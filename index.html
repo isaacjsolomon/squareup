@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Square Up</title>
+<style>
+  :root {
+    --bg1: #1e1b4b; --bg2: #312e81;
+    --card: #ffffff; --ink: #1f2937; --muted: #6b7280;
+    --accent: #6366f1; --accent-dark: #4f46e5;
+    --green: #059669; --red: #dc2626; --line: #e5e7eb;
+    --side-bg: #9fcad3; --side-line: #8cb2ba;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    color: var(--ink); padding: 24px 16px 60px;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  header { color: #fff; text-align: center; margin-bottom: 20px; }
+  header h1 { margin: 0; font-size: 2rem; letter-spacing: -0.5px; }
+  header p { margin: 4px 0 0; opacity: .75; }
+  .card {
+    background: var(--card); border-radius: 16px; padding: 20px;
+    margin-bottom: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.2);
+  }
+  .card h2 { margin: 0 0 14px; font-size: 1.1rem; }
+
+  /* toggle */
+  .toggle { display: flex; background: #eef2ff; border-radius: 12px; padding: 4px; margin-bottom: 12px; }
+  .toggle button {
+    flex: 1; border: 0; background: transparent; padding: 10px; border-radius: 9px;
+    font-size: 15px; font-weight: 600; color: var(--muted); cursor: pointer;
+  }
+  .toggle button.active { background: #fff; color: var(--accent-dark); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+
+  form { display: grid; gap: 10px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  input {
+    width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--line);
+    border-radius: 10px; outline: none; font-family: inherit;
+  }
+  input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,.2); }
+  .preview { text-align: center; color: var(--muted); font-size: 14px; min-height: 20px; }
+  .primary {
+    border: 0; padding: 13px; font-size: 16px; font-weight: 600; color: #fff; cursor: pointer;
+    background: var(--accent); border-radius: 10px;
+  }
+  .primary:hover { background: var(--accent-dark); }
+
+  /* net balances */
+  .net {
+    display: flex; align-items: center; gap: 12px; padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .net:last-child { border-bottom: 0; }
+  .avatar {
+    width: 38px; height: 38px; border-radius: 50%; color: #fff; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex: none;
+  }
+  .net .text { flex: 1; }
+  .amount { font-weight: 700; color: var(--red); font-size: 1.05rem; }
+  .small-btn {
+    border: 1px solid var(--line); background: #fff; border-radius: 8px;
+    padding: 6px 10px; font-size: 13px; cursor: pointer; color: var(--ink);
+  }
+  .small-btn:hover { background: #f3f4f6; }
+
+  /* matrix table */
+  .table-scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { padding: 10px; text-align: center; border: 1px solid var(--line); }
+  th { background: #f5f3ff; font-weight: 600; }
+  td.self { background: #f9fafb; color: #d1d5db; }
+  td.owed { color: var(--red); font-weight: 700; background: #fef2f2; }
+  .corner { font-size: 11px; color: var(--muted); font-weight: 500; line-height: 1.2; }
+
+  /* history */
+  .entry { padding: 12px 0; border-bottom: 1px solid var(--line); display: flex; gap: 12px; align-items: flex-start; }
+  .entry:last-child { border-bottom: 0; }
+  .tag { font-size: 11px; font-weight: 700; border-radius: 6px; padding: 3px 7px; flex: none; margin-top: 2px; }
+  .tag.debt { background: #fee2e2; color: var(--red); }
+  .tag.payment { background: #d1fae5; color: var(--green); }
+  .entry .text { flex: 1; }
+  .note { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .empty { color: var(--muted); text-align: center; padding: 10px 0; }
+  .danger { color: var(--red); }
+  footer { text-align: center; }
+  footer button { background: transparent; border: 0; color: rgba(255,255,255,.6); cursor: pointer; font-size: 13px; }
+
+  /* auth */
+  .ghost-btn {
+    background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.3);
+    border-radius: 9px; padding: 8px 14px; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .ghost-btn:hover { background: rgba(255,255,255,.22); }
+  .ghost-btn.solid { background: #fff; color: var(--accent-dark); border-color: #fff; }
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(15,12,40,.6); display: none;
+    align-items: center; justify-content: center; padding: 16px; z-index: 10;
+  }
+  .modal-bg.open { display: flex; }
+  .modal { width: 100%; max-width: 380px; position: relative; }
+  .modal .close {
+    position: absolute; top: 10px; right: 12px; border: 0; background: transparent;
+    font-size: 22px; color: var(--muted); cursor: pointer;
+  }
+  .modal h2 { margin-top: 4px; }
+  .link-btn { border: 0; background: transparent; color: var(--accent-dark); cursor: pointer; font-size: 14px; padding: 0; }
+  .google-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
+    background: #fff; color: var(--ink); border: 1px solid var(--line); border-radius: 10px;
+    padding: 11px 14px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .google-btn:hover { background: #f9fafb; }
+  .google-btn:disabled { opacity: .6; cursor: default; }
+  .divider { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; margin: 10px 0; }
+  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .msg { font-size: 14px; min-height: 18px; text-align: center; }
+  .msg.error { color: var(--red); }
+  .msg.ok { color: var(--green); }
+  /* trackers + sharing */
+  .tb-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .tb-row select {
+    flex: 1; min-width: 160px; padding: 10px 12px; font-size: 16px; border: 1px solid var(--line);
+    border-radius: 10px; background: #fff; font-family: inherit; color: var(--ink);
+  }
+  .tb-text { flex: 1; color: var(--muted); font-size: 14px; min-width: 200px; }
+  .tb-text b { color: var(--ink); }
+  .tb-members { margin-top: 10px; font-size: 14px; color: var(--muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .tb-members .avatar, .member .avatar { width: 26px; height: 26px; font-size: 12px; }
+  .small-btn.accent { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  .small-btn.accent:hover { background: var(--accent-dark); }
+  .sync { font-size: 12px; color: var(--muted); margin-left: auto; }
+  .invite-row { display: flex; gap: 8px; }
+  .invite-row input { font-size: 14px; background: #f9fafb; }
+  .member { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .member:last-child { border-bottom: 0; }
+  .member .text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .role { font-size: 11px; font-weight: 700; color: var(--accent-dark); background: #eef2ff; border-radius: 6px; padding: 2px 6px; }
+  .hint { font-size: 13px; color: var(--muted); margin: 0; }
+  .section-label { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin: 6px 0 0; }
+  .check { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--ink); }
+  .check input { width: auto; }
+  .modal-actions { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .join-banner { background: #eef2ff; color: var(--accent-dark); border-radius: 10px; padding: 10px 12px; font-size: 14px; margin-bottom: 10px; }
+  /* backdrop */
+  #backdrop {
+    position: fixed; inset: 0; z-index: -1;
+    background: linear-gradient(135deg, var(--bg1), var(--bg2)) center / cover no-repeat;
+    transition: background .3s;
+  }
+  #backdrop.photo::after { content: ""; position: absolute; inset: 0; background: rgba(15,12,40,.35); }
+  .logo-btn { border: 0; padding: 0; background: none; cursor: pointer; border-radius: 10px; align-self: flex-start; margin-bottom: 4px; flex-shrink: 0; }
+  .logo-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  .sidebar .logo { display: block; width: 40px; height: 40px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,.25); transition: transform .15s; }
+  .logo-btn:hover .logo { transform: scale(1.06); }
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .swatch {
+    height: 58px; border-radius: 10px; border: 2px solid transparent; cursor: pointer;
+    color: #fff; font-size: 13px; font-weight: 600; font-family: inherit;
+    display: flex; align-items: flex-end; padding: 6px 8px; background-size: cover; background-position: center;
+  }
+  .swatch.active { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,.3); }
+  .swatch.photo-swatch { text-shadow: 0 1px 3px rgba(0,0,0,.7); }
+  /* left side panel */
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0; width: 280px; z-index: 5; overflow-y: auto;
+    background: var(--side-bg); border-right: 1px solid var(--side-line); transition: background .3s; padding: 20px 16px;
+    display: flex; flex-direction: column; gap: 16px; box-shadow: 4px 0 20px rgba(0,0,0,.15);
+  }
+  .side-section { display: flex; flex-direction: column; gap: 8px; }
+  .side-section + .side-section { border-top: 1px solid var(--side-line); padding-top: 16px; }
+  .sidebar { --muted: #374151; }
+  .sidebar .who { font-weight: 600; color: var(--ink); overflow-wrap: anywhere; }
+  .sidebar .small-btn { width: 100%; padding: 10px 12px; font-size: 14px; text-align: left; }
+  .sidebar .tb-row { flex-direction: column; align-items: stretch; }
+  .sidebar .tb-row select, .sidebar .tb-text { min-width: 0; flex: none; width: 100%; }
+  .sidebar .tb-members { margin-top: 2px; }
+  .sidebar .sync { margin-left: 0; width: 100%; }
+  body { padding-left: 296px; }
+  @media (max-width: 800px) {
+    body { padding-left: 16px; padding-top: 0; }
+    .sidebar { position: static; width: auto; margin: 0 -16px 20px; box-shadow: none; border-right: 0; border-bottom: 1px solid var(--side-line); }
+  }
+  /* collapsed side panel: only the logo stays, in the corner */
+  body.side-collapsed { padding-left: 16px; }
+  body.side-collapsed .sidebar {
+    bottom: auto; width: auto; overflow: visible; padding: 16px;
+    background: transparent; border: 0; box-shadow: none;
+  }
+  body.side-collapsed .sidebar #tracker-bar,
+  body.side-collapsed .side-account > :not(.logo-btn) { display: none; }
+  body.side-collapsed .logo-btn { margin-bottom: 0; }
+  @media (max-width: 800px) {
+    body.side-collapsed .sidebar { position: static; margin: 0 -16px 8px; }
+  }
+  /* profile + settings menu */
+  .avatar.has-photo { background-size: cover !important; background-position: center !important; color: transparent; }
+  .me { display: flex; align-items: center; gap: 10px; }
+  .me-avatar { width: 36px; height: 36px; border: 2px solid #fff; padding: 0; cursor: pointer; font-size: 15px; font-family: inherit; background: var(--accent); }
+  .settings { position: relative; }
+  .sidebar .settings-btn { display: flex; justify-content: space-between; align-items: center; }
+  .settings-btn::after { content: ""; border: 5px solid transparent; border-top-color: currentColor; margin-top: 5px; }
+  .settings-btn[aria-expanded="true"]::after { border-top-color: transparent; border-bottom-color: currentColor; margin-top: -5px; }
+  .settings-menu {
+    position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 6;
+    background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 4px;
+    box-shadow: 0 10px 24px rgba(0,0,0,.18); display: flex; flex-direction: column;
+  }
+  .settings-menu button {
+    border: 0; background: transparent; text-align: left; padding: 10px 12px; border-radius: 7px;
+    font-size: 14px; color: var(--ink); cursor: pointer; font-family: inherit;
+  }
+  .settings-menu button:hover, .settings-menu button:focus-visible { background: #eef2ff; outline: none; }
+  .photo-preview { width: 120px; height: 120px; font-size: 44px; margin: 6px auto 14px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div id="backdrop" aria-hidden="true"></div>
+<aside class="sidebar" aria-label="Account and trackers">
+  <!-- ACCOUNT -->
+  <div class="side-section side-account">
+    <button type="button" class="logo-btn" id="side-toggle" aria-expanded="true" aria-label="Collapse side panel" title="Collapse side panel">
+      <img class="logo" src="/images/logo.png" alt="" width="40" height="40">
+    </button>
+    <div class="me" id="me" hidden>
+      <button type="button" class="avatar me-avatar" id="me-avatar" aria-label="Change profile photo"></button>
+      <span class="who" id="who"></span>
+    </div>
+    <div class="settings">
+      <button type="button" class="small-btn settings-btn" id="btn-settings" aria-haspopup="menu" aria-expanded="false" aria-controls="settings-menu">Settings</button>
+      <div class="settings-menu" id="settings-menu" role="menu" hidden>
+        <button type="button" role="menuitem" id="btn-login">Log in</button>
+        <button type="button" role="menuitem" id="btn-signup">Create account</button>
+        <button type="button" role="menuitem" id="btn-backdrop">Backdrop</button>
+        <button type="button" role="menuitem" id="btn-photo" hidden>Profile photo</button>
+        <button type="button" role="menuitem" id="btn-change-pw" hidden>Change password</button>
+        <button type="button" role="menuitem" id="btn-logout" hidden>Log out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRACKER PICKER / SHARING -->
+  <div class="side-section" id="tracker-bar">
+    <div class="tb-row" id="tb-local">
+      <div class="tb-text"><b>Saved on this device only.</b> Log in to make trackers you can share with friends.</div>
+      <button type="button" class="small-btn accent" id="tb-login">Log in to share</button>
+    </div>
+    <div id="tb-cloud" hidden>
+      <div class="tb-row">
+        <select id="tracker-select" aria-label="Choose a tracker"></select>
+        <button type="button" class="small-btn" id="tb-new">+ New tracker</button>
+        <button type="button" class="small-btn accent" id="tb-share">Share tracker</button>
+      </div>
+      <div class="tb-members" id="tb-members"></div>
+    </div>
+  </div>
+
+</aside>
+<div class="wrap">
+  <header>
+    <h1>💸 Square Up</h1>
+    <p>Track who owes who. Debts that go both ways cancel out automatically.</p>
+  </header>
+
+  <!-- ADD ENTRY -->
+  <div class="card">
+    <div class="toggle">
+      <button type="button" id="mode-debt" class="active">Owes money</button>
+      <button type="button" id="mode-payment">Paid back</button>
+    </div>
+    <form id="form">
+      <div class="row">
+        <input id="person1" list="people" placeholder="Person 1" autocomplete="off" required>
+        <input id="person2" list="people" placeholder="Person 2" autocomplete="off" required>
+      </div>
+      <datalist id="people"></datalist>
+      <div class="row">
+        <input id="amount" type="number" step="0.01" min="0.01" placeholder="Amount ($)" required>
+        <input id="note" placeholder="What for? (pizza, Uber...)" autocomplete="off">
+      </div>
+      <div class="preview" id="preview"></div>
+      <button class="primary" type="submit">Add</button>
+    </form>
+  </div>
+
+  <!-- NET BALANCES -->
+  <div class="card">
+    <h2>Current balances</h2>
+    <div id="nets"></div>
+  </div>
+
+  <!-- MATRIX TABLE -->
+  <div class="card">
+    <h2>Who owes who</h2>
+    <div class="table-scroll" id="matrix"></div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="card">
+    <h2>History</h2>
+    <div id="history"></div>
+  </div>
+
+  <footer><button id="clear">Clear everything</button></footer>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-bg" id="auth-modal">
+  <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <button type="button" class="close" id="auth-close" aria-label="Close">×</button>
+    <h2 id="auth-title">Log in</h2>
+    <div class="join-banner" id="auth-join" hidden>You've been invited to a shared tracker. Log in or create an account to join.</div>
+    <div class="toggle" id="auth-tabs">
+      <button type="button" id="tab-login" class="active">Log in</button>
+      <button type="button" id="tab-signup">Create account</button>
+    </div>
+    <div id="auth-oauth">
+      <button type="button" class="google-btn" id="auth-google">
+        <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+        <span id="auth-google-label">Log in with Google</span>
+      </button>
+      <div class="divider">or use email</div>
+    </div>
+    <form id="auth-form">
+      <input id="auth-name" placeholder="Your name" autocomplete="name" hidden>
+      <input id="auth-email" type="email" placeholder="Email" autocomplete="email" required>
+      <input id="auth-password" type="password" placeholder="Password" autocomplete="current-password" required minlength="6">
+      <div class="msg" id="auth-msg"></div>
+      <button class="primary" type="submit" id="auth-submit">Log in</button>
+      <div style="text-align:center"><button type="button" class="link-btn" id="auth-forgot">Forgot password?</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- PROFILE PHOTO MODAL -->
+<div class="modal-bg" id="photo-modal">
+  <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="photo-title">
+    <button type="button" class="close" id="photo-close" aria-label="Close">×</button>
+    <h2 id="photo-title">Profile photo</h2>
+    <p class="hint">Friends in your shared trackers see this next to your name.</p>
+    <div class="avatar photo-preview" id="photo-preview"></div>
+    <input type="file" id="photo-file" accept="image/*" hidden>
+    <div class="modal-actions">
+      <button type="button" class="small-btn accent" id="photo-upload">Upload a photo</button>
+      <button type="button" class="small-btn danger" id="photo-remove" hidden>Remove photo</button>
+    </div>
+    <div class="msg" id="photo-msg" style="margin-top:8px"></div>
+  </div>
+</div>
+
+<!-- SETTLE UP MODAL -->
+<div class="modal-bg" id="settle-modal">
+  <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="settle-title">
+    <button type="button" class="close" id="settle-close" aria-label="Close">×</button>
+    <h2 id="settle-title">Settle up</h2>
+    <form id="settle-form">
+      <p class="hint" id="settle-text"></p>
+      <input id="settle-amount" type="number" inputmode="decimal" step="0.01" min="0.01" required placeholder="Amount paid ($)">
+      <label class="check"><input type="checkbox" id="settle-full"> Pay the full amount</label>
+      <p class="hint" id="settle-left"></p>
+      <div class="msg error" id="settle-msg"></div>
+      <button class="primary" type="submit">Record payment</button>
+    </form>
+  </div>
+</div>
+
+<!-- NEW TRACKER MODAL -->
+<div class="modal-bg" id="new-modal">
+  <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="new-title">
+    <button type="button" class="close" data-close aria-label="Close">×</button>
+    <h2 id="new-title">New tracker</h2>
+    <form id="new-form">
+      <input id="new-name" placeholder="Name (e.g. Roommates, Ski trip)" maxlength="80" required autocomplete="off">
+      <label class="check" id="new-import-row" hidden><input type="checkbox" id="new-import" checked> <span id="new-import-label"></span></label>
+      <p class="hint">After creating it, tap <b>Share tracker</b> to invite friends. Everyone in a tracker can add, settle and delete entries.</p>
+      <div class="msg" id="new-msg"></div>
+      <button class="primary" type="submit" id="new-submit">Create tracker</button>
+    </form>
+  </div>
+</div>
+
+<!-- MY TRACKERS MODAL -->
+<div class="modal-bg" id="manage-modal">
+  <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="manage-title">
+    <button type="button" class="close" data-close aria-label="Close">×</button>
+    <h2 id="manage-title">My trackers</h2>
+    <p class="hint">Deleting a tracker you own removes it for everyone. For trackers shared with you, you can leave instead.</p>
+    <div id="manage-list" style="margin-top:8px"></div>
+    <div class="msg" id="manage-msg"></div>
+  </div>
+</div>
+
+<!-- BACKDROP MODAL -->
+<div class="modal-bg" id="backdrop-modal">
+  <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="backdrop-title">
+    <button type="button" class="close" data-close aria-label="Close">×</button>
+    <h2 id="backdrop-title">Backdrop</h2>
+    <p class="hint" id="backdrop-scope"></p>
+    <div class="swatches" id="backdrop-swatches" style="margin-top:10px"></div>
+    <input type="file" id="backdrop-file" accept="image/*" hidden>
+    <div class="tb-row" style="margin-top:12px">
+      <button type="button" class="small-btn accent" id="backdrop-upload">Upload a photo</button>
+    </div>
+    <div class="msg" id="backdrop-msg" style="margin-top:8px"></div>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-bg" id="share-modal">
+  <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="share-title">
+    <button type="button" class="close" data-close aria-label="Close">×</button>
+    <h2 id="share-title">Share tracker</h2>
+    <form id="rename-form" class="tb-row">
+      <input id="share-name" maxlength="80" required aria-label="Tracker name">
+      <button type="submit" class="small-btn">Rename</button>
+    </form>
+    <p class="section-label">Invite link</p>
+    <p class="hint">Send this link to a friend. Once they log in or create an account, they can see and manage this tracker with you.</p>
+    <div class="invite-row" style="margin-top:8px">
+      <input id="invite-link" readonly aria-label="Invite link">
+      <button type="button" class="small-btn accent" id="invite-copy">Copy</button>
+    </div>
+    <div style="margin-top:6px"><button type="button" class="link-btn" id="invite-native" hidden>Share via…</button>
+      <button type="button" class="link-btn" id="invite-reset" hidden style="margin-left:10px">Reset link</button></div>
+    <p class="section-label" style="margin-top:16px">People</p>
+    <div id="share-members"></div>
+    <div class="msg" id="share-msg"></div>
+    <div class="modal-actions" style="margin-top:8px">
+      <button type="button" class="small-btn danger" id="share-leave">Leave tracker</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ STORAGE (safe: falls back to memory if the browser blocks it) ============
+var KEY = "squareup-entries";
+var memoryFallback = [];
+function loadEntries() {
+  try { return JSON.parse(localStorage.getItem(KEY) || "[]"); }
+  catch (e) { return memoryFallback; }
+}
+function saveEntries() {
+  memoryFallback = entries;
+  try { localStorage.setItem(KEY, JSON.stringify(entries)); } catch (e) {}
+}
+
+// ============ DATA ============
+// entry = { id, type: "debt" | "payment", from, to, amount, note, date }
+//   debt:    "from" owes "to"
+//   payment: "from" paid "to" back (reduces what from owes to)
+var entries = loadEntries();
+var mode = "debt";
+
+function norm(name) { return name.trim().toLowerCase(); }
+function pretty(name) {
+  name = name.trim();
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+function money(n) { return "$" + n.toFixed(2); }
+
+// Display names: first spelling used for each person wins
+function nameMap() {
+  var map = {};
+  entries.forEach(function (e) {
+    [e.from, e.to].forEach(function (n) { if (!map[norm(n)]) map[norm(n)] = pretty(n); });
+  });
+  return map;
+}
+
+// ============ THE MATH ============
+// owes[a][b] = how much a owes b (debts add, payments subtract)
+// Then for each pair we net the two directions so they cancel out.
+function computeNet() {
+  var owes = {};
+  function add(a, b, amt) {
+    if (!owes[a]) owes[a] = {};
+    owes[a][b] = (owes[a][b] || 0) + amt;
+  }
+  entries.forEach(function (e) {
+    var a = norm(e.from), b = norm(e.to);
+    add(a, b, e.type === "debt" ? e.amount : -e.amount);
+  });
+
+  var people = Object.keys(nameMap()).sort();
+  var net = {}; // net[a][b] > 0 means a owes b that much (after cancelling)
+  var pairs = [];
+  people.forEach(function (a) {
+    net[a] = {};
+    people.forEach(function (b) {
+      if (a === b) return;
+      var ab = (owes[a] && owes[a][b]) || 0;
+      var ba = (owes[b] && owes[b][a]) || 0;
+      var diff = Math.round((ab - ba) * 100) / 100;
+      net[a][b] = diff > 0 ? diff : 0;
+      if (diff > 0) pairs.push({ from: a, to: b, amount: diff });
+    });
+  });
+  return { people: people, net: net, pairs: pairs };
+}
+
+// ============ DRAWING ============
+var COLORS = ["#6366f1", "#ec4899", "#f59e0b", "#10b981", "#0ea5e9", "#8b5cf6", "#ef4444", "#14b8a6"];
+function avatar(name, idx) {
+  return '<div class="avatar" style="background:' + COLORS[idx % COLORS.length] + '">' + esc(name.charAt(0)) + "</div>";
+}
+
+function render() {
+  var names = nameMap();
+  var result = computeNet();
+  var people = result.people;
+
+  // autocomplete list
+  document.getElementById("people").innerHTML =
+    people.map(function (p) { return '<option value="' + esc(names[p]) + '">'; }).join("");
+
+  // net balances
+  var netsHtml = result.pairs.map(function (p) {
+    var idx = people.indexOf(p.from);
+    return '<div class="net">' + avatar(names[p.from], idx) +
+      '<div class="text"><b>' + esc(names[p.from]) + "</b> owes <b>" + esc(names[p.to]) + "</b></div>" +
+      '<div class="amount">' + money(p.amount) + "</div>" +
+      '<button class="small-btn" data-from="' + esc(p.from) + '" data-to="' + esc(p.to) +
+      '" data-amt="' + p.amount + '">Settle up</button></div>';
+  }).join("");
+  document.getElementById("nets").innerHTML = netsHtml || '<div class="empty">Everyone is squared up 🎉</div>';
+
+  // matrix table
+  if (people.length < 2) {
+    document.getElementById("matrix").innerHTML = '<div class="empty">Add an entry to see the table.</div>';
+  } else {
+    var t = '<table><tr><th class="corner">owes ↓ &nbsp; to →</th>' +
+      people.map(function (p) { return "<th>" + esc(names[p]) + "</th>"; }).join("") + "</tr>";
+    people.forEach(function (row) {
+      t += "<tr><th>" + esc(names[row]) + "</th>";
+      people.forEach(function (col) {
+        if (row === col) t += '<td class="self">—</td>';
+        else if (result.net[row][col] > 0) t += '<td class="owed">' + money(result.net[row][col]) + "</td>";
+        else t += "<td>$0</td>";
+      });
+      t += "</tr>";
+    });
+    document.getElementById("matrix").innerHTML = t + "</table>";
+  }
+
+  // history (newest first)
+  var h = entries.slice().reverse().map(function (e) {
+    var from = esc(names[norm(e.from)]), to = esc(names[norm(e.to)]);
+    var text = e.type === "debt"
+      ? "<b>" + from + "</b> owes <b>" + to + "</b> " + money(e.amount)
+      : "<b>" + from + "</b> paid <b>" + to + "</b> back " + money(e.amount);
+    return '<div class="entry"><span class="tag ' + e.type + '">' + (e.type === "debt" ? "OWES" : "PAID") + "</span>" +
+      '<div class="text">' + text + '<div class="note">' + esc(e.note || "No note") + " · " + esc(e.date) +
+      (e.createdBy ? " · added by " + esc(e.createdBy) : "") + "</div></div>" +
+      '<button class="small-btn danger" data-del="' + e.id + '">Delete</button></div>';
+  }).join("");
+  document.getElementById("history").innerHTML = h || '<div class="empty">Nothing yet.</div>';
+
+  updatePreview();
+}
+
+function updatePreview() {
+  var a = document.getElementById("person1").value.trim();
+  var b = document.getElementById("person2").value.trim();
+  var el = document.getElementById("preview");
+  if (!a || !b) { el.textContent = ""; return; }
+  el.textContent = mode === "debt"
+    ? pretty(a) + " owes " + pretty(b)
+    : pretty(a) + " paid " + pretty(b) + " back";
+}
+
+// ============ ACTIONS ============
+// When a shared tracker is open, the accounts script sets `cloud` and entries
+// are saved to the server instead of this browser.
+var cloud = null; // { add(entry), remove(id), clear() } | null
+function useEntries(list, cloudApi) {
+  cloud = cloudApi || null;
+  entries = list || loadEntries();
+  document.getElementById("clear").textContent = cloud ? "Clear everything in this tracker" : "Clear everything";
+  render();
+}
+
+function addEntry(type, from, to, amount, note) {
+  var entry = {
+    id: Date.now() + Math.random(),
+    type: type, from: from.trim(), to: to.trim(),
+    amount: Math.round(amount * 100) / 100,
+    note: (note || "").trim(),
+    date: new Date().toLocaleDateString()
+  };
+  if (cloud) return cloud.add(entry);
+  entries.push(entry);
+  saveEntries();
+  render();
+}
+
+document.getElementById("form").addEventListener("submit", function (e) {
+  e.preventDefault();
+  var a = document.getElementById("person1").value;
+  var b = document.getElementById("person2").value;
+  var amt = parseFloat(document.getElementById("amount").value);
+  if (norm(a) === norm(b)) { alert("Pick two different people."); return; }
+  if (!(amt > 0)) return;
+  addEntry(mode, a, b, amt, document.getElementById("note").value);
+  e.target.reset();
+});
+
+function setMode(m) {
+  mode = m;
+  document.getElementById("mode-debt").classList.toggle("active", m === "debt");
+  document.getElementById("mode-payment").classList.toggle("active", m === "payment");
+  updatePreview();
+}
+document.getElementById("mode-debt").onclick = function () { setMode("debt"); };
+document.getElementById("mode-payment").onclick = function () { setMode("payment"); };
+document.getElementById("person1").addEventListener("input", updatePreview);
+document.getElementById("person2").addEventListener("input", updatePreview);
+
+// Settle up + delete buttons (event delegation)
+document.addEventListener("click", function (e) {
+  var t = e.target;
+  if (t.dataset && t.dataset.amt) openSettle(t.dataset.from, t.dataset.to, parseFloat(t.dataset.amt));
+  if (t.dataset && t.dataset.del) {
+    if (cloud) return cloud.remove(t.dataset.del);
+    entries = entries.filter(function (x) { return String(x.id) !== t.dataset.del; });
+    saveEntries();
+    render();
+  }
+});
+
+// Settle up dialog: pay the full balance or just part of it
+var settling = null; // { from, to, owed }
+function openSettle(from, to, owed) {
+  var names = nameMap();
+  settling = { from: names[from] || from, to: names[to] || to, owed: owed };
+  document.getElementById("settle-text").innerHTML = "<b>" + esc(settling.from) + "</b> owes <b>" +
+    esc(settling.to) + "</b> " + money(owed) + ". How much was paid back?";
+  document.getElementById("settle-amount").value = owed.toFixed(2);
+  document.getElementById("settle-full").checked = true;
+  document.getElementById("settle-msg").textContent = "";
+  updateSettleLeft();
+  document.getElementById("settle-modal").classList.add("open");
+  var input = document.getElementById("settle-amount");
+  input.focus(); input.select();
+}
+function closeSettle() {
+  settling = null;
+  document.getElementById("settle-modal").classList.remove("open");
+}
+function updateSettleLeft() {
+  if (!settling) return;
+  var amt = parseFloat(document.getElementById("settle-amount").value);
+  var el = document.getElementById("settle-left");
+  document.getElementById("settle-full").checked = Math.abs(amt - settling.owed) < 0.005;
+  if (!(amt > 0)) { el.textContent = ""; return; }
+  var left = Math.round((settling.owed - amt) * 100) / 100;
+  el.textContent = left > 0 ? "Still owed after this: " + money(left)
+    : left < 0 ? "That's " + money(-left) + " more than owed — " + settling.to + " will then owe " + settling.from + "."
+    : "This squares them up completely.";
+}
+document.getElementById("settle-amount").addEventListener("input", updateSettleLeft);
+document.getElementById("settle-full").onchange = function (e) {
+  if (e.target.checked && settling) document.getElementById("settle-amount").value = settling.owed.toFixed(2);
+  updateSettleLeft();
+};
+document.getElementById("settle-close").onclick = closeSettle;
+document.getElementById("settle-modal").addEventListener("click", function (e) { if (e.target === e.currentTarget) closeSettle(); });
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeSettle(); });
+document.getElementById("settle-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+  if (!settling) return;
+  var amt = Math.round(parseFloat(document.getElementById("settle-amount").value) * 100) / 100;
+  if (!(amt > 0)) { document.getElementById("settle-msg").textContent = "Enter an amount greater than $0."; return; }
+  var full = Math.abs(amt - settling.owed) < 0.005;
+  var s = settling;
+  closeSettle();
+  addEntry("payment", s.from, s.to, amt, full ? "Settled up" : "Partial payment");
+});
+
+document.getElementById("clear").onclick = function () {
+  var msg = cloud ? "Delete all entries in this tracker for everyone in it? This can't be undone."
+    : "Delete all entries? This can't be undone.";
+  if (confirm(msg)) {
+    if (cloud) return cloud.clear();
+    entries = [];
+    saveEntries();
+    render();
+  }
+};
+
+render();
+</script>
+<script type="module">
+// ============ ACCOUNTS (Netlify Identity) ============
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+const supabase = createClient("https://pajrdqarszbnrlstoyly.supabase.co", "sb_publishable_iyr6Jv8Xa4FjmkQNANtVUA_xaguZX5q");
+const mapUser = u => u ? ({ id:u.id, email:u.email || "", name:u.user_metadata?.full_name || u.email?.split("@")[0] || "", emailVerified: !!u.email_confirmed_at, confirmedAt:u.email_confirmed_at }) : null;
+async function unwrap(p) { const {data,error}=await p; if(error) throw error; return data; }
+async function login(email,password) { const data=await unwrap(supabase.auth.signInWithPassword({email,password})); return mapUser(data.user); }
+async function signup(email,password,metadata) { const data=await unwrap(supabase.auth.signUp({email,password,options:{data:metadata || {},emailRedirectTo:location.origin}})); return mapUser(data.user); }
+async function logout() { await unwrap(supabase.auth.signOut()); }
+async function getUser() { const {data,error}=await supabase.auth.getUser(); return error ? null : mapUser(data.user); }
+function onAuthChange(cb) { return supabase.auth.onAuthStateChange((event,session)=>{ setTimeout(()=>cb(event,mapUser(session?.user)),0); }); }
+async function refreshSession() { return supabase.auth.getSession(); }
+async function requestPasswordRecovery(email) { await unwrap(supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin})); }
+async function updateUser(values) { const data=await unwrap(supabase.auth.updateUser(values)); return mapUser(data.user); }
+async function oauthLogin(provider) { const data=await unwrap(supabase.auth.signInWithOAuth({provider,options:{redirectTo:location.origin}})); if(data.url) location.assign(data.url); }
+async function handleAuthCallback() { const hash=new URLSearchParams(location.hash.slice(1)); if(hash.get("type")==="recovery") return {type:"recovery"}; const query=new URLSearchParams(location.search); if(query.has("code")) { await supabase.auth.exchangeCodeForSession(query.get("code")); history.replaceState(null,"",location.pathname); } return null; }
+const AuthError=Error, MissingIdentityError=Error;
+async function authHeaders(extra={}) { const {data}=await supabase.auth.getSession(); return {...extra,...(data.session?.access_token ? {Authorization:"Bearer "+data.session.access_token} : {})}; }
+
+var $ = function (id) { return document.getElementById(id); };
+var authMode = "login"; // "login" | "signup" | "forgot" | "reset"
+var currentUser = null;
+
+function showMsg(text, kind) {
+  $("auth-msg").textContent = text || "";
+  $("auth-msg").className = "msg" + (kind ? " " + kind : "");
+}
+function errorText(err) {
+  if (err?.message) return err.message;
+  if (false) {
+    if (err.status === 401) return "Invalid email or password.";
+    if (err.status === 403) return "New signups are currently closed.";
+    if (err.status === 422) return err.message || "Check your email and password.";
+    return err.message;
+  }
+  return "Something went wrong. Please try again.";
+}
+
+function setAuthMode(m) {
+  authMode = m;
+  var titles = { login: "Log in", signup: "Create account", forgot: "Reset password", reset: "Set a new password" };
+  var submits = { login: "Log in", signup: "Create account", forgot: "Send reset link", reset: "Save password" };
+  $("auth-title").textContent = titles[m];
+  $("auth-submit").textContent = submits[m];
+  $("auth-tabs").hidden = m === "forgot" || m === "reset";
+  $("auth-oauth").hidden = m === "forgot" || m === "reset";
+  $("auth-google-label").textContent = m === "signup" ? "Sign up with Google" : "Log in with Google";
+  $("auth-google").disabled = false;
+  $("auth-submit").hidden = false;
+  $("tab-login").classList.toggle("active", m === "login");
+  $("tab-signup").classList.toggle("active", m === "signup");
+  $("auth-name").hidden = m !== "signup";
+  $("auth-email").hidden = m === "reset";
+  $("auth-email").required = m !== "reset";
+  $("auth-password").hidden = m === "forgot";
+  $("auth-password").required = m !== "forgot";
+  $("auth-password").placeholder = m === "reset" ? "New password" : "Password";
+  $("auth-password").autocomplete = m === "login" ? "current-password" : "new-password";
+  $("auth-forgot").hidden = m !== "login";
+  $("auth-join").hidden = !pendingJoin() || m === "forgot" || m === "reset";
+  showMsg("");
+}
+function openAuth(m) {
+  setAuthMode(m);
+  $("auth-modal").classList.add("open");
+  (m === "reset" ? $("auth-password") : m === "signup" ? $("auth-name") : $("auth-email")).focus();
+}
+function closeAuth() {
+  $("auth-modal").classList.remove("open");
+  $("auth-form").reset();
+}
+
+function showUser(user) {
+  var loggedIn = !!user;
+  currentUser = user || null;
+  $("btn-change-pw").hidden = !loggedIn;
+  $("btn-login").hidden = loggedIn;
+  $("btn-signup").hidden = loggedIn;
+  $("btn-logout").hidden = !loggedIn;
+  $("btn-photo").hidden = !loggedIn;
+  $("me").hidden = !loggedIn;
+  $("who").textContent = loggedIn ? "Hi, " + (user.name || user.email) : "";
+  if (!loggedIn) $("photo-modal").classList.remove("open");
+  loadMyPhoto(user);
+  syncTrackers(user);
+}
+
+// ============ SETTINGS MENU ============
+function setSettingsOpen(open) {
+  $("settings-menu").hidden = !open;
+  $("btn-settings").setAttribute("aria-expanded", open ? "true" : "false");
+  if (open) {
+    var first = $("settings-menu").querySelector("button:not([hidden])");
+    if (first) first.focus();
+  }
+}
+$("btn-settings").onclick = function () { setSettingsOpen($("settings-menu").hidden); };
+// Picking an item closes the menu
+$("settings-menu").addEventListener("click", function (e) { if (e.target.closest("button")) setSettingsOpen(false); });
+document.addEventListener("click", function (e) {
+  if (!$("settings-menu").hidden && !e.target.closest(".settings")) setSettingsOpen(false);
+});
+$("settings-menu").addEventListener("keydown", function (e) {
+  if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+  e.preventDefault();
+  var items = Array.prototype.slice.call(this.querySelectorAll("button:not([hidden])"));
+  var i = items.indexOf(document.activeElement) + (e.key === "ArrowDown" ? 1 : -1);
+  items[(i + items.length) % items.length].focus();
+});
+
+$("btn-login").onclick = function () { openAuth("login"); };
+$("btn-signup").onclick = function () { openAuth("signup"); };
+$("tab-login").onclick = function () { setAuthMode("login"); };
+$("tab-signup").onclick = function () { setAuthMode("signup"); };
+$("auth-forgot").onclick = function () { setAuthMode("forgot"); };
+$("auth-google").onclick = function () {
+  $("auth-google").disabled = true;
+  showMsg("Redirecting to Google…");
+  try {
+    oauthLogin("google").catch(err => showMsg(errorText(err), "error"));
+  } catch (err) {
+    $("auth-google").disabled = false;
+    showMsg(errorText(err), "error");
+  }
+};
+// Logged-in users change their password by confirming a link sent to their email
+$("btn-change-pw").onclick = function () {
+  openAuth("forgot");
+  $("auth-title").textContent = "Change password";
+  if (currentUser && currentUser.email) $("auth-email").value = currentUser.email;
+  $("auth-submit").focus();
+};
+$("auth-close").onclick = closeAuth;
+$("auth-modal").addEventListener("click", function (e) { if (e.target === e.currentTarget) closeAuth(); });
+document.addEventListener("keydown", function (e) {
+  if (e.key !== "Escape") return;
+  if (!$("settings-menu").hidden) { setSettingsOpen(false); $("btn-settings").focus(); return; }
+  closeAuth(); closeModals(); $("photo-modal").classList.remove("open");
+});
+$("btn-logout").onclick = async function () {
+  try { await logout(); } catch (e) {}
+  showUser(null);
+};
+
+$("auth-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  var email = $("auth-email").value.trim();
+  var password = $("auth-password").value;
+  var btn = $("auth-submit");
+  btn.disabled = true;
+  showMsg("Working…");
+  try {
+    if (authMode === "login") {
+      showUser(await login(email, password));
+      closeAuth();
+    } else if (authMode === "signup") {
+      var name = $("auth-name").value.trim();
+      var user = await signup(email, password, name ? { full_name: name } : undefined);
+      if (user.emailVerified || user.confirmedAt) {
+        showUser(user);
+        closeAuth();
+      } else {
+        showMsg("Almost done! Check your email to confirm your account.", "ok");
+      }
+    } else if (authMode === "forgot") {
+      await requestPasswordRecovery(email);
+      showMsg("Check your email. We sent a link to set a new password.", "ok");
+    } else if (authMode === "reset") {
+      showUser(await updateUser({ password: password }));
+      $("auth-form").reset();
+      $("auth-password").hidden = true;
+      $("auth-submit").hidden = true;
+      showMsg("Your password has been changed.", "ok");
+      setTimeout(function () { $("auth-submit").hidden = false; closeAuth(); }, 1800);
+    }
+  } catch (err) {
+    showMsg(errorText(err), "error");
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+onAuthChange(function (event, user) { showUser(user); if (event === "PASSWORD_RECOVERY") openAuth("reset"); });
+
+// ============ SHARED TRACKERS ============
+var CURRENT_KEY = "squareup-current-tracker";
+var JOIN_KEY = "squareup-join";
+var sessionUserId = null;   // whose trackers are loaded
+var trackers = [];          // [{ id, name, role, memberCount }]
+var current = null;         // full detail of the open shared tracker, or null for "this device"
+var lastSnapshot = "";
+var pollTimer = null;
+
+function store(key, value) {
+  try { value == null ? localStorage.removeItem(key) : localStorage.setItem(key, value); } catch (e) {}
+}
+function read(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+function pendingJoin() { return read(JOIN_KEY); }
+
+// Remember an invite token from the URL (it survives the sign-up + email confirmation round trip)
+(function () {
+  var params = new URLSearchParams(location.search);
+  var token = params.get("join");
+  if (token) {
+    store(JOIN_KEY, token);
+    params.delete("join");
+    var qs = params.toString();
+    history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + location.hash);
+  }
+})();
+
+async function api(path, method, body) {
+  try { await refreshSession(); } catch (e) {}
+  var res = await fetch("/api/" + path, {
+    method: method || "GET",
+    headers: await authHeaders(body ? { "Content-Type": "application/json" } : {}),
+    body: body ? JSON.stringify(body) : undefined,
+    credentials: "same-origin"
+  });
+  var data = await res.json().catch(function () { return {}; });
+  if (!res.ok) {
+    var err = new Error(data.error || "Something went wrong. Please try again.");
+    err.status = res.status;
+    throw err;
+  }
+  return data;
+}
+
+function displayName(m) { return m.isYou ? "You" : (m.name || m.email || "Friend"); }
+function avatarHtml(name, i, member) {
+  var photo = member && member.photo ? ' data-uid="' + esc(member.id) + '" data-v="' + esc(member.photo) + '"' : "";
+  return '<div class="avatar"' + photo + ' style="background:' + COLORS[i % COLORS.length] + '">' + esc(name.charAt(0).toUpperCase()) + "</div>";
+}
+
+// ============ PROFILE PHOTOS ============
+var avatarCache = {}; // "userId/version" -> Promise of an object URL (or null)
+function avatarUrl(userId, v) {
+  var key = userId + "/" + v;
+  if (!avatarCache[key]) {
+    avatarCache[key] = (async function () {
+      try { await refreshSession(); } catch (e) {}
+      var res = await fetch("/api/profile/photo/" + encodeURIComponent(userId) + "?v=" + encodeURIComponent(v), { credentials: "same-origin", headers: await authHeaders() });
+      return res.ok ? URL.createObjectURL(await res.blob()) : null;
+    })().catch(function () { return null; });
+  }
+  return avatarCache[key];
+}
+function setAvatarPhoto(el, url) {
+  el.classList.toggle("has-photo", !!url);
+  el.style.backgroundImage = url ? 'url("' + url + '")' : "";
+}
+// Swap the letter avatars inside root for photos, for people who have one
+function hydrateAvatars(root) {
+  root.querySelectorAll(".avatar[data-uid]").forEach(function (el) {
+    avatarUrl(el.dataset.uid, el.dataset.v).then(function (url) { if (url) setAvatarPhoto(el, url); });
+  });
+}
+
+var myPhoto = null; // version of the logged-in user's photo
+function renderMe() {
+  var initial = currentUser ? (currentUser.name || currentUser.email || "?").charAt(0).toUpperCase() : "";
+  ["me-avatar", "photo-preview"].forEach(function (id) {
+    var el = $(id);
+    el.textContent = initial;
+    setAvatarPhoto(el, null);
+    if (currentUser && myPhoto) {
+      var v = myPhoto;
+      avatarUrl(currentUser.id, v).then(function (url) { if (myPhoto === v) setAvatarPhoto(el, url); });
+    }
+  });
+  $("photo-upload").textContent = myPhoto ? "Upload a different photo" : "Upload a photo";
+  $("photo-remove").hidden = !myPhoto;
+}
+async function loadMyPhoto(user) {
+  myPhoto = null;
+  renderMe();
+  if (!user) return;
+  try {
+    var data = await api("profile");
+    if (currentUser && currentUser.id === user.id) { myPhoto = data.photo; renderMe(); }
+  } catch (e) {}
+}
+
+function photoMsg(text, kind) {
+  $("photo-msg").className = "msg" + (kind ? " " + kind : "");
+  $("photo-msg").textContent = text || "";
+}
+function openPhoto() {
+  if (!currentUser) return;
+  photoMsg("");
+  renderMe();
+  $("photo-modal").classList.add("open");
+}
+// Center-crop to a small square so avatars stay light
+function squarePhoto(file) {
+  return new Promise(function (resolve, reject) {
+    var img = new Image();
+    var src = URL.createObjectURL(file);
+    img.onload = function () {
+      URL.revokeObjectURL(src);
+      var side = Math.min(img.naturalWidth, img.naturalHeight), size = Math.min(320, side);
+      var canvas = document.createElement("canvas");
+      canvas.width = canvas.height = size;
+      canvas.getContext("2d").drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, size, size);
+      canvas.toBlob(function (blob) { blob ? resolve(blob) : reject(new Error("read")); }, "image/jpeg", 0.85);
+    };
+    img.onerror = function () { URL.revokeObjectURL(src); reject(new Error("read")); };
+    img.src = src;
+  });
+}
+async function afterPhotoChange(version) {
+  myPhoto = version;
+  renderMe();
+  if (current) {
+    try { applyDetail(await api("trackers/" + current.id)); } catch (e) {}
+  }
+}
+$("photo-upload").onclick = function () { $("photo-file").click(); };
+$("photo-file").onchange = async function (e) {
+  var file = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if (!file) return;
+  var btn = $("photo-upload");
+  btn.disabled = true;
+  photoMsg("Uploading…");
+  try {
+    var blob;
+    try { blob = await squarePhoto(file); }
+    catch (err) { throw new Error("Couldn't read that photo. Try a JPEG or PNG."); }
+    try { await refreshSession(); } catch (err) {}
+    var res = await fetch("/api/profile/photo", {
+      method: "PUT", headers: await authHeaders({ "Content-Type": "image/jpeg" }), body: blob, credentials: "same-origin"
+    });
+    var data = await res.json().catch(function () { return {}; });
+    if (!res.ok) throw new Error(data.error || "Upload failed. Please try again.");
+    await afterPhotoChange(data.photo);
+    photoMsg("Profile photo updated.", "ok");
+  } catch (err) {
+    photoMsg(err.message, "error");
+  } finally {
+    btn.disabled = false;
+  }
+};
+$("photo-remove").onclick = async function () {
+  var btn = $("photo-remove");
+  btn.disabled = true;
+  photoMsg("Removing…");
+  try {
+    await api("profile/photo", "DELETE");
+    await afterPhotoChange(null);
+    photoMsg("Profile photo removed.", "ok");
+  } catch (err) {
+    photoMsg(err.message, "error");
+  } finally {
+    btn.disabled = false;
+  }
+};
+$("btn-photo").onclick = openPhoto;
+$("me-avatar").onclick = openPhoto;
+$("photo-close").onclick = function () { $("photo-modal").classList.remove("open"); };
+$("photo-modal").addEventListener("click", function (e) { if (e.target === e.currentTarget) e.currentTarget.classList.remove("open"); });
+
+function renderPicker() {
+  var sel = $("tracker-select");
+  sel.innerHTML = '<option value="local">This device (not shared)</option>' +
+    trackers.map(function (t) {
+      return '<option value="' + esc(t.id) + '">' + esc(t.name) + "</option>";
+    }).join("") +
+    (trackers.length ? '<option disabled>──────────</option><option value="manage">Manage my trackers…</option>' : "");
+  sel.value = current ? current.id : "local";
+  $("tb-share").hidden = !current;
+  if ($("manage-modal").classList.contains("open")) renderManageList();
+}
+
+// ============ BACKDROP ============
+// Shared trackers keep their backdrop on the server so every member sees it;
+// the on-device tracker keeps its own in this browser.
+var BACKDROP_KEY = "squareup-backdrop";
+var PRESETS = {
+  indigo: { label: "Indigo", css: "linear-gradient(135deg, #1e1b4b, #312e81)", side: [159, 202, 211] },
+  sunset: { label: "Sunset", css: "linear-gradient(135deg, #7c2d12, #be185d)", side: [253, 164, 175] },
+  ocean:  { label: "Ocean",  css: "linear-gradient(135deg, #0c4a6e, #0e7490)", side: [103, 232, 249] },
+  forest: { label: "Forest", css: "linear-gradient(135deg, #14532d, #115e59)", side: [110, 231, 183] },
+  night:  { label: "Night",  css: "linear-gradient(135deg, #020617, #334155)", side: [148, 163, 184] },
+  berry:  { label: "Berry",  css: "linear-gradient(135deg, #4a044e, #6b21a8)", side: [216, 180, 254] }
+};
+
+// Side panel takes a medium tint of the backdrop: a fixed tint for presets,
+// or the photo's average color mixed toward white.
+function setSideTint(rgb) {
+  var root = document.documentElement.style;
+  root.setProperty("--side-bg", "rgb(" + rgb.join(",") + ")");
+  root.setProperty("--side-line", "rgb(" + rgb.map(function (c) { return Math.round(c * 0.88); }).join(",") + ")");
+}
+function photoTint(url) {
+  return new Promise(function (resolve) {
+    var img = new Image();
+    img.onload = function () {
+      try {
+        var c = document.createElement("canvas");
+        c.width = c.height = 16;
+        var ctx = c.getContext("2d");
+        ctx.drawImage(img, 0, 0, 16, 16);
+        var d = ctx.getImageData(0, 0, 16, 16).data, sum = [0, 0, 0];
+        for (var i = 0; i < d.length; i += 4) { sum[0] += d[i]; sum[1] += d[i + 1]; sum[2] += d[i + 2]; }
+        var n = d.length / 4;
+        resolve(sum.map(function (v) { return Math.round(v / n * 0.55 + 255 * 0.45); }));
+      } catch (e) { resolve(null); }
+    };
+    img.onerror = function () { resolve(null); };
+    img.src = url;
+  });
+}
+var photoCache = { key: null, url: null }; // object URL of the shared tracker's photo
+
+function localBackdrop() {
+  try { return JSON.parse(read(BACKDROP_KEY)) || { preset: "indigo" }; } catch (e) { return { preset: "indigo" }; }
+}
+function backdropState() {
+  if (current) return current.backdrop || { preset: "indigo" };
+  return localBackdrop();
+}
+
+async function photoUrl(b) {
+  if (!current) return b.image || null;
+  if (!b.photo) return null;
+  var key = current.id + "/" + b.photo;
+  if (photoCache.key === key) return photoCache.url;
+  try { await refreshSession(); } catch (e) {}
+  var res = await fetch("/api/trackers/" + current.id + "/backdrop?v=" + encodeURIComponent(b.photo), { credentials: "same-origin", headers: await authHeaders() });
+  if (!res.ok) return null;
+  var url = URL.createObjectURL(await res.blob());
+  if (photoCache.url) URL.revokeObjectURL(photoCache.url);
+  photoCache = { key: key, url: url };
+  return url;
+}
+
+var backdropRun = 0;
+async function applyBackdrop() {
+  var run = ++backdropRun;
+  var b = backdropState();
+  var el = $("backdrop");
+  var url = b.preset === "photo" ? await photoUrl(b) : null;
+  if (run !== backdropRun) return; // a newer change already won
+  el.classList.toggle("photo", !!url);
+  el.style.backgroundImage = url ? 'url("' + url + '")' : (PRESETS[b.preset] || PRESETS.indigo).css;
+  var tint = url ? await photoTint(url) : null;
+  if (run !== backdropRun) return;
+  setSideTint(tint || (PRESETS[url ? "indigo" : b.preset] || PRESETS.indigo).side);
+  if ($("backdrop-modal").classList.contains("open")) renderBackdropPicker();
+}
+
+function backdropMsg(text, kind) {
+  $("backdrop-msg").className = "msg" + (kind ? " " + kind : "");
+  $("backdrop-msg").textContent = text || "";
+}
+function renderBackdropPicker() {
+  var b = backdropState();
+  $("backdrop-scope").innerHTML = current
+    ? "Everyone in <b>" + esc(current.name) + "</b> sees this backdrop."
+    : "This backdrop is saved on this device only.";
+  var html = Object.keys(PRESETS).map(function (k) {
+    return '<button type="button" class="swatch' + (b.preset === k ? " active" : "") + '" data-preset="' + k +
+      '" style="background-image:' + PRESETS[k].css + '">' + PRESETS[k].label + "</button>";
+  }).join("");
+  if (b.preset === "photo") {
+    var bg = $("backdrop").style.backgroundImage;
+    html += '<button type="button" class="swatch photo-swatch active" data-preset="photo" style=\'background-image:' +
+      esc(bg) + '\'>Your photo</button>';
+  }
+  $("backdrop-swatches").innerHTML = html;
+  $("backdrop-upload").textContent = b.preset === "photo" ? "Upload a different photo" : "Upload a photo";
+}
+
+// Shrink big phone photos before saving so they upload fast and fit in browser storage
+function resizePhoto(file) {
+  return new Promise(function (resolve, reject) {
+    var img = new Image();
+    var src = URL.createObjectURL(file);
+    img.onload = function () {
+      URL.revokeObjectURL(src);
+      var max = 1920, scale = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+      var canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.naturalWidth * scale);
+      canvas.height = Math.round(img.naturalHeight * scale);
+      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(function (blob) { blob ? resolve(blob) : reject(new Error("read")); }, "image/jpeg", 0.82);
+    };
+    img.onerror = function () { URL.revokeObjectURL(src); reject(new Error("read")); };
+    img.src = src;
+  });
+}
+function blobToDataUrl(blob) {
+  return new Promise(function (resolve, reject) {
+    var r = new FileReader();
+    r.onload = function () { resolve(r.result); };
+    r.onerror = reject;
+    r.readAsDataURL(blob);
+  });
+}
+
+async function setPreset(preset) {
+  if (!current) {
+    store(BACKDROP_KEY, JSON.stringify({ preset: preset }));
+    return applyBackdrop();
+  }
+  backdropMsg("Saving…");
+  try {
+    applyDetail(await api("trackers/" + current.id, "PATCH", { backdrop: preset }));
+    backdropMsg("Backdrop updated for everyone in this tracker.", "ok");
+  } catch (err) { backdropMsg(err.message, "error"); }
+}
+
+async function uploadPhoto(file) {
+  var btn = $("backdrop-upload");
+  btn.disabled = true;
+  backdropMsg("Preparing photo…");
+  try {
+    var blob;
+    try { blob = await resizePhoto(file); }
+    catch (e) { throw new Error("Couldn't read that photo. Try a JPEG or PNG."); }
+    if (!current) {
+      var data = await blobToDataUrl(blob);
+      try { localStorage.setItem(BACKDROP_KEY, JSON.stringify({ preset: "photo", image: data })); }
+      catch (e) { throw new Error("That photo is too big to save on this device. Try a smaller one."); }
+      await applyBackdrop();
+      backdropMsg("Backdrop updated.", "ok");
+      return;
+    }
+    backdropMsg("Uploading…");
+    var id = current.id;
+    try { await refreshSession(); } catch (e) {}
+    var res = await fetch("/api/trackers/" + id + "/backdrop", {
+      method: "PUT", headers: await authHeaders({ "Content-Type": "image/jpeg" }), body: blob, credentials: "same-origin"
+    });
+    var detail = await res.json().catch(function () { return {}; });
+    if (!res.ok) throw new Error(detail.error || "Upload failed. Please try again.");
+    if (current && current.id === id) applyDetail(detail);
+    backdropMsg("Backdrop updated for everyone in this tracker.", "ok");
+  } catch (err) {
+    backdropMsg(err.message, "error");
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+$("btn-backdrop").onclick = function () {
+  backdropMsg("");
+  renderBackdropPicker();
+  $("backdrop-modal").classList.add("open");
+};
+$("backdrop-swatches").addEventListener("click", function (e) {
+  var preset = e.target.dataset && e.target.dataset.preset;
+  if (preset && preset !== "photo" && preset !== backdropState().preset) setPreset(preset);
+});
+$("backdrop-upload").onclick = function () { $("backdrop-file").click(); };
+$("backdrop-file").onchange = function (e) {
+  var file = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if (file) uploadPhoto(file);
+};
+
+function renderMembers() {
+  var box = $("tb-members");
+  if (!current) {
+    box.innerHTML = "Entries here stay in this browser. Create a tracker to share one with friends.";
+    return;
+  }
+  var others = current.members.filter(function (m) { return !m.isYou; });
+  var avatars = current.members.map(function (m, i) { return avatarHtml(displayName(m), i, m); }).join("");
+  box.innerHTML = avatars + "<span>" + (others.length
+    ? "Shared with " + others.map(function (m) { return "<b>" + esc(displayName(m)) + "</b>"; }).join(", ")
+    : "Only you so far. Tap <b>Share tracker</b> to invite friends.") + "</span>" +
+    '<span class="sync" id="sync-status">Synced</span>';
+  hydrateAvatars(box);
+}
+
+var cloudApi = {
+  add: function (entry) { return mutate("trackers/" + current.id + "/entries", "POST", entry); },
+  remove: function (id) { return mutate("trackers/" + current.id + "/entries/" + encodeURIComponent(id), "DELETE"); },
+  clear: function () { return mutate("trackers/" + current.id + "/entries", "DELETE"); }
+};
+
+async function mutate(path, method, body) {
+  var status = $("sync-status");
+  if (status) status.textContent = "Saving…";
+  try {
+    applyDetail(await api(path, method, body));
+  } catch (err) {
+    if (status) status.textContent = "Not saved";
+    alert(err.message);
+    if (err.status === 404) loadTrackers();
+  }
+}
+
+function applyDetail(detail) {
+  var snapshot = JSON.stringify(detail);
+  current = detail;
+  var t = trackers.find(function (x) { return x.id === detail.id; });
+  if (t) { t.name = detail.name; t.role = detail.role; t.memberCount = detail.members.length; }
+  if (snapshot !== lastSnapshot) {
+    lastSnapshot = snapshot;
+    renderPicker();
+    renderMembers();
+    applyBackdrop();
+    useEntries(detail.entries, cloudApi);
+    if ($("share-modal").classList.contains("open")) renderShareMembers();
+  }
+}
+
+async function openTracker(id) {
+  store(CURRENT_KEY, id);
+  lastSnapshot = "";
+  if (id === "local" || !trackers.some(function (t) { return t.id === id; })) {
+    current = null;
+    renderPicker();
+    renderMembers();
+    applyBackdrop();
+    useEntries(null, null);
+    return;
+  }
+  $("tb-members").textContent = "Loading…";
+  try {
+    applyDetail(await api("trackers/" + id));
+  } catch (err) {
+    $("tb-members").textContent = err.message;
+  }
+}
+
+async function loadTrackers(preferId) {
+  try {
+    trackers = await api("trackers");
+  } catch (err) {
+    $("tb-members").textContent = err.message;
+    return;
+  }
+  var want = preferId || (current && current.id) || read(CURRENT_KEY);
+  if (!want || (want !== "local" && !trackers.some(function (t) { return t.id === want; }))) {
+    want = trackers.length ? trackers[0].id : "local";
+  }
+  current = null;
+  await openTracker(want);
+}
+
+async function joinPending() {
+  var token = pendingJoin();
+  if (!token) return null;
+  store(JOIN_KEY, null);
+  try {
+    var t = await api("join/" + encodeURIComponent(token), "POST");
+    return t.id;
+  } catch (err) {
+    alert(err.message);
+    return null;
+  }
+}
+
+async function syncTrackers(user) {
+  var id = user ? user.id : null;
+  if (id === sessionUserId) return;
+  sessionUserId = id;
+  clearInterval(pollTimer);
+  $("tb-local").hidden = !!user;
+  $("tb-cloud").hidden = !user;
+  if (!user) {
+    trackers = [];
+    current = null;
+    lastSnapshot = "";
+    applyBackdrop();
+    useEntries(null, null);
+    return;
+  }
+  var joined = await joinPending();
+  await loadTrackers(joined);
+  // Pick up changes made by friends
+  pollTimer = setInterval(function () {
+    if (!current || document.visibilityState !== "visible") return;
+    api("trackers/" + current.id).then(applyDetail).catch(function (err) {
+      if (err.status === 404) { alert("You no longer have access to this tracker."); loadTrackers(); }
+    });
+  }, 8000);
+}
+
+$("tb-login").onclick = function () { openAuth("login"); };
+$("tracker-select").onchange = function (e) {
+  if (e.target.value === "manage") {
+    // Not a real tracker: snap the picker back and open the manager instead.
+    e.target.value = current ? current.id : "local";
+    openManage();
+    return;
+  }
+  openTracker(e.target.value);
+};
+
+// --- modals ---
+function closeModals() {
+  $("new-modal").classList.remove("open");
+  $("share-modal").classList.remove("open");
+  $("manage-modal").classList.remove("open");
+  $("backdrop-modal").classList.remove("open");
+}
+document.querySelectorAll("[data-close]").forEach(function (b) { b.onclick = closeModals; });
+["new-modal", "share-modal", "manage-modal", "backdrop-modal"].forEach(function (id) {
+  $(id).addEventListener("click", function (e) { if (e.target === e.currentTarget) closeModals(); });
+});
+
+// --- new tracker ---
+$("tb-new").onclick = function () {
+  $("new-form").reset();
+  $("new-msg").textContent = "";
+  var localCount = current ? 0 : loadEntries().length;
+  $("new-import-row").hidden = !localCount;
+  $("new-import").checked = !!localCount;
+  $("new-import-label").textContent = "Copy the " + localCount + " " + (localCount === 1 ? "entry" : "entries") + " saved on this device";
+  $("new-modal").classList.add("open");
+  $("new-name").focus();
+};
+$("new-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  var btn = $("new-submit");
+  btn.disabled = true;
+  $("new-msg").className = "msg";
+  $("new-msg").textContent = "Creating…";
+  try {
+    var withLocal = !$("new-import-row").hidden && $("new-import").checked;
+    var detail = await api("trackers", "POST", {
+      name: $("new-name").value,
+      entries: withLocal ? loadEntries() : []
+    });
+    closeModals();
+    trackers.push({ id: detail.id, name: detail.name, role: detail.role, memberCount: 1 });
+    store(CURRENT_KEY, detail.id);
+    lastSnapshot = "";
+    applyDetail(detail);
+    openShare();
+  } catch (err) {
+    $("new-msg").className = "msg error";
+    $("new-msg").textContent = err.message;
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// --- share ---
+function shareMsg(text, kind) {
+  $("share-msg").className = "msg" + (kind ? " " + kind : "");
+  $("share-msg").textContent = text || "";
+}
+function renderShareMembers() {
+  if (!current) return;
+  var owner = current.role === "owner";
+  $("share-members").innerHTML = current.members.map(function (m, i) {
+    var label = m.isYou ? "You" + (m.name ? " (" + m.name + ")" : "") : (m.name || m.email || "Friend");
+    var sub = m.name && m.email && !m.isYou ? '<div class="note">' + esc(m.email) + "</div>" : "";
+    return '<div class="member">' + avatarHtml(label, i, m) +
+      '<div class="text">' + esc(label) + sub + "</div>" +
+      (m.role === "owner" ? '<span class="role">OWNER</span>' : "") +
+      (owner && !m.isYou ? '<button type="button" class="small-btn danger" data-remove="' + esc(m.id) + '">Remove</button>' : "") +
+      "</div>";
+  }).join("");
+  hydrateAvatars($("share-members"));
+  $("share-name").value = current.name;
+  $("invite-reset").hidden = !owner;
+  $("share-leave").textContent = owner ? "Delete tracker" : "Leave tracker";
+}
+async function openShare() {
+  if (!current) return;
+  shareMsg("");
+  $("invite-link").value = "Getting link…";
+  $("invite-native").hidden = !navigator.share;
+  renderShareMembers();
+  $("share-modal").classList.add("open");
+  try {
+    var r = await api("trackers/" + current.id + "/invite", "POST", {});
+    $("invite-link").value = location.origin + "/?join=" + encodeURIComponent(r.token);
+  } catch (err) {
+    $("invite-link").value = "";
+    shareMsg(err.message, "error");
+  }
+}
+$("tb-share").onclick = openShare;
+
+// ---- Collapsible side panel (tap the logo) ----
+var SIDE_KEY = "squareup-side-collapsed";
+function setSideCollapsed(collapsed) {
+  document.body.classList.toggle("side-collapsed", collapsed);
+  var btn = $("side-toggle");
+  var label = collapsed ? "Expand side panel" : "Collapse side panel";
+  btn.setAttribute("aria-expanded", String(!collapsed));
+  btn.setAttribute("aria-label", label);
+  btn.title = label;
+  if (collapsed) setSettingsOpen(false);
+  store(SIDE_KEY, collapsed ? "1" : null);
+}
+$("side-toggle").onclick = function () {
+  setSideCollapsed(!document.body.classList.contains("side-collapsed"));
+};
+setSideCollapsed(read(SIDE_KEY) === "1");
+
+$("invite-copy").onclick = async function () {
+  var input = $("invite-link");
+  try {
+    await navigator.clipboard.writeText(input.value);
+  } catch (e) {
+    input.select();
+    document.execCommand("copy");
+  }
+  shareMsg("Link copied. Send it to your friend!", "ok");
+};
+$("invite-native").onclick = function () {
+  navigator.share({
+    title: "Square Up: " + current.name,
+    text: "Join my \"" + current.name + "\" tracker on Square Up so we can both keep track of who owes who.",
+    url: $("invite-link").value
+  }).catch(function () {});
+};
+$("invite-reset").onclick = async function () {
+  if (!confirm("Make a new invite link? The old link will stop working (people already in the tracker stay).")) return;
+  try {
+    var r = await api("trackers/" + current.id + "/invite", "POST", { reset: true });
+    $("invite-link").value = location.origin + "/?join=" + encodeURIComponent(r.token);
+    shareMsg("New link ready.", "ok");
+  } catch (err) { shareMsg(err.message, "error"); }
+};
+$("rename-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  try {
+    applyDetail(await api("trackers/" + current.id, "PATCH", { name: $("share-name").value }));
+    shareMsg("Renamed.", "ok");
+  } catch (err) { shareMsg(err.message, "error"); }
+});
+$("share-members").addEventListener("click", async function (e) {
+  var id = e.target.dataset && e.target.dataset.remove;
+  if (!id || !confirm("Remove this person from the tracker? They won't be able to see it anymore.")) return;
+  try {
+    applyDetail(await api("trackers/" + current.id + "/members/" + encodeURIComponent(id), "DELETE"));
+  } catch (err) { shareMsg(err.message, "error"); }
+});
+// Delete (owner) or leave (member) a tracker. Returns true if it went through.
+async function removeTracker(t) {
+  var q = t.role === "owner"
+    ? "Delete \"" + t.name + "\" for everyone? All its entries will be gone. This can't be undone."
+    : "Leave \"" + t.name + "\"? You'll need a new invite link to rejoin.";
+  if (!confirm(q)) return false;
+  await api("trackers/" + t.id, "DELETE");
+  trackers = trackers.filter(function (x) { return x.id !== t.id; });
+  if (current && current.id === t.id) {
+    current = null;
+    store(CURRENT_KEY, null);
+    await loadTrackers();
+  } else {
+    renderPicker();
+  }
+  return true;
+}
+$("share-leave").onclick = async function () {
+  try {
+    if (await removeTracker(current)) closeModals();
+  } catch (err) { shareMsg(err.message, "error"); }
+};
+
+// --- my trackers ---
+function renderManageList() {
+  $("manage-list").innerHTML = trackers.length ? trackers.map(function (t, i) {
+    var owner = t.role === "owner";
+    var sub = t.memberCount > 1 ? "Shared with " + (t.memberCount - 1) + (t.memberCount === 2 ? " person" : " people") : "Only you";
+    return '<div class="member">' + avatarHtml(t.name, i) +
+      '<div class="text">' + esc(t.name) + '<div class="note">' + sub + (current && current.id === t.id ? " · open now" : "") + "</div></div>" +
+      (owner ? '<span class="role">OWNER</span>' : "") +
+      '<button type="button" class="small-btn danger" data-remove-tracker="' + esc(t.id) + '">' + (owner ? "Delete" : "Leave") + "</button>" +
+      "</div>";
+  }).join("") : '<div class="empty">No trackers yet.</div>';
+}
+function openManage() {
+  $("manage-msg").className = "msg";
+  $("manage-msg").textContent = "";
+  renderManageList();
+  $("manage-modal").classList.add("open");
+}
+$("manage-list").addEventListener("click", async function (e) {
+  var id = e.target.dataset && e.target.dataset.removeTracker;
+  var t = id && trackers.find(function (x) { return x.id === id; });
+  if (!t) return;
+  e.target.disabled = true;
+  try {
+    if (await removeTracker(t)) {
+      $("manage-msg").className = "msg ok";
+      $("manage-msg").textContent = (t.role === "owner" ? "Deleted " : "Left ") + "\"" + t.name + "\".";
+    }
+  } catch (err) {
+    $("manage-msg").className = "msg error";
+    $("manage-msg").textContent = err.message;
+  } finally {
+    e.target.disabled = false;
+  }
+  renderManageList();
+});
+
+applyBackdrop();
+
+// Handle links from emails (confirm account, reset password) and Google sign-in redirects
+try {
+  var result = await handleAuthCallback();
+  if (result && result.type === "recovery") openAuth("reset");
+} catch (err) {
+  openAuth("login");
+  showMsg(errorText(err), "error");
+}
+var startUser = await getUser();
+showUser(startUser);
+if (!startUser && pendingJoin() && !$("auth-modal").classList.contains("open")) openAuth("signup");
+</script>
+</body>
+</html>
