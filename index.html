@@ -584,6 +584,20 @@ body.settings-view #btn-settings { background:#65f5ac!important; color:#081b2b!i
 .settings-payment-member strong { flex:1; min-width:90px; }
 .settings-payment-member a { color:#65f5ac; text-decoration:none; font-size:13px; }
 @media(max-width:720px) { .settings-columns { grid-template-columns:1fr; } .settings-panel { padding:16px; } }
+
+/* First-time account setup */
+#onboarding-page { position:fixed; inset:0; z-index:30; overflow-y:auto; background:radial-gradient(ellipse at top,#163b4c,#071422 70%); padding:32px 16px; color:#f1f7ff; }
+#onboarding-page[hidden] {display:none!important;}
+.onboard-wrap {max-width:550px;margin:20px auto 40px;}
+.onboard-wrap h1 {font-size:32px;margin:0 0 8px;}
+.onboard-panel {background:#10263b;border:1px solid #35526a;border-radius:22px;padding:25px;margin-top:22px;}
+.onboard-panel label {display:block;margin:16px 0 5px;font-size:14px;font-weight:700;}
+.onboard-panel input {width:100%;background:#091b2c;color:#fff;border:1px solid #375570;}
+.onboard-photo {display:flex;align-items:center;gap:16px;margin:16px 0;}
+#onboard-avatar {width:76px;height:76px;flex:none;border-radius:50%;display:grid;place-items:center;background:#5f60ed;background-size:cover;background-position:center;font-size:30px;font-weight:800;}
+#onboard-continue {width:100%;margin-top:22px;}
+#onboard-continue:disabled {opacity:.55;cursor:wait;}
+#onboard-message {min-height:20px;margin-top:12px;font-size:14px;color:#ff9db1;}
 </style>
 </head>
 <body>
@@ -752,10 +766,42 @@ body.settings-view #btn-settings { background:#65f5ac!important; color:#081b2b!i
         </form>
       </div>
       <div class="settings-panel"><h3>Friends' payment accounts</h3><p class="settings-muted">Saved payment usernames for members of the selected shared tracker.</p><div id="settings-friend-payments" class="settings-muted">Open a shared tracker to see payment links.</div></div>
+      <div class="settings-panel" id="delete-account-panel"><h3>Delete account</h3><p class="settings-muted">Permanently delete your SquareUp account, profile, payment usernames, profile photo, and your saved tracker data. Trackers you own will also be deleted for their members. This cannot be undone.</p><button type="button" class="settings-action" id="settings-delete-account" style="background:#512334;color:#ffb5c4;border-color:#9e4158">Delete my account</button><div class="settings-notice" id="settings-delete-msg" role="status" aria-live="polite"></div></div>
     </div>
   </div>
 </section>
 </div>
+
+
+<!-- Only shown after a NEW account is created and signed in -->
+<section id="onboarding-page" aria-label="Set up your new SquareUp account" hidden>
+  <div class="onboard-wrap">
+    <h1>Welcome to SquareUp!</h1>
+    <p class="settings-muted">Set up your new profile before you get started.</p>
+    <div class="onboard-panel">
+      <form id="onboard-form">
+        <div class="onboard-photo">
+          <div id="onboard-avatar" aria-hidden="true">?</div>
+          <div><button type="button" class="settings-action" id="onboard-photo-button">Choose profile photo</button>
+          <p class="settings-muted">Optional · JPG, PNG or WebP</p></div>
+        </div>
+        <input id="onboard-photo-file" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+        <label for="onboard-display">Display name *</label>
+        <input id="onboard-display" maxlength="60" placeholder="How friends will see you" required>
+        <label for="onboard-username">Username *</label>
+        <input id="onboard-username" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]{3,24}" placeholder="your_username" required autocapitalize="off" autocomplete="off">
+        <p class="settings-muted">3–24 letters, numbers or underscores. Must be unique.</p>
+        <label for="onboard-venmo">Venmo username (optional)</label>
+        <input id="onboard-venmo" maxlength="30" placeholder="yourvenmo" autocapitalize="off" autocomplete="off">
+        <label for="onboard-cashapp">Cash App $Cashtag (optional)</label>
+        <input id="onboard-cashapp" maxlength="21" placeholder="$yourcashtag" autocapitalize="off" autocomplete="off">
+        <p class="settings-muted">SquareUp only shares your payment profile links with tracker members. It does not send money.</p>
+        <button id="onboard-continue" class="primary" type="submit">Continue to SquareUp →</button>
+        <div id="onboard-message" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+  </div>
+</section>
 
 <!-- AUTH MODAL -->
 <div class="modal-bg" id="auth-modal">
@@ -1311,7 +1357,7 @@ render();
 // ============ ACCOUNTS (Netlify Identity) ============
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const supabase = createClient("https://pajrdqarszbnrlstoyly.supabase.co", "sb_publishable_iyr6Jv8Xa4FjmkQNANtVUA_xaguZX5q");
-const mapUser = u => u ? ({ id:u.id, email:u.email || "", name:u.user_metadata?.full_name || u.email?.split("@")[0] || "", emailVerified: !!u.email_confirmed_at, confirmedAt:u.email_confirmed_at }) : null;
+const mapUser = u => u ? ({ id:u.id, email:u.email || "", name:u.user_metadata?.full_name || u.email?.split("@")[0] || "", emailVerified: !!u.email_confirmed_at, confirmedAt:u.email_confirmed_at, createdAt:u.created_at }) : null;
 async function unwrap(p) { const {data,error}=await p; if(error) throw error; return data; }
 async function login(email,password) { const data=await unwrap(supabase.auth.signInWithPassword({email,password})); return mapUser(data.user); }
 async function signup(email,password,metadata) { const data=await unwrap(supabase.auth.signUp({email,password,options:{data:metadata || {},emailRedirectTo:location.origin}})); return mapUser(data.user); }
@@ -1321,7 +1367,7 @@ function onAuthChange(cb) { return supabase.auth.onAuthStateChange((event,sessio
 async function refreshSession() { return supabase.auth.getSession(); }
 async function requestPasswordRecovery(email) { await unwrap(supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin})); }
 async function updateUser(values) { const data=await unwrap(supabase.auth.updateUser(values)); return mapUser(data.user); }
-async function oauthLogin(provider) { const data=await unwrap(supabase.auth.signInWithOAuth({provider,options:{redirectTo:location.origin}})); if(data.url) location.assign(data.url); }
+async function oauthLogin(provider) { if(authMode === "signup") store("squareup-pending-oauth-signup", "1"); const data=await unwrap(supabase.auth.signInWithOAuth({provider,options:{redirectTo:location.origin}})); if(data.url) location.assign(data.url); }
 async function handleAuthCallback() { const hash=new URLSearchParams(location.hash.slice(1)); if(hash.get("type")==="recovery") return {type:"recovery"}; const query=new URLSearchParams(location.search); if(query.has("code")) { await supabase.auth.exchangeCodeForSession(query.get("code")); history.replaceState(null,"",location.pathname); } return null; }
 const AuthError=Error, MissingIdentityError=Error;
 async function authHeaders(extra={}) { const {data}=await supabase.auth.getSession(); return {...extra,...(data.session?.access_token ? {Authorization:"Bearer "+data.session.access_token} : {})}; }
@@ -1466,9 +1512,11 @@ $("auth-form").addEventListener("submit", async function (e) {
     } else if (authMode === "signup") {
       var name = $("auth-name").value.trim();
       var user = await signup(email, password, name ? { full_name: name } : undefined);
+      store("squareup-pending-new-signup", email.toLowerCase());
       if (user.emailVerified || user.confirmedAt) {
         showUser(user);
         closeAuth();
+        maybeShowOnboarding(user);
       } else {
         showMsg("Almost done! Check your email to confirm your account.", "ok");
       }
@@ -1490,7 +1538,85 @@ $("auth-form").addEventListener("submit", async function (e) {
   }
 });
 
-onAuthChange(function (event, user) { showUser(user); if (event === "PASSWORD_RECOVERY") openAuth("reset"); });
+onAuthChange(function (event, user) { showUser(user); if (event === "PASSWORD_RECOVERY") openAuth("reset"); else if (user) maybeShowOnboarding(user); });
+
+
+// New-signup-only onboarding: existing logins never trigger this page.
+var onboardPhotoBlob = null;
+var onboardingUserId = null;
+function maybeShowOnboarding(user) {
+  if (!user || !user.id || onboardingUserId === user.id) return;
+  var pendingEmail = read('squareup-pending-new-signup');
+  var matchingEmail = pendingEmail && pendingEmail === String(user.email||'').toLowerCase();
+  var pendingOauth = read('squareup-pending-oauth-signup') === '1';
+  var recentCreation = user.createdAt && Date.now() - new Date(user.createdAt).getTime() < 15*60*1000;
+  if (!matchingEmail && !(pendingOauth && recentCreation)) {
+    if (pendingOauth) store('squareup-pending-oauth-signup', null);
+    return;
+  }
+  onboardingUserId = user.id;
+  $('onboard-display').value = user.name || '';
+  $('onboard-username').value = '';
+  $('onboard-venmo').value = '';
+  $('onboard-cashapp').value = '';
+  $('onboard-message').textContent = '';
+  $('onboard-avatar').textContent = (user.name||'?').charAt(0).toUpperCase();
+  $('onboard-avatar').style.backgroundImage = '';
+  onboardPhotoBlob = null;
+  $('onboarding-page').hidden = false;
+  $('auth-modal').classList.remove('open');
+  window.scrollTo(0,0);
+}
+$('onboard-photo-button').onclick = function () { $('onboard-photo-file').click(); };
+$('onboard-photo-file').onchange = async function(e) {
+  var file = e.target.files && e.target.files[0]; e.target.value='';
+  if (!file) return;
+  if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 10*1024*1024) {
+    $('onboard-message').textContent='Choose a JPG, PNG or WebP photo under 10 MB.'; return;
+  }
+  try {
+    onboardPhotoBlob = await squarePhoto(file);
+    var url = URL.createObjectURL(onboardPhotoBlob);
+    var av = $('onboard-avatar');
+    if (av.dataset.previewUrl) URL.revokeObjectURL(av.dataset.previewUrl);
+    av.dataset.previewUrl=url; av.style.backgroundImage='url("'+url+'")'; av.textContent='';
+    $('onboard-message').textContent='';
+  } catch(err) { $('onboard-message').textContent='Could not read that photo. Try another image.'; }
+};
+$('onboard-form').addEventListener('submit',async function(e) {
+  e.preventDefault();
+  if (!currentUser || currentUser.id !== onboardingUserId) return;
+  var btn=$('onboard-continue'); btn.disabled=true;
+  $('onboard-message').textContent='Saving your profile…';
+  try {
+    var profile=await api('profile','PATCH',{
+      displayName:$('onboard-display').value.trim(),
+      username:$('onboard-username').value.trim(),
+      venmo:$('onboard-venmo').value.trim(),
+      cashapp:$('onboard-cashapp').value.trim()
+    });
+    if (onboardPhotoBlob) {
+      var response=await fetch('/api/profile/photo',{
+        method:'PUT',headers:await authHeaders({'Content-Type':'image/jpeg'}),
+        body:onboardPhotoBlob,credentials:'same-origin'
+      });
+      var photoResult=await response.json().catch(function(){return {};});
+      if (!response.ok) throw new Error(photoResult.error || 'Could not save your profile photo. Please try again.');
+      await afterPhotoChange(photoResult.photo);
+    }
+    await unwrap(supabase.auth.updateUser({data:{full_name:profile.displayName}}));
+    currentUser.name=profile.displayName;
+    $('who').textContent='Hi, '+profile.displayName;
+    store('squareup-pending-new-signup',null);
+    store('squareup-pending-oauth-signup',null);
+    onboardingUserId=null; onboardPhotoBlob=null;
+    $('onboarding-page').hidden=true;
+    settingsRoute('dashboard');
+    if(current&&current.id) { try { applyDetail(await api('trackers/'+current.id)); } catch(_) {} }
+  } catch(err) {
+    $('onboard-message').textContent=err.message||'Could not save. Please try again.';
+  } finally {btn.disabled=false;}
+});
 
 // ============ SHARED TRACKERS ============
 var CURRENT_KEY = "squareup-current-tracker";
@@ -1588,6 +1714,22 @@ $("settings-login").onclick=function(){openAuth('login');};
 $("settings-photo").onclick=function(){openPhoto();};
 $("settings-password").onclick=function(){ $("btn-change-pw").click(); };
 $("settings-signout").onclick=function(){ $("btn-logout").click(); settingsRoute('dashboard'); };
+$("settings-delete-account").onclick=async function(){
+  if(!currentUser)return;
+  if(!confirm("Permanently delete your SquareUp account and saved information? Trackers you own will also be deleted for everyone. This cannot be undone."))return;
+  var typed=prompt('Type DELETE to permanently delete your account:');
+  if(typed!=="DELETE")return;
+  var btn=$("settings-delete-account");btn.disabled=true;
+  settingsMessage('settings-delete-msg','Deleting your account…',true);
+  try{
+    await api('account','DELETE');
+    try{await supabase.auth.signOut({scope:'local'});}catch(_){}
+    store('squareup-pending-new-signup',null);
+    store('squareup-pending-oauth-signup',null);
+    store('squareup-current-tracker',null);
+    location.replace(location.origin+location.pathname);
+  }catch(err){settingsMessage('settings-delete-msg',err.message||'Deletion failed. Please try again.',false);btn.disabled=false;}
+};
 $("settings-profile-form").addEventListener('submit',async function(e){
   e.preventDefault(); if(!currentUser)return;
   var btn=$("settings-profile-save");btn.disabled=true;settingsMessage('settings-profile-msg','Saving…',true);
@@ -2367,6 +2509,7 @@ try {
 }
 var startUser = await getUser();
 showUser(startUser);
+if (startUser) maybeShowOnboarding(startUser);
 if (!startUser && pendingJoin() && !$("auth-modal").classList.contains("open")) openAuth("signup");
 </script>
 </body>
