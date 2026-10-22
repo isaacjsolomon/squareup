@@ -1,3 +1,4 @@
+
 // Cloudflare Pages Functions: server-side Supabase access.
 // SUPABASE_SERVICE_ROLE_KEY must be configured as an encrypted Cloudflare secret.
 const URL_BASE = 'https://pajrdqarszbnrlstoyly.supabase.co';
@@ -25,7 +26,7 @@ export async function onRequest({request,env,params}) {
  async function storage(bucket,path,method='GET',bytes,type){const u=URL_BASE+'/storage/v1/object/'+bucket+'/'+path;const r=await fetch(u,{method,headers:{...baseHeaders,...(type?{'Content-Type':type}:{})},body:bytes});if(!r.ok){if(method==='GET')return null;throw Error('Photo storage request failed');}return r;}
  const parts=(params.path||[]);const method=request.method;
  async function member(id){if(!uuid.test(id))return null;return (await db('tracker_members',{filters:{tracker_id:'eq.'+id,user_id:'eq.'+me.id}}))[0]||null;}
- async function detail(id){const t=(await db('trackers',{filters:{id:'eq.'+id}}))[0];const m=await member(id);if(!t||!m)throw Error('Tracker not found');const members=await db('tracker_members',{filters:{tracker_id:'eq.'+id},order:'joined_at.asc'});const entries=await db('tracker_entries',{filters:{tracker_id:'eq.'+id},order:'created_at.asc,id.asc'});const profiles=await db('profiles',{filters:{user_id:'in.('+members.map(x=>x.user_id).join(',')+')'}}).catch(()=>[]);return {id:t.id,name:t.name,role:m.role,inviteToken:t.invite_token,backdrop:{preset:t.backdrop,photo:t.backdrop==='photo'&&t.backdrop_image?t.backdrop_image.split('/').pop():null},members:members.map(x=>({id:x.user_id,email:x.email,name:x.name,role:x.role,isYou:x.user_id===me.id,photo:profiles.find(p=>p.user_id===x.user_id)?.photo_key?.split('/').pop()||null})),entries:entries.map(e=>({id:e.id,type:e.type,from:e.from_name,to:e.to_name,amount:Number(e.amount),note:e.note,date:e.date_label,createdBy:members.find(m=>m.user_id===e.created_by)?.name||''}))};}
+ async function detail(id){const t=(await db('trackers',{filters:{id:'eq.'+id}}))[0];const m=await member(id);if(!t||!m)throw Error('Tracker not found');const members=await db('tracker_members',{filters:{tracker_id:'eq.'+id},order:'joined_at.asc'});const entries=await db('tracker_entries',{filters:{tracker_id:'eq.'+id},order:'created_at.asc,id.asc'});const profiles=await db('profiles',{filters:{user_id:'in.('+members.map(x=>x.user_id).join(',')+')'}}).catch(()=>[]);return {id:t.id,name:t.name,role:m.role,inviteToken:t.invite_token,backdrop:{preset:t.backdrop,photo:t.backdrop==='photo'&&t.backdrop_image?t.backdrop_image.split('/').pop():null},members:members.map(x=>({id:x.user_id,email:x.email,name:profiles.find(p=>p.user_id===x.user_id)?.display_name||x.name,role:x.role,isYou:x.user_id===me.id,photo:profiles.find(p=>p.user_id===x.user_id)?.photo_key?.split('/').pop()||null,payments:{venmo:profiles.find(p=>p.user_id===x.user_id)?.venmo_username||'',cashapp:profiles.find(p=>p.user_id===x.user_id)?.cashapp_username||''}})),entries:entries.map(e=>({id:e.id,type:e.type,from:e.from_name,to:e.to_name,amount:Number(e.amount),note:e.note,date_label:e.date_label,createdBy:members.find(m=>m.user_id===e.created_by)?.name||''}))};}
  try {
   const body=['POST','PATCH'].includes(method)?await request.json().catch(()=>({})):{};
   if(parts[0]==='join'&&parts[1]&&method==='POST'){
@@ -34,7 +35,19 @@ export async function onRequest({request,env,params}) {
   }
   if(parts[0]==='profile'){
    const target=parts[2]||me.id;
-   if(parts.length===1&&method==='GET'){const p=(await db('profiles',{filters:{user_id:'eq.'+me.id}}))[0];return json({photo:p?.photo_key?.split('/').pop()||null});}
+   if(parts.length===1&&method==='GET'){const p=(await db('profiles',{filters:{user_id:'eq.'+me.id}}))[0];return json({photo:p?.photo_key?.split('/').pop()||null,displayName:p?.display_name||me.name,username:p?.username||'',bio:p?.bio||'',venmo:p?.venmo_username||'',cashapp:p?.cashapp_username||''});}
+   if(parts.length===1&&method==='PATCH'){
+    const p=(await db('profiles',{filters:{user_id:'eq.'+me.id}}))[0];
+    const update={updated_at:new Date().toISOString()};
+    if(body.displayName!==undefined){const name=clean(body.displayName,60);if(!name)return fail('Enter a display name.',400);update.display_name=name;}
+    if(body.username!==undefined){const name=clean(body.username,24).toLowerCase();if(!/^[a-z0-9_]{3,24}$/.test(name))return fail('Username must be 3–24 letters, numbers or underscores.',400);const taken=await db('profiles',{filters:{username:'eq.'+name}});if(taken.some(x=>x.user_id!==me.id))return fail('That username is already taken.',409);update.username=name;}
+    if(body.bio!==undefined)update.bio=clean(body.bio,180);
+    if(body.venmo!==undefined){const v=clean(body.venmo,30).replace(/^@/,'');if(v&&!/^[a-zA-Z0-9_-]{3,30}$/.test(v))return fail('Enter a valid Venmo username.',400);update.venmo_username=v;}
+    if(body.cashapp!==undefined){const v=clean(body.cashapp,21).replace(/^\$/,'');if(v&&!/^[a-zA-Z][a-zA-Z0-9]{0,19}$/.test(v))return fail('Enter a valid Cash App $Cashtag.',400);update.cashapp_username=v;}
+    try{if(p)await db('profiles',{method:'PATCH',filters:{user_id:'eq.'+me.id},body:update});else await db('profiles',{method:'POST',body:{user_id:me.id,...update}});}catch(err){if(String(err.message).includes('duplicate'))return fail('That username is already taken.',409);throw err;}
+    if(update.display_name){const memberships=await db('tracker_members',{filters:{user_id:'eq.'+me.id}});for(const m of memberships)await db('tracker_members',{method:'PATCH',filters:{user_id:'eq.'+me.id,tracker_id:'eq.'+m.tracker_id},body:{name:update.display_name}});}
+    const saved=(await db('profiles',{filters:{user_id:'eq.'+me.id}}))[0];return json({photo:saved?.photo_key?.split('/').pop()||null,displayName:saved.display_name||me.name,username:saved.username||'',bio:saved.bio||'',venmo:saved.venmo_username||'',cashapp:saved.cashapp_username||''});
+   }
    if(parts[1]!=='photo')return fail('Not found',404);
    if(method==='GET'){
     if(target!==me.id){const mine=await db('tracker_members',{filters:{user_id:'eq.'+me.id}});const theirs=await db('tracker_members',{filters:{user_id:'eq.'+target}});if(!mine.some(a=>theirs.some(b=>b.tracker_id===a.tracker_id)))return fail('No profile photo.',404);}
@@ -67,7 +80,7 @@ export async function onRequest({request,env,params}) {
   if(sub==='members'&&parts[3]&&method==='DELETE'){if(!owner)return fail('Only the owner can remove people.',403);if(parts[3]===me.id)return fail("You can't remove yourself as the owner.",400);await db('tracker_members',{method:'DELETE',filters:{tracker_id:'eq.'+id,user_id:'eq.'+parts[3]}});return json(await detail(id));}
   if(sub==='backdrop'){
    const t=(await db('trackers',{filters:{id:'eq.'+id}}))[0];
-   if(method==='GET'){if(!t?.backdrop_image)return fail('No backdrop photo.',404);const r=await storage('tracker-backdrops',t.backdrop_image);if(!r)return fail('No backdrop photo.',404);return new Response(r.body,{headers:{'Content-Type':r.headers.get('Content-Type')||'image/jpeg','Cache-Control':'private, max-age=60'}});}
+   if(method==='GET'){if(!t?.backdrop_image)return fail('No backdrop photo.',404);const r=await storage('tracker-backdrops',t.backdrop_image);if(!r)return fail('No backdrop photo.',404);return new Response(r.body,{headers:{'Content-Type':r.headers.get('Content-Type')||'image/jpeg','Cache-Control':'private, max-age=60'}});
    if(method==='PUT'){const bytes=new Uint8Array(await request.arrayBuffer()),type=kind(bytes);if(!bytes.length||bytes.length>5*1024*1024||!type)return fail('Upload a JPEG, PNG or WebP under 5 MB.',400);const path=id+'/'+crypto.randomUUID();await storage('tracker-backdrops',path,'POST',bytes,type);await db('trackers',{method:'PATCH',filters:{id:'eq.'+id},body:{backdrop:'photo',backdrop_image:path}});if(t?.backdrop_image)await storage('tracker-backdrops',t.backdrop_image,'DELETE');return json(await detail(id));}
   }
   return fail('Not found',404);
