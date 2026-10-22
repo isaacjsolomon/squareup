@@ -221,6 +221,189 @@
   .settings-menu button:hover, .settings-menu button:focus-visible { background: #eef2ff; outline: none; }
   .photo-preview { width: 120px; height: 120px; font-size: 44px; margin: 6px auto 14px; }
   [hidden] { display: none !important; }
+  
+/* ===== SQUARE UP — DARK NEON REDESIGN ===== */
+:root {
+  --bg1: #061323;
+  --bg2: #0b2540;
+  --card: #101f32;
+  --ink: #f1f7ff;
+  --muted: #a4b8ce;
+  --accent: #65f5ac;
+  --accent-dark: #3cda91;
+  --green: #65f5ac;
+  --red: #ff6485;
+  --line: #294057;
+  --side-bg: #0a1b2e;
+  --side-line: #294057;
+}
+
+body {
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    #143a50 0%,
+    #081b2c 48%,
+    #040d19 100%
+  );
+  color: var(--ink);
+}
+
+.card {
+  background: linear-gradient(155deg, #14283e, #0c192a);
+  border: 1px solid #294057;
+  border-radius: 24px;
+  box-shadow: 0 14px 35px rgba(0,0,0,.25);
+  color: var(--ink);
+}
+
+.card h2 {
+  color: #f4faff;
+  font-weight: 750;
+}
+
+header h1 {
+  color: #f5faff;
+  font-weight: 850;
+}
+
+header p {
+  color: #b4c7d8;
+  opacity: 1;
+}
+
+.toggle {
+  background: #071525;
+  border: 1px solid #294057;
+  border-radius: 15px;
+}
+
+.toggle button {
+  color: #9eb3c9;
+}
+
+.toggle button.active {
+  background: #19344b;
+  color: #69f5b0;
+  box-shadow: 0 2px 12px rgba(0,0,0,.25);
+}
+
+input,
+select,
+textarea {
+  background: #0a1a2b;
+  color: #f4faff;
+  border: 1px solid #30465d;
+  border-radius: 13px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #8da3b9;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline-color: #65f5ac;
+  border-color: #65f5ac;
+}
+
+button.primary,
+.primary {
+  background: linear-gradient(100deg, #58e99d, #83ffba);
+  color: #061525;
+  border: 0;
+  border-radius: 15px;
+  font-weight: 800;
+  box-shadow: 0 5px 22px rgba(90,240,160,.16);
+}
+
+button.primary:hover,
+.primary:hover {
+  filter: brightness(1.06);
+}
+
+.small-btn {
+  border-radius: 12px;
+}
+
+.small-btn.accent {
+  background: #65f5ac;
+  color: #071625;
+  border-color: #65f5ac;
+}
+
+.net {
+  background: #0d2134;
+  border: 1px solid #294057;
+  border-radius: 15px;
+  color: #f1f7ff;
+}
+
+.net .amount {
+  color: #65f5ac;
+  font-weight: 800;
+}
+
+.empty,
+.hint,
+.section-label {
+  color: #a4b8ce;
+}
+
+table {
+  color: #e9f4ff;
+}
+
+th {
+  background: #173047;
+  color: #e9f4ff;
+}
+
+td {
+  background: #0b1d30;
+  color: #d7e7f5;
+}
+
+td.owed {
+  color: #65f5ac;
+}
+
+.side {
+  background: #0a1b2e;
+  color: #eaf5ff;
+}
+
+.settings-menu {
+  background: #10263b;
+  color: #f4faff;
+  border-color: #294057;
+}
+
+.settings-menu button {
+  color: #f4faff;
+}
+
+.modal {
+  background: #102238;
+  color: #f4faff;
+}
+
+@media (max-width: 600px) {
+  .card {
+    border-radius: 21px;
+    padding: 18px;
+  }
+
+  header h1 {
+    font-size: 2.1rem;
+  }
+
+  .primary {
+    min-height: 52px;
+  }
+}
+
 </style>
 </head>
 <body>
