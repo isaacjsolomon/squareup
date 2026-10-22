@@ -86,3 +86,4 @@ export async function onRequest({request,env,params}) {
   return fail('Not found',404);
  }catch(e){return fail(e.message||'Unexpected server error',500);}
 }
+```
