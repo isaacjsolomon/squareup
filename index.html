@@ -1613,18 +1613,69 @@ $("settings-pay-form").addEventListener('submit',async function(e){
 });
 function displayName(m) { return m.isYou ? "You" : (m.name || m.email || "Friend"); }
 // Safe bridge for the non-module tracker UI. Module-scoped variables are not global.
-window.squareUpPayNow = function () {
-  var members=current&&current.members?current.members.filter(function(m){return !m.isYou && m.payments&&(m.payments.venmo||m.payments.cashapp);}):[];
-  if(!members.length){alert("No friends in this tracker have saved payment usernames yet. Ask them to add one in Settings.");return;}
-  var choices=[];
-  members.forEach(function(m){if(m.payments.venmo)choices.push({label:(m.name||'Friend')+' — Venmo @'+m.payments.venmo,url:'https://venmo.com/u/'+encodeURIComponent(m.payments.venmo)});if(m.payments.cashapp)choices.push({label:(m.name||'Friend')+' — Cash App $'+m.payments.cashapp,url:'https://cash.app/$'+encodeURIComponent(m.payments.cashapp)});});
-  var choice=prompt("Choose who to pay by entering a number:\n"+choices.map(function(c,i){return (i+1)+'. '+c.label;}).join('\n'));
-  if(choice===null)return;
-  var idx=Number(choice)-1;
-  if(!Number.isInteger(idx)||idx<0||idx>=choices.length){alert('Choose a valid number.');return;}
-  if(!confirm('Open '+choices[idx].label+'? Verify the recipient in the payment app before sending money.'))return;
-  window.open(choices[idx].url,'_blank','noopener,noreferrer');
-  alert('After the payment is complete, return to SquareUp and use Log Payment. SquareUp cannot automatically verify external payments.');
+window.squareUpPayNow = async function () {
+  if (!current || !current.id) { alert('Open a shared tracker first.'); return; }
+  var me = (current.members || []).find(function (m) { return m.isYou; });
+  if (!me) { alert('Could not identify your tracker membership.'); return; }
+  var recipients = (current.members || []).filter(function (m) {
+    return !m.isYou && m.payments && (m.payments.venmo || m.payments.cashapp);
+  });
+  if (!recipients.length) {
+    alert('No friends in this tracker have saved payment usernames yet. Ask them to add one in Settings.');
+    return;
+  }
+  var options = [];
+  recipients.forEach(function (m) {
+    if (m.payments.venmo) options.push({member:m, provider:'Venmo', url:'https://venmo.com/u/'+encodeURIComponent(m.payments.venmo)});
+    if (m.payments.cashapp) options.push({member:m, provider:'Cash App', url:'https://cash.app/$'+encodeURIComponent(m.payments.cashapp)});
+  });
+  var selection = prompt('Choose who to pay:\n'+options.map(function (o,i) {
+    return (i+1)+'. '+(o.member.name||'Friend')+' via '+o.provider;
+  }).join('\n'));
+  if (selection === null) return;
+  var index = Number(selection)-1;
+  if (!Number.isInteger(index) || index < 0 || index >= options.length) { alert('Choose a valid number.'); return; }
+  var chosen = options[index];
+  var from = me.name || me.email;
+  var to = chosen.member.name || chosen.member.email;
+  if (!from || !to || from.trim().toLowerCase() === to.trim().toLowerCase()) {
+    alert('Could not determine the correct payer and recipient.'); return;
+  }
+  // Calculate the pairwise balance using the same debt/payment convention as the tracker.
+  var cents = 0;
+  (current.entries || []).forEach(function (e) {
+    var ef = String(e.from||'').trim().toLowerCase(), et = String(e.to||'').trim().toLowerCase();
+    var f = from.trim().toLowerCase(), t = to.trim().toLowerCase();
+    var sign = e.type === 'debt' ? 1 : -1;
+    var value = Math.round(Number(e.amount)*100);
+    if (!Number.isFinite(value)) return;
+    if (ef === f && et === t) cents += sign*value;
+    if (ef === t && et === f) cents -= sign*value;
+  });
+  if (cents <= 0) { alert('You do not currently owe '+to+' in this tracker.'); return; }
+  var owed = cents/100;
+  var entered = prompt('You owe '+to+' $'+owed.toFixed(2)+'.\nHow much will you pay? Enter the full amount or a smaller partial payment:',owed.toFixed(2));
+  if (entered === null) return;
+  if (!/^\d+(?:\.\d{1,2})?$/.test(entered.trim())) { alert('Enter a valid dollar amount with up to two decimal places.'); return; }
+  var paidCents = Math.round(Number(entered)*100);
+  if (!Number.isSafeInteger(paidCents) || paidCents <= 0 || paidCents > cents) {
+    alert('Enter an amount greater than $0 and no more than $'+owed.toFixed(2)+'.'); return;
+  }
+  if (!confirm('Open '+chosen.provider+' to pay '+to+' $'+(paidCents/100).toFixed(2)+'?\nVerify the recipient before sending money. SquareUp cannot verify the payment.')) return;
+  var paymentTab = window.open(chosen.url,'_blank','noopener,noreferrer');
+  if (!paymentTab) { alert('Your browser may have blocked the payment page. Enable pop-ups and try again.'); return; }
+  if (!confirm('Only click OK if you have COMPLETED the $'+(paidCents/100).toFixed(2)+' payment to '+to+' in '+chosen.provider+'.\nClick Cancel if you did not pay.')) return;
+  try {
+    var trackerId = current.id;
+    var detail = await api('trackers/'+trackerId+'/entries','POST',{
+      type:'payment', from:from, to:to, amount:paidCents/100,
+      note:'Paid via '+chosen.provider+' (self-reported)', date:new Date().toLocaleDateString()
+    });
+    if (current && current.id === trackerId) applyDetail(detail);
+    alert('Payment recorded! Remaining balance: $'+((cents-paidCents)/100).toFixed(2)+'.');
+  } catch (err) {
+    alert('The payment was NOT recorded in SquareUp: '+(err.message||'Save failed')+'. If you paid externally, use Log Payment to record it.');
+  }
 };
 window.squareUpSplitMembers = function () {
   return current && Array.isArray(current.members) ? current.members.map(displayName) : [];
