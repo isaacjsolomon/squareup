@@ -496,8 +496,8 @@ td.owed {
 .tracker-heading { text-align:left; margin-bottom:18px; }
 .tracker-heading h1 { font-size:2rem; }
 .tracker-heading p { font-size:14px; }
-.dashboard-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
-.dashboard-action { min-height:54px; border-radius:14px; padding:13px 16px; font:700 15px inherit; font-family:inherit; font-weight:750; cursor:pointer; border:1px solid #35506b; background:#19344b; color:#f1f7ff; }
+.dashboard-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
+.dashboard-action { min-height:86px; border-radius:14px; padding:13px 16px; font:700 15px inherit; font-family:inherit; font-weight:750; cursor:pointer; border:1px solid #35506b; background:#19344b; color:#f1f7ff; }
 .dashboard-action.expense { background:#65f5ac; border-color:#65f5ac; color:#071625; }
 .dashboard-action:focus-visible { outline:3px solid #fff; outline-offset:3px; }
 .dashboard-action:hover { filter:brightness(1.09); }
@@ -520,6 +520,40 @@ td.owed {
  #nets .net { flex-wrap:wrap; }
  #nets .net .small-btn { margin-left:auto; }
 }
+
+/* Split a Bill: dedicated view, same tracker and theme */
+.dashboard-action .action-icon { display:block; font-size:25px; margin-bottom:5px; color:#65f5ac; }
+.dashboard-action.expense .action-icon { color:#071625; }
+.dashboard-action .action-sub { display:block; font-size:12px; font-weight:400; color:#a4b8ce; margin-top:4px; }
+.dashboard-action.expense .action-sub { color:#173d39; }
+#split-page { display:none; }
+body.split-view #split-page { display:block; }
+body.split-view #tracker-dashboard { display:none; }
+.split-back { border:0; background:none; color:#65f5ac; font:700 15px inherit; font-family:inherit; cursor:pointer; padding:4px 0 18px; }
+.split-header h2 { margin:0 0 5px; font-size:28px; color:#f1f7ff; }
+.split-header p { margin:0 0 18px; color:#a4b8ce; }
+.split-layout { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
+.split-panel { background:#0e2337; border:1px solid #29465e; border-radius:16px; padding:20px; color:#f1f7ff; }
+.split-panel h3 { margin:0 0 14px; font-size:17px; }
+.split-field { display:block; margin-bottom:17px; font-size:14px; font-weight:650; }
+.split-field input { margin-top:7px; background:#132f48; color:#fff; border:1px solid #36536b; }
+.split-field input:focus { border-color:#65f5ac; }
+.split-person { display:flex; align-items:center; gap:10px; padding:8px 0; color:#e7f3fc; }
+.split-person input[type=checkbox], .split-person input[type=radio] { width:18px; height:18px; margin:0; accent-color:#65f5ac; flex:none; }
+.split-person .split-avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#5f60ed; font-weight:700; flex:none; }
+.split-person .split-name { flex:1; }
+.split-person .split-custom { width:100px; margin:0; padding:8px; background:#132f48; color:#fff; border:1px solid #36536b; }
+.split-method { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:4px; background:#0a1a2c; border-radius:10px; margin:10px 0; }
+.split-method button { background:transparent; color:#d1e1ed; border:0; border-radius:8px; padding:10px 5px; font-weight:650; cursor:pointer; }
+.split-method button.active { background:#65f5ac; color:#071625; }
+.split-summary-line { display:flex; justify-content:space-between; gap:10px; padding:7px 0; }
+.split-summary-line.total { font-weight:750; font-size:18px; }
+.split-summary-line.total strong, .split-due { color:#65f5ac; }
+.split-rule { border:0; border-top:1px solid #29465e; margin:12px 0; }
+.split-save { display:block; width:100%; margin-top:14px; padding:14px; border:0; border-radius:12px; background:#65f5ac; color:#071625; font-weight:800; font-size:15px; cursor:pointer; }
+.split-save:disabled { opacity:.5; cursor:not-allowed; }
+.split-message { margin-top:12px; color:#a4b8ce; font-size:13px; line-height:1.5; }
+@media(max-width:700px) { .split-layout { grid-template-columns:1fr; } .split-panel { padding:16px; } }
 </style>
 </head>
 <body>
@@ -570,6 +604,7 @@ td.owed {
     <p>Track who owes who. Debts that go both ways cancel out automatically.</p>
   </header>
 
+  <div id="tracker-dashboard">
   <!-- CURRENT BALANCES -->
   <div class="card" id="balances-card">
     <h2>Current balances</h2>
@@ -578,9 +613,10 @@ td.owed {
 
   <!-- QUICK ACTIONS -->
   <div class="dashboard-actions" aria-label="Tracker actions">
-    <button type="button" class="dashboard-action" id="quick-pay-now">↗ Pay Now</button>
-    <button type="button" class="dashboard-action expense" id="quick-expense" aria-expanded="false" aria-controls="entry-card">＋ Add Expense</button>
-    <button type="button" class="dashboard-action" id="quick-payment" aria-expanded="false" aria-controls="entry-card">↗ Log Payment</button>
+    <button type="button" class="dashboard-action" id="quick-pay-now"><span class="action-icon">↗</span>Pay Now<span class="action-sub">Send via Venmo or Cash App</span></button>
+    <button type="button" class="dashboard-action expense" id="quick-expense" aria-expanded="false" aria-controls="entry-card"><span class="action-icon">＋</span>Add Expense<span class="action-sub">Manually add an expense</span></button>
+    <button type="button" class="dashboard-action" id="quick-payment" aria-expanded="false" aria-controls="entry-card"><span class="action-icon">▤</span>Log Payment<span class="action-sub">Record a payment you made</span></button>
+    <button type="button" class="dashboard-action" id="quick-split"><span class="action-icon">♧</span>Split a Bill<span class="action-sub">Divide an expense with friends</span></button>
   </div>
 
   <!-- ENTRY FORM: shown by quick actions -->
@@ -619,6 +655,41 @@ td.owed {
   </div>
 
   <footer><button id="clear">Clear everything</button></footer>
+  </div><!-- /tracker-dashboard -->
+
+  <section id="split-page" aria-label="Split a Bill">
+    <button type="button" id="split-back" class="split-back">← Back to Dashboard</button>
+    <div class="split-header"><h2>Split a Bill</h2><p>Divide an expense with your friends.</p></div>
+    <div class="split-layout">
+      <div class="split-panel">
+        <label class="split-field">Expense description<input id="split-description" maxlength="160" placeholder="Dinner at a restaurant" autocomplete="off"></label>
+        <label class="split-field">Total amount ($)<input id="split-total" type="number" min="0.01" max="1000000" step="0.01" placeholder="60.00" inputmode="decimal"></label>
+        <h3>Who paid?</h3><div id="split-payers"></div>
+      </div>
+      <div>
+        <div class="split-panel">
+          <h3>Split between <span id="split-count"></span></h3>
+          <div id="split-participants"></div>
+          <hr class="split-rule">
+          <h3>Split method</h3>
+          <div class="split-method">
+            <button type="button" id="split-equal" class="active">Split equally</button>
+            <button type="button" id="split-custom">Custom amounts</button>
+          </div>
+          <div class="split-message" id="split-custom-help" hidden>Enter how much each selected person should contribute. Amounts must add up to the total.</div>
+        </div>
+        <div class="split-panel" style="margin-top:14px">
+          <div class="split-summary-line total"><span>Split summary</span><strong id="split-summary-total">$0.00</strong></div>
+          <div id="split-summary"></div>
+          <hr class="split-rule">
+          <div class="split-message" id="split-owed-heading">Payments owed to payer</div>
+          <div id="split-owed"></div>
+          <button type="button" id="split-save" class="split-save">Add to Tracker</button>
+          <div class="split-message" id="split-message" role="status" aria-live="polite">This records expenses in SquareUp. No money is transferred.</div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
 
 <!-- AUTH MODAL -->
@@ -971,6 +1042,139 @@ document.getElementById("mode-debt").onclick = function () { setMode("debt"); };
 document.getElementById("mode-payment").onclick = function () { setMode("payment"); };
 document.getElementById("person1").addEventListener("input", updatePreview);
 document.getElementById("person2").addEventListener("input", updatePreview);
+
+
+// ============ SPLIT A BILL (separate view, same existing tracker) ============
+var splitState = { people:[], payer:"", selected:{}, custom:{}, method:"equal", saving:false };
+function splitMoney(cents) { return "$" + (cents/100).toFixed(2); }
+function splitMembers() {
+  var found = {}, list = [];
+  function add(name) {
+    name = String(name || "").trim();
+    if (!name || found[norm(name)]) return;
+    found[norm(name)] = true;
+    list.push(name);
+  }
+  if (current && Array.isArray(current.members)) current.members.forEach(function(m) { add(displayName(m)); });
+  Object.keys(nameMap()).forEach(function(k) { add(nameMap()[k]); });
+  return list;
+}
+function openSplitPage() {
+  splitState.people = splitMembers();
+  splitState.selected = {};
+  splitState.custom = {};
+  splitState.people.forEach(function(p) { splitState.selected[p] = true; splitState.custom[p] = "0.00"; });
+  splitState.payer = splitState.people[0] || "";
+  splitState.method = "equal";
+  document.getElementById("split-description").value = "";
+  document.getElementById("split-total").value = "";
+  document.getElementById("split-message").textContent = "This records expenses in SquareUp. No money is transferred.";
+  document.body.classList.add("split-view");
+  renderSplitPage();
+  window.scrollTo(0,0);
+}
+function closeSplitPage() { document.body.classList.remove("split-view"); window.scrollTo(0,0); }
+function splitCalc() {
+  var amount = Number(document.getElementById("split-total").value);
+  var cents = Number.isFinite(amount) && amount>0 ? Math.round(amount*100) : 0;
+  var selected = splitState.people.filter(function(p) { return splitState.selected[p]; });
+  var shares = selected.map(function(p,i) {
+    var value = splitState.method === "equal" ? Math.floor(cents/selected.length)+(i<cents%selected.length?1:0) : Math.round(Number(splitState.custom[p] || 0)*100);
+    return {name:p,cents:value};
+  });
+  var assigned = shares.reduce(function(sum,p){return sum+p.cents;},0);
+  var validShares = shares.every(function(p){return Number.isFinite(p.cents) && p.cents>=0;});
+  return { cents:cents, shares:shares, assigned:assigned, valid:validShares && cents>0 && assigned===cents && selected.length>0 && !!splitState.payer && !!document.getElementById("split-description").value.trim() };
+}
+function renderSplitPage() {
+  var payers = document.getElementById("split-payers"), participants = document.getElementById("split-participants");
+  payers.replaceChildren(); participants.replaceChildren();
+  splitState.people.forEach(function(person,i) {
+    var payerLabel = document.createElement("label"); payerLabel.className="split-person";
+    var radio = document.createElement("input"); radio.type="radio"; radio.name="split-payer"; radio.checked=splitState.payer===person;
+    radio.addEventListener("change",function(){splitState.payer=person;renderSplitSummary();});
+    var av=document.createElement("span"); av.className="split-avatar"; av.style.background=COLORS[i%COLORS.length]; av.textContent=person.charAt(0).toUpperCase();
+    var name=document.createElement("span"); name.className="split-name"; name.textContent=person;
+    payerLabel.append(radio,av,name); payers.append(payerLabel);
+    var label=document.createElement("label"); label.className="split-person";
+    var check=document.createElement("input"); check.type="checkbox"; check.checked=!!splitState.selected[person];
+    check.addEventListener("change",function(){splitState.selected[person]=check.checked;renderSplitPage();});
+    var pav=av.cloneNode(true), pname=name.cloneNode(true);
+    label.append(pav,pname,check);
+    if (splitState.method === "custom" && check.checked) {
+      var custom=document.createElement("input"); custom.type="number"; custom.min="0"; custom.step="0.01"; custom.inputMode="decimal"; custom.className="split-custom"; custom.setAttribute("aria-label",person+" share in dollars"); custom.value=splitState.custom[person];
+      custom.addEventListener("input",function(){splitState.custom[person]=custom.value;renderSplitSummary();});
+      custom.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();});
+      label.append(custom);
+    }
+    participants.append(label);
+  });
+  document.getElementById("split-equal").classList.toggle("active",splitState.method==="equal");
+  document.getElementById("split-custom").classList.toggle("active",splitState.method==="custom");
+  document.getElementById("split-custom-help").hidden=splitState.method!=="custom";
+  document.getElementById("split-count").textContent="("+splitState.people.filter(function(p){return splitState.selected[p];}).length+" selected)";
+  if (!splitState.people.length) {
+    participants.textContent="No people yet. Invite friends to your tracker or add an expense with their names first.";
+  }
+  renderSplitSummary();
+}
+function renderSplitSummary() {
+  var result=splitCalc(), summary=document.getElementById("split-summary"), owed=document.getElementById("split-owed");
+  summary.replaceChildren(); owed.replaceChildren();
+  document.getElementById("split-summary-total").textContent=splitMoney(result.cents);
+  function line(parent,name,cents,cls) {
+    var row=document.createElement("div"); row.className="split-summary-line";
+    var left=document.createElement("span"); left.textContent=name;
+    var right=document.createElement("strong"); right.textContent=splitMoney(cents); if(cls)right.className=cls;
+    row.append(left,right); parent.append(row);
+  }
+  result.shares.forEach(function(p){line(summary,p.name,p.cents);});
+  document.getElementById("split-owed-heading").textContent="Payments owed to "+(splitState.payer||"payer");
+  result.shares.filter(function(p){return p.name!==splitState.payer && p.cents>0;}).forEach(function(p){line(owed,p.name,p.cents,"split-due");});
+  if (splitState.method==="custom" && result.assigned!==result.cents) {
+    var warning=document.createElement("div");warning.className="split-message";warning.textContent="Assigned "+splitMoney(result.assigned)+" of "+splitMoney(result.cents)+". Adjust custom amounts to match.";summary.append(warning);
+  }
+  document.getElementById("split-save").disabled=!result.valid||splitState.saving;
+}
+document.getElementById("quick-split").addEventListener("click",openSplitPage);
+document.getElementById("split-back").addEventListener("click",closeSplitPage);
+document.getElementById("split-total").addEventListener("input",renderSplitSummary);
+document.getElementById("split-description").addEventListener("input",renderSplitSummary);
+document.getElementById("split-equal").addEventListener("click",function(){splitState.method="equal";renderSplitPage();});
+document.getElementById("split-custom").addEventListener("click",function(){splitState.method="custom";renderSplitPage();});
+document.getElementById("split-save").addEventListener("click",async function(){
+  var result=splitCalc(); if (!result.valid || splitState.saving) return;
+  var payer=splitState.payer, description=document.getElementById("split-description").value.trim();
+  var debts=result.shares.filter(function(p){return p.name!==payer&&p.cents>0;});
+  var msg=document.getElementById("split-message");
+  if (!debts.length) { msg.textContent="No one owes the payer for this split. Nothing to record."; return; }
+  if (!confirm("Add "+debts.length+" expense"+(debts.length===1?"":"s")+" to this tracker?")) return;
+  splitState.saving=true;renderSplitSummary();
+  var saved=0, lastDetail=null, trackerId=current&&current.id;
+  try {
+    for (var i=0;i<debts.length;i++) {
+      var p=debts[i];
+      var entry={id:Date.now()+Math.random(),type:"debt",from:p.name,to:payer,amount:p.cents/100,note:"Split bill: "+description,date:new Date().toLocaleDateString()};
+      if (trackerId) {
+        lastDetail=await api("trackers/"+trackerId+"/entries","POST",entry);
+      } else {
+        entries.push(entry);saveEntries();
+      }
+      saved++;
+    }
+    if (trackerId) { if (current&&current.id===trackerId) applyDetail(lastDetail); }
+    else render();
+    msg.textContent="Saved "+saved+" expense"+(saved===1?"":"s")+"! Balances are updated.";
+    document.getElementById("split-description").value="";
+    document.getElementById("split-total").value="";
+    renderSplitSummary();
+    setTimeout(closeSplitPage,900);
+  } catch(err) {
+    if (trackerId && lastDetail && current && current.id===trackerId) applyDetail(lastDetail);
+    if (!trackerId) render();
+    msg.textContent="Only "+saved+" of "+debts.length+" entries saved. "+(err.message||"Please try again.")+" Check Recent Activity before retrying to avoid duplicates.";
+  } finally { splitState.saving=false;renderSplitSummary(); }
+});
 
 // Settle up + delete buttons (event delegation)
 document.addEventListener("click", function (e) {
