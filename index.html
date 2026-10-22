@@ -616,7 +616,7 @@ body.split-view #tracker-dashboard { display:none; }
     <button type="button" class="dashboard-action" id="quick-pay-now"><span class="action-icon">↗</span>Pay Now<span class="action-sub">Send via Venmo or Cash App</span></button>
     <button type="button" class="dashboard-action expense" id="quick-expense" aria-expanded="false" aria-controls="entry-card"><span class="action-icon">＋</span>Add Expense<span class="action-sub">Manually add an expense</span></button>
     <button type="button" class="dashboard-action" id="quick-payment" aria-expanded="false" aria-controls="entry-card"><span class="action-icon">▤</span>Log Payment<span class="action-sub">Record a payment you made</span></button>
-    <button type="button" class="dashboard-action" id="quick-split"><span class="action-icon">♧</span>Split a Bill<span class="action-sub">Divide an expense with friends</span></button>
+    <button type="button" class="dashboard-action" id="quick-split"><span class="action-icon" aria-hidden="true"><svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Split a Bill<span class="action-sub">Divide an expense with friends</span></button>
   </div>
 
   <!-- ENTRY FORM: shown by quick actions -->
@@ -1055,7 +1055,8 @@ function splitMembers() {
     found[norm(name)] = true;
     list.push(name);
   }
-  if (current && Array.isArray(current.members)) current.members.forEach(function(m) { add(displayName(m)); });
+  var sharedMembers = typeof window.squareUpSplitMembers === "function" ? window.squareUpSplitMembers() : [];
+  sharedMembers.forEach(add);
   Object.keys(nameMap()).forEach(function(k) { add(nameMap()[k]); });
   return list;
 }
@@ -1070,10 +1071,11 @@ function openSplitPage() {
   document.getElementById("split-total").value = "";
   document.getElementById("split-message").textContent = "This records expenses in SquareUp. No money is transferred.";
   document.body.classList.add("split-view");
+  if (location.hash !== "#split-bill") history.pushState(null,"","#split-bill");
   renderSplitPage();
   window.scrollTo(0,0);
 }
-function closeSplitPage() { document.body.classList.remove("split-view"); window.scrollTo(0,0); }
+function closeSplitPage() { document.body.classList.remove("split-view"); if (location.hash === "#split-bill") history.replaceState(null,"",location.pathname+location.search); window.scrollTo(0,0); }
 function splitCalc() {
   var amount = Number(document.getElementById("split-total").value);
   var cents = Number.isFinite(amount) && amount>0 ? Math.round(amount*100) : 0;
@@ -1137,6 +1139,8 @@ function renderSplitSummary() {
   document.getElementById("split-save").disabled=!result.valid||splitState.saving;
 }
 document.getElementById("quick-split").addEventListener("click",openSplitPage);
+window.addEventListener("popstate",function(){ if(location.hash==="#split-bill") openSplitPage(); else document.body.classList.remove("split-view"); });
+if (location.hash === "#split-bill") openSplitPage();
 document.getElementById("split-back").addEventListener("click",closeSplitPage);
 document.getElementById("split-total").addEventListener("input",renderSplitSummary);
 document.getElementById("split-description").addEventListener("input",renderSplitSummary);
@@ -1150,28 +1154,27 @@ document.getElementById("split-save").addEventListener("click",async function(){
   if (!debts.length) { msg.textContent="No one owes the payer for this split. Nothing to record."; return; }
   if (!confirm("Add "+debts.length+" expense"+(debts.length===1?"":"s")+" to this tracker?")) return;
   splitState.saving=true;renderSplitSummary();
-  var saved=0, lastDetail=null, trackerId=current&&current.id;
+  var saved=0;
+  var sharedAtStart=!!cloud;
   try {
     for (var i=0;i<debts.length;i++) {
       var p=debts[i];
       var entry={id:Date.now()+Math.random(),type:"debt",from:p.name,to:payer,amount:p.cents/100,note:"Split bill: "+description,date:new Date().toLocaleDateString()};
-      if (trackerId) {
-        lastDetail=await api("trackers/"+trackerId+"/entries","POST",entry);
+      if (sharedAtStart && typeof window.squareUpSplitSave === "function") {
+        await window.squareUpSplitSave(entry);
       } else {
         entries.push(entry);saveEntries();
       }
       saved++;
     }
-    if (trackerId) { if (current&&current.id===trackerId) applyDetail(lastDetail); }
-    else render();
+    if (!sharedAtStart) render();
     msg.textContent="Saved "+saved+" expense"+(saved===1?"":"s")+"! Balances are updated.";
     document.getElementById("split-description").value="";
     document.getElementById("split-total").value="";
     renderSplitSummary();
     setTimeout(closeSplitPage,900);
   } catch(err) {
-    if (trackerId && lastDetail && current && current.id===trackerId) applyDetail(lastDetail);
-    if (!trackerId) render();
+    if (!sharedAtStart) render();
     msg.textContent="Only "+saved+" of "+debts.length+" entries saved. "+(err.message||"Please try again.")+" Check Recent Activity before retrying to avoid duplicates.";
   } finally { splitState.saving=false;renderSplitSummary(); }
 });
@@ -1479,6 +1482,16 @@ async function api(path, method, body) {
 }
 
 function displayName(m) { return m.isYou ? "You" : (m.name || m.email || "Friend"); }
+// Safe bridge for the non-module tracker UI. Module-scoped variables are not global.
+window.squareUpSplitMembers = function () {
+  return current && Array.isArray(current.members) ? current.members.map(displayName) : [];
+};
+window.squareUpSplitSave = async function (entry) {
+  if (!current || !current.id) throw new Error("Open a shared tracker first.");
+  var trackerId = current.id;
+  var detail = await api("trackers/" + trackerId + "/entries", "POST", entry);
+  if (current && current.id === trackerId) applyDetail(detail);
+};
 function avatarHtml(name, i, member) {
   var photo = member && member.photo ? ' data-uid="' + esc(member.id) + '" data-v="' + esc(member.photo) + '"' : "";
   return '<div class="avatar"' + photo + ' style="background:' + COLORS[i % COLORS.length] + '">' + esc(name.charAt(0).toUpperCase()) + "</div>";
