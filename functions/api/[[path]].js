@@ -80,7 +80,7 @@ export async function onRequest({request,env,params}) {
   if(sub==='members'&&parts[3]&&method==='DELETE'){if(!owner)return fail('Only the owner can remove people.',403);if(parts[3]===me.id)return fail("You can't remove yourself as the owner.",400);await db('tracker_members',{method:'DELETE',filters:{tracker_id:'eq.'+id,user_id:'eq.'+parts[3]}});return json(await detail(id));}
   if(sub==='backdrop'){
    const t=(await db('trackers',{filters:{id:'eq.'+id}}))[0];
-   if(method==='GET'){if(!t?.backdrop_image)return fail('No backdrop photo.',404);const r=await storage('tracker-backdrops',t.backdrop_image);if(!r)return fail('No backdrop photo.',404);return new Response(r.body,{headers:{'Content-Type':r.headers.get('Content-Type')||'image/jpeg','Cache-Control':'private, max-age=60'}});
+   if(method==='GET'){if(!t?.backdrop_image)return fail('No backdrop photo.',404);const r=await storage('tracker-backdrops',t.backdrop_image);if(!r)return fail('No backdrop photo.',404);return new Response(r.body,{headers:{'Content-Type':r.headers.get('Content-Type')||'image/jpeg','Cache-Control':'private, max-age=60'}});}
    if(method==='PUT'){const bytes=new Uint8Array(await request.arrayBuffer()),type=kind(bytes);if(!bytes.length||bytes.length>5*1024*1024||!type)return fail('Upload a JPEG, PNG or WebP under 5 MB.',400);const path=id+'/'+crypto.randomUUID();await storage('tracker-backdrops',path,'POST',bytes,type);await db('trackers',{method:'PATCH',filters:{id:'eq.'+id},body:{backdrop:'photo',backdrop_image:path}});if(t?.backdrop_image)await storage('tracker-backdrops',t.backdrop_image,'DELETE');return json(await detail(id));}
   }
   return fail('Not found',404);
