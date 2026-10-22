@@ -26,9 +26,29 @@ export async function onRequest({request,env,params}) {
  async function storage(bucket,path,method='GET',bytes,type){const u=URL_BASE+'/storage/v1/object/'+bucket+'/'+path;const r=await fetch(u,{method,headers:{...baseHeaders,...(type?{'Content-Type':type}:{})},body:bytes});if(!r.ok){if(method==='GET')return null;throw Error('Photo storage request failed');}return r;}
  const parts=(params.path||[]);const method=request.method;
  async function member(id){if(!uuid.test(id))return null;return (await db('tracker_members',{filters:{tracker_id:'eq.'+id,user_id:'eq.'+me.id}}))[0]||null;}
- async function detail(id){const t=(await db('trackers',{filters:{id:'eq.'+id}}))[0];const m=await member(id);if(!t||!m)throw Error('Tracker not found');const members=await db('tracker_members',{filters:{tracker_id:'eq.'+id},order:'joined_at.asc'});const entries=await db('tracker_entries',{filters:{tracker_id:'eq.'+id},order:'created_at.asc,id.asc'});const profiles=await db('profiles',{filters:{user_id:'in.('+members.map(x=>x.user_id).join(',')+')'}}).catch(()=>[]);return {id:t.id,name:t.name,role:m.role,inviteToken:t.invite_token,backdrop:{preset:t.backdrop,photo:t.backdrop==='photo'&&t.backdrop_image?t.backdrop_image.split('/').pop():null},members:members.map(x=>({id:x.user_id,email:x.email,name:profiles.find(p=>p.user_id===x.user_id)?.display_name||x.name,role:x.role,isYou:x.user_id===me.id,photo:profiles.find(p=>p.user_id===x.user_id)?.photo_key?.split('/').pop()||null,payments:{venmo:profiles.find(p=>p.user_id===x.user_id)?.venmo_username||'',cashapp:profiles.find(p=>p.user_id===x.user_id)?.cashapp_username||''}})),entries:entries.map(e=>({id:e.id,type:e.type,from:e.from_name,to:e.to_name,amount:Number(e.amount),note:e.note,date_label:e.date_label,createdBy:members.find(m=>m.user_id===e.created_by)?.name||''}))};}
+ async function detail(id){const t=(await db('trackers',{filters:{id:'eq.'+id}}))[0];const m=await member(id);if(!t||!m)throw Error('Tracker not found');const members=await db('tracker_members',{filters:{tracker_id:'eq.'+id},order:'joined_at.asc'});const entries=await db('tracker_entries',{filters:{tracker_id:'eq.'+id},order:'created_at.asc,id.asc'});const profiles=await db('profiles',{filters:{user_id:'in.('+members.map(x=>x.user_id).join(',')+')'}}).catch(()=>[]);return {id:t.id,name:t.name,role:m.role,inviteToken:t.invite_token,backdrop:{preset:t.backdrop,photo:t.backdrop==='photo'&&t.backdrop_image?t.backdrop_image.split('/').pop():null},members:members.map(x=>({id:x.user_id,email:x.email,name:profiles.find(p=>p.user_id===x.user_id)?.display_name||x.name,role:x.role,isYou:x.user_id===me.id,photo:profiles.find(p=>p.user_id===x.user_id)?.photo_key?.split('/').pop()||null,payments:{venmo:profiles.find(p=>p.user_id===x.user_id)?.venmo_username||'',cashapp:profiles.find(p=>p.user_id===x.user_id)?.cashapp_username||''}})),entries:entries.map(e=>({id:e.id,type:e.type,from:e.from_name,to:e.to_name,amount:Number(e.amount),note:e.note,date:e.date_label,createdBy:members.find(m=>m.user_id===e.created_by)?.name||''}))};}
  try {
   const body=['POST','PATCH'].includes(method)?await request.json().catch(()=>({})):{};
+  if(parts[0]==='account'&&parts.length===1&&method==='DELETE'){
+   // The bearer token above has been verified by Supabase and identifies 'me'.
+   // Clean up app-owned records before removing the auth identity.
+   const owned=await db('trackers',{filters:{owner_id:'eq.'+me.id}});
+   for(const t of owned){
+    if(t.backdrop_image)await storage('tracker-backdrops',t.backdrop_image,'DELETE');
+    await db('tracker_entries',{method:'DELETE',filters:{tracker_id:'eq.'+t.id}});
+    await db('tracker_members',{method:'DELETE',filters:{tracker_id:'eq.'+t.id}});
+    await db('trackers',{method:'DELETE',filters:{id:'eq.'+t.id}});
+   }
+   // Remove contributions and membership in other people's trackers.
+   await db('tracker_entries',{method:'DELETE',filters:{created_by:'eq.'+me.id}});
+   await db('tracker_members',{method:'DELETE',filters:{user_id:'eq.'+me.id}});
+   const p=(await db('profiles',{filters:{user_id:'eq.'+me.id}}))[0];
+   if(p?.photo_key)await storage('profile-photos',p.photo_key,'DELETE');
+   await db('profiles',{method:'DELETE',filters:{user_id:'eq.'+me.id}});
+   const authDelete=await fetch(URL_BASE+'/auth/v1/admin/users/'+encodeURIComponent(me.id),{method:'DELETE',headers:baseHeaders});
+   if(!authDelete.ok){const info=await authDelete.json().catch(()=>({}));throw Error(info.msg||info.message||'Could not delete login account. Contact support.');}
+   return json({ok:true});
+  }
   if(parts[0]==='join'&&parts[1]&&method==='POST'){
    const t=(await db('trackers',{filters:{invite_token:'eq.'+parts[1]}}))[0];if(!t)return fail('This invite link is no longer valid.',404);
    await db('tracker_members',{method:'POST',body:{tracker_id:t.id,user_id:me.id,email:me.email,name:me.name,role:'member'},select:'*'}).catch(async e=>{if(!String(e).includes('duplicate'))throw e;});return json({id:t.id,name:t.name});
