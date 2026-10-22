@@ -554,6 +554,36 @@ body.split-view #tracker-dashboard { display:none; }
 .split-save:disabled { opacity:.5; cursor:not-allowed; }
 .split-message { margin-top:12px; color:#a4b8ce; font-size:13px; line-height:1.5; }
 @media(max-width:700px) { .split-layout { grid-template-columns:1fr; } .split-panel { padding:16px; } }
+
+/* Dedicated settings page */
+#settings-page [hidden] { display:none!important; }
+body.settings-view #tracker-dashboard, body.settings-view #split-page { display:none!important; }
+#settings-page { display:none; }
+body.settings-view #settings-page { display:block; }
+.sidebar #btn-settings { width:100%; text-align:left; font-weight:750; }
+body.settings-view #btn-settings { background:#65f5ac!important; color:#081b2b!important; }
+.settings-shell { max-width:900px; margin:0 auto; color:#eff7ff; }
+.settings-heading { margin:0 0 4px; font-size:30px; }
+.settings-muted { color:#a6bed0; font-size:14px; line-height:1.5; }
+.settings-columns { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:20px; align-items:start; }
+.settings-panel { background:#0e2337; border:1px solid #29465e; border-radius:17px; padding:22px; margin-bottom:18px; }
+.settings-panel h3 { margin:0 0 6px; font-size:19px; }
+.settings-field { display:block; font-size:13px; font-weight:750; margin:17px 0; color:#d9e9f7; }
+.settings-field input,.settings-field textarea { display:block; width:100%; box-sizing:border-box; margin-top:7px; padding:12px; border-radius:10px; border:1px solid #375570; background:#132e47; color:#fff; font:inherit; }
+.settings-field textarea { min-height:94px; resize:vertical; }
+.settings-field input:focus,.settings-field textarea:focus { outline:2px solid #65f5ac; outline-offset:1px; }
+.settings-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+.settings-action { padding:11px 15px; border-radius:11px; border:1px solid #3a5670; background:#1a374f; color:#f3f9ff; cursor:pointer; font:700 14px inherit; font-family:inherit; font-weight:700; }
+.settings-action.primary { background:#65f5ac; border-color:#65f5ac; color:#071625; }
+.settings-action:disabled { opacity:.55; cursor:wait; }
+.settings-avatar { width:70px; height:70px; border-radius:50%; background:#5f60ed; display:grid; place-items:center; font-size:30px; font-weight:800; background-size:cover; background-position:center; }
+.settings-avatar-row { display:flex; align-items:center; gap:15px; }
+.settings-notice { margin-top:12px; min-height:18px; font-size:13px; color:#a6bed0; }
+.settings-payment-member { display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid #29465e; flex-wrap:wrap; }
+.settings-payment-member:last-child { border:0; }
+.settings-payment-member strong { flex:1; min-width:90px; }
+.settings-payment-member a { color:#65f5ac; text-decoration:none; font-size:13px; }
+@media(max-width:720px) { .settings-columns { grid-template-columns:1fr; } .settings-panel { padding:16px; } }
 </style>
 </head>
 <body>
@@ -569,8 +599,8 @@ body.split-view #tracker-dashboard { display:none; }
       <span class="who" id="who"></span>
     </div>
     <div class="settings">
-      <button type="button" class="small-btn settings-btn" id="btn-settings" aria-haspopup="menu" aria-expanded="false" aria-controls="settings-menu">Settings</button>
-      <div class="settings-menu" id="settings-menu" role="menu" hidden>
+      <button type="button" class="small-btn" id="btn-settings" aria-label="Open settings page">⚙ Settings</button>
+      <div class="settings-menu" id="settings-menu" role="menu" hidden style="display:none!important">
         <button type="button" role="menuitem" id="btn-login">Log in</button>
         <button type="button" role="menuitem" id="btn-signup">Create account</button>
         <button type="button" role="menuitem" id="btn-backdrop">Backdrop</button>
@@ -690,6 +720,41 @@ body.split-view #tracker-dashboard { display:none; }
       </div>
     </div>
   </section>
+
+<section id="settings-page" class="settings-shell" aria-label="Settings">
+  <button type="button" class="split-back" id="settings-back">← Back to Dashboard</button>
+  <h2 class="settings-heading">Settings</h2><p class="settings-muted">Customize your profile and how friends can pay you.</p>
+  <div id="settings-guest" class="settings-panel" hidden><h3>Sign in to edit your profile</h3><p class="settings-muted">Your settings are saved to your SquareUp account.</p><button type="button" class="settings-action primary" id="settings-login">Log in or create account</button></div>
+  <div id="settings-signed-in" class="settings-columns" hidden>
+    <div>
+      <div class="settings-panel">
+        <h3>Edit Profile</h3><p class="settings-muted">Your name, username, bio, and profile picture.</p>
+        <div class="settings-avatar-row"><div class="settings-avatar" id="settings-avatar">?</div><div><button type="button" class="settings-action" id="settings-photo">Change profile picture</button><p class="settings-muted">JPG, PNG or WebP • up to 2 MB</p></div></div>
+        <form id="settings-profile-form">
+          <label class="settings-field">Display name<input id="settings-display-name" maxlength="60" required autocomplete="nickname" placeholder="Your name"></label>
+          <label class="settings-field">Username<input id="settings-username" maxlength="24" minlength="3" pattern="[A-Za-z0-9_]{3,24}" placeholder="your_username" autocomplete="off" required></label>
+          <p class="settings-muted">3–24 letters, numbers, or underscores. Usernames must be unique.</p>
+          <label class="settings-field">Bio<textarea id="settings-bio" maxlength="180" placeholder="A little about you (optional)"></textarea></label>
+          <button type="submit" class="settings-action primary" id="settings-profile-save">Save profile</button>
+          <div class="settings-notice" id="settings-profile-msg" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+      <div class="settings-panel"><h3>Account</h3><div class="settings-actions"><button type="button" class="settings-action" id="settings-password">Change password</button><button type="button" class="settings-action" id="settings-signout">Log out</button></div></div>
+    </div>
+    <div>
+      <div class="settings-panel"><h3>Payment Accounts</h3><p class="settings-muted">Add your Venmo username or Cash App $Cashtag. Other members of your shared trackers can use these to open your payment profile.</p>
+        <form id="settings-pay-form">
+          <label class="settings-field">Venmo username<input id="settings-venmo" maxlength="30" placeholder="e.g. myvenmo" autocapitalize="off" autocomplete="off"></label>
+          <label class="settings-field">Cash App $Cashtag<input id="settings-cashapp" maxlength="21" placeholder="e.g. $mycashtag" autocapitalize="off" autocomplete="off"></label>
+          <p class="settings-muted">Only enter accounts you own. Friends should confirm the recipient in the payment app before sending money. SquareUp never transfers funds.</p>
+          <button type="submit" class="settings-action primary" id="settings-pay-save">Save payment accounts</button>
+          <div class="settings-notice" id="settings-pay-msg" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+      <div class="settings-panel"><h3>Friends' payment accounts</h3><p class="settings-muted">Saved payment usernames for members of the selected shared tracker.</p><div id="settings-friend-payments" class="settings-muted">Open a shared tracker to see payment links.</div></div>
+    </div>
+  </div>
+</section>
 </div>
 
 <!-- AUTH MODAL -->
@@ -1022,19 +1087,8 @@ function showEntryForm(m) {
 // Pay Now opens a verified payment-provider profile; SquareUp never handles money.
 // The user must enter the recipient's own Venmo or Cash App payment link.
 document.getElementById("quick-pay-now").onclick = function () {
-  var raw = prompt("Paste your friend's Venmo profile link (venmo.com/u/...) or Cash App link (cash.app/$...). Verify it belongs to the correct person before paying.");
-  if (!raw) return;
-  var url;
-  try { url = new URL(raw.trim()); } catch (_) { alert("Enter a complete https:// payment link."); return; }
-  var host = url.hostname.toLowerCase();
-  var allowed = (host === "venmo.com" || host === "www.venmo.com") && /^\/u\/[^/]+\/?$/.test(url.pathname)
-    || (host === "cash.app" || host === "www.cash.app") && /^\/\$[^/]+\/?$/.test(url.pathname);
-  if (url.protocol !== "https:" || !allowed || url.username || url.password) {
-    alert("For safety, use a Venmo profile link (https://venmo.com/u/username) or Cash App link (https://cash.app/$cashtag).");
-    return;
-  }
-  window.open(url.href, "_blank", "noopener,noreferrer");
-  alert("Complete your payment in the payment app. When it is finished, return to SquareUp and select Log Payment to update your balance. SquareUp cannot verify external payments automatically.");
+  if (typeof window.squareUpPayNow === "function") window.squareUpPayNow();
+  else alert("Please sign in and open a shared tracker to see friends' payment accounts.");
 };
 document.getElementById("quick-expense").onclick = function () { showEntryForm("debt"); };
 document.getElementById("quick-payment").onclick = function () { showEntryForm("payment"); };
@@ -1326,6 +1380,7 @@ function closeAuth() {
 }
 
 function showUser(user) {
+  if(!user && document.body.classList.contains("settings-view")) settingsRoute("dashboard");
   var loggedIn = !!user;
   currentUser = user || null;
   $("btn-change-pw").hidden = !loggedIn;
@@ -1349,7 +1404,7 @@ function setSettingsOpen(open) {
     if (first) first.focus();
   }
 }
-$("btn-settings").onclick = function () { setSettingsOpen($("settings-menu").hidden); };
+$("btn-settings").onclick = function () { openSettingsPage(); };
 // Picking an item closes the menu
 $("settings-menu").addEventListener("click", function (e) { if (e.target.closest("button")) setSettingsOpen(false); });
 document.addEventListener("click", function (e) {
@@ -1481,8 +1536,96 @@ async function api(path, method, body) {
   return data;
 }
 
+// ============ DEDICATED SETTINGS PAGE ============
+var myProfileSettings = null;
+function settingsMessage(id, message, ok) { var el=$(id); el.textContent=message; el.style.color=ok?'#65f5ac':'#ff9db1'; }
+function settingsRoute(page) {
+  document.body.classList.remove('split-view','settings-view');
+  if (page==='settings') document.body.classList.add('settings-view');
+  var url=page==='settings'?'#settings':'';
+  history.replaceState(null,'',location.pathname+location.search+url);
+  window.scrollTo(0,0);
+}
+async function openSettingsPage() {
+  settingsRoute('settings');
+  $("settings-guest").hidden=!!currentUser;
+  $("settings-signed-in").hidden=!currentUser;
+  if (!currentUser) return;
+  await loadProfileSettings();
+  showFriendPayments();
+}
+async function loadProfileSettings() {
+  if (!currentUser) return;
+  try {
+    var data=await api('profile');
+    myProfileSettings=data;
+    $("settings-display-name").value=data.displayName||currentUser.name||'';
+    $("settings-username").value=data.username||'';
+    $("settings-bio").value=data.bio||'';
+    $("settings-venmo").value=data.venmo||'';
+    $("settings-cashapp").value=data.cashapp?'$'+data.cashapp:'';
+    var av=$("settings-avatar"); av.textContent=(data.displayName||currentUser.name||'?').charAt(0).toUpperCase();
+    av.style.backgroundImage='';
+    if (data.photo) { var url=await avatarUrl(currentUser.id,data.photo); if(url) {av.textContent='';av.style.backgroundImage='url("'+url+'")';} }
+  } catch(err) { settingsMessage('settings-profile-msg',err.message||'Could not load settings.',false); }
+}
+function showFriendPayments() {
+  var el=$("settings-friend-payments"); el.replaceChildren();
+  if(!current||!Array.isArray(current.members)){el.textContent='Open a shared tracker to see friends’ payment links.';return;}
+  var others=current.members.filter(function(m){return !m.isYou;});
+  if(!others.length){el.textContent='Invite friends to your tracker to see their payment accounts.';return;}
+  others.forEach(function(m){
+    var row=document.createElement('div');row.className='settings-payment-member';
+    var name=document.createElement('strong');name.textContent=m.name||m.email||'Friend';row.append(name);
+    var p=m.payments||{};
+    [['Venmo',p.venmo,p.venmo?'https://venmo.com/u/'+encodeURIComponent(p.venmo):null],['Cash App',p.cashapp,p.cashapp?'https://cash.app/$'+encodeURIComponent(p.cashapp):null]].forEach(function(a){if(!a[1])return;var link=document.createElement('a');link.href=a[2];link.target='_blank';link.rel='noopener noreferrer';link.textContent=a[0]+' ↗';row.append(link);});
+    if(!p.venmo&&!p.cashapp){var none=document.createElement('span');none.textContent='Not added yet';row.append(none);}
+    el.append(row);
+  });
+}
+$("settings-back").onclick=function(){settingsRoute('dashboard');};
+$("settings-login").onclick=function(){openAuth('login');};
+$("settings-photo").onclick=function(){openPhoto();};
+$("settings-password").onclick=function(){ $("btn-change-pw").click(); };
+$("settings-signout").onclick=function(){ $("btn-logout").click(); settingsRoute('dashboard'); };
+$("settings-profile-form").addEventListener('submit',async function(e){
+  e.preventDefault(); if(!currentUser)return;
+  var btn=$("settings-profile-save");btn.disabled=true;settingsMessage('settings-profile-msg','Saving…',true);
+  try {
+    var payload={displayName:$("settings-display-name").value.trim(),username:$("settings-username").value.trim(),bio:$("settings-bio").value.trim()};
+    var data=await api('profile','PATCH',payload); myProfileSettings=data;
+    await unwrap(supabase.auth.updateUser({data:{full_name:data.displayName}}));
+    currentUser.name=data.displayName; $("who").textContent='Hi, '+data.displayName;
+    renderMe();await loadProfileSettings();
+    if(current&&current.id) {try{applyDetail(await api('trackers/'+current.id));}catch(_) {}}
+    settingsMessage('settings-profile-msg','Profile saved!',true);
+  }catch(err){settingsMessage('settings-profile-msg',err.message||'Could not save.',false);}finally{btn.disabled=false;}
+});
+$("settings-pay-form").addEventListener('submit',async function(e){
+  e.preventDefault();if(!currentUser)return;
+  var btn=$("settings-pay-save");btn.disabled=true;settingsMessage('settings-pay-msg','Saving…',true);
+  try{
+    var data=await api('profile','PATCH',{venmo:$("settings-venmo").value.trim(),cashapp:$("settings-cashapp").value.trim()});
+    myProfileSettings=data;
+    if(current&&current.id) {try{applyDetail(await api('trackers/'+current.id));}catch(_) {}}
+    settingsMessage('settings-pay-msg','Payment usernames saved!',true);
+  }catch(err){settingsMessage('settings-pay-msg',err.message||'Could not save.',false);}finally{btn.disabled=false;}
+});
 function displayName(m) { return m.isYou ? "You" : (m.name || m.email || "Friend"); }
 // Safe bridge for the non-module tracker UI. Module-scoped variables are not global.
+window.squareUpPayNow = function () {
+  var members=current&&current.members?current.members.filter(function(m){return !m.isYou && m.payments&&(m.payments.venmo||m.payments.cashapp);}):[];
+  if(!members.length){alert("No friends in this tracker have saved payment usernames yet. Ask them to add one in Settings.");return;}
+  var choices=[];
+  members.forEach(function(m){if(m.payments.venmo)choices.push({label:(m.name||'Friend')+' — Venmo @'+m.payments.venmo,url:'https://venmo.com/u/'+encodeURIComponent(m.payments.venmo)});if(m.payments.cashapp)choices.push({label:(m.name||'Friend')+' — Cash App $'+m.payments.cashapp,url:'https://cash.app/$'+encodeURIComponent(m.payments.cashapp)});});
+  var choice=prompt("Choose who to pay by entering a number:\n"+choices.map(function(c,i){return (i+1)+'. '+c.label;}).join('\n'));
+  if(choice===null)return;
+  var idx=Number(choice)-1;
+  if(!Number.isInteger(idx)||idx<0||idx>=choices.length){alert('Choose a valid number.');return;}
+  if(!confirm('Open '+choices[idx].label+'? Verify the recipient in the payment app before sending money.'))return;
+  window.open(choices[idx].url,'_blank','noopener,noreferrer');
+  alert('After the payment is complete, return to SquareUp and use Log Payment. SquareUp cannot automatically verify external payments.');
+};
 window.squareUpSplitMembers = function () {
   return current && Array.isArray(current.members) ? current.members.map(displayName) : [];
 };
