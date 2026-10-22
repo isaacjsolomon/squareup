@@ -404,6 +404,92 @@ td.owed {
   }
 }
 
+/* ===== FIX WHITE BOXES AND LOW-CONTRAST TEXT ===== */
+
+/* Sidebar and dropdowns */
+.sidebar {
+  background: #0a1b2e !important;
+  color: #f1f7ff !important;
+}
+
+.sidebar select,
+.sidebar input,
+.sidebar button:not(.accent):not(.avatar):not(.me-avatar):not(.side-toggle),
+.settings-btn {
+  background: #10263b !important;
+  color: #f1f7ff !important;
+  border: 1px solid #30465d !important;
+}
+
+.sidebar select option {
+  background: #10263b;
+  color: #f1f7ff;
+}
+
+.sidebar .tb-text,
+.sidebar .who,
+.sidebar .tb-members,
+.sidebar .side-section {
+  color: #e0edfa;
+}
+
+/* Keep action buttons mint green */
+.sidebar .small-btn.accent {
+  background: #65f5ac !important;
+  color: #061525 !important;
+  border-color: #65f5ac !important;
+}
+
+/* Balances and settle-up buttons */
+.net .small-btn,
+#nets .small-btn {
+  background: #19344b !important;
+  color: #f1f7ff !important;
+  border: 1px solid #36536d !important;
+}
+
+/* Table cells, including diagonal and highlighted cells */
+#matrix td,
+#matrix td.self,
+#matrix td.owed {
+  background: #0b1d30 !important;
+  color: #eaf5ff !important;
+  border-color: #294057 !important;
+}
+
+#matrix td.owed {
+  color: #65f5ac !important;
+  font-weight: 800;
+}
+
+#matrix th {
+  background: #19344b !important;
+  color: #f1f7ff !important;
+}
+
+/* Other form elements and popups */
+.card input,
+.card select,
+.card textarea,
+.modal input,
+.modal select,
+.modal textarea {
+  background: #0a1a2b !important;
+  color: #f1f7ff !important;
+  border-color: #30465d !important;
+}
+
+.card input::placeholder,
+.modal input::placeholder {
+  color: #9bb0c6 !important;
+}
+
+.settings-menu,
+.settings-menu button {
+  background: #10263b !important;
+  color: #f1f7ff !important;
+}
+
 </style>
 </head>
 <body>
