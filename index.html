@@ -490,6 +490,36 @@ td.owed {
   color: #f1f7ff !important;
 }
 
+
+/* ===== UPDATED TRACKER DASHBOARD ===== */
+.wrap { max-width: 920px; }
+.tracker-heading { text-align:left; margin-bottom:18px; }
+.tracker-heading h1 { font-size:2rem; }
+.tracker-heading p { font-size:14px; }
+.dashboard-actions { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px; }
+.dashboard-action { min-height:54px; border-radius:14px; padding:13px 16px; font:700 15px inherit; font-family:inherit; font-weight:750; cursor:pointer; border:1px solid #35506b; background:#19344b; color:#f1f7ff; }
+.dashboard-action.expense { background:#65f5ac; border-color:#65f5ac; color:#071625; }
+.dashboard-action:focus-visible { outline:3px solid #fff; outline-offset:3px; }
+.dashboard-action:hover { filter:brightness(1.09); }
+#entry-card { display:none; }
+#entry-card.entry-open { display:block; }
+#entry-card h2 { margin-bottom:14px; }
+#entry-card .toggle { margin-bottom:14px; }
+#nets .net { padding:14px; margin:0 0 10px; gap:12px; }
+#nets .net:last-child { margin-bottom:0; }
+#nets .net .text { line-height:1.5; }
+#nets .net .small-btn { white-space:nowrap; }
+#history .entry { padding:14px 0; align-items:center; }
+#history .entry .note { color:#a4b8ce; }
+#history .tag.debt { background:#3b2437; color:#ff8da6; }
+#history .tag.payment { background:#153f39; color:#65f5ac; }
+.dashboard-subheading { color:#a4b8ce; margin:-5px 0 14px; font-size:13px; }
+@media(max-width:600px) {
+ .dashboard-actions { gap:8px; }
+ .dashboard-action { padding:12px 8px; font-size:14px; }
+ #nets .net { flex-wrap:wrap; }
+ #nets .net .small-btn { margin-left:auto; }
+}
 </style>
 </head>
 <body>
@@ -535,13 +565,26 @@ td.owed {
 
 </aside>
 <div class="wrap">
-  <header>
+  <header class="tracker-heading">
     <h1>💸 Square Up</h1>
     <p>Track who owes who. Debts that go both ways cancel out automatically.</p>
   </header>
 
-  <!-- ADD ENTRY -->
-  <div class="card">
+  <!-- CURRENT BALANCES -->
+  <div class="card" id="balances-card">
+    <h2>Current balances</h2>
+    <div id="nets"></div>
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="dashboard-actions" aria-label="Tracker actions">
+    <button type="button" class="dashboard-action expense" id="quick-expense" aria-expanded="false" aria-controls="entry-card">＋ Add Expense</button>
+    <button type="button" class="dashboard-action" id="quick-payment" aria-expanded="false" aria-controls="entry-card">↗ Log Payment</button>
+  </div>
+
+  <!-- ENTRY FORM: shown by quick actions -->
+  <div class="card" id="entry-card">
+    <h2 id="entry-title">Add Expense</h2>
     <div class="toggle">
       <button type="button" id="mode-debt" class="active">Owes money</button>
       <button type="button" id="mode-payment">Paid back</button>
@@ -557,26 +600,21 @@ td.owed {
         <input id="note" placeholder="What for? (pizza, Uber...)" autocomplete="off">
       </div>
       <div class="preview" id="preview"></div>
-      <button class="primary" type="submit">Add</button>
+      <button class="primary" type="submit">Save entry</button>
     </form>
   </div>
 
-  <!-- NET BALANCES -->
+  <!-- RECENT ACTIVITY -->
   <div class="card">
-    <h2>Current balances</h2>
-    <div id="nets"></div>
+    <h2>Recent Activity</h2>
+    <div id="history"></div>
   </div>
 
-  <!-- MATRIX TABLE -->
+  <!-- FULL BALANCE TABLE -->
   <div class="card">
     <h2>Who owes who</h2>
+    <p class="dashboard-subheading">Full breakdown for everyone in this tracker</p>
     <div class="table-scroll" id="matrix"></div>
-  </div>
-
-  <!-- HISTORY -->
-  <div class="card">
-    <h2>History</h2>
-    <div id="history"></div>
   </div>
 
   <footer><button id="clear">Clear everything</button></footer>
@@ -885,6 +923,9 @@ document.getElementById("form").addEventListener("submit", function (e) {
   if (!(amt > 0)) return;
   addEntry(mode, a, b, amt, document.getElementById("note").value);
   e.target.reset();
+  document.getElementById("entry-card").classList.remove("entry-open");
+  document.getElementById("quick-expense").setAttribute("aria-expanded", "false");
+  document.getElementById("quick-payment").setAttribute("aria-expanded", "false");
 });
 
 function setMode(m) {
@@ -893,6 +934,21 @@ function setMode(m) {
   document.getElementById("mode-payment").classList.toggle("active", m === "payment");
   updatePreview();
 }
+function showEntryForm(m) {
+  var card = document.getElementById("entry-card");
+  var wasOpen = card.classList.contains("entry-open") && mode === m;
+  card.classList.toggle("entry-open", !wasOpen);
+  if (!wasOpen) {
+    setMode(m);
+    document.getElementById("entry-title").textContent = m === "debt" ? "Add Expense" : "Log Payment";
+    card.scrollIntoView({behavior:"smooth",block:"nearest"});
+    document.getElementById("person1").focus({preventScroll:true});
+  }
+  document.getElementById("quick-expense").setAttribute("aria-expanded", String(card.classList.contains("entry-open")));
+  document.getElementById("quick-payment").setAttribute("aria-expanded", String(card.classList.contains("entry-open")));
+}
+document.getElementById("quick-expense").onclick = function () { showEntryForm("debt"); };
+document.getElementById("quick-payment").onclick = function () { showEntryForm("payment"); };
 document.getElementById("mode-debt").onclick = function () { setMode("debt"); };
 document.getElementById("mode-payment").onclick = function () { setMode("payment"); };
 document.getElementById("person1").addEventListener("input", updatePreview);
