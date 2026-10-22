@@ -496,7 +496,7 @@ td.owed {
 .tracker-heading { text-align:left; margin-bottom:18px; }
 .tracker-heading h1 { font-size:2rem; }
 .tracker-heading p { font-size:14px; }
-.dashboard-actions { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px; }
+.dashboard-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
 .dashboard-action { min-height:54px; border-radius:14px; padding:13px 16px; font:700 15px inherit; font-family:inherit; font-weight:750; cursor:pointer; border:1px solid #35506b; background:#19344b; color:#f1f7ff; }
 .dashboard-action.expense { background:#65f5ac; border-color:#65f5ac; color:#071625; }
 .dashboard-action:focus-visible { outline:3px solid #fff; outline-offset:3px; }
@@ -516,7 +516,7 @@ td.owed {
 .dashboard-subheading { color:#a4b8ce; margin:-5px 0 14px; font-size:13px; }
 @media(max-width:600px) {
  .dashboard-actions { gap:8px; }
- .dashboard-action { padding:12px 8px; font-size:14px; }
+ .dashboard-action { padding:12px 6px; font-size:12px; }
  #nets .net { flex-wrap:wrap; }
  #nets .net .small-btn { margin-left:auto; }
 }
@@ -578,6 +578,7 @@ td.owed {
 
   <!-- QUICK ACTIONS -->
   <div class="dashboard-actions" aria-label="Tracker actions">
+    <button type="button" class="dashboard-action" id="quick-pay-now">↗ Pay Now</button>
     <button type="button" class="dashboard-action expense" id="quick-expense" aria-expanded="false" aria-controls="entry-card">＋ Add Expense</button>
     <button type="button" class="dashboard-action" id="quick-payment" aria-expanded="false" aria-controls="entry-card">↗ Log Payment</button>
   </div>
@@ -947,6 +948,23 @@ function showEntryForm(m) {
   document.getElementById("quick-expense").setAttribute("aria-expanded", String(card.classList.contains("entry-open")));
   document.getElementById("quick-payment").setAttribute("aria-expanded", String(card.classList.contains("entry-open")));
 }
+// Pay Now opens a verified payment-provider profile; SquareUp never handles money.
+// The user must enter the recipient's own Venmo or Cash App payment link.
+document.getElementById("quick-pay-now").onclick = function () {
+  var raw = prompt("Paste your friend's Venmo profile link (venmo.com/u/...) or Cash App link (cash.app/$...). Verify it belongs to the correct person before paying.");
+  if (!raw) return;
+  var url;
+  try { url = new URL(raw.trim()); } catch (_) { alert("Enter a complete https:// payment link."); return; }
+  var host = url.hostname.toLowerCase();
+  var allowed = (host === "venmo.com" || host === "www.venmo.com") && /^\/u\/[^/]+\/?$/.test(url.pathname)
+    || (host === "cash.app" || host === "www.cash.app") && /^\/\$[^/]+\/?$/.test(url.pathname);
+  if (url.protocol !== "https:" || !allowed || url.username || url.password) {
+    alert("For safety, use a Venmo profile link (https://venmo.com/u/username) or Cash App link (https://cash.app/$cashtag).");
+    return;
+  }
+  window.open(url.href, "_blank", "noopener,noreferrer");
+  alert("Complete your payment in the payment app. When it is finished, return to SquareUp and select Log Payment to update your balance. SquareUp cannot verify external payments automatically.");
+};
 document.getElementById("quick-expense").onclick = function () { showEntryForm("debt"); };
 document.getElementById("quick-payment").onclick = function () { showEntryForm("payment"); };
 document.getElementById("mode-debt").onclick = function () { setMode("debt"); };
