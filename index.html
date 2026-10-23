@@ -1009,12 +1009,12 @@ function avatar(name, idx) {
 }
 
 function populateExpenseMembers() {
-  var members = current && Array.isArray(current.members) ? current.members : [];
+  var members = typeof window.squareUpExpenseMembers === 'function' ? window.squareUpExpenseMembers() : [];
   var options = members.map(function(m) {
     return { name: String(m.name || m.email || '').trim(), id: m.id };
   }).filter(function(m) { return m.name; });
   // For local-only mode, keep the historical name-based behavior.
-  if (!current) {
+  if (!cloud) {
     var names = nameMap();
     options = Object.keys(names).map(function(k) { return { name: names[k] }; });
   }
@@ -1138,8 +1138,8 @@ document.getElementById("form").addEventListener("submit", function (e) {
   var b = document.getElementById("person2").value;
   var amt = parseFloat(document.getElementById("amount").value);
   if (!a || !b || norm(a) === norm(b)) { alert("Choose two different tracker members."); return; }
-  if (cloud && current && current.members) {
-    var valid = current.members.map(function(m){ return norm(m.name || m.email || ''); });
+  if (cloud) {
+    var valid = (typeof window.squareUpExpenseMembers === 'function' ? window.squareUpExpenseMembers() : []).map(function(m){ return norm(m.name || m.email || ''); });
     if (!valid.includes(norm(a)) || !valid.includes(norm(b))) {
       alert('Choose both people from the members of this tracker.'); return;
     }
@@ -1685,6 +1685,10 @@ var JOIN_KEY = "squareup-join";
 var sessionUserId = null;   // whose trackers are loaded
 var trackers = [];          // [{ id, name, role, memberCount }]
 var current = null;         // full detail of the open shared tracker, or null for "this device"
+// Bridge tracker membership into the classic expense-form script.
+window.squareUpExpenseMembers = function () {
+  return current && Array.isArray(current.members) ? current.members : [];
+};
 var lastSnapshot = "";
 var pollTimer = null;
 
