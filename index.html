@@ -1008,23 +1008,48 @@ function avatar(name, idx) {
   return '<div class="avatar" style="background:' + COLORS[idx % COLORS.length] + '">' + esc(name.charAt(0)) + "</div>";
 }
 
+function populateExpenseMembers() {
+  var members = current && Array.isArray(current.members) ? current.members : [];
+  var options = members.map(function(m) {
+    return { name: String(m.name || m.email || '').trim(), id: m.id };
+  }).filter(function(m) { return m.name; });
+  // For local-only mode, keep the historical name-based behavior.
+  if (!current) {
+    var names = nameMap();
+    options = Object.keys(names).map(function(k) { return { name: names[k] }; });
+  }
+  ['person1','person2'].forEach(function(id) {
+    var select = document.getElementById(id);
+    if (!select) return;
+    var old = select.value;
+    var label = id === 'person1' ? 'Who owes money?' : 'Who is owed money?';
+    select.replaceChildren();
+    var placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = label;
+    select.appendChild(placeholder);
+    options.forEach(function(member) {
+      var option = document.createElement('option');
+      option.value = member.name;
+      option.textContent = member.name;
+      select.appendChild(option);
+    });
+    if (options.some(function(member) { return member.name === old; })) select.value = old;
+  });
+}
+// Refresh options when a person opens either dropdown, including after tracker changes.
+['person1','person2'].forEach(function(id) {
+  var el = document.getElementById(id);
+  if (el) el.addEventListener('pointerdown', populateExpenseMembers);
+});
+
 function render() {
   var names = nameMap();
   var result = computeNet();
   var people = result.people;
 
-  // Shared trackers only allow real tracker members. Preserve selection on refresh.
-  var memberNames = (cloud && typeof current !== 'undefined' && current && Array.isArray(current.members))
-    ? current.members.map(function(m){ return (m.name || m.email || '').trim(); }).filter(Boolean)
-    : people.map(function(p){ return names[p]; });
-  ['person1','person2'].forEach(function(id){
-    var select = document.getElementById(id), previous = select.value;
-    var label = id === 'person1' ? 'Who owes money?' : 'Who is owed money?';
-    select.innerHTML = '<option value="">'+label+'</option>' + memberNames.map(function(name){
-      return '<option value="'+esc(name)+'">'+esc(name)+'</option>';
-    }).join('');
-    if (memberNames.includes(previous)) select.value = previous;
-  });
+  // Build expense dropdowns from the actual tracker membership, not expense history.
+  populateExpenseMembers();
 
   // net balances
   var netsHtml = result.pairs.map(function (p) {
