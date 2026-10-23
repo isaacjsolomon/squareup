@@ -834,6 +834,10 @@ body.side-collapsed .sidebar .sidebar-top-row .logo-btn {display:inline-flex!imp
 .sidebar .squareup-nav .sq-nav-icon svg,
 .sidebar .squareup-nav #btn-settings .sq-nav-icon svg {width:22px!important;height:22px!important;}
 </style>
+<style>
+.feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
+.smart-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid #29465c}.smart-row strong{color:#60f0ae}.chat-messages{max-height:310px;overflow-y:auto;border:1px solid #2c4b60;border-radius:15px;padding:14px;min-height:100px;background:#0a1e31}.chat-bubble{padding:10px 12px;margin:7px 0;border-radius:12px;background:#19354a;overflow-wrap:anywhere}.chat-bubble.mine{background:#164a47}.chat-bubble small{color:#a4bfd1;display:block;margin-top:5px}.chat-compose{display:flex;gap:9px;margin-top:12px}.chat-compose input{flex:1;min-width:0}.chat-compose button{white-space:nowrap}.recurring-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #29465c}.recurring-row small{color:#a4bfd1;display:block}
+</style>
 </head>
 <body>
 <div id="backdrop" aria-hidden="true"></div>
@@ -948,11 +952,17 @@ body.side-collapsed .sidebar .sidebar-top-row .logo-btn {display:inline-flex!imp
         <input id="amount" type="number" step="0.01" min="0.01" placeholder="Amount ($)" required>
         <input id="note" placeholder="What for? (pizza, Uber...)" autocomplete="off">
       </div>
+      <label id="recurring-wrap" class="feature-field">Repeat this expense
+        <select id="expense-recurring"><option value="none">One-time expense</option><option value="daily">Every day</option><option value="weekly">Every week</option><option value="biweekly">Every 2 weeks</option><option value="monthly">Every month</option></select>
+        <small>Future expenses are added when someone opens the tracker. Manage schedules below.</small></label>
       <label id="due-date-wrap" style="display:block;margin:10px 0;color:var(--muted)">Payment due date (optional) <input id="expense-due-date" type="date" style="margin-top:6px;width:100%"></label><div class="preview" id="preview"></div>
       <button class="primary" type="submit">Save entry</button>
     </form>
   </div>
 
+  <div class="card" id="smart-settle-card"><h2>✨ Smart settle-up</h2><p class="dashboard-subheading">Simplify group debts into fewer payments. Suggestions do not move money.</p><div id="smart-settle-list"></div></div>
+  <div class="card" id="chat-card"><h2>💬 Tracker group chat</h2><p class="dashboard-subheading">Messages are shared with everyone in this tracker and appear in their notification centers.</p><div id="tracker-chat-messages" class="chat-messages">Open a tracker to see messages.</div><form id="tracker-chat-form" class="chat-compose"><input id="tracker-chat-input" maxlength="1200" placeholder="Message your group…" aria-label="Message your group" required><button type="submit" class="primary">Send</button></form></div>
+  <div class="card" id="recurring-card"><h2>↻ Recurring expenses</h2><p class="dashboard-subheading">Manage repeating expenses for this tracker.</p><div id="recurring-list"></div></div>
   <!-- RECENT ACTIVITY -->
   <div class="card">
     <h2>Recent Activity</h2>
@@ -1338,6 +1348,18 @@ function populateExpenseMembers() {
   if (el) el.addEventListener('pointerdown', populateExpenseMembers);
 });
 
+function renderSmartSettle(){
+ var el=document.getElementById('smart-settle-list');if(!el)return;
+ var net={};entries.forEach(function(e){if(e.type==='payment'&&e.paymentStatus&&e.paymentStatus!=='confirmed')return;
+  var a=norm(e.from),b=norm(e.to),c=Math.round(Number(e.amount)*100)*(e.type==='debt'?-1:1);
+  net[a]=(net[a]||0)+c;net[b]=(net[b]||0)-c;
+ });
+ var debtors=Object.keys(net).filter(k=>net[k]<0).map(k=>({name:k,amount:-net[k]})).sort((a,b)=>b.amount-a.amount);
+ var creditors=Object.keys(net).filter(k=>net[k]>0).map(k=>({name:k,amount:net[k]})).sort((a,b)=>b.amount-a.amount);
+ var suggestions=[],i=0,j=0;while(i<debtors.length&&j<creditors.length){var n=Math.min(debtors[i].amount,creditors[j].amount);if(n>0)suggestions.push({from:debtors[i].name,to:creditors[j].name,amount:n/100});debtors[i].amount-=n;creditors[j].amount-=n;if(!debtors[i].amount)i++;if(!creditors[j].amount)j++;}
+ var names=nameMap();if(typeof window.squareUpExpenseMembers==='function')window.squareUpExpenseMembers().forEach(m=>{names[norm(m.name)]=m.name;});
+ el.innerHTML=suggestions.map(s=>'<div class="smart-row"><span><b>'+esc(names[s.from]||s.from)+'</b> → <b>'+esc(names[s.to]||s.to)+'</b></span><strong>'+money(s.amount)+'</strong></div>').join('')||'<p class="dashboard-subheading">Everyone is squared up 🎉</p>';
+}
 function render() {
   var names = nameMap();
   var result = computeNet();
@@ -1377,7 +1399,7 @@ function render() {
   }
 
   // history (newest first)
-  var h = entries.slice().reverse().map(function (e) {
+  var h = entries.slice().sort(function(a,b){return Number(!!b.pinned)-Number(!!a.pinned);}).reverse().sort(function(a,b){return Number(!!b.pinned)-Number(!!a.pinned);}).map(function (e) {
     var from = esc(names[norm(e.from)]), to = esc(names[norm(e.to)]);
     var text = e.type === "debt"
       ? "<b>" + from + "</b> owes <b>" + to + "</b> " + money(e.amount)
@@ -1385,11 +1407,12 @@ function render() {
     return '<div class="entry"><span class="tag ' + e.type + '">' + (e.type === "debt" ? "OWES" : "PAID") + "</span>" +
       '<div class="text">' + text + '<div class="note">' + esc(e.note || "No note") + " · " + esc(e.date) +
       (e.createdBy ? " · added by " + esc(e.createdBy) : "") + (e.dueDate ? " · Due " + esc(e.dueDate) + (e.type === "debt" && e.dueDate < new Date().toISOString().slice(0,10) ? " (overdue)" : "") : "") + (e.type === "payment" ? " · " + esc(e.paymentStatus || "confirmed") : "") + "</div></div>" +
-      '<button class="small-btn danger" data-del="' + e.id + '">Delete</button></div>';
+      '<button class="small-btn" data-pin="' + e.id + '">' + (e.pinned ? 'Unpin' : '📌 Pin') + '</button><button class="small-btn danger" data-del="' + e.id + '">Delete</button></div>';
   }).join("");
   document.getElementById("history").innerHTML = h || '<div class="empty">Nothing yet.</div>';
 
   updatePreview();
+  renderSmartSettle();
 }
 
 function updatePreview() {
@@ -1419,6 +1442,7 @@ function addEntry(type, from, to, amount, note) {
     type: type, from: from.trim(), to: to.trim(),
     amount: Math.round(amount * 100) / 100,
     note: (note || "").trim(),
+    recurring: type === "debt" ? (document.getElementById("expense-recurring")?.value || "none") : "none",
     dueDate: type === "debt" ? (document.getElementById("expense-due-date")?.value || null) : null,
     date: new Date().toLocaleDateString()
   };
@@ -1454,6 +1478,7 @@ function setMode(m) {
   document.getElementById("mode-debt").classList.toggle("active", m === "debt");
   document.getElementById("mode-payment").classList.toggle("active", m === "payment");
   document.getElementById("due-date-wrap").hidden = m !== "debt";
+  document.getElementById("recurring-wrap").hidden = m !== "debt";
   updatePreview();
 }
 function showEntryForm(m) {
@@ -1627,6 +1652,10 @@ document.addEventListener("click", function (e) {
     else alert('Sign in and open a shared tracker to send a reminder.');
   }
   if (t.dataset && t.dataset.amt) openSettle(t.dataset.from, t.dataset.to, parseFloat(t.dataset.amt));
+  if (t.dataset && t.dataset.pin) {
+    if (cloud && typeof window.squareUpPinExpense === 'function') window.squareUpPinExpense(t.dataset.pin);
+    else { var target=entries.find(x=>String(x.id)===t.dataset.pin);if(target){target.pinned=!target.pinned;saveEntries();render();} }
+  }
   if (t.dataset && t.dataset.del) {
     if (cloud) return cloud.remove(t.dataset.del);
     entries = entries.filter(function (x) { return String(x.id) !== t.dataset.del; });
@@ -2660,6 +2689,7 @@ function applyDetail(detail) {
     renderMembers();
     applyBackdrop();
     useEntries(detail.entries, cloudApi);
+    loadTrackerChat();loadRecurring();
     if ($("share-modal").classList.contains("open")) renderShareMembers();
   }
 }
@@ -3028,6 +3058,18 @@ document.getElementById('receipt-file').onchange=async function(e){var file=e.ta
  if(parsed.length){receiptLines=parsed.slice(0,60);receiptDraw();status.textContent='Found '+parsed.length+' possible items. Correct any errors and assign each item.';}else status.textContent='No item prices recognized. Add items manually below.';
  }catch(err){status.textContent='Automatic reading failed. You can enter items manually.';console.warn(err);}};
 document.getElementById('receipt-save').onclick=async function(){var result=receiptPreview();if(!result.valid||!current)return;var debts=Object.entries(result.shares).filter(([p,c])=>p!==result.payer&&c>0);if(!debts.length){alert('No one owes the payer.');return;}if(!confirm('Save '+debts.length+' expense entries?'))return;var btn=this;btn.disabled=true;var saved=0;try{for(var [p,c] of debts){await api('trackers/'+current.id+'/entries','POST',{type:'debt',from:p,to:result.payer,amount:c/100,note:'Itemized receipt: '+receiptLines.filter(l=>l.people.includes(p)).map(l=>l.name).join(', ').slice(0,190),date:new Date().toLocaleDateString(),dueDate:document.getElementById('receipt-due').value||null});saved++;}applyDetail(await api('trackers/'+current.id));receiptLines=[];receiptDraw();document.getElementById('receipt-status').textContent='Saved '+saved+' expenses.';await refreshInbox();}catch(err){alert('Saved '+saved+' of '+debts.length+'. '+err.message+' Check activity before retrying.');}finally{btn.disabled=false;}};
+
+window.squareUpPinExpense=async function(id){if(!current)return;var e=current.entries.find(x=>String(x.id)===String(id));if(!e)return;try{applyDetail(await api('trackers/'+current.id+'/entries/'+encodeURIComponent(id)+'/pin','PATCH',{pinned:!e.pinned}));}catch(err){alert(err.message);}};
+var chatTrackerId=null;
+async function loadTrackerChat(){var box=document.getElementById('tracker-chat-messages');if(!box)return;if(!current){box.textContent='Open a shared tracker to chat.';return;}
+ try{var id=current.id;var rows=await api('trackers/'+id+'/chat');if(!current||current.id!==id)return;box.innerHTML=rows.map(m=>'<div class="chat-bubble '+(current.members.some(x=>x.id===m.senderId&&x.isYou)?'mine':'')+'"><b>'+esc(m.senderName)+'</b><div>'+esc(m.message)+'</div><small>'+esc(new Date(m.createdAt).toLocaleString())+'</small></div>').join('')||'<p class="dashboard-subheading">No messages yet. Say hello!</p>';box.scrollTop=box.scrollHeight;}catch(err){box.textContent='Chat unavailable: '+err.message;}}
+async function loadRecurring(){var el=document.getElementById('recurring-list');if(!el)return;if(!current){el.textContent='Open a shared tracker to manage recurring expenses.';return;}
+ try{var id=current.id;var rows=await api('trackers/'+id+'/recurring');if(!current||current.id!==id)return;el.innerHTML=rows.filter(x=>x.active).map(x=>'<div class="recurring-row"><div><b>'+esc(x.from_name)+' → '+esc(x.to_name)+'</b> · '+money(Number(x.amount))+'<small>'+esc(x.note||'Recurring expense')+' · '+esc(x.frequency)+' · Next '+esc(x.next_date)+'</small></div><button class="small-btn danger" data-stop-recurring="'+esc(x.id)+'">Stop</button></div>').join('')||'<p class="dashboard-subheading">No active recurring expenses.</p>';}catch(err){el.textContent='Schedules unavailable: '+err.message;}}
+document.getElementById('recurring-list').addEventListener('click',async function(ev){var id=ev.target.dataset.stopRecurring;if(!id||!current)return;if(!confirm('Stop future repeats? Existing expenses will remain.'))return;try{await api('trackers/'+current.id+'/recurring/'+id,'DELETE');await loadRecurring();}catch(err){alert(err.message);}});
+document.getElementById('tracker-chat-form').addEventListener('submit',async function(ev){ev.preventDefault();if(!current)return alert('Open a shared tracker first.');var input=document.getElementById('tracker-chat-input'),message=input.value.trim();if(!message)return;var button=this.querySelector('button');button.disabled=true;try{await api('trackers/'+current.id+'/chat','POST',{message});input.value='';await loadTrackerChat();await refreshInbox();}catch(err){alert(err.message);}finally{button.disabled=false;}});
+var extraLastTracker=null;
+setInterval(function(){if(current){loadTrackerChat();loadRecurring();}},30000);
+
 setInterval(function(){if(current)refreshInbox();},45000);
 
 
