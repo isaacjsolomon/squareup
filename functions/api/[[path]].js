@@ -143,13 +143,20 @@ export async function onRequest({ request, env, params }) {
     if (!uuid.test(id)) return null;
 
     const rows = await db('tracker_members', {
-      filters: {
-        tracker_id: 'eq.' + id,
-        user_id: 'eq.' + me.id
-      }
-    });
+  filters: {
+    tracker_id: 'eq.' + id,
+    user_id: 'eq.' + me.id
+  }
+});
 
-    if (rows.length) return rows[0];
+console.log('MEMBERSHIP DEBUG', {
+  trackerId: id,
+  userId: me.id,
+  matchingMembers: rows.length,
+  memberFound: rows.length > 0
+});
+
+if (rows.length) return rows[0];
 
     const owned = await db('trackers', {
       filters: {
