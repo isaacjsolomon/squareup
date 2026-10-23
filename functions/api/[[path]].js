@@ -139,43 +139,47 @@ export async function onRequest({ request, env, params }) {
   // Verify tracker ownership against the original trackers table
   // as well as tracker_members.
   // This preserves access to legacy owner-created trackers.
-  async function member(id) {
-    if (!uuid.test(id)) return null;
-
-    const rows = await db('tracker_members', {
-  filters: {
-    tracker_id: 'eq.' + id,
-    user_id: 'eq.' + me.id
-  }
-});
-
-console.log('MEMBERSHIP DEBUG', {
-  trackerId: id,
-  userId: me.id,
-  matchingMembers: rows.length,
-  memberFound: rows.length > 0
-});
-console.log('MEMBER QUERY RESULT', {
-  trackerId: id,
-  userId: me.id,
-  rowsFound: rows.length
-});
-if (rows.length) return rows[0];
-
-    const owned = await db('trackers', {
-      filters: {
-        id: 'eq.' + id,
-        owner_id: 'eq.' + me.id
-      }
+  
+async function member(id) {
+  if (typeof id !== 'string' || !uuid.test(id)) {
+    console.error('TRACKER ACCESS DIAGNOSTIC: invalid tracker ID', {
+      trackerId: String(id),
+      idType: typeof id
     });
-console.log('OWNER QUERY RESULT', {
-  trackerId: id,
-  userId: me.id,
-  rowsFound: owned.length
-});
-    if (!owned.length) return null;
+    return null;
+  }
 
-    // Do not insert, delete or rewrite membership records.
+  const trackers = await db('trackers', {
+    filters: { id: 'eq.' + id },
+    limit: 1
+  });
+
+  const tracker = trackers[0];
+
+  if (!tracker) {
+    console.error(
+      'TRACKER ACCESS DIAGNOSTIC: tracker absent from backend database',
+      {
+        trackerId: id,
+        supabaseProject: new URL(URL_BASE).hostname
+      }
+    );
+    return null;
+  }
+
+  const members = await db('tracker_members', {
+    filters: { tracker_id: 'eq.' + id }
+  });
+
+  const currentUserId = String(me.id).toLowerCase();
+
+  const match = members.find(row =>
+    String(row.user_id).toLowerCase() === currentUserId
+  );
+
+  if (match) return match;
+
+  if (String(tracker.owner_id).toLowerCase() === currentUserId) {
     return {
       tracker_id: id,
       user_id: me.id,
@@ -183,6 +187,20 @@ console.log('OWNER QUERY RESULT', {
       name: me.name
     };
   }
+
+  console.error(
+    'TRACKER ACCESS DIAGNOSTIC: user not authorized for tracker',
+    {
+      trackerId: id,
+      userId: me.id,
+      memberCount: members.length,
+      supabaseProject: new URL(URL_BASE).hostname
+    }
+  );
+
+  return null;
+}
+
 
   function advanceDate(date, freq) {
     const d = new Date(date + 'T12:00:00Z');
