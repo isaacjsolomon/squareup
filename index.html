@@ -565,6 +565,8 @@ body.settings-view #btn-settings { background:#65f5ac!important; color:#081b2b!i
 .settings-shell { max-width:900px; margin:0 auto; color:#eff7ff; }
 .settings-heading { margin:0 0 4px; font-size:30px; }
 .settings-muted { color:#a6bed0; font-size:14px; line-height:1.5; }
+.settings-heading-area { min-height:100px; display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-end; padding-bottom:8px; }
+.settings-heading-area .settings-heading { margin-top:8px; }
 .settings-columns { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:20px; align-items:start; }
 .settings-panel { background:#0e2337; border:1px solid #29465e; border-radius:17px; padding:22px; margin-bottom:18px; }
 .settings-panel h3 { margin:0 0 6px; font-size:19px; }
@@ -751,11 +753,14 @@ body.settings-view #btn-settings { background:#65f5ac!important; color:#081b2b!i
   </section>
 
 <section id="settings-page" class="settings-shell" aria-label="Settings">
-  <button type="button" class="split-back" id="settings-back">← Back to Dashboard</button>
-  <h2 class="settings-heading">Settings</h2><p class="settings-muted">Customize your profile and how friends can pay you.</p>
   <div id="settings-guest" class="settings-panel" hidden><h3>Sign in to edit your profile</h3><p class="settings-muted">Your settings are saved to your SquareUp account.</p><button type="button" class="settings-action primary" id="settings-login">Log in or create account</button></div>
   <div id="settings-signed-in" class="settings-columns" hidden>
     <div>
+      <div class="settings-heading-area">
+        <button type="button" class="split-back" id="settings-back">← Back to Dashboard</button>
+        <h2 class="settings-heading">Settings</h2>
+        <p class="settings-muted">Customize your profile and how friends can pay you.</p>
+      </div>
       <div class="settings-panel">
         <h3>Edit Profile</h3><p class="settings-muted">Your name, username, bio, and profile picture.</p>
         <div class="settings-avatar-row"><div class="settings-avatar" id="settings-avatar">?</div><div><button type="button" class="settings-action" id="settings-photo">Change profile picture</button><p class="settings-muted">JPG, PNG or WebP • up to 2 MB</p></div></div>
