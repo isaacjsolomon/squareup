@@ -700,6 +700,34 @@ body.about-view #tracker-dashboard,body.about-view #split-page,body.about-view #
 @media(max-width:950px){.about-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.about-hero{grid-template-columns:1fr}.about-hero-art{display:none}}
 @media(max-width:600px){.about-hero{padding:26px 22px}.about-feature-grid{padding:12px;gap:10px}.about-feature{padding:16px 12px}.about-mission{padding:25px 22px;grid-template-columns:1fr}.about-sunset{display:none}}
 body.side-collapsed .sidebar .squareup-nav{display:none}
+
+/* Dedicated tracker gallery: tracker controls live here, not in the sidebar. */
+.sidebar #tracker-bar{display:none!important}
+#trackers-page{display:none;max-width:1150px;margin:0 auto;color:#f2f7ff}
+body.trackers-view #trackers-page{display:block}
+body.trackers-view #tracker-dashboard,body.trackers-view #split-page,body.trackers-view #settings-page,body.trackers-view #about-page{display:none!important}
+.trackers-header{background:linear-gradient(145deg,#10273e,#0b1b2f);border:1px solid rgba(155,193,224,.17);border-radius:26px;padding:32px 36px;margin-bottom:17px;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+.trackers-header .eyebrow{font-size:12px;font-weight:800;letter-spacing:.11em;color:#90aac5}
+.trackers-header h2{font-size:clamp(28px,4vw,39px);margin:8px 0;color:#fff}
+.trackers-header p{margin:0;color:#b0c6dc;line-height:1.5}
+.tracker-create{background:#5ff0ad;color:#09283a;border:0;border-radius:13px;padding:13px 19px;font-weight:800;cursor:pointer}
+.trackers-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.tracker-tile{background:linear-gradient(155deg,#122e47,#0b1e33);border:1px solid #2a4860;border-radius:23px;padding:26px;box-shadow:0 14px 30px #06142644;min-width:0}
+.tracker-tile-head{display:flex;align-items:center;gap:13px;margin-bottom:20px}
+.tracker-tile-icon{display:grid;place-items:center;flex-shrink:0;width:50px;height:50px;border-radius:14px;background:#194d51;color:#63f0b1;font-size:26px}
+.tracker-tile h3{font-size:21px;color:#fff;margin:0;overflow-wrap:anywhere}
+.tracker-tile .tracker-sub{color:#8eabc4;font-size:13px;margin-top:5px}
+.tracker-tile-members{color:#d0e0ed;font-size:14px;line-height:1.55;min-height:65px;margin-bottom:22px}
+.tracker-tile-members strong{display:block;color:#9ab4ca;font-size:12px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
+.tracker-tile-actions{display:flex;flex-wrap:wrap;gap:9px}
+.tracker-tile-actions button{border-radius:11px;padding:10px 12px;font-weight:750;cursor:pointer;border:1px solid #3b5972;background:#1a354d;color:#e1eff8}
+.tracker-tile-actions button:hover{background:#284a65}
+.tracker-tile-actions .tile-open{background:#5ff0ad;color:#082639;border-color:#5ff0ad}
+.tracker-tile-actions .tile-open:hover{background:#7af7c0}
+.tracker-tile-actions .tile-delete{color:#ffb2c0;border-color:#734458;background:#352538}
+.tracker-tile-actions .tile-delete:hover{background:#573046}
+.trackers-empty{grid-column:1/-1;padding:38px;text-align:center;color:#bed0df;background:#0d2338;border:1px solid #28475e;border-radius:22px}
+@media(max-width:760px){.trackers-grid{grid-template-columns:1fr}.trackers-header{padding:24px}.tracker-tile{padding:21px}}
 </style>
 </head>
 <body>
@@ -944,6 +972,10 @@ body.side-collapsed .sidebar .squareup-nav{display:none}
   </div>
 </section>
 
+<section id="trackers-page" aria-label="Your trackers">
+  <div class="trackers-header"><div><div class="eyebrow">YOUR SHARED SPACES</div><h2>My <span style="color:#60edaf">Trackers</span></h2><p>Keep every group organized. Open, share, or manage a tracker below.</p></div><button type="button" id="tracker-gallery-new" class="tracker-create">＋ New tracker</button></div>
+  <div id="trackers-gallery" class="trackers-grid" aria-live="polite"></div>
+</section>
 <section id="about-page" aria-label="About Square Up">
   <div class="about-hero">
     <div class="about-hero-copy"><div class="about-kicker">ABOUT SQUARE UP</div><h2>Keeping money<br>between friends <em>simple.</em></h2><p>Square Up makes it easy to track shared expenses, split bills, and settle up with friends. No awkward conversations, no spreadsheets — just a simple way to stay even.</p></div>
@@ -1890,11 +1922,12 @@ async function api(path, method, body) {
 var myProfileSettings = null;
 function settingsMessage(id, message, ok) { var el=$(id); el.textContent=message; el.style.color=ok?'#65f5ac':'#ff9db1'; }
 function settingsRoute(page) {
-  document.body.classList.remove('split-view','settings-view','about-view');
+  document.body.classList.remove('split-view','settings-view','about-view','trackers-view');
+  if(page==='trackers')document.body.classList.add('trackers-view');
   if(page==='about')document.body.classList.add('about-view');
-  document.querySelectorAll('.sq-nav-link').forEach(function(b){var active=b.id==='nav-'+(page==='settings'?'profile':page==='about'?'about':'home');b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
+  document.querySelectorAll('.sq-nav-link').forEach(function(b){var active=b.id==='nav-'+(page==='settings'?'profile':page==='about'?'about':page==='trackers'?'trackers':'home');b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
   if (page==='settings') document.body.classList.add('settings-view');
-  var url=page==='settings'?'#settings':page==='about'?'#about':'';
+  var url=page==='settings'?'#settings':page==='about'?'#about':page==='trackers'?'#trackers':'';
   history.replaceState(null,'',location.pathname+location.search+url);
   window.scrollTo(0,0);
 }
@@ -1937,13 +1970,14 @@ function showFriendPayments() {
 }
 $("settings-back").onclick=function(){settingsRoute('dashboard');};
 $('nav-home').onclick=function(){settingsRoute('dashboard');};
-$('nav-trackers').onclick=function(){settingsRoute('dashboard');$('tracker-select').focus();};
+$('nav-trackers').onclick=function(){settingsRoute('trackers');renderTrackerGallery();};
 $('nav-profile').onclick=function(){openSettingsPage();};
 $('nav-about').onclick=function(){settingsRoute('about');};
-$('about-start').onclick=function(){settingsRoute('dashboard');$('tracker-select').focus();};
-if(location.hash==='#about')settingsRoute('about');
+$('about-start').onclick=function(){settingsRoute('trackers');renderTrackerGallery();};
+if(location.hash==='#trackers'){settingsRoute('trackers');renderTrackerGallery();}
+else if(location.hash==='#about')settingsRoute('about');
 else if(location.hash==='#settings')openSettingsPage();
-window.addEventListener('popstate',function(){if(location.hash==='#about')settingsRoute('about');else if(location.hash==='#settings')openSettingsPage();else if(document.body.classList.contains('about-view')||document.body.classList.contains('settings-view'))settingsRoute('dashboard');});
+window.addEventListener('popstate',function(){if(location.hash==='#trackers'){settingsRoute('trackers');renderTrackerGallery();}else if(location.hash==='#about')settingsRoute('about');else if(location.hash==='#settings')openSettingsPage();else if(document.body.classList.contains('about-view')||document.body.classList.contains('settings-view')||document.body.classList.contains('trackers-view'))settingsRoute('dashboard');});
 $("settings-login").onclick=function(){openAuth('login');};
 $("settings-photo").onclick=function(){openPhoto();};
 $("settings-password").onclick=function(){ $("btn-change-pw").click(); };
@@ -2237,6 +2271,50 @@ function renderPicker() {
   $("tb-share").hidden = !current;
   if ($("manage-modal").classList.contains("open")) renderManageList();
 }
+
+
+// Tracker gallery uses existing authenticated tracker endpoints and share dialog.
+var trackerGallerySerial=0;
+async function renderTrackerGallery(){
+  var gallery=$('trackers-gallery');
+  var serial=++trackerGallerySerial;
+  if(!currentUser){gallery.innerHTML='<div class="trackers-empty">Log in to create and share trackers.</div>';return;}
+  gallery.innerHTML='<div class="trackers-empty">Loading your trackers…</div>';
+  try{
+    var list=await api('trackers');
+    if(serial!==trackerGallerySerial)return;
+    trackers=list;
+    renderPicker();
+    if(!list.length){gallery.innerHTML='<div class="trackers-empty">No trackers yet. Create your first tracker to get started.</div>';return;}
+    gallery.replaceChildren();
+    var details=await Promise.all(list.map(function(t){return api('trackers/'+encodeURIComponent(t.id)).catch(function(){return null;});}));
+    if(serial!==trackerGallerySerial)return;
+    list.forEach(function(t,i){
+      var d=details[i];
+      var card=document.createElement('article');card.className='tracker-tile';
+      var head=document.createElement('div');head.className='tracker-tile-head';
+      var ico=document.createElement('div');ico.className='tracker-tile-icon';ico.textContent='♧';
+      var nameWrap=document.createElement('div');
+      var title=document.createElement('h3');title.textContent=t.name;
+      var sub=document.createElement('div');sub.className='tracker-sub';sub.textContent=t.role==='owner'?'Created by you':'Shared with you';
+      nameWrap.append(title,sub);head.append(ico,nameWrap);
+      var people=document.createElement('div');people.className='tracker-tile-members';
+      var peopleLabel=document.createElement('strong');peopleLabel.textContent='Shared with';
+      var otherMembers=d&&d.members?d.members.filter(function(m){return !m.isYou;}):[];
+      var names=document.createElement('div');names.textContent=d?(otherMembers.length?otherMembers.map(function(m){return m.name||m.email||'Member';}).join(', '):'Only you — invite someone to collaborate'):'Members unavailable';
+      people.append(peopleLabel,names);
+      var actions=document.createElement('div');actions.className='tracker-tile-actions';
+      function action(label,cls,fn){var b=document.createElement('button');b.type='button';b.className=cls;b.textContent=label;b.onclick=fn;actions.append(b);}
+      action('Open tracker','tile-open',async function(){await openTracker(t.id);settingsRoute('dashboard');});
+      action('Share tracker','tile-share',async function(){await openTracker(t.id);if(current&&current.id===t.id)await openShare();});
+      action(t.role==='owner'?'Delete tracker':'Leave tracker','tile-delete',async function(){
+        try{if(await removeTracker(t))await renderTrackerGallery();}catch(err){alert(err.message||'Could not remove tracker.');}
+      });
+      card.append(head,people,actions);gallery.append(card);
+    });
+  }catch(err){if(serial===trackerGallerySerial)gallery.textContent='Could not load trackers: '+(err.message||'Unknown error');}
+}
+$('tracker-gallery-new').onclick=function(){$('tb-new').click();};
 
 // ============ BACKDROP ============
 // Shared trackers keep their backdrop on the server so every member sees it;
