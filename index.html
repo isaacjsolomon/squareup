@@ -733,6 +733,14 @@ body.trackers-view #tracker-dashboard,body.trackers-view #split-page,body.tracke
 .tracker-tile-actions .tile-delete:hover{background:#573046}
 .trackers-empty{grid-column:1/-1;padding:38px;text-align:center;color:#bed0df;background:#0d2338;border:1px solid #28475e;border-radius:22px}
 @media(max-width:760px){.trackers-grid{grid-template-columns:1fr}.trackers-header{padding:24px}.tracker-tile{padding:21px}}
+/* Clean, open sidebar navigation matching the reference */
+.sidebar .squareup-nav{display:flex;flex-direction:column;gap:7px;margin:14px 0 18px;padding:6px 0}
+.sidebar .squareup-nav .sq-nav-link,.sidebar #btn-settings.sq-nav-link{display:flex;align-items:center;gap:18px;width:100%;min-height:57px;padding:12px 14px!important;background:transparent;border:0;border-radius:13px;color:#e5edf6;font-family:inherit;font-size:19px!important;font-weight:650;text-align:left;box-shadow:none;transition:background .18s,color .18s}
+.sidebar .squareup-nav .sq-nav-link:hover,.sidebar .squareup-nav .sq-nav-link.active,.sidebar #btn-settings.sq-nav-link.active{background:#193851!important;color:#fff!important}
+.sidebar .squareup-nav .sq-nav-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 27px;width:27px;height:27px}
+.sidebar .squareup-nav .sq-nav-icon svg{width:26px;height:26px}
+.sidebar .squareup-nav .sq-nav-label{width:auto;font-size:inherit;font-weight:inherit;line-height:1.2;text-align:left}
+.sidebar .squareup-nav .profile-icon{color:#60f3aa}
 </style>
 </head>
 <body>
@@ -758,11 +766,11 @@ body.trackers-view #tracker-dashboard,body.trackers-view #split-page,body.tracke
       <span class="who" id="who"></span>
     </div>
 <nav class="squareup-nav" aria-label="Main navigation">
-  <button type="button" id="nav-home" class="sq-nav-link active" aria-current="page"><span>⌂</span> Home</button>
-  <button type="button" id="nav-trackers" class="sq-nav-link"><span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h10M7 13h6M7 17h9"/></svg></span> Trackers</button>
-  <button type="button" id="nav-profile" class="sq-nav-link"><span class="sq-nav-icon profile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M21 20v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Profile</button>
-  <button type="button" id="nav-about" class="sq-nav-link"><span>ⓘ</span> About</button>
-  <button type="button" id="btn-settings" class="sq-nav-link" aria-label="Open settings page"><span>⚙</span> Settings</button>
+  <button type="button" id="nav-home" class="sq-nav-link active" aria-current="page"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/><path d="M7 10v-1m10 1V9"/></svg></span><span class="sq-nav-label">Home</span></button>
+  <button type="button" id="nav-trackers" class="sq-nav-link"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 7 2 2 3-4"/><path d="M12 7h9"/><circle cx="6" cy="17" r="2"/><path d="M12 17h9"/></svg></span><span class="sq-nav-label">Trackers</span></button>
+  <button type="button" id="nav-profile" class="sq-nav-link"><span class="sq-nav-icon profile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="sq-nav-label">Profile</span></button>
+  <button type="button" id="nav-about" class="sq-nav-link"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".7" fill="currentColor" stroke="none"/></svg></span><span class="sq-nav-label">About</span></button>
+  <button type="button" id="btn-settings" class="sq-nav-link"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2 2-.07-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.56V21h-2.83v-.9a1.7 1.7 0 0 0-1-1.56 1.7 1.7 0 0 0-1.87.34l-.07.06-2-2 .06-.06A1.7 1.7 0 0 0 7.5 15a1.7 1.7 0 0 0-1.56-1H5v-2.83h.94a1.7 1.7 0 0 0 1.56-1 1.7 1.7 0 0 0-.34-1.87L7.1 8.24l2-2 .07.06a1.7 1.7 0 0 0 1.87.34 1.7 1.7 0 0 0 1-1.56V4h2.83v1.08a1.7 1.7 0 0 0 1 1.56 1.7 1.7 0 0 0 1.87-.34l.07-.06 2 2-.06.06a1.7 1.7 0 0 0-.34 1.87 1.7 1.7 0 0 0 1.56 1H22V14h-1.04a1.7 1.7 0 0 0-1.56 1Z" transform="translate(-.5 -.5)"/></svg></span><span class="sq-nav-label">Settings</span></button>
 </nav>
     <div class="settings">
       <div class="settings-menu" id="settings-menu" role="menu" hidden style="display:none!important">
@@ -1930,7 +1938,7 @@ function settingsRoute(page) {
   document.body.classList.remove('split-view','settings-view','about-view','trackers-view');
   if(page==='trackers')document.body.classList.add('trackers-view');
   if(page==='about')document.body.classList.add('about-view');
-  document.querySelectorAll('.sq-nav-link').forEach(function(b){var active=b.id==='nav-'+(page==='settings'?'settings':page==='about'?'about':page==='trackers'?'trackers':'home');b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
+  document.querySelectorAll('.sq-nav-link').forEach(function(b){var active=b.id===(page==='settings'?'btn-settings':'nav-'+(page==='about'?'about':page==='trackers'?'trackers':'home'));b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
   if (page==='settings') document.body.classList.add('settings-view');
   var url=page==='settings'?'#settings':page==='about'?'#about':page==='trackers'?'#trackers':'';
   history.replaceState(null,'',location.pathname+location.search+url);
