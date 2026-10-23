@@ -672,14 +672,32 @@ body.settings-view #btn-settings { background:#65f5ac!important; color:#081b2b!i
     <div id="nets"></div>
   </div>
 
+  <div class="card" id="notification-center" style="margin-bottom:18px">
+    <button type="button" id="notifications-toggle" class="small-btn" aria-expanded="false">🔔 Notifications <span id="notifications-count"></span></button>
+    <div id="notifications-panel" hidden><p style="color:var(--muted)">Payment confirmations, expenses and due dates appear here.</p><div id="notifications-list"></div></div>
+  </div>
   <!-- QUICK ACTIONS -->
   <div class="dashboard-actions" aria-label="Tracker actions">
     <button type="button" class="dashboard-action" id="quick-pay-now"><span class="action-icon">↗</span>Pay Now<span class="action-sub">Send via Venmo or Cash App</span></button>
     <button type="button" class="dashboard-action expense" id="quick-expense" aria-expanded="false" aria-controls="entry-card"><span class="action-icon">＋</span>Add Expense<span class="action-sub">Manually add an expense</span></button>
     <button type="button" class="dashboard-action" id="quick-payment" aria-expanded="false" aria-controls="entry-card"><span class="action-icon">▤</span>Log Payment<span class="action-sub">Record a payment you made</span></button>
+    <button type="button" class="dashboard-action" id="quick-receipt"><span class="action-icon">▧</span>Scan Receipt<span class="action-sub">Assign items to friends</span></button>
     <button type="button" class="dashboard-action" id="quick-split"><span class="action-icon" aria-hidden="true"><svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Split a Bill<span class="action-sub">Divide an expense with friends</span></button>
   </div>
 
+  <div class="card" id="receipt-card" hidden>
+    <h2>Receipt scanner · itemized split</h2>
+    <p style="color:var(--muted)">Upload a photo, check the recognized lines, then assign who ordered each item. Scanning uses Tesseract.js in your browser; check all amounts before saving.</p>
+    <input type="file" id="receipt-file" accept="image/*" capture="environment" aria-label="Receipt photo">
+    <div id="receipt-status" role="status" style="margin:10px 0;color:var(--muted)"></div>
+    <label>Who paid? <select id="receipt-payer"></select></label>
+    <div id="receipt-items"></div>
+    <button type="button" class="small-btn" id="receipt-add-item">+ Add item</button>
+    <div class="row" style="margin-top:12px"><label>Tax ($)<input type="number" id="receipt-tax" min="0" step=".01" value="0"></label><label>Tip ($)<input type="number" id="receipt-tip" min="0" step=".01" value="0"></label></div>
+    <label>Due date (optional)<input type="date" id="receipt-due"></label>
+    <div id="receipt-preview" style="margin:12px 0"></div>
+    <button type="button" class="primary" id="receipt-save">Save assigned expenses</button>
+  </div>
   <!-- ENTRY FORM: shown by quick actions -->
   <div class="card" id="entry-card">
     <h2 id="entry-title">Add Expense</h2>
@@ -697,7 +715,7 @@ body.settings-view #btn-settings { background:#65f5ac!important; color:#081b2b!i
         <input id="amount" type="number" step="0.01" min="0.01" placeholder="Amount ($)" required>
         <input id="note" placeholder="What for? (pizza, Uber...)" autocomplete="off">
       </div>
-      <div class="preview" id="preview"></div>
+      <label id="due-date-wrap" style="display:block;margin:10px 0;color:var(--muted)">Payment due date (optional) <input id="expense-due-date" type="date" style="margin-top:6px;width:100%"></label><div class="preview" id="preview"></div>
       <button class="primary" type="submit">Save entry</button>
     </form>
   </div>
@@ -1007,6 +1025,7 @@ function computeNet() {
     owes[a][b] = (owes[a][b] || 0) + amt;
   }
   entries.forEach(function (e) {
+    if (e.type === "payment" && e.paymentStatus && e.paymentStatus !== "confirmed") return;
     var a = norm(e.from), b = norm(e.to);
     add(a, b, e.type === "debt" ? e.amount : -e.amount);
   });
@@ -1115,7 +1134,7 @@ function render() {
       : "<b>" + from + "</b> paid <b>" + to + "</b> back " + money(e.amount);
     return '<div class="entry"><span class="tag ' + e.type + '">' + (e.type === "debt" ? "OWES" : "PAID") + "</span>" +
       '<div class="text">' + text + '<div class="note">' + esc(e.note || "No note") + " · " + esc(e.date) +
-      (e.createdBy ? " · added by " + esc(e.createdBy) : "") + "</div></div>" +
+      (e.createdBy ? " · added by " + esc(e.createdBy) : "") + (e.dueDate ? " · Due " + esc(e.dueDate) + (e.type === "debt" && e.dueDate < new Date().toISOString().slice(0,10) ? " (overdue)" : "") : "") + (e.type === "payment" ? " · " + esc(e.paymentStatus || "confirmed") : "") + "</div></div>" +
       '<button class="small-btn danger" data-del="' + e.id + '">Delete</button></div>';
   }).join("");
   document.getElementById("history").innerHTML = h || '<div class="empty">Nothing yet.</div>';
@@ -1150,6 +1169,7 @@ function addEntry(type, from, to, amount, note) {
     type: type, from: from.trim(), to: to.trim(),
     amount: Math.round(amount * 100) / 100,
     note: (note || "").trim(),
+    dueDate: type === "debt" ? (document.getElementById("expense-due-date")?.value || null) : null,
     date: new Date().toLocaleDateString()
   };
   if (cloud) return cloud.add(entry);
@@ -1183,6 +1203,7 @@ function setMode(m) {
   mode = m;
   document.getElementById("mode-debt").classList.toggle("active", m === "debt");
   document.getElementById("mode-payment").classList.toggle("active", m === "payment");
+  document.getElementById("due-date-wrap").hidden = m !== "debt";
   updatePreview();
 }
 function showEntryForm(m) {
@@ -1424,6 +1445,7 @@ document.getElementById("clear").onclick = function () {
 };
 
 render();
+
 </script>
 <script type="module">
 // ============ ACCOUNTS (Netlify Identity) ============
@@ -2322,6 +2344,7 @@ async function mutate(path, method, body) {
 function applyDetail(detail) {
   var snapshot = JSON.stringify(detail);
   current = detail;
+  refreshInbox();
   var t = trackers.find(function (x) { return x.id === detail.id; });
   if (t) { t.name = detail.name; t.role = detail.role; t.memberCount = detail.members.length; }
   if (snapshot !== lastSnapshot) {
@@ -2636,6 +2659,62 @@ var startUser = await getUser();
 showUser(startUser);
 if (startUser) maybeShowOnboarding(startUser);
 if (!startUser && pendingJoin() && !$("auth-modal").classList.contains("open")) openAuth("signup");
+// --- Notifications, payment approval and itemized receipt split ---
+var inbox=[];
+async function refreshInbox(){
+ if(!current){inbox=[];drawInbox();return;}
+ try {inbox=await api('notifications');drawInbox();}catch(e){console.warn('Notifications unavailable',e);}
+}
+function drawInbox(){
+ var count=inbox.filter(n=>!n.read_at).length;
+ document.getElementById('notifications-count').textContent=count?'('+count+' new)':'';
+ var due=(current?.entries||[]).filter(e=>e.type==='debt'&&e.dueDate&&e.dueDate<=new Date(Date.now()+3*86400000).toISOString().slice(0,10)&&e.paymentStatus!=='disputed');
+ var dueHtml=due.map(e=>'<div class="entry"><div class="text"><b>'+esc(e.dueDate<new Date().toISOString().slice(0,10)?'Overdue':'Due soon')+'</b> · '+esc(e.from)+' owes '+esc(e.to)+' '+money(e.amount)+'<div class="note">Due '+esc(e.dueDate)+'</div></div></div>').join('');
+ document.getElementById('notifications-list').innerHTML=(inbox.map(n=>'<div class="entry"><div class="text"><b>'+esc(n.title)+'</b><div class="note">'+esc(n.message)+' · '+esc(new Date(n.created_at).toLocaleString())+'</div>'+(n.kind==='payment_pending'&&n.entry_id?'<button class="small-btn" data-confirm-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Confirm payment</button> <button class="small-btn danger" data-dispute-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Dispute</button>':'')+'</div>'+(n.read_at?'':'<button class="small-btn" data-read-notification="'+esc(n.id)+'">Mark read</button>')+'</div>').join('')||'<p>No notifications yet.</p>')+dueHtml;
+}
+document.getElementById('notifications-toggle').onclick=function(){var panel=document.getElementById('notifications-panel');panel.hidden=!panel.hidden;this.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)refreshInbox();};
+document.getElementById('notifications-list').addEventListener('click',async function(e){
+ var t=e.target;
+ try{
+ if(t.dataset.readNotification){await api('notifications/'+t.dataset.readNotification,'PATCH',{});await refreshInbox();}
+ var id=t.dataset.confirmPayment||t.dataset.disputePayment;
+ if(id){var action=t.dataset.confirmPayment?'confirm':'dispute';if(!confirm((action==='confirm'?'Confirm you received':'Dispute')+' this payment?'))return;var detail=await api('trackers/'+t.dataset.trackerId+'/payments/'+id+'/'+action,'POST',{});if(current&&current.id===detail.id)applyDetail(detail);await refreshInbox();}
+ }catch(err){alert(err.message);}
+});
+var receiptLines=[];
+function receiptPeople(){return (current?.members||[]).map(m=>m.name);}
+function receiptAddLine(name,amount){receiptLines.push({name:name||'',amount:amount||'',people:[]});receiptDraw();}
+function receiptDraw(){
+ var people=receiptPeople(),payer=document.getElementById('receipt-payer'),old=payer.value;
+ payer.innerHTML=people.map(p=>'<option value="'+esc(p)+'">'+esc(p)+'</option>').join('');if(people.includes(old))payer.value=old;
+ document.getElementById('receipt-items').innerHTML=receiptLines.map((l,i)=>'<div class="card" style="padding:12px;margin:8px 0"><div class="row"><input aria-label="Item name" data-item-name="'+i+'" value="'+esc(l.name)+'" placeholder="Item"><input aria-label="Item price" type="number" step=".01" min="0" data-item-price="'+i+'" value="'+esc(l.amount)+'" placeholder="Price"><button type="button" class="small-btn danger" data-item-remove="'+i+'">×</button></div><div style="margin-top:8px">Who ordered this? '+people.map(p=>'<label style="display:inline-block;margin:4px 12px 4px 0"><input type="checkbox" data-item-person="'+i+'" data-person="'+esc(p)+'" '+(l.people.includes(p)?'checked':'')+'> '+esc(p)+'</label>').join('')+'</div></div>').join('');receiptPreview();
+}
+function receiptPreview(){
+ var shares={},subtotal=0,valid=true;
+ receiptLines.forEach(l=>{var c=Math.round(Number(l.amount)*100);if(!l.name||!Number.isFinite(c)||c<=0||!l.people.length){valid=false;return;}subtotal+=c;var base=Math.floor(c/l.people.length);l.people.forEach((p,i)=>shares[p]=(shares[p]||0)+base+(i<c%l.people.length?1:0));});
+ var extra=Math.round((Number(document.getElementById('receipt-tax').value)+Number(document.getElementById('receipt-tip').value))*100);if(!Number.isFinite(extra)||extra<0)valid=false;
+ var people=Object.keys(shares),remaining=extra;
+ people.forEach((p,i)=>{var add=i===people.length-1?remaining:Math.round(extra*shares[p]/subtotal);shares[p]+=add;remaining-=add;});
+ var payer=document.getElementById('receipt-payer').value;
+ document.getElementById('receipt-preview').textContent='Total: $'+((subtotal+extra)/100).toFixed(2)+' · '+people.map(p=>p+': $'+(shares[p]/100).toFixed(2)).join(' · ')+(valid?'':' · Fill in all items and select who ordered each one.');
+ document.getElementById('receipt-save').disabled=!valid||!current;
+ return {shares,payer,valid};
+}
+document.getElementById('quick-receipt').onclick=function(){var card=document.getElementById('receipt-card');card.hidden=!card.hidden;if(!card.hidden){if(!current){alert('Open a shared tracker to save receipt expenses.');card.hidden=true;return;}if(!receiptLines.length)receiptLines=[{name:'',amount:'',people:[]}];receiptDraw();card.scrollIntoView({behavior:'smooth',block:'start'});}};
+document.getElementById('receipt-add-item').onclick=()=>receiptAddLine('', '');
+document.getElementById('receipt-items').addEventListener('input',function(e){var t=e.target,i=Number(t.dataset.itemName??t.dataset.itemPrice??t.dataset.itemPerson);if(!receiptLines[i])return;if(t.dataset.itemName!==undefined)receiptLines[i].name=t.value;if(t.dataset.itemPrice!==undefined)receiptLines[i].amount=t.value;if(t.dataset.itemPerson!==undefined){receiptLines[i].people=t.checked?[...receiptLines[i].people,t.dataset.person]:receiptLines[i].people.filter(p=>p!==t.dataset.person);}receiptPreview();});
+document.getElementById('receipt-items').addEventListener('click',function(e){var i=e.target.dataset.itemRemove;if(i!==undefined){receiptLines.splice(Number(i),1);receiptDraw();}});
+['receipt-payer','receipt-tax','receipt-tip'].forEach(id=>document.getElementById(id).addEventListener('input',receiptPreview));
+document.getElementById('receipt-file').onchange=async function(e){var file=e.target.files[0];if(!file)return;var status=document.getElementById('receipt-status');status.textContent='Reading receipt photo…';try{
+ if(!window.Tesseract){await new Promise((resolve,reject)=>{var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=resolve;s.onerror=reject;document.head.appendChild(s);});}
+ var result=await Tesseract.recognize(file,'eng');var lines=result.data.text.split(/\n/);var parsed=[];
+ lines.forEach(line=>{var match=line.trim().match(/^(.+?)\s+\$?([0-9]+[.,][0-9]{2})\s*$/);if(match&&!/^(total|subtotal|tax|tip|change|cash|card|balance|discount)/i.test(match[1].trim()))parsed.push({name:match[1].trim().slice(0,80),amount:match[2].replace(',','.'),people:[]});});
+ if(parsed.length){receiptLines=parsed.slice(0,60);receiptDraw();status.textContent='Found '+parsed.length+' possible items. Correct any errors and assign each item.';}else status.textContent='No item prices recognized. Add items manually below.';
+ }catch(err){status.textContent='Automatic reading failed. You can enter items manually.';console.warn(err);}};
+document.getElementById('receipt-save').onclick=async function(){var result=receiptPreview();if(!result.valid||!current)return;var debts=Object.entries(result.shares).filter(([p,c])=>p!==result.payer&&c>0);if(!debts.length){alert('No one owes the payer.');return;}if(!confirm('Save '+debts.length+' expense entries?'))return;var btn=this;btn.disabled=true;var saved=0;try{for(var [p,c] of debts){await api('trackers/'+current.id+'/entries','POST',{type:'debt',from:p,to:result.payer,amount:c/100,note:'Itemized receipt: '+receiptLines.filter(l=>l.people.includes(p)).map(l=>l.name).join(', ').slice(0,190),date:new Date().toLocaleDateString(),dueDate:document.getElementById('receipt-due').value||null});saved++;}applyDetail(await api('trackers/'+current.id));receiptLines=[];receiptDraw();document.getElementById('receipt-status').textContent='Saved '+saved+' expenses.';await refreshInbox();}catch(err){alert('Saved '+saved+' of '+debts.length+'. '+err.message+' Check activity before retrying.');}finally{btn.disabled=false;}};
+setInterval(function(){if(current)refreshInbox();},45000);
+
+
 </script>
 </body>
 </html>
