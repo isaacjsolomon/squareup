@@ -2424,7 +2424,7 @@ async function renderTrackerGallery(){
     renderPicker();
     if(!list.length){gallery.innerHTML='<div class="trackers-empty">No trackers yet. Create your first tracker to get started.</div>';return;}
     gallery.replaceChildren();
-    var details=await Promise.all(list.map(function(t){return api('trackers/'+encodeURIComponent(t.id)).catch(function(){return null;});}));
+    var details=await Promise.all(list.map(function(t){return api('trackers/'+encodeURIComponent(t.id)).catch(function(err){return {loadError:err.message};});}));
     if(serial!==trackerGallerySerial)return;
     list.forEach(function(t,i){
       var d=details[i];
@@ -2438,11 +2438,11 @@ async function renderTrackerGallery(){
       var people=document.createElement('div');people.className='tracker-tile-members';
       var peopleLabel=document.createElement('strong');peopleLabel.textContent='Shared with';
       var otherMembers=d&&d.members?d.members.filter(function(m){return !m.isYou;}):[];
-      var names=document.createElement('div');names.textContent=d?(otherMembers.length?otherMembers.map(function(m){return m.name||m.email||'Member';}).join(', '):'Only you — invite someone to collaborate'):'Members unavailable';
+      var names=document.createElement('div');names.textContent=d&&d.loadError?'Could not load members: '+d.loadError:d&&d.members?(otherMembers.length?otherMembers.map(function(m){return m.name||m.email||'Member';}).join(', '):'Only you — invite someone to collaborate'):'Members unavailable';
       people.append(peopleLabel,names);
       var actions=document.createElement('div');actions.className='tracker-tile-actions';
       function action(label,cls,fn){var b=document.createElement('button');b.type='button';b.className=cls;b.textContent=label;b.onclick=fn;actions.append(b);}
-      action('Open tracker','tile-open',async function(){await openTracker(t.id);settingsRoute('dashboard');});
+      action('Open tracker','tile-open',async function(){await openTracker(t.id);if(current&&current.id===t.id)settingsRoute('dashboard');});
       action('Share tracker','tile-share',async function(){await openTracker(t.id);if(current&&current.id===t.id)await openShare();});
       action(t.role==='owner'?'Delete tracker':'Leave tracker','tile-delete',async function(){
         try{if(await removeTracker(t))await renderTrackerGallery();}catch(err){alert(err.message||'Could not remove tracker.');}
@@ -2709,7 +2709,9 @@ async function openTracker(id) {
   try {
     applyDetail(await api("trackers/" + id));
   } catch (err) {
-    $("tb-members").textContent = err.message;
+    $("tb-members").textContent = 'Could not load tracker: ' + err.message;
+    console.error('SquareUp tracker load failed:', id, err);
+    alert('Could not load your tracker. Your saved expenses have NOT been deleted. Error: ' + err.message);
   }
 }
 
