@@ -598,6 +598,21 @@ body.settings-view #btn-settings { background:#65f5ac!important; color:#081b2b!i
 #onboard-continue {width:100%;margin-top:22px;}
 #onboard-continue:disabled {opacity:.55;cursor:wait;}
 #onboard-message {min-height:20px;margin-top:12px;font-size:14px;color:#ff9db1;}
+/* Larger, easier-to-read expense member selectors */
+#entry-card #person1, #entry-card #person2 {
+  min-height: 58px;
+  padding: 14px 18px;
+  font-size: 17px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+#entry-card #person1 option, #entry-card #person2 option {
+  font-size: 17px;
+  padding: 12px;
+}
+@media (max-width: 650px) {
+  #entry-card #person1, #entry-card #person2 { font-size: 16px; min-height: 54px; }
+}
 </style>
 </head>
 <body>
@@ -752,6 +767,12 @@ body.settings-view #btn-settings { background:#65f5ac!important; color:#081b2b!i
           <button type="submit" class="settings-action primary" id="settings-profile-save">Save profile</button>
           <div class="settings-notice" id="settings-profile-msg" role="status" aria-live="polite"></div>
         </form>
+      </div>
+      <div class="settings-panel" id="settings-backdrop-panel">
+        <h3>Change backdrop</h3>
+        <p class="settings-muted">Choose a color scheme or upload your own photo for the currently selected tracker. Everyone sharing that tracker will see the new backdrop.</p>
+        <button type="button" class="settings-action primary" id="settings-change-backdrop">Change backdrop</button>
+        <p class="settings-muted" style="margin-top:10px">Choose from six color themes, or upload a JPG, PNG or WebP photo (up to 5 MB).</p>
       </div>
       <div class="settings-panel"><h3>Account</h3><div class="settings-actions"><button type="button" class="settings-action" id="settings-password">Change password</button><button type="button" class="settings-action" id="settings-signout">Log out</button></div></div>
     </div>
@@ -2245,6 +2266,9 @@ $("btn-backdrop").onclick = function () {
   backdropMsg("");
   renderBackdropPicker();
   $("backdrop-modal").classList.add("open");
+};
+$("settings-change-backdrop").onclick = function () {
+  $("btn-backdrop").click();
 };
 $("backdrop-swatches").addEventListener("click", function (e) {
   var preset = e.target.dataset && e.target.dataset.preset;
