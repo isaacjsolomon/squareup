@@ -1024,7 +1024,8 @@ function render() {
       '<div class="text"><b>' + esc(names[p.from]) + "</b> owes <b>" + esc(names[p.to]) + "</b></div>" +
       '<div class="amount">' + money(p.amount) + "</div>" +
       '<button class="small-btn" data-from="' + esc(p.from) + '" data-to="' + esc(p.to) +
-      '" data-amt="' + p.amount + '">Settle up</button></div>';
+      '" data-amt="' + p.amount + '">Settle up</button>' +
+      '<button class="small-btn" data-remind-from="' + esc(p.from) + '" data-remind-to="' + esc(p.to) + '" data-remind-amount="' + p.amount + '">Send reminder</button></div>';
   }).join("");
   document.getElementById("nets").innerHTML = netsHtml || '<div class="empty">Everyone is squared up 🎉</div>';
 
@@ -1282,6 +1283,10 @@ document.getElementById("split-save").addEventListener("click",async function(){
 // Settle up + delete buttons (event delegation)
 document.addEventListener("click", function (e) {
   var t = e.target;
+  if (t.dataset && t.dataset.remindFrom) {
+    if (typeof window.squareUpSendReminder === 'function') window.squareUpSendReminder(t.dataset.remindFrom, t.dataset.remindTo, Number(t.dataset.remindAmount));
+    else alert('Sign in and open a shared tracker to send a reminder.');
+  }
   if (t.dataset && t.dataset.amt) openSettle(t.dataset.from, t.dataset.to, parseFloat(t.dataset.amt));
   if (t.dataset && t.dataset.del) {
     if (cloud) return cloud.remove(t.dataset.del);
@@ -1833,6 +1838,32 @@ window.squareUpPayNow = async function () {
   } catch (err) {
     alert('The payment was NOT recorded in SquareUp: '+(err.message||'Save failed')+'. If you paid externally, use Log Payment to record it.');
   }
+};
+// Compose a reminder in the user's email app. Nothing is sent automatically.
+window.squareUpSendReminder = function (fromKey, toKey, shownAmount) {
+  if (!current || !Array.isArray(current.members)) { alert('Open a shared tracker first.'); return; }
+  var people = current.members;
+  var debtor = people.find(function(m){ return (m.name || m.email || '').trim().toLowerCase() === String(fromKey).trim().toLowerCase(); });
+  var creditor = people.find(function(m){ return (m.name || m.email || '').trim().toLowerCase() === String(toKey).trim().toLowerCase(); });
+  if (!debtor || !creditor) { alert('Could not match both people to members of this tracker.'); return; }
+  if (!creditor.isYou) { alert('Only the person owed money can send this reminder.'); return; }
+  if (debtor.isYou || !debtor.email) { alert('No recipient email is available.'); return; }
+  // Recalculate the balance from current tracker entries instead of trusting the button amount.
+  var cents = 0;
+  (current.entries || []).forEach(function(e){
+    var a=String(e.from||'').trim().toLowerCase(), b=String(e.to||'').trim().toLowerCase();
+    var d=(debtor.name||debtor.email).trim().toLowerCase(), c=(creditor.name||creditor.email).trim().toLowerCase();
+    var val=Math.round(Number(e.amount)*100)*(e.type==='debt'?1:-1);
+    if (!Number.isFinite(val)) return;
+    if (a===d && b===c) cents+=val;
+    if (a===c && b===d) cents-=val;
+  });
+  if (cents<=0) { alert('There is no outstanding balance to remind this friend about.'); return; }
+  var amount=(cents/100).toFixed(2);
+  var subject='SquareUp payment reminder: $'+amount;
+  var message='Hi '+(debtor.name||'there')+',\n\nJust a friendly reminder that you have an outstanding balance of $'+amount+' owed to '+(creditor.name||creditor.email)+' in our SquareUp tracker "'+current.name+'".\n\nPlease check the tracker for details and let me know when you have paid.\n\nThanks!';
+  if (!confirm('Open your email app with a $'+amount+' reminder addressed to '+debtor.email+'? You will review and send it yourself.')) return;
+  window.location.href='mailto:'+encodeURIComponent(debtor.email)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(message);
 };
 window.squareUpSplitMembers = function () {
   return current && Array.isArray(current.members) ? current.members.map(displayName) : [];
