@@ -880,6 +880,18 @@ body.side-collapsed .sidebar .sidebar-top-row .logo-btn {display:inline-flex!imp
 .tracker-collapsible .tool-heading-label { display: inline-flex; align-items: center; gap: 12px; min-width: 0; }
 .tracker-collapsible .tool-heading-icon { width: 25px; height: 25px; flex: 0 0 25px; color: #50efb0; }
 @media (max-width: 600px) { .tracker-collapsible .tool-heading-label { gap: 9px; } .tracker-collapsible .tool-heading-icon { width: 22px; height: 22px; flex-basis: 22px; } }
+
+/* Analytics, friend cards, receipt recognition and chat threads */
+body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.analytics-view #settings-page,body.analytics-view #about-page,body.analytics-view #trackers-page{display:none!important}
+#analytics-page{display:none}body.analytics-view #analytics-page{display:block}
+.feature-panel{background:#10263b;border:1px solid #2a4960;border-radius:17px;padding:20px;color:#f1f7ff;margin:14px 0}
+.feature-panel h2,.feature-panel h3{margin:0 0 12px}.feature-muted{color:#a8bfd1;font-size:14px}
+.analytics-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.analytics-stat{padding:17px;border-radius:13px;background:#17334a}.analytics-stat strong{display:block;color:#65f5ac;font-size:24px;margin-top:6px}
+.analytics-bar{display:flex;align-items:center;gap:12px;margin:12px 0}.analytics-bar-label{width:115px;flex:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.analytics-bar-track{height:13px;background:#243c50;border-radius:9px;flex:1;overflow:hidden}.analytics-bar-fill{height:100%;background:#65f5ac;border-radius:9px}.analytics-bar-value{width:85px;text-align:right}
+.friend-card{display:flex;align-items:center;gap:12px;background:#18344b;border:1px solid #31536b;padding:12px;border-radius:14px;margin:9px 0;cursor:pointer;color:#f2f8ff;width:100%;text-align:left}.friend-card:hover{border-color:#65f5ac}.friend-card .friend-initial{background:#28556a;border-radius:50%;width:43px;height:43px;display:grid;place-items:center;font-size:20px;font-weight:750;color:#65f5ac;flex:none}
+.chat-reactions{display:flex;gap:5px;flex-wrap:wrap;margin:5px 0}.chat-reaction{font-size:12px;border:1px solid #4b6578;border-radius:20px;background:#17344b;color:#e9f6ff;padding:3px 8px;cursor:pointer}.chat-reaction.selected{border-color:#65f5ac;background:#285849}.chat-message-actions{display:flex;gap:7px;margin:5px 0}.chat-message-actions button{background:none;border:0;color:#aac5d8;font-size:12px;cursor:pointer;padding:2px 5px}.chat-message-actions button:hover{color:#65f5ac}.chat-reply-preview{font-size:12px;border-left:2px solid #65f5ac;padding:5px 8px;margin-bottom:5px;background:#1b3c4e;border-radius:5px;opacity:.9}.chat-reply-target{padding:8px 12px;border:1px solid #65f5ac;border-radius:12px;margin:10px 0;color:#d8f9ed;display:flex;justify-content:space-between;gap:12px}
+.receipt-scan-box{background:#17344b;border:1px solid #31536b;border-radius:13px;padding:14px;margin:0 0 18px}.receipt-scan-box input[type=file]{width:100%;margin:9px 0}.receipt-scan-box button{border-radius:9px;padding:9px 13px;background:#65f5ac;color:#082032;border:0;font-weight:700;cursor:pointer}.receipt-scan-box button:disabled{opacity:.5}
+@media(max-width:650px){.analytics-stats{grid-template-columns:1fr}.analytics-bar-label{width:80px}.analytics-bar-value{width:65px}}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -934,6 +946,7 @@ body.side-collapsed .sidebar .sidebar-top-row .logo-btn {display:inline-flex!imp
 <nav class="squareup-nav" aria-label="Main navigation">
   <button type="button" id="nav-home" class="sq-nav-link active" aria-current="page"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/><path d="M7 10v-1m10 1V9"/></svg></span><span class="sq-nav-label">Home</span></button>
   <button type="button" id="nav-trackers" class="sq-nav-link"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 7 2 2 3-4"/><path d="M12 7h9"/><circle cx="6" cy="17" r="2"/><path d="M12 17h9"/></svg></span><span class="sq-nav-label">Trackers</span></button>
+  <button type="button" id="nav-analytics" class="sq-nav-link"><span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 16v-5m5 5V7m5 9V5"/></svg></span><span class="sq-nav-label">Analytics</span></button>
   <button type="button" id="nav-profile" class="sq-nav-link"><span class="sq-nav-icon profile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="sq-nav-label">Profile</span></button>
   <button type="button" id="nav-about" class="sq-nav-link"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".7" fill="currentColor" stroke="none"/></svg></span><span class="sq-nav-label">About</span></button>
   <button type="button" id="btn-settings" class="sq-nav-link"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2 2-.07-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.56V21h-2.83v-.9a1.7 1.7 0 0 0-1-1.56 1.7 1.7 0 0 0-1.87.34l-.07.06-2-2 .06-.06A1.7 1.7 0 0 0 7.5 15a1.7 1.7 0 0 0-1.56-1H5v-2.83h.94a1.7 1.7 0 0 0 1.56-1 1.7 1.7 0 0 0-.34-1.87L7.1 8.24l2-2 .07.06a1.7 1.7 0 0 0 1.87.34 1.7 1.7 0 0 0 1-1.56V4h2.83v1.08a1.7 1.7 0 0 0 1 1.56 1.7 1.7 0 0 0 1.87-.34l.07-.06 2 2-.06.06a1.7 1.7 0 0 0-.34 1.87 1.7 1.7 0 0 0 1.56 1H22V14h-1.04a1.7 1.7 0 0 0-1.56 1Z" transform="translate(-.5 -.5)"/></svg></span><span class="sq-nav-label">Settings</span></button>
@@ -1030,7 +1043,7 @@ body.side-collapsed .sidebar .sidebar-top-row .logo-btn {display:inline-flex!imp
   <div class="tracker-tools-grid">
     <div class="tracker-tools-left">
   <details class="card tracker-collapsible" id="smart-settle-card"><summary><span class="tool-heading-label"><svg class="tool-heading-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M30 9 33.9 20.1 45 24l-11.1 3.9L30 39l-3.9-11.1L15 24l11.1-3.9L30 9Z"/><path d="m11 5 2.1 5.9L19 13l-5.9 2.1L11 21l-2.1-5.9L3 13l5.9-2.1L11 5Z"/></svg><span>Smart settle-up</span></span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Simplify group debts into fewer payments. Suggestions do not move money.</p><div id="smart-settle-list"></div></div></details>
-  <details class="card tracker-collapsible" id="chat-card"><summary><span class="tool-heading-label"><svg class="tool-heading-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M30 31c-2.6 2-5.8 3-9.5 3-2 0-3.8-.3-5.5-.9L5 38l2.5-10A17 17 0 0 1 4 18.5C4 9.9 11.4 3 20.5 3S37 9.9 37 18.5c0 2.6-.7 5-2 7"/><path d="M29 33c2.5 1.8 5.4 2.7 8.5 2.7 1.1 0 2.2-.1 3.3-.4L46 39l-1.7-6.6a11.5 11.5 0 0 0 2.2-6.7c0-5.5-4.1-10.1-9.6-11.1"/><circle cx="13" cy="19" r="1.2" fill="currentColor" stroke="none"/><circle cx="21" cy="19" r="1.2" fill="currentColor" stroke="none"/><circle cx="29" cy="19" r="1.2" fill="currentColor" stroke="none"/></svg><span>Tracker group chat</span></span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Messages are shared with everyone in this tracker and appear in their notification centers.</p><div id="tracker-chat-messages" class="chat-messages">Open a tracker to see messages.</div><form id="tracker-chat-form" class="chat-compose"><input id="tracker-chat-input" maxlength="1200" placeholder="Message your group…" aria-label="Message your group" required><button type="submit" class="primary">Send</button></form></div></details>
+  <details class="card tracker-collapsible" id="chat-card"><summary><span class="tool-heading-label"><svg class="tool-heading-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M30 31c-2.6 2-5.8 3-9.5 3-2 0-3.8-.3-5.5-.9L5 38l2.5-10A17 17 0 0 1 4 18.5C4 9.9 11.4 3 20.5 3S37 9.9 37 18.5c0 2.6-.7 5-2 7"/><path d="M29 33c2.5 1.8 5.4 2.7 8.5 2.7 1.1 0 2.2-.1 3.3-.4L46 39l-1.7-6.6a11.5 11.5 0 0 0 2.2-6.7c0-5.5-4.1-10.1-9.6-11.1"/><circle cx="13" cy="19" r="1.2" fill="currentColor" stroke="none"/><circle cx="21" cy="19" r="1.2" fill="currentColor" stroke="none"/><circle cx="29" cy="19" r="1.2" fill="currentColor" stroke="none"/></svg><span>Tracker group chat</span></span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Messages are shared with everyone in this tracker and appear in their notification centers.</p><div id="tracker-chat-messages" class="chat-messages">Open a tracker to see messages.</div><div id="chat-reply-target" class="chat-reply-target" hidden></div><form id="tracker-chat-form" class="chat-compose"><input id="tracker-chat-input" maxlength="1200" placeholder="Message your group…" aria-label="Message your group" required><button type="submit" class="primary">Send</button></form></div></details>
     </div>
   <div class="card" id="recurring-card"><h2>↻ Recurring expenses</h2><p class="dashboard-subheading">Manage repeating expenses for this tracker.</p><div id="recurring-list"></div></div>
   </div>
@@ -1050,11 +1063,13 @@ body.side-collapsed .sidebar .sidebar-top-row .logo-btn {display:inline-flex!imp
   <footer><button id="clear">Clear everything</button></footer>
   </div><!-- /tracker-dashboard -->
 
+  <section id="analytics-page" aria-label="Spending analytics"><div class="feature-panel"><h2>Spending analytics</h2><p class="feature-muted" id="analytics-tracker-title">Select a tracker to see its spending.</p><div class="analytics-stats" id="analytics-stats"></div></div><div class="feature-panel"><h3>Activity by month</h3><div id="analytics-months"></div></div><div class="feature-panel"><h3>Expenses by person</h3><div id="analytics-people"></div></div><div class="feature-panel"><h3>Friends in this tracker</h3><p class="feature-muted">Select a friend to view their profile and shared expense history.</p><div id="analytics-friends"></div><div id="friend-profile-detail" hidden></div></div></section>
   <section id="split-page" aria-label="Split a Bill">
     <button type="button" id="split-back" class="split-back">← Back to Dashboard</button>
     <div class="split-header"><h2>Split a Bill</h2><p>Divide an expense with your friends.</p></div>
     <div class="split-layout">
       <div class="split-panel">
+        <div class="receipt-scan-box"><strong>Scan a receipt with AI-assisted text recognition</strong><p class="feature-muted">Upload a receipt photo to read item names and prices, then review the detected total before splitting. Recognition runs in your browser.</p><input type="file" id="split-receipt-file" accept="image/*" capture="environment" aria-label="Choose receipt photo"><div id="split-receipt-status" class="feature-muted" role="status"></div><div id="split-receipt-items"></div><button type="button" id="split-use-itemized" hidden>Assign receipt items to friends →</button></div>
         <label class="split-field">Expense description<input id="split-description" maxlength="160" placeholder="Dinner at a restaurant" autocomplete="off"></label>
         <label class="split-field">Total amount ($)<input id="split-total" type="number" min="0.01" max="1000000" step="0.01" placeholder="60.00" inputmode="decimal"></label>
         <h3>Who paid?</h3><div id="split-payers"></div>
@@ -2130,12 +2145,14 @@ async function api(path, method, body) {
 var myProfileSettings = null;
 function settingsMessage(id, message, ok) { var el=$(id); el.textContent=message; el.style.color=ok?'#65f5ac':'#ff9db1'; }
 function settingsRoute(page) {
-  document.body.classList.remove('split-view','settings-view','about-view','trackers-view');
+  document.body.classList.remove('split-view','settings-view','about-view','trackers-view','analytics-view');
+  if(page==='analytics')document.body.classList.add('analytics-view');
   if(page==='trackers')document.body.classList.add('trackers-view');
   if(page==='about')document.body.classList.add('about-view');
   document.querySelectorAll('.sq-nav-link').forEach(function(b){var active=b.id===(page==='settings'?'btn-settings':'nav-'+(page==='about'?'about':page==='trackers'?'trackers':'home'));b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
   if (page==='settings') document.body.classList.add('settings-view');
-  var url=page==='settings'?'#settings':page==='about'?'#about':page==='trackers'?'#trackers':'';
+  if(page==='analytics')renderSquareUpAnalytics();
+  var url=page==='settings'?'#settings':page==='about'?'#about':page==='trackers'?'#trackers':page==='analytics'?'#analytics':'';
   history.replaceState(null,'',location.pathname+location.search+url);
   window.scrollTo(0,0);
 }
@@ -2182,7 +2199,7 @@ $('nav-trackers').onclick=function(){settingsRoute('trackers');renderTrackerGall
 $('nav-profile').onclick=function(){openSettingsPage();};
 $('nav-about').onclick=function(){settingsRoute('about');};
 $('about-start').onclick=function(){settingsRoute('trackers');renderTrackerGallery();};
-if(location.hash==='#trackers'){settingsRoute('trackers');renderTrackerGallery();}
+if(location.hash==='#analytics'){settingsRoute('analytics');}else if(location.hash==='#trackers'){settingsRoute('trackers');renderTrackerGallery();}
 else if(location.hash==='#about')settingsRoute('about');
 else if(location.hash==='#settings')openSettingsPage();
 window.addEventListener('popstate',function(){if(location.hash==='#trackers'){settingsRoute('trackers');renderTrackerGallery();}else if(location.hash==='#about')settingsRoute('about');else if(location.hash==='#settings')openSettingsPage();else if(document.body.classList.contains('about-view')||document.body.classList.contains('settings-view')||document.body.classList.contains('trackers-view'))settingsRoute('dashboard');});
@@ -2751,6 +2768,7 @@ async function mutate(path, method, body) {
 function applyDetail(detail) {
   var snapshot = JSON.stringify(detail);
   current = detail;
+  if(document.body.classList.contains("analytics-view"))renderSquareUpAnalytics();
   refreshInbox();
   var t = trackers.find(function (x) { return x.id === detail.id; });
   if (t) { t.name = detail.name; t.role = detail.role; t.memberCount = detail.members.length; }
@@ -3163,17 +3181,80 @@ document.getElementById('receipt-save').onclick=async function(){var result=rece
 window.squareUpPinExpense=async function(id){if(!current)return;var e=current.entries.find(x=>String(x.id)===String(id));if(!e)return;try{applyDetail(await api('trackers/'+current.id+'/entries/'+encodeURIComponent(id)+'/pin','PATCH',{pinned:!e.pinned}));}catch(err){alert(err.message);}};
 var chatTrackerId=null;
 async function loadTrackerChat(){var box=document.getElementById('tracker-chat-messages');if(!box)return;if(!current){box.textContent='Open a shared tracker to chat.';return;}
- try{var id=current.id;var rows=await api('trackers/'+id+'/chat');if(!current||current.id!==id)return;box.innerHTML=rows.map(m=>{var mine=current.members.some(x=>String(x.id)===String(m.senderId)&&x.isYou);return '<div class="chat-line '+(mine?'mine':'theirs')+'">'+(mine?'':'<div class="chat-sender">'+esc(m.senderName)+'</div>')+'<div class="chat-bubble">'+esc(m.message)+'</div><div class="chat-time">'+esc(new Date(m.createdAt).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}))+'</div></div>';}).join('')||'<p class="dashboard-subheading">No messages yet. Say hello!</p>';box.scrollTop=box.scrollHeight;}catch(err){box.textContent='Chat unavailable: '+err.message;}}
+ try{var id=current.id,rows=await api('trackers/'+id+'/chat');if(!current||current.id!==id)return;squareUpChatRows=rows;
+ var byId=new Map(rows.map(m=>[String(m.id),m]));
+ box.innerHTML=rows.map(m=>{var mine=String(m.senderId)===String(currentUser?.id)||current.members.some(x=>x.isYou&&(String(x.userId||x.user_id||'')===String(m.senderId)||x.name===m.senderName)),parent=m.replyTo?byId.get(String(m.replyTo)):null;
+ var reply=parent?'<div class="chat-reply-preview">'+esc(parent.senderName)+': '+esc(parent.message.slice(0,120))+'</div>':'';
+ var reactions=(m.reactions||[]).map(r=>'<button class="chat-reaction'+(r.mine?' selected':'')+'" data-react="'+esc(m.id)+'" data-emoji="'+esc(r.emoji)+'">'+esc(r.emoji)+' '+r.count+'</button>').join('');
+ return '<div class="chat-line '+(mine?'mine':'theirs')+'">'+(mine?'':'<div class="chat-sender">'+esc(m.senderName)+'</div>')+'<div class="chat-bubble">'+reply+esc(m.message)+'</div><div class="chat-reactions">'+reactions+'</div><div class="chat-message-actions"><button type="button" data-reply="'+esc(m.id)+'">↩ Reply</button>'+['❤️','👍','😂','🎉'].map(emoji=>'<button type="button" data-react="'+esc(m.id)+'" data-emoji="'+emoji+'">'+emoji+'</button>').join('')+'</div><div class="chat-time">'+esc(new Date(m.createdAt).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}))+'</div></div>';}).join('')||'<p class="dashboard-subheading">No messages yet. Say hello!</p>';
+ }catch(err){box.textContent='Chat unavailable: '+err.message;}}
 async function loadRecurring(){var el=document.getElementById('recurring-list');if(!el)return;if(!current){el.textContent='Open a shared tracker to manage recurring expenses.';return;}
  try{var id=current.id;var rows=await api('trackers/'+id+'/recurring');if(!current||current.id!==id)return;el.innerHTML=rows.filter(x=>x.active).map(x=>'<div class="recurring-row"><div><b>'+esc(x.from_name)+' → '+esc(x.to_name)+'</b> · '+money(Number(x.amount))+'<small>'+esc(x.note||'Recurring expense')+' · '+esc(x.frequency)+' · Next '+esc(x.next_date)+'</small></div><button class="small-btn danger" data-stop-recurring="'+esc(x.id)+'">Stop</button></div>').join('')||'<p class="dashboard-subheading">No active recurring expenses.</p>';}catch(err){el.textContent='Schedules unavailable: '+err.message;}}
 document.getElementById('recurring-list').addEventListener('click',async function(ev){var id=ev.target.dataset.stopRecurring;if(!id||!current)return;if(!confirm('Stop future repeats? Existing expenses will remain.'))return;try{await api('trackers/'+current.id+'/recurring/'+id,'DELETE');await loadRecurring();}catch(err){alert(err.message);}});
-document.getElementById('tracker-chat-form').addEventListener('submit',async function(ev){ev.preventDefault();if(!current)return alert('Open a shared tracker first.');var input=document.getElementById('tracker-chat-input'),message=input.value.trim();if(!message)return;var button=this.querySelector('button');button.disabled=true;try{await api('trackers/'+current.id+'/chat','POST',{message});input.value='';await loadTrackerChat();await refreshInbox();}catch(err){alert(err.message);}finally{button.disabled=false;}});
+document.getElementById('tracker-chat-form').addEventListener('submit',async function(ev){ev.preventDefault();if(!current)return alert('Open a shared tracker first.');var input=document.getElementById('tracker-chat-input'),message=input.value.trim();if(!message)return;var button=this.querySelector('button');button.disabled=true;try{await api('trackers/'+current.id+'/chat','POST',{message,replyTo:squareUpReplyTo});input.value='';squareUpReplyTo=null;document.getElementById('chat-reply-target').hidden=true;await loadTrackerChat();await refreshInbox();}catch(err){alert(err.message);}finally{button.disabled=false;}});
 var extraLastTracker=null;
 setInterval(function(){if(current){loadTrackerChat();loadRecurring();}},30000);
 
 setInterval(function(){if(current)refreshInbox();},45000);
 
 
+
+// SquareUp analytics: calculations use only the currently selected tracker.
+function squareUpMoney(n){return '$'+Number(n||0).toFixed(2);}
+function squareUpBarList(target,values){
+ var el=document.getElementById(target);if(!el)return;var rows=Object.entries(values).sort((a,b)=>b[1]-a[1]);
+ if(!rows.length){el.innerHTML='<p class="feature-muted">No expense data yet.</p>';return;}
+ var max=Math.max(...rows.map(r=>r[1]),1);
+ el.innerHTML=rows.map(([name,value])=>'<div class="analytics-bar"><span class="analytics-bar-label" title="'+esc(name)+'">'+esc(name)+'</span><div class="analytics-bar-track"><div class="analytics-bar-fill" style="width:'+Math.max(1,value/max*100).toFixed(1)+'%"></div></div><strong class="analytics-bar-value">'+squareUpMoney(value)+'</strong></div>').join('');
+}
+function squareUpEntries(){return Array.isArray(current?.entries)?current.entries:[];}
+function renderSquareUpAnalytics(){
+ var title=document.getElementById('analytics-tracker-title'),stats=document.getElementById('analytics-stats'),friends=document.getElementById('analytics-friends');
+ if(!current){title.textContent='Open a shared tracker first, then choose Analytics.';stats.innerHTML='';squareUpBarList('analytics-months',{});squareUpBarList('analytics-people',{});friends.innerHTML='';return;}
+ title.textContent='Showing data for '+current.name+' only';
+ var entries=squareUpEntries().filter(e=>e.type==='debt'),months={},people={},total=0;
+ entries.forEach(e=>{var n=Number(e.amount)||0;if(n<=0)return;total+=n;var person=e.from||'Unknown';people[person]=(people[person]||0)+n;var raw=e.date||e.dateLabel||e.createdAt||'';var d=new Date(raw);var month=Number.isNaN(d.getTime())?'Unspecified':d.toLocaleDateString(undefined,{month:'short',year:'numeric'});months[month]=(months[month]||0)+n;});
+ stats.innerHTML='<div class="analytics-stat">Recorded expenses<strong>'+squareUpMoney(total)+'</strong></div><div class="analytics-stat">Expense entries<strong>'+entries.length+'</strong></div><div class="analytics-stat">Members<strong>'+current.members.length+'</strong></div>';
+ squareUpBarList('analytics-months',months);squareUpBarList('analytics-people',people);
+ friends.innerHTML=current.members.map((m,i)=>'<button type="button" class="friend-card" data-friend-index="'+i+'"><span class="friend-initial">'+esc((m.name||'?').slice(0,1).toUpperCase())+'</span><span><b>'+esc(m.name||'Member')+'</b><br><span class="feature-muted">View friend profile</span></span></button>').join('');
+ document.getElementById('friend-profile-detail').hidden=true;
+}
+function openSquareUpFriendProfile(index){
+ if(!current||!current.members[index])return;var m=current.members[index],name=m.name||'',entries=squareUpEntries().filter(e=>e.from===name||e.to===name),owes=entries.filter(e=>e.type==='debt'&&e.from===name).reduce((n,e)=>n+Number(e.amount||0),0),owed=entries.filter(e=>e.type==='debt'&&e.to===name).reduce((n,e)=>n+Number(e.amount||0),0);
+ var el=document.getElementById('friend-profile-detail');el.hidden=false;el.className='feature-panel';el.innerHTML='<h3>'+esc(name)+'</h3><p class="feature-muted">Member of '+esc(current.name)+'</p><div class="analytics-stats"><div class="analytics-stat">Expense entries<strong>'+entries.length+'</strong></div><div class="analytics-stat">Owed by friend<strong>'+squareUpMoney(owes)+'</strong></div><div class="analytics-stat">Owed to friend<strong>'+squareUpMoney(owed)+'</strong></div></div><h3 style="margin-top:20px">Shared activity</h3>'+(entries.length?entries.slice().reverse().slice(0,20).map(e=>'<p>'+esc(e.from||'')+' → '+esc(e.to||'')+' · '+squareUpMoney(e.amount)+' · '+esc(e.note||'Expense')+'</p>').join(''):'<p class="feature-muted">No shared expenses yet.</p>');el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+document.getElementById('analytics-friends').addEventListener('click',e=>{var btn=e.target.closest('[data-friend-index]');if(btn)openSquareUpFriendProfile(Number(btn.dataset.friendIndex));});
+document.getElementById('nav-analytics').addEventListener('click',()=>settingsRoute('analytics'));
+// Browser-based receipt recognition is provided as an assistive first pass, not a guaranteed extraction.
+var squareUpScannedLines=[];
+document.getElementById('split-receipt-file').addEventListener('change',async function(){
+ var file=this.files?.[0],status=document.getElementById('split-receipt-status');if(!file)return;
+ if(!file.type.startsWith('image/')){status.textContent='Please choose an image.';return;}
+ status.textContent='Reading receipt… This can take a moment.';
+ try{
+  if(!window.Tesseract)await new Promise((resolve,reject)=>{var sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';sc.onload=resolve;sc.onerror=reject;document.head.appendChild(sc);});
+  var result=await window.Tesseract.recognize(file,'eng'),lines=result.data.text.split(/\n/),items=[],tax=0,tip=0;
+  lines.forEach(line=>{var match=line.trim().match(/^(.+?)\s+\$?([0-9]+[.,][0-9]{2})\s*$/);if(!match)return;var label=match[1].trim(),amount=Number(match[2].replace(',','.'));if(!Number.isFinite(amount)||amount<=0)return;if(/^tax\b/i.test(label))tax=amount;else if(/^tip\b/i.test(label))tip=amount;else if(!/^(total|subtotal|change|cash|card|balance|discount|payment|visa|mastercard)/i.test(label))items.push({name:label.slice(0,80),amount:String(amount),people:[]});});
+  squareUpScannedLines=items.slice(0,60);var total=items.reduce((sum,item)=>sum+Number(item.amount),0)+tax+tip;
+  if(!items.length){status.textContent='Could not confidently recognize items. Try a clearer image or enter the bill manually.';return;}
+  document.getElementById('split-total').value=total.toFixed(2);if(!document.getElementById('split-description').value)document.getElementById('split-description').value='Scanned receipt';renderSplitSummary();
+  status.textContent='Found '+items.length+' items; estimated total '+squareUpMoney(total)+'. Check every amount and tax/tip before saving.';
+  document.getElementById('split-receipt-items').innerHTML='<p class="feature-muted">'+items.map(x=>esc(x.name)+' · '+squareUpMoney(x.amount)).join(' · ')+'</p>';
+  document.getElementById('split-use-itemized').hidden=false;
+  squareUpScannedLines.tax=tax;squareUpScannedLines.tip=tip;
+ }catch(err){status.textContent='Could not read this receipt. You can enter the amount manually.';console.warn(err);}
+});
+document.getElementById('split-use-itemized').addEventListener('click',()=>{
+ if(!current)return alert('Open a shared tracker first.');
+ closeSplitPage();settingsRoute('dashboard');receiptLines=squareUpScannedLines.map(l=>({name:l.name,amount:l.amount,people:[]}));
+ document.getElementById('receipt-tax').value=squareUpScannedLines.tax||0;document.getElementById('receipt-tip').value=squareUpScannedLines.tip||0;
+ document.getElementById('receipt-card').hidden=false;receiptDraw();document.getElementById('receipt-card').scrollIntoView({behavior:'smooth',block:'start'});
+});
+// Group chat: threaded replies and reactions persisted by the Cloudflare API.
+var squareUpReplyTo=null,squareUpChatRows=[];
+function squareUpChatReply(id){var row=squareUpChatRows.find(r=>String(r.id)===String(id));if(!row)return;squareUpReplyTo=row.id;var el=document.getElementById('chat-reply-target');el.hidden=false;el.innerHTML='<span>Replying to <b>'+esc(row.senderName)+'</b>: '+esc(row.message.slice(0,100))+'</span><button type="button" id="chat-cancel-reply" class="small-btn">×</button>';document.getElementById('chat-cancel-reply').onclick=()=>{squareUpReplyTo=null;el.hidden=true;};document.getElementById('tracker-chat-input').focus();}
+async function squareUpReact(id,emoji){if(!current)return;try{await api('trackers/'+current.id+'/chat/'+encodeURIComponent(id)+'/reactions','POST',{emoji});await loadTrackerChat();}catch(err){alert('Reaction could not be saved: '+err.message);}}
+document.getElementById('tracker-chat-messages').addEventListener('click',e=>{var b=e.target.closest('button');if(!b)return;if(b.dataset.reply)squareUpChatReply(b.dataset.reply);if(b.dataset.react)squareUpReact(b.dataset.react,b.dataset.emoji);});
 </script>
 </body>
 </html>
