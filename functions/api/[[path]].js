@@ -1153,12 +1153,16 @@ if (
     ) {
       const messageId = String(parts[3] || '');
 
-      if (
-        !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(messageId) &&
-        !/^[0-9]{1,19}$/.test(messageId)
-      ) {
-        return fail('Invalid message ID.', 400);
-      }
+    
+if (
+  !messageId ||
+  messageId === 'undefined' ||
+  messageId === 'null' ||
+  messageId.length > 200
+) {
+  return fail('Invalid message ID.', 400);
+}
+
 
       const emoji = clean(body.emoji, 10);
 
