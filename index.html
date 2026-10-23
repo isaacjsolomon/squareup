@@ -1360,7 +1360,7 @@ const supabase = createClient("https://pajrdqarszbnrlstoyly.supabase.co", "sb_pu
 const mapUser = u => u ? ({ id:u.id, email:u.email || "", name:u.user_metadata?.full_name || u.email?.split("@")[0] || "", emailVerified: !!u.email_confirmed_at, confirmedAt:u.email_confirmed_at, createdAt:u.created_at }) : null;
 async function unwrap(p) { const {data,error}=await p; if(error) throw error; return data; }
 async function login(email,password) { const data=await unwrap(supabase.auth.signInWithPassword({email,password})); return mapUser(data.user); }
-async function signup(email,password,metadata) { const data=await unwrap(supabase.auth.signUp({email,password,options:{data:metadata || {},emailRedirectTo:location.origin}})); return mapUser(data.user); }
+async function signup(email,password,metadata) { const data=await unwrap(supabase.auth.signUp({email,password,options:{data:metadata || {},emailRedirectTo:location.origin+"/?setup=1"}})); return mapUser(data.user); }
 async function logout() { await unwrap(supabase.auth.signOut()); }
 async function getUser() { const {data,error}=await supabase.auth.getUser(); return error ? null : mapUser(data.user); }
 function onAuthChange(cb) { return supabase.auth.onAuthStateChange((event,session)=>{ setTimeout(()=>cb(event,mapUser(session?.user)),0); }); }
@@ -1544,16 +1544,30 @@ onAuthChange(function (event, user) { showUser(user); if (event === "PASSWORD_RE
 // New-signup-only onboarding: existing logins never trigger this page.
 var onboardPhotoBlob = null;
 var onboardingUserId = null;
-function maybeShowOnboarding(user) {
+async function maybeShowOnboarding(user) {
   if (!user || !user.id || onboardingUserId === user.id) return;
+  var params = new URLSearchParams(location.search);
+  var emailLink = params.get('setup') === '1';
   var pendingEmail = read('squareup-pending-new-signup');
   var matchingEmail = pendingEmail && pendingEmail === String(user.email||'').toLowerCase();
   var pendingOauth = read('squareup-pending-oauth-signup') === '1';
-  var recentCreation = user.createdAt && Date.now() - new Date(user.createdAt).getTime() < 15*60*1000;
-  if (!matchingEmail && !(pendingOauth && recentCreation)) {
-    if (pendingOauth) store('squareup-pending-oauth-signup', null);
-    return;
+  // Email links may be opened on another device, where localStorage is empty.
+  var createdTime = Date.parse(user.createdAt || '');
+  var recentCreation = Number.isFinite(createdTime) && Date.now() - createdTime >= 0 && Date.now() - createdTime < 24*60*60*1000;
+  if (!matchingEmail && !(pendingOauth && recentCreation) && !(emailLink && recentCreation)) return;
+  // Never show onboarding again if the user has already set a username.
+  try {
+    var existingProfile = await api('profile');
+    if (existingProfile && existingProfile.username) {
+      store('squareup-pending-new-signup',null);
+      store('squareup-pending-oauth-signup',null);
+      if (emailLink) { params.delete('setup'); history.replaceState(null,'',location.pathname+(params.toString()?'?'+params:'')+location.hash); }
+      return;
+    }
+  } catch (err) {
+    // Don't block setup for a brand-new user with no profile yet.
   }
+  if (onboardingUserId === user.id) return;
   onboardingUserId = user.id;
   $('onboard-display').value = user.name || '';
   $('onboard-username').value = '';
@@ -1566,6 +1580,7 @@ function maybeShowOnboarding(user) {
   $('onboarding-page').hidden = false;
   $('auth-modal').classList.remove('open');
   window.scrollTo(0,0);
+  if (emailLink) { params.delete('setup'); history.replaceState(null,'',location.pathname+(params.toString()?'?'+params:'')+location.hash); }
 }
 $('onboard-photo-button').onclick = function () { $('onboard-photo-file').click(); };
 $('onboard-photo-file').onchange = async function(e) {
