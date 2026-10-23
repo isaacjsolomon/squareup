@@ -20,7 +20,11 @@
    const from=clean(v?.from,60);
    const to=clean(v?.to,60);
    const amount=Math.round(Number(v?.amount)*100)/100;
-   if(!type||!from||!to||from.toLowerCase()===to.toLowerCase()||!(amount>0)||amount>1e9)return null;
+
+   if(!type||!from||!to||
+      from.toLowerCase()===to.toLowerCase()||
+      !(amount>0)||amount>1e9)return null;
+
    return {
      type,
      from_name:from,
@@ -28,37 +32,62 @@
      amount,
      note:clean(v.note,200),
      date_label:clean(v.date,40),
-     due_date:type==='debt'&&/^\d{4}-\d{2}-\d{2}$/.test(v.dueDate||'')?v.dueDate:null
+     due_date:type==='debt'&&
+       /^\d{4}-\d{2}-\d{2}$/.test(v.dueDate||'')
+       ?v.dueDate:null
    };
  }
 
  export async function onRequest({request,env,params}){
    const key=env.SUPABASE_SERVICE_ROLE_KEY;
-   if(!key)return fail('Backend not configured: add SUPABASE_SERVICE_ROLE_KEY in Cloudflare Pages secrets.',503);
+
+   if(!key)return fail(
+     'Backend not configured: add SUPABASE_SERVICE_ROLE_KEY in Cloudflare Pages secrets.',
+     503
+   );
 
    const origin=request.headers.get('Origin');
-   if(origin&&origin!==new URL(request.url).origin)return fail('Origin not allowed.',403);
+   if(origin&&origin!==new URL(request.url).origin)
+     return fail('Origin not allowed.',403);
 
    const bearer=request.headers.get('Authorization')||'';
-   if(!bearer.startsWith('Bearer '))return fail('Please log in first.',401);
+   if(!bearer.startsWith('Bearer '))
+     return fail('Please log in first.',401);
 
    const userRes=await fetch(URL_BASE+'/auth/v1/user',{
      headers:{apikey:key,Authorization:bearer}
    });
+
    if(!userRes.ok)return fail('Session expired. Please log in.',401);
 
    const user=await userRes.json();
    const me={
      id:user.id,
      email:user.email||'',
-     name:user.user_metadata?.full_name||user.email?.split('@')[0]||''
+     name:user.user_metadata?.full_name||
+       user.email?.split('@')[0]||''
    };
-   const baseHeaders={apikey:key,Authorization:'Bearer '+key};
 
-   async function db(table,{select='*',filters={},method='GET',body,order,limit}={}){
+   const baseHeaders={
+     apikey:key,
+     Authorization:'Bearer '+key
+   };
+
+   async function db(table,{
+     select='*',
+     filters={},
+     method='GET',
+     body,
+     order,
+     limit
+   }={}){
      const u=new URL(URL_BASE+'/rest/v1/'+table);
+
      if(select)u.searchParams.set('select',select);
-     for(const [k,v] of Object.entries(filters))u.searchParams.set(k,v);
+
+     for(const [k,v] of Object.entries(filters))
+       u.searchParams.set(k,v);
+
      if(order)u.searchParams.set('order',order);
      if(limit)u.searchParams.set('limit',limit);
 
@@ -67,26 +96,40 @@
        headers:{
          ...baseHeaders,
          Prefer:'return=representation',
-         ...(method!=='GET'?{'Content-Type':'application/json'}:{})
+         ...(method!=='GET'
+           ?{'Content-Type':'application/json'}
+           :{})
        },
        body:body===undefined?undefined:JSON.stringify(body)
      });
+
      const data=await r.json().catch(()=>[]);
-     if(!r.ok)throw new Error(data.message||data.error||'Database request failed');
+
+     if(!r.ok)
+       throw new Error(
+         data.message||data.error||'Database request failed'
+       );
+
      return data;
    }
 
    async function storage(bucket,path,method='GET',bytes,type){
      const u=URL_BASE+'/storage/v1/object/'+bucket+'/'+path;
+
      const r=await fetch(u,{
        method,
-       headers:{...baseHeaders,...(type?{'Content-Type':type}:{})},
+       headers:{
+         ...baseHeaders,
+         ...(type?{'Content-Type':type}:{})
+       },
        body:bytes
      });
+
      if(!r.ok){
        if(method==='GET')return null;
        throw Error('Photo storage request failed');
      }
+
      return r;
    }
 
@@ -95,38 +138,61 @@
 
    async function member(id){
      if(!uuid.test(id))return null;
+
      return (await db('tracker_members',{
-       filters:{tracker_id:'eq.'+id,user_id:'eq.'+me.id}
+       filters:{
+         tracker_id:'eq.'+id,
+         user_id:'eq.'+me.id
+       }
      }))[0]||null;
    }
 
    function advanceDate(date,freq){
      const d=new Date(date+'T12:00:00Z');
-     if(freq==='daily')d.setUTCDate(d.getUTCDate()+1);
-     else if(freq==='weekly')d.setUTCDate(d.getUTCDate()+7);
-     else if(freq==='biweekly')d.setUTCDate(d.getUTCDate()+14);
+
+     if(freq==='daily')
+       d.setUTCDate(d.getUTCDate()+1);
+     else if(freq==='weekly')
+       d.setUTCDate(d.getUTCDate()+7);
+     else if(freq==='biweekly')
+       d.setUTCDate(d.getUTCDate()+14);
      else if(freq==='monthly'){
        const day=d.getUTCDate();
        d.setUTCDate(1);
        d.setUTCMonth(d.getUTCMonth()+1);
+
        const month=d.getUTCMonth();
-       d.setUTCDate(Math.min(day,new Date(Date.UTC(d.getUTCFullYear(),month+1,0)).getUTCDate()));
+       d.setUTCDate(Math.min(
+         day,
+         new Date(Date.UTC(
+           d.getUTCFullYear(),month+1,0
+         )).getUTCDate()
+       ));
      }
+
      return d.toISOString().slice(0,10);
    }
 
    async function materializeRecurring(id){
      const schedules=await db('squareup_recurring_expenses',{
-       filters:{tracker_id:'eq.'+id,active:'eq.true'}
+       filters:{
+         tracker_id:'eq.'+id,
+         active:'eq.true'
+       }
      });
+
      const today=new Date().toISOString().slice(0,10);
 
      for(const s of schedules){
        let next=s.next_date;
        let n=0;
+
        while(next<=today&&n<24){
          const existing=await db('tracker_entries',{
-           filters:{recurring_id:'eq.'+s.id,recurring_on:'eq.'+next}
+           filters:{
+             recurring_id:'eq.'+s.id,
+             recurring_on:'eq.'+next
+           }
          });
 
          if(!existing.length){
@@ -150,7 +216,10 @@
 
            const recipient=(await db('tracker_members',{
              filters:{tracker_id:'eq.'+id}
-           })).find(m=>m.name.toLowerCase()===s.from_name.toLowerCase());
+           })).find(
+             m=>m.name.toLowerCase()===
+               s.from_name.toLowerCase()
+           );
 
            if(recipient&&recipient.user_id!==s.created_by){
              await db('squareup_notifications',{
@@ -161,18 +230,25 @@
                  entry_id:created.id,
                  kind:'expense',
                  title:'Recurring expense',
-                 message:s.from_name+' owes '+s.to_name+' $'+Number(s.amount).toFixed(2)+' · '+s.note
+                 message:s.from_name+' owes '+s.to_name+
+                   ' $'+Number(s.amount).toFixed(2)+
+                   ' · '+s.note
                }
              });
            }
          }
+
          next=advanceDate(next,s.frequency);
          n++;
        }
+
        if(n){
          await db('squareup_recurring_expenses',{
            method:'PATCH',
-           filters:{id:'eq.'+s.id,tracker_id:'eq.'+id},
+           filters:{
+             id:'eq.'+s.id,
+             tracker_id:'eq.'+id
+           },
            body:{next_date:next}
          });
        }
@@ -180,20 +256,29 @@
    }
 
    async function detail(id){
-     const t=(await db('trackers',{filters:{id:'eq.'+id}}))[0];
+     const t=(await db('trackers',{
+       filters:{id:'eq.'+id}
+     }))[0];
+
      const m=await member(id);
+
      if(!t||!m)throw Error('Tracker not found');
 
      const members=await db('tracker_members',{
-       filters:{tracker_id:'eq.'+id},
-       order:'joined_at.asc'
+       filters:{tracker_id:'eq.'+id}
      });
+
      const entries=await db('tracker_entries',{
        filters:{tracker_id:'eq.'+id},
-       order:'created_at.asc,id.asc'
+       order:'created_at.asc'
      });
+
      const profiles=await db('profiles',{
-       filters:{user_id:'in.('+members.map(x=>x.user_id).join(',')+')'}
+       filters:{
+         user_id:'in.('+
+           members.map(x=>x.user_id).join(',')+
+           ')'
+       }
      }).catch(()=>[]);
 
      return {
@@ -203,18 +288,28 @@
        inviteToken:t.invite_token,
        backdrop:{
          preset:t.backdrop,
-         photo:t.backdrop==='photo'&&t.backdrop_image?t.backdrop_image.split('/').pop():null
+         photo:t.backdrop==='photo'&&t.backdrop_image
+           ?t.backdrop_image.split('/').pop()
+           :null
        },
        members:members.map(x=>({
          id:x.user_id,
          email:x.email,
-         name:profiles.find(p=>p.user_id===x.user_id)?.display_name||x.name,
+         name:profiles.find(
+           p=>p.user_id===x.user_id
+         )?.display_name||x.name,
          role:x.role,
          isYou:x.user_id===me.id,
-         photo:profiles.find(p=>p.user_id===x.user_id)?.photo_key?.split('/').pop()||null,
+         photo:profiles.find(
+           p=>p.user_id===x.user_id
+         )?.photo_key?.split('/').pop()||null,
          payments:{
-           venmo:profiles.find(p=>p.user_id===x.user_id)?.venmo_username||'',
-           cashapp:profiles.find(p=>p.user_id===x.user_id)?.cashapp_username||''
+           venmo:profiles.find(
+             p=>p.user_id===x.user_id
+           )?.venmo_username||'',
+           cashapp:profiles.find(
+             p=>p.user_id===x.user_id
+           )?.cashapp_username||''
          }
        })),
        entries:entries.map(e=>({
@@ -227,7 +322,9 @@
          date:e.date_label,
          dueDate:e.due_date||null,
          paymentStatus:e.payment_status||'confirmed',
-         createdBy:members.find(m=>m.user_id===e.created_by)?.name||'',
+         createdBy:members.find(
+           m=>m.user_id===e.created_by
+         )?.name||'',
          pinned:!!e.is_pinned,
          recurringId:e.recurring_id||null
        }))
@@ -235,24 +332,36 @@
    }
 
    try{
-     const body=['POST','PATCH'].includes(method)?
-       await request.json().catch(()=>({})): {};
+     const body=['POST','PATCH'].includes(method)
+       ?await request.json().catch(()=>({}))
+       :{};
 
-     if(parts[0]==='account'&&parts.length===1&&method==='DELETE'){
+     // ACCOUNT DELETION
+     if(parts[0]==='account'&&
+        parts.length===1&&method==='DELETE'){
+
        const owned=await db('trackers',{
          filters:{owner_id:'eq.'+me.id}
        });
 
        for(const t of owned){
-         if(t.backdrop_image)await storage('tracker-backdrops',t.backdrop_image,'DELETE');
+         if(t.backdrop_image)
+           await storage(
+             'tracker-backdrops',
+             t.backdrop_image,
+             'DELETE'
+           );
+
          await db('tracker_entries',{
            method:'DELETE',
            filters:{tracker_id:'eq.'+t.id}
          });
+
          await db('tracker_members',{
            method:'DELETE',
            filters:{tracker_id:'eq.'+t.id}
          });
+
          await db('trackers',{
            method:'DELETE',
            filters:{id:'eq.'+t.id}
@@ -263,6 +372,7 @@
          method:'DELETE',
          filters:{created_by:'eq.'+me.id}
        });
+
        await db('tracker_members',{
          method:'DELETE',
          filters:{user_id:'eq.'+me.id}
@@ -271,7 +381,13 @@
        const p=(await db('profiles',{
          filters:{user_id:'eq.'+me.id}
        }))[0];
-       if(p?.photo_key)await storage('profile-photos',p.photo_key,'DELETE');
+
+       if(p?.photo_key)
+         await storage(
+           'profile-photos',
+           p.photo_key,
+           'DELETE'
+         );
 
        await db('profiles',{
          method:'DELETE',
@@ -279,21 +395,36 @@
        });
 
        const authDelete=await fetch(
-         URL_BASE+'/auth/v1/admin/users/'+encodeURIComponent(me.id),
-         {method:'DELETE',headers:baseHeaders}
+         URL_BASE+'/auth/v1/admin/users/'+
+           encodeURIComponent(me.id),
+         {
+           method:'DELETE',
+           headers:baseHeaders
+         }
        );
+
        if(!authDelete.ok){
          const info=await authDelete.json().catch(()=>({}));
-         throw Error(info.msg||info.message||'Could not delete login account. Contact support.');
+         throw Error(
+           info.msg||info.message||
+           'Could not delete login account. Contact support.'
+         );
        }
+
        return json({ok:true});
      }
 
+     // JOIN TRACKER
      if(parts[0]==='join'&&parts[1]&&method==='POST'){
        const t=(await db('trackers',{
          filters:{invite_token:'eq.'+parts[1]}
        }))[0];
-       if(!t)return fail('This invite link is no longer valid.',404);
+
+       if(!t)
+         return fail(
+           'This invite link is no longer valid.',
+           404
+         );
 
        await db('tracker_members',{
          method:'POST',
@@ -308,9 +439,11 @@
        }).catch(async e=>{
          if(!String(e).includes('duplicate'))throw e;
        });
+
        return json({id:t.id,name:t.name});
      }
 
+     // PROFILE
      if(parts[0]==='profile'){
        const target=parts[2]||me.id;
 
@@ -318,6 +451,7 @@
          const p=(await db('profiles',{
            filters:{user_id:'eq.'+me.id}
          }))[0];
+
          return json({
            photo:p?.photo_key?.split('/').pop()||null,
            displayName:p?.display_name||me.name,
@@ -332,7 +466,10 @@
          const p=(await db('profiles',{
            filters:{user_id:'eq.'+me.id}
          }))[0];
-         const update={updated_at:new Date().toISOString()};
+
+         const update={
+           updated_at:new Date().toISOString()
+         };
 
          if(body.displayName!==undefined){
            const name=clean(body.displayName,60);
@@ -341,30 +478,57 @@
          }
 
          if(body.username!==undefined){
-           const name=clean(body.username,24).toLowerCase();
+           const name=clean(
+             body.username,24
+           ).toLowerCase();
+
            if(!/^[a-z0-9_]{3,24}$/.test(name))
-             return fail('Username must be 3–24 letters, numbers or underscores.',400);
+             return fail(
+               'Username must be 3–24 letters, numbers or underscores.',
+               400
+             );
+
            const taken=await db('profiles',{
              filters:{username:'eq.'+name}
            });
+
            if(taken.some(x=>x.user_id!==me.id))
-             return fail('That username is already taken.',409);
+             return fail(
+               'That username is already taken.',
+               409
+             );
+
            update.username=name;
          }
 
-         if(body.bio!==undefined)update.bio=clean(body.bio,180);
+         if(body.bio!==undefined)
+           update.bio=clean(body.bio,180);
 
          if(body.venmo!==undefined){
-           const v=clean(body.venmo,30).replace(/^@/,'');
+           const v=clean(
+             body.venmo,30
+           ).replace(/^@/,'');
+
            if(v&&!/^[a-zA-Z0-9_-]{3,30}$/.test(v))
-             return fail('Enter a valid Venmo username.',400);
+             return fail(
+               'Enter a valid Venmo username.',
+               400
+             );
+
            update.venmo_username=v;
          }
 
          if(body.cashapp!==undefined){
-           const v=clean(body.cashapp,21).replace(/^\$/,'');
+           const v=clean(
+             body.cashapp,21
+           ).replace(/^\$/,'');
+
            if(v&&!/^[a-zA-Z][a-zA-Z0-9]{0,19}$/.test(v))
-             return fail('Enter a valid Cash App $Cashtag.',400);
+             return fail(
+               'Enter a valid Cash App $Cashtag.',
+               400
+             );
+
            update.cashapp_username=v;
          }
 
@@ -378,12 +542,18 @@
            }else{
              await db('profiles',{
                method:'POST',
-               body:{user_id:me.id,...update}
+               body:{
+                 user_id:me.id,
+                 ...update
+               }
              });
            }
          }catch(err){
            if(String(err.message).includes('duplicate'))
-             return fail('That username is already taken.',409);
+             return fail(
+               'That username is already taken.',
+               409
+             );
            throw err;
          }
 
@@ -391,6 +561,7 @@
            const memberships=await db('tracker_members',{
              filters:{user_id:'eq.'+me.id}
            });
+
            for(const m of memberships){
              await db('tracker_members',{
                method:'PATCH',
@@ -406,6 +577,7 @@
          const saved=(await db('profiles',{
            filters:{user_id:'eq.'+me.id}
          }))[0];
+
          return json({
            photo:saved?.photo_key?.split('/').pop()||null,
            displayName:saved.display_name||me.name,
@@ -416,37 +588,52 @@
          });
        }
 
-       if(parts[1]!=='photo')return fail('Not found',404);
+       if(parts[1]!=='photo')
+         return fail('Not found',404);
 
        if(method==='GET'){
          if(target!==me.id){
            const mine=await db('tracker_members',{
              filters:{user_id:'eq.'+me.id}
            });
+
            const theirs=await db('tracker_members',{
              filters:{user_id:'eq.'+target}
            });
-           if(!mine.some(a=>theirs.some(b=>b.tracker_id===a.tracker_id)))
+
+           if(!mine.some(a=>theirs.some(
+             b=>b.tracker_id===a.tracker_id
+           )))
              return fail('No profile photo.',404);
          }
 
          const p=(await db('profiles',{
            filters:{user_id:'eq.'+target}
          }))[0];
-         if(!p?.photo_key)return fail('No profile photo.',404);
 
-         const r=await storage('profile-photos',p.photo_key);
-         if(!r)return fail('No profile photo.',404);
+         if(!p?.photo_key)
+           return fail('No profile photo.',404);
+
+         const r=await storage(
+           'profile-photos',
+           p.photo_key
+         );
+
+         if(!r)
+           return fail('No profile photo.',404);
 
          return new Response(r.body,{
            headers:{
-             'Content-Type':r.headers.get('Content-Type')||'image/jpeg',
+             'Content-Type':
+               r.headers.get('Content-Type')||
+               'image/jpeg',
              'Cache-Control':'private, max-age=60'
            }
          });
        }
 
-       if(parts[2])return fail('Not found',404);
+       if(parts[2])
+         return fail('Not found',404);
 
        const p=(await db('profiles',{
          filters:{user_id:'eq.'+me.id}
@@ -455,7 +642,10 @@
        if(method==='DELETE'){
          await db('profiles',{
            method:'POST',
-           body:{user_id:me.id,photo_key:null},
+           body:{
+             user_id:me.id,
+             photo_key:null
+           },
            select:'*'
          }).catch(async()=>db('profiles',{
            method:'PATCH',
@@ -463,19 +653,41 @@
            body:{photo_key:null}
          }));
 
-         if(p?.photo_key)await storage('profile-photos',p.photo_key,'DELETE');
+         if(p?.photo_key)
+           await storage(
+             'profile-photos',
+             p.photo_key,
+             'DELETE'
+           );
+
          return json({photo:null});
        }
 
        if(method==='PUT'){
-         const bytes=new Uint8Array(await request.arrayBuffer());
+         const bytes=new Uint8Array(
+           await request.arrayBuffer()
+         );
+
          const type=kind(bytes);
-         if(!bytes.length||bytes.length>2*1024*1024||!type)
-           return fail('Upload a JPEG, PNG or WebP under 2 MB.',400);
+
+         if(!bytes.length||
+            bytes.length>2*1024*1024||
+            !type)
+           return fail(
+             'Upload a JPEG, PNG or WebP under 2 MB.',
+             400
+           );
 
          const version=crypto.randomUUID();
          const path=me.id+'/'+version;
-         await storage('profile-photos',path,'POST',bytes,type);
+
+         await storage(
+           'profile-photos',
+           path,
+           'POST',
+           bytes,
+           type
+         );
 
          if(p){
            await db('profiles',{
@@ -489,16 +701,27 @@
          }else{
            await db('profiles',{
              method:'POST',
-             body:{user_id:me.id,photo_key:path}
+             body:{
+               user_id:me.id,
+               photo_key:path
+             }
            });
          }
 
-         if(p?.photo_key)await storage('profile-photos',p.photo_key,'DELETE');
+         if(p?.photo_key)
+           await storage(
+             'profile-photos',
+             p.photo_key,
+             'DELETE'
+           );
+
          return json({photo:version});
        }
+
        return fail('Method not allowed',405);
      }
 
+     // NOTIFICATIONS
      if(parts[0]==='notifications'){
        if(parts.length===1&&method==='GET'){
          const rows=await db('squareup_notifications',{
@@ -506,56 +729,80 @@
            order:'created_at.desc',
            limit:100
          });
+
          return json(rows);
        }
 
-       if(parts[1]&&uuid.test(parts[1])&&method==='PATCH'){
+       if(parts[1]&&
+          uuid.test(parts[1])&&
+          method==='PATCH'){
          await db('squareup_notifications',{
            method:'PATCH',
            filters:{
              id:'eq.'+parts[1],
              recipient_id:'eq.'+me.id
            },
-           body:{read_at:new Date().toISOString()}
+           body:{
+             read_at:new Date().toISOString()
+           }
          });
+
          return json({ok:true});
        }
+
        return fail('Not found',404);
      }
 
-     if(parts[0]!=='trackers')return fail('Not found',404);
+     if(parts[0]!=='trackers')
+       return fail('Not found',404);
 
      const id=parts[1];
 
+     // LIST AND CREATE TRACKERS
      if(!id){
        if(method==='GET'){
          const members=await db('tracker_members',{
            filters:{user_id:'eq.'+me.id}
          });
+
          const ids=members.map(m=>m.tracker_id);
+
          if(!ids.length)return json([]);
 
          const ts=await db('trackers',{
-           filters:{id:'in.('+ids.join(',')+')'},
+           filters:{
+             id:'in.('+ids.join(',')+')'
+           },
            order:'created_at.asc'
          });
+
          const counts=await db('tracker_members',{
-           filters:{tracker_id:'in.('+ids.join(',')+')'}
+           filters:{
+             tracker_id:'in.('+ids.join(',')+')'
+           }
          });
 
          return json(ts.map(t=>({
            id:t.id,
            name:t.name,
-           role:members.find(m=>m.tracker_id===t.id)?.role,
-           memberCount:counts.filter(m=>m.tracker_id===t.id).length
+           role:members.find(
+             m=>m.tracker_id===t.id
+           )?.role,
+           memberCount:counts.filter(
+             m=>m.tracker_id===t.id
+           ).length
          })));
        }
 
        if(method==='POST'){
          const name=clean(body.name,80)||'My tracker';
+
          const t=(await db('trackers',{
            method:'POST',
-           body:{name,owner_id:me.id}
+           body:{
+             name,
+             owner_id:me.id
+           }
          }))[0];
 
          await db('tracker_members',{
@@ -569,8 +816,10 @@
            }
          });
 
-         const entries=(Array.isArray(body.entries)?body.entries:[])
-           .slice(0,2000).map(validate).filter(Boolean);
+         const entries=(
+           Array.isArray(body.entries)
+             ?body.entries:[]
+         ).slice(0,2000).map(validate).filter(Boolean);
 
          if(entries.length){
            await db('tracker_entries',{
@@ -582,34 +831,70 @@
              }))
            });
          }
+
          return json(await detail(t.id),201);
        }
+
        return fail('Method not allowed',405);
      }
 
      const m=await member(id);
-     if(!m)return fail('Tracker not found.',404);
+
+     if(!m)
+       return fail('Tracker not found.',404);
+
      const owner=m.role==='owner';
      const sub=parts[2];
 
+     // TRACKER DETAILS
      if(!sub){
        if(method==='GET'){
-         await materializeRecurring(id);
-         return json(await detail(id));
+         // Load existing tracker data first.
+         // A recurring sync error must not hide it.
+         const result=await detail(id);
+
+         try{
+           await materializeRecurring(id);
+           return json(await detail(id));
+         }catch(recurringError){
+           console.error(
+             'Recurring sync failed; returning existing tracker data:',
+             recurringError
+           );
+
+           return json({
+             ...result,
+             recurringWarning:
+               'Recurring expenses could not sync: '+
+               recurringError.message
+           });
+         }
        }
 
        if(method==='PATCH'){
          const patch={};
+
          if(body.name!==undefined){
            patch.name=clean(body.name,80);
-           if(!patch.name)return fail('Give the tracker a name.',400);
+
+           if(!patch.name)
+             return fail(
+               'Give the tracker a name.',
+               400
+             );
          }
+
          if(body.backdrop!==undefined){
            if(!presets.includes(body.backdrop))
-             return fail('Pick one of the backdrops.',400);
+             return fail(
+               'Pick one of the backdrops.',
+               400
+             );
+
            patch.backdrop=body.backdrop;
            patch.backdrop_image=null;
          }
+
          if(Object.keys(patch).length){
            await db('trackers',{
              method:'PATCH',
@@ -617,6 +902,7 @@
              body:patch
            });
          }
+
          return json(await detail(id));
        }
 
@@ -635,10 +921,12 @@
              }
            });
          }
+
          return json({ok:true});
        }
      }
 
+     // TRACKER GROUP CHAT
      if(sub==='chat'){
        if(method==='GET'){
          const rows=await db('squareup_chat_messages',{
@@ -646,6 +934,7 @@
            order:'created_at.asc',
            limit:200
          });
+
          return json(rows.map(r=>({
            id:r.id,
            senderId:r.sender_id,
@@ -657,12 +946,18 @@
 
        if(method==='POST'){
          const message=clean(body.message,1200);
-         if(!message)return fail('Write a message first.');
+
+         if(!message)
+           return fail('Write a message first.');
 
          const members=await db('tracker_members',{
            filters:{tracker_id:'eq.'+id}
          });
-         const mine=members.find(x=>x.user_id===me.id);
+
+         const mine=members.find(
+           x=>x.user_id===me.id
+         );
+
          const senderName=mine?.name||me.name;
 
          const row=(await db('squareup_chat_messages',{
@@ -675,7 +970,10 @@
            }
          }))[0];
 
-         const others=members.filter(x=>x.user_id!==me.id);
+         const others=members.filter(
+           x=>x.user_id!==me.id
+         );
+
          if(others.length){
            await db('squareup_notifications',{
              method:'POST',
@@ -684,24 +982,31 @@
                tracker_id:id,
                kind:'chat',
                title:'New group message',
-               message:senderName+': '+message.slice(0,180)
+               message:senderName+': '+
+                 message.slice(0,180)
              }))
            });
          }
+
          return json({id:row.id},201);
        }
+
        return fail('Method not allowed',405);
      }
 
+     // RECURRING EXPENSES
      if(sub==='recurring'){
        if(method==='GET'){
-         return json(await db('squareup_recurring_expenses',{
-           filters:{tracker_id:'eq.'+id},
-           order:'created_at.desc'
-         }));
+         return json(
+           await db('squareup_recurring_expenses',{
+             filters:{tracker_id:'eq.'+id},
+             order:'created_at.desc'
+           })
+         );
        }
 
-       if(method==='DELETE'&&uuid.test(parts[3]||'')){
+       if(method==='DELETE'&&
+          uuid.test(parts[3]||'')){
          await db('squareup_recurring_expenses',{
            method:'PATCH',
            filters:{
@@ -710,12 +1015,20 @@
            },
            body:{active:false}
          });
+
          return json({ok:true});
        }
+
        return fail('Method not allowed',405);
      }
 
-     if(sub==='entries'&&parts[3]&&uuid.test(parts[3])&&parts[4]==='pin'&&method==='PATCH'){
+     // PIN AND UNPIN EXPENSES
+     if(sub==='entries'&&
+        parts[3]&&
+        uuid.test(parts[3])&&
+        parts[4]==='pin'&&
+        method==='PATCH'){
+
        const e=(await db('tracker_entries',{
          filters:{
            tracker_id:'eq.'+id,
@@ -723,7 +1036,8 @@
          }
        }))[0];
 
-       if(!e)return fail('Expense not found',404);
+       if(!e)
+         return fail('Expense not found',404);
 
        await db('tracker_entries',{
          method:'PATCH',
@@ -731,12 +1045,20 @@
            tracker_id:'eq.'+id,
            id:'eq.'+parts[3]
          },
-         body:{is_pinned:!!body.pinned}
+         body:{
+           is_pinned:!!body.pinned
+         }
        });
+
        return json(await detail(id));
      }
 
-     if(sub==='payments'&&parts[3]&&uuid.test(parts[3])&&method==='POST'){
+     // PAYMENT CONFIRMATIONS
+     if(sub==='payments'&&
+        parts[3]&&
+        uuid.test(parts[3])&&
+        method==='POST'){
+
        if(!['confirm','dispute'].includes(parts[4]))
          return fail('Invalid action.',400);
 
@@ -747,18 +1069,32 @@
          }
        }))[0];
 
-       if(!entry||entry.type!=='payment'||entry.payment_status!=='pending')
-         return fail('Payment is no longer pending.',409);
+       if(!entry||
+          entry.type!=='payment'||
+          entry.payment_status!=='pending')
+         return fail(
+           'Payment is no longer pending.',
+           409
+         );
 
        const members=await db('tracker_members',{
          filters:{tracker_id:'eq.'+id}
        });
-       const recipient=members.find(x=>x.user_id===me.id);
 
-       if(!recipient||recipient.name.toLowerCase()!==entry.to_name.toLowerCase())
-         return fail('Only the payment recipient can respond.',403);
+       const recipient=members.find(
+         x=>x.user_id===me.id
+       );
 
-       const status=parts[4]==='confirm'?'confirmed':'disputed';
+       if(!recipient||
+          recipient.name.toLowerCase()!==
+            entry.to_name.toLowerCase())
+         return fail(
+           'Only the payment recipient can respond.',
+           403
+         );
+
+       const status=parts[4]==='confirm'
+         ?'confirmed':'disputed';
 
        await db('tracker_entries',{
          method:'PATCH',
@@ -778,48 +1114,86 @@
            entry_id:entry.id,
            kind:'payment_'+status,
            title:'Payment '+status,
-           message:me.name+' '+(status==='confirmed'?'confirmed':'disputed')+
-             ' a $'+Number(entry.amount).toFixed(2)+' payment.'
+           message:me.name+' '+
+             (status==='confirmed'
+               ?'confirmed':'disputed')+
+             ' a $'+Number(entry.amount).toFixed(2)+
+             ' payment.'
          }
        });
+
        return json(await detail(id));
      }
 
+     // ADD OR DELETE EXPENSES
      if(sub==='entries'){
        if(method==='POST'&&!parts[3]){
          const e=validate(body);
-         if(!e)return fail('Check the names and amount.',400);
+
+         if(!e)
+           return fail(
+             'Check the names and amount.',
+             400
+           );
 
          const members=await db('tracker_members',{
            filters:{tracker_id:'eq.'+id}
          });
-         const findName=n=>members.find(
-           x=>x.name.toLowerCase()===n.toLowerCase()
-         );
-         const debtor=findName(e.from);
-         const creditor=findName(e.to);
 
-         if(!debtor||!creditor)return fail('Select tracker members.',400);
-         if(e.type==='payment'&&debtor.user_id!==me.id)
-           return fail('You can only report payments made by you.',403);
+         const findName=n=>members.find(
+           x=>x.name.toLowerCase()===
+             n.toLowerCase()
+         );
+
+         const debtor=findName(e.from_name);
+         const creditor=findName(e.to_name);
+
+         if(!debtor||!creditor)
+           return fail(
+             'Select tracker members.',
+             400
+           );
+
+         if(e.type==='payment'&&
+            debtor.user_id!==me.id)
+           return fail(
+             'You can only report payments made by you.',
+             403
+           );
 
          const pending=e.type==='payment';
+
          const created=(await db('tracker_entries',{
            method:'POST',
            body:{
              ...e,
              tracker_id:id,
              created_by:me.id,
-             payment_status:pending?'pending':'confirmed'
+             payment_status:pending
+               ?'pending':'confirmed'
            }
          }))[0];
 
-         if(e.type==='debt'&&body.recurring&&body.recurring!=='none'){
-           const freq=body.recurring;
-           if(!['daily','weekly','biweekly','monthly'].includes(freq))
-             return fail('Invalid recurrence',400);
+         if(e.type==='debt'&&
+            body.recurring&&
+            body.recurring!=='none'){
 
-           const start=new Date().toISOString().slice(0,10);
+           const freq=body.recurring;
+
+           if(![
+             'daily',
+             'weekly',
+             'biweekly',
+             'monthly'
+           ].includes(freq))
+             return fail(
+               'Invalid recurrence',
+               400
+             );
+
+           const start=new Date()
+             .toISOString().slice(0,10);
+
            const next=advanceDate(start,freq);
 
            await db('squareup_recurring_expenses',{
@@ -839,6 +1213,7 @@
          }
 
          const notify=pending?creditor:debtor;
+
          if(notify.user_id!==me.id){
            await db('squareup_notifications',{
              method:'POST',
@@ -846,46 +1221,68 @@
                recipient_id:notify.user_id,
                tracker_id:id,
                entry_id:created.id,
-               kind:pending?'payment_pending':'expense',
-               title:pending?'Payment awaiting confirmation':'New expense',
-               message:pending?
-                 me.name+' reported paying you $'+e.amount.toFixed(2)+
-                   '. Confirm or dispute it.':
-                 e.from+' owes '+e.to+' $'+e.amount.toFixed(2)+
-                   (e.due_date?' by '+e.due_date:'')+'.'
+               kind:pending
+                 ?'payment_pending':'expense',
+               title:pending
+                 ?'Payment awaiting confirmation'
+                 :'New expense',
+               message:pending
+                 ?me.name+
+                   ' reported paying you $'+
+                   e.amount.toFixed(2)+
+                   '. Confirm or dispute it.'
+                 :e.from_name+' owes '+
+                   e.to_name+' $'+
+                   e.amount.toFixed(2)+
+                   (e.due_date
+                     ?' by '+e.due_date
+                     :'')+'.'
              }
            });
          }
+
          return json(await detail(id),201);
        }
 
        if(method==='DELETE'){
          if(parts[3]&&!uuid.test(parts[3]))
-           return fail('Entry not found',404);
+           return fail(
+             'Entry not found',
+             404
+           );
 
          await db('tracker_entries',{
            method:'DELETE',
            filters:{
              tracker_id:'eq.'+id,
-             ...(parts[3]?{id:'eq.'+parts[3]}:{})
+             ...(parts[3]
+               ?{id:'eq.'+parts[3]}
+               :{})
            }
          });
+
          return json(await detail(id));
        }
      }
 
+     // SHARE TRACKER
      if(sub==='invite'&&method==='POST'){
        if(body.reset===true&&!owner)
-         return fail('Only the owner can reset the invite link.',403);
+         return fail(
+           'Only the owner can reset the invite link.',
+           403
+         );
 
        const t=(await db('trackers',{
          filters:{id:'eq.'+id}
        }))[0];
 
-       const token=body.reset===true||!t.invite_token?
-         crypto.randomUUID().replaceAll('-','')+
-         crypto.randomUUID().replaceAll('-','').slice(0,4):
-         t.invite_token;
+       const token=body.reset===true||
+         !t.invite_token
+         ?crypto.randomUUID().replaceAll('-','')+
+           crypto.randomUUID()
+             .replaceAll('-','').slice(0,4)
+         :t.invite_token;
 
        if(token!==t.invite_token){
          await db('trackers',{
@@ -894,13 +1291,26 @@
            body:{invite_token:token}
          });
        }
+
        return json({token});
      }
 
-     if(sub==='members'&&parts[3]&&method==='DELETE'){
-       if(!owner)return fail('Only the owner can remove people.',403);
+     // REMOVE TRACKER MEMBER
+     if(sub==='members'&&
+        parts[3]&&
+        method==='DELETE'){
+
+       if(!owner)
+         return fail(
+           'Only the owner can remove people.',
+           403
+         );
+
        if(parts[3]===me.id)
-         return fail("You can't remove yourself as the owner.",400);
+         return fail(
+           "You can't remove yourself as the owner.",
+           400
+         );
 
        await db('tracker_members',{
          method:'DELETE',
@@ -909,35 +1319,69 @@
            user_id:'eq.'+parts[3]
          }
        });
+
        return json(await detail(id));
      }
 
+     // TRACKER BACKDROP
      if(sub==='backdrop'){
        const t=(await db('trackers',{
          filters:{id:'eq.'+id}
        }))[0];
 
        if(method==='GET'){
-         if(!t?.backdrop_image)return fail('No backdrop photo.',404);
-         const r=await storage('tracker-backdrops',t.backdrop_image);
-         if(!r)return fail('No backdrop photo.',404);
+         if(!t?.backdrop_image)
+           return fail(
+             'No backdrop photo.',
+             404
+           );
+
+         const r=await storage(
+           'tracker-backdrops',
+           t.backdrop_image
+         );
+
+         if(!r)
+           return fail(
+             'No backdrop photo.',
+             404
+           );
 
          return new Response(r.body,{
            headers:{
-             'Content-Type':r.headers.get('Content-Type')||'image/jpeg',
-             'Cache-Control':'private, max-age=60'
+             'Content-Type':
+               r.headers.get('Content-Type')||
+               'image/jpeg',
+             'Cache-Control':
+               'private, max-age=60'
            }
          });
        }
 
        if(method==='PUT'){
-         const bytes=new Uint8Array(await request.arrayBuffer());
+         const bytes=new Uint8Array(
+           await request.arrayBuffer()
+         );
+
          const type=kind(bytes);
-         if(!bytes.length||bytes.length>5*1024*1024||!type)
-           return fail('Upload a JPEG, PNG or WebP under 5 MB.',400);
+
+         if(!bytes.length||
+            bytes.length>5*1024*1024||
+            !type)
+           return fail(
+             'Upload a JPEG, PNG or WebP under 5 MB.',
+             400
+           );
 
          const path=id+'/'+crypto.randomUUID();
-         await storage('tracker-backdrops',path,'POST',bytes,type);
+
+         await storage(
+           'tracker-backdrops',
+           path,
+           'POST',
+           bytes,
+           type
+         );
 
          await db('trackers',{
            method:'PATCH',
@@ -949,7 +1393,11 @@
          });
 
          if(t?.backdrop_image)
-           await storage('tracker-backdrops',t.backdrop_image,'DELETE');
+           await storage(
+             'tracker-backdrops',
+             t.backdrop_image,
+             'DELETE'
+           );
 
          return json(await detail(id));
        }
@@ -957,6 +1405,9 @@
 
      return fail('Not found',404);
    }catch(e){
-     return fail(e.message||'Unexpected server error',500);
+     return fail(
+       e.message||'Unexpected server error',
+       500
+     );
    }
  }
