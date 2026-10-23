@@ -3079,12 +3079,40 @@ function drawInbox(){
 }
 document.getElementById('notifications-toggle').onclick=function(){var panel=document.getElementById('notifications-panel');panel.hidden=!panel.hidden;this.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)refreshInbox();};
 document.getElementById('notifications-list').addEventListener('click',async function(e){
- var t=e.target;
- try{
- if(t.dataset.readNotification){await api('notifications/'+t.dataset.readNotification,'PATCH',{});await refreshInbox();}
+ // Use closest() so clicks on text inside a button work too.
+ var t=e.target.closest('button');
+ if(!t || t.disabled)return;
+ if(t.hasAttribute('data-read-notification')){
+  var notificationId=t.getAttribute('data-read-notification');
+  t.disabled=true;
+  var previousLabel=t.textContent;
+  t.textContent='Saving…';
+  try{
+   // Persist the read state on the server, so it stays read after a reload.
+   await api('notifications/'+encodeURIComponent(notificationId),'PATCH',{});
+   var found=inbox.find(n=>String(n.id)===notificationId);
+   if(found)found.read_at=new Date().toISOString();
+   drawInbox();
+   // Sync any other notifications that arrived in the meantime.
+   await refreshInbox();
+  }catch(err){
+   t.disabled=false;
+   t.textContent=previousLabel;
+   alert('Could not mark this notification as read: '+err.message+'\nPlease check that your Cloudflare backend supports PATCH /api/notifications/:id.');
+  }
+  return;
+ }
  var id=t.dataset.confirmPayment||t.dataset.disputePayment;
- if(id){var action=t.dataset.confirmPayment?'confirm':'dispute';if(!confirm((action==='confirm'?'Confirm you received':'Dispute')+' this payment?'))return;var detail=await api('trackers/'+t.dataset.trackerId+'/payments/'+id+'/'+action,'POST',{});if(current&&current.id===detail.id)applyDetail(detail);await refreshInbox();}
- }catch(err){alert(err.message);}
+ if(id){
+  var action=t.dataset.confirmPayment?'confirm':'dispute';
+  if(!confirm((action==='confirm'?'Confirm you received':'Dispute')+' this payment?'))return;
+  t.disabled=true;
+  try{
+   var detail=await api('trackers/'+t.dataset.trackerId+'/payments/'+id+'/'+action,'POST',{});
+   if(current&&current.id===detail.id)applyDetail(detail);
+   await refreshInbox();
+  }catch(err){alert(err.message);t.disabled=false;}
+ }
 });
 var receiptLines=[];
 function receiptPeople(){return (current?.members||[]).map(m=>m.name);}
