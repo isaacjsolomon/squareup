@@ -157,14 +157,22 @@ console.log('MEMBERSHIP DEBUG', {
 });
 
 if (rows.length) return rows[0];
-
+console.log('MEMBER QUERY RESULT', {
+  trackerId: id,
+  userId: me.id,
+  rowsFound: rows.length
+});
     const owned = await db('trackers', {
       filters: {
         id: 'eq.' + id,
         owner_id: 'eq.' + me.id
       }
     });
-
+console.log('OWNER QUERY RESULT', {
+  trackerId: id,
+  userId: me.id,
+  rowsFound: owned.length
+});
     if (!owned.length) return null;
 
     // Do not insert, delete or rewrite membership records.
