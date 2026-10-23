@@ -801,6 +801,20 @@ body.side-collapsed .sidebar .sidebar-top-row .logo-btn {display:inline-flex!imp
 body.side-collapsed .sidebar .side-account > :not(.sidebar-top-row) {display:none!important;}
 body.side-collapsed .sidebar #tracker-bar {display:none!important;}
 @media(max-width:800px){body.side-collapsed {padding-left:92px!important;}}
+
+/* Separate hamburger button underneath the logo */
+.sidebar .sidebar-collapse-toggle {
+  display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;margin:10px 0 16px 0;
+  padding:0;color:#d8e7f2;background:transparent;
+  border:1px solid rgba(173,202,225,.30);border-radius:10px;
+  cursor:pointer;transition:background .2s,border-color .2s;
+}
+.sidebar .sidebar-collapse-toggle:hover {background:rgba(173,202,225,.10);border-color:rgba(173,202,225,.55);}
+.sidebar .logo-btn {cursor:default;}
+body.side-collapsed .sidebar .side-account > .sidebar-collapse-toggle {display:flex!important;margin:12px auto 0!important;}
+body.side-collapsed .sidebar .sidebar-top-row {justify-content:center!important;}
+body.side-collapsed .sidebar .sidebar-top-row .logo-btn {display:inline-flex!important;}
 </style>
 </head>
 <body>
@@ -809,14 +823,17 @@ body.side-collapsed .sidebar #tracker-bar {display:none!important;}
   <!-- ACCOUNT -->
   <div class="side-section side-account">
     <div class="sidebar-top-row">
-      <button type="button" class="logo-btn" id="side-toggle" aria-expanded="true" aria-label="Collapse side panel" title="Collapse side panel">
+      <span class="logo-btn">
         <img class="logo" src="/images/logo.png" alt="" width="40" height="40">
-      </button>
+      </span>
       <button type="button" id="notifications-toggle" class="notification-bell" aria-label="Open notifications" title="Notifications" aria-expanded="false" aria-controls="notifications-panel">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
         <span id="notifications-count" class="notification-count" hidden></span>
       </button>
     </div>
+    <button type="button" id="side-toggle" class="sidebar-collapse-toggle" aria-expanded="true" aria-label="Collapse side panel" title="Collapse side panel">
+      <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
     <div id="notifications-panel" class="sidebar-notification-panel" hidden>
       <div class="notification-panel-heading">Updates</div>
       <div id="notifications-list"></div>
