@@ -851,6 +851,26 @@ body.side-collapsed .sidebar .sidebar-top-row .logo-btn {display:inline-flex!imp
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
 .smart-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid #29465c}.smart-row strong{color:#60f0ae}.chat-messages{max-height:310px;overflow-y:auto;border:1px solid #2c4b60;border-radius:15px;padding:14px;min-height:100px;background:#0a1e31}.chat-bubble{padding:10px 12px;margin:7px 0;border-radius:12px;background:#19354a;overflow-wrap:anywhere}.chat-bubble.mine{background:#164a47}.chat-bubble small{color:#a4bfd1;display:block;margin-top:5px}.chat-compose{display:flex;gap:9px;margin-top:12px}.chat-compose input{flex:1;min-width:0}.chat-compose button{white-space:nowrap}.recurring-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #29465c}.recurring-row small{color:#a4bfd1;display:block}
+
+/* Smaller collapsed tools; iMessage-inspired conversation */
+.tracker-collapsible { border-radius: 15px !important; margin-bottom: 10px !important; }
+.tracker-collapsible > summary { min-height: 48px; padding: 11px 17px; font-size: 0.98rem; gap: 10px; }
+.tracker-collapsible > summary:hover { background: rgba(104, 220, 174, .065); }
+.tracker-collapsible .collapse-chevron { font-size: 1.25rem; }
+.tracker-collapsible-body { padding: 3px 17px 17px; }
+.tracker-collapsible-body > .dashboard-subheading { margin: 3px 0 12px; font-size: .84rem; }
+#chat-card .chat-messages { background: #0c1b2d; border: 1px solid rgba(150,185,211,.18); border-radius: 17px; padding: 18px 14px; max-height: 400px; min-height: 160px; display: flex; flex-direction: column; gap: 12px; }
+#chat-card .chat-line { display: flex; flex-direction: column; align-items: flex-start; max-width: 100%; }
+#chat-card .chat-line.mine { align-items: flex-end; }
+#chat-card .chat-sender { color: #a7c0d2; font-size: 12px; font-weight: 600; margin: 0 11px 4px; }
+#chat-card .chat-bubble { box-sizing: border-box; width: fit-content; max-width: min(78%, 570px); margin: 0; padding: 10px 15px; border-radius: 18px 18px 18px 5px; background: #263c53; color: #f6faff; font-size: 15px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; box-shadow: 0 2px 7px rgba(0,0,0,.09); }
+#chat-card .chat-line.mine .chat-bubble { background: #43b990; color: #092a2b; border-radius: 18px 18px 5px 18px; }
+#chat-card .chat-time { color: #8faabd; font-size: 11px; margin: 4px 10px 0; }
+#chat-card .chat-compose { align-items: center; gap: 9px; margin-top: 12px; }
+#chat-card .chat-compose input { border-radius: 24px; min-height: 43px; padding: 10px 16px; background: rgba(9,26,43,.7); border: 1px solid rgba(156,192,211,.38); }
+#chat-card .chat-compose input:focus { outline: 2px solid rgba(94,221,174,.65); outline-offset: 1px; }
+#chat-card .chat-compose button { border-radius: 24px; min-height: 43px; padding: 9px 18px; }
+@media(max-width:600px){#chat-card .chat-bubble{max-width:88%;}.tracker-collapsible > summary{padding:10px 13px;}.tracker-collapsible-body{padding:3px 12px 13px;}}
 </style>
 </head>
 <body>
@@ -3078,7 +3098,7 @@ document.getElementById('receipt-save').onclick=async function(){var result=rece
 window.squareUpPinExpense=async function(id){if(!current)return;var e=current.entries.find(x=>String(x.id)===String(id));if(!e)return;try{applyDetail(await api('trackers/'+current.id+'/entries/'+encodeURIComponent(id)+'/pin','PATCH',{pinned:!e.pinned}));}catch(err){alert(err.message);}};
 var chatTrackerId=null;
 async function loadTrackerChat(){var box=document.getElementById('tracker-chat-messages');if(!box)return;if(!current){box.textContent='Open a shared tracker to chat.';return;}
- try{var id=current.id;var rows=await api('trackers/'+id+'/chat');if(!current||current.id!==id)return;box.innerHTML=rows.map(m=>'<div class="chat-bubble '+(current.members.some(x=>x.id===m.senderId&&x.isYou)?'mine':'')+'"><b>'+esc(m.senderName)+'</b><div>'+esc(m.message)+'</div><small>'+esc(new Date(m.createdAt).toLocaleString())+'</small></div>').join('')||'<p class="dashboard-subheading">No messages yet. Say hello!</p>';box.scrollTop=box.scrollHeight;}catch(err){box.textContent='Chat unavailable: '+err.message;}}
+ try{var id=current.id;var rows=await api('trackers/'+id+'/chat');if(!current||current.id!==id)return;box.innerHTML=rows.map(m=>{var mine=current.members.some(x=>String(x.id)===String(m.senderId)&&x.isYou);return '<div class="chat-line '+(mine?'mine':'theirs')+'">'+(mine?'':'<div class="chat-sender">'+esc(m.senderName)+'</div>')+'<div class="chat-bubble">'+esc(m.message)+'</div><div class="chat-time">'+esc(new Date(m.createdAt).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}))+'</div></div>';}).join('')||'<p class="dashboard-subheading">No messages yet. Say hello!</p>';box.scrollTop=box.scrollHeight;}catch(err){box.textContent='Chat unavailable: '+err.message;}}
 async function loadRecurring(){var el=document.getElementById('recurring-list');if(!el)return;if(!current){el.textContent='Open a shared tracker to manage recurring expenses.';return;}
  try{var id=current.id;var rows=await api('trackers/'+id+'/recurring');if(!current||current.id!==id)return;el.innerHTML=rows.filter(x=>x.active).map(x=>'<div class="recurring-row"><div><b>'+esc(x.from_name)+' → '+esc(x.to_name)+'</b> · '+money(Number(x.amount))+'<small>'+esc(x.note||'Recurring expense')+' · '+esc(x.frequency)+' · Next '+esc(x.next_date)+'</small></div><button class="small-btn danger" data-stop-recurring="'+esc(x.id)+'">Stop</button></div>').join('')||'<p class="dashboard-subheading">No active recurring expenses.</p>';}catch(err){el.textContent='Schedules unavailable: '+err.message;}}
 document.getElementById('recurring-list').addEventListener('click',async function(ev){var id=ev.target.dataset.stopRecurring;if(!id||!current)return;if(!confirm('Stop future repeats? Existing expenses will remain.'))return;try{await api('trackers/'+current.id+'/recurring/'+id,'DELETE');await loadRecurring();}catch(err){alert(err.message);}});
