@@ -672,8 +672,8 @@ body.settings-view #btn-settings { background:#65f5ac!important; color:#081b2b!i
     </div>
     <form id="form">
       <div class="row">
-        <input id="person1" list="people" placeholder="Person 1" autocomplete="off" required>
-        <input id="person2" list="people" placeholder="Person 2" autocomplete="off" required>
+        <select id="person1" required aria-label="Who owes money"><option value="">Who owes money?</option></select>
+        <select id="person2" required aria-label="Who is owed money"><option value="">Who is owed money?</option></select>
       </div>
       <datalist id="people"></datalist>
       <div class="row">
@@ -1013,9 +1013,18 @@ function render() {
   var result = computeNet();
   var people = result.people;
 
-  // autocomplete list
-  document.getElementById("people").innerHTML =
-    people.map(function (p) { return '<option value="' + esc(names[p]) + '">'; }).join("");
+  // Shared trackers only allow real tracker members. Preserve selection on refresh.
+  var memberNames = (cloud && typeof current !== 'undefined' && current && Array.isArray(current.members))
+    ? current.members.map(function(m){ return (m.name || m.email || '').trim(); }).filter(Boolean)
+    : people.map(function(p){ return names[p]; });
+  ['person1','person2'].forEach(function(id){
+    var select = document.getElementById(id), previous = select.value;
+    var label = id === 'person1' ? 'Who owes money?' : 'Who is owed money?';
+    select.innerHTML = '<option value="">'+label+'</option>' + memberNames.map(function(name){
+      return '<option value="'+esc(name)+'">'+esc(name)+'</option>';
+    }).join('');
+    if (memberNames.includes(previous)) select.value = previous;
+  });
 
   // net balances
   var netsHtml = result.pairs.map(function (p) {
@@ -1103,10 +1112,17 @@ document.getElementById("form").addEventListener("submit", function (e) {
   var a = document.getElementById("person1").value;
   var b = document.getElementById("person2").value;
   var amt = parseFloat(document.getElementById("amount").value);
-  if (norm(a) === norm(b)) { alert("Pick two different people."); return; }
+  if (!a || !b || norm(a) === norm(b)) { alert("Choose two different tracker members."); return; }
+  if (cloud && current && current.members) {
+    var valid = current.members.map(function(m){ return norm(m.name || m.email || ''); });
+    if (!valid.includes(norm(a)) || !valid.includes(norm(b))) {
+      alert('Choose both people from the members of this tracker.'); return;
+    }
+  }
   if (!(amt > 0)) return;
   addEntry(mode, a, b, amt, document.getElementById("note").value);
   e.target.reset();
+  render();
   document.getElementById("entry-card").classList.remove("entry-open");
   document.getElementById("quick-expense").setAttribute("aria-expanded", "false");
   document.getElementById("quick-payment").setAttribute("aria-expanded", "false");
@@ -1845,7 +1861,7 @@ window.squareUpSendReminder = function (fromKey, toKey, shownAmount) {
   var people = current.members;
   var debtor = people.find(function(m){ return (m.name || m.email || '').trim().toLowerCase() === String(fromKey).trim().toLowerCase(); });
   var creditor = people.find(function(m){ return (m.name || m.email || '').trim().toLowerCase() === String(toKey).trim().toLowerCase(); });
-  if (!debtor || !creditor) { alert('Could not match both people to members of this tracker.'); return; }
+  if (!debtor || !creditor) { alert('This balance uses a name that is not linked to a current tracker member. Delete the old expense and add it again, selecting both people from the new member dropdowns.'); return; }
   if (!creditor.isYou) { alert('Only the person owed money can send this reminder.'); return; }
   if (debtor.isYou || !debtor.email) { alert('No recipient email is available.'); return; }
   // Recalculate the balance from current tracker entries instead of trusting the button amount.
