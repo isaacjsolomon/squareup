@@ -869,8 +869,14 @@ export async function onRequest({ request, env, params }) {
 
     const m = await member(id);
 
-    if (!m)
-      return fail('Tracker not found.', 404);
+   if (!m) {
+  console.error('Tracker membership check failed', {
+    trackerId: id,
+    userId: me.id
+  });
+
+  return fail('Tracker not found.', 404);
+}
 
     const owner = m.role === 'owner';
     const sub = parts[2];
