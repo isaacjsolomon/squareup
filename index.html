@@ -847,6 +847,34 @@ body.side-collapsed .sidebar .sidebar-top-row .logo-btn {display:inline-flex!imp
 .entry-pin-btn.is-pinned { background: #65d9a8; color: #10283a; border-color: #65d9a8; }
 .entry-pin-btn:focus-visible { outline: 2px solid #a5f7d6; outline-offset: 3px; }
 
+
+/* Tracker tools: match the two-column ocean dashboard mockup. */
+.tracker-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+  margin-bottom: 18px;
+}
+.tracker-tools-left { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.tracker-tools-left .tracker-collapsible { margin: 0 !important; border-radius: 17px !important; }
+.tracker-tools-left .tracker-collapsible > summary {
+  min-height: 75px;
+  padding: 17px 23px;
+  font-size: 1.15rem;
+}
+.tracker-tools-grid #recurring-card {
+  margin: 0 !important;
+  min-width: 0;
+  border-radius: 18px;
+  padding: 24px 25px;
+}
+.tracker-tools-grid #recurring-card h2 { margin-top: 0; }
+@media (max-width: 720px) {
+  .tracker-tools-grid { grid-template-columns: 1fr; gap: 12px; }
+  .tracker-tools-left .tracker-collapsible > summary { min-height: 57px; padding: 12px 17px; font-size: 1rem; }
+  .tracker-tools-grid #recurring-card { padding: 20px; }
+}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -994,9 +1022,13 @@ body.side-collapsed .sidebar .sidebar-top-row .logo-btn {display:inline-flex!imp
     </form>
   </div>
 
+  <div class="tracker-tools-grid">
+    <div class="tracker-tools-left">
   <details class="card tracker-collapsible" id="smart-settle-card"><summary><span>✨ Smart settle-up</span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Simplify group debts into fewer payments. Suggestions do not move money.</p><div id="smart-settle-list"></div></div></details>
   <details class="card tracker-collapsible" id="chat-card"><summary><span>💬 Tracker group chat</span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Messages are shared with everyone in this tracker and appear in their notification centers.</p><div id="tracker-chat-messages" class="chat-messages">Open a tracker to see messages.</div><form id="tracker-chat-form" class="chat-compose"><input id="tracker-chat-input" maxlength="1200" placeholder="Message your group…" aria-label="Message your group" required><button type="submit" class="primary">Send</button></form></div></details>
+    </div>
   <div class="card" id="recurring-card"><h2>↻ Recurring expenses</h2><p class="dashboard-subheading">Manage repeating expenses for this tracker.</p><div id="recurring-list"></div></div>
+  </div>
   <!-- RECENT ACTIVITY -->
   <div class="card">
     <h2>Recent Activity</h2>
