@@ -652,6 +652,12 @@ body.side-collapsed .sidebar .notification-bell, body.side-collapsed .sidebar-no
   outline: 2px solid #65f5ac;
   outline-offset: 3px;
 }
+
+/* Receipt form footer */
+.receipt-footer-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+#receipt-clear.receipt-clear-btn{background:#19334a;color:#c8d9e8;border:1px solid #426077;border-radius:14px;padding:13px 19px;font-weight:700;cursor:pointer}
+#receipt-clear.receipt-clear-btn:hover{background:#24455e;border-color:#7b9fb4;color:#fff}
+
 </style>
 </head>
 <body>
@@ -739,7 +745,7 @@ body.side-collapsed .sidebar .notification-bell, body.side-collapsed .sidebar-no
     <div class="row" style="margin-top:12px"><label>Tax ($)<input type="number" id="receipt-tax" min="0" step=".01" value="0"></label><label>Tip ($)<input type="number" id="receipt-tip" min="0" step=".01" value="0"></label></div>
     <label>Due date (optional)<input type="date" id="receipt-due"></label>
     <div id="receipt-preview" style="margin:12px 0"></div>
-    <button type="button" class="primary" id="receipt-save">Save assigned expenses</button>
+    <div class="receipt-footer-actions"><button type="button" class="primary" id="receipt-save">Save assigned expenses</button><button type="button" class="small-btn receipt-clear-btn" id="receipt-clear">Clear receipt</button></div>
   </div>
   <!-- ENTRY FORM: shown by quick actions -->
   <div class="card" id="entry-card">
@@ -2745,6 +2751,15 @@ function receiptPreview(){
 }
 document.getElementById('quick-receipt').onclick=function(){var card=document.getElementById('receipt-card');card.hidden=!card.hidden;if(!card.hidden){if(!current){alert('Open a shared tracker to save receipt expenses.');card.hidden=true;return;}if(!receiptLines.length)receiptLines=[{name:'',amount:'',people:[]}];receiptDraw();card.scrollIntoView({behavior:'smooth',block:'start'});}};
 document.getElementById('receipt-add-item').onclick=()=>receiptAddLine('', '');
+document.getElementById('receipt-clear').onclick=function(){
+ receiptLines=[];
+ document.getElementById('receipt-file').value='';
+ document.getElementById('receipt-tax').value='0';
+ document.getElementById('receipt-tip').value='0';
+ document.getElementById('receipt-due').value='';
+ document.getElementById('receipt-status').textContent='';
+ receiptDraw();
+};
 document.getElementById('receipt-items').addEventListener('input',function(e){var t=e.target,i=Number(t.dataset.itemName??t.dataset.itemPrice??t.dataset.itemPerson);if(!receiptLines[i])return;if(t.dataset.itemName!==undefined)receiptLines[i].name=t.value;if(t.dataset.itemPrice!==undefined)receiptLines[i].amount=t.value;if(t.dataset.itemPerson!==undefined){receiptLines[i].people=t.checked?[...receiptLines[i].people,t.dataset.person]:receiptLines[i].people.filter(p=>p!==t.dataset.person);}receiptPreview();});
 document.getElementById('receipt-items').addEventListener('click',function(e){var i=e.target.dataset.itemRemove;if(i!==undefined){receiptLines.splice(Number(i),1);receiptDraw();}});
 ['receipt-payer','receipt-tax','receipt-tip'].forEach(id=>document.getElementById(id).addEventListener('input',receiptPreview));
