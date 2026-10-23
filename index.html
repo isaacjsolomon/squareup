@@ -615,6 +615,43 @@ body.settings-view #btn-settings { background:#65f5ac!important; color:#081b2b!i
 @media (max-width: 650px) {
   #entry-card #person1, #entry-card #person2 { font-size: 16px; min-height: 54px; }
 }
+
+/* Compact sidebar notifications */
+.sidebar-top-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px; }
+.sidebar-top-row .logo-btn { margin-bottom:0; }
+.sidebar .notification-bell { position:relative; display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; padding:0; border:1px solid rgba(173,202,225,.20); border-radius:11px; background:rgba(255,255,255,.045); color:#b8c9dc; cursor:pointer; transition:background .15s,color .15s; }
+.sidebar .notification-bell:hover,.sidebar .notification-bell[aria-expanded="true"] { background:rgba(255,255,255,.12); color:#fff; }
+.notification-count { position:absolute; right:-5px; top:-6px; min-width:17px; height:17px; padding:0 4px; border-radius:12px; background:#57eab1; color:#092336; font-size:10px; font-weight:800; line-height:17px; text-align:center; }
+.notification-count[hidden] { display:none!important; }
+.sidebar-notification-panel { margin:4px 0 14px; padding:12px; border:1px solid rgba(173,202,225,.22); border-radius:13px; background:#10263c; max-height:min(58vh,450px); overflow-y:auto; }
+.sidebar-notification-panel[hidden] { display:none!important; }
+.notification-panel-heading { font-weight:750; font-size:14px; margin-bottom:9px; color:#e7f0fa; }
+.sidebar-notification-panel .entry { padding:10px 0; border-bottom:1px solid rgba(173,202,225,.13); font-size:12px; }
+.sidebar-notification-panel .entry:last-child { border-bottom:0; }
+.sidebar-notification-panel .entry .note { font-size:11px; line-height:1.5; overflow-wrap:anywhere; }
+.sidebar-notification-panel .small-btn { width:auto; padding:6px 8px; font-size:11px; margin-top:6px; }
+#quick-payment { display:none!important; }
+body.side-collapsed .sidebar-top-row { margin-bottom:0; }
+body.side-collapsed .sidebar .notification-bell, body.side-collapsed .sidebar-notification-panel { display:none!important; }
+
+/* Receipt editor: subtle mint-on-navy add-item action */
+#receipt-add-item.receipt-add-item-btn {
+  background: #173447;
+  border: 1px solid #3c796c;
+  color: #83f5bd;
+  font-weight: 700;
+  padding: 11px 17px;
+  border-radius: 12px;
+  transition: background .15s ease, border-color .15s ease;
+}
+#receipt-add-item.receipt-add-item-btn:hover {
+  background: #204a4c;
+  border-color: #65f5ac;
+}
+#receipt-add-item.receipt-add-item-btn:focus-visible {
+  outline: 2px solid #65f5ac;
+  outline-offset: 3px;
+}
 </style>
 </head>
 <body>
@@ -622,9 +659,19 @@ body.settings-view #btn-settings { background:#65f5ac!important; color:#081b2b!i
 <aside class="sidebar" aria-label="Account and trackers">
   <!-- ACCOUNT -->
   <div class="side-section side-account">
-    <button type="button" class="logo-btn" id="side-toggle" aria-expanded="true" aria-label="Collapse side panel" title="Collapse side panel">
-      <img class="logo" src="/images/logo.png" alt="" width="40" height="40">
-    </button>
+    <div class="sidebar-top-row">
+      <button type="button" class="logo-btn" id="side-toggle" aria-expanded="true" aria-label="Collapse side panel" title="Collapse side panel">
+        <img class="logo" src="/images/logo.png" alt="" width="40" height="40">
+      </button>
+      <button type="button" id="notifications-toggle" class="notification-bell" aria-label="Open notifications" title="Notifications" aria-expanded="false" aria-controls="notifications-panel">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+        <span id="notifications-count" class="notification-count" hidden></span>
+      </button>
+    </div>
+    <div id="notifications-panel" class="sidebar-notification-panel" hidden>
+      <div class="notification-panel-heading">Updates</div>
+      <div id="notifications-list"></div>
+    </div>
     <div class="me" id="me" hidden>
       <button type="button" class="avatar me-avatar" id="me-avatar" aria-label="Change profile photo"></button>
       <span class="who" id="who"></span>
@@ -672,15 +719,11 @@ body.settings-view #btn-settings { background:#65f5ac!important; color:#081b2b!i
     <div id="nets"></div>
   </div>
 
-  <div class="card" id="notification-center" style="margin-bottom:18px">
-    <button type="button" id="notifications-toggle" class="small-btn" aria-expanded="false">🔔 Notifications <span id="notifications-count"></span></button>
-    <div id="notifications-panel" hidden><p style="color:var(--muted)">Payment confirmations, expenses and due dates appear here.</p><div id="notifications-list"></div></div>
-  </div>
   <!-- QUICK ACTIONS -->
   <div class="dashboard-actions" aria-label="Tracker actions">
     <button type="button" class="dashboard-action" id="quick-pay-now"><span class="action-icon">↗</span>Pay Now<span class="action-sub">Send via Venmo or Cash App</span></button>
     <button type="button" class="dashboard-action expense" id="quick-expense" aria-expanded="false" aria-controls="entry-card"><span class="action-icon">＋</span>Add Expense<span class="action-sub">Manually add an expense</span></button>
-    <button type="button" class="dashboard-action" id="quick-payment" aria-expanded="false" aria-controls="entry-card"><span class="action-icon">▤</span>Log Payment<span class="action-sub">Record a payment you made</span></button>
+    <button type="button" class="dashboard-action" id="quick-payment" hidden aria-expanded="false" aria-controls="entry-card"><span class="action-icon">▤</span>Log Payment<span class="action-sub">Record a payment you made</span></button>
     <button type="button" class="dashboard-action" id="quick-receipt"><span class="action-icon">▧</span>Scan Receipt<span class="action-sub">Assign items to friends</span></button>
     <button type="button" class="dashboard-action" id="quick-split"><span class="action-icon" aria-hidden="true"><svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Split a Bill<span class="action-sub">Divide an expense with friends</span></button>
   </div>
@@ -692,7 +735,7 @@ body.settings-view #btn-settings { background:#65f5ac!important; color:#081b2b!i
     <div id="receipt-status" role="status" style="margin:10px 0;color:var(--muted)"></div>
     <label>Who paid? <select id="receipt-payer"></select></label>
     <div id="receipt-items"></div>
-    <button type="button" class="small-btn" id="receipt-add-item">+ Add item</button>
+    <button type="button" class="small-btn receipt-add-item-btn" id="receipt-add-item">＋ Add item</button>
     <div class="row" style="margin-top:12px"><label>Tax ($)<input type="number" id="receipt-tax" min="0" step=".01" value="0"></label><label>Tip ($)<input type="number" id="receipt-tip" min="0" step=".01" value="0"></label></div>
     <label>Due date (optional)<input type="date" id="receipt-due"></label>
     <div id="receipt-preview" style="margin:12px 0"></div>
@@ -2667,7 +2710,7 @@ async function refreshInbox(){
 }
 function drawInbox(){
  var count=inbox.filter(n=>!n.read_at).length;
- document.getElementById('notifications-count').textContent=count?'('+count+' new)':'';
+ var badge=document.getElementById('notifications-count');badge.textContent=count>99?'99+':String(count);badge.hidden=!count;
  var due=(current?.entries||[]).filter(e=>e.type==='debt'&&e.dueDate&&e.dueDate<=new Date(Date.now()+3*86400000).toISOString().slice(0,10)&&e.paymentStatus!=='disputed');
  var dueHtml=due.map(e=>'<div class="entry"><div class="text"><b>'+esc(e.dueDate<new Date().toISOString().slice(0,10)?'Overdue':'Due soon')+'</b> · '+esc(e.from)+' owes '+esc(e.to)+' '+money(e.amount)+'<div class="note">Due '+esc(e.dueDate)+'</div></div></div>').join('');
  document.getElementById('notifications-list').innerHTML=(inbox.map(n=>'<div class="entry"><div class="text"><b>'+esc(n.title)+'</b><div class="note">'+esc(n.message)+' · '+esc(new Date(n.created_at).toLocaleString())+'</div>'+(n.kind==='payment_pending'&&n.entry_id?'<button class="small-btn" data-confirm-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Confirm payment</button> <button class="small-btn danger" data-dispute-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Dispute</button>':'')+'</div>'+(n.read_at?'':'<button class="small-btn" data-read-notification="'+esc(n.id)+'">Mark read</button>')+'</div>').join('')||'<p>No notifications yet.</p>')+dueHtml;
