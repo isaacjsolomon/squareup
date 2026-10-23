@@ -1014,8 +1014,9 @@ if (
       }
     }
 
+    
     // TRACKER GROUP CHAT
-    if (sub === 'chat') {
+    if (sub === 'chat' && parts.length === 3) {
       if (method === 'GET') {
         const rows = await db('squareup_chat_messages', {
           filters: { tracker_id: 'eq.' + id },
@@ -1023,8 +1024,39 @@ if (
           limit: 200
         });
 
+        const reactionRows = rows.length
+          ? await db('squareup_chat_reactions', {
+              filters: { tracker_id: 'eq.' + id },
+              limit: 1000
+            })
+          : [];
+
         return json(rows.map(r => ({
           id: r.id,
+          replyTo: r.reply_to || null,
+          reactions: Object.values(
+            reactionRows
+              .filter(x => String(x.message_id) === String(r.id))
+              .reduce((acc, x) => {
+                const emoji = x.emoji;
+
+                if (!acc[emoji]) {
+                  acc[emoji] = {
+                    emoji,
+                    count: 0,
+                    mine: false
+                  };
+                }
+
+                acc[emoji].count++;
+
+                if (x.user_id === me.id) {
+                  acc[emoji].mine = true;
+                }
+
+                return acc;
+              }, {})
+          ),
           senderId: r.sender_id,
           senderName: r.sender_name,
           message: r.message,
@@ -1034,9 +1066,38 @@ if (
 
       if (method === 'POST') {
         const message = clean(body.message, 1200);
+        const replyTo = body.replyTo
+          ? String(body.replyTo)
+          : null;
 
-        if (!message)
+        if (!message) {
           return fail('Write a message first.');
+        }
+
+        if (
+          replyTo &&
+          !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(replyTo) &&
+          !/^[0-9]{1,19}$/.test(replyTo)
+        ) {
+          return fail('Invalid reply message.', 400);
+        }
+
+        if (replyTo) {
+          const parent = await db('squareup_chat_messages', {
+            filters: {
+              id: 'eq.' + replyTo,
+              tracker_id: 'eq.' + id
+            },
+            limit: 1
+          });
+
+          if (!parent.length) {
+            return fail(
+              'Message being replied to was not found.',
+              404
+            );
+          }
+        }
 
         const members = await db('tracker_members', {
           filters: { tracker_id: 'eq.' + id }
@@ -1054,7 +1115,8 @@ if (
             tracker_id: id,
             sender_id: me.id,
             sender_name: senderName,
-            message
+            message,
+            reply_to: replyTo
           }
         }))[0];
 
@@ -1081,6 +1143,76 @@ if (
 
       return fail('Method not allowed', 405);
     }
+
+    // CHAT REACTIONS
+    if (
+      sub === 'chat' &&
+      parts.length === 5 &&
+      parts[4] === 'reactions' &&
+      method === 'POST'
+    ) {
+      const messageId = String(parts[3] || '');
+
+      if (
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(messageId) &&
+        !/^[0-9]{1,19}$/.test(messageId)
+      ) {
+        return fail('Invalid message ID.', 400);
+      }
+
+      const emoji = clean(body.emoji, 10);
+
+      if (!['❤️', '👍', '😂', '🎉'].includes(emoji)) {
+        return fail('Unsupported reaction.', 400);
+      }
+
+      const messages = await db('squareup_chat_messages', {
+        filters: {
+          id: 'eq.' + messageId,
+          tracker_id: 'eq.' + id
+        },
+        limit: 1
+      });
+
+      if (!messages.length) {
+        return fail('Message not found.', 404);
+      }
+
+      const filters = {
+        tracker_id: 'eq.' + id,
+        message_id: 'eq.' + messageId,
+        user_id: 'eq.' + me.id,
+        emoji: 'eq.' + emoji
+      };
+
+      const existing = await db('squareup_chat_reactions', {
+        filters,
+        limit: 1
+      });
+
+      if (existing.length) {
+        await db('squareup_chat_reactions', {
+          method: 'DELETE',
+          filters
+        });
+      } else {
+        await db('squareup_chat_reactions', {
+          method: 'POST',
+          body: {
+            tracker_id: id,
+            message_id: messageId,
+            user_id: me.id,
+            emoji
+          }
+        });
+      }
+
+      return json({
+        ok: true,
+        selected: !existing.length
+      });
+    }
+
 
     // RECURRING EXPENSES
     if (sub === 'recurring') {
