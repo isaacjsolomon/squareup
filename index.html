@@ -666,11 +666,16 @@ body.side-collapsed .sidebar .notification-bell, body.side-collapsed .sidebar-no
 .sidebar .who{color:#f0f6ff!important}
 .sq-nav-link{width:100%;display:flex;align-items:center;gap:14px;text-align:left;padding:12px 14px;border:0;border-radius:13px;background:transparent;color:#b5c9de;font:600 15px inherit;cursor:pointer;transition:background .18s,color .18s}
 .sq-nav-link span{width:24px;font-size:23px;line-height:1;text-align:center;font-weight:400}
+.sq-nav-link .sq-nav-icon{display:inline-flex;align-items:center;justify-content:center}
+.sq-nav-icon svg{width:24px;height:24px}
+.sq-nav-link .profile-icon{color:#65f5ac}
+.sidebar #btn-settings.sq-nav-link{width:100%;display:flex;align-items:center;gap:14px;text-align:left;padding:12px 14px!important;border-radius:13px;font-size:15px!important;cursor:pointer}
+.sidebar #btn-settings.sq-nav-link.active{background:#193851!important;color:#fff!important}
 .sq-nav-link:hover,.sq-nav-link.active{background:#193851;color:#fff}
 .sq-nav-link:focus-visible{outline:2px solid #65f5ac;outline-offset:2px}
 .squareup-nav{display:flex;flex-direction:column;gap:3px;padding:5px 0 11px}
 .sidebar .settings{margin-top:0}
-.sidebar #btn-settings{background:transparent!important;color:#b5c9de!important;border:0!important;padding:11px 14px!important;font-weight:600!important}
+.sidebar #btn-settings{background:transparent!important;color:#b5c9de!important;border:0!important;font-weight:600!important}
 .sidebar #btn-settings:hover,body.settings-view .sidebar #btn-settings{background:#193851!important;color:#fff!important}
 #about-page{display:none;max-width:1150px;margin:0 auto;color:#f2f7ff}
 body.about-view #about-page{display:block}
@@ -754,12 +759,12 @@ body.trackers-view #tracker-dashboard,body.trackers-view #split-page,body.tracke
     </div>
 <nav class="squareup-nav" aria-label="Main navigation">
   <button type="button" id="nav-home" class="sq-nav-link active" aria-current="page"><span>⌂</span> Home</button>
-  <button type="button" id="nav-trackers" class="sq-nav-link"><span>♧</span> Trackers</button>
-  <button type="button" id="nav-profile" class="sq-nav-link"><span>♙</span> Profile</button>
+  <button type="button" id="nav-trackers" class="sq-nav-link"><span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h10M7 13h6M7 17h9"/></svg></span> Trackers</button>
+  <button type="button" id="nav-profile" class="sq-nav-link"><span class="sq-nav-icon profile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M21 20v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Profile</button>
   <button type="button" id="nav-about" class="sq-nav-link"><span>ⓘ</span> About</button>
+  <button type="button" id="btn-settings" class="sq-nav-link" aria-label="Open settings page"><span>⚙</span> Settings</button>
 </nav>
     <div class="settings">
-      <button type="button" class="small-btn" id="btn-settings" aria-label="Open settings page">⚙ Settings</button>
       <div class="settings-menu" id="settings-menu" role="menu" hidden style="display:none!important">
         <button type="button" role="menuitem" id="btn-login">Log in</button>
         <button type="button" role="menuitem" id="btn-signup">Create account</button>
@@ -1925,7 +1930,7 @@ function settingsRoute(page) {
   document.body.classList.remove('split-view','settings-view','about-view','trackers-view');
   if(page==='trackers')document.body.classList.add('trackers-view');
   if(page==='about')document.body.classList.add('about-view');
-  document.querySelectorAll('.sq-nav-link').forEach(function(b){var active=b.id==='nav-'+(page==='settings'?'profile':page==='about'?'about':page==='trackers'?'trackers':'home');b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
+  document.querySelectorAll('.sq-nav-link').forEach(function(b){var active=b.id==='nav-'+(page==='settings'?'settings':page==='about'?'about':page==='trackers'?'trackers':'home');b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
   if (page==='settings') document.body.classList.add('settings-view');
   var url=page==='settings'?'#settings':page==='about'?'#about':page==='trackers'?'#trackers':'';
   history.replaceState(null,'',location.pathname+location.search+url);
