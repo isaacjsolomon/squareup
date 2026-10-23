@@ -155,13 +155,13 @@ console.log('MEMBERSHIP DEBUG', {
   matchingMembers: rows.length,
   memberFound: rows.length > 0
 });
-
-if (rows.length) return rows[0];
 console.log('MEMBER QUERY RESULT', {
   trackerId: id,
   userId: me.id,
   rowsFound: rows.length
 });
+if (rows.length) return rows[0];
+
     const owned = await db('trackers', {
       filters: {
         id: 'eq.' + id,
