@@ -794,10 +794,14 @@ if (
       if (parts.length === 2 && method === 'PATCH') {
         const notificationId = String(parts[1] || '');
 
-        if (!uuid.test(notificationId) &&
-            !/^[0-9]{1,19}$/.test(notificationId)) {
-          return fail('Invalid notification ID.', 400);
-        }
+       
+if (
+  !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(notificationId) &&
+  !/^[0-9]{1,19}$/.test(notificationId)
+) {
+  return fail('Invalid notification ID.', 400);
+}
+
 
         const updated = await db('squareup_notifications', {
           method: 'PATCH',
