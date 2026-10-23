@@ -658,6 +658,48 @@ body.side-collapsed .sidebar .notification-bell, body.side-collapsed .sidebar-no
 #receipt-clear.receipt-clear-btn{background:#19334a;color:#c8d9e8;border:1px solid #426077;border-radius:14px;padding:13px 19px;font-weight:700;cursor:pointer}
 #receipt-clear.receipt-clear-btn:hover{background:#24455e;border-color:#7b9fb4;color:#fff}
 
+
+/* About page and refreshed mockup-style navigation */
+.sidebar {background:linear-gradient(165deg,#091c30,#0b2139 70%,#102941)!important;gap:13px}
+.sidebar .side-account{gap:13px}
+.sidebar .me{margin:5px 0 3px}
+.sidebar .who{color:#f0f6ff!important}
+.sq-nav-link{width:100%;display:flex;align-items:center;gap:14px;text-align:left;padding:12px 14px;border:0;border-radius:13px;background:transparent;color:#b5c9de;font:600 15px inherit;cursor:pointer;transition:background .18s,color .18s}
+.sq-nav-link span{width:24px;font-size:23px;line-height:1;text-align:center;font-weight:400}
+.sq-nav-link:hover,.sq-nav-link.active{background:#193851;color:#fff}
+.sq-nav-link:focus-visible{outline:2px solid #65f5ac;outline-offset:2px}
+.squareup-nav{display:flex;flex-direction:column;gap:3px;padding:5px 0 11px}
+.sidebar .settings{margin-top:0}
+.sidebar #btn-settings{background:transparent!important;color:#b5c9de!important;border:0!important;padding:11px 14px!important;font-weight:600!important}
+.sidebar #btn-settings:hover,body.settings-view .sidebar #btn-settings{background:#193851!important;color:#fff!important}
+#about-page{display:none;max-width:1150px;margin:0 auto;color:#f2f7ff}
+body.about-view #about-page{display:block}
+body.about-view #tracker-dashboard,body.about-view #split-page,body.about-view #settings-page{display:none!important}
+.about-hero,.about-feature-grid,.about-mission{background:linear-gradient(145deg,#10273e,#0b1b2f);border:1px solid rgba(155,193,224,.16);border-radius:28px;box-shadow:0 14px 34px rgba(0,0,0,.15)}
+.about-hero{padding:44px 48px;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(220px,1fr);align-items:center;gap:20px;min-height:310px}
+.about-kicker{font-weight:800;letter-spacing:.09em;color:#90aac5;font-size:13px;margin-bottom:15px}
+.about-hero h2{font-size:clamp(30px,4vw,50px);line-height:1.13;letter-spacing:-.035em;margin:0 0 18px;color:#fff}
+#about-page em{font-style:normal;color:#60edaf}
+#about-page p{color:#b0c6dc;font-size:16px;line-height:1.65;margin:0}
+.about-hero-art{height:210px;position:relative;min-width:0}
+.about-float-card{position:absolute;width:215px;min-height:118px;background:linear-gradient(145deg,#1d3e63,#10263e);border:3px solid #2a4b7b;border-radius:21px;padding:20px;display:flex;align-items:center;gap:12px;box-shadow:0 16px 24px #07172980;transform:rotate(-10deg);top:4px;left:5px}
+.about-float-card.two{transform:rotate(-5deg);top:91px;left:70px;z-index:1}
+.about-dot{height:30px;width:30px;flex-shrink:0;border-radius:50%;background:#4c99ff}.about-dot.violet{background:#8c7bde}
+.about-fake-lines{font-size:11px;line-height:2;color:#456588}.about-float-card strong{font-size:12px;color:#5ef2ac;white-space:nowrap}.about-float-card.two strong{color:#ff6580}
+.about-feature-grid{margin-top:16px;padding:20px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.about-feature{border:1px solid #29445e;border-radius:20px;padding:22px 18px;min-height:195px;background:#10283f}
+.about-icon{display:inline-flex;align-items:center;justify-content:center;font-size:29px;background:#1b5260;color:#62eeb3;width:55px;height:55px;border-radius:14px;margin-bottom:16px}
+.about-icon.blue{color:#67b3ff;background:#1d3e63}.about-icon.purple{color:#ac8aff;background:#34345f}
+.about-feature h3{margin:0 0 10px;color:white;font-size:17px}.about-feature p{font-size:14px!important;line-height:1.55!important}
+.about-mission{margin-top:16px;padding:30px 42px;display:grid;grid-template-columns:1.6fr 1fr;gap:25px;align-items:center;overflow:hidden}
+.about-mission h2{font-size:clamp(22px,2.5vw,30px);margin:0 0 12px}.about-start{margin-top:18px;background:#5ff0ad;border:0;border-radius:11px;padding:11px 16px;font-weight:800;color:#0b2437;cursor:pointer}
+.about-sunset{height:170px;border-radius:100px 100px 15px 15px;position:relative;overflow:hidden;background:linear-gradient(#243554,#aa687c 62%,#1c4261 63%,#112b48)}
+.about-sun{position:absolute;width:96px;height:96px;border-radius:50%;background:#ffcb97;left:50%;top:50px;transform:translateX(-50%)}
+.about-hills{position:absolute;bottom:35px;width:110%;left:-5%;height:75px;background:#122e49;clip-path:polygon(0 90%,18% 50%,37% 80%,58% 62%,80% 87%,100% 48%,100% 100%,0 100%)}
+.about-sea{position:absolute;bottom:0;left:0;right:0;height:39px;background:repeating-linear-gradient(174deg,#163b5a 0 10px,#244b6a 11px 13px)}
+@media(max-width:950px){.about-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.about-hero{grid-template-columns:1fr}.about-hero-art{display:none}}
+@media(max-width:600px){.about-hero{padding:26px 22px}.about-feature-grid{padding:12px;gap:10px}.about-feature{padding:16px 12px}.about-mission{padding:25px 22px;grid-template-columns:1fr}.about-sunset{display:none}}
+body.side-collapsed .sidebar .squareup-nav{display:none}
 </style>
 </head>
 <body>
@@ -682,6 +724,12 @@ body.side-collapsed .sidebar .notification-bell, body.side-collapsed .sidebar-no
       <button type="button" class="avatar me-avatar" id="me-avatar" aria-label="Change profile photo"></button>
       <span class="who" id="who"></span>
     </div>
+<nav class="squareup-nav" aria-label="Main navigation">
+  <button type="button" id="nav-home" class="sq-nav-link active" aria-current="page"><span>⌂</span> Home</button>
+  <button type="button" id="nav-trackers" class="sq-nav-link"><span>♧</span> Trackers</button>
+  <button type="button" id="nav-profile" class="sq-nav-link"><span>♙</span> Profile</button>
+  <button type="button" id="nav-about" class="sq-nav-link"><span>ⓘ</span> About</button>
+</nav>
     <div class="settings">
       <button type="button" class="small-btn" id="btn-settings" aria-label="Open settings page">⚙ Settings</button>
       <div class="settings-menu" id="settings-menu" role="menu" hidden style="display:none!important">
@@ -896,6 +944,19 @@ body.side-collapsed .sidebar .notification-bell, body.side-collapsed .sidebar-no
   </div>
 </section>
 
+<section id="about-page" aria-label="About Square Up">
+  <div class="about-hero">
+    <div class="about-hero-copy"><div class="about-kicker">ABOUT SQUARE UP</div><h2>Keeping money<br>between friends <em>simple.</em></h2><p>Square Up makes it easy to track shared expenses, split bills, and settle up with friends. No awkward conversations, no spreadsheets — just a simple way to stay even.</p></div>
+    <div class="about-hero-art" aria-hidden="true"><div class="about-float-card one"><div class="about-dot"></div><div class="about-fake-lines">━━━━━━<br>━━━━</div><strong>+$18.50</strong></div><div class="about-float-card two"><div class="about-dot violet"></div><div class="about-fake-lines">━━━━━━<br>━━━━</div><strong>−$24.00</strong></div></div>
+  </div>
+  <div class="about-feature-grid">
+    <article class="about-feature"><span class="about-icon">♧</span><h3>Track together</h3><p>Keep all your shared expenses in one place.</p></article>
+    <article class="about-feature"><span class="about-icon blue">▦</span><h3>Split automatically</h3><p>See who owes who with up-to-date balances.</p></article>
+    <article class="about-feature"><span class="about-icon purple">▤</span><h3>Scan receipts</h3><p>Upload a receipt and assign items to friends.</p></article>
+    <article class="about-feature"><span class="about-icon">▣</span><h3>Stay organized</h3><p>Add due dates, get notifications, and settle up easily.</p></article>
+  </div>
+  <div class="about-mission"><div><div class="about-kicker">OUR MISSION</div><h2>Less confusion. <em>More time together.</em></h2><p>Square Up was built to make managing shared money effortless, so you can focus on what actually matters — your friends, experiences, and memories.</p><button type="button" id="about-start" class="about-start">Go to your trackers →</button></div><div class="about-sunset" aria-hidden="true"><div class="about-sun"></div><div class="about-hills"></div><div class="about-sea"></div></div></div>
+</section>
 <!-- AUTH MODAL -->
 <div class="modal-bg" id="auth-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
@@ -1308,6 +1369,7 @@ function openSplitPage() {
   document.getElementById("split-description").value = "";
   document.getElementById("split-total").value = "";
   document.getElementById("split-message").textContent = "This records expenses in SquareUp. No money is transferred.";
+  document.body.classList.remove("about-view","settings-view");
   document.body.classList.add("split-view");
   if (location.hash !== "#split-bill") history.pushState(null,"","#split-bill");
   renderSplitPage();
@@ -1828,9 +1890,11 @@ async function api(path, method, body) {
 var myProfileSettings = null;
 function settingsMessage(id, message, ok) { var el=$(id); el.textContent=message; el.style.color=ok?'#65f5ac':'#ff9db1'; }
 function settingsRoute(page) {
-  document.body.classList.remove('split-view','settings-view');
+  document.body.classList.remove('split-view','settings-view','about-view');
+  if(page==='about')document.body.classList.add('about-view');
+  document.querySelectorAll('.sq-nav-link').forEach(function(b){var active=b.id==='nav-'+(page==='settings'?'profile':page==='about'?'about':'home');b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
   if (page==='settings') document.body.classList.add('settings-view');
-  var url=page==='settings'?'#settings':'';
+  var url=page==='settings'?'#settings':page==='about'?'#about':'';
   history.replaceState(null,'',location.pathname+location.search+url);
   window.scrollTo(0,0);
 }
@@ -1872,6 +1936,14 @@ function showFriendPayments() {
   });
 }
 $("settings-back").onclick=function(){settingsRoute('dashboard');};
+$('nav-home').onclick=function(){settingsRoute('dashboard');};
+$('nav-trackers').onclick=function(){settingsRoute('dashboard');$('tracker-select').focus();};
+$('nav-profile').onclick=function(){openSettingsPage();};
+$('nav-about').onclick=function(){settingsRoute('about');};
+$('about-start').onclick=function(){settingsRoute('dashboard');$('tracker-select').focus();};
+if(location.hash==='#about')settingsRoute('about');
+else if(location.hash==='#settings')openSettingsPage();
+window.addEventListener('popstate',function(){if(location.hash==='#about')settingsRoute('about');else if(location.hash==='#settings')openSettingsPage();else if(document.body.classList.contains('about-view')||document.body.classList.contains('settings-view'))settingsRoute('dashboard');});
 $("settings-login").onclick=function(){openAuth('login');};
 $("settings-photo").onclick=function(){openPhoto();};
 $("settings-password").onclick=function(){ $("btn-change-pw").click(); };
