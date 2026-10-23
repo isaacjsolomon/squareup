@@ -777,6 +777,7 @@ if (
       return fail('Method not allowed', 405);
     }
 
+   
     // NOTIFICATIONS
     if (parts[0] === 'notifications') {
       if (parts.length === 1 && method === 'GET') {
@@ -789,13 +790,19 @@ if (
         return json(rows);
       }
 
-      if (parts[1] &&
-          uuid.test(parts[1]) &&
-          method === 'PATCH') {
-        await db('squareup_notifications', {
+      // Support UUID and numeric notification IDs.
+      if (parts.length === 2 && method === 'PATCH') {
+        const notificationId = String(parts[1] || '');
+
+        if (!uuid.test(notificationId) &&
+            !/^[0-9]{1,19}$/.test(notificationId)) {
+          return fail('Invalid notification ID.', 400);
+        }
+
+        const updated = await db('squareup_notifications', {
           method: 'PATCH',
           filters: {
-            id: 'eq.' + parts[1],
+            id: 'eq.' + notificationId,
             recipient_id: 'eq.' + me.id
           },
           body: {
@@ -803,11 +810,19 @@ if (
           }
         });
 
-        return json({ ok: true });
+        if (!updated.length) {
+          return fail('Notification not found.', 404);
+        }
+
+        return json({
+          ok: true,
+          notification: updated[0]
+        });
       }
 
       return fail('Not found', 404);
     }
+
 
     if (parts[0] !== 'trackers')
       return fail('Not found', 404);
