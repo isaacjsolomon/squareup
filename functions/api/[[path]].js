@@ -6,6 +6,39 @@ const json = (v, status = 200) => Response.json(v, { status });
 const fail = (message, status = 400) => json({ error: message }, status);
 const clean = (v, n) => typeof v === 'string' ? v.trim().slice(0, n) : '';
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+// SUPPORTED CURRENCIES
+const CURRENCIES = [
+  'USD', 'EUR', 'GBP', 'CAD', 'AUD',
+  'JPY', 'CHF', 'CNY', 'INR', 'MXN',
+  'BRL', 'KRW', 'SGD', 'HKD', 'NZD',
+  'SEK', 'NOK', 'DKK', 'ILS', 'ZAR'
+];
+
+const validCurrency = currency =>
+  CURRENCIES.includes(String(currency || '').toUpperCase());
+
+// Fetch exchange rates for converting expenses
+async function exchangeRate(from, to) {
+  if (from === to) return 1;
+
+  const response = await fetch(
+    'https://open.er-api.com/v6/latest/' +
+    encodeURIComponent(from)
+  );
+
+  if (!response.ok) {
+    throw Error('Exchange rates unavailable. Please try again later.');
+  }
+
+  const data = await response.json();
+  const rate = Number(data?.rates?.[to]);
+
+  if (data.result !== 'success' || !(rate > 0)) {
+    throw Error('Exchange rate unavailable for ' + from + '/' + to);
+  }
+
+  return rate;
+}
 const presets = ['indigo', 'sunset', 'ocean', 'forest', 'night', 'berry'];
 
 function kind(b) {
@@ -13,6 +46,34 @@ function kind(b) {
     b[0] === 137 && b[1] === 80 && b[2] === 78 ? 'image/png' :
     String.fromCharCode(...b.slice(0, 4)) === 'RIFF' &&
     String.fromCharCode(...b.slice(8, 12)) === 'WEBP' ? 'image/webp' : null;
+}
+
+// DETECT SUPPORTED IMAGE TYPES
+function kind(bytes) {
+  if (
+    bytes[0] === 255 &&
+    bytes[1] === 216 &&
+    bytes[2] === 255
+  ) {
+    return 'image/jpeg';
+  }
+
+  if (
+    bytes[0] === 137 &&
+    bytes[1] === 80 &&
+    bytes[2] === 78
+  ) {
+    return 'image/png';
+  }
+
+  if (
+    String.fromCharCode(...bytes.slice(0, 4)) === 'RIFF' &&
+    String.fromCharCode(...bytes.slice(8, 12)) === 'WEBP'
+  ) {
+    return 'image/webp';
+  }
+
+  return null;
 }
 
 function validate(v) {
@@ -340,6 +401,10 @@ if (
     return {
       id: t.id,
       name: t.name,
+      currency: t.currency || 'USD',
+budget: t.budget_amount == null
+  ? null
+  : Number(t.budget_amount),
       role: m.role,
       inviteToken: t.invite_token,
       backdrop: {
@@ -374,6 +439,15 @@ if (
         from: e.from_name,
         to: e.to_name,
         amount: Number(e.amount),
+        originalAmount: e.original_amount == null
+  ? Number(e.amount)
+  : Number(e.original_amount),
+
+originalCurrency: e.original_currency || t.currency || 'USD',
+
+exchangeRate: e.exchange_rate == null
+  ? 1
+  : Number(e.exchange_rate),
         note: e.note,
         date: e.date_label,
         dueDate: e.due_date || null,
@@ -388,7 +462,9 @@ if (
   }
 
   try {
-    const body = ['POST', 'PATCH'].includes(method)
+   const body = ['POST', 'PATCH'].includes(method) &&
+  (request.headers.get('Content-Type') || '')
+    .includes('application/json')
       ? await request.json().catch(() => ({}))
       : {};
 
@@ -867,6 +943,7 @@ if (
         return json(ts.map(t => ({
           id: t.id,
           name: t.name,
+          currency: t.currency || 'USD',
           role: members.find(
             m => m.tracker_id === t.id
           )?.role,
@@ -879,10 +956,17 @@ if (
       if (method === 'POST') {
         const name = clean(body.name, 80) || 'My tracker';
 
+        const currency = String(body.currency || 'USD').toUpperCase();
+
+if (!validCurrency(currency)) {
+  return fail('Unsupported currency.', 400);
+}
+
         const t = (await db('trackers', {
           method: 'POST',
           body: {
             name,
+            currency,
             owner_id: me.id
           }
         }))[0];
@@ -1014,6 +1098,156 @@ if (
       }
     }
 
+    // =============================================
+// GROUP BUDGETS
+// =============================================
+
+if (sub === 'budget' && parts.length === 3) {
+  if (method !== 'PATCH') {
+    return fail('Method not allowed', 405);
+  }
+
+  const amount =
+    body.amount === null || body.amount === ''
+      ? null
+      : Number(body.amount);
+
+  if (
+    amount !== null &&
+    (
+      !Number.isFinite(amount) ||
+      amount <= 0 ||
+      amount > 1e10
+    )
+  ) {
+    return fail('Enter a positive budget or clear it.', 400);
+  }
+
+  await db('trackers', {
+    method: 'PATCH',
+    filters: {
+      id: 'eq.' + id
+    },
+    body: {
+      budget_amount:
+        amount === null
+          ? null
+          : Math.round(amount * 100) / 100
+    }
+  });
+
+  return json(await detail(id));
+}
+
+
+// =============================================
+// CHAT PHOTO SHARING - VIEW PHOTOS
+// =============================================
+
+if (
+  sub === 'chat-photo' &&
+  parts.length === 4 &&
+  method === 'GET'
+) {
+  const photoId = String(parts[3] || '');
+
+  if (!uuid.test(photoId)) {
+    return fail('Photo not found.', 404);
+  }
+
+  const records = await db('squareup_chat_photos', {
+    filters: {
+      id: 'eq.' + photoId,
+      tracker_id: 'eq.' + id
+    },
+    limit: 1
+  });
+
+  if (!records.length) {
+    return fail('Photo not found.', 404);
+  }
+
+  const stored = await storage(
+    'squareup-chat-photos',
+    records[0].storage_path
+  );
+
+  if (!stored) {
+    return fail('Photo not found.', 404);
+  }
+
+  return new Response(stored.body, {
+    headers: {
+      'Content-Type':
+        stored.headers.get('Content-Type') || 'image/jpeg',
+      'Cache-Control': 'private, max-age=120',
+      'X-Content-Type-Options': 'nosniff'
+    }
+  });
+}
+
+
+// =============================================
+// CHAT PHOTO SHARING - UPLOAD PHOTOS
+// =============================================
+
+if (
+  sub === 'chat-photo' &&
+  parts.length === 3 &&
+  method === 'POST'
+) {
+  const bytes = new Uint8Array(
+    await request.arrayBuffer()
+  );
+
+  const type = bytes.length >= 12
+    ? kind(bytes)
+    : null;
+
+  if (
+    !type ||
+    bytes.length > 4 * 1024 * 1024
+  ) {
+    return fail(
+      'Upload a JPEG, PNG or WebP image under 4 MB.',
+      400
+    );
+  }
+
+  const photoId = crypto.randomUUID();
+  const path = id + '/' + photoId;
+
+  await storage(
+    'squareup-chat-photos',
+    path,
+    'POST',
+    bytes,
+    type
+  );
+
+  try {
+    await db('squareup_chat_photos', {
+      method: 'POST',
+      body: {
+        id: photoId,
+        tracker_id: id,
+        uploaded_by: me.id,
+        storage_path: path,
+        content_type: type
+      }
+    });
+  } catch (error) {
+    await storage(
+      'squareup-chat-photos',
+      path,
+      'DELETE'
+    ).catch(() => {});
+
+    throw error;
+  }
+
+  return json({ photoId }, 201);
+}
     
     // TRACKER GROUP CHAT
     if (sub === 'chat' && parts.length === 3) {
@@ -1058,22 +1292,54 @@ if (
               }, {})
           ),
           senderId: r.sender_id,
-          senderName: r.sender_name,
-          message: r.message,
-          createdAt: r.created_at
+         senderName: r.sender_name,
+message: r.message,
+photoId: r.photo_id || null,
+mentions: r.mentions || [],
+createdAt: r.created_at
         })));
       }
 
       if (method === 'POST') {
         const message = clean(body.message, 1200);
+        const photoId = body.photoId
+  ? String(body.photoId)
+  : null;
+
+if (!message && !photoId) {
+  return fail('Write a message or attach a photo.', 400);
+}
         const replyTo = body.replyTo
           ? String(body.replyTo)
           : null;
 
-        if (!message) {
-          return fail('Write a message first.');
-        }
+if (photoId) {
+  if (!uuid.test(photoId)) {
+    return fail('Invalid photo.', 400);
+  }
 
+  const photos = await db('squareup_chat_photos', {
+    filters: {
+      id: 'eq.' + photoId,
+      tracker_id: 'eq.' + id,
+      uploaded_by: 'eq.' + me.id
+    },
+    limit: 1
+  });
+
+  if (!photos.length) {
+    return fail('Photo not found.', 404);
+  }
+
+  const used = await db('squareup_chat_messages', {
+    filters: { photo_id: 'eq.' + photoId },
+    limit: 1
+  });
+
+  if (used.length) {
+    return fail('Photo already attached.', 400);
+  }
+}
         if (
           replyTo &&
           !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(replyTo) &&
@@ -1108,15 +1374,26 @@ if (
         );
 
         const senderName = mine?.name || me.name;
+const requestedMentions = Array.isArray(body.mentions)
+  ? body.mentions.slice(0, 30)
+  : [];
 
+const mentions = [
+  ...new Set(requestedMentions.map(String))
+].filter(userId =>
+  userId !== me.id &&
+  members.some(x => x.user_id === userId)
+);
         const row = (await db('squareup_chat_messages', {
           method: 'POST',
           body: {
             tracker_id: id,
             sender_id: me.id,
             sender_name: senderName,
-            message,
-            reply_to: replyTo
+  message,
+photo_id: photoId,
+mentions,
+reply_to: replyTo
           }
         }))[0];
 
@@ -1130,10 +1407,15 @@ if (
             body: others.map(x => ({
               recipient_id: x.user_id,
               tracker_id: id,
-              kind: 'chat',
-              title: 'New group message',
+              kind: mentions.includes(x.user_id)
+  ? 'mention'
+  : 'chat',
+
+title: mentions.includes(x.user_id)
+  ? senderName + ' mentioned you'
+  : 'New group message',
               message: senderName + ': ' +
-                message.slice(0, 180)
+(message || 'Shared a photo').slice(0, 180)
             }))
           });
         }
@@ -1359,7 +1641,47 @@ if (
             'Check the names and amount.',
             400
           );
+// CONVERT EXPENSES INTO TRACKER CURRENCY
 
+const tracker = (await db('trackers', {
+  filters: { id: 'eq.' + id },
+  limit: 1
+}))[0];
+
+const baseCurrency = tracker.currency || 'USD';
+
+const originalCurrency = String(
+  body.currency || baseCurrency
+).toUpperCase();
+
+if (!validCurrency(originalCurrency)) {
+  return fail('Unsupported currency.', 400);
+}
+
+if (
+  e.type === 'payment' &&
+  originalCurrency !== baseCurrency
+) {
+  return fail(
+    'Record payments in the tracker currency.',
+    400
+  );
+}
+
+const originalAmount = e.amount;
+
+const rate = await exchangeRate(
+  originalCurrency,
+  baseCurrency
+);
+
+e.amount = Math.round(
+  originalAmount * rate * 100
+) / 100;
+
+if (!(e.amount > 0)) {
+  return fail('Converted amount is too small.', 400);
+}
         const members = await db('tracker_members', {
           filters: { tracker_id: 'eq.' + id }
         });
@@ -1391,6 +1713,9 @@ if (
           method: 'POST',
           body: {
             ...e,
+            original_amount: originalAmount,
+original_currency: originalCurrency,
+exchange_rate: rate,
             tracker_id: id,
             created_by: me.id,
             payment_status: pending
