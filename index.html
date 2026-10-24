@@ -3359,22 +3359,29 @@ document.getElementById('tracker-chat-messages').addEventListener('click',e=>{va
  document.querySelectorAll('.sq-mobile-nav button').forEach(b=>b.addEventListener('click',()=>{const el=document.getElementById(b.dataset.target);if(el)el.click();document.querySelectorAll('.sq-mobile-nav button').forEach(x=>x.classList.toggle('active',x===b));if(b.dataset.target==='nav-home')tab('overview')}));
  document.getElementById('sq-mobile-bell')?.addEventListener('click',()=>document.getElementById('notifications-toggle')?.click());
  function updateStats(){
-  const me=(current?.members||[]).find(m=>m.isYou);
-  const ids=new Set([me?.name,me?.email,currentUser?.name,currentUser?.email].filter(Boolean).map(norm));
-  let owe=0,owed=0;
-  if(me && ids.size){
-   computeNet().pairs.forEach(p=>{
-    if(ids.has(p.from))owe+=Number(p.amount)||0;
-    if(ids.has(p.to))owed+=Number(p.amount)||0;
-   });
-  }
-  document.getElementById('sq-stat-owe').textContent=money(owe);
-  document.getElementById('sq-stat-owed').textContent=money(owed);
-  document.getElementById('sq-stat-net').textContent=(owed-owe>=0?'+':'−')+money(Math.abs(owed-owe));
+  const fmt = v => (typeof money === 'function' ? money(v) : '$' + Number(v).toFixed(2));
+  let owe=0, owed=0;
+  try {
+   const members=(typeof current !== 'undefined' && current && Array.isArray(current.members)) ? current.members : [];
+   const mine=members.find(m=>m.isYou) || members.find(m=>String(m.userId||m.user_id||m.id||'')===String(currentUser?.id||''));
+   const myNames=[mine?.name,mine?.email,currentUser?.name,currentUser?.email].filter(v=>typeof v==='string' && v.trim()).map(v=>v.trim().toLowerCase());
+   const names=new Set(myNames);
+   if(typeof computeNet==='function'){
+    computeNet().pairs.forEach(p=>{
+     if(names.has(String(p.from).trim().toLowerCase()))owe+=Number(p.amount)||0;
+     if(names.has(String(p.to).trim().toLowerCase()))owed+=Number(p.amount)||0;
+    });
+   }
+  } catch(error){ console.warn('Balance summary:',error); }
+  document.getElementById('sq-stat-owe').textContent=fmt(owe);
+  document.getElementById('sq-stat-owed').textContent=fmt(owed);
+  document.getElementById('sq-stat-net').textContent=(owed-owe>=0?'+':'−')+fmt(Math.abs(owed-owe));
  }
  const nets=document.getElementById('nets');
- let pending=false;
- new MutationObserver(()=>{if(pending)return;pending=true;queueMicrotask(()=>{pending=false;updateStats()})}).observe(nets,{childList:true,subtree:true,characterData:true});
+ if(nets){
+  let pending=false;
+  new MutationObserver(()=>{if(pending)return;pending=true;queueMicrotask(()=>{pending=false;updateStats()})}).observe(nets,{childList:true,subtree:true,characterData:true});
+ }
  updateStats();
 })();
 </script></body>
