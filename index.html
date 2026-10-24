@@ -3359,39 +3359,29 @@ document.getElementById('tracker-chat-messages').addEventListener('click',e=>{va
  document.querySelectorAll('.sq-mobile-nav button').forEach(b=>b.addEventListener('click',()=>{const el=document.getElementById(b.dataset.target);if(el)el.click();document.querySelectorAll('.sq-mobile-nav button').forEach(x=>x.classList.toggle('active',x===b));if(b.dataset.target==='nav-home')tab('overview')}));
  document.getElementById('sq-mobile-bell')?.addEventListener('click',()=>document.getElementById('notifications-toggle')?.click());
  function updateStats(){
-  const fmt=v=>(typeof money==='function'?money(v):'$'+Number(v).toFixed(2));
-  const normalize=v=>String(v||'').trim().toLowerCase();
+  const fmt=v=>money(Math.round((Number(v)||0)*100)/100);
+  const normalize=v=>String(v??'').trim().toLowerCase();
   let owe=0,owed=0;
   try{
-   const members=(current&&Array.isArray(current.members))?current.members:[];
-   const userId=normalize(currentUser?.id);
-   const userEmail=normalize(currentUser?.email);
-   const mine=members.find(m=>m.isYou)||members.find(m=>
-     (userId&&[m.userId,m.user_id,m.id].some(v=>normalize(v)===userId))||
-     (userEmail&&normalize(m.email)===userEmail));
-   const identities=new Set([mine?.name,mine?.displayName,mine?.display_name,mine?.email,
-     currentUser?.name,currentUser?.displayName,currentUser?.display_name,currentUser?.email]
+   const members=Array.isArray(current?.members)?current.members:[];
+   const mine=members.find(m=>m.isYou)||members.find(m=>normalize(m.id||m.userId||m.user_id)===normalize(currentUser?.id));
+   const identities=new Set(['you',mine?.name,mine?.displayName,mine?.display_name,mine?.email,mine?.username,
+     currentUser?.name,currentUser?.displayName,currentUser?.display_name,currentUser?.email,currentUser?.username]
      .map(normalize).filter(Boolean));
-   // Match names against the actual expense entries, not just member IDs.
-   const pairs=typeof computeNet==='function'?computeNet().pairs:[];
+   // The expense ledger uses names, not account IDs. Include all names associated
+   // with the signed-in tracker member, including the literal 'You' label.
+   const pairs=computeNet().pairs;
    for(const p of pairs){
     if(identities.has(normalize(p.from)))owe+=Number(p.amount)||0;
     if(identities.has(normalize(p.to)))owed+=Number(p.amount)||0;
    }
-   // When profile names differ from expense names, identify the signed-in member
-   // through the member list and the tracker’s displayed names.
-   if(!owe&&!owed&&pairs.length&&mine){
-    const names=[mine.name,mine.displayName,mine.display_name].map(normalize).filter(Boolean);
-    for(const p of pairs){
-     if(names.includes(normalize(p.from)))owe+=Number(p.amount)||0;
-     if(names.includes(normalize(p.to)))owed+=Number(p.amount)||0;
-    }
-   }
   }catch(error){console.warn('Balance summary:',error);}
   document.getElementById('sq-stat-owe').textContent=fmt(owe);
   document.getElementById('sq-stat-owed').textContent=fmt(owed);
-  document.getElementById('sq-stat-net').textContent=(owed-owe>=0?'+':'−')+fmt(Math.abs(owed-owe));
+  const net=owed-owe;
+  document.getElementById('sq-stat-net').textContent=(net<0?'−':net>0?'+':'')+fmt(Math.abs(net));
  }
+
  const nets=document.getElementById('nets');
  if(nets){
   let pending=false;
