@@ -3363,13 +3363,13 @@ document.getElementById('tracker-chat-messages').addEventListener('click',e=>{va
   const normalize=v=>String(v??'').trim().toLowerCase();
   let owe=0,owed=0;
   try{
-   const members=Array.isArray(current?.members)?current.members:[];
-   const mine=members.find(m=>m.isYou)||members.find(m=>normalize(m.id||m.userId||m.user_id)===normalize(currentUser?.id));
-   const identities=new Set(['you',mine?.name,mine?.displayName,mine?.display_name,mine?.email,mine?.username,
-     currentUser?.name,currentUser?.displayName,currentUser?.display_name,currentUser?.email,currentUser?.username]
-     .map(normalize).filter(Boolean));
-   // The expense ledger uses names, not account IDs. Include all names associated
-   // with the signed-in tracker member, including the literal 'You' label.
+   // The tracker account variables are private to a different script scope.
+   // Use its public membership bridge rather than accessing `current` or `currentUser`.
+   const members=typeof window.squareUpExpenseMembers==='function'
+     ? window.squareUpExpenseMembers() : [];
+   const mine=members.find(m=>m.isYou);
+   const identities=new Set(['you',mine?.name,mine?.displayName,mine?.display_name,
+     mine?.email,mine?.username].map(normalize).filter(Boolean));
    const pairs=computeNet().pairs;
    for(const p of pairs){
     if(identities.has(normalize(p.from)))owe+=Number(p.amount)||0;
