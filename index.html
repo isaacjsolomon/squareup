@@ -3358,13 +3358,24 @@ document.getElementById('tracker-chat-messages').addEventListener('click',e=>{va
  tabs.forEach(b=>b.addEventListener('click',()=>tab(b.dataset.sqTab)));
  document.querySelectorAll('.sq-mobile-nav button').forEach(b=>b.addEventListener('click',()=>{const el=document.getElementById(b.dataset.target);if(el)el.click();document.querySelectorAll('.sq-mobile-nav button').forEach(x=>x.classList.toggle('active',x===b));if(b.dataset.target==='nav-home')tab('overview')}));
  document.getElementById('sq-mobile-bell')?.addEventListener('click',()=>document.getElementById('notifications-toggle')?.click());
- const nets=document.getElementById('nets');
  function updateStats(){
-  const rows=[...nets.querySelectorAll('.net')];let owe=0,owed=0;
-  rows.forEach(row=>{const text=row.textContent||'';const matches=text.match(/(?:[$€£¥]\s*[-+]?\d[\d,]*(?:\.\d{1,2})?)/g)||[];if(!matches.length)return;const amount=Number(matches[matches.length-1].replace(/[^0-9.]/g,''));if(!Number.isFinite(amount))return;if(/you owe|owe to|you →|you pay/i.test(text))owe+=amount;else if(/owes you|owed to you|→ you/i.test(text))owed+=amount;});
-  const money=v=>'$'+v.toFixed(2);document.getElementById('sq-stat-owe').textContent=money(owe);document.getElementById('sq-stat-owed').textContent=money(owed);document.getElementById('sq-stat-net').textContent=(owed-owe>=0?'+':'−')+money(Math.abs(owed-owe));
+  const me=(current?.members||[]).find(m=>m.isYou);
+  const ids=new Set([me?.name,me?.email,currentUser?.name,currentUser?.email].filter(Boolean).map(norm));
+  let owe=0,owed=0;
+  if(me && ids.size){
+   computeNet().pairs.forEach(p=>{
+    if(ids.has(p.from))owe+=Number(p.amount)||0;
+    if(ids.has(p.to))owed+=Number(p.amount)||0;
+   });
+  }
+  document.getElementById('sq-stat-owe').textContent=money(owe);
+  document.getElementById('sq-stat-owed').textContent=money(owed);
+  document.getElementById('sq-stat-net').textContent=(owed-owe>=0?'+':'−')+money(Math.abs(owed-owe));
  }
- let pending=false;new MutationObserver(()=>{if(pending)return;pending=true;queueMicrotask(()=>{pending=false;updateStats()})}).observe(nets,{childList:true,subtree:true,characterData:true});updateStats();
+ const nets=document.getElementById('nets');
+ let pending=false;
+ new MutationObserver(()=>{if(pending)return;pending=true;queueMicrotask(()=>{pending=false;updateStats()})}).observe(nets,{childList:true,subtree:true,characterData:true});
+ updateStats();
 })();
 </script></body>
 </html>
