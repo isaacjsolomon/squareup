@@ -1771,6 +1771,13 @@ if (method === 'DELETE') {
   const entryId = String(parts[3] || '');
 
  if (!uuid.test(entryId)) {
+  return json({
+    error: 'Invalid entry ID.',
+    receivedEntryId: entryId,
+    routeParts: parts,
+    requestPath: new URL(request.url).pathname
+  }, 400);
+}
     return fail('Invalid entry ID.', 400);
   }
 
