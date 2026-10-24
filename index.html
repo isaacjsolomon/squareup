@@ -1799,9 +1799,23 @@ document.addEventListener("click", function (e) {
     if (cloud && typeof window.squareUpPinExpense === 'function') window.squareUpPinExpense(t.dataset.pin);
     else { var target=entries.find(x=>String(x.id)===t.dataset.pin);if(target){target.pinned=!target.pinned;saveEntries();render();} }
   }
-  if (t.dataset && t.dataset.del) {
-    if (cloud) return cloud.remove(t.dataset.del);
-    entries = entries.filter(function (x) { return String(x.id) !== t.dataset.del; });
+  var deleteButton = e.target.closest('[data-del]');
+  if (deleteButton) {
+    var entryId = deleteButton.dataset.del;
+    if (!confirm('Delete this activity entry? This cannot be undone.')) return;
+    if (cloud) {
+      // Shared entries must have server-generated UUIDs. Numeric IDs belong to
+      // old local entries and must never be sent to the shared-tracker API.
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(entryId)) {
+        alert('This entry has an outdated local ID. Reloading the tracker to get its saved entries.');
+        if (typeof window.squareUpReloadCurrentTracker === 'function') window.squareUpReloadCurrentTracker();
+        return;
+      }
+      deleteButton.disabled = true;
+      Promise.resolve(cloud.remove(entryId)).finally(function () { deleteButton.disabled = false; });
+      return;
+    }
+    entries = entries.filter(function (x) { return String(x.id) !== entryId; });
     saveEntries();
     render();
   }
@@ -2807,6 +2821,12 @@ function renderMembers() {
   hydrateAvatars(box);
 }
 
+window.squareUpReloadCurrentTracker = async function () {
+  if (!current || !current.id) return;
+  try { applyDetail(await api('trackers/' + encodeURIComponent(current.id))); }
+  catch (err) { alert('Could not refresh tracker: ' + err.message); }
+};
+
 var cloudApi = {
   add: function (entry) { return mutate("trackers/" + current.id + "/entries", "POST", entry); },
   remove: function (id) { return mutate("trackers/" + current.id + "/entries/" + encodeURIComponent(id), "DELETE"); },
@@ -3197,7 +3217,18 @@ document.getElementById('notifications-list').addEventListener('click',async fun
    var detail=await api('trackers/'+t.dataset.trackerId+'/payments/'+id+'/'+action,'POST',{});
    if(current&&current.id===detail.id)applyDetail(detail);
    await refreshInbox();
-  }catch(err){alert(err.message);t.disabled=false;}
+  }catch(err){
+   t.disabled=false;
+   alert('Could not '+action+' payment: '+err.message);
+   // A payment can already have been handled in another tab/device.
+   // Refresh the inbox so obsolete confirmation buttons disappear.
+   if(err.status===409 || err.status===404) {
+    try { await refreshInbox(); } catch(_) {}
+    if(current && current.id===t.dataset.trackerId) {
+     try { applyDetail(await api('trackers/'+encodeURIComponent(current.id))); } catch(_) {}
+    }
+   }
+  }
  }
 });
 var receiptLines=[];
