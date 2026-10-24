@@ -917,9 +917,33 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
 #chat-card .chat-compose input:focus { outline: 2px solid rgba(94,221,174,.65); outline-offset: 1px; }
 #chat-card .chat-compose button { border-radius: 24px; min-height: 43px; padding: 9px 18px; }
 @media(max-width:600px){#chat-card .chat-bubble{max-width:88%;}.tracker-collapsible > summary{padding:10px 13px;}.tracker-collapsible-body{padding:3px 12px 13px;}}
+/* Guest-only account access in the upper-right corner */
+#guest-auth-button:not([hidden]) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 20px;
+  right: 22px;
+  z-index: 100;
+  padding: 11px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(97, 239, 181, .65);
+  background: #55efae;
+  color: #092536;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 5px 18px rgba(0,0,0,.15);
+}
+#guest-auth-button[hidden] { display: none !important; }
+@media (max-width: 600px) {
+  #guest-auth-button:not([hidden]) { top: 12px; right: 12px; padding: 9px 12px; font-size: 13px; }
+}
 </style>
 </head>
 <body>
+<button type="button" id="guest-auth-button" hidden>Log in or create account</button>
 <div id="backdrop" aria-hidden="true"></div>
 <aside class="sidebar" aria-label="Account and trackers">
   <!-- ACCOUNT -->
@@ -1898,6 +1922,7 @@ function showUser(user) {
   if(!user && document.body.classList.contains("settings-view")) settingsRoute("dashboard");
   var loggedIn = !!user;
   currentUser = user || null;
+  $("guest-auth-button").hidden = loggedIn;
   $("btn-change-pw").hidden = !loggedIn;
   $("btn-login").hidden = loggedIn;
   $("btn-signup").hidden = loggedIn;
@@ -1933,6 +1958,7 @@ $("settings-menu").addEventListener("keydown", function (e) {
   items[(i + items.length) % items.length].focus();
 });
 
+$("guest-auth-button").onclick = function () { openAuth("login"); };
 $("btn-login").onclick = function () { openAuth("login"); };
 $("btn-signup").onclick = function () { openAuth("signup"); };
 $("tab-login").onclick = function () { setAuthMode("login"); };
