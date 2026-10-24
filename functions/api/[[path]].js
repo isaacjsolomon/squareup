@@ -1765,25 +1765,63 @@ exchange_rate: rate,
         return json(await detail(id), 201);
       }
 
-      if (method === 'DELETE') {
-        if (parts[3] && !uuid.test(parts[3]))
-          return fail(
-            'Entry not found',
-            404
-          );
+ 
+if (method === 'DELETE') {
+  // Require a valid entry ID to prevent accidental bulk deletion.
+  const entryId = String(parts[3] || '');
 
-        await db('tracker_entries', {
-          method: 'DELETE',
-          filters: {
-            tracker_id: 'eq.' + id,
-            ...(parts[3]
-              ? { id: 'eq.' + parts[3] }
-              : {})
-          }
-        });
+  if (parts.length !== 4 || !uuid.test(entryId)) {
+    return fail('Invalid entry ID.', 400);
+  }
 
-        return json(await detail(id));
+  // Find the entry in this tracker.
+  const existing = await db('tracker_entries', {
+    filters: {
+      id: 'eq.' + entryId,
+      tracker_id: 'eq.' + id
+    },
+    limit: 1
+  });
+
+  if (!existing.length) {
+    return json({
+      error: 'Entry not found in this tracker. Refresh the tracker and try again.',
+      code: 'ENTRY_NOT_IN_TRACKER',
+      entryId
+    }, 404);
+  }
+
+  // Delete the specific entry.
+  const deleted = await db('tracker_entries', {
+    method: 'DELETE',
+    filters: {
+      id: 'eq.' + entryId,
+      tracker_id: 'eq.' + id
+    }
+  });
+
+  if (!deleted.length) {
+    return fail('Entry could not be deleted. Please retry.', 409);
+  }
+
+  // Clean up notifications for the deleted entry.
+  try {
+    await db('squareup_notifications', {
+      method: 'DELETE',
+      filters: {
+        entry_id: 'eq.' + entryId,
+        tracker_id: 'eq.' + id
       }
+    });
+  } catch (notificationError) {
+    console.error(
+      'Notification cleanup failed:',
+      notificationError
+    );
+  }
+
+  return json(await detail(id));
+}
     }
 
     // SHARE TRACKER
