@@ -48,34 +48,6 @@ function kind(b) {
     String.fromCharCode(...b.slice(8, 12)) === 'WEBP' ? 'image/webp' : null;
 }
 
-// DETECT SUPPORTED IMAGE TYPES
-function kind(bytes) {
-  if (
-    bytes[0] === 255 &&
-    bytes[1] === 216 &&
-    bytes[2] === 255
-  ) {
-    return 'image/jpeg';
-  }
-
-  if (
-    bytes[0] === 137 &&
-    bytes[1] === 80 &&
-    bytes[2] === 78
-  ) {
-    return 'image/png';
-  }
-
-  if (
-    String.fromCharCode(...bytes.slice(0, 4)) === 'RIFF' &&
-    String.fromCharCode(...bytes.slice(8, 12)) === 'WEBP'
-  ) {
-    return 'image/webp';
-  }
-
-  return null;
-}
-
 function validate(v) {
   const type = ['debt', 'payment'].includes(v?.type) ? v.type : null;
   const from = clean(v?.from, 60);
