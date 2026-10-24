@@ -3359,20 +3359,35 @@ document.getElementById('tracker-chat-messages').addEventListener('click',e=>{va
  document.querySelectorAll('.sq-mobile-nav button').forEach(b=>b.addEventListener('click',()=>{const el=document.getElementById(b.dataset.target);if(el)el.click();document.querySelectorAll('.sq-mobile-nav button').forEach(x=>x.classList.toggle('active',x===b));if(b.dataset.target==='nav-home')tab('overview')}));
  document.getElementById('sq-mobile-bell')?.addEventListener('click',()=>document.getElementById('notifications-toggle')?.click());
  function updateStats(){
-  const fmt = v => (typeof money === 'function' ? money(v) : '$' + Number(v).toFixed(2));
-  let owe=0, owed=0;
-  try {
-   const members=(typeof current !== 'undefined' && current && Array.isArray(current.members)) ? current.members : [];
-   const mine=members.find(m=>m.isYou) || members.find(m=>String(m.userId||m.user_id||m.id||'')===String(currentUser?.id||''));
-   const myNames=[mine?.name,mine?.email,currentUser?.name,currentUser?.email].filter(v=>typeof v==='string' && v.trim()).map(v=>v.trim().toLowerCase());
-   const names=new Set(myNames);
-   if(typeof computeNet==='function'){
-    computeNet().pairs.forEach(p=>{
-     if(names.has(String(p.from).trim().toLowerCase()))owe+=Number(p.amount)||0;
-     if(names.has(String(p.to).trim().toLowerCase()))owed+=Number(p.amount)||0;
-    });
+  const fmt=v=>(typeof money==='function'?money(v):'$'+Number(v).toFixed(2));
+  const normalize=v=>String(v||'').trim().toLowerCase();
+  let owe=0,owed=0;
+  try{
+   const members=(current&&Array.isArray(current.members))?current.members:[];
+   const userId=normalize(currentUser?.id);
+   const userEmail=normalize(currentUser?.email);
+   const mine=members.find(m=>m.isYou)||members.find(m=>
+     (userId&&[m.userId,m.user_id,m.id].some(v=>normalize(v)===userId))||
+     (userEmail&&normalize(m.email)===userEmail));
+   const identities=new Set([mine?.name,mine?.displayName,mine?.display_name,mine?.email,
+     currentUser?.name,currentUser?.displayName,currentUser?.display_name,currentUser?.email]
+     .map(normalize).filter(Boolean));
+   // Match names against the actual expense entries, not just member IDs.
+   const pairs=typeof computeNet==='function'?computeNet().pairs:[];
+   for(const p of pairs){
+    if(identities.has(normalize(p.from)))owe+=Number(p.amount)||0;
+    if(identities.has(normalize(p.to)))owed+=Number(p.amount)||0;
    }
-  } catch(error){ console.warn('Balance summary:',error); }
+   // When profile names differ from expense names, identify the signed-in member
+   // through the member list and the tracker’s displayed names.
+   if(!owe&&!owed&&pairs.length&&mine){
+    const names=[mine.name,mine.displayName,mine.display_name].map(normalize).filter(Boolean);
+    for(const p of pairs){
+     if(names.includes(normalize(p.from)))owe+=Number(p.amount)||0;
+     if(names.includes(normalize(p.to)))owed+=Number(p.amount)||0;
+    }
+   }
+  }catch(error){console.warn('Balance summary:',error);}
   document.getElementById('sq-stat-owe').textContent=fmt(owe);
   document.getElementById('sq-stat-owed').textContent=fmt(owed);
   document.getElementById('sq-stat-net').textContent=(owed-owe>=0?'+':'−')+fmt(Math.abs(owed-owe));
