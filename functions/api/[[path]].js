@@ -1830,7 +1830,7 @@ if (method === 'DELETE') {
   return json(await detail(id));
 }
     }
-
+}
     // SHARE TRACKER
     if (sub === 'invite' && method === 'POST') {
       if (body.reset === true && !owner)
