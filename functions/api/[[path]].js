@@ -1532,10 +1532,14 @@ if (
     }
 
     // PAYMENT CONFIRMATIONS
-    if (sub === 'payments' &&
-        parts[3] &&
-        uuid.test(parts[3]) &&
-        method === 'POST') {
+
+if (
+  sub === 'payments' &&
+  parts[3] &&
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(parts[3]) &&
+  method === 'POST'
+) {
+
 
       if (!['confirm', 'dispute'].includes(parts[4]))
         return fail('Invalid action.', 400);
