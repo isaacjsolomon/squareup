@@ -941,6 +941,28 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
   #guest-auth-button:not([hidden]) { top: 12px; right: 12px; padding: 9px 12px; font-size: 13px; }
 }
 </style>
+<style>
+/* SquareUp 2026 responsive ocean interface */
+:root{--bg1:#050e23;--bg2:#101c4d;--card:#081b30;--ink:#edf7ff;--muted:#a3bad1;--accent:#40ecc0;--accent-dark:#16c9a5;--green:#42edbd;--red:#ff587d;--line:#24405b;--side-bg:#06192b;--side-line:#213b58}
+html{scroll-behavior:smooth}body{background:radial-gradient(ellipse at 55% 0%,#182052 0%,#071126 53%,#030b1c 100%)!important;color:#eef6ff!important;padding:22px 26px 70px 206px!important}
+.wrap{max-width:1450px!important;margin:0 auto!important}.sidebar{position:fixed!important;left:12px!important;top:12px!important;bottom:12px!important;width:176px!important;margin:0!important;border:1px solid #1c3852!important;border-radius:18px!important;background:linear-gradient(160deg,#061a2c,#041226)!important;padding:13px 10px!important;z-index:50;overflow:auto!important}
+.sidebar .squareup-nav .sq-nav-link{font-size:13px!important;min-height:42px!important;color:#c8d7e8!important}.sidebar .squareup-nav .sq-nav-link.active{background:#10304a!important;color:#43efc2!important;border-left:3px solid #40ecc0!important}
+.sidebar .logo{width:35px;height:35px;object-fit:contain}.sidebar .sidebar-collapse-toggle{width:32px;height:32px;margin:8px 0!important}
+body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{width:66px!important}
+.tracker-heading{text-align:left!important;padding:9px 6px 20px!important;margin:0!important}.tracker-heading h1{font-size:26px!important}.tracker-heading p{font-size:14px;color:#adc3d8}
+.card,.feature-panel,.split-panel,.settings-panel,.tracker-tile{background:linear-gradient(160deg,#0a2238,#07182b)!important;color:#f0f7ff!important;border:1px solid #203c58!important;box-shadow:none!important;border-radius:16px!important}
+.card h2,.card h3{color:#f5f9ff!important}.dashboard-actions{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important;margin:14px 0!important}
+.dashboard-action{background:linear-gradient(145deg,#0d2c43,#101b47)!important;color:#f3f9ff!important;border:1px solid #24415d!important;border-radius:15px!important;min-height:120px!important;padding:16px 9px!important;font-size:15px!important}
+.dashboard-action .action-icon{background:#104f57!important;color:#47f3c5!important;border-radius:50%!important;width:44px!important;height:44px!important;display:grid!important;place-items:center!important;margin:0 auto 9px!important;font-size:26px!important}.dashboard-action .action-sub{font-size:11px!important;color:#b5c7dc!important}
+.primary,.split-save{background:#42eec0!important;color:#05263a!important;font-weight:750!important;border-radius:10px!important}.small-btn,.ghost-btn{border-color:#32516b!important;color:#e7f5ff!important;background:#173149!important}input,select,textarea{background:#0c253b!important;color:#effaff!important;border:1px solid #36536b!important}input::placeholder{color:#9ab0c4} .toggle{background:#102a40!important}.toggle button.active{background:#3ee6b8!important;color:#052538!important}
+.sq-workspace-tabs{display:flex;gap:6px;align-items:center;padding:6px;background:#071a2c;border:1px solid #223e58;border-radius:13px;margin:0 0 16px;overflow-x:auto}.sq-workspace-tabs button{white-space:nowrap;border:0;background:transparent;color:#c5d8e8;padding:11px 17px;border-radius:10px;font-weight:700;cursor:pointer}.sq-workspace-tabs button[aria-selected=true]{background:#40edbe;color:#052437}.sq-workspace-tabs button:hover:not([aria-selected=true]){background:#16334c}
+.sq-overview-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:15px}.sq-stat{border:1px solid #223c57;border-radius:14px;background:linear-gradient(145deg,#07192c,#0a1734);padding:18px;min-height:98px}.sq-stat span{font-size:12px;color:#c0d0df;display:block}.sq-stat strong{font-size:clamp(20px,2.4vw,30px);display:block;margin-top:9px;color:#43ecc0}.sq-stat.negative strong{color:#ff5b82}.sq-stat.neutral strong{color:#f3f7ff}
+.sq-tab-hidden{display:none!important}.sq-mobile-nav{display:none}.sq-mobile-top{display:none}
+#balances-card{padding:23px!important}#nets .net{border-color:#244159!important}.amount{color:#ff6488!important}
+#tracker-chat-messages{max-height:60vh!important;min-height:320px!important}.sq-workspace-tabs button:focus-visible,.sq-mobile-nav button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(max-width:900px){body{padding:14px 14px 90px 14px!important}body.side-collapsed{padding:14px 14px 90px!important}.sidebar{display:none!important}.wrap{max-width:100%!important}.dashboard-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important}.sq-mobile-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:5px 3px;color:#fff;font-weight:800}.sq-mobile-top img{height:28px;width:28px;object-fit:contain}.sq-mobile-top .sq-brand{display:flex;align-items:center;gap:9px}.sq-mobile-top button{background:none;border:0;color:#d6e5f4;font-size:22px;padding:6px}.sq-mobile-nav{position:fixed;display:flex;justify-content:space-around;align-items:center;bottom:0;left:0;right:0;z-index:80;background:#061729;border-top:1px solid #28415c;padding:8px 5px max(10px,env(safe-area-inset-bottom));box-shadow:0 -8px 25px #0005}.sq-mobile-nav button{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:0;color:#b8ccdd;font-size:10px;min-width:52px;cursor:pointer}.sq-mobile-nav button .sq-m-icon{font-size:22px;line-height:27px}.sq-mobile-nav button.sq-add .sq-m-icon{background:#40edbf;color:#03253b;border-radius:50%;width:44px;height:44px;font-size:32px;line-height:42px;margin-top:-20px;box-shadow:0 4px 20px #2ee6b94a}.sq-mobile-nav button.active{color:#42edc0}.tracker-heading{padding:7px 3px 14px!important}.tracker-heading h1{font-size:21px!important}.sq-stat{padding:12px;min-height:76px}.sq-stat strong{font-size:18px}.sq-stat span{font-size:10px}.sq-workspace-tabs{gap:3px}.sq-workspace-tabs button{font-size:12px;padding:10px 12px}.tracker-tools-grid{grid-template-columns:1fr!important}.card{padding:15px!important}.sq-mobile-nav~*{max-width:100%}}
+@media(max-width:480px){.dashboard-action{min-height:93px!important;font-size:13px!important}.dashboard-action .action-icon{width:37px!important;height:37px!important;font-size:22px!important}.dashboard-action .action-sub{font-size:10px!important}.sq-overview-stats{gap:6px}.sq-stat{padding:9px 7px}.sq-stat strong{font-size:16px}.sq-stat span{font-size:9px}.row{grid-template-columns:1fr!important}.sq-workspace-tabs button{padding:9px 10px}}
+</style>
 </head>
 <body>
 <button type="button" id="guest-auth-button" hidden>Log in or create account</button>
@@ -1005,13 +1027,15 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
   </div>
 
 </aside>
-<div class="wrap">
+<div class="wrap"><div class="sq-mobile-top"><span class="sq-brand"><img src="/images/logo.png" alt="">Square Up</span><button type="button" id="sq-mobile-bell" aria-label="Notifications">♧</button></div>
   <header class="tracker-heading">
     <h1>💸 Square Up</h1>
     <p>Track who owes who. Debts that go both ways cancel out automatically.</p>
   </header>
 
   <div id="tracker-dashboard">
+  <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="chat" role="tab" aria-selected="false">Chat</button><button type="button" data-sq-tab="budget" role="tab" aria-selected="false">Budget</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button></div>
+  <div class="sq-overview-stats" id="sq-overview-stats"><div class="sq-stat negative"><span>You owe</span><strong id="sq-stat-owe">—</strong></div><div class="sq-stat"><span>Owed to you</span><strong id="sq-stat-owed">—</strong></div><div class="sq-stat neutral"><span>Net balance</span><strong id="sq-stat-net">—</strong></div></div>
   <!-- CURRENT BALANCES -->
   <div class="card" id="balances-card">
     <h2>Current balances</h2>
@@ -3307,5 +3331,40 @@ function squareUpChatReply(id){var row=squareUpChatRows.find(r=>String(r.id)===S
 async function squareUpReact(id,emoji){if(!current)return;try{await api('trackers/'+current.id+'/chat/'+encodeURIComponent(id)+'/reactions','POST',{emoji});await loadTrackerChat();}catch(err){alert('Reaction could not be saved: '+err.message);}}
 document.getElementById('tracker-chat-messages').addEventListener('click',e=>{var b=e.target.closest('button');if(!b)return;if(b.dataset.reply)squareUpChatReply(b.dataset.reply);if(b.dataset.react)squareUpReact(b.dataset.react,b.dataset.emoji);});
 </script>
-</body>
+<nav class="sq-mobile-nav" aria-label="Mobile navigation"><button type="button" data-target="nav-home" class="active"><span class="sq-m-icon">⌂</span>Home</button><button type="button" data-target="nav-trackers"><span class="sq-m-icon">▣</span>Trackers</button><button type="button" class="sq-add" data-target="quick-expense"><span class="sq-m-icon">+</span>Add</button><button type="button" data-target="nav-analytics"><span class="sq-m-icon">▥</span>Analytics</button><button type="button" data-target="nav-profile"><span class="sq-m-icon">♙</span>Account</button></nav>
+<script>
+(function(){
+ const tabs=document.querySelectorAll('[data-sq-tab]');
+ const ids={overview:[],expenses:['history','matrix'],chat:['chat-card'],budget:['budget-card'],members:['balances-card']};
+ const dashboard=document.getElementById('tracker-dashboard');
+ const cards=Array.from(dashboard.children).filter(e=>e.classList.contains('card')||e.classList.contains('tracker-tools-grid')||e.classList.contains('dashboard-actions'));
+ const tools=document.querySelector('.tracker-tools-grid');
+ function tab(name){
+  tabs.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.sqTab===name)));
+  cards.forEach(e=>e.classList.toggle('sq-tab-hidden',name!=='overview'));
+  document.getElementById('sq-overview-stats').classList.toggle('sq-tab-hidden',name!=='overview');
+  if(name==='overview'){tools.querySelectorAll('.tracker-collapsible,#recurring-card').forEach(e=>e.classList.remove('sq-tab-hidden'));return;}
+  if(name==='expenses'){
+    const history=document.getElementById('history');const matrix=document.getElementById('matrix');
+    [history,matrix].forEach(el=>{const card=el&&el.closest('.card');if(card)card.classList.remove('sq-tab-hidden')});
+  }
+  if(name==='members')document.getElementById('balances-card').classList.remove('sq-tab-hidden');
+  if(name==='chat'||name==='budget'){
+    tools.classList.remove('sq-tab-hidden');
+    tools.querySelectorAll('.tracker-collapsible,#recurring-card').forEach(e=>e.classList.toggle('sq-tab-hidden',e.id!==(name==='chat'?'chat-card':'budget-card')));
+    const d=document.getElementById(name==='chat'?'chat-card':'budget-card');if(d)d.open=true;
+  }else tools.querySelectorAll('.tracker-collapsible,#recurring-card').forEach(e=>e.classList.remove('sq-tab-hidden'));
+ }
+ tabs.forEach(b=>b.addEventListener('click',()=>tab(b.dataset.sqTab)));
+ document.querySelectorAll('.sq-mobile-nav button').forEach(b=>b.addEventListener('click',()=>{const el=document.getElementById(b.dataset.target);if(el)el.click();document.querySelectorAll('.sq-mobile-nav button').forEach(x=>x.classList.toggle('active',x===b));if(b.dataset.target==='nav-home')tab('overview')}));
+ document.getElementById('sq-mobile-bell')?.addEventListener('click',()=>document.getElementById('notifications-toggle')?.click());
+ const nets=document.getElementById('nets');
+ function updateStats(){
+  const rows=[...nets.querySelectorAll('.net')];let owe=0,owed=0;
+  rows.forEach(row=>{const text=row.textContent||'';const matches=text.match(/(?:[$€£¥]\s*[-+]?\d[\d,]*(?:\.\d{1,2})?)/g)||[];if(!matches.length)return;const amount=Number(matches[matches.length-1].replace(/[^0-9.]/g,''));if(!Number.isFinite(amount))return;if(/you owe|owe to|you →|you pay/i.test(text))owe+=amount;else if(/owes you|owed to you|→ you/i.test(text))owed+=amount;});
+  const money=v=>'$'+v.toFixed(2);document.getElementById('sq-stat-owe').textContent=money(owe);document.getElementById('sq-stat-owed').textContent=money(owed);document.getElementById('sq-stat-net').textContent=(owed-owe>=0?'+':'−')+money(Math.abs(owed-owe));
+ }
+ let pending=false;new MutationObserver(()=>{if(pending)return;pending=true;queueMicrotask(()=>{pending=false;updateStats()})}).observe(nets,{childList:true,subtree:true,characterData:true});updateStats();
+})();
+</script></body>
 </html>
