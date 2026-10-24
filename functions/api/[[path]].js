@@ -1768,7 +1768,11 @@ exchange_rate: rate,
  
 if (method === 'DELETE') {
   // Require a valid entry ID to prevent accidental bulk deletion.
-  const entryId = String(parts[3] || '');
+
+const entryId = String(
+  new URL(request.url).pathname.split('/').filter(Boolean).at(-1) || ''
+);
+
 
  
 if (!uuid.test(entryId)) {
