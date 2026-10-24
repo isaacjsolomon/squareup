@@ -892,6 +892,7 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
 .chat-reactions{display:flex;gap:5px;flex-wrap:wrap;margin:5px 0}.chat-reaction{font-size:12px;border:1px solid #4b6578;border-radius:20px;background:#17344b;color:#e9f6ff;padding:3px 8px;cursor:pointer}.chat-reaction.selected{border-color:#65f5ac;background:#285849}.chat-message-actions{display:flex;gap:7px;margin:5px 0}.chat-message-actions button{background:none;border:0;color:#aac5d8;font-size:12px;cursor:pointer;padding:2px 5px}.chat-message-actions button:hover{color:#65f5ac}.chat-reply-preview{font-size:12px;border-left:2px solid #65f5ac;padding:5px 8px;margin-bottom:5px;background:#1b3c4e;border-radius:5px;opacity:.9}.chat-reply-target{padding:8px 12px;border:1px solid #65f5ac;border-radius:12px;margin:10px 0;color:#d8f9ed;display:flex;justify-content:space-between;gap:12px}
 .receipt-scan-box{background:#17344b;border:1px solid #31536b;border-radius:13px;padding:14px;margin:0 0 18px}.receipt-scan-box input[type=file]{width:100%;margin:9px 0}.receipt-scan-box button{border-radius:9px;padding:9px 13px;background:#65f5ac;color:#082032;border:0;font-weight:700;cursor:pointer}.receipt-scan-box button:disabled{opacity:.5}
 @media(max-width:650px){.analytics-stats{grid-template-columns:1fr}.analytics-bar-label{width:80px}.analytics-bar-value{width:65px}}
+.sq-photo-button{cursor:pointer;display:grid;place-items:center;min-width:42px;height:42px;border:1px solid #5edbb0;border-radius:50%;color:#65f5ac;font-size:25px}.sq-chat-image{display:block;max-width:min(100%,260px);max-height:240px;object-fit:contain;border-radius:12px;margin-top:8px;cursor:zoom-in}.sq-mention-list{position:absolute;bottom:100%;left:30px;right:0;background:#152f45;border:1px solid #65f5ac;border-radius:10px;z-index:5;max-height:180px;overflow:auto}.sq-mention-list button{display:block;width:100%;text-align:left;border:0;background:transparent;color:#fff;padding:10px}.sq-mention-list button:hover{background:#285849}.sq-photo-preview{font-size:13px;color:#65f5ac;margin-top:8px}.sq-budget-progress{height:14px;background:#18374b;border-radius:15px;overflow:hidden;margin:12px 0}.sq-budget-progress>div{height:100%;background:#65f5ac;transition:width .2s}.sq-budget-progress.over>div{background:#f29c7f}.sq-currency-select{min-width:100px}#tracker-chat-form{position:relative;flex-wrap:wrap}#tracker-chat-form input#tracker-chat-input{flex:1;min-width:130px}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -1013,7 +1014,7 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
     <div class="row" style="margin-top:12px"><label>Tax ($)<input type="number" id="receipt-tax" min="0" step=".01" value="0"></label><label>Tip ($)<input type="number" id="receipt-tip" min="0" step=".01" value="0"></label></div>
     <label>Due date (optional)<input type="date" id="receipt-due"></label>
     <div id="receipt-preview" style="margin:12px 0"></div>
-    <div class="receipt-footer-actions"><button type="button" class="primary" id="receipt-save">Save assigned expenses</button><button type="button" class="small-btn receipt-clear-btn" id="receipt-clear">Clear receipt</button></div>
+    <label>Receipt currency <select id="receipt-currency" class="sq-currency-select"></select></label><div class="receipt-footer-actions"><button type="button" class="primary" id="receipt-save">Save assigned expenses</button><button type="button" class="small-btn receipt-clear-btn" id="receipt-clear">Clear receipt</button></div>
   </div>
   <!-- ENTRY FORM: shown by quick actions -->
   <div class="card" id="entry-card">
@@ -1029,7 +1030,7 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
       </div>
       <datalist id="people"></datalist>
       <div class="row">
-        <input id="amount" type="number" step="0.01" min="0.01" placeholder="Amount ($)" required>
+        <select id="expense-currency" class="sq-currency-select" aria-label="Expense currency"></select><input id="amount" type="number" step="0.01" min="0.01" placeholder="Amount ($)" required>
         <input id="note" placeholder="What for? (pizza, Uber...)" autocomplete="off">
       </div>
       <label id="recurring-wrap" class="feature-field">Repeat this expense
@@ -1043,7 +1044,8 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
   <div class="tracker-tools-grid">
     <div class="tracker-tools-left">
   <details class="card tracker-collapsible" id="smart-settle-card"><summary><span class="tool-heading-label"><svg class="tool-heading-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M30 9 33.9 20.1 45 24l-11.1 3.9L30 39l-3.9-11.1L15 24l11.1-3.9L30 9Z"/><path d="m11 5 2.1 5.9L19 13l-5.9 2.1L11 21l-2.1-5.9L3 13l5.9-2.1L11 5Z"/></svg><span>Smart settle-up</span></span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Simplify group debts into fewer payments. Suggestions do not move money.</p><div id="smart-settle-list"></div></div></details>
-  <details class="card tracker-collapsible" id="chat-card"><summary><span class="tool-heading-label"><svg class="tool-heading-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M30 31c-2.6 2-5.8 3-9.5 3-2 0-3.8-.3-5.5-.9L5 38l2.5-10A17 17 0 0 1 4 18.5C4 9.9 11.4 3 20.5 3S37 9.9 37 18.5c0 2.6-.7 5-2 7"/><path d="M29 33c2.5 1.8 5.4 2.7 8.5 2.7 1.1 0 2.2-.1 3.3-.4L46 39l-1.7-6.6a11.5 11.5 0 0 0 2.2-6.7c0-5.5-4.1-10.1-9.6-11.1"/><circle cx="13" cy="19" r="1.2" fill="currentColor" stroke="none"/><circle cx="21" cy="19" r="1.2" fill="currentColor" stroke="none"/><circle cx="29" cy="19" r="1.2" fill="currentColor" stroke="none"/></svg><span>Tracker group chat</span></span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Messages are shared with everyone in this tracker and appear in their notification centers.</p><div id="tracker-chat-messages" class="chat-messages">Open a tracker to see messages.</div><div id="chat-reply-target" class="chat-reply-target" hidden></div><form id="tracker-chat-form" class="chat-compose"><input id="tracker-chat-input" maxlength="1200" placeholder="Message your group…" aria-label="Message your group" required><button type="submit" class="primary">Send</button></form></div></details>
+  <details class="card tracker-collapsible" id="budget-card"><summary><span class="tool-heading-label"><svg class="tool-heading-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg><span>Group budget & goal</span></span><span class="collapse-chevron">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Track the group's spending against a shared goal in the tracker's main currency.</p><div id="sq-budget-display"></div><form id="sq-budget-form" class="chat-compose"><input type="number" id="sq-budget-amount" min="0.01" step="0.01" placeholder="Budget amount" aria-label="Group budget amount"><button class="primary" type="submit">Save goal</button><button type="button" class="small-btn" id="sq-budget-clear">Clear</button></form></div></details>
+  <details class="card tracker-collapsible" id="chat-card"><summary><span class="tool-heading-label"><svg class="tool-heading-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M30 31c-2.6 2-5.8 3-9.5 3-2 0-3.8-.3-5.5-.9L5 38l2.5-10A17 17 0 0 1 4 18.5C4 9.9 11.4 3 20.5 3S37 9.9 37 18.5c0 2.6-.7 5-2 7"/><path d="M29 33c2.5 1.8 5.4 2.7 8.5 2.7 1.1 0 2.2-.1 3.3-.4L46 39l-1.7-6.6a11.5 11.5 0 0 0 2.2-6.7c0-5.5-4.1-10.1-9.6-11.1"/><circle cx="13" cy="19" r="1.2" fill="currentColor" stroke="none"/><circle cx="21" cy="19" r="1.2" fill="currentColor" stroke="none"/><circle cx="29" cy="19" r="1.2" fill="currentColor" stroke="none"/></svg><span>Tracker group chat</span></span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Messages are shared with everyone in this tracker and appear in their notification centers.</p><div id="tracker-chat-messages" class="chat-messages">Open a tracker to see messages.</div><div id="chat-reply-target" class="chat-reply-target" hidden></div><form id="tracker-chat-form" class="chat-compose"><label for="sq-chat-photo-input" class="sq-photo-button" title="Attach photo" aria-label="Attach photo">▧</label><input type="file" id="sq-chat-photo-input" accept="image/jpeg,image/png,image/webp" hidden><input id="tracker-chat-input" maxlength="1200" placeholder="Message your group…" aria-label="Message your group" autocomplete="off"><div id="sq-mention-list" class="sq-mention-list" hidden></div><button type="submit" class="primary">Send</button></form><div id="sq-photo-preview" class="sq-photo-preview" hidden></div></div></details>
     </div>
   <div class="card" id="recurring-card"><h2>↻ Recurring expenses</h2><p class="dashboard-subheading">Manage repeating expenses for this tracker.</p><div id="recurring-list"></div></div>
   </div>
@@ -1066,7 +1068,7 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
   <section id="analytics-page" aria-label="Spending analytics"><div class="feature-panel"><h2>Spending analytics</h2><p class="feature-muted" id="analytics-tracker-title">Select a tracker to see its spending.</p><div class="analytics-stats" id="analytics-stats"></div></div><div class="feature-panel"><h3>Activity by month</h3><div id="analytics-months"></div></div><div class="feature-panel"><h3>Expenses by person</h3><div id="analytics-people"></div></div><div class="feature-panel"><h3>Friends in this tracker</h3><p class="feature-muted">Select a friend to view their profile and shared expense history.</p><div id="analytics-friends"></div><div id="friend-profile-detail" hidden></div></div></section>
   <section id="split-page" aria-label="Split a Bill">
     <button type="button" id="split-back" class="split-back">← Back to Dashboard</button>
-    <div class="split-header"><h2>Split a Bill</h2><p>Divide an expense with your friends.</p></div>
+    <div class="split-header"><h2>Split a Bill</h2><label>Bill currency <select id="split-currency" class="sq-currency-select"></select></label><p>Divide an expense with your friends.</p></div>
     <div class="split-layout">
       <div class="split-panel">
         <div class="receipt-scan-box"><strong>Scan a receipt with AI-assisted text recognition</strong><p class="feature-muted">Upload a receipt photo to read item names and prices, then review the detected total before splitting. Recognition runs in your browser.</p><input type="file" id="split-receipt-file" accept="image/*" capture="environment" aria-label="Choose receipt photo"><div id="split-receipt-status" class="feature-muted" role="status"></div><div id="split-receipt-items"></div><button type="button" id="split-use-itemized" hidden>Assign receipt items to friends →</button></div>
@@ -1259,7 +1261,7 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
     <button type="button" class="close" data-close aria-label="Close">×</button>
     <h2 id="new-title">New tracker</h2>
     <form id="new-form">
-      <input id="new-name" placeholder="Name (e.g. Roommates, Ski trip)" maxlength="80" required autocomplete="off">
+      <label class="feature-field">Main currency <select id="new-currency" class="sq-currency-select"></select></label><input id="new-name" placeholder="Name (e.g. Roommates, Ski trip)" maxlength="80" required autocomplete="off">
       <label class="check" id="new-import-row" hidden><input type="checkbox" id="new-import" checked> <span id="new-import-label"></span></label>
       <p class="hint">After creating it, tap <b>Share tracker</b> to invite friends. Everyone in a tracker can add, settle and delete entries.</p>
       <div class="msg" id="new-msg"></div>
@@ -1350,7 +1352,12 @@ function esc(s) {
     return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
   });
 }
-function money(n) { return "$" + n.toFixed(2); }
+const SQ_CURRENCIES = ['USD','EUR','GBP','CAD','AUD','JPY','CHF','CNY','INR','MXN','BRL','KRW','SGD','HKD','NZD','SEK','NOK','DKK','ILS','ZAR'];
+function sqCurrency(){return (typeof current !== 'undefined' && current && current.currency) || 'USD';}
+function sqFormat(n,c){return new Intl.NumberFormat('en-US',{style:'currency',currency:c||sqCurrency()}).format(Number(n)||0);}
+function money(n) { return sqFormat(n); }
+function sqFillCurrencies(){document.querySelectorAll('.sq-currency-select').forEach(el=>{var old=el.value;el.innerHTML=SQ_CURRENCIES.map(c=>'<option value="'+c+'">'+c+' — '+sqFormat(1,c)+'</option>').join('');el.value=SQ_CURRENCIES.includes(old)?old:sqCurrency();});}
+
 
 // Display names: first spelling used for each person wins
 function nameMap() {
@@ -1530,7 +1537,8 @@ function addEntry(type, from, to, amount, note) {
     note: (note || "").trim(),
     recurring: type === "debt" ? (document.getElementById("expense-recurring")?.value || "none") : "none",
     dueDate: type === "debt" ? (document.getElementById("expense-due-date")?.value || null) : null,
-    date: new Date().toLocaleDateString()
+    date: new Date().toLocaleDateString(),
+    currency: type === "payment" ? sqCurrency() : document.getElementById("expense-currency").value
   };
   if (cloud) return cloud.add(entry);
   entries.push(entry);
@@ -1694,6 +1702,7 @@ window.addEventListener("popstate",function(){ if(location.hash==="#split-bill")
 if (location.hash === "#split-bill") openSplitPage();
 document.getElementById("split-back").addEventListener("click",closeSplitPage);
 document.getElementById("split-total").addEventListener("input",renderSplitSummary);
+document.getElementById("split-currency").addEventListener("change",renderSplitSummary);
 document.getElementById("split-description").addEventListener("input",renderSplitSummary);
 document.getElementById("split-equal").addEventListener("click",function(){splitState.method="equal";renderSplitPage();});
 document.getElementById("split-custom").addEventListener("click",function(){splitState.method="custom";renderSplitPage();});
@@ -1710,7 +1719,7 @@ document.getElementById("split-save").addEventListener("click",async function(){
   try {
     for (var i=0;i<debts.length;i++) {
       var p=debts[i];
-      var entry={id:Date.now()+Math.random(),type:"debt",from:p.name,to:payer,amount:p.cents/100,note:"Split bill: "+description,date:new Date().toLocaleDateString()};
+      var entry={id:Date.now()+Math.random(),type:"debt",from:p.name,to:payer,amount:p.cents/100,note:"Split bill: "+description,date:new Date().toLocaleDateString(),currency:document.getElementById("split-currency").value};
       if (sharedAtStart && typeof window.squareUpSplitSave === "function") {
         await window.squareUpSplitSave(entry);
       } else {
@@ -2141,6 +2150,7 @@ async function api(path, method, body) {
   return data;
 }
 
+sqFillCurrencies();
 // ============ DEDICATED SETTINGS PAGE ============
 var myProfileSettings = null;
 function settingsMessage(id, message, ok) { var el=$(id); el.textContent=message; el.style.color=ok?'#65f5ac':'#ff9db1'; }
@@ -2768,6 +2778,8 @@ async function mutate(path, method, body) {
 function applyDetail(detail) {
   var snapshot = JSON.stringify(detail);
   current = detail;
+  sqFillCurrencies();
+  sqRenderBudget();
   if(document.body.classList.contains("analytics-view"))renderSquareUpAnalytics();
   refreshInbox();
   var t = trackers.find(function (x) { return x.id === detail.id; });
@@ -2902,6 +2914,7 @@ $("new-form").addEventListener("submit", async function (e) {
     var withLocal = !$("new-import-row").hidden && $("new-import").checked;
     var detail = await api("trackers", "POST", {
       name: $("new-name").value,
+      currency: $("new-currency").value,
       entries: withLocal ? loadEntries() : []
     });
     closeModals();
@@ -3176,9 +3189,20 @@ document.getElementById('receipt-file').onchange=async function(e){var file=e.ta
  lines.forEach(line=>{var match=line.trim().match(/^(.+?)\s+\$?([0-9]+[.,][0-9]{2})\s*$/);if(match&&!/^(total|subtotal|tax|tip|change|cash|card|balance|discount)/i.test(match[1].trim()))parsed.push({name:match[1].trim().slice(0,80),amount:match[2].replace(',','.'),people:[]});});
  if(parsed.length){receiptLines=parsed.slice(0,60);receiptDraw();status.textContent='Found '+parsed.length+' possible items. Correct any errors and assign each item.';}else status.textContent='No item prices recognized. Add items manually below.';
  }catch(err){status.textContent='Automatic reading failed. You can enter items manually.';console.warn(err);}};
-document.getElementById('receipt-save').onclick=async function(){var result=receiptPreview();if(!result.valid||!current)return;var debts=Object.entries(result.shares).filter(([p,c])=>p!==result.payer&&c>0);if(!debts.length){alert('No one owes the payer.');return;}if(!confirm('Save '+debts.length+' expense entries?'))return;var btn=this;btn.disabled=true;var saved=0;try{for(var [p,c] of debts){await api('trackers/'+current.id+'/entries','POST',{type:'debt',from:p,to:result.payer,amount:c/100,note:'Itemized receipt: '+receiptLines.filter(l=>l.people.includes(p)).map(l=>l.name).join(', ').slice(0,190),date:new Date().toLocaleDateString(),dueDate:document.getElementById('receipt-due').value||null});saved++;}applyDetail(await api('trackers/'+current.id));receiptLines=[];receiptDraw();document.getElementById('receipt-status').textContent='Saved '+saved+' expenses.';await refreshInbox();}catch(err){alert('Saved '+saved+' of '+debts.length+'. '+err.message+' Check activity before retrying.');}finally{btn.disabled=false;}};
+document.getElementById('receipt-save').onclick=async function(){var result=receiptPreview();if(!result.valid||!current)return;var debts=Object.entries(result.shares).filter(([p,c])=>p!==result.payer&&c>0);if(!debts.length){alert('No one owes the payer.');return;}if(!confirm('Save '+debts.length+' expense entries?'))return;var btn=this;btn.disabled=true;var saved=0;try{for(var [p,c] of debts){await api('trackers/'+current.id+'/entries','POST',{type:'debt',from:p,to:result.payer,amount:c/100,currency:document.getElementById('receipt-currency').value,note:'Itemized receipt: '+receiptLines.filter(l=>l.people.includes(p)).map(l=>l.name).join(', ').slice(0,190),date:new Date().toLocaleDateString(),dueDate:document.getElementById('receipt-due').value||null});saved++;}applyDetail(await api('trackers/'+current.id));receiptLines=[];receiptDraw();document.getElementById('receipt-status').textContent='Saved '+saved+' expenses.';await refreshInbox();}catch(err){alert('Saved '+saved+' of '+debts.length+'. '+err.message+' Check activity before retrying.');}finally{btn.disabled=false;}};
 
 window.squareUpPinExpense=async function(id){if(!current)return;var e=current.entries.find(x=>String(x.id)===String(id));if(!e)return;try{applyDetail(await api('trackers/'+current.id+'/entries/'+encodeURIComponent(id)+'/pin','PATCH',{pinned:!e.pinned}));}catch(err){alert(err.message);}};
+function sqRenderBudget(){var el=document.getElementById('sq-budget-display');if(!el)return;if(!current){el.textContent='Open a tracker to set a goal.';return;}var budget=Number(current.budget),spent=(current.entries||[]).filter(e=>e.type==='debt').reduce((sum,e)=>sum+Number(e.amount||0),0);document.getElementById('sq-budget-amount').value=budget>0?budget:'';if(!budget){el.textContent='No budget set yet. Set a goal below.';return;}var pct=spent/budget*100;el.innerHTML='<strong>'+sqFormat(spent)+' of '+sqFormat(budget)+'</strong><div class="sq-budget-progress'+(pct>100?' over':'')+'"><div style="width:'+Math.min(100,pct)+'%"></div></div><small>'+pct.toFixed(1)+'% used'+(pct>100?' · '+sqFormat(spent-budget)+' over budget':'')+'</small>';}
+document.getElementById('sq-budget-form').addEventListener('submit',async e=>{e.preventDefault();if(!current)return alert('Open a tracker first.');try{applyDetail(await api('trackers/'+current.id+'/budget','PATCH',{amount:Number(document.getElementById('sq-budget-amount').value)}));}catch(err){alert(err.message);}});
+document.getElementById('sq-budget-clear').onclick=async()=>{if(!current)return;try{applyDetail(await api('trackers/'+current.id+'/budget','PATCH',{amount:null}));}catch(err){alert(err.message);}};
+var sqPhotoFile=null,sqMentionIds=new Set();
+const sqChatInput=document.getElementById('tracker-chat-input');
+const sqMentionList=document.getElementById('sq-mention-list');
+document.getElementById('sq-chat-photo-input').onchange=function(){sqPhotoFile=this.files[0]||null;var preview=document.getElementById('sq-photo-preview');preview.hidden=!sqPhotoFile;preview.textContent=sqPhotoFile?'Attached: '+sqPhotoFile.name+' ('+Math.round(sqPhotoFile.size/1024)+' KB)':'';};
+function sqMentionMatch(){var before=sqChatInput.value.slice(0,sqChatInput.selectionStart),match=before.match(/(^|\s)@([\w.-]*)$/);return match?{term:match[2],start:before.length-match[2].length-1}:null;}
+sqChatInput.addEventListener('input',()=>{var m=sqMentionMatch();if(!m||!current){sqMentionList.hidden=true;return;}var found=current.members.filter(x=>!x.isYou&&(x.name||'').toLowerCase().includes(m.term.toLowerCase())).slice(0,8);sqMentionList.innerHTML=found.map(x=>'<button type="button" data-mention-id="'+esc(x.id)+'">@'+esc(x.name)+'</button>').join('');sqMentionList.hidden=!found.length;});
+sqMentionList.addEventListener('click',e=>{var btn=e.target.closest('[data-mention-id]');if(!btn||!current)return;var member=current.members.find(x=>String(x.id)===btn.dataset.mentionId),m=sqMentionMatch();if(!member||!m)return;var pos=sqChatInput.selectionStart;sqChatInput.value=sqChatInput.value.slice(0,m.start)+'@'+member.name+' '+sqChatInput.value.slice(pos);sqMentionIds.add(member.id);sqMentionList.hidden=true;sqChatInput.focus();});
+async function sqUploadPhoto(file){if(!file)return null;if(file.size>4*1024*1024)throw Error('Photo must be under 4 MB.');var headers=await authHeaders({'Content-Type':file.type});var response=await fetch('/api/trackers/'+current.id+'/chat-photo',{method:'POST',headers,body:file});var data=await response.json().catch(()=>({}));if(!response.ok)throw Error(data.error||'Photo upload failed');return data.photoId;}
 var chatTrackerId=null;
 async function loadTrackerChat(){var box=document.getElementById('tracker-chat-messages');if(!box)return;if(!current){box.textContent='Open a shared tracker to chat.';return;}
  try{var id=current.id,rows=await api('trackers/'+id+'/chat');if(!current||current.id!==id)return;squareUpChatRows=rows;
@@ -3186,12 +3210,13 @@ async function loadTrackerChat(){var box=document.getElementById('tracker-chat-m
  box.innerHTML=rows.map(m=>{var mine=String(m.senderId)===String(currentUser?.id)||current.members.some(x=>x.isYou&&(String(x.userId||x.user_id||'')===String(m.senderId)||x.name===m.senderName)),parent=m.replyTo?byId.get(String(m.replyTo)):null;
  var reply=parent?'<div class="chat-reply-preview">'+esc(parent.senderName)+': '+esc(parent.message.slice(0,120))+'</div>':'';
  var reactions=(m.reactions||[]).map(r=>'<button class="chat-reaction'+(r.mine?' selected':'')+'" data-react="'+esc(m.id)+'" data-emoji="'+esc(r.emoji)+'">'+esc(r.emoji)+' '+r.count+'</button>').join('');
- return '<div class="chat-line '+(mine?'mine':'theirs')+'">'+(mine?'':'<div class="chat-sender">'+esc(m.senderName)+'</div>')+'<div class="chat-bubble">'+reply+esc(m.message)+'</div><div class="chat-reactions">'+reactions+'</div><div class="chat-message-actions"><button type="button" data-reply="'+esc(m.id)+'">↩ Reply</button>'+['❤️','👍','😂','🎉'].map(emoji=>'<button type="button" data-react="'+esc(m.id)+'" data-emoji="'+emoji+'">'+emoji+'</button>').join('')+'</div><div class="chat-time">'+esc(new Date(m.createdAt).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}))+'</div></div>';}).join('')||'<p class="dashboard-subheading">No messages yet. Say hello!</p>';
+ return '<div class="chat-line '+(mine?'mine':'theirs')+'">'+(mine?'':'<div class="chat-sender">'+esc(m.senderName)+'</div>')+'<div class="chat-bubble">'+reply+esc(m.message)+(m.photoId?'<a href="/api/trackers/'+encodeURIComponent(id)+'/chat-photo/'+encodeURIComponent(m.photoId)+'" target="_blank" rel="noopener"><img class="sq-chat-image" data-photo="'+esc(m.photoId)+'" alt="Shared photo"></a>':'')+'</div><div class="chat-reactions">'+reactions+'</div><div class="chat-message-actions"><button type="button" data-reply="'+esc(m.id)+'">↩ Reply</button>'+['❤️','👍','😂','🎉'].map(emoji=>'<button type="button" data-react="'+esc(m.id)+'" data-emoji="'+emoji+'">'+emoji+'</button>').join('')+'</div><div class="chat-time">'+esc(new Date(m.createdAt).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}))+'</div></div>';}).join('')||'<p class="dashboard-subheading">No messages yet. Say hello!</p>';
+ box.querySelectorAll('img[data-photo]').forEach(async img=>{try{var response=await fetch('/api/trackers/'+encodeURIComponent(id)+'/chat-photo/'+encodeURIComponent(img.dataset.photo),{headers:await authHeaders()});if(!response.ok)return;var blob=await response.blob();var url=URL.createObjectURL(blob);img.src=url;img.closest('a').href=url;img.onload=()=>setTimeout(()=>URL.revokeObjectURL(url),60000);}catch(e){}});
  }catch(err){box.textContent='Chat unavailable: '+err.message;}}
 async function loadRecurring(){var el=document.getElementById('recurring-list');if(!el)return;if(!current){el.textContent='Open a shared tracker to manage recurring expenses.';return;}
  try{var id=current.id;var rows=await api('trackers/'+id+'/recurring');if(!current||current.id!==id)return;el.innerHTML=rows.filter(x=>x.active).map(x=>'<div class="recurring-row"><div><b>'+esc(x.from_name)+' → '+esc(x.to_name)+'</b> · '+money(Number(x.amount))+'<small>'+esc(x.note||'Recurring expense')+' · '+esc(x.frequency)+' · Next '+esc(x.next_date)+'</small></div><button class="small-btn danger" data-stop-recurring="'+esc(x.id)+'">Stop</button></div>').join('')||'<p class="dashboard-subheading">No active recurring expenses.</p>';}catch(err){el.textContent='Schedules unavailable: '+err.message;}}
 document.getElementById('recurring-list').addEventListener('click',async function(ev){var id=ev.target.dataset.stopRecurring;if(!id||!current)return;if(!confirm('Stop future repeats? Existing expenses will remain.'))return;try{await api('trackers/'+current.id+'/recurring/'+id,'DELETE');await loadRecurring();}catch(err){alert(err.message);}});
-document.getElementById('tracker-chat-form').addEventListener('submit',async function(ev){ev.preventDefault();if(!current)return alert('Open a shared tracker first.');var input=document.getElementById('tracker-chat-input'),message=input.value.trim();if(!message)return;var button=this.querySelector('button');button.disabled=true;try{await api('trackers/'+current.id+'/chat','POST',{message,replyTo:squareUpReplyTo});input.value='';squareUpReplyTo=null;document.getElementById('chat-reply-target').hidden=true;await loadTrackerChat();await refreshInbox();}catch(err){alert(err.message);}finally{button.disabled=false;}});
+document.getElementById('tracker-chat-form').addEventListener('submit',async function(ev){ev.preventDefault();if(!current)return alert('Open a shared tracker first.');var input=document.getElementById('tracker-chat-input'),message=input.value.trim();if(!message&&!sqPhotoFile)return;var button=this.querySelector('button[type=submit]');button.disabled=true;try{var photoId=sqPhotoFile?await sqUploadPhoto(sqPhotoFile):null;var mentions=[...sqMentionIds].filter(mid=>{var m=current.members.find(x=>x.id===mid);return m&&message.includes('@'+m.name);});await api('trackers/'+current.id+'/chat','POST',{message,photoId,mentions,replyTo:squareUpReplyTo});input.value='';sqPhotoFile=null;sqMentionIds.clear();document.getElementById('sq-chat-photo-input').value='';document.getElementById('sq-photo-preview').hidden=true;squareUpReplyTo=null;document.getElementById('chat-reply-target').hidden=true;await loadTrackerChat();await refreshInbox();}catch(err){alert(err.message);}finally{button.disabled=false;}});
 var extraLastTracker=null;
 setInterval(function(){if(current){loadTrackerChat();loadRecurring();}},30000);
 
@@ -3200,7 +3225,7 @@ setInterval(function(){if(current)refreshInbox();},45000);
 
 
 // SquareUp analytics: calculations use only the currently selected tracker.
-function squareUpMoney(n){return '$'+Number(n||0).toFixed(2);}
+function squareUpMoney(n){return sqFormat(n);}
 function squareUpBarList(target,values){
  var el=document.getElementById(target);if(!el)return;var rows=Object.entries(values).sort((a,b)=>b[1]-a[1]);
  if(!rows.length){el.innerHTML='<p class="feature-muted">No expense data yet.</p>';return;}
