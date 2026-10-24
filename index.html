@@ -1200,6 +1200,13 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
         <button type="button" class="settings-action primary" id="settings-install-app" hidden>Install SquareUp App</button>
         <p class="settings-muted" id="settings-install-status" role="status" aria-live="polite"></p>
       </div>
+      <div class="settings-panel" id="settings-push-panel">
+        <h3>Push notifications</h3>
+        <p class="settings-muted">Get an alert when someone adds an expense, confirms a payment, or sends a group message—even when SquareUp is closed. Notification details stay inside your account.</p>
+        <button type="button" class="settings-action primary" id="settings-push-enable">Enable push notifications</button>
+        <button type="button" class="settings-action" id="settings-push-disable" hidden>Disable on this device</button>
+        <p class="settings-muted" id="settings-push-status" role="status" aria-live="polite"></p>
+      </div>
       <div class="settings-panel"><h3>Account</h3><div class="settings-actions"><button type="button" class="settings-action" id="settings-password">Change password</button><button type="button" class="settings-action" id="settings-signout">Log out</button></div></div>
       <div class="settings-panel"><h3>Payment Accounts</h3><p class="settings-muted">Add your Venmo username or Cash App $Cashtag. Other members of your shared trackers can use these to open your payment profile.</p>
         <form id="settings-pay-form">
@@ -3538,6 +3545,77 @@ if ('serviceWorker' in navigator) {
   });
   window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; updateInstallUI(); });
   updateInstallUI();
+})();
+</script>
+<script>
+(function () {
+  const enable = document.getElementById('settings-push-enable');
+  const disable = document.getElementById('settings-push-disable');
+  const status = document.getElementById('settings-push-status');
+  if (!enable || !disable || !status) return;
+  const installed = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const supported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+  function keyBytes(base64url) {
+    const b64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+    const raw = atob(b64 + '='.repeat((4 - b64.length % 4) % 4));
+    return Uint8Array.from(raw, c => c.charCodeAt(0));
+  }
+  async function refresh() {
+    if (!supported) {
+      enable.hidden = true;
+      disable.hidden = true;
+      status.textContent = 'Push notifications are not supported in this browser.';
+      return;
+    }
+    if (isIOS && !installed()) {
+      enable.hidden = true;
+      disable.hidden = true;
+      status.textContent = 'On iPhone, first install SquareUp to your Home Screen, then open the installed app to enable notifications.';
+      return;
+    }
+    const reg = await navigator.serviceWorker.ready;
+    const subscription = await reg.pushManager.getSubscription();
+    enable.hidden = !!subscription;
+    disable.hidden = !subscription;
+    status.textContent = subscription ? 'Push notifications are enabled on this device.' :
+      Notification.permission === 'denied' ? 'Notifications are blocked in device settings. Allow them there before trying again.' :
+      'Notifications are off on this device.';
+  }
+  enable.addEventListener('click', async () => {
+    enable.disabled = true;
+    status.textContent = 'Enabling notifications…';
+    try {
+      if (!supported || (isIOS && !installed())) throw Error('Install SquareUp to your Home Screen first.');
+      // Permission is requested directly from this button click.
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') throw Error('Notification permission was not granted.');
+      const config = await api('push/config');
+      const reg = await navigator.serviceWorker.ready;
+      const subscription = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(config.publicKey) });
+      try { await api('push/subscription', 'POST', { subscription: subscription.toJSON() }); }
+      catch (error) { await subscription.unsubscribe(); throw error; }
+      await refresh();
+    } catch (error) { status.textContent = error.message || 'Could not enable push notifications.'; }
+    finally { enable.disabled = false; }
+  });
+  disable.addEventListener('click', async () => {
+    disable.disabled = true;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const subscription = await reg.pushManager.getSubscription();
+      if (subscription) {
+        await api('push/subscription', 'DELETE', { endpoint: subscription.endpoint });
+        await subscription.unsubscribe();
+      }
+      await refresh();
+    } catch (error) { status.textContent = error.message || 'Could not disable notifications.'; }
+    finally { disable.disabled = false; }
+  });
+  refresh().catch(error => { status.textContent = error.message || 'Push setup unavailable.'; });
+  document.getElementById('btn-settings')?.addEventListener('click', () => {
+    refresh().catch(() => {});
+  });
 })();
 </script>
 </body>
