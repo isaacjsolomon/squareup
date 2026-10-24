@@ -1770,7 +1770,7 @@ if (method === 'DELETE') {
   // Require a valid entry ID to prevent accidental bulk deletion.
   const entryId = String(parts[3] || '');
 
-  if (parts.length !== 4 || !uuid.test(entryId)) {
+ if (!uuid.test(entryId)) {
     return fail('Invalid entry ID.', 400);
   }
 
