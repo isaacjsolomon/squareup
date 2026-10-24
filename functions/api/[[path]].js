@@ -153,14 +153,162 @@ async function pushVapidToken(endpoint, env) {
   };
 }
 
-async function sendPush(endpoint, env) {
+async function encryptPushPayload(subscription, payload) {
+  const encoder = new TextEncoder();
+
+  const clientPublicKey = pushBytes(subscription.p256dh);
+  const authSecret = pushBytes(subscription.auth);
+
+  // Generate a fresh encryption key for each notification.
+  const serverKeys = await crypto.subtle.generateKey(
+    { name: 'ECDH', namedCurve: 'P-256' },
+    true,
+    ['deriveBits']
+  );
+
+  const serverPublicKey = new Uint8Array(
+    await crypto.subtle.exportKey('raw', serverKeys.publicKey)
+  );
+
+  const clientKey = await crypto.subtle.importKey(
+    'raw',
+    clientPublicKey,
+    { name: 'ECDH', namedCurve: 'P-256' },
+    false,
+    []
+  );
+
+  const sharedSecret = await crypto.subtle.deriveBits(
+    { name: 'ECDH', public: clientKey },
+    serverKeys.privateKey,
+    256
+  );
+
+  async function hkdf(ikm, salt, info, length) {
+    const key = await crypto.subtle.importKey(
+      'raw',
+      ikm,
+      'HKDF',
+      false,
+      ['deriveBits']
+    );
+
+    return new Uint8Array(
+      await crypto.subtle.deriveBits(
+        {
+          name: 'HKDF',
+          hash: 'SHA-256',
+          salt,
+          info
+        },
+        key,
+        length * 8
+      )
+    );
+  }
+
+  function joinBytes(...arrays) {
+    const result = new Uint8Array(
+      arrays.reduce((total, item) => total + item.length, 0)
+    );
+
+    let offset = 0;
+
+    for (const item of arrays) {
+      result.set(item, offset);
+      offset += item.length;
+    }
+
+    return result;
+  }
+
+  const info = joinBytes(
+    encoder.encode('WebPush: info\0'),
+    clientPublicKey,
+    serverPublicKey
+  );
+
+  const ikm = await hkdf(
+    sharedSecret,
+    authSecret,
+    info,
+    32
+  );
+
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+
+  const contentKey = await hkdf(
+    ikm,
+    salt,
+    encoder.encode('Content-Encoding: aes128gcm\0'),
+    16
+  );
+
+  const nonce = await hkdf(
+    ikm,
+    salt,
+    encoder.encode('Content-Encoding: nonce\0'),
+    12
+  );
+
+  const plaintext = joinBytes(
+    encoder.encode(JSON.stringify(payload)),
+    new Uint8Array([2])
+  );
+
+  const aesKey = await crypto.subtle.importKey(
+    'raw',
+    contentKey,
+    'AES-GCM',
+    false,
+    ['encrypt']
+  );
+
+  const ciphertext = new Uint8Array(
+    await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv: nonce },
+      aesKey,
+      plaintext
+    )
+  );
+
+  // Web Push aes128gcm record header.
+  const recordHeader = new Uint8Array(5);
+  new DataView(recordHeader.buffer).setUint32(0, 4096);
+  recordHeader[4] = serverPublicKey.length;
+
+  return joinBytes(
+    salt,
+    recordHeader,
+    serverPublicKey,
+    ciphertext
+  );
+}
+
+
+
+async function sendPush(subscription, env, content) {
   if (
     !env.VAPID_PUBLIC_KEY ||
     !env.VAPID_PRIVATE_KEY ||
     !env.VAPID_SUBJECT
   ) return null;
 
-  const { jwt, publicKey } = await pushVapidToken(endpoint, env);
+  const endpoint = subscription.endpoint;
+
+  const { jwt, publicKey } = await pushVapidToken(
+    endpoint,
+    env
+  );
+
+  const payload = await encryptPushPayload(
+    subscription,
+    {
+      title: content.title,
+      body: content.body,
+      url: '/'
+    }
+  );
 
   return fetch(endpoint, {
     method: 'POST',
@@ -168,8 +316,11 @@ async function sendPush(endpoint, env) {
     headers: {
       Authorization: 'vapid t=' + jwt + ', k=' + publicKey,
       TTL: '300',
-      Urgency: 'normal'
-    }
+      Urgency: 'normal',
+      'Content-Encoding': 'aes128gcm',
+      'Content-Type': 'application/octet-stream'
+    },
+    body: payload
   });
 }
 
@@ -248,7 +399,8 @@ export async function onRequest({ request, env, params, waitUntil }) {
         data.message || data.error || 'Database request failed'
       );
 
-// Send push alerts when new notifications are saved.
+
+// Send categorized push alerts when new notifications are saved.
 if (
   table === 'squareup_notifications' &&
   method === 'POST' &&
@@ -256,13 +408,60 @@ if (
 ) {
   const rows = Array.isArray(data) ? data : [];
 
-  const recipients = [
-    ...new Set(rows.map(r => r.recipient_id).filter(Boolean))
-  ];
+  // Choose a short, privacy-friendly notification for each event.
+  function pushContent(row) {
+    switch (row.kind) {
+      case 'chat':
+        return {
+          title: 'New Chat Message',
+          body: 'Someone sent a message in your SquareUp tracker.'
+        };
 
-  if (recipients.length) {
+      case 'mention':
+        return {
+          title: 'You Were Mentioned',
+          body: 'Someone mentioned you in a group chat.'
+        };
+
+      case 'expense':
+        return {
+          title: 'New Expense Logged',
+          body: 'A new expense was added to your tracker.'
+        };
+
+      case 'payment_pending':
+        return {
+          title: 'Payment Awaiting Confirmation',
+          body: 'A payment is waiting for your confirmation.'
+        };
+
+      case 'payment_confirmed':
+        return {
+          title: 'Payment Confirmed',
+          body: 'Your payment has been confirmed.'
+        };
+
+      case 'payment_disputed':
+        return {
+          title: 'Payment Disputed',
+          body: 'A payment needs your attention.'
+        };
+
+      default:
+        return {
+          title: 'SquareUp Notification',
+          body: 'You have new activity.'
+        };
+    }
+  }
+
+  if (rows.length) {
     waitUntil((async () => {
       try {
+        const recipients = [
+          ...new Set(rows.map(r => r.recipient_id).filter(Boolean))
+        ];
+
         const subscriptions = await db(
           'squareup_push_subscriptions',
           {
@@ -273,9 +472,25 @@ if (
           }
         );
 
+        // Send each device its recipient's notification category.
         await Promise.all(subscriptions.map(async s => {
           try {
-            const response = await sendPush(s.endpoint, env);
+            const recipientRows = rows.filter(
+              r => r.recipient_id === s.user_id
+            );
+
+            if (!recipientRows.length) return;
+
+            // Use the most recent event for this recipient.
+            const content = pushContent(
+              recipientRows[recipientRows.length - 1]
+            );
+
+            const response = await sendPush(
+              s,
+              env,
+              content
+            );
 
             if (response && [404, 410].includes(response.status)) {
               await db('squareup_push_subscriptions', {
@@ -303,6 +518,7 @@ if (
     })());
   }
 }
+
 
     
     return data;
