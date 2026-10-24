@@ -1840,35 +1840,68 @@ if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(entr
 }
 }
 
-// SHARE TRACKER
-if (sub === 'invite' && method === 'POST') {
 
+    // SHARE TRACKER
+    if (sub === 'invite' && parts.length === 3 && method === 'POST') {
+      const trackers = await db('trackers', {
+        filters: { id: 'eq.' + id },
+        limit: 1
+      });
+
+      const t = trackers[0];
+
+      if (!t) {
+        return fail('Tracker not found.', 404);
+      }
+
+      // Verify ownership using the trackers table,
+      // not just the tracker_members role.
+      const isOwner =
+        String(t.owner_id).toLowerCase() ===
+        String(me.id).toLowerCase();
+
+      const wantsReset = body.reset === true;
+
+      // Only the owner can reset an existing invitation.
+      if (wantsReset && !isOwner) {
         return fail(
           'Only the owner can reset the invite link.',
           403
         );
+      }
 
-      const t = (await db('trackers', {
-        filters: { id: 'eq.' + id }
-      }))[0];
+      // Members may reuse an existing invitation link,
+      // but only the owner can generate a missing one.
+      if (!t.invite_token && !isOwner) {
+        return fail(
+          'Only the owner can create an invite link.',
+          403
+        );
+      }
 
-      const token = body.reset === true ||
-        !t.invite_token
-        ? crypto.randomUUID().replaceAll('-', '') +
+      let token = t.invite_token;
+
+      if (wantsReset || !token) {
+        token =
+          crypto.randomUUID().replaceAll('-', '') +
           crypto.randomUUID()
-            .replaceAll('-', '').slice(0, 4)
-        : t.invite_token;
+            .replaceAll('-', '').slice(0, 4);
 
-      if (token !== t.invite_token) {
         await db('trackers', {
           method: 'PATCH',
-          filters: { id: 'eq.' + id },
-          body: { invite_token: token }
+          filters: {
+            id: 'eq.' + id,
+            owner_id: 'eq.' + me.id
+          },
+          body: {
+            invite_token: token
+          }
         });
       }
 
       return json({ token });
     }
+
 
     // REMOVE TRACKER MEMBER
     if (sub === 'members' &&
