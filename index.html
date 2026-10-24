@@ -1375,6 +1375,12 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
       <input id="invite-link" readonly aria-label="Invite link">
       <button type="button" class="small-btn accent" id="invite-copy">Copy</button>
     </div>
+    <div id="invite-qr-section" style="margin-top:16px;text-align:center" hidden>
+      <p class="section-label">Scan to join</p>
+      <div id="invite-qr" style="display:inline-flex;background:#fff;padding:12px;border-radius:12px;max-width:100%" aria-label="QR code for tracker invitation"></div>
+      <div style="margin-top:10px"><button type="button" class="small-btn" id="invite-qr-download">Download QR code</button></div>
+      <p class="hint">Anyone with this code can open the invitation. Only share it with people you trust.</p>
+    </div>
     <div style="margin-top:6px"><button type="button" class="link-btn" id="invite-native" hidden>Share via…</button>
       <button type="button" class="link-btn" id="invite-reset" hidden style="margin-left:10px">Reset link</button></div>
     <p class="section-label" style="margin-top:16px">People</p>
@@ -1386,6 +1392,7 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 <script>
 // ============ STORAGE (safe: falls back to memory if the browser blocks it) ============
 var KEY = "squareup-entries";
@@ -3017,6 +3024,36 @@ $("new-form").addEventListener("submit", async function (e) {
   }
 });
 
+// QR code generator runs in the browser; the invite token is never sent to a QR API.
+function updateInviteQR() {
+  var url = $("invite-link").value;
+  var section = $("invite-qr-section");
+  var target = $("invite-qr");
+  target.textContent = "";
+  section.hidden = !/^https:\/\/[^\s]+\?join=/.test(url);
+  if (section.hidden) return;
+  if (typeof QRCode === "undefined") {
+    target.textContent = "QR generator unavailable. You can still copy the invitation link.";
+    $("invite-qr-download").hidden = true;
+    return;
+  }
+  $("invite-qr-download").hidden = false;
+  new QRCode(target, { text: url, width: 220, height: 220,
+    colorDark: "#111827", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+}
+$("invite-qr-download").onclick = function () {
+  var qr = $("invite-qr");
+  var canvas = qr.querySelector("canvas");
+  var img = qr.querySelector("img");
+  var url = canvas ? canvas.toDataURL("image/png") : img && img.src;
+  if (!url) { shareMsg("QR image not ready. Try again.", "error"); return; }
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "SquareUp-tracker-invite.png";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+};
 // --- share ---
 function shareMsg(text, kind) {
   $("share-msg").className = "msg" + (kind ? " " + kind : "");
@@ -3043,14 +3080,17 @@ async function openShare() {
   if (!current) return;
   shareMsg("");
   $("invite-link").value = "Getting link…";
+  updateInviteQR();
   $("invite-native").hidden = !navigator.share;
   renderShareMembers();
   $("share-modal").classList.add("open");
   try {
     var r = await api("trackers/" + current.id + "/invite", "POST", {});
     $("invite-link").value = location.origin + "/?join=" + encodeURIComponent(r.token);
+    updateInviteQR();
   } catch (err) {
     $("invite-link").value = "";
+    updateInviteQR();
     shareMsg(err.message, "error");
   }
 }
@@ -3095,6 +3135,7 @@ $("invite-reset").onclick = async function () {
   try {
     var r = await api("trackers/" + current.id + "/invite", "POST", { reset: true });
     $("invite-link").value = location.origin + "/?join=" + encodeURIComponent(r.token);
+    updateInviteQR();
     shareMsg("New link ready.", "ok");
   } catch (err) { shareMsg(err.message, "error"); }
 };
