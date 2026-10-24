@@ -1194,6 +1194,12 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
       </div>
     </div>
     <div>
+      <div class="settings-panel" id="settings-install-panel">
+        <h3>Install SquareUp</h3>
+        <p class="settings-muted">Add SquareUp to your Home Screen or desktop for quick access.</p>
+        <button type="button" class="settings-action primary" id="settings-install-app" hidden>Install SquareUp App</button>
+        <p class="settings-muted" id="settings-install-status" role="status" aria-live="polite"></p>
+      </div>
       <div class="settings-panel"><h3>Account</h3><div class="settings-actions"><button type="button" class="settings-action" id="settings-password">Change password</button><button type="button" class="settings-action" id="settings-signout">Log out</button></div></div>
       <div class="settings-panel"><h3>Payment Accounts</h3><p class="settings-muted">Add your Venmo username or Cash App $Cashtag. Other members of your shared trackers can use these to open your payment profile.</p>
         <form id="settings-pay-form">
@@ -3483,6 +3489,56 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(err => console.warn('PWA service worker:', err));
   });
 }
+</script>
+<script>
+/* Progressive Web App installation: no backend changes required. */
+(function () {
+  let deferredInstallPrompt = null;
+  const button = document.getElementById('settings-install-app');
+  const status = document.getElementById('settings-install-status');
+  if (!button || !status) return;
+  const standalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const android = /Android/i.test(navigator.userAgent);
+  function updateInstallUI() {
+    if (standalone()) {
+      button.hidden = true;
+      status.textContent = 'SquareUp is already installed and running as an app.';
+    } else if (deferredInstallPrompt) {
+      button.hidden = false;
+      status.textContent = 'Install SquareUp to launch it like an app.';
+    } else if (ios) {
+      button.hidden = true;
+      status.textContent = 'On iPhone or iPad, open SquareUp in Safari, tap Share, then Add to Home Screen → Add. After installing, open it from your Home Screen.';
+    } else if (android) {
+      button.hidden = true;
+      status.textContent = 'In Chrome, open the browser menu (⋮) and choose Install app or Add to Home screen. If an install prompt becomes available, an Install button will appear here.';
+    } else {
+      button.hidden = true;
+      status.textContent = 'In Chrome or Edge, use the browser menu to install this site as an app. Some browsers do not support app installation.';
+    }
+  }
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    updateInstallUI();
+  });
+  button.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) { updateInstallUI(); return; }
+    const prompt = deferredInstallPrompt;
+    deferredInstallPrompt = null;
+    button.hidden = true;
+    try {
+      await prompt.prompt();
+      const choice = await prompt.userChoice;
+      status.textContent = choice && choice.outcome === 'accepted' ? 'Installation accepted. Check your Home Screen or app list.' : 'Installation dismissed. You can still install from your browser menu.';
+    } catch (error) {
+      status.textContent = 'The install prompt was unavailable. Try the install option in your browser menu.';
+    }
+  });
+  window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; updateInstallUI(); });
+  updateInstallUI();
+})();
 </script>
 </body>
 </html>
