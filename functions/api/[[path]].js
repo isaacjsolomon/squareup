@@ -71,7 +71,112 @@ function validate(v) {
   };
 }
 
-export async function onRequest({ request, env, params }) {
+
+// WEB PUSH NOTIFICATIONS
+// Send empty-payload notifications to protect private expense details.
+
+function pushB64(bytes) {
+  let binary = '';
+  for (const b of bytes) {
+    binary += String.fromCharCode(b);
+  }
+  return btoa(binary)
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+}
+
+function pushBytes(s) {
+  const normalized = s.replace(/-/g, '+').replace(/_/g, '/');
+  const binary = atob(
+    normalized + '='.repeat((4 - normalized.length % 4) % 4)
+  );
+  return Uint8Array.from(binary, c => c.charCodeAt(0));
+}
+
+async function pushVapidToken(endpoint, env) {
+  const key = pushBytes(env.VAPID_PUBLIC_KEY || '');
+  if (key.length !== 65 || key[0] !== 4) {
+    throw Error('Invalid VAPID public key');
+  }
+
+  const privateBytes = pushBytes(env.VAPID_PRIVATE_KEY || '');
+  if (privateBytes.length !== 32) {
+    throw Error('Invalid VAPID private key');
+  }
+
+  const jwk = {
+    kty: 'EC',
+    crv: 'P-256',
+    x: pushB64(key.slice(1, 33)),
+    y: pushB64(key.slice(33)),
+    d: pushB64(privateBytes),
+    ext: false
+  };
+
+  const signingKey = await crypto.subtle.importKey(
+    'jwk',
+    jwk,
+    { name: 'ECDSA', namedCurve: 'P-256' },
+    false,
+    ['sign']
+  );
+
+  const origin = new URL(endpoint).origin;
+  const subject = env.VAPID_SUBJECT;
+
+  const header = pushB64(
+    new TextEncoder().encode(
+      JSON.stringify({ typ: 'JWT', alg: 'ES256' })
+    )
+  );
+
+  const claims = pushB64(
+    new TextEncoder().encode(JSON.stringify({
+      aud: origin,
+      exp: Math.floor(Date.now() / 1000) + 3600,
+      sub: subject
+    }))
+  );
+
+  const unsigned = header + '.' + claims;
+
+  const signature = await crypto.subtle.sign(
+    { name: 'ECDSA', hash: 'SHA-256' },
+    signingKey,
+    new TextEncoder().encode(unsigned)
+  );
+
+  return {
+    jwt: unsigned + '.' + pushB64(new Uint8Array(signature)),
+    publicKey: env.VAPID_PUBLIC_KEY
+  };
+}
+
+async function sendPush(endpoint, env) {
+  if (
+    !env.VAPID_PUBLIC_KEY ||
+    !env.VAPID_PRIVATE_KEY ||
+    !env.VAPID_SUBJECT
+  ) return null;
+
+  const { jwt, publicKey } = await pushVapidToken(endpoint, env);
+
+  return fetch(endpoint, {
+    method: 'POST',
+    redirect: 'manual',
+    headers: {
+      Authorization: 'vapid t=' + jwt + ', k=' + publicKey,
+      TTL: '300',
+      Urgency: 'normal'
+    }
+  });
+}
+
+
+
+export async function onRequest({ request, env, params, waitUntil }) {
+
   const key = env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!key) return fail(
@@ -143,6 +248,63 @@ export async function onRequest({ request, env, params }) {
         data.message || data.error || 'Database request failed'
       );
 
+// Send push alerts when new notifications are saved.
+if (
+  table === 'squareup_notifications' &&
+  method === 'POST' &&
+  waitUntil
+) {
+  const rows = Array.isArray(data) ? data : [];
+
+  const recipients = [
+    ...new Set(rows.map(r => r.recipient_id).filter(Boolean))
+  ];
+
+  if (recipients.length) {
+    waitUntil((async () => {
+      try {
+        const subscriptions = await db(
+          'squareup_push_subscriptions',
+          {
+            filters: {
+              user_id: 'in.(' + recipients.join(',') + ')'
+            },
+            limit: 500
+          }
+        );
+
+        await Promise.all(subscriptions.map(async s => {
+          try {
+            const response = await sendPush(s.endpoint, env);
+
+            if (response && [404, 410].includes(response.status)) {
+              await db('squareup_push_subscriptions', {
+                method: 'DELETE',
+                filters: {
+                  endpoint: 'eq.' + s.endpoint
+                }
+              });
+            } else if (response && !response.ok) {
+              console.error(
+                'Push delivery rejected:',
+                response.status
+              );
+            }
+          } catch (error) {
+            console.error('Push delivery error:', error.message);
+          }
+        }));
+      } catch (error) {
+        console.error(
+          'Push notification dispatch:',
+          error.message
+        );
+      }
+    })());
+  }
+}
+
+    
     return data;
   }
 
@@ -434,7 +596,9 @@ exchangeRate: e.exchange_rate == null
   }
 
   try {
-   const body = ['POST', 'PATCH'].includes(method) &&
+   
+const body = ['POST', 'PATCH', 'DELETE'].includes(method) &&
+
   (request.headers.get('Content-Type') || '')
     .includes('application/json')
       ? await request.json().catch(() => ({}))
@@ -492,6 +656,13 @@ exchangeRate: e.exchange_rate == null
           p.photo_key,
           'DELETE'
         );
+
+await db('squareup_push_subscriptions', {
+  method: 'DELETE',
+  filters: {
+    user_id: 'eq.' + me.id
+  }
+});
 
       await db('profiles', {
         method: 'DELETE',
@@ -826,6 +997,126 @@ exchangeRate: e.exchange_rate == null
     }
 
    
+// PUSH SUBSCRIPTIONS
+
+if (
+  parts[0] === 'push' &&
+  parts[1] === 'config' &&
+  parts.length === 2 &&
+  method === 'GET'
+) {
+  if (
+    !env.VAPID_PUBLIC_KEY ||
+    !env.VAPID_PRIVATE_KEY ||
+    !env.VAPID_SUBJECT
+  ) {
+    return fail('Push notifications are not configured yet.', 503);
+  }
+
+  return json({ publicKey: env.VAPID_PUBLIC_KEY });
+}
+
+if (
+  parts[0] === 'push' &&
+  parts[1] === 'subscription' &&
+  parts.length === 2
+) {
+  if (method === 'POST') {
+    const sub = body.subscription;
+    const endpoint =
+      typeof sub?.endpoint === 'string' ? sub.endpoint : '';
+
+    let url;
+
+    try {
+      url = new URL(endpoint);
+    } catch {
+      return fail('Invalid push endpoint.', 400);
+    }
+
+    if (
+      url.protocol !== 'https:' ||
+      endpoint.length > 2000 ||
+      !sub?.keys?.p256dh ||
+      !sub?.keys?.auth
+    ) {
+      return fail('Invalid push subscription.', 400);
+    }
+
+    // Only allow recognized browser push services.
+    const host = url.hostname.toLowerCase();
+
+    const trusted =
+      host === 'updates.push.services.mozilla.com' ||
+      host === 'fcm.googleapis.com' ||
+      host === 'web.push.apple.com' ||
+      host === 'push.services.mozilla.com' ||
+      host.endsWith('.push.apple.com') ||
+      host === 'push.googleapis.com';
+
+    if (!trusted) {
+      return fail('Unsupported push provider.', 400);
+    }
+
+    await db('squareup_push_subscriptions', {
+      method: 'POST',
+      body: {
+        user_id: me.id,
+        endpoint,
+        p256dh: String(sub.keys.p256dh).slice(0, 256),
+        auth: String(sub.keys.auth).slice(0, 128)
+      }
+    }).catch(async error => {
+      if (!/duplicate|unique/i.test(String(error.message))) {
+        throw error;
+      }
+
+      const existing = await db('squareup_push_subscriptions', {
+        filters: { endpoint: 'eq.' + endpoint },
+        limit: 1
+      });
+
+      if (existing[0]?.user_id !== me.id) {
+        throw Error('Subscription belongs to another account.');
+      }
+
+      await db('squareup_push_subscriptions', {
+        method: 'PATCH',
+        filters: {
+          endpoint: 'eq.' + endpoint,
+          user_id: 'eq.' + me.id
+        },
+        body: {
+          p256dh: String(sub.keys.p256dh).slice(0, 256),
+          auth: String(sub.keys.auth).slice(0, 128)
+        }
+      });
+    });
+
+    return json({ ok: true });
+  }
+
+  if (method === 'DELETE') {
+    const endpoint = String(body.endpoint || '');
+
+    if (!endpoint || endpoint.length > 2000) {
+      return fail('Invalid endpoint.', 400);
+    }
+
+    await db('squareup_push_subscriptions', {
+      method: 'DELETE',
+      filters: {
+        endpoint: 'eq.' + endpoint,
+        user_id: 'eq.' + me.id
+      }
+    });
+
+    return json({ ok: true });
+  }
+
+  return fail('Method not allowed', 405);
+}
+
     // NOTIFICATIONS
     if (parts[0] === 'notifications') {
       if (parts.length === 1 && method === 'GET') {
