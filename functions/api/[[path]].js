@@ -1770,7 +1770,8 @@ if (method === 'DELETE') {
   // Require a valid entry ID to prevent accidental bulk deletion.
   const entryId = String(parts[3] || '');
 
- if (!uuid.test(entryId)) {
+ 
+if (!uuid.test(entryId)) {
   return json({
     error: 'Invalid entry ID.',
     receivedEntryId: entryId,
@@ -1778,8 +1779,6 @@ if (method === 'DELETE') {
     requestPath: new URL(request.url).pathname
   }, 400);
 }
-    return fail('Invalid entry ID.', 400);
-  }
 
   // Find the entry in this tracker.
   const existing = await db('tracker_entries', {
@@ -1828,12 +1827,14 @@ if (method === 'DELETE') {
   }
 
   return json(await detail(id));
+
+  return json(await detail(id));
 }
-    }
 }
-    // SHARE TRACKER
-    if (sub === 'invite' && method === 'POST') {
-      if (body.reset === true && !owner)
+
+// SHARE TRACKER
+if (sub === 'invite' && method === 'POST') {
+
         return fail(
           'Only the owner can reset the invite link.',
           403
