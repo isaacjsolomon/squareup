@@ -2249,7 +2249,7 @@ async function api(path, method, body) {
   }
   return data;
 }
-
+window.squareUpApi = api;
 sqFillCurrencies();
 // ============ DEDICATED SETTINGS PAGE ============
 var myProfileSettings = null;
@@ -3549,6 +3549,8 @@ if ('serviceWorker' in navigator) {
 </script>
 <script>
 (function () {
+const api = (...args) => window.squareUpApi(...args);
+  
   const enable = document.getElementById('settings-push-enable');
   const disable = document.getElementById('settings-push-disable');
   const status = document.getElementById('settings-push-status');
