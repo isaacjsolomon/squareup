@@ -1775,7 +1775,7 @@ const entryId = String(
 
 
  
-if (!uuid.test(entryId)) {
+if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(entryId)) {
   return json({
     error: 'Invalid entry ID.',
     receivedEntryId: entryId,
