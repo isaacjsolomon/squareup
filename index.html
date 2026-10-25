@@ -756,6 +756,57 @@ body.trackers-view #tracker-dashboard,body.trackers-view #split-page,body.tracke
 .tracker-tile-actions .tile-delete:hover{background:#573046}
 .trackers-empty{grid-column:1/-1;padding:38px;text-align:center;color:#bed0df;background:#0d2338;border:1px solid #28475e;border-radius:22px}
 @media(max-width:760px){.trackers-grid{grid-template-columns:1fr}.trackers-header{padding:24px}.tracker-tile{padding:21px}}
+
+/* Tracker gallery: image-led desktop cards and compact mobile cards */
+#trackers-page{max-width:1220px}
+.trackers-grid{gap:20px}
+.tracker-tile{padding:0!important;overflow:visible;position:relative;border-radius:21px!important;background:#081d31!important;box-shadow:0 12px 28px #03122150!important}
+.tracker-tile-banner{height:156px;position:relative;overflow:visible;border-radius:20px 20px 0 0;background:radial-gradient(ellipse at 70% 30%,#61d6c8aa,transparent 38%),linear-gradient(135deg,#14577b,#0c3e61 42%,#0b253e 85%)}
+.tracker-tile:nth-child(3n+2) .tracker-tile-banner{background:radial-gradient(ellipse at 72% 12%,#f8b77b8c,transparent 38%),linear-gradient(145deg,#173b5b,#0a5871 60%,#10263d)}
+.tracker-tile-banner:after{content:'';position:absolute;inset:48% 0 0;background:repeating-radial-gradient(ellipse at 55% -40%,transparent 0 18px,#b3f9e10d 19px 23px,transparent 24px 48px);pointer-events:none}
+.tracker-tile-menu{position:absolute;right:14px;top:14px;z-index:5}
+.tracker-tile-menu summary{list-style:none;cursor:pointer;background:#061a2ddc;color:#fff;border:1px solid #7eabc080;border-radius:10px;display:grid;place-items:center;width:39px;height:36px;font-size:24px;line-height:1}
+.tracker-tile-menu summary::-webkit-details-marker{display:none}
+.tracker-tile-menu-panel{position:absolute;right:0;top:43px;min-width:170px;padding:7px;background:#102b43;border:1px solid #36536b;border-radius:12px;box-shadow:0 12px 24px #0008;display:grid;gap:5px}
+.tracker-tile-menu-panel button{font:inherit;color:#f0f8ff;background:transparent;border:0;border-radius:8px;padding:11px;text-align:left;cursor:pointer}
+.tracker-tile-menu-panel button:hover{background:#264760}
+.tracker-tile-menu-panel button.danger{color:#ffb2c0}
+.tracker-tile-body{padding:21px 23px 23px}
+.tracker-tile-head{margin:0 0 18px!important}
+.tracker-tile-icon{width:46px;height:46px;font-size:25px}
+.tracker-tile-head h3{font-size:21px}
+.tracker-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:18px}
+.tracker-stat{min-width:0;background:#102f47;border-radius:12px;padding:12px 8px;text-align:center}
+.tracker-stat b{display:block;font-size:17px;color:#fff;white-space:nowrap}
+.tracker-stat span{display:block;font-size:11px;color:#a6c0d1;margin-top:3px}
+.tracker-tile-members{min-height:0!important;margin:0 0 19px!important}
+.tracker-tile-members strong{margin-bottom:9px}
+.tracker-people{display:flex;align-items:center;gap:10px;min-width:0}
+.tracker-avatars{display:flex;padding-left:3px;flex-shrink:0}
+.tracker-avatar{display:grid;place-items:center;width:32px;height:32px;border:2px solid #092037;border-radius:50%;margin-left:-4px;background:#1a6982;color:#c4fff1;font-size:13px;font-weight:800}
+.tracker-avatar:nth-child(even){background:#2261aa;color:white}
+.tracker-people-names{font-size:12px;line-height:1.4;overflow:hidden;text-overflow:ellipsis}
+.tracker-tile-actions{display:block!important}
+.tracker-tile-actions .tile-open{display:block;width:100%;padding:13px!important}
+@media(max-width:760px){
+ .trackers-header{display:block;padding:23px!important}
+ .trackers-header .tracker-create{display:block;width:100%;margin-top:18px}
+ .tracker-tile-banner{height:0;border-radius:0}
+ .tracker-tile-menu{top:17px;right:16px}
+ .tracker-tile-menu summary{background:#14334c}
+ .tracker-tile-body{padding:18px}
+ .tracker-tile-head{padding-right:45px;margin-bottom:13px!important}
+ .tracker-tile h3{font-size:18px}
+ .tracker-stats{gap:6px;margin-bottom:13px}
+ .tracker-stat{padding:10px 4px}
+ .tracker-stat b{font-size:14px}
+ .tracker-stat span{font-size:10px}
+ .tracker-tile-members{margin-bottom:13px!important}
+ .tracker-tile-members strong{display:none}
+ .tracker-avatar{width:27px;height:27px}
+ .tracker-tile-actions .tile-open{padding:11px!important}
+}
+
 /* Clean, open sidebar navigation matching the reference */
 .sidebar .squareup-nav{display:flex;flex-direction:column;gap:7px;margin:14px 0 18px;padding:6px 0}
 .sidebar .squareup-nav .sq-nav-link,.sidebar #btn-settings.sq-nav-link{display:flex;align-items:center;gap:18px;width:100%;min-height:57px;padding:12px 14px!important;background:transparent;border:0;border-radius:13px;color:#e5edf6;font-family:inherit;font-size:19px!important;font-weight:650;text-align:left;box-shadow:none;transition:background .18s,color .18s}
@@ -2720,25 +2771,37 @@ async function renderTrackerGallery(){
     list.forEach(function(t,i){
       var d=details[i];
       var card=document.createElement('article');card.className='tracker-tile';
+      var banner=document.createElement('div');banner.className='tracker-tile-banner';
+      var menu=document.createElement('details');menu.className='tracker-tile-menu';
+      var menuToggle=document.createElement('summary');menuToggle.textContent='⋯';menuToggle.setAttribute('aria-label','Actions for '+t.name);
+      var menuPanel=document.createElement('div');menuPanel.className='tracker-tile-menu-panel';
+      function menuAction(label,cls,fn){var btn=document.createElement('button');btn.type='button';btn.className=cls;btn.textContent=label;btn.onclick=async function(){menu.open=false;await fn();};menuPanel.append(btn);}
+      menuAction('Share tracker','',async function(){await openTracker(t.id);if(current&&current.id===t.id)await openShare();});
+      menuAction(t.role==='owner'?'Delete tracker':'Leave tracker','danger',async function(){try{if(await removeTracker(t))await renderTrackerGallery();}catch(err){alert(err.message||'Could not remove tracker.');}});
+      menu.append(menuToggle,menuPanel);banner.append(menu);
+      var body=document.createElement('div');body.className='tracker-tile-body';
       var head=document.createElement('div');head.className='tracker-tile-head';
       var ico=document.createElement('div');ico.className='tracker-tile-icon';ico.textContent='♧';
       var nameWrap=document.createElement('div');
       var title=document.createElement('h3');title.textContent=t.name;
       var sub=document.createElement('div');sub.className='tracker-sub';sub.textContent=t.role==='owner'?'Created by you':'Shared with you';
       nameWrap.append(title,sub);head.append(ico,nameWrap);
+      var members=Array.isArray(d&&d.members)?d.members:[];
+      var debts=Array.isArray(d&&d.entries)?d.entries.filter(function(e){return e.type==='debt';}):[];
+      var total=debts.reduce(function(sum,e){return sum+(Number(e.amount)||0);},0);
+      var stats=document.createElement('div');stats.className='tracker-stats';
+      [[members.length||t.memberCount||'—','Members'],[d&&d.loadError?'—':money(total),'Total expenses'],[d&&d.loadError?'—':debts.length,'Entries']].forEach(function(item){var el=document.createElement('div');el.className='tracker-stat';var value=document.createElement('b');value.textContent=item[0];var label=document.createElement('span');label.textContent=item[1];el.append(value,label);stats.append(el);});
       var people=document.createElement('div');people.className='tracker-tile-members';
       var peopleLabel=document.createElement('strong');peopleLabel.textContent='Shared with';
-      var otherMembers=d&&d.members?d.members.filter(function(m){return !m.isYou;}):[];
-      var names=document.createElement('div');names.textContent=d&&d.loadError?'Could not load members: '+d.loadError:d&&d.members?(otherMembers.length?otherMembers.map(function(m){return m.name||m.email||'Member';}).join(', '):'Only you — invite someone to collaborate'):'Members unavailable';
-      people.append(peopleLabel,names);
+      var peopleRow=document.createElement('div');peopleRow.className='tracker-people';
+      var avatars=document.createElement('div');avatars.className='tracker-avatars';
+      members.slice(0,4).forEach(function(m){var av=document.createElement('span');av.className='tracker-avatar';var display=m.name||m.email||'Member';av.textContent=display.trim().charAt(0).toUpperCase();av.title=display;avatars.append(av);});
+      var otherMembers=members.filter(function(m){return !m.isYou;});
+      var names=document.createElement('div');names.className='tracker-people-names';names.textContent=d&&d.loadError?'Members unavailable':members.length?(otherMembers.length?otherMembers.map(function(m){return m.name||m.email||'Member';}).join(', '):'Only you — invite a friend'):'Members unavailable';
+      peopleRow.append(avatars,names);people.append(peopleLabel,peopleRow);
       var actions=document.createElement('div');actions.className='tracker-tile-actions';
-      function action(label,cls,fn){var b=document.createElement('button');b.type='button';b.className=cls;b.textContent=label;b.onclick=fn;actions.append(b);}
-      action('Open tracker','tile-open',async function(){await openTracker(t.id);if(current&&current.id===t.id)settingsRoute('dashboard');});
-      action('Share tracker','tile-share',async function(){await openTracker(t.id);if(current&&current.id===t.id)await openShare();});
-      action(t.role==='owner'?'Delete tracker':'Leave tracker','tile-delete',async function(){
-        try{if(await removeTracker(t))await renderTrackerGallery();}catch(err){alert(err.message||'Could not remove tracker.');}
-      });
-      card.append(head,people,actions);gallery.append(card);
+      var open=document.createElement('button');open.type='button';open.className='tile-open';open.textContent='Open tracker  →';open.onclick=async function(){await openTracker(t.id);if(current&&current.id===t.id)settingsRoute('dashboard');};actions.append(open);
+      body.append(head,stats,people,actions);card.append(banner,body);gallery.append(card);
     });
   }catch(err){if(serial===trackerGallerySerial)gallery.textContent='Could not load trackers: '+(err.message||'Unknown error');}
 }
