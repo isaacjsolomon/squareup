@@ -807,6 +807,23 @@ body.trackers-view #tracker-dashboard,body.trackers-view #split-page,body.tracke
  .tracker-tile-actions .tile-open{padding:11px!important}
 }
 
+
+/* Custom tracker card banners (stored on this device). */
+.tracker-tile-banner{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
+.tracker-tile-banner:after{display:none!important}
+.tracker-banner-editor{position:fixed;inset:0;z-index:100000;background:#020b17c9;display:flex;align-items:center;justify-content:center;padding:18px}
+.tracker-banner-editor[hidden]{display:none!important}
+.tracker-banner-dialog{width:min(520px,100%);max-height:90vh;overflow:auto;background:#0b2238;color:#eaf7ff;border:1px solid #34546d;border-radius:20px;padding:22px;box-shadow:0 25px 70px #0009}
+.tracker-banner-dialog h2{margin:0 0 8px;font-size:23px}.tracker-banner-dialog p{color:#a9c2d4;font-size:13px}
+.tracker-banner-presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0}
+.tracker-banner-choice{height:84px;border:2px solid #44647a;border-radius:12px;cursor:pointer;background-size:cover;background-position:center;color:white;text-shadow:0 1px 5px black;font-weight:800}
+.tracker-banner-choice:focus-visible,.tracker-banner-choice:hover{border-color:#5cf1b2}
+.tracker-banner-dialog input[type=file]{max-width:100%;margin:10px 0 18px}
+.tracker-banner-dialog .banner-editor-actions{display:flex;justify-content:flex-end;gap:9px}
+.tracker-banner-dialog .banner-editor-actions button{border:0;border-radius:10px;padding:11px 16px;cursor:pointer;background:#23445b;color:white}
+.tracker-banner-dialog .banner-editor-actions button:first-child{background:#59edb0;color:#072638;font-weight:800}
+@media(max-width:760px){.tracker-tile-banner{background-image:none!important}}
+
 /* Clean, open sidebar navigation matching the reference */
 .sidebar .squareup-nav{display:flex;flex-direction:column;gap:7px;margin:14px 0 18px;padding:6px 0}
 .sidebar .squareup-nav .sq-nav-link,.sidebar #btn-settings.sq-nav-link{display:flex;align-items:center;gap:18px;width:100%;min-height:57px;padding:12px 14px!important;background:transparent;border:0;border-radius:13px;color:#e5edf6;font-family:inherit;font-size:19px!important;font-weight:650;text-align:left;box-shadow:none;transition:background .18s,color .18s}
@@ -2752,6 +2769,52 @@ function renderPicker() {
 }
 
 
+
+// Per-tracker banners: presets + uploaded images, saved locally in IndexedDB.
+// This avoids touching tracker backdrops or requiring a database migration.
+var SQ_BANNER_PRESETS={
+ ocean:'linear-gradient(125deg,#034d68,#12a3aa 55%,#05314d)',
+ sunset:'linear-gradient(125deg,#51376b,#dc795e 55%,#f4bd80)',
+ forest:'linear-gradient(125deg,#073c3d,#27775c 55%,#96ad65)',
+ night:'linear-gradient(125deg,#080e30,#334a86 55%,#7c6d99)',
+ coral:'linear-gradient(125deg,#004a66,#1e9b9d 48%,#d97884)',
+ lavender:'linear-gradient(125deg,#262c64,#856cae 55%,#d4a3c1)'
+};
+var sqBannerDBPromise=null;
+function sqBannerDB(){
+ if(!sqBannerDBPromise)sqBannerDBPromise=new Promise(function(resolve,reject){
+   var req=indexedDB.open('squareup-tracker-banners',1);
+   req.onupgradeneeded=function(){req.result.createObjectStore('banners');};
+   req.onsuccess=function(){resolve(req.result);};req.onerror=function(){reject(req.error);};
+ });
+ return sqBannerDBPromise;
+}
+async function sqBannerGet(id){
+ try{var db=await sqBannerDB();return await new Promise(function(resolve,reject){var r=db.transaction('banners','readonly').objectStore('banners').get(id);r.onsuccess=function(){resolve(r.result||null)};r.onerror=function(){reject(r.error)};});}catch(e){return null;}
+}
+async function sqBannerSet(id,value){
+ var db=await sqBannerDB();return new Promise(function(resolve,reject){var r=db.transaction('banners','readwrite').objectStore('banners').put(value,id);r.onsuccess=function(){resolve()};r.onerror=function(){reject(r.error)};});
+}
+function sqBannerApply(banner,value){
+ if(!banner)return;
+ banner.style.backgroundImage=value&&value.image?'url('+JSON.stringify(value.image)+')':SQ_BANNER_PRESETS[value&&value.preset]||SQ_BANNER_PRESETS.ocean;
+}
+async function sqBannerEdit(trackerId,trackerName,banner){
+ var existing=document.getElementById('sq-banner-editor');if(existing)existing.remove();
+ var overlay=document.createElement('div');overlay.id='sq-banner-editor';overlay.className='tracker-banner-editor';
+ var dialog=document.createElement('div');dialog.className='tracker-banner-dialog';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Change tracker banner');
+ var title=document.createElement('h2');title.textContent='Change banner · '+trackerName;
+ var hint=document.createElement('p');hint.textContent='Choose a preset or upload a photo. Your choice is saved on this device.';
+ var presets=document.createElement('div');presets.className='tracker-banner-presets';
+ Object.keys(SQ_BANNER_PRESETS).forEach(function(name){var b=document.createElement('button');b.type='button';b.className='tracker-banner-choice';b.style.background=SQ_BANNER_PRESETS[name];b.textContent=name.charAt(0).toUpperCase()+name.slice(1);b.onclick=async function(){try{var v={preset:name};await sqBannerSet(trackerId,v);sqBannerApply(banner,v);overlay.remove();}catch(e){alert('Could not save banner: '+e.message);}};presets.append(b);});
+ var uploadLabel=document.createElement('p');uploadLabel.textContent='Or upload your own image (JPG, PNG, or WebP, max 3 MB):';
+ var file=document.createElement('input');file.type='file';file.accept='image/jpeg,image/png,image/webp';
+ file.onchange=async function(){var f=file.files&&file.files[0];if(!f)return;if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>3*1024*1024){alert('Choose a JPG, PNG, or WebP image under 3 MB.');file.value='';return;}
+ try{var data=await new Promise(function(resolve,reject){var r=new FileReader();r.onload=function(){resolve(r.result)};r.onerror=function(){reject(Error('Could not read image'))};r.readAsDataURL(f);});var v={image:data};await sqBannerSet(trackerId,v);sqBannerApply(banner,v);overlay.remove();}catch(e){alert('Could not save image. Try a smaller photo. '+e.message);}};
+ var actions=document.createElement('div');actions.className='banner-editor-actions';var close=document.createElement('button');close.textContent='Close';close.onclick=function(){overlay.remove()};actions.append(close);
+ dialog.append(title,hint,presets,uploadLabel,file,actions);overlay.append(dialog);overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove()});document.body.append(overlay);close.focus();
+}
+
 // Tracker gallery uses existing authenticated tracker endpoints and share dialog.
 var trackerGallerySerial=0;
 async function renderTrackerGallery(){
@@ -2772,10 +2835,12 @@ async function renderTrackerGallery(){
       var d=details[i];
       var card=document.createElement('article');card.className='tracker-tile';
       var banner=document.createElement('div');banner.className='tracker-tile-banner';
+      sqBannerGet(t.id).then(function(v){sqBannerApply(banner,v)});
       var menu=document.createElement('details');menu.className='tracker-tile-menu';
       var menuToggle=document.createElement('summary');menuToggle.textContent='⋯';menuToggle.setAttribute('aria-label','Actions for '+t.name);
       var menuPanel=document.createElement('div');menuPanel.className='tracker-tile-menu-panel';
       function menuAction(label,cls,fn){var btn=document.createElement('button');btn.type='button';btn.className=cls;btn.textContent=label;btn.onclick=async function(){menu.open=false;await fn();};menuPanel.append(btn);}
+      menuAction('Change banner','',async function(){await sqBannerEdit(t.id,t.name,banner);});
       menuAction('Share tracker','',async function(){await openTracker(t.id);if(current&&current.id===t.id)await openShare();});
       menuAction(t.role==='owner'?'Delete tracker':'Leave tracker','danger',async function(){try{if(await removeTracker(t))await renderTrackerGallery();}catch(err){alert(err.message||'Could not remove tracker.');}});
       menu.append(menuToggle,menuPanel);banner.append(menu);
