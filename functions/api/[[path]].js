@@ -1516,6 +1516,231 @@ if (
       return fail('Not found', 404);
     }
 
+    
+    // SOCIAL: Tracker invitations and notifications
+    if (parts[0] === 'social' && parts[1] === 'notifications') {
+      if (method === 'GET' && parts.length === 2) {
+        return json(await db('sq_social_notifications', {
+          filters: { recipient_id: 'eq.' + me.id },
+          order: 'created_at.desc',
+          limit: 100
+        }));
+      }
+
+      if (method === 'PATCH' && uuid.test(parts[2] || '')) {
+        const rows = await db('sq_social_notifications', {
+          method: 'PATCH',
+          filters: {
+            id: 'eq.' + parts[2],
+            recipient_id: 'eq.' + me.id
+          },
+          body: { read_at: new Date().toISOString() }
+        });
+
+        return rows.length
+          ? json({ ok: true })
+          : fail('Notification not found', 404);
+      }
+
+      return fail('Not found', 404);
+    }
+
+    if (parts[0] === 'social' && parts[1] === 'invitations') {
+      // Get invitations sent to the signed-in user.
+      if (method === 'GET' && parts.length === 2) {
+        return json(await db('sq_tracker_invitations', {
+          filters: {
+            recipient_id: 'eq.' + me.id,
+            status: 'eq.pending'
+          },
+          order: 'created_at.desc',
+          limit: 100
+        }));
+      }
+
+      // Invite an accepted friend to a tracker you own.
+      if (method === 'POST' && parts.length === 2) {
+        const trackerId = String(body.trackerId || '');
+        const recipientId = String(body.recipientId || '');
+
+        if (!uuid.test(trackerId) ||
+            !uuid.test(recipientId) ||
+            recipientId === me.id) {
+          return fail('Invalid invitation.', 400);
+        }
+
+        const tracker = (await db('trackers', {
+          filters: { id: 'eq.' + trackerId },
+          limit: 1
+        }))[0];
+
+        if (!tracker ||
+            String(tracker.owner_id).toLowerCase() !== me.id.toLowerCase()) {
+          return fail('Only the tracker owner can invite friends.', 403);
+        }
+
+        const [lo, hi] = [me.id, recipientId].sort();
+
+        const friendship = await db('sq_friendships', {
+          filters: {
+            user_low: 'eq.' + lo,
+            user_high: 'eq.' + hi,
+            status: 'eq.accepted'
+          },
+          limit: 1
+        });
+
+        if (!friendship.length) {
+          return fail('You must be friends to invite this user.', 403);
+        }
+
+        const existing = await db('tracker_members', {
+          filters: {
+            tracker_id: 'eq.' + trackerId,
+            user_id: 'eq.' + recipientId
+          },
+          limit: 1
+        });
+
+        if (existing.length) {
+          return fail('This friend is already a tracker member.', 409);
+        }
+
+        const pending = await db('sq_tracker_invitations', {
+          filters: {
+            tracker_id: 'eq.' + trackerId,
+            recipient_id: 'eq.' + recipientId,
+            status: 'eq.pending'
+          },
+          limit: 1
+        });
+
+        if (pending.length) {
+          return fail('An invitation is already pending.', 409);
+        }
+
+        const invitation = (await db('sq_tracker_invitations', {
+          method: 'POST',
+          body: {
+            tracker_id: trackerId,
+            tracker_name: tracker.name,
+            sender_id: me.id,
+            recipient_id: recipientId,
+            status: 'pending'
+          }
+        }))[0];
+
+        await db('sq_social_notifications', {
+          method: 'POST',
+          body: {
+            recipient_id: recipientId,
+            kind: 'tracker_invite',
+            title: 'Tracker invitation',
+            message: 'You were invited to ' + tracker.name,
+            invitation_id: invitation.id
+          }
+        });
+
+        return json(invitation, 201);
+      }
+
+      // Accept or decline an invitation.
+      if (method === 'POST' &&
+          parts.length === 4 &&
+          uuid.test(parts[2] || '')) {
+
+        const action = parts[3];
+
+        if (!['accept', 'decline'].includes(action)) {
+          return fail('Invalid invitation action.', 400);
+        }
+
+        const invitation = (await db('sq_tracker_invitations', {
+          filters: {
+            id: 'eq.' + parts[2],
+            recipient_id: 'eq.' + me.id,
+            status: 'eq.pending'
+          },
+          limit: 1
+        }))[0];
+
+        if (!invitation) {
+          return fail('Invitation no longer pending.', 404);
+        }
+
+        if (action === 'accept') {
+          const tracker = (await db('trackers', {
+            filters: { id: 'eq.' + invitation.tracker_id },
+            limit: 1
+          }))[0];
+
+          if (!tracker) {
+            return fail('Tracker no longer exists.', 404);
+          }
+
+          const existing = await db('tracker_members', {
+            filters: {
+              tracker_id: 'eq.' + invitation.tracker_id,
+              user_id: 'eq.' + me.id
+            },
+            limit: 1
+          });
+
+          if (!existing.length) {
+            await db('tracker_members', {
+              method: 'POST',
+              body: {
+                tracker_id: invitation.tracker_id,
+                user_id: me.id,
+                email: me.email,
+                name: me.name,
+                role: 'member'
+              }
+            });
+          }
+        }
+
+        const updated = await db('sq_tracker_invitations', {
+          method: 'PATCH',
+          filters: {
+            id: 'eq.' + invitation.id,
+            recipient_id: 'eq.' + me.id,
+            status: 'eq.pending'
+          },
+          body: {
+            status: action === 'accept' ? 'accepted' : 'declined',
+            updated_at: new Date().toISOString()
+          }
+        });
+
+        if (!updated.length) {
+          return fail('Invitation already handled.', 409);
+        }
+
+        await db('sq_social_notifications', {
+          method: 'POST',
+          body: {
+            recipient_id: invitation.sender_id,
+            kind: 'tracker_invite_' + action,
+            title: 'Tracker invitation ' +
+              (action === 'accept' ? 'accepted' : 'declined'),
+            message: me.name +
+              (action === 'accept'
+                ? ' joined '
+                : ' declined an invitation to ') +
+              invitation.tracker_name
+          }
+        });
+
+        return json({
+          ok: true,
+          trackerId: invitation.tracker_id
+        });
+      }
+
+      return fail('Not found', 404);
+    }
+
 
     if (parts[0] !== 'trackers')
       return fail('Not found', 404);
