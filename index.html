@@ -1153,6 +1153,46 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
 .sq-member-profile{align-items:flex-start}
 
 </style>
+
+<style id="sq-expenses-redesign-v2">
+/* Expenses layout: existing balance, history and matrix remain live and functional. */
+#tracker-dashboard .sq-expense-side{display:none}
+#tracker-dashboard.sq-tab-expenses{display:grid;grid-template-columns:minmax(0,3fr) minmax(255px,1fr);gap:16px;align-items:start}
+#tracker-dashboard.sq-tab-expenses>.sq-workspace-tabs{grid-column:1/-1;margin-bottom:0}
+#tracker-dashboard.sq-tab-expenses #balances-card{grid-column:1/-1;grid-row:2;margin:0!important;padding:24px!important}
+#tracker-dashboard.sq-tab-expenses #sq-activity-card{grid-column:1;grid-row:3;margin:0!important;min-width:0}
+#tracker-dashboard.sq-tab-expenses .sq-expense-side{display:flex;grid-column:2;grid-row:3;flex-direction:column;gap:12px;min-width:0}
+#tracker-dashboard.sq-tab-expenses .sq-clean-matrix-card{grid-column:1/-1;grid-row:4;margin:0!important}
+#tracker-dashboard.sq-tab-expenses>footer{grid-column:1/-1;grid-row:5}
+#tracker-dashboard.sq-tab-expenses #balances-card h2{margin-bottom:4px}
+.sq-expense-subtitle{font-size:13px;color:#a9c0d4;margin:0 0 14px}
+#tracker-dashboard.sq-tab-expenses #nets{display:flex;flex-direction:column;gap:9px}
+#tracker-dashboard.sq-tab-expenses #nets .net{display:flex;align-items:center;gap:14px;padding:16px;border-radius:13px;background:#0b263b;border:1px solid #25465f;flex-wrap:wrap}
+#tracker-dashboard.sq-tab-expenses #nets .net .text{flex:1 1 230px;font-size:15px}
+#tracker-dashboard.sq-tab-expenses #nets .net .amount{font-size:23px;font-weight:800}
+#tracker-dashboard.sq-tab-expenses #nets .net button{min-height:37px}
+.sq-expense-activity-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:15px}
+.sq-expense-activity-top h2{margin:0}
+.sq-expense-search{width:min(100%,285px);padding:11px 12px;border-radius:10px}
+.sq-expense-time{padding:11px 12px;border-radius:10px;max-width:150px}
+#tracker-dashboard.sq-tab-expenses #history>.entry{gap:12px;padding:17px 0;border-bottom:1px solid #24445b;align-items:center}
+#tracker-dashboard.sq-tab-expenses #history>.entry .text{line-height:1.6;min-width:0}
+#tracker-dashboard.sq-tab-expenses #history>.entry .note{font-size:12px}
+#tracker-dashboard.sq-tab-expenses #history>.entry .tag{flex-shrink:0}
+#tracker-dashboard.sq-tab-expenses #history>.entry[hidden]{display:none!important}
+.sq-expense-side .sq-side-action{display:flex;align-items:center;gap:13px;padding:15px;border:1px solid #27465d;border-radius:13px;background:linear-gradient(120deg,#082138,#07182e);color:#f1f8ff;text-align:left;cursor:pointer;width:100%}
+.sq-expense-side .sq-side-action:hover{border-color:#45e5bb;background:#11334a}
+.sq-side-icon{display:grid;place-items:center;border-radius:50%;background:#115456;color:#4bf3c3;font-size:22px;font-weight:800;width:42px;height:42px;flex:none}
+.sq-side-copy{display:flex;flex-direction:column;gap:4px;flex:1}.sq-side-copy small{color:#aac1d5;font-size:11px}
+.sq-expense-filters{padding:17px;border:1px solid #27465d;border-radius:14px;background:#071c31;display:flex;flex-direction:column;gap:10px}
+.sq-expense-filters h3{margin:0;font-size:17px}.sq-expense-filters p{font-size:12px;color:#aac1d5;margin:0 0 5px}
+.sq-expense-filters label{font-size:12px;color:#c4d7e7;display:flex;flex-direction:column;gap:6px}
+.sq-expense-filters select{width:100%;padding:10px;border-radius:9px}
+.sq-expense-count{color:#b2c6d7;font-size:12px;margin:10px 0 0}
+.sq-expense-no-results{color:#b2c6d7;padding:15px 0}
+@media(max-width:900px){#tracker-dashboard.sq-tab-expenses{grid-template-columns:minmax(0,1fr)}#tracker-dashboard.sq-tab-expenses>.sq-workspace-tabs,#tracker-dashboard.sq-tab-expenses #balances-card,#tracker-dashboard.sq-tab-expenses #sq-activity-card,#tracker-dashboard.sq-tab-expenses .sq-expense-side,#tracker-dashboard.sq-tab-expenses .sq-clean-matrix-card,#tracker-dashboard.sq-tab-expenses>footer{grid-column:1;grid-row:auto}#tracker-dashboard.sq-tab-expenses .sq-expense-side{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}#tracker-dashboard.sq-tab-expenses .sq-expense-filters{grid-column:1/-1}}
+@media(max-width:600px){#tracker-dashboard.sq-tab-expenses .sq-expense-side{grid-template-columns:1fr}#tracker-dashboard.sq-tab-expenses .sq-expense-filters{grid-column:1}#tracker-dashboard.sq-tab-expenses #nets .net{gap:8px}#tracker-dashboard.sq-tab-expenses #nets .net .text{flex-basis:160px}.sq-expense-search{width:100%}}
+</style>
 </head>
 <body>
 <button type="button" id="guest-auth-button" hidden>Log in or create account</button>
@@ -1233,6 +1273,7 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
   <!-- CURRENT BALANCES: EXPENSES TAB -->
   <div class="card" id="balances-card">
     <h2>Current balances</h2>
+    <p class="sq-expense-subtitle">Who owes whom in this tracker</p>
     <div id="nets"></div>
   </div>
 
@@ -1299,9 +1340,16 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
   </div>
   <!-- RECENT ACTIVITY -->
   <div class="card sq-clean-activity" id="sq-activity-card">
-    <div class="sq-clean-activity-heading"><h2>Recent Activity</h2><button type="button" id="sq-activity-all" class="small-btn">View all →</button></div>
-    <div id="history"></div>
+    <div class="sq-expense-activity-top"><div><h2>Recent activity</h2><p class="sq-expense-subtitle">Expenses and payments in this tracker</p></div><div style="display:flex;gap:9px;flex-wrap:wrap"><input class="sq-expense-search" id="sq-expense-search" type="search" placeholder="Search expenses..." aria-label="Search expenses"><select id="sq-expense-time" class="sq-expense-time" aria-label="Filter by time"><option value="all">All time</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last year</option></select></div></div>
+    <div id="history"></div><div class="sq-expense-count" id="sq-expense-count" aria-live="polite"></div>
+    <div class="sq-clean-activity-heading" style="justify-content:flex-end;margin-top:12px"><button type="button" id="sq-activity-all" class="small-btn">View all expenses →</button></div>
   </div>
+  <aside class="sq-expense-side" aria-label="Expense tools and filters">
+    <button class="sq-side-action" type="button" data-sq-quick="quick-expense"><span class="sq-side-icon">＋</span><span class="sq-side-copy"><strong>Add an expense</strong><small>Quick add options</small></span><span aria-hidden="true">›</span></button>
+    <button class="sq-side-action" type="button" data-sq-quick="quick-receipt"><span class="sq-side-icon">▧</span><span class="sq-side-copy"><strong>Scan receipt</strong><small>Assign items to friends</small></span><span aria-hidden="true">›</span></button>
+    <button class="sq-side-action" type="button" data-sq-quick="quick-split"><span class="sq-side-icon">♧</span><span class="sq-side-copy"><strong>Split a bill</strong><small>Divide an expense with friends</small></span><span aria-hidden="true">›</span></button>
+    <div class="sq-expense-filters"><h3>Filters</h3><p>Filter expenses by category or person</p><label>Category<select id="sq-expense-category"><option value="all">All categories</option></select></label><label>Member<select id="sq-expense-member"><option value="all">All members</option></select></label></div>
+  </aside>
 
   <!-- FULL BALANCE TABLE -->
   <div class="card sq-clean-matrix-card">
@@ -3844,6 +3892,47 @@ document.getElementById('tracker-chat-messages').addEventListener('click',e=>{va
   new MutationObserver(()=>{if(pending)return;pending=true;queueMicrotask(()=>{pending=false;updateStats()})}).observe(nets,{childList:true,subtree:true,characterData:true});
  }
  updateStats();
+})();
+</script><script id="sq-expenses-controls">
+(function(){
+ const dashboard=document.getElementById('tracker-dashboard');
+ const history=document.getElementById('history');
+ const search=document.getElementById('sq-expense-search');
+ const time=document.getElementById('sq-expense-time');
+ const category=document.getElementById('sq-expense-category');
+ const member=document.getElementById('sq-expense-member');
+ const count=document.getElementById('sq-expense-count');
+ if(!dashboard||!history||!search)return;
+ document.querySelectorAll('[data-sq-quick]').forEach(button=>button.addEventListener('click',()=>{
+   const target=document.getElementById(button.dataset.sqQuick);
+   if(target)target.click();
+ }));
+ function refresh(){
+  const rows=[...history.querySelectorAll(':scope > .entry')];
+  const catSet=new Set(),memberSet=new Set();
+  rows.forEach(row=>{
+   const chip=row.querySelector('.sq-cat-chip');if(chip&&chip.textContent.trim())catSet.add(chip.textContent.trim());
+   row.querySelectorAll('.text b').forEach(el=>{if(el.textContent.trim())memberSet.add(el.textContent.trim())});
+  });
+  function options(el,values,allLabel){const chosen=el.value;el.replaceChildren(new Option(allLabel,'all'));[...values].sort().forEach(x=>el.add(new Option(x,x)));el.value=[...el.options].some(o=>o.value===chosen)?chosen:'all';}
+  options(category,catSet,'All categories');options(member,memberSet,'All members');
+  const query=search.value.trim().toLowerCase();const cutoff=time.value==='all'?null:new Date(Date.now()-Number(time.value)*86400000);
+  let shown=0;
+  rows.forEach(row=>{
+   const text=row.textContent.toLowerCase();
+   const chip=row.querySelector('.sq-cat-chip')?.textContent.trim()||'';
+   const names=[...row.querySelectorAll('.text b')].map(el=>el.textContent.trim());
+   const note=row.querySelector('.note')?.textContent||'';
+   const matchDate=note.match(/\b(\d{4}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}\/\d{4})\b/);
+   const date=matchDate?new Date(matchDate[1]):null;
+   const show=(!query||text.includes(query))&&(category.value==='all'||chip===category.value)&&(member.value==='all'||names.includes(member.value))&&(!cutoff||(date&&!isNaN(date)&&date>=cutoff));
+   row.hidden=!show;if(show)shown++;
+  });
+  count.textContent=shown+' of '+rows.length+' activities shown';
+ }
+ [search,time,category,member].forEach(el=>el.addEventListener(el===search?'input':'change',refresh));
+ new MutationObserver(()=>queueMicrotask(refresh)).observe(history,{childList:true});
+ refresh();
 })();
 </script><script>
 if ('serviceWorker' in navigator) {
