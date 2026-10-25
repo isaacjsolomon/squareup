@@ -1214,6 +1214,78 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
 @media(max-width:900px){#tracker-dashboard.sq-tab-expenses{grid-template-columns:minmax(0,1fr)}#tracker-dashboard.sq-tab-expenses>.sq-workspace-tabs,#tracker-dashboard.sq-tab-expenses #balances-card,#tracker-dashboard.sq-tab-expenses #sq-activity-card,#tracker-dashboard.sq-tab-expenses .sq-expense-side,#tracker-dashboard.sq-tab-expenses .sq-clean-matrix-card,#tracker-dashboard.sq-tab-expenses>footer{grid-column:1;grid-row:auto}#tracker-dashboard.sq-tab-expenses .sq-expense-side{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}#tracker-dashboard.sq-tab-expenses .sq-expense-filters{grid-column:1/-1}}
 @media(max-width:600px){#tracker-dashboard.sq-tab-expenses .sq-expense-side{grid-template-columns:1fr}#tracker-dashboard.sq-tab-expenses .sq-expense-filters{grid-column:1}#tracker-dashboard.sq-tab-expenses #nets .net{gap:8px}#tracker-dashboard.sq-tab-expenses #nets .net .text{flex-basis:160px}.sq-expense-search{width:100%}}
 </style>
+<style id="sq-modern-dashboard-2026">
+/* SquareUp Modern Dashboard • visual-only redesign, October 2026.
+   All existing element IDs, event handlers, chat and activity interactions remain intact. */
+:root{--bg1:#071523;--bg2:#0b1e30;--accent:#42ddba;--accent-dark:#20b896;--side-bg:#10263a;--side-line:#274358;--card:#11283d;--ink:#eef7ff;--muted:#a9bfd0;--line:#2a465c;--green:#40ddb0;--red:#ff718c}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(ellipse 900px 550px at 90% -10%,#163f53 0%,transparent 68%),linear-gradient(145deg,#071523,#0b1e30 65%,#071827)!important;color:#edf6ff;letter-spacing:-.01em}
+body:not(.side-collapsed){padding-left:292px}
+.wrap{max-width:1260px!important;width:100%;margin:0 auto;padding:0 12px}
+.sidebar{width:268px!important;background:linear-gradient(180deg,#102c40 0%,#0b2033 100%)!important;border-right:1px solid #2c4b60!important;box-shadow:8px 0 35px #020d1833!important;padding:24px 16px!important;gap:24px!important}
+.sidebar-top-row{padding:0 7px 12px;border-bottom:1px solid #2b485a}
+.sidebar .sq-nav-link{border-radius:13px!important;min-height:45px!important;transition:background .2s,color .2s,transform .2s}
+.sidebar .sq-nav-link:hover{background:#244458!important;transform:translateX(2px)}
+.sidebar .sq-nav-link.active{background:#1a514f!important;color:#78f5d4!important;box-shadow:inset 3px 0 #42e7bc}
+.sidebar .sq-nav-link .sq-nav-icon{opacity:.95}
+.sidebar #tracker-bar{border-top:1px solid #2a465c;padding-top:17px}
+.tracker-heading{position:relative;margin:0 0 24px!important;padding:18px 0 21px!important;text-align:left!important;border-bottom:1px solid #244358}
+.tracker-heading h1{font-size:clamp(26px,3vw,36px)!important;font-weight:850!important;letter-spacing:-1.2px!important;color:#f2faff!important}
+.tracker-heading p{font-size:14px!important;color:#a8c2d3!important;line-height:1.6}
+.card,details.card{background:#10283d!important;border:1px solid #29465e!important;border-radius:19px!important;box-shadow:0 12px 32px #020b142a!important;color:#edf6ff}
+.card h2,.card h3{color:#f5fbff;letter-spacing:-.025em}
+.card p,.dashboard-subheading{line-height:1.55}
+#tracker-dashboard .sq-workspace-tabs{display:flex;gap:7px;flex-wrap:wrap;background:#0b2032;border:1px solid #2b485e;border-radius:16px;padding:7px;margin:0 0 18px!important;max-width:max-content}
+#tracker-dashboard .sq-workspace-tabs button{border-radius:11px!important;font-size:13px!important;font-weight:750!important;padding:12px 20px!important;color:#b6ccdb!important;background:transparent!important;transition:background .2s,color .2s}
+#tracker-dashboard .sq-workspace-tabs button[aria-selected=true]{background:#36d9b1!important;color:#07273a!important;box-shadow:0 4px 14px #23d3a929}
+#tracker-dashboard .sq-workspace-tabs button:hover:not([aria-selected=true]){background:#244357!important;color:#fff!important}
+#tracker-dashboard .sq-clean-balance{background:linear-gradient(110deg,#123c4d 0%,#0e3044 48%,#0b243b 100%)!important;border:1px solid #397487!important;border-radius:23px!important;padding:34px 36px!important;box-shadow:0 16px 42px #020c1638!important;position:relative;overflow:hidden}
+#tracker-dashboard .sq-clean-balance:after{content:"";position:absolute;width:280px;height:280px;right:-120px;top:-175px;border:1px solid #71f3cf35;border-radius:50%;pointer-events:none;box-shadow:0 0 0 35px #71f3cf08,0 0 0 80px #71f3cf05}
+#tracker-dashboard .sq-clean-balance-copy{position:relative;z-index:1}
+#tracker-dashboard .sq-clean-balance-copy strong{font-size:clamp(35px,4.4vw,55px)!important;letter-spacing:-1.8px!important}
+#tracker-dashboard .sq-clean-balance-actions{position:relative;z-index:1}
+#tracker-dashboard .sq-clean-balance-actions button{border-radius:12px!important;min-height:46px;transition:transform .2s,filter .2s}
+#tracker-dashboard .sq-clean-balance-actions button:hover{transform:translateY(-2px);filter:brightness(1.08)}
+#tracker-dashboard .sq-overview-stats{gap:14px;margin-bottom:18px}
+#tracker-dashboard .sq-stat{border-radius:17px!important;background:#10283d!important;border:1px solid #294b62!important;padding:21px!important}
+#tracker-dashboard .sq-stat strong{font-size:clamp(22px,2.5vw,32px)!important}
+#tracker-dashboard .dashboard-actions{gap:13px!important;margin:0 0 19px!important}
+#tracker-dashboard .dashboard-action:not([hidden]){background:#102a40!important;border:1px solid #2c4c63!important;border-radius:18px!important;min-height:136px!important;box-shadow:0 10px 25px #020e1725!important;transition:transform .2s,background .2s,border-color .2s,box-shadow .2s}
+#tracker-dashboard .dashboard-action:not([hidden]):hover{transform:translateY(-3px);background:#16384d!important;border-color:#42dbb4!important;box-shadow:0 16px 32px #010c1645!important}
+#tracker-dashboard .dashboard-action .action-icon{color:#55ebc5!important;background:#194a4b!important;border-radius:13px!important;width:46px!important;height:46px!important;display:grid!important;place-items:center!important}
+#tracker-dashboard .dashboard-action .action-sub{color:#a7c0d1!important;font-size:11px!important;line-height:1.4}
+#tracker-dashboard #sq-activity-card{border-radius:19px!important;overflow:hidden}
+#tracker-dashboard .sq-clean-activity-heading{padding-bottom:8px}
+#tracker-dashboard .tracker-collapsible{border-radius:18px!important;overflow:hidden}
+#tracker-dashboard .tracker-collapsible summary{cursor:pointer}
+#tracker-dashboard.sq-tab-expenses #balances-card{border-radius:20px!important}
+#tracker-dashboard.sq-tab-expenses #nets .net{background:#0b2235!important;border:1px solid #2a475d!important;border-radius:14px!important;transition:border-color .2s}
+#tracker-dashboard.sq-tab-expenses #nets .net:hover{border-color:#3b887e!important}
+#tracker-dashboard.sq-tab-expenses .sq-expense-filters{background:#10283d!important;border-radius:18px!important}
+#tracker-dashboard.sq-tab-expenses .sq-side-action{background:#10283d!important;border-radius:16px!important}
+#tracker-dashboard.sq-tab-expenses .sq-side-action:hover{background:#1b3b50!important}
+.sq-member-profile{border-radius:16px!important;background:#0c2438!important}
+button,input,select,textarea{font-family:inherit}
+input,select,textarea{border-radius:11px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #54eac7!important;outline-offset:3px}
+.primary{background:#38d7b0!important;color:#072638!important;border-radius:12px!important;font-weight:800!important}
+.primary:hover{background:#64f0cd!important}
+.small-btn{border-radius:10px!important}
+.table-scroll{border-radius:12px;overflow-x:auto}
+th{background:#18364a!important;color:#eaf7ff}
+th,td{border-color:#2c4b61!important}
+.entry{border-bottom-color:#2b475d!important}
+.sq-mobile-top{border-bottom:1px solid #244258;padding-bottom:14px!important}
+.sq-mobile-top .sq-brand{font-size:17px;letter-spacing:-.4px}
+.sq-mobile-header-actions{display:flex;align-items:center;gap:8px}
+.sq-mobile-header-actions button{display:grid;place-items:center;width:42px;height:42px;border:1px solid #2d5166!important;border-radius:12px;background:#132f44!important}
+.sq-mobile-header-actions button:hover{background:#1d4456!important}
+@media(max-width:1100px) and (min-width:901px){body:not(.side-collapsed){padding-left:270px}.wrap{padding:0 6px}}
+@media(max-width:900px){body,body:not(.side-collapsed),body.side-collapsed{padding:16px 13px 100px!important}.wrap{padding:0!important;max-width:100%!important}.sidebar{display:none!important}.tracker-heading{padding:9px 0 15px!important;margin-bottom:17px!important}.tracker-heading h1{font-size:25px!important}.sq-mobile-top{margin-bottom:10px!important}.sq-mobile-nav{background:#0c2336!important;border-top:1px solid #315064!important;box-shadow:0 -8px 26px #020c1755!important;backdrop-filter:blur(15px)}#tracker-dashboard .sq-clean-balance{padding:25px 21px!important;border-radius:19px!important}#tracker-dashboard .sq-workspace-tabs{width:100%;max-width:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:5px}#tracker-dashboard .sq-workspace-tabs button{padding:11px 5px!important;font-size:12px!important}#tracker-dashboard .dashboard-action:not([hidden]){min-height:118px!important}.card,details.card{border-radius:16px!important}}
+@media(max-width:520px){#tracker-dashboard .sq-clean-balance{padding:22px 17px!important}#tracker-dashboard .sq-clean-balance-actions{gap:8px}#tracker-dashboard .sq-clean-balance-actions button{padding:11px 8px!important;font-size:12px}#tracker-dashboard .dashboard-actions{gap:9px!important}#tracker-dashboard .dashboard-action:not([hidden]){min-height:115px!important;padding:12px 8px!important}#tracker-dashboard .dashboard-action .action-icon{width:42px!important;height:42px!important}.sq-mobile-header-actions button{width:40px;height:40px}.sq-overview-stats{gap:7px!important}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+
+</style>
 </head>
 <body>
 <button type="button" id="guest-auth-button" hidden>Log in or create account</button>
