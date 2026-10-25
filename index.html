@@ -1045,6 +1045,19 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
 .sq-approval-actions{display:flex;gap:9px;align-items:center;}
 .sq-approval-actions button{padding:10px 15px;}
 @media(max-width:650px){.split-method{grid-template-columns:repeat(2,minmax(0,1fr));}.sq-approval-row{align-items:flex-start;flex-direction:column;}}
+
+/* Compact mobile header chat and collapsible recent activity */
+.sq-mobile-header-actions{display:flex;align-items:center;gap:8px}
+.sq-mobile-header-actions button{display:inline-flex;align-items:center;justify-content:center;min-width:38px;min-height:38px;border-radius:11px}
+.sq-mobile-header-actions button:hover,.sq-mobile-header-actions button:focus-visible{background:rgba(255,255,255,.12)}
+#sq-activity-card .sq-activity-toggle{display:flex;width:100%;align-items:center;justify-content:space-between;gap:14px;text-align:left;background:transparent;border:0;color:inherit;padding:3px 0;cursor:pointer}
+#sq-activity-card .sq-activity-toggle strong{display:block;font-size:1.25rem;font-weight:750}
+#sq-activity-card .sq-activity-toggle small{display:block;margin-top:5px;color:#a9bdd1;font-size:.85rem;font-weight:400}
+#sq-activity-card .sq-activity-chevron{flex-shrink:0;transition:transform .2s ease}
+#sq-activity-card .sq-activity-toggle[aria-expanded="true"] .sq-activity-chevron{transform:rotate(180deg)}
+#sq-activity-card #sq-activity-content[hidden]{display:none!important}
+#sq-activity-card .sq-activity-filters{margin-top:18px}
+#sq-activity-card .sq-activity-toggle:focus-visible{outline:2px solid #42edc0;outline-offset:5px;border-radius:5px}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -1266,7 +1279,7 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
   </div>
 
 </aside>
-<div class="wrap"><div class="sq-mobile-top"><span class="sq-brand"><img src="/images/logo.png" alt="">Square Up</span><button type="button" id="sq-mobile-bell" aria-label="Notifications">♧</button></div>
+<div class="wrap"><div class="sq-mobile-top"><span class="sq-brand"><img src="/images/logo.png" alt="">Square Up</span><span class="sq-mobile-header-actions"><button type="button" id="sq-mobile-chat" aria-label="Open group chat" title="Group chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5Z"/></svg></button><button type="button" id="sq-mobile-bell" aria-label="Notifications">♧</button></span></div>
   <header class="tracker-heading">
     <h1>💸 Square Up</h1>
     <p>Track who owes who. Debts that go both ways cancel out automatically.</p>
@@ -1354,9 +1367,12 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
   </section>
   <!-- RECENT ACTIVITY -->
   <div class="card sq-clean-activity" id="sq-activity-card">
-    <div class="sq-expense-activity-top"><div><h2>Recent activity</h2><p class="sq-expense-subtitle">Expenses and payments in this tracker</p></div><div style="display:flex;gap:9px;flex-wrap:wrap"><input class="sq-expense-search" id="sq-expense-search" type="search" placeholder="Search expenses..." aria-label="Search expenses"><select id="sq-expense-time" class="sq-expense-time" aria-label="Filter by time"><option value="all">All time</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last year</option></select></div></div>
-    <div id="history"></div><div class="sq-expense-count" id="sq-expense-count" aria-live="polite"></div>
-    <div class="sq-clean-activity-heading" style="justify-content:flex-end;margin-top:12px"><button type="button" id="sq-activity-all" class="small-btn">View all expenses →</button></div>
+    <button type="button" id="sq-activity-toggle" class="sq-activity-toggle" aria-expanded="false" aria-controls="sq-activity-content"><span><strong>Recent activity</strong><small>Expenses and payments in this tracker</small></span><svg class="sq-activity-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+    <div id="sq-activity-content" hidden>
+      <div class="sq-expense-activity-top sq-activity-filters"><div style="display:flex;gap:9px;flex-wrap:wrap"><input class="sq-expense-search" id="sq-expense-search" type="search" placeholder="Search expenses..." aria-label="Search expenses"><select id="sq-expense-time" class="sq-expense-time" aria-label="Filter by time"><option value="all">All time</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last year</option></select></div></div>
+      <div id="history"></div><div class="sq-expense-count" id="sq-expense-count" aria-live="polite"></div>
+      <div class="sq-clean-activity-heading" style="justify-content:flex-end;margin-top:12px"><button type="button" id="sq-activity-all" class="small-btn">View all expenses →</button></div>
+    </div>
   </div>
   <aside class="sq-expense-side" aria-label="Expense tools and filters">
     <button class="sq-side-action" type="button" data-sq-quick="quick-expense"><span class="sq-side-icon">＋</span><span class="sq-side-copy"><strong>Add an expense</strong><small>Quick add options</small></span><span aria-hidden="true">›</span></button>
@@ -3936,6 +3952,19 @@ document.getElementById('tracker-chat-messages').addEventListener('click',e=>{va
  }));
  document.querySelectorAll('.sq-mobile-nav button').forEach(b=>b.addEventListener('click',()=>{const el=document.getElementById(b.dataset.target);if(el)el.click();document.querySelectorAll('.sq-mobile-nav button').forEach(x=>x.classList.toggle('active',x===b));if(b.dataset.target==='nav-home')tab('overview')}));
  document.getElementById('sq-mobile-bell')?.addEventListener('click',()=>document.getElementById('notifications-toggle')?.click());
+ document.getElementById('sq-mobile-chat')?.addEventListener('click',()=>{
+  if(!document.getElementById('nav-chat'))return;
+  document.getElementById('nav-chat').click();
+ });
+ const activityToggle=document.getElementById('sq-activity-toggle');
+ const activityContent=document.getElementById('sq-activity-content');
+ if(activityToggle&&activityContent){
+  activityToggle.addEventListener('click',()=>{
+   const expanded=activityToggle.getAttribute('aria-expanded')==='true';
+   activityToggle.setAttribute('aria-expanded',String(!expanded));
+   activityContent.hidden=expanded;
+  });
+ }
  function updateStats(){
   const fmt=v=>money(Math.round((Number(v)||0)*100)/100);
   const normalize=v=>String(v??'').trim().toLowerCase();
