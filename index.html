@@ -4030,6 +4030,9 @@ document.getElementById('tracker-chat-messages').addEventListener('click',e=>{va
     const d=document.getElementById(name==='chat'?'chat-card':'budget-card');if(d)d.open=true;
   }else tools.querySelectorAll('.tracker-collapsible,#recurring-card').forEach(e=>e.classList.remove('sq-tab-hidden'));
  }
+ // Returning Home must also reset the tracker content from Chat to Overview.
+ const homeNav=document.getElementById('nav-home');
+ if(homeNav)homeNav.addEventListener('click',()=>tab('overview'));
  // The sidebar Chat button opens the existing tracker chat view and retains its message, reply, reaction and attachment handlers.
  const chatNav=document.getElementById('nav-chat');
  if(chatNav)chatNav.addEventListener('click',()=>{
