@@ -520,20 +520,56 @@ if (
           }
         );
 
+
+
+        const savedPreferences = await db(
+          'squareup_notification_preferences',
+          {
+            filters: {
+              user_id: 'in.(' + recipients.join(',') + ')'
+            },
+            limit: 500
+          }
+        );
+
+        const preferencesByUser = new Map(
+          savedPreferences.map(p => [p.user_id, p])
+        );
+
+        function pushCategory(kind) {
+          kind = String(kind || '').toLowerCase();
+
+          if (kind === 'chat' || kind === 'message') return 'messages';
+          if (kind === 'mention') return 'mentions';
+          if (kind.startsWith('payment_')) return 'payments';
+          if (kind.includes('remind') || kind.includes('due')) return 'reminders';
+
+          return 'expenses';
+        }
+
+        
         // Send each device its recipient's notification category.
         await Promise.all(subscriptions.map(async s => {
           try {
           
-const recipientRows = rows.filter(
-  r => r.recipient_id === s.user_id && allowedPush(r)
-);
 
-            if (!recipientRows.length) return;
-
-            // Use the most recent event for this recipient.
-            const content = pushContent(
-              recipientRows[recipientRows.length - 1]
+            const recipientRows = rows.filter(
+              r => r.recipient_id === s.user_id
             );
+
+            const preference = preferencesByUser.get(s.user_id) || {};
+
+            const allowedRows = recipientRows.filter(
+              r => preference[pushCategory(r.kind)] !== false
+            );
+
+            if (!allowedRows.length) return;
+
+            // Use the most recent allowed notification.
+            const content = pushContent(
+              allowedRows[allowedRows.length - 1]
+            );
+
 
             const response = await sendPush(
               s,
@@ -1441,6 +1477,65 @@ if (
         );
 
         return json(saved[0] || settings);
+      }
+
+      return fail('Method not allowed', 405);
+    }
+
+    
+    // Per-user notification preferences
+    if (parts[0] === 'notification-preferences' && parts.length === 1) {
+      const defaults = {
+        expenses: true,
+        payments: true,
+        messages: true,
+        mentions: true,
+        reminders: true
+      };
+
+      if (method === 'GET') {
+        const rows = await db('squareup_notification_preferences', {
+          filters: { user_id: 'eq.' + me.id },
+          limit: 1
+        });
+
+        return json({ ...defaults, ...(rows[0] || {}) });
+      }
+
+      if (method === 'PATCH') {
+        const changes = {};
+
+        for (const k of Object.keys(defaults)) {
+          if (Object.prototype.hasOwnProperty.call(body, k)) {
+            if (typeof body[k] !== 'boolean') {
+              return fail('Preference must be true or false.', 400);
+            }
+            changes[k] = body[k];
+          }
+        }
+
+        if (!Object.keys(changes).length) {
+          return fail('No valid preferences supplied.', 400);
+        }
+
+        const existing = await db('squareup_notification_preferences', {
+          filters: { user_id: 'eq.' + me.id },
+          limit: 1
+        });
+
+        const rows = await db('squareup_notification_preferences', {
+          method: existing.length ? 'PATCH' : 'POST',
+          ...(existing.length
+            ? { filters: { user_id: 'eq.' + me.id } }
+            : {}),
+          body: {
+            ...(existing.length ? {} : { user_id: me.id }),
+            ...changes,
+            updated_at: new Date().toISOString()
+          }
+        });
+
+        return json({ ...defaults, ...(rows[0] || {}), ...changes });
       }
 
       return fail('Method not allowed', 405);
