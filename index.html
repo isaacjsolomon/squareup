@@ -1121,7 +1121,7 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
 #tracker-dashboard .dashboard-action:not([hidden]){display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:5px!important;min-height:110px!important;padding:14px 12px!important;text-align:center!important;font-weight:800!important}
 #tracker-dashboard .dashboard-action .action-icon{margin:0 0 3px!important;flex-shrink:0!important}.dashboard-action .action-sub{display:block!important;font-weight:400!important}
 #tracker-dashboard #quick-pay-now:not([hidden]){display:flex!important}
-#tracker-dashboard #balances-card,#tracker-dashboard .sq-clean-matrix-card{display:none}
+#tracker-dashboard #balances-card,#tracker-dashboard #sq-tracker-profiles-card,#tracker-dashboard .sq-clean-matrix-card{display:none}
 #tracker-dashboard .sq-clean-activity-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:8px}.sq-clean-activity-heading h2{margin:0}.sq-clean-activity-heading button{border:0!important;background:transparent!important;color:#c6e4fa!important}
 #tracker-dashboard .sq-clean-activity:not(.sq-activity-expanded) #history>.entry:nth-child(n+4){display:none!important}
 #tracker-dashboard .tracker-tools-grid{display:flex!important;flex-direction:column!important;gap:12px!important;margin:14px 0!important}
@@ -1131,12 +1131,23 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
 #tracker-dashboard .tracker-collapsible{border-radius:15px!important}
 #tracker-dashboard .sq-tab-hidden{display:none!important}
 #tracker-dashboard.sq-tab-expenses .sq-clean-balance,#tracker-dashboard.sq-tab-expenses .dashboard-actions,#tracker-dashboard.sq-tab-expenses .tracker-tools-grid{display:none!important}
-#tracker-dashboard.sq-tab-expenses .sq-clean-matrix-card{display:block}
-#tracker-dashboard.sq-tab-members #balances-card{display:block}
+#tracker-dashboard.sq-tab-expenses .sq-clean-matrix-card,#tracker-dashboard.sq-tab-expenses #balances-card{display:block}
+#tracker-dashboard.sq-tab-members #sq-tracker-profiles-card{display:block}
 #tracker-dashboard.sq-tab-chat #chat-card,#tracker-dashboard.sq-tab-budget #budget-card{display:block}
 #tracker-dashboard.sq-tab-chat .tracker-tools-grid,#tracker-dashboard.sq-tab-budget .tracker-tools-grid{display:flex!important}
 #tracker-dashboard.sq-tab-expenses .sq-clean-activity #history>.entry{display:flex!important}
 @media(max-width:750px){#tracker-dashboard .sq-clean-balance{flex-direction:column;align-items:stretch;padding:21px 18px}.sq-clean-balance-actions{width:100%}.sq-clean-balance-actions button{flex:1;padding:12px 10px}#tracker-dashboard .dashboard-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important}#tracker-dashboard .dashboard-action:not([hidden]){min-height:105px!important}#tracker-dashboard .sq-clean-activity-heading{align-items:center}}
+
+/* Separate the expense balances from the members directory. */
+#sq-tracker-profiles-card .sq-members-heading h2{margin:0 0 5px}
+#sq-tracker-profiles-card .sq-members-heading p{margin:0 0 19px;color:var(--muted);font-size:14px}
+.sq-member-profiles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.sq-member-profile{display:flex;align-items:center;gap:15px;padding:18px;background:#10283e;border:1px solid #31506a;border-radius:14px;min-width:0}
+.sq-member-profile .avatar{width:52px;height:52px;min-width:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;background-position:center;background-size:cover;font-size:20px;font-weight:750;color:#fff}
+.sq-member-profile-info{display:flex;flex-direction:column;gap:4px;min-width:0;overflow-wrap:anywhere}
+.sq-member-profile-info strong{font-size:16px;color:#f5f9ff}
+.sq-member-you{font-size:12px;color:#46edc1;font-weight:700}
+.sq-member-email,.sq-members-empty{color:#b9cddd;font-size:13px}
 </style>
 </head>
 <body>
@@ -1215,10 +1226,16 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
     <div class="sq-clean-balance-actions"><button type="button" class="sq-clean-settle" id="sq-clean-settle">Settle up</button><button type="button" class="sq-clean-remind" id="sq-clean-remind">Send reminder</button></div>
   </section>
   <div class="sq-overview-stats" id="sq-overview-stats" hidden><div class="sq-stat negative"><span>You owe</span><strong id="sq-stat-owe">—</strong></div><div class="sq-stat"><span>Owed to you</span><strong id="sq-stat-owed">—</strong></div><div class="sq-stat neutral"><span>Net balance</span><strong id="sq-stat-net">—</strong></div></div>
-  <!-- CURRENT BALANCES -->
+  <!-- CURRENT BALANCES: EXPENSES TAB -->
   <div class="card" id="balances-card">
     <h2>Current balances</h2>
     <div id="nets"></div>
+  </div>
+
+  <!-- TRACKER MEMBER PROFILES: MEMBERS TAB -->
+  <div class="card" id="sq-tracker-profiles-card" aria-label="Tracker member profiles">
+    <div class="sq-members-heading"><div><h2>Tracker members</h2><p>People sharing this tracker</p></div></div>
+    <div id="sq-tracker-profiles" class="sq-member-profiles-grid"><p class="sq-members-empty">Open a tracker to see its members.</p></div>
   </div>
 
   <!-- QUICK ACTIONS -->
@@ -3100,7 +3117,27 @@ $("backdrop-file").onchange = function (e) {
   if (file) uploadPhoto(file);
 };
 
+// Render tracker member cards using the same live member data and photo loader as the sidebar.
+window.squareUpRenderTrackerProfiles = function () {
+  var box = document.getElementById('sq-tracker-profiles');
+  if (!box) return;
+  var members = current && Array.isArray(current.members) ? current.members : [];
+  if (!members.length) {
+    box.innerHTML = '<p class="sq-members-empty">No tracker members to display yet.</p>';
+    return;
+  }
+  box.innerHTML = members.map(function (m, i) {
+    var name = m.name || m.displayName || m.email || 'Member';
+    var secondary = m.email && m.email !== name ? '<span class="sq-member-email">' + esc(m.email) + '</span>' : '';
+    return '<div class="sq-member-profile">' + avatarHtml(name, i, m) +
+      '<div class="sq-member-profile-info"><strong>' + esc(name) + '</strong>' +
+      (m.isYou ? '<span class="sq-member-you">You</span>' : '') + secondary + '</div></div>';
+  }).join('');
+  hydrateAvatars(box);
+};
+
 function renderMembers() {
+  window.squareUpRenderTrackerProfiles();
   var box = $("tb-members");
   if (!current) {
     box.innerHTML = "Entries here stay in this browser. Create a tracker to share one with friends.";
@@ -3718,7 +3755,7 @@ document.getElementById('tracker-chat-messages').addEventListener('click',e=>{va
 <script>
 (function(){
  const tabs=document.querySelectorAll('[data-sq-tab]');
- const ids={overview:[],expenses:['history','matrix'],chat:['chat-card'],budget:['budget-card'],members:['balances-card']};
+ const ids={overview:[],expenses:['history','matrix'],chat:['chat-card'],budget:['budget-card'],members:['sq-tracker-profiles-card']};
  const dashboard=document.getElementById('tracker-dashboard');
  const cards=Array.from(dashboard.children).filter(e=>e.classList.contains('card')||e.classList.contains('tracker-tools-grid')||e.classList.contains('dashboard-actions'));
  const tools=document.querySelector('.tracker-tools-grid');
@@ -3732,8 +3769,9 @@ document.getElementById('tracker-chat-messages').addEventListener('click',e=>{va
   if(name==='expenses'){
     const history=document.getElementById('history');const matrix=document.getElementById('matrix');
     [history,matrix].forEach(el=>{const card=el&&el.closest('.card');if(card)card.classList.remove('sq-tab-hidden')});
+    document.getElementById('balances-card').classList.remove('sq-tab-hidden');
   }
-  if(name==='members')document.getElementById('balances-card').classList.remove('sq-tab-hidden');
+  if(name==='members'){document.getElementById('sq-tracker-profiles-card').classList.remove('sq-tab-hidden');if(typeof window.squareUpRenderTrackerProfiles==='function')window.squareUpRenderTrackerProfiles();}
   if(name==='chat'||name==='budget'){
     tools.classList.remove('sq-tab-hidden');
     tools.querySelectorAll('.tracker-collapsible,#recurring-card').forEach(e=>e.classList.toggle('sq-tab-hidden',e.id!==(name==='chat'?'chat-card':'budget-card')));
