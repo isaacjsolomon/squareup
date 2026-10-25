@@ -3794,13 +3794,14 @@ function squareUpBarList(target,values){
  el.innerHTML=rows.map(([name,value])=>'<div class="analytics-bar"><span class="analytics-bar-label" title="'+esc(name)+'">'+esc(name)+'</span><div class="analytics-bar-track"><div class="analytics-bar-fill" style="width:'+Math.max(1,value/max*100).toFixed(1)+'%"></div></div><strong class="analytics-bar-value">'+squareUpMoney(value)+'</strong></div>').join('');
 }
 function squareUpEntries(){return Array.isArray(current?.entries)?current.entries:[];}
+function squareUpConfirmedExpense(e){return e.type==='debt'&&(!e.paymentStatus||e.paymentStatus==='confirmed');}
 function renderSquareUpAnalytics(){
  var title=document.getElementById('analytics-tracker-title'),stats=document.getElementById('analytics-stats'),friends=document.getElementById('analytics-friends'),monthsEl=document.getElementById('analytics-months'),peopleEl=document.getElementById('analytics-people'),recentEl=document.getElementById('analytics-recent');
  if(!current){title.textContent='Open a shared tracker first, then choose Analytics.';stats.innerHTML='';monthsEl.innerHTML=peopleEl.innerHTML=recentEl.innerHTML='<p class="sq-analytics-empty">Open a tracker to view analytics.</p>';friends.innerHTML='';document.getElementById('friend-profile-detail').hidden=true;return;}
  title.textContent='Showing data for '+current.name+' only';
  var range=document.getElementById('analytics-range').value;
  var now=new Date(),start=new Date(now.getFullYear(),now.getMonth()-(range==='all'?0:Number(range)-1),1);
- var all=squareUpEntries().filter(e=>e.type==='debt');
+ var all=squareUpEntries().filter(squareUpConfirmedExpense);
  function entryDate(e){var raw=e.date||e.dateLabel||e.createdAt||e.created_at||'';var d=new Date(raw);return Number.isNaN(d.getTime())?null:d;}
  var entries=all.filter(e=>{var d=entryDate(e);return range==='all'||!d||d>=start;});
  var people={},total=0,months={};
@@ -3829,7 +3830,7 @@ function renderSquareUpAnalytics(){
  document.getElementById('friend-profile-detail').hidden=true;
 }
 function openSquareUpFriendProfile(index){
- if(!current||!current.members[index])return;var m=current.members[index],name=m.name||'',entries=squareUpEntries().filter(e=>e.from===name||e.to===name),owes=entries.filter(e=>e.type==='debt'&&e.from===name).reduce((n,e)=>n+Number(e.amount||0),0),owed=entries.filter(e=>e.type==='debt'&&e.to===name).reduce((n,e)=>n+Number(e.amount||0),0);
+ if(!current||!current.members[index])return;var m=current.members[index],name=m.name||'',entries=squareUpEntries().filter(e=>squareUpConfirmedExpense(e)&&(e.from===name||e.to===name)),owes=entries.filter(e=>e.type==='debt'&&e.from===name).reduce((n,e)=>n+Number(e.amount||0),0),owed=entries.filter(e=>e.type==='debt'&&e.to===name).reduce((n,e)=>n+Number(e.amount||0),0);
  var el=document.getElementById('friend-profile-detail');el.hidden=false;el.className='feature-panel';el.innerHTML='<h3>'+esc(name)+'</h3><p class="feature-muted">Member of '+esc(current.name)+'</p><div class="analytics-stats"><div class="analytics-stat">Expense entries<strong>'+entries.length+'</strong></div><div class="analytics-stat">Owed by friend<strong>'+squareUpMoney(owes)+'</strong></div><div class="analytics-stat">Owed to friend<strong>'+squareUpMoney(owed)+'</strong></div></div><h3 style="margin-top:20px">Shared activity</h3>'+(entries.length?entries.slice().reverse().slice(0,20).map(e=>'<p>'+esc(e.from||'')+' → '+esc(e.to||'')+' · '+squareUpMoney(e.amount)+' · '+esc(e.note||'Expense')+'</p>').join(''):'<p class="feature-muted">No shared expenses yet.</p>');el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 document.getElementById('analytics-friends').addEventListener('click',e=>{var btn=e.target.closest('[data-friend-index]');if(btn)openSquareUpFriendProfile(Number(btn.dataset.friendIndex));});
