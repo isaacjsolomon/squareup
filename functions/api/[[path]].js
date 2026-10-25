@@ -1396,7 +1396,12 @@ if (
 
     
     // NOTIFICATION PREFERENCES
-    if (parts[0] === 'notification-preferences' && parts.length === 1) {
+    if (parts[0] === 'notification-preferences' && parts.length === 1) { 
+      return json({
+  diagnostic: 'NOTIFICATION_PREFERENCES_ROUTE_REACHED',
+  method,
+  parts
+});
       const defaults = {
         expenses: true,
         payments: true,
