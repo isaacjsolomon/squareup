@@ -1971,20 +1971,23 @@ document.getElementById("person2").addEventListener("input", updatePreview);
 function renderExpenseApprovals(){
  var card=document.getElementById('sq-approvals-card'),list=document.getElementById('sq-approvals-list');
  if(!card||!list)return;
- var mine=current&&Array.isArray(current.members)?current.members.find(function(m){return m.isYou;}):null;
+ var approvalTracker=typeof window.squareUpApprovalTracker==='function'?window.squareUpApprovalTracker():null;
+ var mine=approvalTracker&&Array.isArray(approvalTracker.members)?approvalTracker.members.find(function(m){return m.isYou;}):null;
  var myName=mine?(mine.ledgerName||mine.name):'';
- var pending=(current&&current.entries||[]).filter(function(e){return e.type==='debt'&&e.paymentStatus==='pending'&&myName&&norm(e.from)===norm(myName);});
+ var pending=(approvalTracker&&approvalTracker.entries||[]).filter(function(e){return e.type==='debt'&&e.paymentStatus==='pending'&&myName&&norm(e.from)===norm(myName);});
  card.hidden=!pending.length;
  document.getElementById('sq-approvals-count').textContent=pending.length?'('+pending.length+')':'';
  list.innerHTML=pending.map(function(e){return '<div class="sq-approval-row"><div><strong>'+esc(e.note||'Expense')+'</strong><div class="dashboard-subheading">'+esc(e.from)+' owes '+esc(e.to)+' · '+money(e.amount)+'</div></div><div class="sq-approval-actions"><button type="button" class="primary" data-sq-approve="'+esc(String(e.id))+'">Approve</button><button type="button" class="small-btn" data-sq-dispute="'+esc(String(e.id))+'">Dispute</button></div></div>';}).join('');
 }
 document.getElementById('sq-approvals-list').addEventListener('click',async function(ev){
- var btn=ev.target.closest('button');if(!btn||!current)return;
+ var btn=ev.target.closest('button');
+ var approvalTracker=typeof window.squareUpApprovalTracker==='function'?window.squareUpApprovalTracker():null;
+ if(!btn||!approvalTracker)return;
  var id=btn.dataset.sqApprove||btn.dataset.sqDispute;if(!id)return;
  var action=btn.dataset.sqApprove?'approve':'dispute';
  if(!confirm((action==='approve'?'Approve':'Dispute')+' this expense?'))return;
  btn.disabled=true;
- try{var updated=await api('trackers/'+current.id+'/entries/'+encodeURIComponent(id)+'/approval','PATCH',{action:action});applyDetail(updated);}
+ try{await window.squareUpReviewExpense(id,action);}
  catch(err){alert('Could not '+action+' expense: '+err.message);btn.disabled=false;}
 });
 // ============ SPLIT A BILL (separate view, same existing tracker) ============
@@ -2525,6 +2528,13 @@ var JOIN_KEY = "squareup-join";
 var sessionUserId = null;   // whose trackers are loaded
 var trackers = [];          // [{ id, name, role, memberCount }]
 var current = null;         // full detail of the open shared tracker, or null for "this device"
+// Bridge expense approvals from the classic script to this module's tracker state and API.
+window.squareUpApprovalTracker = function(){ return current; };
+window.squareUpReviewExpense = async function(entryId, action){
+  if (!current || !current.id) throw new Error('Open a shared tracker first.');
+  var updated = await api('trackers/'+current.id+'/entries/'+encodeURIComponent(entryId)+'/approval','PATCH',{action:action});
+  applyDetail(updated);
+};
 // Bridge tracker membership into the classic expense-form script.
 window.squareUpExpenseMembers = function () {
   return current && Array.isArray(current.members) ? current.members : [];
