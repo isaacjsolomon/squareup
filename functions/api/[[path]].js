@@ -1394,18 +1394,72 @@ if (
   // PUSH SUBSCRIPTIONS
 // ... existing push subscription code ...
 
-// NOTIFICATION PREFERENCES
-if (
-  parts[0] === 'notification-preferences' &&
-  parts.length === 1
-) {
-  // The new notification preferences code goes here
-}
+    
+    // NOTIFICATION PREFERENCES
+    if (parts[0] === 'notification-preferences' && parts.length === 1) {
+      const defaults = {
+        expenses: true,
+        payments: true,
+        messages: true,
+        mentions: true,
+        reminders: true
+      };
 
-// NOTIFICATIONS
-if (parts[0] === 'notifications') {
-  // Existing notifications code stays here
-}
+      if (method === 'GET') {
+        const rows = await db('squareup_notification_preferences', {
+          filters: { user_id: 'eq.' + me.id },
+          limit: 1
+        });
+
+        return json({
+          ...defaults,
+          ...(rows[0] || {})
+        });
+      }
+
+      if (method === 'PATCH' || method === 'PUT') {
+        const changes = {};
+
+        for (const field of Object.keys(defaults)) {
+          if (Object.prototype.hasOwnProperty.call(body, field)) {
+            if (typeof body[field] !== 'boolean') {
+              return fail('All notification settings must be true or false.', 400);
+            }
+            changes[field] = body[field];
+          }
+        }
+
+        if (!Object.keys(changes).length) {
+          return fail('No valid preferences supplied.', 400);
+        }
+
+        const existing = await db('squareup_notification_preferences', {
+          filters: { user_id: 'eq.' + me.id },
+          limit: 1
+        });
+
+        const saved = await db('squareup_notification_preferences', {
+          method: 'POST',
+          filters: { on_conflict: 'user_id' },
+          body: {
+            ...defaults,
+            ...(existing[0] || {}),
+            ...changes,
+            user_id: me.id,
+            updated_at: new Date().toISOString()
+          }
+        });
+
+        return json({
+          ...defaults,
+          ...(saved[0] || {}),
+          ...changes
+        });
+      }
+
+      return fail('Method not allowed', 405);
+    }
+
 
     
     // NOTIFICATIONS
