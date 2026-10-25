@@ -826,8 +826,13 @@ budget: t.budget_amount == null
         name: profiles.find(
           p => p.user_id === x.user_id
         )?.display_name || x.name,
-        role: x.role,
-        isYou: x.user_id === me.id,
+      
+role: x.role,
+isYou: x.user_id === me.id,
+username: profiles.find(
+  p => p.user_id === x.user_id
+)?.username || '',
+
         photo: profiles.find(
           p => p.user_id === x.user_id
         )?.photo_key?.split('/').pop() || null,
