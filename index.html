@@ -1058,6 +1058,15 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
 #sq-activity-card #sq-activity-content[hidden]{display:none!important}
 #sq-activity-card .sq-activity-filters{margin-top:18px}
 #sq-activity-card .sq-activity-toggle:focus-visible{outline:2px solid #42edc0;outline-offset:5px;border-radius:5px}
+
+/* Desktop-only sidebar/content separation. Mobile rules remain unchanged. */
+@media (min-width: 901px) {
+  body:not(.side-collapsed) { padding-left: 310px !important; }
+  body.side-collapsed { padding-left: 92px !important; }
+  body > .wrap, body .wrap { box-sizing: border-box; width: 100%; max-width: 1260px !important; margin-left: auto !important; margin-right: auto !important; }
+  .sidebar { left: 12px !important; width: 268px !important; box-sizing: border-box; }
+  body.side-collapsed .sidebar { width: 66px !important; }
+}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
