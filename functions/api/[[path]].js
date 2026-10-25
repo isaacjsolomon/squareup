@@ -1402,11 +1402,6 @@ if (
     
     // NOTIFICATION PREFERENCES
     if (parts[0] === 'notification-preferences' && parts.length === 1) { 
-      return json({
-  diagnostic: 'NOTIFICATION_PREFERENCES_ROUTE_REACHED',
-  method,
-  parts
-});
       const defaults = {
         expenses: true,
         payments: true,
@@ -2489,7 +2484,10 @@ exchange_rate: rate,
           });
         }
 
-        const notify = pending ? creditor : debtor;
+       const notify =
+  e.type === 'payment'
+    ? creditor
+    : debtor;
 
         if (notify.user_id !== me.id) {
           await db('squareup_notifications', {
