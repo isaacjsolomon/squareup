@@ -1107,6 +1107,9 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
 @media(max-width:900px){body{padding:14px 14px 90px 14px!important}body.side-collapsed{padding:14px 14px 90px!important}.sidebar{display:none!important}.wrap{max-width:100%!important}.dashboard-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important}.sq-mobile-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:5px 3px;color:#fff;font-weight:800}.sq-mobile-top img{height:28px;width:28px;object-fit:contain}.sq-mobile-top .sq-brand{display:flex;align-items:center;gap:9px}.sq-mobile-top button{background:none;border:0;color:#d6e5f4;font-size:22px;padding:6px}.sq-mobile-nav{position:fixed;display:flex;justify-content:space-around;align-items:center;bottom:0;left:0;right:0;z-index:80;background:#061729;border-top:1px solid #28415c;padding:8px 5px max(10px,env(safe-area-inset-bottom));box-shadow:0 -8px 25px #0005}.sq-mobile-nav button{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:0;color:#b8ccdd;font-size:10px;min-width:52px;cursor:pointer}.sq-mobile-nav button .sq-m-icon{font-size:22px;line-height:27px}.sq-mobile-nav button.sq-add .sq-m-icon{background:#40edbf;color:#03253b;border-radius:50%;width:44px;height:44px;font-size:32px;line-height:42px;margin-top:-20px;box-shadow:0 4px 20px #2ee6b94a}.sq-mobile-nav button.active{color:#42edc0}.tracker-heading{padding:7px 3px 14px!important}.tracker-heading h1{font-size:21px!important}.sq-stat{padding:12px;min-height:76px}.sq-stat strong{font-size:18px}.sq-stat span{font-size:10px}.sq-workspace-tabs{gap:3px}.sq-workspace-tabs button{font-size:12px;padding:10px 12px}.tracker-tools-grid{grid-template-columns:1fr!important}.card{padding:15px!important}.sq-mobile-nav~*{max-width:100%}}
 @media(max-width:480px){.dashboard-action{min-height:93px!important;font-size:13px!important}.dashboard-action .action-icon{width:37px!important;height:37px!important;font-size:22px!important}.dashboard-action .action-sub{font-size:10px!important}.sq-overview-stats{gap:6px}.sq-stat{padding:9px 7px}.sq-stat strong{font-size:16px}.sq-stat span{font-size:9px}.row{grid-template-columns:1fr!important}.sq-workspace-tabs button{padding:9px 10px}}
 </style>
+<style id="sq-four-features-style">
+.sq-category-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.sq-category-row label{font-weight:700;color:var(--muted)}.sq-category-row select{min-width:180px;max-width:100%;background:var(--card,#10263b);color:inherit;border:1px solid #59718b;border-radius:10px;padding:10px}.sq-cat-chip{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.03em;border:1px solid #5e8595;border-radius:100px;padding:3px 9px;margin:0 6px;color:#bdeae7}.sq-detail-btn{margin-left:5px}.sq-details-overlay{position:fixed;inset:0;background:#04111bca;z-index:120;display:none;align-items:center;justify-content:center;padding:20px}.sq-details-overlay.open{display:flex}.sq-details-card{background:#11283e;color:#edf7ff;border:1px solid #47617c;border-radius:20px;padding:24px;width:min(100%,490px);max-height:85vh;overflow:auto;box-shadow:0 20px 70px #0007}.sq-details-card h2{margin:0 0 14px}.sq-details-grid{display:grid;grid-template-columns:125px 1fr;gap:12px;margin:20px 0}.sq-details-grid dt{color:#abc2d2}.sq-details-grid dd{margin:0;overflow-wrap:anywhere}.sq-preference{display:flex;gap:10px;align-items:center;margin:12px 0;padding:10px;border:1px solid #35526a;border-radius:12px}.sq-preference input{width:18px;height:18px}.sq-onboard-steps{margin:8px 0 18px;color:#bcece3;font-size:14px}.sq-onboard-steps strong{color:#fff}
+</style>
 </head>
 <body>
 <button type="button" id="guest-auth-button" hidden>Log in or create account</button>
@@ -1225,7 +1228,7 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
         <select id="expense-currency" class="sq-currency-select" aria-label="Expense currency"></select><input id="amount" type="number" step="0.01" min="0.01" placeholder="Amount ($)" required>
         <input id="note" placeholder="What for? (pizza, Uber...)" autocomplete="off">
       </div>
-      <label id="recurring-wrap" class="feature-field">Repeat this expense
+      <div class="sq-category-row" id="sq-category-wrap"><label for="sq-category">Expense category</label><select id="sq-category"><option>Food & Dining</option><option>Groceries</option><option>Transportation</option><option>Shopping</option><option>Entertainment</option><option>Travel</option><option>Housing</option><option>Utilities</option><option>School</option><option>Other</option></select></div><label id="recurring-wrap" class="feature-field">Repeat this expense
         <select id="expense-recurring"><option value="none">One-time expense</option><option value="daily">Every day</option><option value="weekly">Every week</option><option value="biweekly">Every 2 weeks</option><option value="monthly">Every month</option></select>
         <small>Future expenses are added when someone opens the tracker. Manage schedules below.</small></label>
       <label id="due-date-wrap" style="display:block;margin:10px 0;color:var(--muted)">Payment due date (optional) <input id="expense-due-date" type="date" style="margin-top:6px;width:100%"></label><div class="preview" id="preview"></div>
@@ -1366,7 +1369,7 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
 <button class="settings-action" hidden="" id="settings-push-disable" type="button">Disable on this device</button>
 <p aria-live="polite" class="settings-muted" id="settings-push-status" role="status"></p>
 </div></div>
-        <div><div class="settings-panel" id="settings-install-panel">
+        <div><div class="settings-panel" id="sq-notification-preferences"><h3>Notification preferences</h3><p class="settings-muted">Choose which types appear in your notification center on this device. These filters do not change server-side push delivery.</p><label class="sq-preference"><input type="checkbox" data-sq-pref="expenses" checked>New expenses</label><label class="sq-preference"><input type="checkbox" data-sq-pref="payments" checked>Payments and confirmations</label><label class="sq-preference"><input type="checkbox" data-sq-pref="messages" checked>Group chat messages</label><label class="sq-preference"><input type="checkbox" data-sq-pref="reminders" checked>Due-date reminders</label><p class="settings-muted" id="sq-pref-status" role="status"></p></div></div><div><div class="settings-panel" id="settings-install-panel">
 <h3>Install SquareUp</h3>
 <p class="settings-muted">Add SquareUp to your Home Screen or desktop for quick access.</p>
 <button class="settings-action primary" hidden="" id="settings-install-app" type="button">Install SquareUp App</button>
@@ -1391,7 +1394,7 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
     <h1>Welcome to SquareUp!</h1>
     <p class="settings-muted">Set up your new profile before you get started.</p>
     <div class="onboard-panel">
-      <form id="onboard-form">
+      <div class="sq-onboard-steps"><strong>Step 1 of 2:</strong> Set up your profile · <strong>Step 2:</strong> Start sharing expenses</div><form id="onboard-form">
         <div class="onboard-photo">
           <div id="onboard-avatar" aria-hidden="true">?</div>
           <div><button type="button" class="settings-action" id="onboard-photo-button">Choose profile photo</button>
@@ -3889,6 +3892,41 @@ if ('serviceWorker' in navigator) {
     });
   });
   selectTab('profile');
+})();
+</script>
+<div id="sq-details-overlay" class="sq-details-overlay" role="dialog" aria-modal="true" aria-labelledby="sq-details-title" aria-hidden="true"><div class="sq-details-card"><h2 id="sq-details-title">Expense details</h2><dl class="sq-details-grid" id="sq-details-grid"></dl><button class="settings-action primary" type="button" id="sq-details-close">Close</button></div></div>
+<script id="sq-four-features-script">
+(function(){
+'use strict';
+var categories=['Food & Dining','Groceries','Transportation','Shopping','Entertainment','Travel','Housing','Utilities','School','Other'];
+var pattern=/^\[Category: ([^\]]+)\]\s*/;
+function unpack(note){var raw=String(note||'');var m=raw.match(pattern);return {category:m&&categories.includes(m[1])?m[1]:'Other',note:raw.replace(pattern,'')};}
+var form=document.getElementById('form'), note=document.getElementById('note'), cat=document.getElementById('sq-category');
+var paymentMode=document.getElementById('mode-payment'), debtMode=document.getElementById('mode-debt');
+function syncCategory(){var wrap=document.getElementById('sq-category-wrap');if(wrap)wrap.hidden=!!(paymentMode&&paymentMode.classList.contains('active'));}
+[paymentMode,debtMode].forEach(function(b){if(b)b.addEventListener('click',function(){setTimeout(syncCategory,0);});});syncCategory();
+// Encode category in the existing note field, so it persists through existing local and server APIs.
+// Capture phase runs before the existing submit handler, and only modifies a debt note.
+if(form)form.addEventListener('submit',function(){
+ if(paymentMode&&paymentMode.classList.contains('active'))return;
+ var val=note.value.replace(pattern,'').trim();note.value='[Category: '+cat.value+'] '+val;
+},true);
+var overlay=document.getElementById('sq-details-overlay'), grid=document.getElementById('sq-details-grid');
+function close(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');}
+document.getElementById('sq-details-close').addEventListener('click',close);
+overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+function show(entry){if(!entry)return;var parsed=unpack(entry.note);var data=[['Type',entry.type==='payment'?'Payment':'Expense'],['Amount',Number(entry.amount||0).toLocaleString(undefined,{style:'currency',currency:entry.currency||'USD'})],['From',entry.from||'—'],['To',entry.to||'—'],['Category',entry.type==='payment'?'Payment':parsed.category],['Description',parsed.note||'No description'],['Date',entry.date||'—'],['Due date',entry.dueDate||'None'],['Status',entry.paymentStatus||'—'],['Created by',entry.createdBy||'—'],['Pinned',entry.pinned?'Yes':'No']];grid.replaceChildren();data.forEach(function(row){var dt=document.createElement('dt');dt.textContent=row[0];var dd=document.createElement('dd');dd.textContent=row[1];grid.append(dt,dd);});overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.getElementById('sq-details-close').focus();}
+var historyEl=document.getElementById('history');
+function decorate(){if(!historyEl)return;historyEl.querySelectorAll('.entry').forEach(function(row){if(row.dataset.sqEnhanced)return;var del=row.querySelector('[data-del]');if(!del)return;row.dataset.sqEnhanced='1';var id=del.dataset.del;var entry=(typeof entries!=='undefined'&&Array.isArray(entries))?entries.find(function(x){return String(x.id)===String(id);}):null;if(!entry)return;var parsed=unpack(entry.note);if(entry.type==='debt'){var chip=document.createElement('span');chip.className='sq-cat-chip';chip.textContent=parsed.category;var noteEl=row.querySelector('.note');if(noteEl){if(pattern.test(String(entry.note||'')))noteEl.textContent=noteEl.textContent.replace(pattern,'');noteEl.prepend(chip);}}var btn=document.createElement('button');btn.type='button';btn.className='small-btn sq-detail-btn';btn.textContent='Details';btn.addEventListener('click',function(){var fresh=(typeof entries!=='undefined'&&Array.isArray(entries))?entries.find(function(x){return String(x.id)===String(id);}):entry;show(fresh);});row.insertBefore(btn,del);});}
+if(historyEl){new MutationObserver(function(){decorate();}).observe(historyEl,{childList:true});decorate();}
+var defaults={expenses:true,payments:true,messages:true,reminders:true};var prefs=Object.assign({},defaults);
+try{prefs=Object.assign(prefs,JSON.parse(localStorage.getItem('squareup_notification_preferences')||'{}'));}catch(e){}
+document.querySelectorAll('[data-sq-pref]').forEach(function(el){var key=el.dataset.sqPref;el.checked=prefs[key]!==false;el.addEventListener('change',function(){prefs[key]=el.checked;try{localStorage.setItem('squareup_notification_preferences',JSON.stringify(prefs));}catch(e){}var status=document.getElementById('sq-pref-status');if(status)status.textContent='Preferences saved on this device.';filterInbox();});});
+function notificationType(kind){kind=String(kind||'').toLowerCase();if(kind.includes('message')||kind.includes('chat'))return 'messages';if(kind.includes('payment')||kind.includes('confirm')||kind.includes('dispute'))return 'payments';if(kind.includes('due')||kind.includes('remind'))return 'reminders';return 'expenses';}
+var inboxEl=document.getElementById('notifications-list');
+function filterInbox(){if(!inboxEl)return;var rows=Array.from(inboxEl.querySelectorAll(':scope > .entry'));var notifications=(typeof inbox!=='undefined'&&Array.isArray(inbox))?inbox:[];rows.forEach(function(row,i){var type=i<notifications.length?notificationType(notifications[i].kind):'reminders';row.hidden=prefs[type]===false;});}
+if(inboxEl){new MutationObserver(filterInbox).observe(inboxEl,{childList:true});filterInbox();}
 })();
 </script>
 </body>
