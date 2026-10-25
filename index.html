@@ -595,6 +595,21 @@ body.settings-view #btn-settings { background:#65f5ac!important; color:#081b2b!i
 .settings-payment-member a { color:#65f5ac; text-decoration:none; font-size:13px; }
 @media(max-width:720px) { .settings-columns { grid-template-columns:1fr; } .settings-panel { padding:16px; } }
 
+
+/* Account Settings: tabbed layout */
+.settings-tab-layout { display:block; max-width:980px; margin:0 auto; }
+.settings-tab-layout .settings-heading-area { min-height:0; margin:0 0 22px; }
+.settings-tabs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px; padding:5px; margin-bottom:20px; background:#091c2e; border:1px solid #31536c; border-radius:15px; }
+.settings-tab { border:0; border-radius:11px; background:transparent; color:#bdd2e4; font:inherit; font-size:14px; font-weight:750; padding:13px 8px; cursor:pointer; }
+.settings-tab:hover { background:#193951; color:#fff; }
+.settings-tab.active { background:#65f5ac; color:#071625; }
+.settings-tab:focus-visible { outline:2px solid #65f5ac; outline-offset:2px; }
+.settings-tab-content[hidden] { display:none!important; }
+.settings-tab-grid { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:18px; align-items:start; }
+.settings-tab-grid > div { min-width:0; }
+.settings-tab-grid .settings-panel { margin-bottom:18px; }
+@media(max-width:720px) { .settings-tab-grid { grid-template-columns:1fr; gap:0; } .settings-tabs { gap:2px; } .settings-tab { font-size:12px; padding:12px 3px; } }
+
 /* First-time account setup */
 #onboarding-page { position:fixed; inset:0; z-index:30; overflow-y:auto; background:radial-gradient(ellipse at top,#163b4c,#071422 70%); padding:32px 16px; color:#f1f7ff; }
 #onboarding-page[hidden] {display:none!important;}
@@ -1165,60 +1180,78 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
     </div>
   </section>
 
-<section id="settings-page" class="settings-shell" aria-label="Settings">
-  <div id="settings-guest" class="settings-panel" hidden><h3>Sign in to edit your profile</h3><p class="settings-muted">Your settings are saved to your SquareUp account.</p><button type="button" class="settings-action primary" id="settings-login">Log in or create account</button></div>
-  <div id="settings-signed-in" class="settings-columns" hidden>
-    <div>
-      <div class="settings-heading-area">
-        <button type="button" class="split-back" id="settings-back">← Back to Dashboard</button>
-        <h2 class="settings-heading">Account</h2>
-        <p class="settings-muted">Customize your profile and how friends can pay you.</p>
-      </div>
-      <div class="settings-panel">
-        <h3>Edit Profile</h3><p class="settings-muted">Your name, username, bio, and profile picture.</p>
-        <div class="settings-avatar-row"><div class="settings-avatar" id="settings-avatar">?</div><div><button type="button" class="settings-action" id="settings-photo">Change profile picture</button><p class="settings-muted">JPG, PNG or WebP • up to 2 MB</p></div></div>
-        <form id="settings-profile-form">
-          <label class="settings-field">Display name<input id="settings-display-name" maxlength="60" required autocomplete="nickname" placeholder="Your name"></label>
-          <label class="settings-field">Username<input id="settings-username" maxlength="24" minlength="3" pattern="[A-Za-z0-9_]{3,24}" placeholder="your_username" autocomplete="off" required></label>
-          <p class="settings-muted">3–24 letters, numbers, or underscores. Usernames must be unique.</p>
-          <label class="settings-field">Bio<textarea id="settings-bio" maxlength="180" placeholder="A little about you (optional)"></textarea></label>
-          <button type="submit" class="settings-action primary" id="settings-profile-save">Save profile</button>
-          <div class="settings-notice" id="settings-profile-msg" role="status" aria-live="polite"></div>
-        </form>
-      </div>
-      <div class="settings-panel" id="settings-backdrop-panel">
-        <h3>Change backdrop</h3>
-        <p class="settings-muted">Choose a color scheme or upload your own photo for the currently selected tracker. Everyone sharing that tracker will see the new backdrop.</p>
-        <button type="button" class="settings-action primary" id="settings-change-backdrop">Change backdrop</button>
-        <p class="settings-muted" style="margin-top:10px">Choose from six color themes, or upload a JPG, PNG or WebP photo (up to 5 MB).</p>
+<section id="settings-page" class="settings-shell" aria-label="Account Settings">
+  <div class="settings-panel" hidden="" id="settings-guest"><h3>Sign in to edit your profile</h3><p class="settings-muted">Your settings are saved to your SquareUp account.</p><button class="settings-action primary" id="settings-login" type="button">Log in or create account</button></div>
+  <div id="settings-signed-in" class="settings-tab-layout" hidden>
+    <div class="settings-heading-area">
+      <button type="button" class="split-back" id="settings-back">← Back to Dashboard</button>
+      <h2 class="settings-heading">Account Settings</h2>
+      <p class="settings-muted">Manage your profile, payments, and preferences.</p>
+    </div>
+    <div class="settings-tabs" role="tablist" aria-label="Account settings sections">
+      <button type="button" class="settings-tab active" id="settings-tab-profile" role="tab" aria-selected="true" aria-controls="settings-content-profile" data-settings-tab="profile">Profile</button>
+      <button type="button" class="settings-tab" id="settings-tab-payments" role="tab" aria-selected="false" aria-controls="settings-content-payments" data-settings-tab="payments" tabindex="-1">Payments</button>
+      <button type="button" class="settings-tab" id="settings-tab-notifications" role="tab" aria-selected="false" aria-controls="settings-content-notifications" data-settings-tab="notifications" tabindex="-1">Notifications</button>
+      <button type="button" class="settings-tab" id="settings-tab-account" role="tab" aria-selected="false" aria-controls="settings-content-account" data-settings-tab="account" tabindex="-1">Account</button>
+    </div>
+    <div id="settings-content-profile" class="settings-tab-content" role="tabpanel" aria-labelledby="settings-tab-profile">
+      <div class="settings-tab-grid">
+        <div><div class="settings-panel">
+<h3>Edit Profile</h3><p class="settings-muted">Your name, username, bio, and profile picture.</p>
+<div class="settings-avatar-row"><div class="settings-avatar" id="settings-avatar">?</div><div><button class="settings-action" id="settings-photo" type="button">Change profile picture</button><p class="settings-muted">JPG, PNG or WebP • up to 2 MB</p></div></div>
+<form id="settings-profile-form">
+<label class="settings-field">Display name<input autocomplete="nickname" id="settings-display-name" maxlength="60" placeholder="Your name" required=""/></label>
+<label class="settings-field">Username<input autocomplete="off" id="settings-username" maxlength="24" minlength="3" pattern="[A-Za-z0-9_]{3,24}" placeholder="your_username" required=""/></label>
+<p class="settings-muted">3–24 letters, numbers, or underscores. Usernames must be unique.</p>
+<label class="settings-field">Bio<textarea id="settings-bio" maxlength="180" placeholder="A little about you (optional)"></textarea></label>
+<button class="settings-action primary" id="settings-profile-save" type="submit">Save profile</button>
+<div aria-live="polite" class="settings-notice" id="settings-profile-msg" role="status"></div>
+</form>
+</div></div>
+        <div><div class="settings-panel" id="settings-backdrop-panel">
+<h3>Change backdrop</h3>
+<p class="settings-muted">Choose a color scheme or upload your own photo for the currently selected tracker. Everyone sharing that tracker will see the new backdrop.</p>
+<button class="settings-action primary" id="settings-change-backdrop" type="button">Change backdrop</button>
+<p class="settings-muted" style="margin-top:10px">Choose from six color themes, or upload a JPG, PNG or WebP photo (up to 5 MB).</p>
+</div></div>
       </div>
     </div>
-    <div>
-      <div class="settings-panel" id="settings-install-panel">
-        <h3>Install SquareUp</h3>
-        <p class="settings-muted">Add SquareUp to your Home Screen or desktop for quick access.</p>
-        <button type="button" class="settings-action primary" id="settings-install-app" hidden>Install SquareUp App</button>
-        <p class="settings-muted" id="settings-install-status" role="status" aria-live="polite"></p>
+    <div id="settings-content-payments" class="settings-tab-content" role="tabpanel" aria-labelledby="settings-tab-payments" hidden>
+      <div class="settings-tab-grid">
+        <div><div class="settings-panel"><h3>Payment Accounts</h3><p class="settings-muted">Add your Venmo username or Cash App $Cashtag. Other members of your shared trackers can use these to open your payment profile.</p>
+<form id="settings-pay-form">
+<label class="settings-field">Venmo username<input autocapitalize="off" autocomplete="off" id="settings-venmo" maxlength="30" placeholder="e.g. myvenmo"/></label>
+<label class="settings-field">Cash App $Cashtag<input autocapitalize="off" autocomplete="off" id="settings-cashapp" maxlength="21" placeholder="e.g. $mycashtag"/></label>
+<p class="settings-muted">Only enter accounts you own. Friends should confirm the recipient in the payment app before sending money. SquareUp never transfers funds.</p>
+<button class="settings-action primary" id="settings-pay-save" type="submit">Save payment accounts</button>
+<div aria-live="polite" class="settings-notice" id="settings-pay-msg" role="status"></div>
+</form>
+</div></div>
+        <div><div class="settings-panel"><h3>Friends' payment accounts</h3><p class="settings-muted">Saved payment usernames for members of the selected shared tracker.</p><div class="settings-muted" id="settings-friend-payments">Open a shared tracker to see payment links.</div></div></div>
       </div>
-      <div class="settings-panel" id="settings-push-panel">
-        <h3>Push notifications</h3>
-        <p class="settings-muted">Get an alert when someone adds an expense, confirms a payment, or sends a group message—even when SquareUp is closed. Notification details stay inside your account.</p>
-        <button type="button" class="settings-action primary" id="settings-push-enable">Enable push notifications</button>
-        <button type="button" class="settings-action" id="settings-push-disable" hidden>Disable on this device</button>
-        <p class="settings-muted" id="settings-push-status" role="status" aria-live="polite"></p>
+    </div>
+    <div id="settings-content-notifications" class="settings-tab-content" role="tabpanel" aria-labelledby="settings-tab-notifications" hidden>
+      <div class="settings-tab-grid">
+        <div><div class="settings-panel" id="settings-push-panel">
+<h3>Push notifications</h3>
+<p class="settings-muted">Get an alert when someone adds an expense, confirms a payment, or sends a group message—even when SquareUp is closed. Notification details stay inside your account.</p>
+<button class="settings-action primary" id="settings-push-enable" type="button">Enable push notifications</button>
+<button class="settings-action" hidden="" id="settings-push-disable" type="button">Disable on this device</button>
+<p aria-live="polite" class="settings-muted" id="settings-push-status" role="status"></p>
+</div></div>
+        <div><div class="settings-panel" id="settings-install-panel">
+<h3>Install SquareUp</h3>
+<p class="settings-muted">Add SquareUp to your Home Screen or desktop for quick access.</p>
+<button class="settings-action primary" hidden="" id="settings-install-app" type="button">Install SquareUp App</button>
+<p aria-live="polite" class="settings-muted" id="settings-install-status" role="status"></p>
+</div></div>
       </div>
-      <div class="settings-panel"><h3>Account</h3><div class="settings-actions"><button type="button" class="settings-action" id="settings-password">Change password</button><button type="button" class="settings-action" id="settings-signout">Log out</button></div></div>
-      <div class="settings-panel"><h3>Payment Accounts</h3><p class="settings-muted">Add your Venmo username or Cash App $Cashtag. Other members of your shared trackers can use these to open your payment profile.</p>
-        <form id="settings-pay-form">
-          <label class="settings-field">Venmo username<input id="settings-venmo" maxlength="30" placeholder="e.g. myvenmo" autocapitalize="off" autocomplete="off"></label>
-          <label class="settings-field">Cash App $Cashtag<input id="settings-cashapp" maxlength="21" placeholder="e.g. $mycashtag" autocapitalize="off" autocomplete="off"></label>
-          <p class="settings-muted">Only enter accounts you own. Friends should confirm the recipient in the payment app before sending money. SquareUp never transfers funds.</p>
-          <button type="submit" class="settings-action primary" id="settings-pay-save">Save payment accounts</button>
-          <div class="settings-notice" id="settings-pay-msg" role="status" aria-live="polite"></div>
-        </form>
+    </div>
+    <div id="settings-content-account" class="settings-tab-content" role="tabpanel" aria-labelledby="settings-tab-account" hidden>
+      <div class="settings-tab-grid">
+        <div><div class="settings-panel"><h3>Account</h3><div class="settings-actions"><button class="settings-action" id="settings-password" type="button">Change password</button><button class="settings-action" id="settings-signout" type="button">Log out</button></div></div></div>
+        <div><div class="settings-panel" id="delete-account-panel"><h3>Delete account</h3><p class="settings-muted">Permanently delete your SquareUp account, profile, payment usernames, profile photo, and your saved tracker data. Trackers you own will also be deleted for their members. This cannot be undone.</p><button class="settings-action" id="settings-delete-account" style="background:#512334;color:#ffb5c4;border-color:#9e4158" type="button">Delete my account</button><div aria-live="polite" class="settings-notice" id="settings-delete-msg" role="status"></div></div></div>
       </div>
-      <div class="settings-panel"><h3>Friends' payment accounts</h3><p class="settings-muted">Saved payment usernames for members of the selected shared tracker.</p><div id="settings-friend-payments" class="settings-muted">Open a shared tracker to see payment links.</div></div>
-      <div class="settings-panel" id="delete-account-panel"><h3>Delete account</h3><p class="settings-muted">Permanently delete your SquareUp account, profile, payment usernames, profile photo, and your saved tracker data. Trackers you own will also be deleted for their members. This cannot be undone.</p><button type="button" class="settings-action" id="settings-delete-account" style="background:#512334;color:#ffb5c4;border-color:#9e4158">Delete my account</button><div class="settings-notice" id="settings-delete-msg" role="status" aria-live="polite"></div></div>
     </div>
   </div>
 </section>
@@ -2250,6 +2283,7 @@ async function api(path, method, body) {
   return data;
 }
 window.squareUpApi = api;
+
 sqFillCurrencies();
 // ============ DEDICATED SETTINGS PAGE ============
 var myProfileSettings = null;
@@ -3549,8 +3583,7 @@ if ('serviceWorker' in navigator) {
 </script>
 <script>
 (function () {
-const api = (...args) => window.squareUpApi(...args);
-  
+  const api = (...args) => window.squareUpApi(...args);
   const enable = document.getElementById('settings-push-enable');
   const disable = document.getElementById('settings-push-disable');
   const status = document.getElementById('settings-push-status');
@@ -3618,6 +3651,33 @@ const api = (...args) => window.squareUpApi(...args);
   document.getElementById('btn-settings')?.addEventListener('click', () => {
     refresh().catch(() => {});
   });
+})();
+</script>
+<script>
+// Account settings tabs: existing forms and button handlers remain unchanged.
+(function () {
+  const tabs = Array.from(document.querySelectorAll('[data-settings-tab]'));
+  function selectTab(name, focus = false) {
+    tabs.forEach(tab => {
+      const active = tab.dataset.settingsTab === name;
+      tab.classList.toggle('active', active);
+      tab.setAttribute('aria-selected', String(active));
+      tab.tabIndex = active ? 0 : -1;
+      const panel = document.getElementById('settings-content-' + tab.dataset.settingsTab);
+      if (panel) panel.hidden = !active;
+      if (active && focus) tab.focus();
+    });
+  }
+  tabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => selectTab(tab.dataset.settingsTab));
+    tab.addEventListener('keydown', event => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      let next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+      selectTab(tabs[next].dataset.settingsTab, true);
+    });
+  });
+  selectTab('profile');
 })();
 </script>
 </body>
