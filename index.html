@@ -3338,9 +3338,13 @@ $("btn-backdrop").onclick = function () {
   renderBackdropPicker();
   $("backdrop-modal").classList.add("open");
 };
-$("settings-change-backdrop").onclick = function () {
-  $("btn-backdrop").click();
-};
+// The Account page no longer has a backdrop button; tracker cards provide it instead.
+// Keep the legacy handler optional so initialization continues on every page.
+if ($("settings-change-backdrop")) {
+  $("settings-change-backdrop").onclick = function () {
+    $("btn-backdrop").click();
+  };
+}
 $("backdrop-swatches").addEventListener("click", function (e) {
   var preset = e.target.dataset && e.target.dataset.preset;
   if (preset && preset !== "photo" && preset !== backdropState().preset) setPreset(preset);
