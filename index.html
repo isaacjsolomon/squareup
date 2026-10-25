@@ -1131,6 +1131,20 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
 #about-page .about-build-step p{font-size:14px;line-height:1.55}
 .about-build-date{font-size:12px;color:#b6cce1;white-space:nowrap;align-self:start;padding-top:3px}
 @media(max-width:650px){.about-build-story{padding:22px 15px;border-radius:22px}.about-build-timeline{padding-left:39px;gap:10px}.about-build-timeline:before{left:15px}.about-build-number{left:-39px;width:32px;height:32px;top:16px;font-size:16px}.about-build-step{grid-template-columns:45px minmax(0,1fr);padding:14px 12px;gap:11px}.about-build-emoji{width:45px;height:45px;font-size:23px}.about-build-date{grid-column:2;grid-row:2;padding:0}.about-build-step h3{font-size:16px}#about-page .about-build-step p{font-size:13px}.about-build-heading h2{font-size:25px}}
+
+/* Dedicated notification center */
+#notifications-page{display:none;max-width:1000px;margin:0 auto;padding:16px 0 40px}
+body.notifications-view #notifications-page{display:block}
+body.notifications-view #tracker-dashboard,body.notifications-view #split-page,body.notifications-view #settings-page,body.notifications-view #about-page,body.notifications-view #trackers-page,body.notifications-view #friends-page,body.notifications-view #analytics-page{display:none!important}
+.sq-notifications-header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+.sq-notifications-header h2{font-size:clamp(24px,3vw,34px);margin:0 0 8px}
+.sq-notifications-header p{color:#b9cedd;margin:0}
+#notifications-page #notifications-panel{display:block!important;max-height:none;overflow:visible;padding:20px;background:#122d44;border:1px solid #35536b;border-radius:18px}
+#notifications-page .entry{padding:16px 8px;font-size:14px}
+#notifications-page .entry .note{font-size:13px;margin-top:6px}
+#notifications-page .notification-panel-heading{font-size:17px}
+@media(min-width:768px){#receipt-file,#split-receipt-file{display:none!important}label[for="receipt-file"],label[for="split-receipt-file"]{display:none!important}}
+@media(max-width:767px){#notifications-page{padding:12px 0}#notifications-page #notifications-panel{padding:14px}}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -1401,10 +1415,7 @@ body.friends-view .wrap #friends-page{display:block!important}
     <button type="button" id="side-toggle" class="sidebar-collapse-toggle" aria-expanded="true" aria-label="Collapse side panel" title="Collapse side panel">
       <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
-    <div id="notifications-panel" class="sidebar-notification-panel" hidden>
-      <div class="notification-panel-heading">Updates</div>
-      <div id="notifications-list"></div>
-    </div>
+
     <div class="me" id="me" hidden>
       <button type="button" class="avatar me-avatar" id="me-avatar" aria-label="Change profile photo"></button>
       <span class="who" id="who"></span>
@@ -1454,6 +1465,10 @@ body.friends-view .wrap #friends-page{display:block!important}
     <p>Track who owes who. Debts that go both ways cancel out automatically.</p>
   </header>
 
+  <section id="notifications-page" aria-label="Notification Center" hidden>
+    <div class="sq-notifications-header"><div><h2>Notification Center</h2><p>Expenses, payments, invitations, and group updates in one place.</p></div><button type="button" id="notifications-back" class="small-btn">← Back to Home</button></div>
+    <div id="notifications-panel" class="sidebar-notification-panel"><div class="notification-panel-heading">Your updates</div><div id="notifications-list"></div></div>
+  </section>
   <div id="tracker-dashboard">
   <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="budget" role="tab" aria-selected="false">Budget</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button></div>
   <section class="sq-clean-balance" id="sq-clean-balance" aria-label="Your balance">
@@ -1486,7 +1501,7 @@ body.friends-view .wrap #friends-page{display:block!important}
   <div class="card" id="receipt-card" hidden>
     <h2>Receipt scanner · itemized split</h2>
     <p style="color:var(--muted)">Upload a photo, check the recognized lines, then assign who ordered each item. Scanning uses Tesseract.js in your browser; check all amounts before saving.</p>
-    <input type="file" id="receipt-file" accept="image/*" capture="environment" aria-label="Receipt photo">
+    <label for="receipt-file">Take a receipt photo (mobile)</label><input type="file" id="receipt-file" accept="image/*" capture="environment" aria-label="Receipt photo">
     <div id="receipt-status" role="status" style="margin:10px 0;color:var(--muted)"></div>
     <label>Who paid? <select id="receipt-payer"></select></label>
     <div id="receipt-items"></div>
@@ -1580,7 +1595,7 @@ body.friends-view .wrap #friends-page{display:block!important}
     <div class="split-header"><h2>Split a Bill</h2><label>Bill currency <select id="split-currency" class="sq-currency-select"></select></label><p>Divide an expense with your friends.</p></div>
     <div class="split-layout">
       <div class="split-panel">
-        <div class="receipt-scan-box"><strong>Scan a receipt with AI-assisted text recognition</strong><p class="feature-muted">Upload a receipt photo to read item names and prices, then review the detected total before splitting. Recognition runs in your browser.</p><input type="file" id="split-receipt-file" accept="image/*" capture="environment" aria-label="Choose receipt photo"><div id="split-receipt-status" class="feature-muted" role="status"></div><div id="split-receipt-items"></div><button type="button" id="split-use-itemized" hidden>Assign receipt items to friends →</button></div>
+        <div class="receipt-scan-box"><strong>Scan a receipt with AI-assisted text recognition</strong><p class="feature-muted">On mobile, take a photo of your receipt to recognize items and prices. Review everything before splitting. Recognition runs in your browser.</p><label for="split-receipt-file">Take a receipt photo (mobile)</label><input type="file" id="split-receipt-file" accept="image/*" capture="environment" aria-label="Choose receipt photo"><div id="split-receipt-status" class="feature-muted" role="status"></div><div id="split-receipt-items"></div><button type="button" id="split-use-itemized" hidden>Assign receipt items to friends →</button></div>
         <label class="split-field">Expense description<input id="split-description" maxlength="160" placeholder="Dinner at a restaurant" autocomplete="off"></label>
         <label class="split-field">Total amount ($)<input id="split-total" type="number" min="0.01" max="1000000" step="0.01" placeholder="60.00" inputmode="decimal"></label>
         <h3>Who paid?</h3><div id="split-payers"></div>
@@ -2796,7 +2811,7 @@ sqFillCurrencies();
 var myProfileSettings = null;
 function settingsMessage(id, message, ok) { var el=$(id); el.textContent=message; el.style.color=ok?'#65f5ac':'#ff9db1'; }
 function settingsRoute(page) {
-  document.body.classList.remove('split-view','settings-view','about-view','trackers-view','analytics-view','friends-view');
+  document.body.classList.remove('split-view','settings-view','about-view','trackers-view','analytics-view','friends-view','notifications-view');
   if(page==='friends')document.body.classList.add('friends-view');
   if(page==='analytics')document.body.classList.add('analytics-view');
   if(page==='trackers')document.body.classList.add('trackers-view');
@@ -3912,7 +3927,12 @@ function drawInbox(){
  var dueHtml=due.map(e=>'<div class="entry"><div class="text"><b>'+esc(e.dueDate<new Date().toISOString().slice(0,10)?'Overdue':'Due soon')+'</b> · '+esc(e.from)+' owes '+esc(e.to)+' '+money(e.amount)+'<div class="note">Due '+esc(e.dueDate)+'</div></div></div>').join('');
  document.getElementById('notifications-list').innerHTML=(inbox.map(n=>'<div class="entry"><div class="text"><b>'+esc(n.title)+'</b><div class="note">'+esc(n.message)+' · '+esc(new Date(n.created_at).toLocaleString())+'</div>'+(n.kind==='tracker_invite'&&n.invitation_id?'<button class="small-btn" data-invite-accept="'+esc(n.invitation_id)+'">Accept tracker</button> <button class="small-btn danger" data-invite-decline="'+esc(n.invitation_id)+'">Decline</button>':'')+(n.kind==='payment_pending'&&n.entry_id?'<button class="small-btn" data-confirm-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Confirm payment</button> <button class="small-btn danger" data-dispute-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Dispute</button>':'')+'</div>'+(n.read_at?'':'<button class="small-btn" data-read-notification="'+esc(n.id)+'">Mark read</button>')+'</div>').join('')||'<p>No notifications yet.</p>')+dueHtml;
 }
-document.getElementById('notifications-toggle').onclick=function(){var panel=document.getElementById('notifications-panel');panel.hidden=!panel.hidden;this.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)refreshInbox();};
+document.getElementById('notifications-toggle').onclick=function(){
+ settingsRoute('home');document.body.classList.add('notifications-view');
+ this.setAttribute('aria-expanded','true');history.replaceState(null,'',location.pathname+location.search+'#notifications');
+ refreshInbox();window.scrollTo(0,0);
+};
+document.getElementById('notifications-back').onclick=function(){settingsRoute('home');document.getElementById('notifications-toggle').setAttribute('aria-expanded','false');};
 document.getElementById('notifications-list').addEventListener('click',async function(e){
  // Use closest() so clicks on text inside a button work too.
  var t=e.target.closest('button');
