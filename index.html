@@ -1114,6 +1114,23 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
 .tracker-tile-actions .tile-share{width:100%;display:flex;justify-content:center;align-items:center;gap:7px;padding:12px 8px!important;min-width:0;font-size:13px;background:#10283e;color:#f0f8ff;border:1px solid #437493}
 .tracker-tile-actions .tile-share:hover{background:#20435c}
 @media(max-width:650px){.tracker-tile-actions{grid-template-columns:1fr 1fr!important}.tracker-tile-actions .tile-open{grid-column:1/-1}.tracker-tile-actions .tile-share{font-size:12px}}
+
+/* About: how the website was made (desktop and mobile) */
+.about-build-story{margin-top:18px;padding:30px 28px;background:linear-gradient(155deg,#102a43,#091d32);border:1px solid #30546b;border-radius:26px;color:#f2f7ff}
+.about-build-heading h2{margin:6px 0 10px;font-size:clamp(25px,3vw,35px);letter-spacing:-.025em}
+.about-build-heading p{max-width:800px}
+.about-build-timeline{list-style:none;margin:24px 0 0;padding:0 0 0 55px;position:relative;display:grid;gap:12px;counter-reset:none}
+.about-build-timeline:before{content:"";position:absolute;top:24px;bottom:28px;left:22px;width:2px;background:linear-gradient(#50b4ff,#5ff0ad)}
+.about-build-timeline li{position:relative;min-width:0}
+.about-build-number{position:absolute;left:-55px;top:18px;width:44px;height:44px;border-radius:50%;background:#5db8ff;color:#061c30;display:grid;place-items:center;font-size:21px;font-weight:850;z-index:1}
+.about-build-timeline li:nth-child(3n) .about-build-number{background:#5cf0cb}
+.about-build-timeline li:nth-child(4n) .about-build-number{background:#a9a2ff}
+.about-build-step{border:1px solid #294e68;border-radius:19px;padding:19px 21px;display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:16px;align-items:center;background:#10283f}
+.about-build-emoji{display:grid;place-items:center;width:62px;height:62px;border-radius:16px;background:#1d4965;font-size:29px}
+.about-build-step h3{margin:0 0 5px;color:#fff;font-size:19px}
+#about-page .about-build-step p{font-size:14px;line-height:1.55}
+.about-build-date{font-size:12px;color:#b6cce1;white-space:nowrap;align-self:start;padding-top:3px}
+@media(max-width:650px){.about-build-story{padding:22px 15px;border-radius:22px}.about-build-timeline{padding-left:39px;gap:10px}.about-build-timeline:before{left:15px}.about-build-number{left:-39px;width:32px;height:32px;top:16px;font-size:16px}.about-build-step{grid-template-columns:45px minmax(0,1fr);padding:14px 12px;gap:11px}.about-build-emoji{width:45px;height:45px;font-size:23px}.about-build-date{grid-column:2;grid-row:2;padding:0}.about-build-step h3{font-size:16px}#about-page .about-build-step p{font-size:13px}.about-build-heading h2{font-size:25px}}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -1701,6 +1718,17 @@ body.friends-view .wrap #friends-page{display:block!important}
     <article class="about-feature"><span class="about-icon purple">▤</span><h3>Scan receipts</h3><p>Upload a receipt and assign items to friends.</p></article>
     <article class="about-feature"><span class="about-icon">▣</span><h3>Stay organized</h3><p>Add due dates, get notifications, and settle up easily.</p></article>
   </div>
+  <section class="about-build-story" aria-labelledby="about-build-title">
+    <div class="about-build-heading"><span class="about-kicker">BEHIND THE WEBSITE</span><h2 id="about-build-title">How This Website Was Made</h2><p>Square Up started as an idea to make it easier for friends to track and settle shared expenses. Here’s how the website came together.</p></div>
+    <ol class="about-build-timeline">
+      <li><span class="about-build-number">1</span><div class="about-build-step"><span class="about-build-emoji" aria-hidden="true">💡</span><div><h3>The Idea</h3><p>A simpler way to keep track of shared costs, see who owes whom, and automatically calculate balances.</p></div><span class="about-build-date">The beginning</span></div></li>
+      <li><span class="about-build-number">2</span><div class="about-build-step"><span class="about-build-emoji" aria-hidden="true">💻</span><div><h3>Built with Netlify</h3><p>The first working version of Square Up was created with Netlify’s AI website builder.</p></div><span class="about-build-date">First version</span></div></li>
+      <li><span class="about-build-number">3</span><div class="about-build-step"><span class="about-build-emoji" aria-hidden="true">🗄️</span><div><h3>Added Supabase</h3><p>Supabase brought user accounts, profiles, shared trackers, expenses, and the database behind the app.</p></div><span class="about-build-date">The foundation</span></div></li>
+      <li><span class="about-build-number">4</span><div class="about-build-step"><span class="about-build-emoji" aria-hidden="true">☁️</span><div><h3>Moved to Cloudflare Pages</h3><p>The website moved to Cloudflare Pages, with code managed through GitHub and server-side features connected to Supabase.</p></div><span class="about-build-date">New home</span></div></li>
+      <li><span class="about-build-number">5</span><div class="about-build-step"><span class="about-build-emoji" aria-hidden="true">👥</span><div><h3>Added More Features</h3><p>Expense splitting, Smart Settle-Up, group chat, notifications, friends, receipt tools, and tracker customization made Square Up more useful.</p></div><span class="about-build-date">Growing</span></div></li>
+      <li><span class="about-build-number">6</span><div class="about-build-step"><span class="about-build-emoji" aria-hidden="true">📈</span><div><h3>Constantly Improving</h3><p>Square Up continues to evolve through testing, fixing bugs, and ideas from the people who use it.</p></div><span class="about-build-date">Ongoing</span></div></li>
+    </ol>
+  </section>
   <div class="about-mission"><div><div class="about-kicker">OUR MISSION</div><h2>Less confusion. <em>More time together.</em></h2><p>Square Up was built to make managing shared money effortless, so you can focus on what actually matters — your friends, experiences, and memories.</p><div class="sq-about-actions"><button type="button" id="about-start" class="about-start">Go to your trackers →</button><button type="button" id="sq-replay-tour" class="about-start sq-tour-launch">▶ Replay site tutorial</button></div></div><div class="about-sunset" aria-hidden="true"><div class="about-sun"></div><div class="about-hills"></div><div class="about-sea"></div></div></div>
 </section>
 
