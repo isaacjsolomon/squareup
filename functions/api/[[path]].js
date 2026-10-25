@@ -384,7 +384,12 @@ export async function onRequest({ request, env, params, waitUntil }) {
       method,
       headers: {
         ...baseHeaders,
-        Prefer: 'return=representation',
+      
+Prefer: method === 'POST' &&
+        table === 'squareup_notification_preferences'
+  ? 'resolution=merge-duplicates,return=representation'
+  : 'return=representation',
+
         ...(method !== 'GET'
           ? { 'Content-Type': 'application/json' }
           : {})
@@ -462,6 +467,49 @@ if (
           ...new Set(rows.map(r => r.recipient_id).filter(Boolean))
         ];
 
+
+        // Load each recipient's saved push preferences.
+        const preferenceRows = await db(
+          'squareup_notification_preferences',
+          {
+            filters: {
+              user_id: 'in.(' + recipients.join(',') + ')'
+            },
+            limit: 500
+          }
+        );
+
+        const preferencesByUser = new Map(
+          preferenceRows.map(row => [row.user_id, row])
+        );
+
+        function allowedPush(row) {
+          const prefs = preferencesByUser.get(row.recipient_id);
+
+          // New users receive notifications by default.
+          if (!prefs) return true;
+
+          const kind = String(row.kind || '').toLowerCase();
+
+          let category = 'expenses';
+
+          if (kind.includes('chat') ||
+              kind.includes('message') ||
+              kind.includes('mention')) {
+            category = 'messages';
+          } else if (kind.includes('payment') ||
+                     kind.includes('confirm') ||
+                     kind.includes('dispute')) {
+            category = 'payments';
+          } else if (kind.includes('remind') ||
+                     kind.includes('due')) {
+            category = 'reminders';
+          }
+
+          return prefs[category] !== false;
+        }
+
+        
         const subscriptions = await db(
           'squareup_push_subscriptions',
           {
@@ -475,7 +523,11 @@ if (
         // Send each device its recipient's notification category.
         await Promise.all(subscriptions.map(async s => {
           try {
-            const recipientRows = rows.filter(
+          
+const recipientRows = rows.filter(
+  r => r.recipient_id === s.user_id && allowedPush(r)
+);
+
               r => r.recipient_id === s.user_id
             );
 
@@ -1333,6 +1385,71 @@ if (
   return fail('Method not allowed', 405);
 }
 
+
+    // NOTIFICATION PREFERENCES
+    if (parts[0] === 'notification-preferences') {
+      const defaults = {
+        expenses: true,
+        payments: true,
+        messages: true,
+        reminders: true
+      };
+
+      if (method === 'GET') {
+        const rows = await db(
+          'squareup_notification_preferences',
+          {
+            filters: { user_id: 'eq.' + me.id },
+            limit: 1
+          }
+        );
+
+        const saved = rows[0] || {};
+
+        return json({
+          expenses: saved.expenses ?? defaults.expenses,
+          payments: saved.payments ?? defaults.payments,
+          messages: saved.messages ?? defaults.messages,
+          reminders: saved.reminders ?? defaults.reminders
+        });
+      }
+
+      if (method === 'PUT') {
+        const settings = {};
+
+        for (const field of Object.keys(defaults)) {
+          if (typeof body[field] !== 'boolean') {
+            return fail(
+              'All notification settings must be true or false.',
+              400
+            );
+          }
+
+          settings[field] = body[field];
+        }
+
+        const saved = await db(
+          'squareup_notification_preferences',
+          {
+            method: 'POST',
+            filters: {
+              on_conflict: 'user_id'
+            },
+            body: {
+              user_id: me.id,
+              ...settings,
+              updated_at: new Date().toISOString()
+            }
+          }
+        );
+
+        return json(saved[0] || settings);
+      }
+
+      return fail('Method not allowed', 405);
+    }
+
+    
     // NOTIFICATIONS
     if (parts[0] === 'notifications') {
       if (parts.length === 1 && method === 'GET') {
