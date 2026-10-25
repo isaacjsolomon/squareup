@@ -1067,6 +1067,27 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
   .sidebar { left: 12px !important; width: 268px !important; box-sizing: border-box; }
   body.side-collapsed .sidebar { width: 66px !important; }
 }
+
+/* SquareUp tracker gallery refresh — card layout based on approved mockup */
+@media(min-width:761px){
+ #trackers-page{max-width:1500px}
+ .trackers-header{background:transparent!important;border:0!important;box-shadow:none!important;padding:8px 3px 25px!important;margin-bottom:0!important;border-radius:0!important}
+ .trackers-header h2{margin:0 0 7px!important}
+ .tracker-tile-banner{height:112px!important}
+ .tracker-tile-body{padding:16px 18px 18px!important}
+ .tracker-tile-head{margin-bottom:14px!important}
+ .tracker-stats{margin-bottom:14px!important}
+ .tracker-tile-members{margin-bottom:15px!important}
+}
+.tracker-tile{border:1px solid #24495d!important;overflow:visible!important}
+.tracker-tile-actions{display:grid!important;grid-template-columns:1fr 1fr;gap:10px!important}
+.tracker-tile-actions .tile-open,.tracker-tile-actions .tile-backdrop{width:100%;display:flex;justify-content:center;align-items:center;gap:7px;padding:12px 8px!important;min-width:0;font-size:13px}
+.tracker-tile-actions .tile-backdrop{background:#10283e;color:#f0f8ff;border:1px solid #437493}
+.tracker-tile-actions .tile-backdrop:hover{background:#20435c}
+.tracker-tile-actions .tile-backdrop span{font-size:19px;line-height:1}
+#settings-content-profile .settings-tab-grid{grid-template-columns:minmax(0,1fr)!important}
+#settings-content-profile .settings-tab-grid>div{width:100%}
+@media(max-width:420px){.tracker-tile-actions{gap:7px!important}.tracker-tile-actions .tile-open,.tracker-tile-actions .tile-backdrop{font-size:11px;padding:11px 5px!important}}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -1549,12 +1570,6 @@ th,td{border-color:#2c4b61!important}
 <button class="settings-action primary" id="settings-profile-save" type="submit">Save profile</button>
 <div aria-live="polite" class="settings-notice" id="settings-profile-msg" role="status"></div>
 </form>
-</div></div>
-        <div><div class="settings-panel" id="settings-backdrop-panel">
-<h3>Change backdrop</h3>
-<p class="settings-muted">Choose a color scheme or upload your own photo for the currently selected tracker. Everyone sharing that tracker will see the new backdrop.</p>
-<button class="settings-action primary" id="settings-change-backdrop" type="button">Change backdrop</button>
-<p class="settings-muted" style="margin-top:10px">Choose from six color themes, or upload a JPG, PNG or WebP photo (up to 5 MB).</p>
 </div></div>
       </div>
     </div>
@@ -3139,6 +3154,7 @@ async function renderTrackerGallery(){
       peopleRow.append(avatars,names);people.append(peopleLabel,peopleRow);
       var actions=document.createElement('div');actions.className='tracker-tile-actions';
       var open=document.createElement('button');open.type='button';open.className='tile-open';open.textContent='Open tracker  →';open.onclick=async function(){await openTracker(t.id);if(current&&current.id===t.id)settingsRoute('dashboard');};actions.append(open);
+      var backdropButton=document.createElement('button');backdropButton.type='button';backdropButton.className='tile-backdrop';backdropButton.innerHTML='<span aria-hidden="true">▧</span> Change backdrop';backdropButton.setAttribute('aria-label','Change backdrop for '+t.name);backdropButton.onclick=async function(){try{await openTracker(t.id);if(current&&current.id===t.id){settingsRoute('trackers');$('btn-backdrop').click();}}catch(err){alert('Could not open backdrop settings: '+(err.message||err));}};actions.append(backdropButton);
       body.append(head,stats,people,actions);card.append(banner,body);gallery.append(card);
     });
   }catch(err){if(serial===trackerGallerySerial)gallery.textContent='Could not load trackers: '+(err.message||'Unknown error');}
