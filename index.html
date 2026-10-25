@@ -917,6 +917,51 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
 @media(max-width:650px){.analytics-stats{grid-template-columns:1fr}.analytics-bar-label{width:80px}.analytics-bar-value{width:65px}}
 .sq-photo-button{cursor:pointer;display:grid;place-items:center;min-width:42px;height:42px;border:1px solid #5edbb0;border-radius:50%;color:#65f5ac;font-size:25px}.sq-chat-image{display:block;max-width:min(100%,260px);max-height:240px;object-fit:contain;border-radius:12px;margin-top:8px;cursor:zoom-in}.sq-mention-list{position:absolute;bottom:100%;left:30px;right:0;background:#152f45;border:1px solid #65f5ac;border-radius:10px;z-index:5;max-height:180px;overflow:auto}.sq-mention-list button{display:block;width:100%;text-align:left;border:0;background:transparent;color:#fff;padding:10px}.sq-mention-list button:hover{background:#285849}.sq-photo-preview{font-size:13px;color:#65f5ac;margin-top:8px}.sq-budget-progress{height:14px;background:#18374b;border-radius:15px;overflow:hidden;margin:12px 0}.sq-budget-progress>div{height:100%;background:#65f5ac;transition:width .2s}.sq-budget-progress.over>div{background:#f29c7f}.sq-currency-select{min-width:100px}#tracker-chat-form{position:relative;flex-wrap:wrap}#tracker-chat-form input#tracker-chat-input{flex:1;min-width:130px}
 
+
+/* SquareUp analytics dashboard — scoped to Analytics only */
+#analytics-page{width:100%}
+.sq-analytics-shell{width:min(100%,1280px);margin:0 auto;padding:10px 0 35px;color:#f2f8ff}
+.sq-analytics-header{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:4px 0 22px}
+.sq-analytics-header h2{font-size:clamp(26px,3vw,36px);letter-spacing:-.7px;margin:0 0 7px}
+.sq-analytics-header p,.sq-analytics-panel-heading p{color:#a8bfd1;margin:0;font-size:14px}
+.sq-analytics-filter{display:flex;align-items:center;gap:9px;color:#b8ccda;font-size:12px;white-space:nowrap}
+.sq-analytics-filter select{border:1px solid #31536b;background:#17344b;color:#f2f8ff;border-radius:11px;padding:10px 12px;font:inherit;font-size:13px}
+#analytics-page .analytics-stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}
+#analytics-page .analytics-stat{min-width:0;background:linear-gradient(140deg,#17364e,#102b42);border:1px solid #294c64;border-radius:16px;padding:20px}
+#analytics-page .analytics-stat .sq-stat-label{display:flex;align-items:center;gap:9px;color:#c2d7e5;font-size:14px}
+#analytics-page .analytics-stat .sq-stat-icon{display:grid;place-items:center;background:#21566a;border-radius:12px;width:37px;height:37px;color:#65f5ac;font-size:20px}
+#analytics-page .analytics-stat strong{font-size:clamp(23px,2.4vw,32px);margin:11px 0 0;letter-spacing:-.6px}
+#analytics-page .analytics-stat small{display:block;color:#9fb7c9;font-size:12px;margin-top:6px}
+.sq-analytics-charts{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;margin-bottom:16px}
+.sq-analytics-panel{background:linear-gradient(155deg,#102b42,#0b2237);border:1px solid #2a4960;border-radius:18px;padding:20px;margin:0 0 16px;min-width:0}
+.sq-analytics-charts .sq-analytics-panel{margin-bottom:0}
+.sq-analytics-panel-heading{margin-bottom:18px}.sq-analytics-panel-heading h3{margin:0 0 5px;font-size:20px;letter-spacing:-.3px}
+.sq-month-chart{display:flex;gap:10px;align-items:stretch;height:238px;padding:6px 0 0}
+.sq-month-column{display:flex;flex:1;min-width:0;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px}
+.sq-month-bar-space{width:100%;height:190px;display:flex;align-items:end;justify-content:center;border-bottom:1px solid #456075;background:repeating-linear-gradient(to top,transparent 0,transparent calc(25% - 1px),#254359 calc(25% - 1px),#254359 25%)}
+.sq-month-bar{width:min(62%,56px);min-height:2px;border-radius:8px 8px 0 0;background:linear-gradient(0deg,#187e91,#42c6b9);position:relative}
+.sq-month-bar.is-latest{background:linear-gradient(0deg,#29c99b,#65f5ac)}
+.sq-month-value{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);white-space:nowrap;color:#d8f9ed;font-size:11px;font-weight:700}
+.sq-month-label{font-size:12px;color:#bdd0df;white-space:nowrap}
+.sq-person-chart{display:flex;align-items:center;justify-content:center;gap:22px;min-height:238px}
+.sq-person-donut{width:190px;max-width:48%;aspect-ratio:1;border-radius:50%;flex:none;display:grid;place-items:center}
+.sq-person-donut-hole{width:66%;height:66%;background:#102b42;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.sq-person-donut-hole strong{font-size:22px;color:#fff}.sq-person-donut-hole span{font-size:12px;color:#a8bfd1}
+.sq-person-legend{display:flex;flex-direction:column;gap:13px;min-width:0;flex:1}
+.sq-person-legend-item{display:flex;align-items:start;gap:9px;font-size:13px}
+.sq-person-dot{width:11px;height:11px;border-radius:50%;flex:none;margin-top:3px}
+.sq-person-legend-item strong{display:block;margin-top:3px;color:#f2f8ff;font-size:15px}
+.sq-person-legend-item small{color:#a8bfd1}
+.sq-recent-row{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.8fr) minmax(0,.7fr);gap:12px;align-items:center;padding:13px 6px;border-top:1px solid #254459;font-size:14px}
+.sq-recent-main{min-width:0}.sq-recent-main b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sq-recent-main small{color:#a8bfd1;font-size:12px}
+.sq-recent-date{color:#b2c8d8}.sq-recent-amount{text-align:right;font-weight:750}
+.sq-analytics-friends{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#analytics-page .friend-card{margin:0;min-width:0}#analytics-page .friend-card:focus-visible{outline:2px solid #65f5ac}
+#analytics-page #friend-profile-detail{margin-top:16px}
+.sq-analytics-empty{color:#a8bfd1;padding:26px 8px;text-align:center;font-size:14px}
+@media(max-width:950px){#analytics-page .analytics-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.sq-analytics-charts{grid-template-columns:1fr}}
+@media(max-width:650px){.sq-analytics-shell{padding:8px 0 24px}.sq-analytics-header{align-items:flex-start;flex-direction:column;gap:12px}.sq-analytics-panel{padding:15px}.sq-analytics-friends{grid-template-columns:1fr}.sq-person-chart{flex-wrap:wrap}.sq-person-donut{width:155px}.sq-month-chart{gap:4px}.sq-month-value{font-size:10px}.sq-month-label{font-size:10px}.sq-recent-row{grid-template-columns:minmax(0,1fr) auto}.sq-recent-date{grid-column:1;grid-row:2}.sq-recent-amount{grid-column:2;grid-row:1 / span 2}}
+
 /* Match mobile bottom-navigation icons to the desktop sidebar SVGs. */
 @media(max-width:900px){
  .sq-mobile-nav button .sq-m-icon{display:flex;align-items:center;justify-content:center;width:27px;height:27px;line-height:normal}
@@ -1144,7 +1189,21 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
   <footer><button id="clear">Clear everything</button></footer>
   </div><!-- /tracker-dashboard -->
 
-  <section id="analytics-page" aria-label="Spending analytics"><div class="feature-panel"><h2>Spending analytics</h2><p class="feature-muted" id="analytics-tracker-title">Select a tracker to see its spending.</p><div class="analytics-stats" id="analytics-stats"></div></div><div class="feature-panel"><h3>Activity by month</h3><div id="analytics-months"></div></div><div class="feature-panel"><h3>Expenses by person</h3><div id="analytics-people"></div></div><div class="feature-panel"><h3>Friends in this tracker</h3><p class="feature-muted">Select a friend to view their profile and shared expense history.</p><div id="analytics-friends"></div><div id="friend-profile-detail" hidden></div></div></section>
+  <section id="analytics-page" aria-label="Spending analytics">
+    <div class="sq-analytics-shell">
+      <div class="sq-analytics-header">
+        <div><h2>Spending Analytics</h2><p id="analytics-tracker-title">Select a tracker to see its spending.</p></div>
+        <label class="sq-analytics-filter">Time range <select id="analytics-range" aria-label="Analytics time range"><option value="6">Last 6 months</option><option value="12">Last 12 months</option><option value="all">All time</option></select></label>
+      </div>
+      <div class="analytics-stats" id="analytics-stats"></div>
+      <div class="sq-analytics-charts">
+        <section class="sq-analytics-panel"><div class="sq-analytics-panel-heading"><div><h3>Monthly spending</h3><p>Total recorded expenses by month</p></div></div><div id="analytics-months" class="sq-month-chart"></div></section>
+        <section class="sq-analytics-panel"><div class="sq-analytics-panel-heading"><div><h3>Expenses by person</h3><p>Share of recorded expenses</p></div></div><div id="analytics-people" class="sq-person-chart"></div></section>
+      </div>
+      <section class="sq-analytics-panel"><div class="sq-analytics-panel-heading"><div><h3>Recent expenses</h3><p>Most recent recorded expense entries</p></div></div><div id="analytics-recent" class="sq-analytics-recent"></div></section>
+      <section class="sq-analytics-panel"><div class="sq-analytics-panel-heading"><div><h3>Tracker members</h3><p>Select a friend to view their profile and shared expense history</p></div></div><div id="analytics-friends" class="sq-analytics-friends"></div><div id="friend-profile-detail" hidden></div></section>
+    </div>
+  </section>
   <section id="split-page" aria-label="Split a Bill">
     <button type="button" id="split-back" class="split-back">← Back to Dashboard</button>
     <div class="split-header"><h2>Split a Bill</h2><label>Bill currency <select id="split-currency" class="sq-currency-select"></select></label><p>Divide an expense with your friends.</p></div>
@@ -3419,14 +3478,37 @@ function squareUpBarList(target,values){
 }
 function squareUpEntries(){return Array.isArray(current?.entries)?current.entries:[];}
 function renderSquareUpAnalytics(){
- var title=document.getElementById('analytics-tracker-title'),stats=document.getElementById('analytics-stats'),friends=document.getElementById('analytics-friends');
- if(!current){title.textContent='Open a shared tracker first, then choose Analytics.';stats.innerHTML='';squareUpBarList('analytics-months',{});squareUpBarList('analytics-people',{});friends.innerHTML='';return;}
+ var title=document.getElementById('analytics-tracker-title'),stats=document.getElementById('analytics-stats'),friends=document.getElementById('analytics-friends'),monthsEl=document.getElementById('analytics-months'),peopleEl=document.getElementById('analytics-people'),recentEl=document.getElementById('analytics-recent');
+ if(!current){title.textContent='Open a shared tracker first, then choose Analytics.';stats.innerHTML='';monthsEl.innerHTML=peopleEl.innerHTML=recentEl.innerHTML='<p class="sq-analytics-empty">Open a tracker to view analytics.</p>';friends.innerHTML='';document.getElementById('friend-profile-detail').hidden=true;return;}
  title.textContent='Showing data for '+current.name+' only';
- var entries=squareUpEntries().filter(e=>e.type==='debt'),months={},people={},total=0;
- entries.forEach(e=>{var n=Number(e.amount)||0;if(n<=0)return;total+=n;var person=e.from||'Unknown';people[person]=(people[person]||0)+n;var raw=e.date||e.dateLabel||e.createdAt||'';var d=new Date(raw);var month=Number.isNaN(d.getTime())?'Unspecified':d.toLocaleDateString(undefined,{month:'short',year:'numeric'});months[month]=(months[month]||0)+n;});
- stats.innerHTML='<div class="analytics-stat">Recorded expenses<strong>'+squareUpMoney(total)+'</strong></div><div class="analytics-stat">Expense entries<strong>'+entries.length+'</strong></div><div class="analytics-stat">Members<strong>'+current.members.length+'</strong></div>';
- squareUpBarList('analytics-months',months);squareUpBarList('analytics-people',people);
- friends.innerHTML=current.members.map((m,i)=>'<button type="button" class="friend-card" data-friend-index="'+i+'"><span class="friend-initial">'+esc((m.name||'?').slice(0,1).toUpperCase())+'</span><span><b>'+esc(m.name||'Member')+'</b><br><span class="feature-muted">View friend profile</span></span></button>').join('');
+ var range=document.getElementById('analytics-range').value;
+ var now=new Date(),start=new Date(now.getFullYear(),now.getMonth()-(range==='all'?0:Number(range)-1),1);
+ var all=squareUpEntries().filter(e=>e.type==='debt');
+ function entryDate(e){var raw=e.date||e.dateLabel||e.createdAt||e.created_at||'';var d=new Date(raw);return Number.isNaN(d.getTime())?null:d;}
+ var entries=all.filter(e=>{var d=entryDate(e);return range==='all'||!d||d>=start;});
+ var people={},total=0,months={};
+ entries.forEach(e=>{var n=Number(e.amount)||0;if(n<=0)return;total+=n;var person=e.from||'Unknown';people[person]=(people[person]||0)+n;var d=entryDate(e);if(d){var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');months[key]=(months[key]||0)+n;}});
+ var avg=entries.length?total/entries.length:0;
+ var cards=[['◈','Total expenses',squareUpMoney(total),'Recorded in this period'],['▤','Expense entries',String(entries.length),'Recorded expenses'],['♧','Members',String(current.members.length),'In this tracker'],['▥','Average expense',squareUpMoney(avg),'Per expense entry']];
+ stats.innerHTML=cards.map(c=>'<div class="analytics-stat"><div class="sq-stat-label"><span class="sq-stat-icon">'+c[0]+'</span>'+c[1]+'</div><strong>'+c[2]+'</strong><small>'+c[3]+'</small></div>').join('');
+ var keys=[];
+ if(range==='all')keys=Object.keys(months).sort();
+ else{var count=Number(range);for(var i=count-1;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth()-i,1);keys.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));}}
+ if(!keys.length){monthsEl.innerHTML='<p class="sq-analytics-empty">No dated expenses to chart yet.</p>';}
+ else{
+  var max=Math.max(1,...keys.map(k=>months[k]||0));
+  monthsEl.innerHTML=keys.map((k,i)=>{var parts=k.split('-');var d=new Date(Number(parts[0]),Number(parts[1])-1,1);var amount=months[k]||0;var label=d.toLocaleDateString(undefined,{month:'short'});return '<div class="sq-month-column"><div class="sq-month-bar-space"><div class="sq-month-bar'+(i===keys.length-1?' is-latest':'')+'" style="height:'+(amount?Math.max(3,amount/max*100):0).toFixed(1)+'%" title="'+esc(d.toLocaleDateString(undefined,{month:'long',year:'numeric'}))+' · '+esc(squareUpMoney(amount))+'">'+(amount?'<span class="sq-month-value">'+esc(squareUpMoney(amount))+'</span>':'')+'</div></div><span class="sq-month-label">'+esc(label)+'</span></div>';}).join('');
+ }
+ var personRows=Object.entries(people).sort((a,b)=>b[1]-a[1]);
+ if(!personRows.length){peopleEl.innerHTML='<p class="sq-analytics-empty">No expenses recorded for this period.</p>';}
+ else{
+  var colors=['#65f5ac','#37a9ff','#f9bb70','#a993ff','#fb85aa','#56d4d8'];var angle=0;
+  var stops=personRows.map((row,i)=>{var from=angle;angle+=row[1]/total*100;return colors[i%colors.length]+' '+from.toFixed(3)+'% '+angle.toFixed(3)+'%';});
+  peopleEl.innerHTML='<div class="sq-person-donut" style="background:conic-gradient('+stops.join(',')+')"><div class="sq-person-donut-hole"><strong>'+squareUpMoney(total)+'</strong><span>Total</span></div></div><div class="sq-person-legend">'+personRows.map((r,i)=>'<div class="sq-person-legend-item"><span class="sq-person-dot" style="background:'+colors[i%colors.length]+'"></span><div><span>'+esc(r[0])+'</span><strong>'+squareUpMoney(r[1])+'</strong><small>'+(r[1]/total*100).toFixed(0)+'% of total</small></div></div>').join('')+'</div>';
+ }
+ var recent=entries.slice().sort((a,b)=>(entryDate(b)?.getTime()||0)-(entryDate(a)?.getTime()||0)).slice(0,5);
+ recentEl.innerHTML=recent.length?recent.map(e=>{var d=entryDate(e);return '<div class="sq-recent-row"><div class="sq-recent-main"><b>'+esc(e.note||'Expense')+'</b><small>'+esc(e.from||'Unknown')+' → '+esc(e.to||'Unknown')+'</small></div><span class="sq-recent-date">'+(d?esc(d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})):'Date unavailable')+'</span><span class="sq-recent-amount">'+squareUpMoney(Number(e.amount)||0)+'</span></div>';}).join(''):'<p class="sq-analytics-empty">No recent expenses in this period.</p>';
+ friends.innerHTML=current.members.map((m,i)=>'<button type="button" class="friend-card" data-friend-index="'+i+'"><span class="friend-initial">'+esc((m.name||'?').slice(0,1).toUpperCase())+'</span><span><b>'+esc(m.name||'Member')+'</b><br><span class="feature-muted">View profile and shared expenses</span></span></button>').join('');
  document.getElementById('friend-profile-detail').hidden=true;
 }
 function openSquareUpFriendProfile(index){
@@ -3435,6 +3517,7 @@ function openSquareUpFriendProfile(index){
 }
 document.getElementById('analytics-friends').addEventListener('click',e=>{var btn=e.target.closest('[data-friend-index]');if(btn)openSquareUpFriendProfile(Number(btn.dataset.friendIndex));});
 document.getElementById('nav-analytics').addEventListener('click',()=>settingsRoute('analytics'));
+document.getElementById('analytics-range').addEventListener('change',renderSquareUpAnalytics);
 // Browser-based receipt recognition is provided as an assistive first pass, not a guaranteed extraction.
 var squareUpScannedLines=[];
 document.getElementById('split-receipt-file').addEventListener('change',async function(){
