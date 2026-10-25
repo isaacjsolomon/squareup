@@ -3933,7 +3933,7 @@ async function loadPreferences(){
 document.querySelectorAll('[data-sq-pref]').forEach(function(el){el.addEventListener('change',async function(){
  var key=el.dataset.sqPref, desired=el.checked; prefs[key]=desired;filterInbox();
  if(prefStatus)prefStatus.textContent='Saving…';el.disabled=true;
- try{await api('notification-preferences','PATCH',{[key]:desired});localStorage.setItem('squareup_notification_preferences',JSON.stringify(prefs));if(prefStatus)prefStatus.textContent='Saved to your account.';}
+ try{try{await api('notification-preferences','PATCH',{[key]:desired});}catch(saveError){if(saveError.status!==405)throw saveError;await api('notification-preferences','PUT',{[key]:desired});}localStorage.setItem('squareup_notification_preferences',JSON.stringify(prefs));if(prefStatus)prefStatus.textContent='Saved to your account.';}
  catch(e){prefs[key]=!desired;el.checked=!desired;filterInbox();if(prefStatus)prefStatus.textContent='Could not save: '+e.message;}
  finally{el.disabled=false;}
 });});
