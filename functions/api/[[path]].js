@@ -528,9 +528,6 @@ const recipientRows = rows.filter(
   r => r.recipient_id === s.user_id && allowedPush(r)
 );
 
-              r => r.recipient_id === s.user_id
-            );
-
             if (!recipientRows.length) return;
 
             // Use the most recent event for this recipient.
