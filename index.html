@@ -1110,6 +1110,34 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
 <style id="sq-four-features-style">
 .sq-category-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.sq-category-row label{font-weight:700;color:var(--muted)}.sq-category-row select{min-width:180px;max-width:100%;background:var(--card,#10263b);color:inherit;border:1px solid #59718b;border-radius:10px;padding:10px}.sq-cat-chip{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.03em;border:1px solid #5e8595;border-radius:100px;padding:3px 9px;margin:0 6px;color:#bdeae7}.sq-detail-btn{margin-left:5px}.sq-details-overlay{position:fixed;inset:0;background:#04111bca;z-index:120;display:none;align-items:center;justify-content:center;padding:20px}.sq-details-overlay.open{display:flex}.sq-details-card{background:#11283e;color:#edf7ff;border:1px solid #47617c;border-radius:20px;padding:24px;width:min(100%,490px);max-height:85vh;overflow:auto;box-shadow:0 20px 70px #0007}.sq-details-card h2{margin:0 0 14px}.sq-details-grid{display:grid;grid-template-columns:125px 1fr;gap:12px;margin:20px 0}.sq-details-grid dt{color:#abc2d2}.sq-details-grid dd{margin:0;overflow-wrap:anywhere}.sq-preference{display:flex;gap:10px;align-items:center;margin:12px 0;padding:10px;border:1px solid #35526a;border-radius:12px}.sq-preference input{width:18px;height:18px}.sq-onboard-steps{margin:8px 0 18px;color:#bcece3;font-size:14px}.sq-onboard-steps strong{color:#fff}
 </style>
+
+<style id="sq-clean-dashboard-styles">
+/* Tracker overview redesign: keep original IDs and API behavior intact. */
+#tracker-dashboard .sq-clean-balance{display:flex;align-items:center;justify-content:space-between;gap:22px;background:linear-gradient(115deg,#061b30,#0a2740);border:1px solid #29465d;border-radius:17px;padding:27px 30px;margin:15px 0 16px;color:#f3f8ff}
+.sq-clean-balance-copy{display:flex;flex-direction:column;gap:9px;min-width:0}.sq-clean-eyebrow{color:#c6d8e9;font-size:15px}.sq-clean-balance-copy strong{font-size:clamp(32px,4vw,49px);line-height:1.1;font-weight:850;letter-spacing:-1px}.sq-clean-balance-copy strong.negative{color:#ff547d}.sq-clean-balance-copy strong.positive{color:#4af0c3}.sq-clean-balance-copy #sq-clean-explanation{font-size:15px;color:#c7d8e8}
+.sq-clean-balance-actions{display:flex;gap:12px;flex-shrink:0}.sq-clean-balance-actions button{border-radius:11px;padding:13px 22px;font-weight:750;cursor:pointer}.sq-clean-settle{background:#48edbc!important;color:#03243a!important;border:0!important}.sq-clean-remind{background:#14324a!important;color:#f4f8ff!important;border:1px solid #4c6c87!important}
+#tracker-dashboard .sq-overview-stats[hidden]{display:none!important}
+#tracker-dashboard .dashboard-actions{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;margin:0 0 16px!important}
+#tracker-dashboard .dashboard-action:not([hidden]){display:flex!important;flex-direction:row!important;justify-content:flex-start!important;align-items:center!important;gap:12px!important;min-height:94px!important;padding:17px 20px!important;text-align:left!important;font-weight:800!important}
+#tracker-dashboard .dashboard-action .action-icon{margin:0!important;flex-shrink:0!important}.dashboard-action .action-sub{display:block!important;font-weight:400!important}
+#tracker-dashboard #quick-pay-now{display:none!important}
+#tracker-dashboard #balances-card,#tracker-dashboard .sq-clean-matrix-card{display:none}
+#tracker-dashboard .sq-clean-activity-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:8px}.sq-clean-activity-heading h2{margin:0}.sq-clean-activity-heading button{border:0!important;background:transparent!important;color:#c6e4fa!important}
+#tracker-dashboard .sq-clean-activity:not(.sq-activity-expanded) #history>.entry:nth-child(n+4){display:none!important}
+#tracker-dashboard .tracker-tools-grid{display:flex!important;flex-direction:column!important;gap:12px!important;margin:14px 0!important}
+#tracker-dashboard .tracker-tools-left,#tracker-dashboard .tracker-tools-right{display:contents!important}
+#tracker-dashboard #budget-card,#tracker-dashboard #chat-card{display:none}
+#tracker-dashboard #recurring-card{order:1}#tracker-dashboard #smart-settle-card{order:2}
+#tracker-dashboard .tracker-collapsible{border-radius:15px!important}
+#tracker-dashboard .sq-tab-hidden{display:none!important}
+#tracker-dashboard.sq-tab-expenses .sq-clean-balance,#tracker-dashboard.sq-tab-expenses .dashboard-actions,#tracker-dashboard.sq-tab-expenses .tracker-tools-grid{display:none!important}
+#tracker-dashboard.sq-tab-expenses .sq-clean-matrix-card{display:block}
+#tracker-dashboard.sq-tab-members #balances-card{display:block}
+#tracker-dashboard.sq-tab-chat #chat-card,#tracker-dashboard.sq-tab-budget #budget-card{display:block}
+#tracker-dashboard.sq-tab-chat .tracker-tools-grid,#tracker-dashboard.sq-tab-budget .tracker-tools-grid{display:flex!important}
+#tracker-dashboard.sq-tab-expenses .sq-clean-activity #history>.entry{display:flex!important}
+@media(max-width:750px){#tracker-dashboard .sq-clean-balance{flex-direction:column;align-items:stretch;padding:21px 18px}.sq-clean-balance-actions{width:100%}.sq-clean-balance-actions button{flex:1;padding:12px 10px}#tracker-dashboard .dashboard-actions{grid-template-columns:1fr!important}#tracker-dashboard .dashboard-action:not([hidden]){min-height:72px!important}#tracker-dashboard .sq-clean-activity-heading{align-items:center}}
+</style>
 </head>
 <body>
 <button type="button" id="guest-auth-button" hidden>Log in or create account</button>
@@ -1182,7 +1210,11 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
 
   <div id="tracker-dashboard">
   <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="chat" role="tab" aria-selected="false">Chat</button><button type="button" data-sq-tab="budget" role="tab" aria-selected="false">Budget</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button></div>
-  <div class="sq-overview-stats" id="sq-overview-stats"><div class="sq-stat negative"><span>You owe</span><strong id="sq-stat-owe">—</strong></div><div class="sq-stat"><span>Owed to you</span><strong id="sq-stat-owed">—</strong></div><div class="sq-stat neutral"><span>Net balance</span><strong id="sq-stat-net">—</strong></div></div>
+  <section class="sq-clean-balance" id="sq-clean-balance" aria-label="Your balance">
+    <div class="sq-clean-balance-copy"><span class="sq-clean-eyebrow">Your net balance</span><strong id="sq-clean-net">—</strong><span id="sq-clean-explanation">Your tracker balance</span></div>
+    <div class="sq-clean-balance-actions"><button type="button" class="sq-clean-settle" id="sq-clean-settle">Settle up</button><button type="button" class="sq-clean-remind" id="sq-clean-remind">Send reminder</button></div>
+  </section>
+  <div class="sq-overview-stats" id="sq-overview-stats" hidden><div class="sq-stat negative"><span>You owe</span><strong id="sq-stat-owe">—</strong></div><div class="sq-stat"><span>Owed to you</span><strong id="sq-stat-owed">—</strong></div><div class="sq-stat neutral"><span>Net balance</span><strong id="sq-stat-net">—</strong></div></div>
   <!-- CURRENT BALANCES -->
   <div class="card" id="balances-card">
     <h2>Current balances</h2>
@@ -1242,16 +1274,16 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
   <details class="card tracker-collapsible" id="budget-card"><summary><span class="tool-heading-label"><svg class="tool-heading-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg><span>Group budget & goal</span></span><span class="collapse-chevron">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Track the group's spending against a shared goal in the tracker's main currency.</p><div id="sq-budget-display"></div><form id="sq-budget-form" class="chat-compose"><input type="number" id="sq-budget-amount" min="0.01" step="0.01" placeholder="Budget amount" aria-label="Group budget amount"><button class="primary" type="submit">Save goal</button><button type="button" class="small-btn" id="sq-budget-clear">Clear</button></form></div></details>
   <details class="card tracker-collapsible" id="chat-card"><summary><span class="tool-heading-label"><svg class="tool-heading-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M30 31c-2.6 2-5.8 3-9.5 3-2 0-3.8-.3-5.5-.9L5 38l2.5-10A17 17 0 0 1 4 18.5C4 9.9 11.4 3 20.5 3S37 9.9 37 18.5c0 2.6-.7 5-2 7"/><path d="M29 33c2.5 1.8 5.4 2.7 8.5 2.7 1.1 0 2.2-.1 3.3-.4L46 39l-1.7-6.6a11.5 11.5 0 0 0 2.2-6.7c0-5.5-4.1-10.1-9.6-11.1"/><circle cx="13" cy="19" r="1.2" fill="currentColor" stroke="none"/><circle cx="21" cy="19" r="1.2" fill="currentColor" stroke="none"/><circle cx="29" cy="19" r="1.2" fill="currentColor" stroke="none"/></svg><span>Tracker group chat</span></span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Messages are shared with everyone in this tracker and appear in their notification centers.</p><div id="tracker-chat-messages" class="chat-messages">Open a tracker to see messages.</div><div id="chat-reply-target" class="chat-reply-target" hidden></div><form id="tracker-chat-form" class="chat-compose"><label for="sq-chat-photo-input" class="sq-photo-button" title="Attach photo" aria-label="Attach photo">▧</label><input type="file" id="sq-chat-photo-input" accept="image/jpeg,image/png,image/webp" hidden><input id="tracker-chat-input" maxlength="1200" placeholder="Message your group…" aria-label="Message your group" autocomplete="off"><div id="sq-mention-list" class="sq-mention-list" hidden></div><button type="submit" class="primary">Send</button></form><div id="sq-photo-preview" class="sq-photo-preview" hidden></div></div></details>
     </div>
-  <div class="card" id="recurring-card"><h2>↻ Recurring expenses</h2><p class="dashboard-subheading">Manage repeating expenses for this tracker.</p><div id="recurring-list"></div></div>
+  <details class="card tracker-collapsible" id="recurring-card"><summary><span class="tool-heading-label">↻ &nbsp; Recurring expenses</span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Manage repeating expenses for this tracker.</p><div id="recurring-list"></div></div></details>
   </div>
   <!-- RECENT ACTIVITY -->
-  <div class="card">
-    <h2>Recent Activity</h2>
+  <div class="card sq-clean-activity" id="sq-activity-card">
+    <div class="sq-clean-activity-heading"><h2>Recent Activity</h2><button type="button" id="sq-activity-all" class="small-btn">View all →</button></div>
     <div id="history"></div>
   </div>
 
   <!-- FULL BALANCE TABLE -->
-  <div class="card">
+  <div class="card sq-clean-matrix-card">
     <h2>Who owes who</h2>
     <p class="dashboard-subheading">Full breakdown for everyone in this tracker</p>
     <div class="table-scroll" id="matrix"></div>
@@ -3694,6 +3726,8 @@ document.getElementById('tracker-chat-messages').addEventListener('click',e=>{va
   tabs.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.sqTab===name)));
   cards.forEach(e=>e.classList.toggle('sq-tab-hidden',name!=='overview'));
   document.getElementById('sq-overview-stats').classList.toggle('sq-tab-hidden',name!=='overview');
+  document.getElementById('sq-clean-balance').classList.toggle('sq-tab-hidden',name!=='overview');
+  dashboard.classList.remove('sq-tab-overview','sq-tab-expenses','sq-tab-members','sq-tab-chat','sq-tab-budget');dashboard.classList.add('sq-tab-'+name);
   if(name==='overview'){tools.querySelectorAll('.tracker-collapsible,#recurring-card').forEach(e=>e.classList.remove('sq-tab-hidden'));return;}
   if(name==='expenses'){
     const history=document.getElementById('history');const matrix=document.getElementById('matrix');
@@ -3731,8 +3765,25 @@ document.getElementById('tracker-chat-messages').addEventListener('click',e=>{va
   document.getElementById('sq-stat-owed').textContent=fmt(owed);
   const net=owed-owe;
   document.getElementById('sq-stat-net').textContent=(net<0?'−':net>0?'+':'')+fmt(Math.abs(net));
+  const headline=document.getElementById('sq-clean-net');
+  const explanation=document.getElementById('sq-clean-explanation');
+  headline.textContent=(net<0?'−':net>0?'+':'')+fmt(Math.abs(net));
+  headline.classList.toggle('negative',net<0);headline.classList.toggle('positive',net>0);
+  const firstNet=document.querySelector('#nets .net .text');
+  explanation.textContent=firstNet?(firstNet.textContent.trim()+' · '+fmt(Math.abs(net))):(net===0?'Everyone is squared up':'See Members for the full balance breakdown');
  }
 
+ document.getElementById('sq-clean-settle').addEventListener('click',()=>{
+  const button=document.querySelector('#nets .net button[data-from][data-to]');
+  if(button)button.click();else alert('No outstanding balance to settle.');
+ });
+ document.getElementById('sq-clean-remind').addEventListener('click',()=>{
+  const button=document.querySelector('#nets .net button[data-remind-from]');
+  if(button)button.click();else alert('No outstanding balance to remind about.');
+ });
+ document.getElementById('sq-activity-all').addEventListener('click',()=>{
+  const button=document.querySelector('[data-sq-tab="expenses"]');if(button)button.click();
+ });
  const nets=document.getElementById('nets');
  if(nets){
   let pending=false;
