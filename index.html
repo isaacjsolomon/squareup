@@ -2532,7 +2532,16 @@ var current = null;         // full detail of the open shared tracker, or null f
 window.squareUpApprovalTracker = function(){ return current; };
 window.squareUpReviewExpense = async function(entryId, action){
   if (!current || !current.id) throw new Error('Open a shared tracker first.');
-  var updated = await api('trackers/'+current.id+'/entries/'+encodeURIComponent(entryId)+'/approval','PATCH',{action:action});
+  var endpoint = 'trackers/'+encodeURIComponent(current.id)+'/entries/'+encodeURIComponent(entryId)+'/approval';
+  var updated;
+  try {
+    updated = await api(endpoint,'PATCH',{action:action});
+  } catch (err) {
+    if (err.status === 404) {
+      throw new Error('The expense approval endpoint was not found on the deployed backend (PATCH /api/'+endpoint+'). Update and deploy functions/api/[[path]].js with the approval route; the frontend cannot create that route.');
+    }
+    throw err;
+  }
   applyDetail(updated);
 };
 // Bridge tracker membership into the classic expense-form script.
