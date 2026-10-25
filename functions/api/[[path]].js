@@ -2146,7 +2146,7 @@ if (
     if (
       sub === 'entries' &&
       parts[3] &&
-      uuid.test(parts[3]) &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(parts[3]) &&
       parts[4] === 'approval' &&
       method === 'PATCH'
     ) {
