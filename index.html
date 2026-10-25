@@ -1367,6 +1367,21 @@ body.friends-view .wrap #friends-page{display:block!important}
 @media(max-width:900px){body.friends-view #friends-page{display:block!important;visibility:visible!important}body.friends-view .sq-mobile-top{display:flex!important}}
 .sq-friends-layout{max-width:1050px;margin:24px auto 80px}.sq-feature-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}.sq-feature-head h2{font-size:clamp(28px,4vw,40px);margin:0}.sq-feature-head p{color:#a8c5d5}.sq-friend-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.sq-friend-tabs button,.sq-template-tabs button{border:1px solid #32586d;border-radius:10px;background:#15354b;color:#cfe2ed;padding:11px 16px;cursor:pointer}.sq-friend-tabs button[aria-selected=true],.sq-template-tabs button[aria-selected=true]{background:#43dfb3;color:#062a35}.sq-friend-list{display:grid;gap:10px}.sq-friend-row{display:flex;align-items:center;gap:14px;padding:16px;background:#102a40;border:1px solid #2c5065;border-radius:14px}.sq-friend-avatar{width:43px;height:43px;border-radius:50%;display:grid;place-items:center;background:#235d64;color:#75ffd2;font-weight:800;flex:none}.sq-friend-info{flex:1;min-width:0}.sq-friend-info strong{display:block}.sq-friend-info small{color:#abc2d4}.sq-friend-actions{display:flex;gap:7px;flex-wrap:wrap}.sq-friend-actions button,.sq-feature-btn{background:#244e67;border:1px solid #43816f;color:#e8fff5;padding:9px 12px;border-radius:9px;cursor:pointer}.sq-feature-btn.primary{background:#43dfb3;color:#072c37}.sq-friend-search{width:100%;margin-top:12px}.sq-feature-status{color:#a8c7d8;font-size:13px;min-height:20px}.sq-template-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}.sq-template-card{padding:14px;border:1px solid #355a70;border-radius:13px;background:#102b41;color:#e8f6ff;text-align:left;cursor:pointer;display:flex;gap:10px;align-items:flex-start}.sq-template-card[aria-pressed=true]{border-color:#51f0bb;background:#15483f}.sq-template-icon{font-size:27px}.sq-template-card small{display:block;color:#acc5d5;margin-top:5px}.sq-template-tags{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.sq-template-tags span{background:#24465b;color:#aef4da;border-radius:20px;padding:5px 10px;font-size:12px}.sq-chat-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}.sq-chat-tools input{min-width:0;flex:1}.sq-chat-tools button{border-radius:10px;background:#193f52;border:1px solid #356b70;color:#d8f8ef;padding:10px;cursor:pointer}.sq-chat-pin{border:1px solid #37687b;background:#17384c;border-radius:11px;padding:10px 12px;margin:9px 0;color:#d2f8ea}.sq-chat-pin button{background:none;border:0;color:#9bf4d0;cursor:pointer}.sq-chat-empty{padding:12px;color:#a8bfd0}.sq-chat-message-hidden{display:none!important}
 @media(max-width:650px){.sq-friend-row{flex-wrap:wrap}.sq-friend-actions{width:100%}.sq-template-grid{grid-template-columns:1fr}.sq-friends-layout{margin:12px 0 85px}}
+
+/* Mobile header: About shortcut and one Square Up title only. */
+@media (max-width:900px) {
+  .tracker-heading > h1 { display:none!important; }
+  .sq-mobile-header-actions { gap:8px; flex-shrink:0; }
+  .sq-mobile-header-actions > button {
+    display:inline-flex!important;align-items:center;justify-content:center;
+    width:44px;height:44px;min-width:44px;min-height:44px;
+    padding:8px!important;background:#102e44!important;
+    border:1px solid #376077!important;border-radius:15px!important;
+    color:#d9e9f6!important;cursor:pointer;touch-action:manipulation;
+  }
+  .sq-mobile-header-actions > button svg {width:24px;height:24px;pointer-events:none;}
+  .sq-mobile-top .sq-brand {min-width:0;white-space:nowrap;}
+}
 </style></head>
 <body>
 <button type="button" id="guest-auth-button" hidden>Log in or create account</button>
@@ -1433,7 +1448,7 @@ body.friends-view .wrap #friends-page{display:block!important}
   </div>
 
 </aside>
-<div class="wrap"><div class="sq-mobile-top"><span class="sq-brand"><img src="/images/logo.png" alt="">Square Up</span><span class="sq-mobile-header-actions"><button type="button" id="sq-mobile-chat" aria-label="Open group chat" title="Group chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5Z"/></svg></button><button type="button" id="sq-mobile-friends" aria-label="Open Friends" title="Friends" ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2"/><path d="M18 8v8M14 12h8"/></svg></button></span></div>
+<div class="wrap"><div class="sq-mobile-top"><span class="sq-brand"><img src="/images/logo.png" alt="">Square Up</span><span class="sq-mobile-header-actions"><button type="button" id="sq-mobile-about" aria-label="Open About" title="About Square Up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none"/></svg></button><button type="button" id="sq-mobile-chat" aria-label="Open group chat" title="Group chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5Z"/></svg></button><button type="button" id="sq-mobile-friends" aria-label="Open Friends" title="Friends" ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2"/><path d="M18 8v8M14 12h8"/></svg></button></span></div>
   <header class="tracker-heading">
     <h1>💸 Square Up</h1>
     <p>Track who owes who. Debts that go both ways cancel out automatically.</p>
@@ -2838,6 +2853,8 @@ $('nav-profile').onclick=function(){openSettingsPage();};
 $('nav-about').onclick=function(){settingsRoute('about');};
 $('nav-friends').onclick=function(){settingsRoute('friends');};
 $('sq-friends-mobile-link').onclick=function(){settingsRoute('friends');};
+// Mobile About shortcut: open the same About page used by desktop navigation.
+$('sq-mobile-about').addEventListener('click',function(event){event.preventDefault();settingsRoute('about');});
 // Mobile Friends shortcut: use the same navigation path as the working sidebar Friends link.
 // This is bound after settingsRoute and the Friends page have been initialized.
 (function () {
