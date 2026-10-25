@@ -519,34 +519,6 @@ if (
             limit: 500
           }
         );
-
-
-
-        const savedPreferences = await db(
-          'squareup_notification_preferences',
-          {
-            filters: {
-              user_id: 'in.(' + recipients.join(',') + ')'
-            },
-            limit: 500
-          }
-        );
-
-        const preferencesByUser = new Map(
-          savedPreferences.map(p => [p.user_id, p])
-        );
-
-        function pushCategory(kind) {
-          kind = String(kind || '').toLowerCase();
-
-          if (kind === 'chat' || kind === 'message') return 'messages';
-          if (kind === 'mention') return 'mentions';
-          if (kind.startsWith('payment_')) return 'payments';
-          if (kind.includes('remind') || kind.includes('due')) return 'reminders';
-
-          return 'expenses';
-        }
-
         
         // Send each device its recipient's notification category.
         await Promise.all(subscriptions.map(async s => {
