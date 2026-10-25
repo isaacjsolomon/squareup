@@ -1037,6 +1037,14 @@ body.analytics-view #tracker-dashboard,body.analytics-view #split-page,body.anal
  .sq-mobile-nav button.sq-add .sq-m-icon{width:44px;height:44px;line-height:normal}
  .sq-mobile-nav button.sq-add .sq-m-icon svg{width:26px;height:26px}
 }
+
+/* Advanced splitting and approval workflow */
+.split-method{grid-template-columns:repeat(4,minmax(0,1fr));}
+.split-method button{font-size:12px;white-space:normal;}
+.sq-approval-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0;border-top:1px solid #29485f;}
+.sq-approval-actions{display:flex;gap:9px;align-items:center;}
+.sq-approval-actions button{padding:10px 15px;}
+@media(max-width:650px){.split-method{grid-template-columns:repeat(2,minmax(0,1fr));}.sq-approval-row{align-items:flex-start;flex-direction:column;}}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -1339,6 +1347,11 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
     </div>
   <details class="card tracker-collapsible" id="recurring-card"><summary><span class="tool-heading-label">↻ &nbsp; Recurring expenses</span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Manage repeating expenses for this tracker.</p><div id="recurring-list"></div></div></details>
   </div>
+  <!-- EXPENSE APPROVALS: debtors review charges before they affect balances -->
+  <section class="card sq-approval-card" id="sq-approvals-card" hidden>
+    <div class="sq-expense-activity-top"><div><h2>Expense approvals <span id="sq-approvals-count"></span></h2><p class="sq-expense-subtitle">Review expenses assigned to you. Pending charges do not affect balances.</p></div></div>
+    <div id="sq-approvals-list" aria-live="polite"></div>
+  </section>
   <!-- RECENT ACTIVITY -->
   <div class="card sq-clean-activity" id="sq-activity-card">
     <div class="sq-expense-activity-top"><div><h2>Recent activity</h2><p class="sq-expense-subtitle">Expenses and payments in this tracker</p></div><div style="display:flex;gap:9px;flex-wrap:wrap"><input class="sq-expense-search" id="sq-expense-search" type="search" placeholder="Search expenses..." aria-label="Search expenses"><select id="sq-expense-time" class="sq-expense-time" aria-label="Filter by time"><option value="all">All time</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last year</option></select></div></div>
@@ -1395,9 +1408,9 @@ body.side-collapsed{padding-left:92px!important}body.side-collapsed .sidebar{wid
           <h3>Split method</h3>
           <div class="split-method">
             <button type="button" id="split-equal" class="active">Split equally</button>
-            <button type="button" id="split-custom">Custom amounts</button>
+            <button type="button" id="split-custom">Exact amounts</button><button type="button" id="split-percent">Percentages</button><button type="button" id="split-shares">Shares</button>
           </div>
-          <div class="split-message" id="split-custom-help" hidden>Enter how much each selected person should contribute. Amounts must add up to the total.</div>
+          <div class="split-message" id="split-custom-help" hidden>Enter each person’s share. Exact amounts must total the bill, percentages must total 100%, and shares must be positive whole numbers.</div>
         </div>
         <div class="split-panel" style="margin-top:14px">
           <div class="split-summary-line total"><span>Split summary</span><strong id="split-summary-total">$0.00</strong></div>
@@ -1729,7 +1742,7 @@ function computeNet() {
     owes[a][b] = (owes[a][b] || 0) + amt;
   }
   entries.forEach(function (e) {
-    if (e.type === "payment" && e.paymentStatus && e.paymentStatus !== "confirmed") return;
+    if (e.paymentStatus && e.paymentStatus !== "confirmed") return;
     var a = norm(e.from), b = norm(e.to);
     add(a, b, e.type === "debt" ? e.amount : -e.amount);
   });
@@ -1794,7 +1807,7 @@ function populateExpenseMembers() {
 
 function renderSmartSettle(){
  var el=document.getElementById('smart-settle-list');if(!el)return;
- var net={};entries.forEach(function(e){if(e.type==='payment'&&e.paymentStatus&&e.paymentStatus!=='confirmed')return;
+ var net={};entries.forEach(function(e){if(e.paymentStatus&&e.paymentStatus!=='confirmed')return;
   var a=norm(e.from),b=norm(e.to),c=Math.round(Number(e.amount)*100)*(e.type==='debt'?-1:1);
   net[a]=(net[a]||0)+c;net[b]=(net[b]||0)-c;
  });
@@ -1850,13 +1863,14 @@ function render() {
       : "<b>" + from + "</b> paid <b>" + to + "</b> back " + money(e.amount);
     return '<div class="entry"><span class="tag ' + e.type + '">' + (e.type === "debt" ? "OWES" : "PAID") + "</span>" +
       '<div class="text">' + text + '<div class="note">' + esc(e.note || "No note") + " · " + esc(e.date) +
-      (e.createdBy ? " · added by " + esc(e.createdBy) : "") + (e.dueDate ? " · Due " + esc(e.dueDate) + (e.type === "debt" && e.dueDate < new Date().toISOString().slice(0,10) ? " (overdue)" : "") : "") + (e.type === "payment" ? " · " + esc(e.paymentStatus || "confirmed") : "") + "</div></div>" +
+      (e.createdBy ? " · added by " + esc(e.createdBy) : "") + (e.dueDate ? " · Due " + esc(e.dueDate) + (e.type === "debt" && e.dueDate < new Date().toISOString().slice(0,10) ? " (overdue)" : "") : "") + (" · " + esc(e.paymentStatus || "confirmed")) + "</div></div>" +
       '<button type="button" class="entry-pin-btn' + (e.pinned ? ' is-pinned' : '') + '" data-pin="' + e.id + '" aria-label="' + (e.pinned ? 'Unpin activity' : 'Pin activity') + '" title="' + (e.pinned ? 'Unpin activity' : 'Pin activity') + '" aria-pressed="' + (!!e.pinned) + '"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3l5 5-3 1-3 5 1 3-2 2-4-4-6 6 6-6-4-4 2-2 3 1 5-3z"/></svg></button><button class="small-btn danger" data-del="' + e.id + '">Delete</button></div>';
   }).join("");
   document.getElementById("history").innerHTML = h || '<div class="empty">Nothing yet.</div>';
 
   updatePreview();
   renderSmartSettle();
+  renderExpenseApprovals();
 }
 
 function updatePreview() {
@@ -1953,8 +1967,28 @@ document.getElementById("person1").addEventListener("input", updatePreview);
 document.getElementById("person2").addEventListener("input", updatePreview);
 
 
+// Expense approvals are stored server-side. Only the assigned debtor can decide.
+function renderExpenseApprovals(){
+ var card=document.getElementById('sq-approvals-card'),list=document.getElementById('sq-approvals-list');
+ if(!card||!list)return;
+ var mine=current&&Array.isArray(current.members)?current.members.find(function(m){return m.isYou;}):null;
+ var myName=mine?(mine.ledgerName||mine.name):'';
+ var pending=(current&&current.entries||[]).filter(function(e){return e.type==='debt'&&e.paymentStatus==='pending'&&myName&&norm(e.from)===norm(myName);});
+ card.hidden=!pending.length;
+ document.getElementById('sq-approvals-count').textContent=pending.length?'('+pending.length+')':'';
+ list.innerHTML=pending.map(function(e){return '<div class="sq-approval-row"><div><strong>'+esc(e.note||'Expense')+'</strong><div class="dashboard-subheading">'+esc(e.from)+' owes '+esc(e.to)+' · '+money(e.amount)+'</div></div><div class="sq-approval-actions"><button type="button" class="primary" data-sq-approve="'+esc(String(e.id))+'">Approve</button><button type="button" class="small-btn" data-sq-dispute="'+esc(String(e.id))+'">Dispute</button></div></div>';}).join('');
+}
+document.getElementById('sq-approvals-list').addEventListener('click',async function(ev){
+ var btn=ev.target.closest('button');if(!btn||!current)return;
+ var id=btn.dataset.sqApprove||btn.dataset.sqDispute;if(!id)return;
+ var action=btn.dataset.sqApprove?'approve':'dispute';
+ if(!confirm((action==='approve'?'Approve':'Dispute')+' this expense?'))return;
+ btn.disabled=true;
+ try{var updated=await api('trackers/'+current.id+'/entries/'+encodeURIComponent(id)+'/approval','PATCH',{action:action});applyDetail(updated);}
+ catch(err){alert('Could not '+action+' expense: '+err.message);btn.disabled=false;}
+});
 // ============ SPLIT A BILL (separate view, same existing tracker) ============
-var splitState = { people:[], payer:"", selected:{}, custom:{}, method:"equal", saving:false };
+var splitState = { people:[], payer:"", selected:{}, custom:{}, percent:{}, shares:{}, method:"equal", saving:false };
 function splitMoney(cents) { return "$" + (cents/100).toFixed(2); }
 function splitMembers() {
   var found = {}, list = [];
@@ -1972,8 +2006,8 @@ function splitMembers() {
 function openSplitPage() {
   splitState.people = splitMembers();
   splitState.selected = {};
-  splitState.custom = {};
-  splitState.people.forEach(function(p) { splitState.selected[p] = true; splitState.custom[p] = "0.00"; });
+  splitState.custom = {}; splitState.percent = {}; splitState.shares = {};
+  splitState.people.forEach(function(p) { splitState.selected[p] = true; splitState.custom[p] = "0.00"; splitState.percent[p] = "0"; splitState.shares[p] = "1"; });
   splitState.payer = splitState.people[0] || "";
   splitState.method = "equal";
   document.getElementById("split-description").value = "";
@@ -1990,13 +2024,24 @@ function splitCalc() {
   var amount = Number(document.getElementById("split-total").value);
   var cents = Number.isFinite(amount) && amount>0 ? Math.round(amount*100) : 0;
   var selected = splitState.people.filter(function(p) { return splitState.selected[p]; });
-  var shares = selected.map(function(p,i) {
-    var value = splitState.method === "equal" ? Math.floor(cents/selected.length)+(i<cents%selected.length?1:0) : Math.round(Number(splitState.custom[p] || 0)*100);
-    return {name:p,cents:value};
-  });
+  // Allocate integer cents with the largest-remainder method; never lose a cent.
+  var weights = selected.map(function(p) { return splitState.method === "percent" ? Number(splitState.percent[p]) : Number(splitState.shares[p]); });
+  var weightTotal = weights.reduce(function(a,b){return a+b;},0);
+  var weightedValid = weights.every(function(w){return Number.isFinite(w)&&w>=0;}) && weightTotal>0 && (splitState.method!=="percent" || Math.abs(weightTotal-100)<0.00001) && (splitState.method!=="shares" || weights.every(function(w){return Number.isInteger(w);}));
+  var amounts = [];
+  if (splitState.method === "equal") amounts=selected.map(function(p,i){return Math.floor(cents/selected.length)+(i<cents%selected.length?1:0);});
+  else if (splitState.method === "custom") amounts=selected.map(function(p){return Math.round(Number(splitState.custom[p]||0)*100);});
+  else if (weightedValid) {
+    var raw=weights.map(function(w){return cents*w/weightTotal;});
+    amounts=raw.map(Math.floor);
+    var remaining=cents-amounts.reduce(function(a,b){return a+b;},0);
+    var order=raw.map(function(v,i){return {i:i,f:v-Math.floor(v)};}).sort(function(a,b){return b.f-a.f||a.i-b.i;});
+    for(var n=0;n<remaining;n++) amounts[order[n].i]++;
+  } else amounts=selected.map(function(){return 0;});
+  var shares = selected.map(function(p,i){return {name:p,cents:amounts[i]};});
   var assigned = shares.reduce(function(sum,p){return sum+p.cents;},0);
   var validShares = shares.every(function(p){return Number.isFinite(p.cents) && p.cents>=0;});
-  return { cents:cents, shares:shares, assigned:assigned, valid:validShares && cents>0 && assigned===cents && selected.length>0 && !!splitState.payer && !!document.getElementById("split-description").value.trim() };
+  return { cents:cents, shares:shares, assigned:assigned, valid:validShares && (splitState.method==="equal" || splitState.method==="custom" || weightedValid) && cents>0 && assigned===cents && selected.length>0 && !!splitState.payer && !!document.getElementById("split-description").value.trim() };
 }
 function renderSplitPage() {
   var payers = document.getElementById("split-payers"), participants = document.getElementById("split-participants");
@@ -2013,9 +2058,10 @@ function renderSplitPage() {
     check.addEventListener("change",function(){splitState.selected[person]=check.checked;renderSplitPage();});
     var pav=av.cloneNode(true), pname=name.cloneNode(true);
     label.append(pav,pname,check);
-    if (splitState.method === "custom" && check.checked) {
-      var custom=document.createElement("input"); custom.type="number"; custom.min="0"; custom.step="0.01"; custom.inputMode="decimal"; custom.className="split-custom"; custom.setAttribute("aria-label",person+" share in dollars"); custom.value=splitState.custom[person];
-      custom.addEventListener("input",function(){splitState.custom[person]=custom.value;renderSplitSummary();});
+    if (splitState.method !== "equal" && check.checked) {
+      var field=splitState.method==="custom"?"custom":splitState.method;
+      var custom=document.createElement("input"); custom.type="number"; custom.min="0"; custom.step=field==="shares"?"1":"0.01"; custom.inputMode="decimal"; custom.className="split-custom"; custom.setAttribute("aria-label",person+(field==="percent"?" percentage":field==="shares"?" shares":" share in dollars")); custom.value=splitState[field][person];
+      custom.addEventListener("input",function(){splitState[field][person]=custom.value;renderSplitSummary();});
       custom.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();});
       label.append(custom);
     }
@@ -2023,7 +2069,9 @@ function renderSplitPage() {
   });
   document.getElementById("split-equal").classList.toggle("active",splitState.method==="equal");
   document.getElementById("split-custom").classList.toggle("active",splitState.method==="custom");
-  document.getElementById("split-custom-help").hidden=splitState.method!=="custom";
+  document.getElementById("split-percent").classList.toggle("active",splitState.method==="percent");
+  document.getElementById("split-shares").classList.toggle("active",splitState.method==="shares");
+  document.getElementById("split-custom-help").hidden=splitState.method==="equal";
   document.getElementById("split-count").textContent="("+splitState.people.filter(function(p){return splitState.selected[p];}).length+" selected)";
   if (!splitState.people.length) {
     participants.textContent="No people yet. Invite friends to your tracker or add an expense with their names first.";
@@ -2043,8 +2091,8 @@ function renderSplitSummary() {
   result.shares.forEach(function(p){line(summary,p.name,p.cents);});
   document.getElementById("split-owed-heading").textContent="Payments owed to "+(splitState.payer||"payer");
   result.shares.filter(function(p){return p.name!==splitState.payer && p.cents>0;}).forEach(function(p){line(owed,p.name,p.cents,"split-due");});
-  if (splitState.method==="custom" && result.assigned!==result.cents) {
-    var warning=document.createElement("div");warning.className="split-message";warning.textContent="Assigned "+splitMoney(result.assigned)+" of "+splitMoney(result.cents)+". Adjust custom amounts to match.";summary.append(warning);
+  if ((splitState.method==="custom" || splitState.method==="percent" || splitState.method==="shares") && !result.valid) {
+    var warning=document.createElement("div");warning.className="split-message";warning.textContent=splitState.method==="percent"?"Percentages must total 100%.":splitState.method==="shares"?"Shares must be nonnegative whole numbers with at least one positive share.":"Assigned "+splitMoney(result.assigned)+" of "+splitMoney(result.cents)+". Adjust amounts to match.";summary.append(warning);
   }
   document.getElementById("split-save").disabled=!result.valid||splitState.saving;
 }
@@ -2057,6 +2105,8 @@ document.getElementById("split-currency").addEventListener("change",renderSplitS
 document.getElementById("split-description").addEventListener("input",renderSplitSummary);
 document.getElementById("split-equal").addEventListener("click",function(){splitState.method="equal";renderSplitPage();});
 document.getElementById("split-custom").addEventListener("click",function(){splitState.method="custom";renderSplitPage();});
+document.getElementById("split-percent").addEventListener("click",function(){splitState.method="percent";renderSplitPage();});
+document.getElementById("split-shares").addEventListener("click",function(){splitState.method="shares";renderSplitPage();});
 document.getElementById("split-save").addEventListener("click",async function(){
   var result=splitCalc(); if (!result.valid || splitState.saving) return;
   var payer=splitState.payer, description=document.getElementById("split-description").value.trim();
