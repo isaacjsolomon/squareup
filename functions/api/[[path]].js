@@ -2146,6 +2146,106 @@ if (
       return fail('Method not allowed', 405);
     }
 
+
+    // EXPENSE APPROVALS
+    if (
+      sub === 'entries' &&
+      parts[3] &&
+      uuid.test(parts[3]) &&
+      parts[4] === 'approval' &&
+      method === 'PATCH'
+    ) {
+      const action = body.action;
+
+      if (!['approve', 'dispute'].includes(action)) {
+        return fail('Invalid approval action.', 400);
+      }
+
+      const entry = (await db('tracker_entries', {
+        filters: {
+          tracker_id: 'eq.' + id,
+          id: 'eq.' + parts[3]
+        },
+        limit: 1
+      }))[0];
+
+      if (!entry || entry.type !== 'debt') {
+        return fail('Expense not found.', 404);
+      }
+
+      const members = await db('tracker_members', {
+        filters: { tracker_id: 'eq.' + id }
+      });
+
+      const debtor = members.find(
+        member =>
+          member.name.toLowerCase() ===
+          String(entry.from_name).toLowerCase()
+      );
+
+      if (!debtor || debtor.user_id !== me.id) {
+        return fail(
+          'Only the person charged can review this expense.',
+          403
+        );
+      }
+
+      if (entry.payment_status !== 'pending') {
+        return fail('Expense has already been reviewed.', 409);
+      }
+
+      const newStatus =
+        action === 'approve' ? 'confirmed' : 'disputed';
+
+      const updated = await db('tracker_entries', {
+        method: 'PATCH',
+        filters: {
+          tracker_id: 'eq.' + id,
+          id: 'eq.' + parts[3],
+          payment_status: 'eq.pending'
+        },
+        body: {
+          payment_status: newStatus
+        }
+      });
+
+      if (!updated.length) {
+        return fail(
+          'Expense was already reviewed. Please refresh.',
+          409
+        );
+      }
+
+      if (entry.created_by && entry.created_by !== me.id) {
+        try {
+          await db('squareup_notifications', {
+            method: 'POST',
+            body: {
+              recipient_id: entry.created_by,
+              tracker_id: id,
+              entry_id: entry.id,
+              kind: 'expense',
+              title: action === 'approve'
+                ? 'Expense approved'
+                : 'Expense disputed',
+              message: me.name +
+                (action === 'approve'
+                  ? ' approved an expense.'
+                  : ' disputed an expense.')
+            }
+          });
+        } catch (error) {
+          console.error(
+            'Approval notification failed:',
+            error.message
+          );
+        }
+      }
+
+      return json(await detail(id));
+    }
+
+    
     // PIN AND UNPIN EXPENSES
     if (sub === 'entries' &&
         parts[3] &&
@@ -2329,7 +2429,13 @@ if (!(e.amount > 0)) {
             403
           );
 
-        const pending = e.type === 'payment';
+
+const pending =
+  e.type === 'payment' ||
+  (
+    e.type === 'debt' &&
+    debtor.user_id !== me.id
+  );
 
         const created = (await db('tracker_entries', {
           method: 'POST',
