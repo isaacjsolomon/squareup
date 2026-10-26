@@ -1884,6 +1884,12 @@ if (!validCurrency(currency)) {
 
     const owner = m.role === 'owner';
     const sub = parts[2];
+    console.log('TRACKER ROUTE REACHED', {
+  trackerId: id,
+  sub,
+  method,
+  partsLength: parts.length
+});
 
     // TRACKER DETAILS
     if (!sub) {
