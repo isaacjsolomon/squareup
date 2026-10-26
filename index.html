@@ -3314,28 +3314,174 @@ async function sqBannerEdit(trackerId,trackerName,banner){
 // Permission editor: all changes are verified and saved by the backend.
 var SQ_PERM_LABELS={add_expenses:'Add expenses',edit_own_expenses:'Edit own expenses',edit_all_expenses:'Edit all expenses',log_payments:'Log payments',delete_expenses:'Delete expenses',manage_members:'Manage members',change_settings:'Change tracker settings'};
 var SQ_PERM_ROLES={editor:{add_expenses:true,edit_own_expenses:true,edit_all_expenses:false,log_payments:true,delete_expenses:false,manage_members:false,change_settings:false},viewer:{add_expenses:false,edit_own_expenses:false,edit_all_expenses:false,log_payments:false,delete_expenses:false,manage_members:false,change_settings:false}};
-async function sqManagePermissions(tracker){
- var overlay=document.createElement('div');overlay.className='sq-perm-overlay';
- var panel=document.createElement('section');panel.className='sq-perm-panel';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-label','Manage permissions');overlay.append(panel);
- function el(tag,text,cls){var x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(cls)x.className=cls;return x;}
- function top(title){var bar=el('div',undefined,'sq-perm-top');bar.append(el('h2',title));var close=el('button','✕','sq-perm-close');close.onclick=function(){overlay.remove()};bar.append(close);panel.append(bar);}
- function notice(message){panel.append(el('div',message,'sq-perm-note'));}
- async function overview(){panel.replaceChildren();top('Manage Permissions');panel.append(el('p',tracker.name+' · Manage member access'));notice('The owner always has full access. Changes are saved for this tracker only.');
-  var data;try{data=await api('trackers/'+encodeURIComponent(tracker.id)+'/permissions');}catch(err){notice('Could not load permissions: '+err.message);return;}
-  data.members.forEach(function(m){var b=el('button',undefined,'sq-perm-member');var av=el('span',(m.name||'?').charAt(0).toUpperCase(),'sq-perm-avatar');var info=el('span');info.style.flex='1';info.append(el('strong',m.name||'Member'),el('small',m.email||''));b.append(av,info,el('span',m.role==='owner'?'Owner':m.role==='viewer'?'Viewer':'Editor','sq-perm-pill'));if(m.role!=='owner'&&data.owner)b.onclick=function(){editor(m)};else b.disabled=true;panel.append(b);});
-  if(data.owner){var invite=el('button','+ Invite new member','sq-perm-save');invite.style.marginTop='14px';invite.onclick=async function(){overlay.remove();try{await openTracker(tracker.id);await openShare();}catch(e){alert(e.message)}};panel.append(invite)}
-  else notice('Only the tracker owner can change permissions.');
- }
- function editor(member){panel.replaceChildren();top('Member Permissions');var back=el('button','← All members','sq-perm-close');back.style.margin='12px 0';back.onclick=overview;panel.append(back,el('h2',member.name||'Member'),el('p',member.email||''));
-  panel.append(el('strong','Role'));var select=el('select');['editor','viewer'].forEach(function(role){var opt=el('option',role==='editor'?'Editor':'Viewer');opt.value=role;select.append(opt)});select.value=member.role==='viewer'?'viewer':'editor';panel.append(select);
-  panel.append(el('p','Select a role to apply its defaults, then customize individual permissions.'));
-  var checks={};var rows=el('div');Object.keys(SQ_PERM_LABELS).forEach(function(key){var row=el('div',undefined,'sq-perm-row');var label=el('label',SQ_PERM_LABELS[key]);var check=document.createElement('input');check.type='checkbox';check.checked=!!member.permissions?.[key];checks[key]=check;row.append(label,check);rows.append(row)});panel.append(rows);
-  select.onchange=function(){Object.keys(checks).forEach(function(key){checks[key].checked=SQ_PERM_ROLES[select.value][key]})};
-  var actions=el('div',undefined,'sq-perm-actions');var remove=el('button','Remove member','sq-perm-close');remove.style.color='#b42342';remove.onclick=async function(){if(!confirm('Remove '+member.name+' from this tracker?'))return;try{await api('trackers/'+encodeURIComponent(tracker.id)+'/members/'+encodeURIComponent(member.id),'DELETE');await overview();await renderTrackerGallery()}catch(err){alert(err.message)}};
-  var save=el('button','Save changes','sq-perm-save');save.onclick=async function(){save.disabled=true;save.textContent='Saving…';var values={};Object.keys(checks).forEach(function(k){values[k]=checks[k].checked});try{await api('trackers/'+encodeURIComponent(tracker.id)+'/permissions/'+encodeURIComponent(member.id),'PATCH',{role:select.value,permissions:values});await overview()}catch(err){alert('Could not save permissions: '+err.message);save.disabled=false;save.textContent='Save changes'}};
-  actions.append(remove,save);panel.append(actions);
- }
- overlay.onclick=function(e){if(e.target===overlay)overlay.remove()};document.body.append(overlay);await overview();
+async function sqManagePermissions(tracker) {
+  const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const trackerId = String(tracker && tracker.id || '').trim();
+  if (!uuidPattern.test(trackerId)) {
+    alert('This tracker has an invalid ID. Please refresh your trackers.');
+    return;
+  }
+  const overlay = document.createElement('div');
+  overlay.className = 'sq-perm-overlay';
+  const panel = document.createElement('section');
+  panel.className = 'sq-perm-panel';
+  panel.setAttribute('role', 'dialog');
+  panel.setAttribute('aria-modal', 'true');
+  panel.setAttribute('aria-label', 'Manage permissions');
+  overlay.append(panel);
+  const endpoint = 'trackers/' + encodeURIComponent(trackerId);
+  const make = (tag, text, className) => {
+    const node = document.createElement(tag);
+    if (text !== undefined) node.textContent = text;
+    if (className) node.className = className;
+    return node;
+  };
+  function header(title) {
+    const bar = make('div', undefined, 'sq-perm-top');
+    const close = make('button', '✕', 'sq-perm-close');
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Close permissions');
+    close.onclick = () => overlay.remove();
+    bar.append(make('h2', title), close);
+    panel.append(bar);
+  }
+  function note(message) { panel.append(make('div', message, 'sq-perm-note')); }
+  function memberId(member) {
+    // The permissions API returns id=user_id. Never send a display name or row ID.
+    const id = String(member && (member.user_id || member.userId || member.id) || '').trim();
+    return uuidPattern.test(id) ? id : null;
+  }
+  function showError(err, prefix) {
+    note(prefix + ': ' + (err && err.message || 'Unknown error'));
+  }
+  async function overview() {
+    panel.replaceChildren();
+    header('Manage Permissions');
+    panel.append(make('p', (tracker.name || 'Tracker') + ' · Member access'));
+    note('The tracker owner always has full access. Changes affect only this tracker.');
+    let data;
+    try { data = await api(endpoint + '/permissions'); }
+    catch (err) { showError(err, 'Could not load permissions'); return; }
+    if (!data || !Array.isArray(data.members)) {
+      note('The server returned an unexpected member list. Please refresh and try again.');
+      return;
+    }
+    if (!data.members.length) note('No members found in this tracker.');
+    data.members.forEach(member => {
+      const row = make('button', undefined, 'sq-perm-member');
+      row.type = 'button';
+      const name = member.name || 'Member';
+      const avatar = make('span', name.charAt(0).toUpperCase(), 'sq-perm-avatar');
+      const info = make('span');
+      info.style.flex = '1';
+      info.append(make('strong', name), make('small', member.email || ''));
+      const role = member.role === 'owner' ? 'Owner' : member.role === 'viewer' ? 'Viewer' : 'Editor';
+      row.append(avatar, info, make('span', role, 'sq-perm-pill'));
+      const id = memberId(member);
+      if (data.owner && member.role !== 'owner' && id) {
+        row.onclick = () => editor(member, id);
+      } else {
+        row.disabled = true;
+        if (data.owner && member.role !== 'owner' && !id)
+          row.title = 'This member has no valid Supabase user ID';
+      }
+      panel.append(row);
+    });
+    if (data.owner) {
+      const invite = make('button', '+ Invite new member', 'sq-perm-save');
+      invite.type = 'button';
+      invite.style.marginTop = '14px';
+      invite.onclick = async () => {
+        try { await openTracker(trackerId); overlay.remove(); await openShare(); }
+        catch (err) { alert(err.message); }
+      };
+      panel.append(invite);
+    } else note('Only the tracker owner can change member permissions.');
+  }
+  function editor(member, id) {
+    panel.replaceChildren();
+    header('Member Permissions');
+    const back = make('button', '← All members', 'sq-perm-close');
+    back.type = 'button';
+    back.style.margin = '12px 0';
+    back.onclick = overview;
+    panel.append(back, make('h2', member.name || 'Member'), make('p', member.email || ''));
+    panel.append(make('strong', 'Role'));
+    const select = make('select');
+    for (const role of ['editor', 'viewer']) {
+      const option = make('option', role === 'editor' ? 'Editor' : 'Viewer');
+      option.value = role;
+      select.append(option);
+    }
+    select.value = member.role === 'viewer' ? 'viewer' : 'editor';
+    panel.append(select, make('p', 'Choose a role, then customize the permissions below.'));
+    const checks = {};
+    const rows = make('div');
+    Object.keys(SQ_PERM_LABELS).forEach(key => {
+      const row = make('div', undefined, 'sq-perm-row');
+      const label = make('label', SQ_PERM_LABELS[key]);
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = typeof member.permissions?.[key] === 'boolean'
+        ? member.permissions[key] : !!SQ_PERM_ROLES[select.value][key];
+      checks[key] = checkbox;
+      label.append(checkbox);
+      row.append(label);
+      rows.append(row);
+    });
+    panel.append(rows);
+    select.onchange = () => Object.keys(checks).forEach(key => {
+      checks[key].checked = !!SQ_PERM_ROLES[select.value][key];
+    });
+    const status = make('div', '', 'sq-perm-note');
+    status.style.display = 'none';
+    panel.append(status);
+    const actions = make('div', undefined, 'sq-perm-actions');
+    const remove = make('button', 'Remove member', 'sq-perm-close');
+    remove.type = 'button';
+    remove.style.color = '#b42342';
+    const save = make('button', 'Save changes', 'sq-perm-save');
+    save.type = 'button';
+    const setBusy = busy => {
+      save.disabled = busy; remove.disabled = busy; select.disabled = busy;
+      Object.values(checks).forEach(input => input.disabled = busy);
+      save.textContent = busy ? 'Saving…' : 'Save changes';
+    };
+    save.onclick = async () => {
+      if (!uuidPattern.test(id)) { alert('Invalid member ID. Refresh the tracker.'); return; }
+      const permissions = {};
+      Object.keys(checks).forEach(key => permissions[key] = checks[key].checked);
+      setBusy(true); status.style.display = 'none';
+      try {
+        await api(endpoint + '/permissions/' + encodeURIComponent(id), 'PATCH', {
+          role: select.value, permissions
+        });
+        await overview();
+      } catch (err) {
+        status.textContent = 'Could not save permissions: ' + (err.message || 'Unknown error');
+        status.style.display = 'block';
+        setBusy(false);
+      }
+    };
+    remove.onclick = async () => {
+      if (!confirm('Remove ' + (member.name || 'this member') + ' from this tracker?')) return;
+      remove.disabled = true; save.disabled = true;
+      try {
+        await api(endpoint + '/members/' + encodeURIComponent(id), 'DELETE');
+        await overview();
+        await renderTrackerGallery();
+      } catch (err) {
+        status.textContent = 'Could not remove member: ' + (err.message || 'Unknown error');
+        status.style.display = 'block';
+        remove.disabled = false; save.disabled = false;
+      }
+    };
+    actions.append(remove, save);
+    panel.append(actions);
+  }
+  overlay.onclick = event => { if (event.target === overlay) overlay.remove(); };
+  document.body.append(overlay);
+  await overview();
 }
 
 // Tracker gallery uses existing authenticated tracker endpoints and share dialog.
