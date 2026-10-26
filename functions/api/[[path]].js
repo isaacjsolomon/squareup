@@ -384,11 +384,12 @@ export async function onRequest({ request, env, params, waitUntil }) {
       method,
       headers: {
         ...baseHeaders,
-      
-Prefer: method === 'POST' &&
-        table === 'squareup_notification_preferences'
-  ? 'resolution=merge-duplicates,return=representation'
-  : 'return=representation',
+
+Prefer:
+  method === 'POST' &&
+  table === 'squareup_notification_preferences'
+    ? 'resolution=merge-duplicates,return=representation'
+    : 'return=representation',
 
         ...(method !== 'GET'
           ? { 'Content-Type': 'application/json' }
@@ -3269,8 +3270,6 @@ if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(entr
   }
 
   return json(await detail(id));
-
-  return json(await detail(id));
 }
 }
 
@@ -3413,12 +3412,12 @@ if (
         parts[3] &&
         method === 'DELETE') {
 
-      if (!owner)
-        return fail(
-          'Only the owner can remove people.',
-          403
-        );
-
+     if (!can('manage_members')) {
+  return fail(
+    'You do not have permission to remove members.',
+    403
+  );
+}
       if (parts[3] === me.id)
         return fail(
           "You can't remove yourself as the owner.",
