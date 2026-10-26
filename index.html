@@ -1146,6 +1146,25 @@ body.notifications-view #tracker-dashboard,body.notifications-view #split-page,b
 @media(min-width:768px){#receipt-file,#split-receipt-file{display:none!important}label[for="receipt-file"],label[for="split-receipt-file"]{display:none!important}}
 @media(max-width:767px){#notifications-page{padding:12px 0}#notifications-page #notifications-panel{padding:14px}}
 
+/* Mobile Notification Center: same content and actions, adapted to phone widths. */
+.sq-mobile-notification-button{position:relative}
+.sq-mobile-notifications-count{position:absolute;top:1px;right:1px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#43e6b7;color:#082c37;font-size:10px;font-weight:800;line-height:17px;text-align:center}
+.sq-mobile-notifications-count[hidden]{display:none!important}
+@media(max-width:900px){
+ .sq-mobile-top .sq-brand{font-size:clamp(14px,3.8vw,18px)}
+ .sq-mobile-header-actions{gap:5px!important}
+ .sq-mobile-header-actions>button{width:clamp(34px,9vw,42px)!important;min-width:0!important;height:40px!important;min-height:40px!important;padding:7px!important;border-radius:12px!important}
+ .sq-mobile-header-actions>button svg{width:22px!important;height:22px!important}
+ body.notifications-view #notifications-page{display:block!important;width:100%;max-width:100%;padding:12px 0 105px}
+ body.notifications-view #notifications-page .sq-notifications-header{gap:12px;margin-bottom:16px;align-items:flex-start}
+ body.notifications-view #notifications-page .sq-notifications-header h2{font-size:25px}
+ body.notifications-view #notifications-page .sq-notifications-header p{font-size:13px;line-height:1.45}
+ body.notifications-view #notifications-page #notifications-panel{padding:12px;border-radius:15px}
+ body.notifications-view #notifications-page .entry{display:flex;flex-wrap:wrap;gap:10px;overflow-wrap:anywhere}
+ body.notifications-view #notifications-page .entry .text{min-width:0;flex:1 1 200px}
+ body.notifications-view #notifications-page .small-btn{max-width:100%;white-space:normal}
+}
+@media(max-width:390px){.sq-mobile-top .sq-brand{gap:5px;font-size:13px}.sq-mobile-top .sq-brand img{width:23px;height:23px}.sq-mobile-header-actions{gap:3px!important}.sq-mobile-header-actions>button{width:33px!important;height:36px!important;min-height:36px!important;padding:6px!important}}
 /* Mobile-first receipt review: keep each item and each summary separate. */
 #receipt-card.sq-receipt-panel{max-width:760px;margin:18px auto;padding:0;overflow:hidden;border-radius:22px}
 .sq-receipt-panel *{box-sizing:border-box}
@@ -1514,7 +1533,7 @@ body.friends-view .wrap #friends-page{display:block!important}
   </div>
 
 </aside>
-<div class="wrap"><div class="sq-mobile-top"><span class="sq-brand"><img src="/images/logo.png" alt="">Square Up</span><span class="sq-mobile-header-actions"><button type="button" id="sq-mobile-about" aria-label="Open About" title="About Square Up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none"/></svg></button><button type="button" id="sq-mobile-chat" aria-label="Open group chat" title="Group chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5Z"/></svg></button><button type="button" id="sq-mobile-friends" aria-label="Open Friends" title="Friends" ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2"/><path d="M18 8v8M14 12h8"/></svg></button></span></div>
+<div class="wrap"><div class="sq-mobile-top"><span class="sq-brand"><img src="/images/logo.png" alt="">Square Up</span><span class="sq-mobile-header-actions"><button type="button" id="sq-mobile-about" aria-label="Open About" title="About Square Up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none"/></svg></button><button type="button" id="sq-mobile-notifications" class="sq-mobile-notification-button" aria-label="Open Notification Center" title="Notifications" aria-controls="notifications-page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span id="sq-mobile-notifications-count" class="sq-mobile-notifications-count" hidden></span></button><button type="button" id="sq-mobile-chat" aria-label="Open group chat" title="Group chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5Z"/></svg></button><button type="button" id="sq-mobile-friends" aria-label="Open Friends" title="Friends" ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2"/><path d="M18 8v8M14 12h8"/></svg></button></span></div>
   <header class="tracker-heading">
     <h1>💸 Square Up</h1>
     <p>Track who owes who. Debts that go both ways cancel out automatically.</p>
@@ -3974,6 +3993,7 @@ async function refreshInbox(){
 function drawInbox(){
  var count=inbox.filter(n=>!n.read_at).length;
  var badge=document.getElementById('notifications-count');badge.textContent=count>99?'99+':String(count);badge.hidden=!count;
+ var mobileBadge=document.getElementById('sq-mobile-notifications-count');if(mobileBadge){mobileBadge.textContent=count>99?'99+':String(count);mobileBadge.hidden=!count;}
  var due=(current?.entries||[]).filter(e=>e.type==='debt'&&e.dueDate&&e.dueDate<=new Date(Date.now()+3*86400000).toISOString().slice(0,10)&&e.paymentStatus!=='disputed');
  var dueHtml=due.map(e=>'<div class="entry"><div class="text"><b>'+esc(e.dueDate<new Date().toISOString().slice(0,10)?'Overdue':'Due soon')+'</b> · '+esc(e.from)+' owes '+esc(e.to)+' '+money(e.amount)+'<div class="note">Due '+esc(e.dueDate)+'</div></div></div>').join('');
  document.getElementById('notifications-list').innerHTML=(inbox.map(n=>'<div class="entry"><div class="text"><b>'+esc(n.title)+'</b><div class="note">'+esc(n.message)+' · '+esc(new Date(n.created_at).toLocaleString())+'</div>'+(n.kind==='tracker_invite'&&n.invitation_id?'<button class="small-btn" data-invite-accept="'+esc(n.invitation_id)+'">Accept tracker</button> <button class="small-btn danger" data-invite-decline="'+esc(n.invitation_id)+'">Decline</button>':'')+(n.kind==='payment_pending'&&n.entry_id?'<button class="small-btn" data-confirm-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Confirm payment</button> <button class="small-btn danger" data-dispute-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Dispute</button>':'')+'</div>'+(n.read_at?'':'<button class="small-btn" data-read-notification="'+esc(n.id)+'">Mark read</button>')+'</div>').join('')||'<p>No notifications yet.</p>')+dueHtml;
@@ -3983,6 +4003,7 @@ document.getElementById('notifications-toggle').onclick=function(){
  this.setAttribute('aria-expanded','true');history.replaceState(null,'',location.pathname+location.search+'#notifications');
  refreshInbox();window.scrollTo(0,0);
 };
+document.getElementById('sq-mobile-notifications')?.addEventListener('click',function(){document.getElementById('notifications-toggle').click();});
 document.getElementById('notifications-back').onclick=function(){settingsRoute('home');document.getElementById('notifications-toggle').setAttribute('aria-expanded','false');};
 document.getElementById('notifications-list').addEventListener('click',async function(e){
  // Use closest() so clicks on text inside a button work too.
