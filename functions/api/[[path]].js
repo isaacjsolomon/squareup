@@ -788,21 +788,24 @@ if (
  
 async function detail(id) {
   // Load independent database queries in parallel.
-  const [trackers, membership, members, entries] =
-    await Promise.all([
-      db('trackers', {
-        filters: { id: 'eq.' + id },
-        limit: 1
-      }),
-      member(id),
-      db('tracker_members', {
-        filters: { tracker_id: 'eq.' + id }
-      }),
-      db('tracker_entries', {
-        filters: { tracker_id: 'eq.' + id },
-        order: 'created_at.asc'
-      })
-    ]);
+ const [trackers, membership, members, entries, permissionRows] =
+  await Promise.all([
+    db('trackers', {
+      filters: { id: 'eq.' + id },
+      limit: 1
+    }),
+    member(id),
+    db('tracker_members', {
+      filters: { tracker_id: 'eq.' + id }
+    }),
+    db('tracker_entries', {
+      filters: { tracker_id: 'eq.' + id },
+      order: 'created_at.asc'
+    }),
+    db('squareup_tracker_permissions', {
+      filters: { tracker_id: 'eq.' + id }
+    })
+  ]);
 
   const t = trackers[0];
 
@@ -831,6 +834,31 @@ async function detail(id) {
     members.map(m => [m.user_id, m])
   );
 
+const permissionMap = new Map(
+  permissionRows.map(p => [
+    String(p.user_id).toLowerCase(),
+    p
+  ])
+);
+
+const resolvedRole = memberRow => {
+  if (
+    String(t.owner_id).toLowerCase() ===
+    String(memberRow.user_id).toLowerCase()
+  ) {
+    return 'owner';
+  }
+
+  const saved = permissionMap.get(
+    String(memberRow.user_id).toLowerCase()
+  );
+
+  return saved?.role === 'viewer' ||
+    (!saved && memberRow.role === 'viewer')
+      ? 'viewer'
+      : 'editor';
+};
+  
   return {
     id: t.id,
     name: t.name,
@@ -838,7 +866,7 @@ async function detail(id) {
     budget: t.budget_amount == null
       ? null
       : Number(t.budget_amount),
-    role: membership.role,
+    role: resolvedRole(membership),
     inviteToken: t.invite_token,
 
     backdrop: {
@@ -855,7 +883,7 @@ async function detail(id) {
         id: m.user_id,
         email: m.email,
         name: p?.display_name || m.name,
-        role: m.role,
+        role: resolvedRole(m),
         isYou: m.user_id === me.id,
         username: p?.username || '',
         photo: p?.photo_key?.split('/').pop() || null,
@@ -942,7 +970,13 @@ const body = ['POST', 'PATCH', 'DELETE'].includes(method) &&
         method: 'DELETE',
         filters: { user_id: 'eq.' + me.id }
       });
-
+await db('squareup_tracker_permissions', {
+  method: 'DELETE',
+  filters: {
+    user_id: 'eq.' + me.id
+  }
+});
+      
       const p = (await db('profiles', {
         filters: { user_id: 'eq.' + me.id }
       }))[0];
@@ -1905,7 +1939,8 @@ const trackerOwnerRecord = (await db('trackers', {
 
 const owner =
   String(trackerOwnerRecord?.owner_id).toLowerCase() ===
-  String(me.id).toLowerCase();
+  String(me.id).toLowerCase() ||
+  (!trackerOwnerRecord?.owner_id && m.role === 'owner');
 const sub = parts[2];
 
 // =============================================
@@ -1946,18 +1981,22 @@ const ROLE_DEFAULTS = {
 
 // Load a member's saved permissions.
 async function getPermissions(userId) {
-  if (
-    String(trackerOwnerRecord?.owner_id).toLowerCase() ===
-    String(userId).toLowerCase()
-  ) {
-    return {
-      role: 'owner',
-      permissions: Object.fromEntries(
-        PERMISSION_KEYS.map(key => [key, true])
-      )
-    };
-  }
-
+ if (
+  String(trackerOwnerRecord?.owner_id).toLowerCase() ===
+  String(userId).toLowerCase() ||
+  (
+    String(m?.user_id).toLowerCase() ===
+    String(userId).toLowerCase() &&
+    m?.role === 'owner'
+  )
+) {
+  return {
+    role: 'owner',
+    permissions: Object.fromEntries(
+      PERMISSION_KEYS.map(key => [key, true])
+    )
+  };
+}
   const membership = (await db('tracker_members', {
     filters: {
       tracker_id: 'eq.' + id,
@@ -2399,7 +2438,15 @@ if (body.name !== undefined) {
               user_id: 'eq.' + me.id
             }
           });
+          await db('squareup_tracker_permissions', {
+  method: 'DELETE',
+  filters: {
+    tracker_id: 'eq.' + id,
+    user_id: 'eq.' + me.id
+  }
+}); 
         }
+     
 
         return json({ ok: true });
       }
@@ -2824,19 +2871,48 @@ if (
         );
       }
 
-      if (method === 'DELETE' &&
-          uuid.test(parts[3] || '')) {
-        await db('squareup_recurring_expenses', {
-          method: 'PATCH',
-          filters: {
-            tracker_id: 'eq.' + id,
-            id: 'eq.' + parts[3]
-          },
-          body: { active: false }
-        });
+    if (
+  method === 'DELETE' &&
+  uuid.test(parts[3] || '')
+) {
+  const schedule = (await db('squareup_recurring_expenses', {
+    filters: {
+      tracker_id: 'eq.' + id,
+      id: 'eq.' + parts[3]
+    },
+    limit: 1
+  }))[0];
 
-        return json({ ok: true });
-      }
+  if (!schedule) {
+    return fail('Recurring expense not found.', 404);
+  }
+
+  if (
+    !can('edit_all_expenses') &&
+    !can('delete_expenses') &&
+    !(
+      can('edit_own_expenses') &&
+      String(schedule.created_by).toLowerCase() ===
+      String(me.id).toLowerCase()
+    )
+  ) {
+    return fail(
+      'You cannot change this recurring expense.',
+      403
+    );
+  }
+
+  await db('squareup_recurring_expenses', {
+    method: 'PATCH',
+    filters: {
+      tracker_id: 'eq.' + id,
+      id: 'eq.' + parts[3]
+    },
+    body: { active: false }
+  });
+
+  return json({ ok: true });
+}
 
       return fail('Method not allowed', 405);
     }
@@ -3199,13 +3275,12 @@ if (notify.user_id !== me.id) {
       }
 
  
-if (method === 'DELETE') {
-    if (!can('delete_expenses')) {
-    return fail(
-      'Only the tracker owner can delete expenses.',
-      403
-    );
-  }
+if (!can('delete_expenses')) {
+  return fail(
+    'You do not have permission to delete expenses.',
+    403
+  );
+}
   // Require a valid entry ID to prevent accidental bulk deletion.
 
 const entryId = String(
@@ -3342,7 +3417,9 @@ if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(entr
       return json({ token });
     }
 
-    // CHANGE TRACKER MEMBER ROLE
+// CHANGE TRACKER MEMBER ROLE
+// Keeps the older role-changing interface compatible.
+
 if (
   sub === 'members' &&
   parts.length === 5 &&
@@ -3350,10 +3427,7 @@ if (
   method === 'PATCH'
 ) {
   if (!owner) {
-    return fail(
-      'Only the tracker owner can manage permissions.',
-      403
-    );
+    return fail('Only the owner can change roles.', 403);
   }
 
   const targetId = parts[3];
@@ -3367,11 +3441,11 @@ if (
     return fail('Choose Editor or Viewer.', 400);
   }
 
-  if (targetId === me.id) {
-    return fail(
-      'You cannot change your own owner role.',
-      403
-    );
+  if (
+    targetId.toLowerCase() ===
+    String(trackerOwnerRecord?.owner_id).toLowerCase()
+  ) {
+    return fail('The owner role cannot be changed.', 403);
   }
 
   const target = (await db('tracker_members', {
@@ -3386,34 +3460,44 @@ if (
     return fail('Member not found.', 404);
   }
 
-  const tracker = (await db('trackers', {
-    filters: { id: 'eq.' + id },
-    limit: 1
-  }))[0];
-
-  if (
-    target.role === 'owner' ||
-    String(tracker?.owner_id).toLowerCase() ===
-      targetId.toLowerCase()
-  ) {
-    return fail(
-      'The tracker owner cannot be reassigned.',
-      403
-    );
+  if (target.role === 'owner') {
+    return fail('The owner role cannot be changed.', 403);
   }
 
-  await db('tracker_members', {
-    method: 'PATCH',
+  const changes = {
+    tracker_id: id,
+    user_id: targetId,
+    role: newRole,
+    ...ROLE_DEFAULTS[newRole]
+  };
+
+  const saved = await db('squareup_tracker_permissions', {
     filters: {
       tracker_id: 'eq.' + id,
       user_id: 'eq.' + targetId
     },
-    body: { role: newRole }
+    limit: 1
   });
+
+  if (saved.length) {
+    await db('squareup_tracker_permissions', {
+      method: 'PATCH',
+      filters: {
+        tracker_id: 'eq.' + id,
+        user_id: 'eq.' + targetId
+      },
+      body: changes
+    });
+  } else {
+    await db('squareup_tracker_permissions', {
+      method: 'POST',
+      body: changes
+    });
+  }
 
   return json(await detail(id));
 }
-
+    
     // REMOVE TRACKER MEMBER
     if (sub === 'members' &&
         parts[3] &&
@@ -3474,6 +3558,14 @@ if (targetId === me.id) {
           user_id: 'eq.' + parts[3]
         }
       });
+
+      await db('squareup_tracker_permissions', {
+  method: 'DELETE',
+  filters: {
+    tracker_id: 'eq.' + id,
+    user_id: 'eq.' + targetId
+  }
+});
 
       return json(await detail(id));
     }
