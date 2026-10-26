@@ -1881,13 +1881,6 @@ body.friends-view .wrap #friends-page{display:block!important}
       <button type="button" id="tab-login" class="active">Log in</button>
       <button type="button" id="tab-signup">Create account</button>
     </div>
-    <div id="auth-oauth">
-      <button type="button" class="google-btn" id="auth-google">
-        <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
-        <span id="auth-google-label">Log in with Google</span>
-      </button>
-      <div class="divider">or use email</div>
-    </div>
     <form id="auth-form">
       <input id="auth-name" placeholder="Your name" autocomplete="name" hidden>
       <input id="auth-email" type="email" placeholder="Email" autocomplete="email" required>
@@ -2573,7 +2566,6 @@ function onAuthChange(cb) { return supabase.auth.onAuthStateChange((event,sessio
 async function refreshSession() { return supabase.auth.getSession(); }
 async function requestPasswordRecovery(email) { await unwrap(supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin})); }
 async function updateUser(values) { const data=await unwrap(supabase.auth.updateUser(values)); return mapUser(data.user); }
-async function oauthLogin(provider) { if(authMode === "signup") store("squareup-pending-oauth-signup", "1"); const data=await unwrap(supabase.auth.signInWithOAuth({provider,options:{redirectTo:location.origin}})); if(data.url) location.assign(data.url); }
 async function handleAuthCallback() { const hash=new URLSearchParams(location.hash.slice(1)); if(hash.get("type")==="recovery") return {type:"recovery"}; const query=new URLSearchParams(location.search); if(query.has("code")) { await supabase.auth.exchangeCodeForSession(query.get("code")); history.replaceState(null,"",location.pathname); } return null; }
 const AuthError=Error, MissingIdentityError=Error;
 async function authHeaders(extra={}) { const {data}=await supabase.auth.getSession(); return {...extra,...(data.session?.access_token ? {Authorization:"Bearer "+data.session.access_token} : {})}; }
@@ -2604,9 +2596,6 @@ function setAuthMode(m) {
   $("auth-title").textContent = titles[m];
   $("auth-submit").textContent = submits[m];
   $("auth-tabs").hidden = m === "forgot" || m === "reset";
-  $("auth-oauth").hidden = m === "forgot" || m === "reset";
-  $("auth-google-label").textContent = m === "signup" ? "Sign up with Google" : "Log in with Google";
-  $("auth-google").disabled = false;
   $("auth-submit").hidden = false;
   $("tab-login").classList.toggle("active", m === "login");
   $("tab-signup").classList.toggle("active", m === "signup");
@@ -2677,16 +2666,6 @@ $("btn-signup").onclick = function () { openAuth("signup"); };
 $("tab-login").onclick = function () { setAuthMode("login"); };
 $("tab-signup").onclick = function () { setAuthMode("signup"); };
 $("auth-forgot").onclick = function () { setAuthMode("forgot"); };
-$("auth-google").onclick = function () {
-  $("auth-google").disabled = true;
-  showMsg("Redirecting to Google…");
-  try {
-    oauthLogin("google").catch(err => showMsg(errorText(err), "error"));
-  } catch (err) {
-    $("auth-google").disabled = false;
-    showMsg(errorText(err), "error");
-  }
-};
 // Logged-in users change their password by confirming a link sent to their email
 $("btn-change-pw").onclick = function () {
   openAuth("forgot");
@@ -2758,17 +2737,15 @@ async function maybeShowOnboarding(user) {
   var emailLink = params.get('setup') === '1';
   var pendingEmail = read('squareup-pending-new-signup');
   var matchingEmail = pendingEmail && pendingEmail === String(user.email||'').toLowerCase();
-  var pendingOauth = read('squareup-pending-oauth-signup') === '1';
   // Email links may be opened on another device, where localStorage is empty.
   var createdTime = Date.parse(user.createdAt || '');
   var recentCreation = Number.isFinite(createdTime) && Date.now() - createdTime >= 0 && Date.now() - createdTime < 24*60*60*1000;
-  if (!matchingEmail && !(pendingOauth && recentCreation) && !(emailLink && recentCreation)) return;
+  if (!matchingEmail && !(emailLink && recentCreation)) return;
   // Never show onboarding again if the user has already set a username.
   try {
     var existingProfile = await api('profile');
     if (existingProfile && existingProfile.username) {
       store('squareup-pending-new-signup',null);
-      store('squareup-pending-oauth-signup',null);
       if (emailLink) { params.delete('setup'); history.replaceState(null,'',location.pathname+(params.toString()?'?'+params:'')+location.hash); }
       return;
     }
@@ -2831,7 +2808,6 @@ $('onboard-form').addEventListener('submit',async function(e) {
     currentUser.name=profile.displayName;
     $('who').textContent='Hi, '+profile.displayName;
     store('squareup-pending-new-signup',null);
-    store('squareup-pending-oauth-signup',null);
     onboardingUserId=null; onboardPhotoBlob=null;
     $('onboarding-page').hidden=true;
     settingsRoute('dashboard');
@@ -3004,7 +2980,6 @@ $("settings-delete-account").onclick=async function(){
     await api('account','DELETE');
     try{await supabase.auth.signOut({scope:'local'});}catch(_){}
     store('squareup-pending-new-signup',null);
-    store('squareup-pending-oauth-signup',null);
     store('squareup-current-tracker',null);
     location.replace(location.origin+location.pathname);
   }catch(err){settingsMessage('settings-delete-msg',err.message||'Deletion failed. Please try again.',false);btn.disabled=false;}
@@ -4253,7 +4228,7 @@ $("manage-list").addEventListener("click", async function (e) {
 
 applyBackdrop();
 
-// Handle links from emails (confirm account, reset password) and Google sign-in redirects
+// Handle links from emails (confirm account and reset password)
 try {
   var result = await handleAuthCallback();
   if (result && result.type === "recovery") openAuth("reset");
