@@ -3326,6 +3326,29 @@ async function renderTrackerGallery(){
       var menuPanel=document.createElement('div');menuPanel.className='tracker-tile-menu-panel';
       function menuAction(label,cls,fn){var btn=document.createElement('button');btn.type='button';btn.className=cls;btn.textContent=label;btn.onclick=async function(){menu.open=false;await fn();};menuPanel.append(btn);}
       menuAction('Change banner','',async function(){await sqBannerEdit(t.id,t.name,banner);});
+      if(t.role==='owner'||(d&&d.role==='owner')) menuAction('Rename tracker','',async function(){
+        var overlay=document.createElement('div');overlay.className='tracker-banner-editor';
+        var dialog=document.createElement('form');dialog.className='tracker-banner-dialog';
+        dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Rename tracker');
+        var heading=document.createElement('h2');heading.textContent='Rename tracker';
+        var label=document.createElement('label');label.textContent='Tracker name';label.style.display='block';label.style.marginBottom='8px';
+        var input=document.createElement('input');input.type='text';input.value=t.name;input.maxLength=80;input.required=true;
+        input.style.width='100%';input.style.boxSizing='border-box';input.style.marginBottom='16px';
+        var actions=document.createElement('div');actions.className='banner-editor-actions';
+        var cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';cancel.onclick=function(){overlay.remove();};
+        var save=document.createElement('button');save.type='submit';save.textContent='Save name';save.className='accent';
+        actions.append(cancel,save);label.append(input);dialog.append(heading,label,actions);overlay.append(dialog);
+        overlay.onclick=function(event){if(event.target===overlay)overlay.remove();};
+        dialog.onsubmit=async function(event){event.preventDefault();var newName=input.value.trim();
+          if(!newName||newName.length>80){alert('Enter a tracker name of 1–80 characters.');return;}
+          save.disabled=true;save.textContent='Saving…';
+          try{await api('trackers/'+encodeURIComponent(t.id),'PATCH',{name:newName});
+            t.name=newName;if(current&&current.id===t.id)current.name=newName;
+            overlay.remove();await renderTrackerGallery();
+          }catch(error){alert('Could not rename tracker: '+(error.message||error));save.disabled=false;save.textContent='Save name';}
+        };
+        document.body.append(overlay);input.focus();input.select();
+      });
       menuAction('Share tracker','',async function(){await openTracker(t.id);if(current&&current.id===t.id)await openShare();});
       menuAction(t.role==='owner'?'Delete tracker':'Leave tracker','danger',async function(){try{if(await removeTracker(t))await renderTrackerGallery();}catch(err){alert(err.message||'Could not remove tracker.');}});
       menu.append(menuToggle,menuPanel);banner.append(menu);
