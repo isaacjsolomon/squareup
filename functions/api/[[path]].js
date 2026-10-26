@@ -2045,15 +2045,25 @@ if (entry.type !== 'payment') {
       if (method === 'PATCH') {
         const patch = {};
 
-        if (body.name !== undefined) {
-          patch.name = clean(body.name, 80);
+        
+if (body.name !== undefined) {
+  if (!owner) {
+    return fail(
+      'Only the tracker owner can rename this tracker.',
+      403
+    );
+  }
 
-          if (!patch.name)
-            return fail(
-              'Give the tracker a name.',
-              400
-            );
-        }
+  patch.name = clean(body.name, 80);
+
+  if (!patch.name) {
+    return fail(
+      'Give the tracker a name.',
+      400
+    );
+  }
+}
+
 
         if (body.backdrop !== undefined) {
           if (!presets.includes(body.backdrop))
