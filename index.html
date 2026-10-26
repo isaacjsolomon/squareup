@@ -1145,6 +1145,47 @@ body.notifications-view #tracker-dashboard,body.notifications-view #split-page,b
 #notifications-page .notification-panel-heading{font-size:17px}
 @media(min-width:768px){#receipt-file,#split-receipt-file{display:none!important}label[for="receipt-file"],label[for="split-receipt-file"]{display:none!important}}
 @media(max-width:767px){#notifications-page{padding:12px 0}#notifications-page #notifications-panel{padding:14px}}
+
+/* Mobile-first receipt review: keep each item and each summary separate. */
+#receipt-card.sq-receipt-panel{max-width:760px;margin:18px auto;padding:0;overflow:hidden;border-radius:22px}
+.sq-receipt-panel *{box-sizing:border-box}
+.sq-receipt-heading{padding:24px 22px 18px;border-bottom:1px solid rgba(148,180,210,.18)}
+.sq-receipt-heading h2{margin:6px 0 8px;font-size:clamp(22px,5vw,30px);line-height:1.2}
+.sq-receipt-heading p,.sq-receipt-hint{margin:5px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
+.sq-receipt-kicker{font-size:11px;font-weight:800;letter-spacing:.12em;color:#56e4c5}
+.sq-receipt-section{padding:20px 22px;border-bottom:1px solid rgba(148,180,210,.18);min-width:0}
+.sq-receipt-last{border-bottom:0}
+.sq-receipt-section-title{font-size:16px;font-weight:800;margin-bottom:12px}
+.sq-receipt-section label{min-width:0;max-width:100%}
+.sq-receipt-section input:not([type=checkbox]):not([type=file]),.sq-receipt-section select{display:block;width:100%;max-width:100%;min-width:0;margin-top:6px;padding:12px;border-radius:12px;font-size:16px}
+.sq-receipt-section input[type=file]{max-width:100%;font-size:13px}
+.sq-receipt-upload{display:block;font-weight:700;margin-bottom:8px}
+.sq-receipt-status{font-size:13px;color:var(--muted);line-height:1.5;margin-top:8px}
+.sq-receipt-title-row{display:flex;justify-content:space-between;align-items:start;gap:12px}
+.sq-receipt-count{flex:none;font-size:12px;color:var(--muted);padding-top:3px}
+.sq-receipt-item{padding:16px;margin:14px 0;border:1px solid rgba(148,180,210,.24);border-radius:16px;background:rgba(5,19,35,.24);min-width:0}
+.sq-receipt-item-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.sq-receipt-item-number{font-size:11px;letter-spacing:.08em;font-weight:800;color:var(--muted)}
+.sq-receipt-remove{border:0;background:none;color:#ffb4b4;font-size:13px;padding:6px;cursor:pointer}
+.sq-receipt-item-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,35%);gap:10px}
+.sq-receipt-item-fields label,.sq-receipt-money-grid label{display:block;font-size:12px;font-weight:700;color:var(--muted)}
+.sq-receipt-assign-title{font-size:13px;font-weight:750;margin:16px 0 9px}
+.sq-receipt-person-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.sq-receipt-person{display:flex!important;align-items:center;gap:10px;padding:11px 12px;border:1px solid rgba(148,180,210,.3);border-radius:12px;cursor:pointer;line-height:1.3;overflow-wrap:anywhere;font-size:14px}
+.sq-receipt-person:has(input:checked){border-color:#57eac7;background:rgba(87,234,199,.12)}
+.sq-receipt-person input[type=checkbox]{width:19px!important;height:19px!important;min-width:19px;flex:none;margin:0!important;accent-color:#4be3c3}
+.sq-receipt-money-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.sq-receipt-totals,.sq-receipt-shares{display:grid;gap:0}
+.sq-receipt-totals>div,.sq-receipt-shares>div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;align-items:center;font-size:14px}
+.sq-receipt-totals>div+div,.sq-receipt-shares>div+div{border-top:1px solid rgba(148,180,210,.15)}
+.sq-receipt-grand{font-size:18px!important;font-weight:800;border-top:1px solid rgba(148,180,210,.35)!important}
+.sq-receipt-share-heading{font-size:14px;font-weight:800;margin:20px 0 5px}
+.sq-receipt-alert{padding:13px;border-radius:12px;background:rgba(255,184,83,.1);border:1px solid rgba(255,184,83,.4);display:grid;gap:5px;line-height:1.5;font-size:13px}
+.sq-receipt-attention{font-size:13px;line-height:1.5;color:#ffca89}
+.sq-receipt-empty{font-size:14px;color:var(--muted);line-height:1.5}
+.sq-receipt-panel .receipt-footer-actions{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap;margin-top:16px}
+.sq-receipt-panel .receipt-footer-actions button{max-width:100%;white-space:normal;line-height:1.3}
+@media(max-width:540px){#receipt-card.sq-receipt-panel{border-radius:16px}.sq-receipt-heading,.sq-receipt-section{padding:17px 14px}.sq-receipt-item{padding:12px}.sq-receipt-item-fields{grid-template-columns:minmax(0,1fr) 105px}.sq-receipt-person-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sq-receipt-person{padding:10px 7px;font-size:12px;gap:6px}.sq-receipt-panel .receipt-footer-actions{flex-direction:column}.sq-receipt-panel .receipt-footer-actions button{width:100%}}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -1498,18 +1539,14 @@ body.friends-view .wrap #friends-page{display:block!important}
     <button type="button" class="dashboard-action" id="quick-split"><span class="action-icon" aria-hidden="true"><svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Split a Bill<span class="action-sub">Divide an expense with friends</span></button>
   </div>
 
-  <div class="card" id="receipt-card" hidden>
-    <h2>🧾 Receipt breakdown · assign each item</h2><p class="dashboard-subheading">Upload a photo, review every detected item and price, then select who ordered each one. Tax and tip are shared proportionally.</p>
-    <p style="color:var(--muted)">Upload a photo, check the recognized lines, then assign who ordered each item. Scanning uses Tesseract.js in your browser; check all amounts before saving.</p>
-    <label for="receipt-file">Take or upload receipt photo (mobile)</label><input type="file" id="receipt-file" accept="image/*" capture="environment" aria-label="Receipt photo">
-    <div id="receipt-status" role="status" style="margin:10px 0;color:var(--muted)"></div>
-    <label>Who paid? <select id="receipt-payer"></select></label>
-    <div id="receipt-items"></div>
-    <button type="button" class="small-btn receipt-add-item-btn" id="receipt-add-item">＋ Add item</button>
-    <div class="row" style="margin-top:12px"><label>Tax ($)<input type="number" id="receipt-tax" min="0" step=".01" value="0"></label><label>Tip ($)<input type="number" id="receipt-tip" min="0" step=".01" value="0"></label></div>
-    <label>Receipt total ($)<input type="number" id="receipt-total" min="0" step=".01" placeholder="Detected from receipt"></label><label>Due date (optional)<input type="date" id="receipt-due"></label>
-    <div id="receipt-preview" style="margin:12px 0"></div>
-    <label>Receipt currency <select id="receipt-currency" class="sq-currency-select"></select></label><div class="receipt-footer-actions"><button type="button" class="primary" id="receipt-save">Save assigned expenses</button><button type="button" class="small-btn receipt-clear-btn" id="receipt-clear">Clear receipt</button></div>
+  <div class="card sq-receipt-panel" id="receipt-card" hidden>
+    <div class="sq-receipt-heading"><div><span class="sq-receipt-kicker">SMART RECEIPT SPLIT</span><h2>🧾 Review your receipt</h2><p>Check the scanned items, then choose who ordered each one. Nothing is saved until you confirm.</p></div></div>
+    <div class="sq-receipt-section"><div class="sq-receipt-section-title">1 · Receipt photo</div><label for="receipt-file" class="sq-receipt-upload">📷 Take or upload another photo</label><input type="file" id="receipt-file" accept="image/*" capture="environment" aria-label="Receipt photo"><div id="receipt-status" role="status" class="sq-receipt-status"></div></div>
+    <div class="sq-receipt-section"><div class="sq-receipt-section-title">2 · Who paid the restaurant?</div><select id="receipt-payer" aria-label="Person who paid"></select></div>
+    <div class="sq-receipt-section"><div class="sq-receipt-title-row"><div><div class="sq-receipt-section-title">3 · Items and who ordered them</div><p class="sq-receipt-hint">Select one or more people per item. Tap a price or name to correct OCR mistakes.</p></div><span id="sq-receipt-count" class="sq-receipt-count">0 items</span></div><div id="receipt-items"></div><button type="button" class="small-btn receipt-add-item-btn" id="receipt-add-item">＋ Add missing item</button></div>
+    <div class="sq-receipt-section"><div class="sq-receipt-section-title">4 · Tax, tip and total</div><div class="sq-receipt-money-grid"><label>Tax ($)<input type="number" inputmode="decimal" id="receipt-tax" min="0" step=".01" value="0"></label><label>Tip ($)<input type="number" inputmode="decimal" id="receipt-tip" min="0" step=".01" value="0"></label></div><label>Printed receipt total ($)<input type="number" inputmode="decimal" id="receipt-total" min="0" step=".01" placeholder="Enter the final total"></label><p class="sq-receipt-hint">If the numbers don't match, check for missing items, discounts, or OCR errors. Tip may not be printed on the receipt.</p></div>
+    <div class="sq-receipt-section"><div class="sq-receipt-section-title">5 · Review everyone's share</div><div id="receipt-preview" class="sq-receipt-preview" aria-live="polite"></div></div>
+    <div class="sq-receipt-section sq-receipt-last"><div class="sq-receipt-money-grid"><label>Currency <select id="receipt-currency" class="sq-currency-select"></select></label><label>Due date (optional)<input type="date" id="receipt-due"></label></div><div class="receipt-footer-actions"><button type="button" class="primary" id="receipt-save">Save assigned expenses</button><button type="button" class="small-btn receipt-clear-btn" id="receipt-clear">Clear receipt</button></div></div>
   </div>
   <!-- ENTRY FORM: shown by quick actions -->
   <div class="card" id="entry-card">
@@ -3987,19 +4024,29 @@ function receiptAddLine(name,amount){receiptLines.push({name:name||'',amount:amo
 function receiptDraw(){
  var people=receiptPeople(),payer=document.getElementById('receipt-payer'),old=payer.value;
  payer.innerHTML=people.map(p=>'<option value="'+esc(p)+'">'+esc(p)+'</option>').join('');if(people.includes(old))payer.value=old;
- document.getElementById('receipt-items').innerHTML=receiptLines.map((l,i)=>'<div class="card" style="padding:12px;margin:8px 0"><div class="row"><input aria-label="Item name" data-item-name="'+i+'" value="'+esc(l.name)+'" placeholder="Item"><input aria-label="Item price" type="number" step=".01" min="0" data-item-price="'+i+'" value="'+esc(l.amount)+'" placeholder="Price"><button type="button" class="small-btn danger" data-item-remove="'+i+'">×</button></div><div style="margin-top:8px">Who ordered this? '+people.map(p=>'<label style="display:inline-block;margin:4px 12px 4px 0"><input type="checkbox" data-item-person="'+i+'" data-person="'+esc(p)+'" '+(l.people.includes(p)?'checked':'')+'> '+esc(p)+'</label>').join('')+'</div></div>').join('') || '<p class="dashboard-subheading">Upload a receipt photo above to automatically list its items, or tap Add item to enter them manually.</p>';receiptPreview();
+ document.getElementById('sq-receipt-count').textContent=receiptLines.length+' item'+(receiptLines.length===1?'':'s');
+ document.getElementById('receipt-items').innerHTML=receiptLines.map((l,i)=>'<div class="sq-receipt-item"><div class="sq-receipt-item-head"><span class="sq-receipt-item-number">ITEM '+(i+1)+'</span><button type="button" class="sq-receipt-remove" data-item-remove="'+i+'" aria-label="Remove item '+(i+1)+'">Remove ×</button></div><div class="sq-receipt-item-fields"><label>Item name<input aria-label="Item '+(i+1)+' name" data-item-name="'+i+'" value="'+esc(l.name)+'" placeholder="Item name"></label><label>Price ($)<input aria-label="Item '+(i+1)+' price" type="number" inputmode="decimal" step=".01" min="0" data-item-price="'+i+'" value="'+esc(l.amount)+'" placeholder="0.00"></label></div><div class="sq-receipt-assign-title">Who ordered this?</div><div class="sq-receipt-person-grid">'+people.map(p=>'<label class="sq-receipt-person"><input type="checkbox" data-item-person="'+i+'" data-person="'+esc(p)+'" '+(l.people.includes(p)?'checked':'')+'><span>'+esc(p)+'</span></label>').join('')+'</div></div>').join('') || '<p class="sq-receipt-empty">No items yet. Upload a photo or add an item to get started.</p>';
+ receiptPreview();
 }
 function receiptPreview(){
- var shares={},subtotal=0,valid=receiptLines.length>0;
- receiptLines.forEach(l=>{var c=Math.round(Number(l.amount)*100);if(!l.name||!Number.isFinite(c)||c<=0||!l.people.length){valid=false;return;}subtotal+=c;var base=Math.floor(c/l.people.length);l.people.forEach((p,i)=>shares[p]=(shares[p]||0)+base+(i<c%l.people.length?1:0));});
- var extra=Math.round((Number(document.getElementById('receipt-tax').value)+Number(document.getElementById('receipt-tip').value))*100);if(!Number.isFinite(extra)||extra<0)valid=false;
+ var shares={},subtotal=0,valid=receiptLines.length>0,unassigned=0;
+ receiptLines.forEach(l=>{var c=Math.round(Number(l.amount)*100);if(!l.name||!Number.isFinite(c)||c<=0||!l.people.length){valid=false;unassigned++;return;}subtotal+=c;var base=Math.floor(c/l.people.length);l.people.forEach((p,i)=>shares[p]=(shares[p]||0)+base+(i<c%l.people.length?1:0));});
+ var tax=Number(document.getElementById('receipt-tax').value),tip=Number(document.getElementById('receipt-tip').value);
+ if(!Number.isFinite(tax)||!Number.isFinite(tip)||tax<0||tip<0)valid=false;
+ var extra=Math.round((tax+tip)*100);if(!Number.isFinite(extra)||extra<0)extra=0;
  var people=Object.keys(shares),remaining=extra;
- people.forEach((p,i)=>{var add=i===people.length-1?remaining:Math.round(extra*shares[p]/subtotal);shares[p]+=add;remaining-=add;});
+ if(subtotal>0)people.forEach((p,i)=>{var add=i===people.length-1?remaining:Math.round(extra*shares[p]/subtotal);shares[p]+=add;remaining-=add;});
  var payer=document.getElementById('receipt-payer').value;
  var expected=document.getElementById('receipt-total').value,actual=(subtotal+extra)/100;
- var mismatch=expected!==''&&Math.abs(Number(expected)-actual)>0.01;
+ var mismatch=expected!==''&&Number.isFinite(Number(expected))&&Math.abs(Number(expected)-actual)>0.01;
  if(mismatch)valid=false;
- document.getElementById('receipt-preview').textContent='Subtotal: $'+(subtotal/100).toFixed(2)+' · Tax & tip: $'+(extra/100).toFixed(2)+' · Calculated total: $'+actual.toFixed(2)+' · '+people.map(p=>p+': $'+(shares[p]/100).toFixed(2)).join(' · ')+(mismatch?' · ⚠️ Receipt total does not match. Correct items, tax or tip before saving.':valid?'':' · Fill in all items and select who ordered each one.');
+ var difference=expected!==''?Math.round((Number(expected)-actual)*100)/100:0;
+ var html='<div class="sq-receipt-totals"><div><span>Items subtotal</span><strong>$'+(subtotal/100).toFixed(2)+'</strong></div><div><span>Tax + tip</span><strong>$'+(extra/100).toFixed(2)+'</strong></div><div class="sq-receipt-grand"><span>Calculated total</span><strong>$'+actual.toFixed(2)+'</strong></div></div>';
+ if(mismatch)html+='<div class="sq-receipt-alert" role="alert"><strong>⚠️ Total does not match</strong><span>The printed total is $'+Number(expected).toFixed(2)+'. The difference is $'+Math.abs(difference).toFixed(2)+(difference>0?' missing from the calculated total.':' above the printed total.')+' Review the scanned items, tax, tip and any discounts before saving.</span></div>';
+ if(unassigned)html+='<p class="sq-receipt-attention">Assign someone and check the name and price for all '+unassigned+' incomplete item'+(unassigned===1?'':'s')+'.</p>';
+ if(people.length)html+='<div class="sq-receipt-share-heading">Each person pays</div><div class="sq-receipt-shares">'+people.map(p=>'<div><span>'+esc(p)+'</span><strong>$'+(shares[p]/100).toFixed(2)+'</strong></div>').join('')+'</div>';
+ if(!receiptLines.length)html+='<p class="sq-receipt-hint">Add or scan items to see the breakdown.</p>';
+ document.getElementById('receipt-preview').innerHTML=html;
  document.getElementById('receipt-save').disabled=!valid||!current;
  return {shares,payer,valid};
 }
@@ -4029,11 +4076,12 @@ function squareUpParseReceipt(text){
   var clean=label.replace(/^[*#•\-\s]+/,'').replace(/\s+[xX]\s*$/,'').trim();
   if(!clean||!Number.isFinite(value))return false;
   if(/^(?:sales\s+|state\s+|local\s+)?tax(?:es)?\b/i.test(clean)){tax+=value;return true;}
-  if(/^(?:gratuity|tip|service\s+charge|suggested\s+tip)\b/i.test(clean)){tip+=value;return true;}
+  if(/^(?:suggested\s+tip|tip\s+suggestion|recommended\s+tip)\b/i.test(clean))return true;
+  if(/^(?:gratuity|tip|service\s+charge)\b/i.test(clean)){tip+=value;return true;}
   if(/^(?:grand\s+total|amount\s+due|balance\s+due|total\s+due|total\s+paid|total)\b/i.test(clean)){total=value;return true;}
   if(/^(?:sub\s*total|items\s+total)\b/i.test(clean)){subtotal=value;return true;}
   if(/^(?:discount|coupon|promo|savings)\b/i.test(clean)){discount+=Math.abs(value);return true;}
-  if(/^(?:change|cash|card|balance|payment|visa|mastercard|amex|debit|credit|paid|tendered|authorization|auth|order\s*(?:number|#)|receipt\s*(?:number|#)|transaction|suggested|server|table|date|time)\b/i.test(clean))return true;
+  if(/^(?:change|cash|card|balance|payment|visa|mastercard|amex|debit|credit|paid|tendered|authorization|auth|order\s*(?:number|#)|receipt\s*(?:number|#)|transaction|suggested|server|table|date|time|thank\s+you|subtotal|taxable|non-taxable)\b/i.test(clean))return true;
   if(value<=0)return true;
   // Some receipts print a quantity before the description; keep it editable.
   clean=clean.replace(/^\d{1,2}\s*[xX]\s+/,'').trim();
