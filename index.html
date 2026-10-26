@@ -1219,6 +1219,20 @@ body.notifications-view #tracker-dashboard,body.notifications-view #split-page,b
 .sq-receipt-panel .receipt-secondary-actions #receipt-clear{flex:0 0 auto;width:auto;font-size:13px;padding:11px 13px}
 .sq-receipt-panel .receipt-secondary-actions #receipt-close{flex:1;min-width:0;background:#24465c;color:#fff;border:1px solid #6a91a9;border-radius:14px;padding:11px 14px;font-weight:700;cursor:pointer}
 .sq-receipt-panel .receipt-secondary-actions #receipt-close:hover{background:#315c76}
+
+/* Tracker settings nested menu */
+.tracker-tile-menu-panel{min-width:265px;max-width:min(310px,calc(100vw - 32px));padding:10px;display:block}
+.tracker-menu-main,.tracker-settings-view{display:grid;gap:4px}
+.tracker-settings-view[hidden],.tracker-menu-main[hidden]{display:none!important}
+.tracker-tile-menu-panel .tracker-menu-action{width:100%;display:flex;align-items:center;gap:12px;padding:12px 11px;text-align:left;min-height:48px}
+.tracker-menu-glyph{font-size:21px;width:25px;flex:none;text-align:center;color:#c7d9e8}
+.tracker-menu-words{display:flex;flex:1;flex-direction:column;gap:3px;min-width:0}
+.tracker-menu-words small{font-size:12px;line-height:1.4;color:#b9cddd;font-weight:400}
+.tracker-menu-chevron{font-size:27px;line-height:1;color:#c3d9ea;margin-left:4px}
+.tracker-tile-menu-panel .tracker-settings-entry{background:#203f59;border:1px solid #385c78;border-radius:10px}
+.tracker-tile-menu-panel hr{border:0;border-top:1px solid #38566b;width:100%;margin:7px 0}
+.tracker-tile-menu-panel .tracker-settings-back{font-weight:700;font-size:16px;width:100%;text-align:left;padding:12px 10px;margin-bottom:4px}
+.tracker-tile-menu-panel .danger .tracker-menu-glyph{color:#ffb2c0}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -3508,9 +3522,24 @@ async function renderTrackerGallery(){
       var menu=document.createElement('details');menu.className='tracker-tile-menu';
       var menuToggle=document.createElement('summary');menuToggle.textContent='⋯';menuToggle.setAttribute('aria-label','Actions for '+t.name);
       var menuPanel=document.createElement('div');menuPanel.className='tracker-tile-menu-panel';
-      function menuAction(label,cls,fn){var btn=document.createElement('button');btn.type='button';btn.className=cls;btn.textContent=label;btn.onclick=async function(){menu.open=false;await fn();};menuPanel.append(btn);}
-      menuAction('Change banner','',async function(){await sqBannerEdit(t.id,t.name,banner);});
-      if(t.role==='owner'||(d&&d.role==='owner')) menuAction('Rename tracker','',async function(){
+      var settingsView=document.createElement('div');settingsView.className='tracker-settings-view';settingsView.hidden=true;
+      var mainView=document.createElement('div');mainView.className='tracker-menu-main';
+      function makeMenuButton(icon,label,cls,fn,subtitle){
+        var btn=document.createElement('button');btn.type='button';btn.className='tracker-menu-action '+(cls||'');
+        var glyph=document.createElement('span');glyph.className='tracker-menu-glyph';glyph.textContent=icon;
+        var words=document.createElement('span');words.className='tracker-menu-words';
+        var heading=document.createElement('span');heading.textContent=label;words.append(heading);
+        if(subtitle){var hint=document.createElement('small');hint.textContent=subtitle;words.append(hint);}
+        btn.append(glyph,words);btn.onclick=fn;return btn;
+      }
+      var settingsHeader=document.createElement('button');settingsHeader.type='button';settingsHeader.className='tracker-settings-back';settingsHeader.textContent='‹  Tracker settings';
+      settingsHeader.onclick=function(){settingsView.hidden=true;mainView.hidden=false;};settingsView.append(settingsHeader);
+      function settingsAction(icon,label,fn){
+        var btn=makeMenuButton(icon,label,'',async function(){menu.open=false;settingsView.hidden=true;mainView.hidden=false;await fn();});
+        var arrow=document.createElement('span');arrow.className='tracker-menu-chevron';arrow.textContent='›';btn.append(arrow);settingsView.append(btn);
+      }
+      settingsAction('▧','Change banner',async function(){await sqBannerEdit(t.id,t.name,banner);});
+      if(t.role==='owner'||(d&&d.role==='owner')) settingsAction('✎','Rename tracker',async function(){
         var overlay=document.createElement('div');overlay.className='tracker-banner-editor';
         var dialog=document.createElement('form');dialog.className='tracker-banner-dialog';
         dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Rename tracker');
@@ -3533,10 +3562,15 @@ async function renderTrackerGallery(){
         };
         document.body.append(overlay);input.focus();input.select();
       });
-      menuAction('Manage permissions','',async function(){await sqManagePermissions(t);});
-      menuAction('Share tracker','',async function(){await openTracker(t.id);if(current&&current.id===t.id)await openShare();});
-      menuAction(t.role==='owner'?'Delete tracker':'Leave tracker','danger',async function(){try{if(await removeTracker(t))await renderTrackerGallery();}catch(err){alert(err.message||'Could not remove tracker.');}});
-      menu.append(menuToggle,menuPanel);banner.append(menu);
+      settingsAction('♙','Manage permissions',async function(){await sqManagePermissions(t);});
+      var settingsButton=makeMenuButton('⚙','Tracker settings','tracker-settings-entry',function(){mainView.hidden=true;settingsView.hidden=false;},'Change banner, rename, manage permissions');
+      var arrow=document.createElement('span');arrow.className='tracker-menu-chevron';arrow.textContent='›';settingsButton.append(arrow);mainView.append(settingsButton);
+      mainView.append(document.createElement('hr'));
+      mainView.append(makeMenuButton('↥','Share tracker','',async function(){menu.open=false;await openTracker(t.id);if(current&&current.id===t.id)await openShare();}));
+      mainView.append(document.createElement('hr'));
+      mainView.append(makeMenuButton('♜',t.role==='owner'?'Delete tracker':'Leave tracker','danger',async function(){menu.open=false;try{if(await removeTracker(t))await renderTrackerGallery();}catch(err){alert(err.message||'Could not remove tracker.');}}));
+      menu.addEventListener('toggle',function(){if(!menu.open){settingsView.hidden=true;mainView.hidden=false;}});
+      menuPanel.append(mainView,settingsView);menu.append(menuToggle,menuPanel);banner.append(menu);
       var body=document.createElement('div');body.className='tracker-tile-body';
       var head=document.createElement('div');head.className='tracker-tile-head';
       var ico=document.createElement('div');ico.className='tracker-tile-icon';ico.textContent='♧';
