@@ -1245,6 +1245,17 @@ body.notifications-view #tracker-dashboard,body.notifications-view #split-page,b
 body.about-view .sq-header-tour-btn{display:inline-flex}
 .sq-header-tour-btn:hover{background:#1d4c65}
 .sq-header-tour-btn:focus-visible{outline:3px solid #35dfb8;outline-offset:2px}
+
+/* Keep dashboard currency totals on one line inside narrow mobile cards. */
+#tracker-dashboard .sq-overview-stats .sq-stat{min-width:0;overflow:hidden}
+#tracker-dashboard .sq-overview-stats .sq-stat strong{white-space:nowrap;overflow-wrap:normal!important;word-break:normal;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+@media(max-width:650px){
+ #tracker-dashboard .sq-overview-stats{gap:6px!important}
+ #tracker-dashboard .sq-overview-stats .sq-stat{padding:10px 7px!important}
+ #tracker-dashboard .sq-overview-stats .sq-stat strong{font-size:clamp(12px,3.2vw,18px)!important;line-height:1.25;letter-spacing:-.055em}
+ #tracker-dashboard .sq-overview-stats .sq-stat span{font-size:clamp(9px,2vw,11px)!important}
+}
+@media(max-width:380px){#tracker-dashboard .sq-overview-stats .sq-stat strong{font-size:12px!important}}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -5069,6 +5080,12 @@ if(inboxEl){filterInbox();}
 </script>
 <style id="sq-2026-enhancements">
 .sq-expense-extra,.sq-notification-tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0}.sq-expense-extra label,.sq-notification-tools label{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--muted,#bed1df)}.sq-expense-extra select,.sq-notification-tools select select{min-height:38px;border-radius:9px;padding:7px;background:#112b40;color:#f5faff;border:1px solid #45657c}.sq-inbox-group{display:block;font-size:12px;font-weight:750;text-transform:uppercase;letter-spacing:.08em;margin:20px 0 8px;color:#8ab9d1}.sq-inbox-group[hidden]{display:none}.sq-notification-tools{margin-bottom:20px}.sq-overview-stats{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))}.sq-stat{min-width:0}.sq-stat strong{overflow-wrap:anywhere}@media(max-width:550px){.sq-overview-stats{gap:7px!important}.sq-overview-stats .sq-stat{padding:11px!important}.sq-overview-stats .sq-stat strong{font-size:18px!important}.sq-expense-extra{align-items:stretch}.sq-expense-extra>*{flex:1}}
+/* Keep currency values on one line in narrow overview cards. */
+.sq-overview-stats .sq-stat{min-width:0;overflow:hidden}
+.sq-overview-stats .sq-stat strong{display:block;white-space:nowrap!important;overflow-wrap:normal!important;word-break:normal!important;font-size:clamp(15px,2.3vw,34px)!important;letter-spacing:-.045em;line-height:1.2}
+@media(max-width:690px){.sq-overview-stats .sq-stat strong{font-size:clamp(15px,4vw,23px)!important}.sq-overview-stats .sq-stat{padding:12px 9px!important}}
+@media(max-width:390px){.sq-overview-stats{gap:6px!important}.sq-overview-stats .sq-stat strong{font-size:clamp(13px,3.8vw,17px)!important;letter-spacing:-.06em}}
+.sq-inbox-column-title h3{overflow-wrap:anywhere;line-height:1.25}
 </style>
 <script id="sq-2026-enhancements-script">
 (function(){
@@ -5083,12 +5100,6 @@ exportButton?.addEventListener('click',function(){
  const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='squareup-expenses-'+new Date().toISOString().slice(0,10)+'.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 });
 const notificationList=document.getElementById('notifications-list'),notificationFilter=document.getElementById('sq-notification-filter');
-function notificationBucket(dateValue){
- const d=new Date(dateValue),now=new Date();if(isNaN(d.getTime()))return 'Earlier';
- const start=new Date(now.getFullYear(),now.getMonth(),now.getDate());
- const yesterday=new Date(start);yesterday.setDate(start.getDate()-1);
- return d>=start?'Today':d>=yesterday?'Yesterday':'Earlier';
-}
 function notificationCategory(kind){const k=String(kind||'').toLowerCase();return /payment|confirm|dispute/.test(k)?'payments':/chat|message|mention/.test(k)?'messages':'expenses';}
 function organizeInbox(){
  if(!notificationList)return;
@@ -5098,22 +5109,29 @@ function organizeInbox(){
  const rows=Array.from(notificationList.querySelectorAll(':scope > .entry'));
  if(!rows.length)return;
  const source=typeof inbox!=='undefined'&&Array.isArray(inbox)?inbox:[];
+ const known=typeof trackers!=='undefined'&&Array.isArray(trackers)?trackers:[];
  const columns=document.createElement('div');columns.className='sq-inbox-columns';
- const buckets={};
- ['Today','Yesterday','Earlier'].forEach(name=>{
-  const section=document.createElement('section');section.className='sq-inbox-column';section.dataset.bucket=name;
+ const groups=new Map();
+ function groupFor(key,label){
+  if(groups.has(key))return groups.get(key);
+  const section=document.createElement('section');section.className='sq-inbox-column';
   const heading=document.createElement('div');heading.className='sq-inbox-column-title';
-  const title=document.createElement('h3');title.textContent=name;
+  const title=document.createElement('h3');title.textContent=label;
   const count=document.createElement('span');count.className='sq-inbox-count';heading.append(title,count);
   const items=document.createElement('div');items.className='sq-inbox-items';section.append(heading,items);
-  columns.append(section);buckets[name]={section,items,count};
- });
+  columns.append(section);const group={section,items,count};groups.set(key,group);return group;
+ }
  rows.forEach((row,i)=>{
-  const n=source[i];const bucket=notificationBucket(n?.created_at);
+  const n=source[i];
+  const trackerId=n&&(n.tracker_id||n.trackerId);
+  const tracker=trackerId&&(known.find(t=>String(t.id)===String(trackerId))||(typeof current!=='undefined'&&current&&String(current.id)===String(trackerId)?current:null));
+  const name=tracker?(tracker.name||tracker.title||'Unnamed tracker'):(trackerId?'Other tracker updates':'General notifications');
+  const key=tracker?'tracker:'+trackerId:(trackerId?'unknown:'+trackerId:'general');
+  const group=groupFor(key,name);
   row.dataset.sqInboxCategory=n?notificationCategory(n.kind):'expenses';
   row.dataset.sqInboxUnread=n&&!n.read_at?'true':'false';
   row.classList.toggle('sq-unread-notification',row.dataset.sqInboxUnread==='true');
-  buckets[bucket].items.append(row);
+  group.items.append(row);
  });
  notificationList.prepend(columns);filterRows();
 }
