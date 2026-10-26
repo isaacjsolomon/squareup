@@ -3314,7 +3314,7 @@ async function renderTrackerGallery(){
     renderPicker();
     if(!list.length){gallery.innerHTML='<div class="trackers-empty">No trackers yet. Create your first tracker to get started.</div>';return;}
     gallery.replaceChildren();
-    var details=await Promise.all(list.map(function(t){return api('trackers/'+encodeURIComponent(t.id)).catch(function(err){return {loadError:err.message};});}));
+    var details=await Promise.all(list.map(async function(t){try{return await api('trackers/'+encodeURIComponent(t.id));}catch(err){return {loadError:err.message};}}));
     if(serial!==trackerGallerySerial)return;
     list.forEach(function(t,i){
       var d=details[i];
@@ -3740,7 +3740,7 @@ async function syncTrackers(user) {
     api("trackers/" + current.id).then(applyDetail).catch(function (err) {
       if (err.status === 404) { alert("You no longer have access to this tracker."); loadTrackers(); }
     });
-  }, 8000);
+  }, 20000);
 }
 
 $("tb-login").onclick = function () { openAuth("login"); };
@@ -4285,9 +4285,9 @@ async function loadRecurring(){var el=document.getElementById('recurring-list');
 document.getElementById('recurring-list').addEventListener('click',async function(ev){var id=ev.target.dataset.stopRecurring;if(!id||!current)return;if(!confirm('Stop future repeats? Existing expenses will remain.'))return;try{await api('trackers/'+current.id+'/recurring/'+id,'DELETE');await loadRecurring();}catch(err){alert(err.message);}});
 document.getElementById('tracker-chat-form').addEventListener('submit',async function(ev){ev.preventDefault();if(!current)return alert('Open a shared tracker first.');var input=document.getElementById('tracker-chat-input'),message=input.value.trim();if(!message&&!sqPhotoFile)return;var button=this.querySelector('button[type=submit]');button.disabled=true;try{var photoId=sqPhotoFile?await sqUploadPhoto(sqPhotoFile):null;var mentions=[...sqMentionIds].filter(mid=>{var m=current.members.find(x=>x.id===mid);return m&&message.includes('@'+m.name);});await api('trackers/'+current.id+'/chat','POST',{message,photoId,mentions,replyTo:squareUpReplyTo});input.value='';sqPhotoFile=null;sqMentionIds.clear();document.getElementById('sq-chat-photo-input').value='';document.getElementById('sq-photo-preview').hidden=true;squareUpReplyTo=null;document.getElementById('chat-reply-target').hidden=true;await loadTrackerChat();await refreshInbox();}catch(err){alert(err.message);}finally{button.disabled=false;}});
 var extraLastTracker=null;
-setInterval(function(){if(current){loadTrackerChat();loadRecurring();}},30000);
+setInterval(function(){if(current && document.visibilityState === "visible"){loadTrackerChat();loadRecurring();}},30000);
 
-setInterval(function(){if(current)refreshInbox();},45000);
+setInterval(function(){if(current && document.visibilityState === "visible")refreshInbox();},45000);
 
 
 
