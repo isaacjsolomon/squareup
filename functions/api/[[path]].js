@@ -1944,6 +1944,74 @@ const owner =
   (!trackerOwnerRecord?.owner_id && m.role === 'owner');
 const sub = parts[2];
 
+    
+async function requiresExpenseApproval() {
+  const rows = await db('squareup_tracker_settings', {
+    filters: {
+      tracker_id: 'eq.' + id
+    },
+    limit: 1
+  });
+
+  return rows.length
+    ? rows[0].require_expense_approval !== false
+    : true;
+}
+
+if (sub === 'expense-approval-settings' && parts.length === 3) {
+  if (method === 'GET') {
+    return json({
+      requireExpenseApproval: await requiresExpenseApproval()
+    });
+  }
+
+  if (method === 'PATCH') {
+    if (!owner) {
+      return fail(
+        'Only the tracker owner can change expense approval settings.',
+        403
+      );
+    }
+
+    if (typeof body.requireExpenseApproval !== 'boolean') {
+      return fail(
+        'Choose whether expense approval is required.',
+        400
+      );
+    }
+
+    const existing = await db('squareup_tracker_settings', {
+      filters: {
+        tracker_id: 'eq.' + id
+      },
+      limit: 1
+    });
+
+    await db('squareup_tracker_settings', existing.length ? {
+      method: 'PATCH',
+      filters: {
+        tracker_id: 'eq.' + id
+      },
+      body: {
+        require_expense_approval: body.requireExpenseApproval
+      }
+    } : {
+      method: 'POST',
+      body: {
+        tracker_id: id,
+        require_expense_approval: body.requireExpenseApproval
+      }
+    });
+
+    return json({
+      requireExpenseApproval: body.requireExpenseApproval
+    });
+  }
+
+  return fail('Method not allowed', 405);
+}
+
+
 // =============================================
 // TRACKER PERMISSIONS
 // =============================================
@@ -3170,12 +3238,15 @@ if (!(e.amount > 0)) {
           );
 
 
+
 const pending =
   e.type === 'payment' ||
   (
     e.type === 'debt' &&
-    debtor.user_id !== me.id
+    debtor.user_id !== me.id &&
+    await requiresExpenseApproval()
   );
+
 
         const created = (await db('tracker_entries', {
           method: 'POST',
