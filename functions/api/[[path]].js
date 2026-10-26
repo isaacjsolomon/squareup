@@ -1882,8 +1882,24 @@ if (!validCurrency(currency)) {
   return fail('Tracker not found.', 404);
 }
 
-    const owner = m.role === 'owner';
-    const sub = parts[2];
+  const owner = m.role === 'owner';
+const sub = parts[2];
+
+// PAYMENT CONFIRMATIONS
+if (
+  sub === 'payments' &&
+  uuid.test(parts[3] || '') &&
+  parts.length === 5 &&
+  method === 'POST'
+) {
+  // Keep the entire existing payment confirmation
+  // handler here, including all its database operations.
+}
+
+// TRACKER DETAILS
+if (!sub) {
+  // Existing tracker details code stays unchanged.
+}
     console.log('TRACKER ROUTE REACHED', {
   trackerId: id,
   sub,
@@ -2533,123 +2549,6 @@ if (
     }
 
    
-// PAYMENT CONFIRMATIONS
-if (
-  sub === 'payments' &&
-  uuid.test(parts[3] || '') &&
-  parts.length === 5 &&
-  method === 'POST'
-) {
-
-  console.log('PAYMENT CONFIRMATION HANDLER REACHED', {
-  trackerId: id,
-  paymentId: parts[3],
-  action: parts[4]
-});
-  const action = parts[4];
-
-  if (!['confirm', 'dispute'].includes(action)) {
-    return fail('Invalid payment action.', 400);
-  }
-
-  const entry = (await db('tracker_entries', {
-    filters: {
-      id: 'eq.' + parts[3],
-      tracker_id: 'eq.' + id
-    },
-    limit: 1
-  }))[0];
-
-  if (!entry || entry.type !== 'payment') {
-    return fail(
-      'Payment record not found. Refresh the tracker.',
-      404
-    );
-  }
-
-  if (entry.payment_status !== 'pending') {
-    return fail(
-      'This payment has already been processed or is no longer pending.',
-      409
-    );
-  }
-
-  const members = await db('tracker_members', {
-    filters: { tracker_id: 'eq.' + id }
-  });
-
-  const recipient = members.find(
-    x => x.user_id === me.id
-  );
-
-  if (
-    !recipient ||
-    recipient.name.toLowerCase() !==
-      String(entry.to_name).toLowerCase()
-  ) {
-    return fail(
-      'Only the payment recipient can respond.',
-      403
-    );
-  }
-
-  const status = action === 'confirm'
-    ? 'confirmed'
-    : 'disputed';
-
-  // Only update payments that are still pending.
-  const updated = await db('tracker_entries', {
-    method: 'PATCH',
-    filters: {
-      id: 'eq.' + entry.id,
-      tracker_id: 'eq.' + id,
-      type: 'eq.payment',
-      payment_status: 'eq.pending'
-    },
-    body: {
-      payment_status: status
-    }
-  });
-
-  if (!updated.length) {
-    return fail(
-      'Payment was already processed. Please refresh.',
-      409
-    );
-  }
-
-  // Notify the person who reported the payment.
-  if (entry.created_by && entry.created_by !== me.id) {
-    try {
-      await db('squareup_notifications', {
-        method: 'POST',
-        body: {
-          recipient_id: entry.created_by,
-          tracker_id: id,
-          entry_id: entry.id,
-          kind: 'payment_' + status,
-          title: 'Payment ' + status,
-          message:
-            me.name + ' ' +
-            (status === 'confirmed'
-              ? 'confirmed'
-              : 'disputed') +
-            ' a $' +
-            Number(entry.amount).toFixed(2) +
-            ' payment.'
-        }
-      });
-    } catch (error) {
-      console.error(
-        'Payment notification failed:',
-        error.message
-      );
-    }
-  }
-
-  return json(await detail(id));
-}
-
 
     // ADD OR DELETE EXPENSES
     if (sub === 'entries') {
