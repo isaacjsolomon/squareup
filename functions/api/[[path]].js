@@ -615,14 +615,11 @@ if (
   // This preserves access to legacy owner-created trackers.
   
 async function member(id) {
+  if (typeof id !== 'string' || !uuid.test(id)) {
+    console.error('Invalid tracker ID:', id);
+    return null;
+  }
   
-if (
-  typeof id !== 'string' ||
- !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
-) {
-  console.error('Invalid tracker ID:', id);
-  return null;
-}
 
   const trackers = await db('trackers', {
     filters: { id: 'eq.' + id },
@@ -1859,9 +1856,13 @@ if (
           id: t.id,
           name: t.name,
           currency: t.currency || 'USD',
-          role: members.find(
-            m => m.tracker_id === t.id
-          )?.role,
+         role:
+  String(t.owner_id).toLowerCase() ===
+  String(me.id).toLowerCase()
+    ? 'owner'
+    : members.find(
+        m => m.tracker_id === t.id
+      )?.role || 'member',
           memberCount: counts.filter(
             m => m.tracker_id === t.id
           ).length
@@ -3274,30 +3275,25 @@ if (notify.user_id !== me.id) {
         return json(await detail(id), 201);
       }
 
- 
-if (!can('delete_expenses')) {
-  return fail(
-    'You do not have permission to delete expenses.',
-    403
-  );
+if (
+  sub === 'entries' &&
+  parts.length === 4 &&
+  method === 'DELETE'
+) {
+  
+  if (!can('delete_expenses')) {
+    return fail(
+      'You do not have permission to delete expenses.',
+      403
+    );
+  }
+
+// Require a valid entry ID before deleting anything.
+const entryId = String(parts[3] || '');
+
+if (!uuid.test(entryId)) {
+  return fail('Invalid entry ID.', 400);
 }
-  // Require a valid entry ID to prevent accidental bulk deletion.
-
-const entryId = String(
-  new URL(request.url).pathname.split('/').filter(Boolean).at(-1) || ''
-);
-
-
- 
-if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(entryId)) {
-  return json({
-    error: 'Invalid entry ID.',
-    receivedEntryId: entryId,
-    routeParts: parts,
-    requestPath: new URL(request.url).pathname
-  }, 400);
-}
-
   // Find the entry in this tracker.
   const existing = await db('tracker_entries', {
     filters: {
@@ -3345,8 +3341,8 @@ if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(entr
   }
 
   return json(await detail(id));
+  }
 }
-
 
     // SHARE TRACKER
     if (sub === 'invite' && parts.length === 3 && method === 'POST') {
