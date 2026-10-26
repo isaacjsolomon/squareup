@@ -1220,6 +1220,11 @@ body.notifications-view #tracker-dashboard,body.notifications-view #split-page,b
 .sq-receipt-panel .receipt-secondary-actions #receipt-close{flex:1;min-width:0;background:#24465c;color:#fff;border:1px solid #6a91a9;border-radius:14px;padding:11px 14px;font-weight:700;cursor:pointer}
 .sq-receipt-panel .receipt-secondary-actions #receipt-close:hover{background:#315c76}
 
+/* Expense approval setting dialog */
+.sq-tracker-approval-choice{display:flex;align-items:center;gap:12px;padding:15px;margin:14px 0;background:rgba(98,160,194,.12);border:1px solid #45677f;border-radius:12px;font-weight:650;line-height:1.4}
+.sq-tracker-approval-choice input{width:21px;height:21px;flex:none;accent-color:#37d5b7}
+.sq-tracker-approval-status{font-size:13px;color:#b7d1e1;line-height:1.5}
+
 /* Tracker settings nested menu */
 .tracker-tile-menu-panel{min-width:265px;max-width:min(310px,calc(100vw - 32px));padding:10px;display:block}
 .tracker-menu-main,.tracker-settings-view{display:grid;gap:4px}
@@ -3563,7 +3568,41 @@ async function renderTrackerGallery(){
         document.body.append(overlay);input.focus();input.select();
       });
       settingsAction('♙','Manage permissions',async function(){await sqManagePermissions(t);});
-      var settingsButton=makeMenuButton('⚙','Tracker settings','tracker-settings-entry',function(){mainView.hidden=true;settingsView.hidden=false;},'Change banner, rename, manage permissions');
+      if(t.role==='owner'||(d&&d.role==='owner')) settingsAction('✓','Expense approval',async function(){
+        var overlay=document.createElement('div');overlay.className='tracker-banner-editor';
+        var dialog=document.createElement('form');dialog.className='tracker-banner-dialog';
+        dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');
+        dialog.setAttribute('aria-label','Expense approval settings');
+        var heading=document.createElement('h2');heading.textContent='Expense approval';
+        var info=document.createElement('p');info.textContent='Choose whether a member must approve expenses that another person assigns to them before those expenses affect tracker balances. Payment confirmations are separate and still require confirmation.';
+        var label=document.createElement('label');label.className='sq-tracker-approval-choice';
+        var toggle=document.createElement('input');toggle.type='checkbox';toggle.disabled=true;
+        var words=document.createElement('span');words.textContent='Require approval from the person charged';
+        label.append(toggle,words);
+        var status=document.createElement('p');status.className='sq-tracker-approval-status';status.textContent='Loading current setting…';
+        var actions=document.createElement('div');actions.className='banner-editor-actions';
+        var cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';cancel.onclick=function(){overlay.remove();};
+        var save=document.createElement('button');save.type='submit';save.textContent='Save setting';save.className='accent';save.disabled=true;
+        actions.append(cancel,save);dialog.append(heading,info,label,status,actions);overlay.append(dialog);
+        overlay.onclick=function(ev){if(ev.target===overlay)overlay.remove();};
+        document.body.append(overlay);
+        var endpoint='trackers/'+encodeURIComponent(t.id)+'/expense-approval-settings';
+        try{
+          var data=await api(endpoint);
+          if(!overlay.isConnected)return;
+          toggle.checked=data.requireExpenseApproval!==false;
+          toggle.disabled=false;save.disabled=false;
+          status.textContent=toggle.checked?'Approval is currently required.':'Approval is currently optional.';
+        }catch(err){status.textContent='Could not load this setting: '+(err.message||err);}
+        toggle.onchange=function(){status.textContent=toggle.checked?'New expenses assigned to someone else will await their approval.':'New expenses will count immediately without debtor approval.';};
+        dialog.onsubmit=async function(ev){ev.preventDefault();save.disabled=true;toggle.disabled=true;status.textContent='Saving…';
+          try{
+            await api(endpoint,'PATCH',{requireExpenseApproval:toggle.checked});
+            overlay.remove();
+          }catch(err){status.textContent='Could not save: '+(err.message||err);save.disabled=false;toggle.disabled=false;}
+        };
+      });
+      var settingsButton=makeMenuButton('⚙','Tracker settings','tracker-settings-entry',function(){mainView.hidden=true;settingsView.hidden=false;},'Banner, name, permissions, approvals');
       var arrow=document.createElement('span');arrow.className='tracker-menu-chevron';arrow.textContent='›';settingsButton.append(arrow);mainView.append(settingsButton);
       mainView.append(document.createElement('hr'));
       mainView.append(makeMenuButton('↥','Share tracker','',async function(){menu.open=false;await openTracker(t.id);if(current&&current.id===t.id)await openShare();}));
