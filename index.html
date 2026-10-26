@@ -1571,7 +1571,7 @@ body.friends-view .wrap #friends-page{display:block!important}
 
   <section id="notifications-page" aria-label="Notification Center">
     <div class="sq-notifications-header"><div><h2>Notification Center</h2><p>Expenses, payments, invitations, and group updates in one place.</p></div><button type="button" id="notifications-back" class="small-btn">← Back to Home</button></div>
-    <div id="notifications-panel" class="sidebar-notification-panel"><div class="notification-panel-heading">Your updates</div><div id="notifications-list"><p>Loading notifications…</p></div></div>
+    <div id="notifications-panel" class="sidebar-notification-panel"><div class="notification-panel-heading">Your updates</div><div class="sq-notification-tools"><label>Show <select id="sq-notification-filter"><option value="all">All notifications</option><option value="unread">Unread only</option><option value="payments">Payments</option><option value="messages">Messages</option><option value="expenses">Expenses & invites</option></select></label></div><div id="notifications-list"><p>Loading notifications…</p></div></div>
   </section>
   <div id="tracker-dashboard">
   <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="budget" role="tab" aria-selected="false">Budget</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button></div>
@@ -1579,7 +1579,7 @@ body.friends-view .wrap #friends-page{display:block!important}
     <div class="sq-clean-balance-copy"><span class="sq-clean-eyebrow">Your net balance</span><strong id="sq-clean-net">—</strong><span id="sq-clean-explanation">Your tracker balance</span></div>
     <div class="sq-clean-balance-actions"><button type="button" class="sq-clean-settle" id="sq-clean-settle">Settle up</button><button type="button" class="sq-clean-remind" id="sq-clean-remind">Send reminder</button></div>
   </section>
-  <div class="sq-overview-stats" id="sq-overview-stats" hidden><div class="sq-stat negative"><span>You owe</span><strong id="sq-stat-owe">—</strong></div><div class="sq-stat"><span>Owed to you</span><strong id="sq-stat-owed">—</strong></div><div class="sq-stat neutral"><span>Net balance</span><strong id="sq-stat-net">—</strong></div></div>
+  <div class="sq-overview-stats" id="sq-overview-stats"><div class="sq-stat negative"><span>You owe</span><strong id="sq-stat-owe">—</strong></div><div class="sq-stat"><span>Owed to you</span><strong id="sq-stat-owed">—</strong></div><div class="sq-stat neutral"><span>Net balance</span><strong id="sq-stat-net">—</strong></div></div>
   <!-- CURRENT BALANCES: EXPENSES TAB -->
   <div class="card" id="balances-card">
     <h2>Current balances</h2>
@@ -1654,7 +1654,7 @@ body.friends-view .wrap #friends-page{display:block!important}
     <button type="button" id="sq-activity-toggle" class="sq-activity-toggle" aria-expanded="false" aria-controls="sq-activity-content"><span><strong>Recent activity</strong><small>Expenses and payments in this tracker</small></span><svg class="sq-activity-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
     <div id="sq-activity-content" hidden>
       <div class="sq-expense-activity-top sq-activity-filters"><div style="display:flex;gap:9px;flex-wrap:wrap"><input class="sq-expense-search" id="sq-expense-search" type="search" placeholder="Search expenses..." aria-label="Search expenses"><select id="sq-expense-time" class="sq-expense-time" aria-label="Filter by time"><option value="all">All time</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last year</option></select></div></div>
-      <div id="history"></div><div class="sq-expense-count" id="sq-expense-count" aria-live="polite"></div>
+      <div class="sq-expense-extra"><label>Status <select id="sq-expense-status"><option value="all">All statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="disputed">Disputed</option></select></label><button type="button" id="sq-export-expenses" class="small-btn">↓ Export CSV</button></div><div id="history"></div><div class="sq-expense-count" id="sq-expense-count" aria-live="polite"></div>
       <div class="sq-clean-activity-heading" style="justify-content:flex-end;margin-top:12px"><button type="button" id="sq-activity-all" class="small-btn">View all expenses →</button></div>
     </div>
   </div>
@@ -1785,7 +1785,7 @@ body.friends-view .wrap #friends-page{display:block!important}
 <p aria-live="polite" class="settings-muted" id="settings-install-status" role="status"></p>
 </div>
         </div>
-        <div><div class="settings-panel" id="sq-notification-preferences"><h3>Notification preferences</h3><p class="settings-muted">Choose which alerts appear in your notification center and which push alerts you receive. Preferences sync across devices.</p><label class="sq-preference"><input type="checkbox" data-sq-pref="expenses" checked>New expenses</label><label class="sq-preference"><input type="checkbox" data-sq-pref="payments" checked>Payments and confirmations</label><label class="sq-preference"><input type="checkbox" data-sq-pref="messages" checked>Group chat messages</label><label class="sq-preference"><input type="checkbox" data-sq-pref="mentions" checked>Mentions in group chat</label><label class="sq-preference"><input type="checkbox" data-sq-pref="reminders" checked>Due-date reminders</label><p class="settings-muted" id="sq-pref-status" role="status"></p></div></div>
+        <div><div class="settings-panel" id="sq-appearance-settings"><h3>Appearance</h3><p class="settings-muted">Choose a look for this browser. Your tracker data stays unchanged.</p><label class="sq-appearance-label">Theme <select id="sq-appearance-theme"><option value="default">Classic navy</option><option value="midnight">Midnight</option><option value="ocean">Ocean blue</option><option value="light">Light</option></select></label><label class="sq-appearance-label">Layout <select id="sq-appearance-density"><option value="comfortable">Comfortable</option><option value="compact">Compact</option></select></label></div><div class="settings-panel" id="sq-notification-preferences"><h3>Notification preferences</h3><p class="settings-muted">Choose which alerts appear in your notification center and which push alerts you receive. Preferences sync across devices.</p><label class="sq-preference"><input type="checkbox" data-sq-pref="expenses" checked>New expenses</label><label class="sq-preference"><input type="checkbox" data-sq-pref="payments" checked>Payments and confirmations</label><label class="sq-preference"><input type="checkbox" data-sq-pref="messages" checked>Group chat messages</label><label class="sq-preference"><input type="checkbox" data-sq-pref="mentions" checked>Mentions in group chat</label><label class="sq-preference"><input type="checkbox" data-sq-pref="reminders" checked>Due-date reminders</label><p class="settings-muted" id="sq-pref-status" role="status"></p></div></div>
       </div>
     </div>
     <div id="settings-content-account" class="settings-tab-content" role="tabpanel" aria-labelledby="settings-tab-account" hidden>
@@ -4766,6 +4766,7 @@ $('sq-chat-pin').addEventListener('click',async e=>{if(e.target.id==='sq-unpin-c
  const category=document.getElementById('sq-expense-category');
  const member=document.getElementById('sq-expense-member');
  const count=document.getElementById('sq-expense-count');
+ const status=document.getElementById('sq-expense-status');
  if(!dashboard||!history||!search)return;
  document.querySelectorAll('[data-sq-quick]').forEach(button=>button.addEventListener('click',()=>{
    const target=document.getElementById(button.dataset.sqQuick);
@@ -4789,12 +4790,13 @@ $('sq-chat-pin').addEventListener('click',async e=>{if(e.target.id==='sq-unpin-c
    const note=row.querySelector('.note')?.textContent||'';
    const matchDate=note.match(/\b(\d{4}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}\/\d{4})\b/);
    const date=matchDate?new Date(matchDate[1]):null;
-   const show=(!query||text.includes(query))&&(category.value==='all'||chip===category.value)&&(member.value==='all'||names.includes(member.value))&&(!cutoff||(date&&!isNaN(date)&&date>=cutoff));
+   const statusMatch=!status||status.value==='all'||(row.querySelector('.note')?.textContent||'').toLowerCase().includes(status.value);
+   const show=statusMatch&&(!query||text.includes(query))&&(category.value==='all'||chip===category.value)&&(member.value==='all'||names.includes(member.value))&&(!cutoff||(date&&!isNaN(date)&&date>=cutoff));
    row.hidden=!show;if(show)shown++;
   });
   count.textContent=shown+' of '+rows.length+' activities shown';
  }
- [search,time,category,member].forEach(el=>el.addEventListener(el===search?'input':'change',refresh));
+ [search,time,category,member,status].filter(Boolean).forEach(el=>el.addEventListener(el===search?'input':'change',refresh));
  new MutationObserver(()=>queueMicrotask(refresh)).observe(history,{childList:true});
  refresh();
 })();
@@ -5031,6 +5033,33 @@ if(inboxEl){new MutationObserver(filterInbox).observe(inboxEl,{childList:true});
  close.addEventListener('click',dismiss);back.addEventListener('click',function(){if(i>0){i--;paint();}});next.addEventListener('click',function(){if(i<steps.length-1){i++;paint();}else dismiss();});
  overlay.addEventListener('click',function(e){if(e.target===overlay)dismiss();});
  document.addEventListener('keydown',function(e){if(overlay.hidden)return;if(e.key==='Escape')dismiss();if(e.key==='Tab'){var focusables=[close,back,next].filter(function(el){return !el.disabled;});var idx=focusables.indexOf(document.activeElement);if(e.shiftKey&&idx===0){e.preventDefault();focusables[focusables.length-1].focus();}else if(!e.shiftKey&&idx===focusables.length-1){e.preventDefault();focusables[0].focus();}}});
+})();
+</script>
+<style id="sq-2026-enhancements">
+.sq-expense-extra,.sq-notification-tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0}.sq-expense-extra label,.sq-notification-tools label,.sq-appearance-label{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--muted,#bed1df)}.sq-expense-extra select,.sq-notification-tools select,.sq-appearance-label select{min-height:38px;border-radius:9px;padding:7px;background:#112b40;color:#f5faff;border:1px solid #45657c}.sq-appearance-label{margin:12px 0;justify-content:space-between}.sq-appearance-label select{min-width:160px}.sq-inbox-group{font-size:12px;font-weight:750;text-transform:uppercase;letter-spacing:.08em;margin:20px 0 8px;color:#8ab9d1}.sq-inbox-group[hidden]{display:none}.sq-notification-tools{margin-bottom:20px}.sq-overview-stats{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))}.sq-stat{min-width:0}.sq-stat strong{overflow-wrap:anywhere}body.sq-density-compact .card,body.sq-density-compact .sq-stat{padding:12px!important}body.sq-density-compact .entry{padding-top:7px!important;padding-bottom:7px!important}body.sq-theme-midnight{--bg:#060b16;--card:#0b1525;filter:saturate(.8)}body.sq-theme-ocean{--bg:#071f33;--card:#103a53;filter:saturate(1.12)}body.sq-theme-light{filter:none!important;background:#e7eef5!important;color:#112b40!important}body.sq-theme-light .card,body.sq-theme-light .settings-panel,body.sq-theme-light #tracker-dashboard .sq-stat,body.sq-theme-light #tracker-dashboard .sq-clean-balance{background:#f8fbff!important;color:#17344a!important;border-color:#c5d7e5!important}body.sq-theme-light .card *,body.sq-theme-light .settings-panel *{color:inherit}body.sq-theme-light .sq-clean-balance *{color:#17344a!important}@media(max-width:550px){.sq-overview-stats{gap:7px!important}.sq-overview-stats .sq-stat{padding:11px!important}.sq-overview-stats .sq-stat strong{font-size:18px!important}.sq-expense-extra{align-items:stretch}.sq-expense-extra>*{flex:1}}
+</style>
+<script id="sq-2026-enhancements-script">
+(function(){
+'use strict';
+const theme=document.getElementById('sq-appearance-theme'),density=document.getElementById('sq-appearance-density');
+function applyAppearance(){document.body.classList.remove('sq-theme-midnight','sq-theme-ocean','sq-theme-light','sq-density-compact');if(theme.value!=='default')document.body.classList.add('sq-theme-'+theme.value);if(density.value==='compact')document.body.classList.add('sq-density-compact');}
+try{const saved=JSON.parse(localStorage.getItem('sq_appearance_v1')||'{}');if(['default','midnight','ocean','light'].includes(saved.theme))theme.value=saved.theme;if(['comfortable','compact'].includes(saved.density))density.value=saved.density;}catch(e){}
+applyAppearance();[theme,density].forEach(el=>el.addEventListener('change',()=>{applyAppearance();try{localStorage.setItem('sq_appearance_v1',JSON.stringify({theme:theme.value,density:density.value}));}catch(e){}}));
+const exportButton=document.getElementById('sq-export-expenses');
+exportButton?.addEventListener('click',function(){
+ const visible=Array.from(document.querySelectorAll('#history > .entry')).filter(row=>!row.hidden);
+ if(!visible.length){alert('There are no matching expenses to export.');return;}
+ const quote=x=>'"'+String(x??'').replace(/"/g,'""')+'"';
+ const lines=[['Type','Description','Details','Exported at'].map(quote).join(',')];
+ visible.forEach(row=>{const type=row.querySelector('.tag')?.textContent.trim()||'';const description=row.querySelector('.text')?.childNodes[0]?.textContent||row.querySelector('.text')?.textContent||'';const details=row.querySelector('.note')?.textContent||'';lines.push([type,description,details,new Date().toISOString()].map(quote).join(','));});
+ const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='squareup-expenses-'+new Date().toISOString().slice(0,10)+'.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+const notificationList=document.getElementById('notifications-list'),notificationFilter=document.getElementById('sq-notification-filter');
+function decorateInbox(){if(!notificationList)return;notificationList.querySelectorAll('.sq-inbox-group').forEach(x=>x.remove());const rows=Array.from(notificationList.querySelectorAll(':scope > .entry'));const source=typeof inbox!=='undefined'&&Array.isArray(inbox)?inbox:[];let last='';const today=new Date().toDateString();const yesterday=new Date(Date.now()-86400000).toDateString();rows.forEach((row,i)=>{const n=source[i];const date=n?.created_at?new Date(n.created_at):null;const group=date&&!isNaN(date)?date.toDateString()===today?'Today':date.toDateString()===yesterday?'Yesterday':'Earlier':'Due dates';const kind=String(n?.kind||'').toLowerCase();const category=kind.includes('payment')||kind.includes('confirm')?'payments':kind.includes('chat')||kind.includes('message')||kind.includes('mention')?'messages':'expenses';row.dataset.sqInboxCategory=category;row.dataset.sqInboxUnread=n&&!n.read_at?'true':'false';if(group!==last){const header=document.createElement('div');header.className='sq-inbox-group';header.textContent=group;row.before(header);last=group;}});filterRows();}
+function filterRows(){if(!notificationList)return;const rows=Array.from(notificationList.querySelectorAll(':scope > .entry'));const selection=notificationFilter?.value||'all';rows.forEach(row=>{const type=row.dataset.sqInboxCategory;const pref=typeof prefs!=='undefined'?prefs:{};const allowed=pref[type]!==false;const matches=selection==='all'||(selection==='unread'&&row.dataset.sqInboxUnread==='true')||selection===type;row.hidden=!allowed||!matches;});let group=null,hasVisible=false;Array.from(notificationList.children).forEach(el=>{if(el.classList.contains('sq-inbox-group')){if(group)group.hidden=!hasVisible;group=el;hasVisible=false;}else if(el.classList.contains('entry')&&!el.hidden){hasVisible=true;}});if(group)group.hidden=!hasVisible;}
+notificationFilter?.addEventListener('change',filterRows);
+if(notificationList){let scheduled=false;new MutationObserver(()=>{if(scheduled)return;scheduled=true;queueMicrotask(()=>{scheduled=false;decorateInbox();});}).observe(notificationList,{childList:true});decorateInbox();}
+const tour=document.getElementById('sq-replay-tour');if(tour){const original=tour.click.bind(tour);let prompted=false;function maybeTour(){if(prompted)return;prompted=true;try{if(localStorage.getItem('sq_tour_seen_v1'))return;localStorage.setItem('sq_tour_seen_v1','1');}catch(e){return;}if(document.getElementById('sq-tour-overlay')?.hidden)original();}window.addEventListener('load',()=>{setTimeout(()=>{if(document.querySelector('#tracker-dashboard')&&!document.body.classList.contains('auth-view')&&document.body.classList.contains('logged-in'))maybeTour();},1800);});}
 })();
 </script>
 </body>
