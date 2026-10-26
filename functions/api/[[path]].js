@@ -1886,7 +1886,16 @@ if (!validCurrency(currency)) {
 const sub = parts[2];
 
 // PAYMENT CONFIRMATIONS
-if (
+console.log('PAYMENT ROUTE CHECK', {
+  sub,
+  paymentId: parts[3],
+  action: parts[4],
+  validUUID: uuid.test(parts[3] || ''),
+  partsLength: parts.length,
+  method
+});
+    
+  if (
   sub === 'payments' &&
   uuid.test(parts[3] || '') &&
   parts.length === 5 &&
