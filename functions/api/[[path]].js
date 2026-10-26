@@ -1895,8 +1895,34 @@ if (!validCurrency(currency)) {
   return fail('Tracker not found.', 404);
 }
 
-  const owner = m.role === 'owner';
+ const owner = m.role === 'owner';
 const sub = parts[2];
+
+// Tracker permissions
+// Existing "member" accounts keep Editor access.
+const role = owner
+  ? 'owner'
+  : m.role === 'viewer'
+    ? 'viewer'
+    : 'editor';
+
+function can(permission) {
+  if (role === 'owner') return true;
+
+  const editorPermissions = [
+    'add_expenses',
+    'edit_own_expenses',
+    'log_payments'
+  ];
+
+  const viewerPermissions = [];
+
+  if (role === 'editor') {
+    return editorPermissions.includes(permission);
+  }
+
+  return viewerPermissions.includes(permission);
+}
 
 // PAYMENT CONFIRMATIONS
 console.log('PAYMENT ROUTE CHECK', {
@@ -2055,9 +2081,15 @@ if (entry.type !== 'payment') {
         }
       }
 
-      if (method === 'PATCH') {
-        const patch = {};
+     if (method === 'PATCH') {
+  if (!can('change_settings')) {
+    return fail(
+      'You do not have permission to change tracker settings.',
+      403
+    );
+  }
 
+  const patch = {};
         
 if (body.name !== undefined) {
   if (!owner) {
@@ -2125,6 +2157,12 @@ if (body.name !== undefined) {
 // =============================================
 
 if (sub === 'budget' && parts.length === 3) {
+    if (!can('change_settings')) {
+    return fail(
+      'You do not have permission to change the group budget.',
+      403
+    );
+  }
   if (method !== 'PATCH') {
     return fail('Method not allowed', 405);
   }
@@ -2694,6 +2732,21 @@ if (
             'Check the names and amount.',
             400
           );
+
+          const requiredPermission =
+    e.type === 'payment'
+      ? 'log_payments'
+      : 'add_expenses';
+
+  if (!can(requiredPermission)) {
+    return fail(
+      e.type === 'payment'
+        ? 'You do not have permission to log payments.'
+        : 'You do not have permission to add expenses.',
+      403
+    );
+  }
+        
 // CONVERT EXPENSES INTO TRACKER CURRENCY
 
 const tracker = (await db('trackers', {
@@ -2868,6 +2921,12 @@ if (notify.user_id !== me.id) {
 
  
 if (method === 'DELETE') {
+    if (!can('delete_expenses')) {
+    return fail(
+      'Only the tracker owner can delete expenses.',
+      403
+    );
+  }
   // Require a valid entry ID to prevent accidental bulk deletion.
 
 const entryId = String(
@@ -2999,6 +3058,77 @@ if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(entr
       return json({ token });
     }
 
+    // CHANGE TRACKER MEMBER ROLE
+if (
+  sub === 'members' &&
+  parts.length === 5 &&
+  parts[4] === 'role' &&
+  method === 'PATCH'
+) {
+  if (!owner) {
+    return fail(
+      'Only the tracker owner can manage permissions.',
+      403
+    );
+  }
+
+  const targetId = parts[3];
+  const newRole = String(body.role || '').toLowerCase();
+
+  if (!uuid.test(targetId)) {
+    return fail('Invalid member ID.', 400);
+  }
+
+  if (!['editor', 'viewer'].includes(newRole)) {
+    return fail('Choose Editor or Viewer.', 400);
+  }
+
+  if (targetId === me.id) {
+    return fail(
+      'You cannot change your own owner role.',
+      403
+    );
+  }
+
+  const target = (await db('tracker_members', {
+    filters: {
+      tracker_id: 'eq.' + id,
+      user_id: 'eq.' + targetId
+    },
+    limit: 1
+  }))[0];
+
+  if (!target) {
+    return fail('Member not found.', 404);
+  }
+
+  const tracker = (await db('trackers', {
+    filters: { id: 'eq.' + id },
+    limit: 1
+  }))[0];
+
+  if (
+    target.role === 'owner' ||
+    String(tracker?.owner_id).toLowerCase() ===
+      targetId.toLowerCase()
+  ) {
+    return fail(
+      'The tracker owner cannot be reassigned.',
+      403
+    );
+  }
+
+  await db('tracker_members', {
+    method: 'PATCH',
+    filters: {
+      tracker_id: 'eq.' + id,
+      user_id: 'eq.' + targetId
+    },
+    body: { role: newRole }
+  });
+
+  return json(await detail(id));
+}
 
     // REMOVE TRACKER MEMBER
     if (sub === 'members' &&
@@ -3064,6 +3194,12 @@ if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(entr
       }
 
       if (method === 'PUT') {
+          if (!can('change_settings')) {
+    return fail(
+      'You do not have permission to change the tracker backdrop.',
+      403
+    );
+  }
         const bytes = new Uint8Array(
           await request.arrayBuffer()
         );
