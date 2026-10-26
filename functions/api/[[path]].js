@@ -1917,9 +1917,16 @@ console.log('PAYMENT ROUTE CHECK', {
     limit: 1
   }))[0];
 
-  if (!entry || entry.type !== 'payment') {
-    return fail('Payment record not found.', 404);
-  }
+  if (!entry) {
+  return fail('Payment record not found.', 404);
+}
+
+if (entry.type !== 'payment') {
+  return fail(
+    'This notification refers to an expense, not a payment. Please review the expense instead.',
+    409
+  );
+}
 
   const members = await db('tracker_members', {
     filters: {
@@ -2003,10 +2010,6 @@ console.log('PAYMENT ROUTE CHECK', {
   return json(await detail(id));
 }
 
-// TRACKER DETAILS
-if (!sub) {
-  // Existing tracker details code stays unchanged.
-}
     console.log('TRACKER ROUTE REACHED', {
   trackerId: id,
   sub,
@@ -2575,17 +2578,18 @@ if (
       const newStatus =
         action === 'approve' ? 'confirmed' : 'disputed';
 
-      const updated = await db('tracker_entries', {
-        method: 'PATCH',
-        filters: {
-          tracker_id: 'eq.' + id,
-          id: 'eq.' + parts[3],
-          payment_status: 'eq.pending'
-        },
-        body: {
-          payment_status: newStatus
-        }
-      });
+    const updated = await db('tracker_entries', {
+  method: 'PATCH',
+  filters: {
+    tracker_id: 'eq.' + id,
+    id: 'eq.' + parts[3],
+    type: 'eq.debt',
+    payment_status: 'eq.pending'
+  },
+  body: {
+    payment_status: newStatus
+  }
+});
 
       if (!updated.length) {
         return fail(
