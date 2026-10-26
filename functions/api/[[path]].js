@@ -1892,8 +1892,106 @@ if (
   parts.length === 5 &&
   method === 'POST'
 ) {
-  // Keep the entire existing payment confirmation
-  // handler here, including all its database operations.
+  const action = parts[4];
+
+  if (!['confirm', 'dispute'].includes(action)) {
+    return fail('Invalid payment action.', 400);
+  }
+
+  const paymentId = parts[3];
+
+  const entry = (await db('tracker_entries', {
+    filters: {
+      id: 'eq.' + paymentId,
+      tracker_id: 'eq.' + id
+    },
+    limit: 1
+  }))[0];
+
+  if (!entry || entry.type !== 'payment') {
+    return fail('Payment record not found.', 404);
+  }
+
+  const members = await db('tracker_members', {
+    filters: {
+      tracker_id: 'eq.' + id
+    }
+  });
+
+  const recipient = members.find(member =>
+    member.user_id === me.id
+  );
+
+  if (
+    !recipient ||
+    recipient.name.toLowerCase() !==
+      String(entry.to_name).toLowerCase()
+  ) {
+    return fail(
+      'Only the payment recipient can respond.',
+      403
+    );
+  }
+
+  if (entry.payment_status !== 'pending') {
+    return fail(
+      'Payment has already been reviewed.',
+      409
+    );
+  }
+
+  const status =
+    action === 'confirm' ? 'confirmed' : 'disputed';
+
+  const updated = await db('tracker_entries', {
+    method: 'PATCH',
+    filters: {
+      id: 'eq.' + paymentId,
+      tracker_id: 'eq.' + id,
+      type: 'eq.payment',
+      payment_status: 'eq.pending'
+    },
+    body: {
+      payment_status: status
+    }
+  });
+
+  if (!updated.length) {
+    return fail(
+      'Payment was already reviewed. Please refresh.',
+      409
+    );
+  }
+
+  if (entry.created_by && entry.created_by !== me.id) {
+    try {
+      await db('squareup_notifications', {
+        method: 'POST',
+        body: {
+          recipient_id: entry.created_by,
+          tracker_id: id,
+          entry_id: entry.id,
+          kind: 'payment_' + status,
+          title: 'Payment ' + status,
+          message:
+            me.name + ' ' +
+            (status === 'confirmed'
+              ? 'confirmed'
+              : 'disputed') +
+            ' a $' +
+            Number(entry.amount).toFixed(2) +
+            ' payment.'
+        }
+      });
+    } catch (error) {
+      console.error(
+        'Payment notification failed:',
+        error.message
+      );
+    }
+  }
+
+  return json(await detail(id));
 }
 
 // TRACKER DETAILS
