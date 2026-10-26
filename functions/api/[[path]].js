@@ -1897,7 +1897,7 @@ console.log('PAYMENT ROUTE CHECK', {
     
   if (
   sub === 'payments' &&
-  uuid.test(parts[3] || '') &&
+/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(parts[3] || '') &&
   parts.length === 5 &&
   method === 'POST'
 ) {
