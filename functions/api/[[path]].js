@@ -602,6 +602,11 @@ if (
   }
 
   const parts = params.path || [];
+  console.log('SquareUp API route debug:', {
+  path: new URL(request.url).pathname,
+  parts,
+  method: request.method
+});
   const method = request.method;
 
   // Verify tracker ownership against the original trackers table
