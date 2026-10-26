@@ -1499,9 +1499,9 @@ body.friends-view .wrap #friends-page{display:block!important}
   </div>
 
   <div class="card" id="receipt-card" hidden>
-    <h2>Receipt scanner · itemized split</h2>
+    <h2>🧾 Receipt breakdown · assign each item</h2><p class="dashboard-subheading">Upload a photo, review every detected item and price, then select who ordered each one. Tax and tip are shared proportionally.</p>
     <p style="color:var(--muted)">Upload a photo, check the recognized lines, then assign who ordered each item. Scanning uses Tesseract.js in your browser; check all amounts before saving.</p>
-    <label for="receipt-file">Take a receipt photo (mobile)</label><input type="file" id="receipt-file" accept="image/*" capture="environment" aria-label="Receipt photo">
+    <label for="receipt-file">Take or upload receipt photo (mobile)</label><input type="file" id="receipt-file" accept="image/*" capture="environment" aria-label="Receipt photo">
     <div id="receipt-status" role="status" style="margin:10px 0;color:var(--muted)"></div>
     <label>Who paid? <select id="receipt-payer"></select></label>
     <div id="receipt-items"></div>
@@ -1595,7 +1595,7 @@ body.friends-view .wrap #friends-page{display:block!important}
     <div class="split-header"><h2>Split a Bill</h2><label>Bill currency <select id="split-currency" class="sq-currency-select"></select></label><p>Divide an expense with your friends.</p></div>
     <div class="split-layout">
       <div class="split-panel">
-        <div class="receipt-scan-box"><strong>Scan a receipt with AI-assisted text recognition</strong><p class="feature-muted">On mobile, take a photo of your receipt to recognize items and prices. Review everything before splitting. Recognition runs in your browser.</p><label for="split-receipt-file">Take a receipt photo (mobile)</label><input type="file" id="split-receipt-file" accept="image/*" capture="environment" aria-label="Choose receipt photo"><div id="split-receipt-status" class="feature-muted" role="status"></div><div id="split-receipt-items"></div><button type="button" id="split-use-itemized" hidden>Assign receipt items to friends →</button></div>
+        <div class="receipt-scan-box"><strong>Scan a receipt with AI-assisted text recognition</strong><p class="feature-muted">On mobile, take a photo of your receipt to recognize items and prices. Review everything before splitting. Recognition runs in your browser.</p><label for="split-receipt-file">Take or upload receipt photo (mobile)</label><input type="file" id="split-receipt-file" accept="image/*" capture="environment" aria-label="Choose receipt photo"><div id="split-receipt-status" class="feature-muted" role="status"></div><div id="split-receipt-items"></div><button type="button" id="split-use-itemized" hidden>Assign receipt items to friends →</button></div>
         <label class="split-field">Expense description<input id="split-description" maxlength="160" placeholder="Dinner at a restaurant" autocomplete="off"></label>
         <label class="split-field">Total amount ($)<input id="split-total" type="number" min="0.01" max="1000000" step="0.01" placeholder="60.00" inputmode="decimal"></label>
         <h3>Who paid?</h3><div id="split-payers"></div>
@@ -3987,10 +3987,10 @@ function receiptAddLine(name,amount){receiptLines.push({name:name||'',amount:amo
 function receiptDraw(){
  var people=receiptPeople(),payer=document.getElementById('receipt-payer'),old=payer.value;
  payer.innerHTML=people.map(p=>'<option value="'+esc(p)+'">'+esc(p)+'</option>').join('');if(people.includes(old))payer.value=old;
- document.getElementById('receipt-items').innerHTML=receiptLines.map((l,i)=>'<div class="card" style="padding:12px;margin:8px 0"><div class="row"><input aria-label="Item name" data-item-name="'+i+'" value="'+esc(l.name)+'" placeholder="Item"><input aria-label="Item price" type="number" step=".01" min="0" data-item-price="'+i+'" value="'+esc(l.amount)+'" placeholder="Price"><button type="button" class="small-btn danger" data-item-remove="'+i+'">×</button></div><div style="margin-top:8px">Who ordered this? '+people.map(p=>'<label style="display:inline-block;margin:4px 12px 4px 0"><input type="checkbox" data-item-person="'+i+'" data-person="'+esc(p)+'" '+(l.people.includes(p)?'checked':'')+'> '+esc(p)+'</label>').join('')+'</div></div>').join('');receiptPreview();
+ document.getElementById('receipt-items').innerHTML=receiptLines.map((l,i)=>'<div class="card" style="padding:12px;margin:8px 0"><div class="row"><input aria-label="Item name" data-item-name="'+i+'" value="'+esc(l.name)+'" placeholder="Item"><input aria-label="Item price" type="number" step=".01" min="0" data-item-price="'+i+'" value="'+esc(l.amount)+'" placeholder="Price"><button type="button" class="small-btn danger" data-item-remove="'+i+'">×</button></div><div style="margin-top:8px">Who ordered this? '+people.map(p=>'<label style="display:inline-block;margin:4px 12px 4px 0"><input type="checkbox" data-item-person="'+i+'" data-person="'+esc(p)+'" '+(l.people.includes(p)?'checked':'')+'> '+esc(p)+'</label>').join('')+'</div></div>').join('') || '<p class="dashboard-subheading">Upload a receipt photo above to automatically list its items, or tap Add item to enter them manually.</p>';receiptPreview();
 }
 function receiptPreview(){
- var shares={},subtotal=0,valid=true;
+ var shares={},subtotal=0,valid=receiptLines.length>0;
  receiptLines.forEach(l=>{var c=Math.round(Number(l.amount)*100);if(!l.name||!Number.isFinite(c)||c<=0||!l.people.length){valid=false;return;}subtotal+=c;var base=Math.floor(c/l.people.length);l.people.forEach((p,i)=>shares[p]=(shares[p]||0)+base+(i<c%l.people.length?1:0));});
  var extra=Math.round((Number(document.getElementById('receipt-tax').value)+Number(document.getElementById('receipt-tip').value))*100);if(!Number.isFinite(extra)||extra<0)valid=false;
  var people=Object.keys(shares),remaining=extra;
@@ -4003,7 +4003,7 @@ function receiptPreview(){
  document.getElementById('receipt-save').disabled=!valid||!current;
  return {shares,payer,valid};
 }
-document.getElementById('quick-receipt').onclick=function(){var card=document.getElementById('receipt-card');card.hidden=!card.hidden;if(!card.hidden){if(!current){alert('Open a shared tracker to save receipt expenses.');card.hidden=true;return;}if(!receiptLines.length)receiptLines=[{name:'',amount:'',people:[]}];receiptDraw();card.scrollIntoView({behavior:'smooth',block:'start'});}};
+document.getElementById('quick-receipt').onclick=function(){var card=document.getElementById('receipt-card');card.hidden=!card.hidden;if(!card.hidden){if(!current){alert('Open a shared tracker to save receipt expenses.');card.hidden=true;return;}receiptDraw();card.scrollIntoView({behavior:'smooth',block:'start'});}};
 document.getElementById('receipt-add-item').onclick=()=>receiptAddLine('', '');
 document.getElementById('receipt-clear').onclick=function(){
  receiptLines=[];
@@ -4020,23 +4020,51 @@ document.getElementById('receipt-items').addEventListener('click',function(e){va
 ['receipt-payer','receipt-tax','receipt-tip','receipt-total'].forEach(id=>document.getElementById(id).addEventListener('input',receiptPreview));
 // Shared OCR parsing for the dashboard scanner and Split a Bill scanner.
 function squareUpParseReceipt(text){
- var items=[],tax=0,tip=0,total=null,subtotal=null;
- var rows=String(text||'').split(/\n/);
- rows.forEach(raw=>{
-  var line=raw.trim().replace(/\s+/g,' ');
-  // Allow common OCR dollar formats and optional trailing currency symbols.
-  var m=line.match(/^(.+?)\s+\$?(-?\d{1,6}[.,]\d{2})\s*\$?$/);
-  if(!m)return;
-  var label=m[1].replace(/^[*#\-\s]+/,'').trim(),amount=Number(m[2].replace(',','.'));
-  if(!label||!Number.isFinite(amount))return;
-  if(/^(?:sales\s+)?tax\b/i.test(label)){tax=amount;return;}
-  if(/^(?:gratuity|tip|service\s+charge)\b/i.test(label)){tip=amount;return;}
-  if(/^(?:grand\s+total|amount\s+due|balance\s+due|total\s+due|total)\b/i.test(label)){total=amount;return;}
-  if(/^sub\s*total\b/i.test(label)){subtotal=amount;return;}
-  if(/^(?:change|cash|card|balance|discount|payment|visa|mastercard|amex|debit|credit|paid|tendered|authorization|auth|order\s+number|receipt\s+number)\b/i.test(label))return;
-  if(amount>0&&items.length<60)items.push({name:label.slice(0,80),amount:amount.toFixed(2),people:[]});
- });
- return {items,tax,tip,total,subtotal};
+ // Receipts use many layouts: item and price on one line, or price on the next.
+ var items=[],tax=0,tip=0,total=null,subtotal=null,discount=0,unmatched=[];
+ var lines=String(text||'').replace(/\r/g,'').split('\n').map(x=>x.replace(/[|]/g,' ').replace(/\s+/g,' ').trim()).filter(Boolean);
+ var money=/(-?\$?\s*\d{1,5}[.,]\d{2})\s*$/;
+ function amount(raw){return Number(String(raw).replace(/[$\s]/g,'').replace(',','.'));}
+ function classify(label,value){
+  var clean=label.replace(/^[*#•\-\s]+/,'').replace(/\s+[xX]\s*$/,'').trim();
+  if(!clean||!Number.isFinite(value))return false;
+  if(/^(?:sales\s+|state\s+|local\s+)?tax(?:es)?\b/i.test(clean)){tax+=value;return true;}
+  if(/^(?:gratuity|tip|service\s+charge|suggested\s+tip)\b/i.test(clean)){tip+=value;return true;}
+  if(/^(?:grand\s+total|amount\s+due|balance\s+due|total\s+due|total\s+paid|total)\b/i.test(clean)){total=value;return true;}
+  if(/^(?:sub\s*total|items\s+total)\b/i.test(clean)){subtotal=value;return true;}
+  if(/^(?:discount|coupon|promo|savings)\b/i.test(clean)){discount+=Math.abs(value);return true;}
+  if(/^(?:change|cash|card|balance|payment|visa|mastercard|amex|debit|credit|paid|tendered|authorization|auth|order\s*(?:number|#)|receipt\s*(?:number|#)|transaction|suggested|server|table|date|time)\b/i.test(clean))return true;
+  if(value<=0)return true;
+  // Some receipts print a quantity before the description; keep it editable.
+  clean=clean.replace(/^\d{1,2}\s*[xX]\s+/,'').trim();
+  if(clean&&items.length<80)items.push({name:clean.slice(0,90),amount:value.toFixed(2),people:[]});
+  return true;
+ }
+ for(var i=0;i<lines.length;i++){
+  var line=lines[i],match=line.match(money);
+  if(match){
+   var label=line.slice(0,match.index).trim();
+   if(label){classify(label,amount(match[1]));continue;}
+   if(unmatched.length){classify(unmatched.pop(),amount(match[1]));continue;}
+  }
+  // Some OCR outputs prices without decimals (e.g. 'BURGER 12 99').
+  var spaced=line.match(/^(.+?)\s+\$?(\d{1,5})\s+(\d{2})$/);
+  if(spaced){classify(spaced[1],Number(spaced[2]+'.'+spaced[3]));continue;}
+  // Save a likely item name for a price-only line that follows.
+  if(!/\d{2,}/.test(line)&&line.length>2)unmatched.push(line);
+ }
+ return {items,tax:Math.max(0,tax),tip:Math.max(0,tip),total,subtotal,discount};
+}
+function squareUpShowParsedReceipt(parsed,status){
+ receiptLines=parsed.items.map(l=>({name:l.name,amount:l.amount,people:[]}));
+ document.getElementById('receipt-tax').value=parsed.tax.toFixed(2);
+ document.getElementById('receipt-tip').value=parsed.tip.toFixed(2);
+ document.getElementById('receipt-total').value=parsed.total===null?'':parsed.total.toFixed(2);
+ document.getElementById('receipt-card').hidden=false;
+ receiptDraw();
+ var warning=parsed.total!==null&&Math.abs(parsed.items.reduce((sum,x)=>sum+Number(x.amount),0)+parsed.tax+parsed.tip-parsed.total)>0.02;
+ status.textContent='Recognized '+parsed.items.length+' item'+(parsed.items.length===1?'':'s')+'. Choose who ordered each item below. '+(warning?'⚠️ Detected amounts do not match the printed total; correct any errors before saving.':'Check the detected amounts before saving.');
+ document.getElementById('receipt-card').scrollIntoView({behavior:'smooth',block:'start'});
 }
 async function squareUpReadReceipt(file){
  if(!file||!file.type.startsWith('image/'))throw Error('Choose a receipt photo.');
@@ -4050,12 +4078,7 @@ document.getElementById('receipt-file').onchange=async function(e){
  try{
   var parsed=await squareUpReadReceipt(file);
   if(!parsed.items.length){status.textContent='No items recognized. Try a clearer photo or add items manually.';return;}
-  receiptLines=parsed.items;
-  document.getElementById('receipt-tax').value=parsed.tax.toFixed(2);
-  document.getElementById('receipt-tip').value=parsed.tip.toFixed(2);
-  document.getElementById('receipt-total').value=parsed.total===null?'':parsed.total.toFixed(2);
-  receiptDraw();
-  status.textContent='Found '+parsed.items.length+' items. Select who ordered each item; tax and tip are split proportionally. Check all detected amounts before saving.';
+  squareUpShowParsedReceipt(parsed,status);
  }catch(err){status.textContent='Automatic reading failed. Try another photo or enter items manually.';console.warn(err);}
 };
 document.getElementById('receipt-save').onclick=async function(){var result=receiptPreview();if(!result.valid||!current)return;var debts=Object.entries(result.shares).filter(([p,c])=>p!==result.payer&&c>0);if(!debts.length){alert('No one owes the payer.');return;}if(!confirm('Save '+debts.length+' expense entries?'))return;var btn=this;btn.disabled=true;var saved=0;try{for(var [p,c] of debts){await api('trackers/'+current.id+'/entries','POST',{type:'debt',from:p,to:result.payer,amount:c/100,currency:document.getElementById('receipt-currency').value,note:'Itemized receipt: '+receiptLines.filter(l=>l.people.includes(p)).map(l=>l.name).join(', ').slice(0,190),date:new Date().toLocaleDateString(),dueDate:document.getElementById('receipt-due').value||null});saved++;}applyDetail(await api('trackers/'+current.id));receiptLines=[];receiptDraw();document.getElementById('receipt-status').textContent='Saved '+saved+' expenses.';await refreshInbox();}catch(err){alert('Saved '+saved+' of '+debts.length+'. '+err.message+' Check activity before retrying.');}finally{btn.disabled=false;}};
@@ -4159,9 +4182,12 @@ document.getElementById('split-receipt-file').addEventListener('change',async fu
   document.getElementById('split-total').value=(parsed.total===null?calculated:parsed.total).toFixed(2);
   if(!document.getElementById('split-description').value)document.getElementById('split-description').value='Scanned receipt';
   renderSplitSummary();
-  status.textContent='Found '+items.length+' items. Review the amounts, then tap Assign receipt items to friends.';
-  document.getElementById('split-receipt-items').innerHTML='<p class="feature-muted">'+items.map(x=>esc(x.name)+' · '+squareUpMoney(x.amount)).join(' · ')+'</p><p>Tax: '+squareUpMoney(parsed.tax)+' · Tip: '+squareUpMoney(parsed.tip)+' · Receipt total: '+(parsed.total===null?'not detected':squareUpMoney(parsed.total))+'</p>';
-  document.getElementById('split-use-itemized').hidden=false;
+  // Automatically open the editable item-by-item assignment page after OCR.
+  closeSplitPage();settingsRoute('dashboard');
+  squareUpShowParsedReceipt(parsed,document.getElementById('receipt-status'));
+  status.textContent='Receipt scanned. Item-by-item breakdown opened.';
+  document.getElementById('split-receipt-items').innerHTML='';
+  document.getElementById('split-use-itemized').hidden=true;
  }catch(err){status.textContent='Could not read this receipt. Enter the amount manually or try another photo.';console.warn(err);}
 });
 document.getElementById('split-use-itemized').addEventListener('click',()=>{
