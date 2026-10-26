@@ -2534,6 +2534,12 @@ if (
   parts.length === 5 &&
   method === 'POST'
 ) {
+
+  console.log('PAYMENT CONFIRMATION HANDLER REACHED', {
+  trackerId: id,
+  paymentId: parts[3],
+  action: parts[4]
+});
   const action = parts[4];
 
   if (!['confirm', 'dispute'].includes(action)) {
