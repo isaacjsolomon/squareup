@@ -3295,6 +3295,13 @@ if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(entr
 
       const wantsReset = body.reset === true;
 
+      if (!can('manage_members')) {
+  return fail(
+    'You do not have permission to invite members.',
+    403
+  );
+}
+
       // Only the owner can reset an existing invitation.
       if (wantsReset && !isOwner) {
         return fail(
@@ -3418,11 +3425,47 @@ if (
     403
   );
 }
-      if (parts[3] === me.id)
-        return fail(
-          "You can't remove yourself as the owner.",
-          400
-        );
+     const targetId = parts[3];
+
+if (!uuid.test(targetId)) {
+  return fail('Invalid member ID.', 400);
+}
+
+if (
+  targetId.toLowerCase() ===
+  String(trackerOwnerRecord?.owner_id).toLowerCase()
+) {
+  return fail(
+    'The tracker owner cannot be removed.',
+    403
+  );
+}
+
+const targetMember = (await db('tracker_members', {
+  filters: {
+    tracker_id: 'eq.' + id,
+    user_id: 'eq.' + targetId
+  },
+  limit: 1
+}))[0];
+
+if (!targetMember) {
+  return fail('Member not found.', 404);
+}
+
+if (targetMember.role === 'owner') {
+  return fail(
+    'The tracker owner cannot be removed.',
+    403
+  );
+}
+
+if (targetId === me.id) {
+  return fail(
+    'You cannot remove yourself using this action.',
+    400
+  );
+}
 
       await db('tracker_members', {
         method: 'DELETE',
