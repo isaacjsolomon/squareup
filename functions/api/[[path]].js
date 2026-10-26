@@ -2521,63 +2521,89 @@ if (
       return json(await detail(id));
     }
 
-    // PAYMENT CONFIRMATIONS
-
+   
+// PAYMENT CONFIRMATIONS
 if (
   sub === 'payments' &&
-  parts[3] &&
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(parts[3]) &&
+  uuid.test(parts[3] || '') &&
+  parts.length === 5 &&
   method === 'POST'
 ) {
+  const action = parts[4];
 
+  if (!['confirm', 'dispute'].includes(action)) {
+    return fail('Invalid payment action.', 400);
+  }
 
-      if (!['confirm', 'dispute'].includes(parts[4]))
-        return fail('Invalid action.', 400);
+  const entry = (await db('tracker_entries', {
+    filters: {
+      id: 'eq.' + parts[3],
+      tracker_id: 'eq.' + id
+    },
+    limit: 1
+  }))[0];
 
-      const entry = (await db('tracker_entries', {
-        filters: {
-          id: 'eq.' + parts[3],
-          tracker_id: 'eq.' + id
-        }
-      }))[0];
+  if (!entry || entry.type !== 'payment') {
+    return fail(
+      'Payment record not found. Refresh the tracker.',
+      404
+    );
+  }
 
-      if (!entry ||
-          entry.type !== 'payment' ||
-          entry.payment_status !== 'pending')
-        return fail(
-          'Payment is no longer pending.',
-          409
-        );
+  if (entry.payment_status !== 'pending') {
+    return fail(
+      'This payment has already been processed or is no longer pending.',
+      409
+    );
+  }
 
-      const members = await db('tracker_members', {
-        filters: { tracker_id: 'eq.' + id }
-      });
+  const members = await db('tracker_members', {
+    filters: { tracker_id: 'eq.' + id }
+  });
 
-      const recipient = members.find(
-        x => x.user_id === me.id
-      );
+  const recipient = members.find(
+    x => x.user_id === me.id
+  );
 
-      if (!recipient ||
-          recipient.name.toLowerCase() !==
-            entry.to_name.toLowerCase())
-        return fail(
-          'Only the payment recipient can respond.',
-          403
-        );
+  if (
+    !recipient ||
+    recipient.name.toLowerCase() !==
+      String(entry.to_name).toLowerCase()
+  ) {
+    return fail(
+      'Only the payment recipient can respond.',
+      403
+    );
+  }
 
-      const status = parts[4] === 'confirm'
-        ? 'confirmed' : 'disputed';
+  const status = action === 'confirm'
+    ? 'confirmed'
+    : 'disputed';
 
-      await db('tracker_entries', {
-        method: 'PATCH',
-        filters: {
-          id: 'eq.' + entry.id,
-          tracker_id: 'eq.' + id,
-          payment_status: 'eq.pending'
-        },
-        body: { payment_status: status }
-      });
+  // Only update payments that are still pending.
+  const updated = await db('tracker_entries', {
+    method: 'PATCH',
+    filters: {
+      id: 'eq.' + entry.id,
+      tracker_id: 'eq.' + id,
+      type: 'eq.payment',
+      payment_status: 'eq.pending'
+    },
+    body: {
+      payment_status: status
+    }
+  });
 
+  if (!updated.length) {
+    return fail(
+      'Payment was already processed. Please refresh.',
+      409
+    );
+  }
+
+  // Notify the person who reported the payment.
+  if (entry.created_by && entry.created_by !== me.id) {
+    try {
       await db('squareup_notifications', {
         method: 'POST',
         body: {
@@ -2586,16 +2612,27 @@ if (
           entry_id: entry.id,
           kind: 'payment_' + status,
           title: 'Payment ' + status,
-          message: me.name + ' ' +
+          message:
+            me.name + ' ' +
             (status === 'confirmed'
-              ? 'confirmed' : 'disputed') +
-            ' a $' + Number(entry.amount).toFixed(2) +
+              ? 'confirmed'
+              : 'disputed') +
+            ' a $' +
+            Number(entry.amount).toFixed(2) +
             ' payment.'
         }
       });
-
-      return json(await detail(id));
+    } catch (error) {
+      console.error(
+        'Payment notification failed:',
+        error.message
+      );
     }
+  }
+
+  return json(await detail(id));
+}
+
 
     // ADD OR DELETE EXPENSES
     if (sub === 'entries') {
@@ -2738,32 +2775,43 @@ exchange_rate: rate,
     ? creditor
     : debtor;
 
-        if (notify.user_id !== me.id) {
-          await db('squareup_notifications', {
-            method: 'POST',
-            body: {
-              recipient_id: notify.user_id,
-              tracker_id: id,
-              entry_id: created.id,
-              kind: pending
-                ? 'payment_pending' : 'expense',
-              title: pending
-                ? 'Payment awaiting confirmation'
-                : 'New expense',
-              message: pending
-                ? me.name +
-                  ' reported paying you $' +
-                  e.amount.toFixed(2) +
-                  '. Confirm or dispute it.'
-                : e.from_name + ' owes ' +
-                  e.to_name + ' $' +
-                  e.amount.toFixed(2) +
-                  (e.due_date
-                    ? ' by ' + e.due_date
-                    : '') + '.'
-            }
-          });
-        }
+
+if (notify.user_id !== me.id) {
+  const isPayment = e.type === 'payment';
+  const needsApproval = e.type === 'debt' && pending;
+
+  await db('squareup_notifications', {
+    method: 'POST',
+    body: {
+      recipient_id: notify.user_id,
+      tracker_id: id,
+      entry_id: created.id,
+      kind: isPayment
+        ? 'payment_pending'
+        : 'expense',
+      title: isPayment
+        ? 'Payment awaiting confirmation'
+        : needsApproval
+          ? 'Expense awaiting approval'
+          : 'New expense',
+      message: isPayment
+        ? me.name +
+          ' reported paying you $' +
+          e.amount.toFixed(2) +
+          '. Confirm or dispute it.'
+        : needsApproval
+          ? e.from_name +
+            ' was charged $' +
+            e.amount.toFixed(2) +
+            ' by ' + e.to_name +
+            '. Review this expense.'
+          : e.from_name +
+            ' owes ' + e.to_name +
+            ' $' + e.amount.toFixed(2) + '.'
+    }
+  });
+}
+
 
         return json(await detail(id), 201);
       }
