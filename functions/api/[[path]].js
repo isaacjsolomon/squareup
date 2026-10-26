@@ -784,99 +784,112 @@ if (
     }
   }
 
-  async function detail(id) {
-    const t = (await db('trackers', {
-      filters: { id: 'eq.' + id }
-    }))[0];
+ 
+async function detail(id) {
+  // Load independent database queries in parallel.
+  const [trackers, membership, members, entries] =
+    await Promise.all([
+      db('trackers', {
+        filters: { id: 'eq.' + id },
+        limit: 1
+      }),
+      member(id),
+      db('tracker_members', {
+        filters: { tracker_id: 'eq.' + id }
+      }),
+      db('tracker_entries', {
+        filters: { tracker_id: 'eq.' + id },
+        order: 'created_at.asc'
+      })
+    ]);
 
-    const m = await member(id);
+  const t = trackers[0];
 
-    if (!t || !m) throw Error('Tracker not found');
-
-    const members = await db('tracker_members', {
-      filters: { tracker_id: 'eq.' + id }
-    });
-
-    const entries = await db('tracker_entries', {
-      filters: { tracker_id: 'eq.' + id },
-      order: 'created_at.asc'
-    });
-
-    const profiles = await db('profiles', {
-      filters: {
-        user_id: 'in.(' +
-          members.map(x => x.user_id).join(',') +
-          ')'
-      }
-    }).catch(() => []);
-
-    return {
-      id: t.id,
-      name: t.name,
-      currency: t.currency || 'USD',
-budget: t.budget_amount == null
-  ? null
-  : Number(t.budget_amount),
-      role: m.role,
-      inviteToken: t.invite_token,
-      backdrop: {
-        preset: t.backdrop,
-        photo: t.backdrop === 'photo' && t.backdrop_image
-          ? t.backdrop_image.split('/').pop()
-          : null
-      },
-      members: members.map(x => ({
-        id: x.user_id,
-        email: x.email,
-        name: profiles.find(
-          p => p.user_id === x.user_id
-        )?.display_name || x.name,
-      
-role: x.role,
-isYou: x.user_id === me.id,
-username: profiles.find(
-  p => p.user_id === x.user_id
-)?.username || '',
-
-        photo: profiles.find(
-          p => p.user_id === x.user_id
-        )?.photo_key?.split('/').pop() || null,
-        payments: {
-          venmo: profiles.find(
-            p => p.user_id === x.user_id
-          )?.venmo_username || '',
-          cashapp: profiles.find(
-            p => p.user_id === x.user_id
-          )?.cashapp_username || ''
-        }
-      })),
-      entries: entries.map(e => ({
-        id: e.id,
-        type: e.type,
-        from: e.from_name,
-        to: e.to_name,
-        amount: Number(e.amount),
-        originalAmount: e.original_amount == null
-  ? Number(e.amount)
-  : Number(e.original_amount),
-
-originalCurrency: e.original_currency || t.currency || 'USD',
-
-exchangeRate: e.exchange_rate == null
-  ? 1
-  : Number(e.exchange_rate),
-        note: e.note,
-        date: e.date_label,
-        dueDate: e.due_date || null,
-        paymentStatus: e.payment_status || 'confirmed',
-        createdBy: members.find(
-          m => m.user_id === e.created_by
-        )?.name || '',
-        pinned: !!e.is_pinned,
-        recurringId: e.recurring_id || null
-      }))
-    };
+  if (!t || !membership) {
+    throw Error('Tracker not found');
   }
+
+  const userIds = [...new Set(
+    members.map(m => m.user_id).filter(Boolean)
+  )];
+
+  const profiles = userIds.length
+    ? await db('profiles', {
+        filters: {
+          user_id: 'in.(' + userIds.join(',') + ')'
+        }
+      }).catch(() => [])
+    : [];
+
+  // Avoid searching the profiles array repeatedly.
+  const profileMap = new Map(
+    profiles.map(p => [p.user_id, p])
+  );
+
+  const memberMap = new Map(
+    members.map(m => [m.user_id, m])
+  );
+
+  return {
+    id: t.id,
+    name: t.name,
+    currency: t.currency || 'USD',
+    budget: t.budget_amount == null
+      ? null
+      : Number(t.budget_amount),
+    role: membership.role,
+    inviteToken: t.invite_token,
+
+    backdrop: {
+      preset: t.backdrop,
+      photo: t.backdrop === 'photo' && t.backdrop_image
+        ? t.backdrop_image.split('/').pop()
+        : null
+    },
+
+    members: members.map(m => {
+      const p = profileMap.get(m.user_id);
+
+      return {
+        id: m.user_id,
+        email: m.email,
+        name: p?.display_name || m.name,
+        role: m.role,
+        isYou: m.user_id === me.id,
+        username: p?.username || '',
+        photo: p?.photo_key?.split('/').pop() || null,
+        payments: {
+          venmo: p?.venmo_username || '',
+          cashapp: p?.cashapp_username || ''
+        }
+      };
+    }),
+
+    entries: entries.map(e => ({
+      id: e.id,
+      type: e.type,
+      from: e.from_name,
+      to: e.to_name,
+      amount: Number(e.amount),
+      originalAmount: e.original_amount == null
+        ? Number(e.amount)
+        : Number(e.original_amount),
+      originalCurrency:
+        e.original_currency || t.currency || 'USD',
+      exchangeRate: e.exchange_rate == null
+        ? 1
+        : Number(e.exchange_rate),
+      note: e.note,
+      date: e.date_label,
+      dueDate: e.due_date || null,
+      paymentStatus: e.payment_status || 'confirmed',
+      createdBy: memberMap.get(e.created_by)?.name || '',
+      pinned: !!e.is_pinned,
+      recurringId: e.recurring_id || null
+    }))
+  };
+}
+
 
   try {
    
