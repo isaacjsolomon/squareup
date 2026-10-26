@@ -4025,6 +4025,9 @@ document.getElementById('notifications-list').addEventListener('click',async fun
  }
 });
 var receiptLines=[];
+var receiptSavedSignature=null;
+var receiptSaving=false;
+function receiptSignature(){return JSON.stringify({tracker:current?.id,items:receiptLines,payer:document.getElementById("receipt-payer").value,tax:document.getElementById("receipt-tax").value,tip:document.getElementById("receipt-tip").value,total:document.getElementById("receipt-total").value,tipMode:receiptTipMode,tipPerson:document.getElementById("receipt-tip-person").value,currency:document.getElementById("receipt-currency").value,due:document.getElementById("receipt-due").value});}
 var receiptTipMode="equal"; // Tip is shared equally or assigned to one tracker member.
 function receiptPeople(){return (current?.members||[]).map(m=>m.name);}
 function receiptAddLine(name,amount){receiptLines.push({name:name||'',amount:amount||'',people:[]});receiptDraw();}
@@ -4056,13 +4059,16 @@ function receiptPreview(){
  if(mismatch)valid=false;
  var difference=expected!==''?Math.round((Number(expected)-actual)*100)/100:0;
  var html='<div class="sq-receipt-totals"><div><span>Items subtotal</span><strong>$'+(subtotal/100).toFixed(2)+'</strong></div><div><span>Tax + tip</span><strong>$'+(extra/100).toFixed(2)+'</strong></div><div class="sq-receipt-grand"><span>Calculated total</span><strong>$'+actual.toFixed(2)+'</strong></div></div>';
- if(mismatch&&difference>0.009)html+='<div class="sq-receipt-fix"><p><strong>$'+difference.toFixed(2)+' is unaccounted for.</strong> If this difference is actually a tip (not a missing item, tax, or fee), choose who pays the tip above and apply it below.</p><button type="button" class="small-btn" id="receipt-use-difference-tip">Use $'+difference.toFixed(2)+' as tip · apply selected split</button></div>';
- if(mismatch)html+='<div class="sq-receipt-alert" role="alert"><strong>⚠️ Total does not match</strong><span>The printed total is $'+Number(expected).toFixed(2)+'. The difference is $'+Math.abs(difference).toFixed(2)+(difference>0?' missing from the calculated total.':' above the printed total.')+' Review the scanned items, tax, tip and any discounts before saving.</span></div>';
+ if(mismatch&&difference>0.009&&receiptLines.length)html+='<div class="sq-receipt-fix"><p><strong>$'+difference.toFixed(2)+' is unaccounted for.</strong> If this difference is actually a tip (not a missing item, tax, or fee), choose who pays the tip above and apply it below.</p><button type="button" class="small-btn" id="receipt-use-difference-tip">Use $'+difference.toFixed(2)+' as tip · apply selected split</button></div>';
+ if(mismatch&&receiptLines.length)html+='<div class="sq-receipt-alert" role="alert"><strong>⚠️ Total does not match</strong><span>The printed total is $'+Number(expected).toFixed(2)+'. The difference is $'+Math.abs(difference).toFixed(2)+(difference>0?' missing from the calculated total.':' above the printed total.')+' Review the scanned items, tax, tip and any discounts before saving.</span></div>';
  if(unassigned)html+='<p class="sq-receipt-attention">Assign someone and check the name and price for all '+unassigned+' incomplete item'+(unassigned===1?'':'s')+'.</p>';
  if(people.length)html+='<div class="sq-receipt-share-heading">Each person pays</div><div class="sq-receipt-shares">'+people.map(p=>'<div><span>'+esc(p)+'</span><strong>$'+(shares[p]/100).toFixed(2)+'</strong></div>').join('')+'</div>';
- if(!receiptLines.length)html+='<p class="sq-receipt-hint">Add or scan items to see the breakdown.</p>';
+ if(!receiptLines.length)html+='<p class="sq-receipt-hint">No items loaded. Scan a receipt or add items before calculating or saving. Existing tracker expenses are not deleted.</p>';
+ var alreadySaved=receiptSavedSignature===receiptSignature();
+ document.getElementById('receipt-save').disabled=!valid||!current||alreadySaved||receiptSaving;
+ document.getElementById('receipt-save').textContent=alreadySaved?'✓ Receipt saved — no duplicate charges':receiptSaving?'Saving expenses…':'Save assigned expenses';
+ if(alreadySaved)html+='<p class="sq-receipt-saved" role="status">✓ Saved successfully. Your item breakdown is kept here for review. To start another receipt, choose Clear receipt.</p>';
  document.getElementById('receipt-preview').innerHTML=html;
- document.getElementById('receipt-save').disabled=!valid||!current;
  document.getElementById('receipt-tip-mode').value=receiptTipMode;
  var tipPersonSelect=document.getElementById('receipt-tip-person'),previousTipPerson=tipPersonSelect.value;
  tipPersonSelect.innerHTML=receiptPeople().map(p=>'<option value="'+esc(p)+'">'+esc(p)+'</option>').join('');
@@ -4073,7 +4079,7 @@ function receiptPreview(){
 document.getElementById('quick-receipt').onclick=function(){var card=document.getElementById('receipt-card');card.hidden=!card.hidden;if(!card.hidden){if(!current){alert('Open a shared tracker to save receipt expenses.');card.hidden=true;return;}receiptDraw();card.scrollIntoView({behavior:'smooth',block:'start'});}};
 document.getElementById('receipt-add-item').onclick=()=>receiptAddLine('', '');
 document.getElementById('receipt-clear').onclick=function(){
- receiptLines=[];
+ receiptLines=[];receiptSavedSignature=null;
  document.getElementById('receipt-file').value='';
  document.getElementById('receipt-tax').value='0';
  document.getElementById('receipt-tip').value='0';receiptTipMode='equal';
@@ -4138,7 +4144,7 @@ function squareUpParseReceipt(text){
  return {items,tax:Math.max(0,tax),tip:Math.max(0,tip),total,subtotal,discount};
 }
 function squareUpShowParsedReceipt(parsed,status){
- receiptTipMode='equal';receiptLines=parsed.items.map(l=>({name:l.name,amount:l.amount,people:[]}));
+ receiptSavedSignature=null;receiptTipMode='equal';receiptLines=parsed.items.map(l=>({name:l.name,amount:l.amount,people:[]}));
  document.getElementById('receipt-tax').value=parsed.tax.toFixed(2);
  document.getElementById('receipt-tip').value=parsed.tip.toFixed(2);
  document.getElementById('receipt-total').value=parsed.total===null?'':parsed.total.toFixed(2);
@@ -4163,7 +4169,40 @@ document.getElementById('receipt-file').onchange=async function(e){
   squareUpShowParsedReceipt(parsed,status);
  }catch(err){status.textContent='Automatic reading failed. Try another photo or enter items manually.';console.warn(err);}
 };
-document.getElementById('receipt-save').onclick=async function(){var result=receiptPreview();if(!result.valid||!current)return;var debts=Object.entries(result.shares).filter(([p,c])=>p!==result.payer&&c>0);if(!debts.length){alert('No one owes the payer.');return;}if(!confirm('Save '+debts.length+' expense entries?'))return;var btn=this;btn.disabled=true;var saved=0;try{for(var [p,c] of debts){await api('trackers/'+current.id+'/entries','POST',{type:'debt',from:p,to:result.payer,amount:c/100,currency:document.getElementById('receipt-currency').value,note:'Itemized receipt: '+receiptLines.filter(l=>l.people.includes(p)).map(l=>l.name).join(', ').slice(0,190),date:new Date().toLocaleDateString(),dueDate:document.getElementById('receipt-due').value||null});saved++;}applyDetail(await api('trackers/'+current.id));receiptLines=[];receiptDraw();document.getElementById('receipt-status').textContent='Saved '+saved+' expenses.';await refreshInbox();}catch(err){alert('Saved '+saved+' of '+debts.length+'. '+err.message+' Check activity before retrying.');}finally{btn.disabled=false;}};
+document.getElementById('receipt-save').onclick=async function(){
+ if(receiptSaving)return;
+ var result=receiptPreview();
+ if(!result.valid||!current){alert('Review all items, assignments, tax, tip and the printed total before saving.');return;}
+ var signature=receiptSignature();
+ if(receiptSavedSignature===signature){alert('This receipt has already been saved. Use Clear receipt to start a new one.');return;}
+ var trackerId=current.id;
+ var debts=Object.entries(result.shares).filter(([p,c])=>p!==result.payer&&c>0);
+ if(!debts.length){alert('There are no amounts owed to the person who paid. Check the payer and item assignments.');return;}
+ if(!confirm('Save '+debts.length+' expense entr'+(debts.length===1?'y':'ies')+' totaling $'+(debts.reduce((sum,x)=>sum+x[1],0)/100).toFixed(2)+'? Review before confirming; saving creates real tracker expenses.'))return;
+ receiptSaving=true;receiptPreview();
+ var saved=0,btn=this;
+ try{
+  for(var [p,c] of debts){
+   await api('trackers/'+encodeURIComponent(trackerId)+'/entries','POST',{
+    type:'debt',from:p,to:result.payer,amount:c/100,
+    currency:document.getElementById('receipt-currency').value,
+    note:'Itemized receipt: '+receiptLines.filter(l=>l.people.includes(p)).map(l=>l.name).join(', ').slice(0,190),
+    date:new Date().toLocaleDateString(),dueDate:document.getElementById('receipt-due').value||null
+   });
+   saved++;
+  }
+  // Keep the scanned receipt and allocations visible after saving.
+  receiptSavedSignature=signature;
+  document.getElementById('receipt-status').textContent='✓ Saved '+saved+' expense entr'+(saved===1?'y':'ies')+'. The breakdown remains below for review. Clear receipt when you are ready for a new one.';
+  try{if(current&&current.id===trackerId)applyDetail(await api('trackers/'+encodeURIComponent(trackerId)));}catch(refreshErr){console.warn('Expenses saved but tracker refresh failed',refreshErr);}
+  try{await refreshInbox();}catch(_){}
+ }catch(err){
+  // Preserve the breakdown to let the user inspect what was saved.
+  if(saved>0){receiptSavedSignature=signature;}
+  document.getElementById('receipt-status').textContent='⚠️ '+saved+' of '+debts.length+' entries saved. Review tracker activity before trying again to avoid duplicates.';
+  alert('Saved '+saved+' of '+debts.length+' entries. '+err.message+' Check tracker activity before retrying.');
+ }finally{receiptSaving=false;receiptPreview();}
+};
 
 window.squareUpPinExpense=async function(id){if(!current)return;var e=current.entries.find(x=>String(x.id)===String(id));if(!e)return;try{applyDetail(await api('trackers/'+current.id+'/entries/'+encodeURIComponent(id)+'/pin','PATCH',{pinned:!e.pinned}));}catch(err){alert(err.message);}};
 function sqRenderBudget(){var el=document.getElementById('sq-budget-display');if(!el)return;if(!current){el.textContent='Open a tracker to set a goal.';return;}var budget=Number(current.budget),spent=(current.entries||[]).filter(e=>e.type==='debt').reduce((sum,e)=>sum+Number(e.amount||0),0);document.getElementById('sq-budget-amount').value=budget>0?budget:'';if(!budget){el.textContent='No budget set yet. Set a goal below.';return;}var pct=spent/budget*100;el.innerHTML='<strong>'+sqFormat(spent)+' of '+sqFormat(budget)+'</strong><div class="sq-budget-progress'+(pct>100?' over':'')+'"><div style="width:'+Math.min(100,pct)+'%"></div></div><small>'+pct.toFixed(1)+'% used'+(pct>100?' · '+sqFormat(spent-budget)+' over budget':'')+'</small>';}
