@@ -1907,32 +1907,275 @@ const owner =
   String(me.id).toLowerCase();
 const sub = parts[2];
 
-// Tracker permissions
-// Existing "member" accounts keep Editor access.
-const role = owner
-  ? 'owner'
-  : m.role === 'viewer'
-    ? 'viewer'
-    : 'editor';
+// =============================================
+// TRACKER PERMISSIONS
+// =============================================
 
-function can(permission) {
-  if (role === 'owner') return true;
+const PERMISSION_KEYS = [
+  'add_expenses',
+  'edit_own_expenses',
+  'edit_all_expenses',
+  'log_payments',
+  'delete_expenses',
+  'manage_members',
+  'change_settings'
+];
 
-  const editorPermissions = [
-    'add_expenses',
-    'edit_own_expenses',
-    'log_payments'
-  ];
+const ROLE_DEFAULTS = {
+  editor: {
+    add_expenses: true,
+    edit_own_expenses: true,
+    edit_all_expenses: false,
+    log_payments: true,
+    delete_expenses: false,
+    manage_members: false,
+    change_settings: false
+  },
 
-  const viewerPermissions = [];
+  viewer: {
+    add_expenses: false,
+    edit_own_expenses: false,
+    edit_all_expenses: false,
+    log_payments: false,
+    delete_expenses: false,
+    manage_members: false,
+    change_settings: false
+  }
+};
 
-  if (role === 'editor') {
-    return editorPermissions.includes(permission);
+// Load a member's saved permissions.
+async function getPermissions(userId) {
+  if (
+    String(trackerOwnerRecord?.owner_id).toLowerCase() ===
+    String(userId).toLowerCase()
+  ) {
+    return {
+      role: 'owner',
+      permissions: Object.fromEntries(
+        PERMISSION_KEYS.map(key => [key, true])
+      )
+    };
   }
 
-  return viewerPermissions.includes(permission);
+  const membership = (await db('tracker_members', {
+    filters: {
+      tracker_id: 'eq.' + id,
+      user_id: 'eq.' + userId
+    },
+    limit: 1
+  }))[0];
+
+  if (!membership) return null;
+
+  const saved = (await db('squareup_tracker_permissions', {
+    filters: {
+      tracker_id: 'eq.' + id,
+      user_id: 'eq.' + userId
+    },
+    limit: 1
+  }))[0];
+
+  const role =
+    saved?.role === 'viewer' ||
+    (!saved && membership.role === 'viewer')
+      ? 'viewer'
+      : 'editor';
+
+  const permissions = {
+    ...ROLE_DEFAULTS[role]
+  };
+
+  for (const key of PERMISSION_KEYS) {
+    if (typeof saved?.[key] === 'boolean') {
+      permissions[key] = saved[key];
+    }
+  }
+
+  return { role, permissions };
 }
 
+// Load the signed-in user's permissions once.
+const myPermissions = await getPermissions(me.id);
+
+// Check access before performing an action.
+function can(permission) {
+  if (owner) return true;
+
+  return myPermissions?.permissions?.[permission] === true;
+}
+
+// =============================================
+// GET TRACKER MEMBER PERMISSIONS
+// =============================================
+
+if (
+  sub === 'permissions' &&
+  parts.length === 3 &&
+  method === 'GET'
+) {
+  const members = await db('tracker_members', {
+    filters: {
+      tracker_id: 'eq.' + id
+    }
+  });
+
+  const memberList = await Promise.all(
+    members.map(async member => {
+      const settings = await getPermissions(
+        member.user_id
+      );
+
+      return {
+        id: member.user_id,
+        name: member.name || 'Member',
+        email: member.email || '',
+        role: settings?.role || 'editor',
+        permissions: settings?.permissions || {}
+      };
+    })
+  );
+
+  // Include legacy owners without a membership row.
+  if (
+    owner &&
+    !memberList.some(member => member.id === me.id)
+  ) {
+    memberList.unshift({
+      id: me.id,
+      name: me.name,
+      email: me.email,
+      role: 'owner',
+      permissions: Object.fromEntries(
+        PERMISSION_KEYS.map(key => [key, true])
+      )
+    });
+  }
+
+  return json({
+    owner,
+    members: memberList
+  });
+}
+
+
+// =============================================
+// UPDATE TRACKER MEMBER PERMISSIONS
+// =============================================
+
+if (
+  sub === 'permissions' &&
+  parts.length === 4 &&
+  method === 'PATCH'
+) {
+  if (!owner) {
+    return fail(
+      'Only the tracker owner can change permissions.',
+      403
+    );
+  }
+
+  const targetId = parts[3];
+
+  if (!uuid.test(targetId)) {
+    return fail('Invalid member ID.', 400);
+  }
+
+  if (
+    String(targetId).toLowerCase() ===
+    String(trackerOwnerRecord.owner_id).toLowerCase()
+  ) {
+    return fail(
+      'Owner permissions cannot be changed.',
+      403
+    );
+  }
+
+  const membership = (await db('tracker_members', {
+    filters: {
+      tracker_id: 'eq.' + id,
+      user_id: 'eq.' + targetId
+    },
+    limit: 1
+  }))[0];
+
+  if (!membership) {
+    return fail('Member not found.', 404);
+  }
+
+  if (membership.role === 'owner') {
+    return fail(
+      'Owner permissions cannot be changed.',
+      403
+    );
+  }
+
+  const newRole = String(body.role || '').toLowerCase();
+
+  if (!['editor', 'viewer'].includes(newRole)) {
+    return fail('Invalid role.', 400);
+  }
+
+  const submitted = body.permissions;
+
+  if (
+    !submitted ||
+    typeof submitted !== 'object' ||
+    Array.isArray(submitted)
+  ) {
+    return fail('Invalid permissions.', 400);
+  }
+
+  const changes = {
+    tracker_id: id,
+    user_id: targetId,
+    role: newRole
+  };
+
+  for (const key of PERMISSION_KEYS) {
+    if (typeof submitted[key] !== 'boolean') {
+      return fail(
+        'Invalid value for ' + key,
+        400
+      );
+    }
+
+    changes[key] = submitted[key];
+  }
+
+  const existing = await db(
+    'squareup_tracker_permissions',
+    {
+      filters: {
+        tracker_id: 'eq.' + id,
+        user_id: 'eq.' + targetId
+      },
+      limit: 1
+    }
+  );
+
+  if (existing.length) {
+    await db('squareup_tracker_permissions', {
+      method: 'PATCH',
+      filters: {
+        tracker_id: 'eq.' + id,
+        user_id: 'eq.' + targetId
+      },
+      body: changes
+    });
+  } else {
+    await db('squareup_tracker_permissions', {
+      method: 'POST',
+      body: changes
+    });
+  }
+
+  return json({
+    ok: true,
+    role: newRole,
+    permissions: submitted
+  });
+}
+    
 // PAYMENT CONFIRMATIONS
 console.log('PAYMENT ROUTE CHECK', {
   sub,
@@ -2705,6 +2948,16 @@ if (
         parts[4] === 'pin' &&
         method === 'PATCH') {
 
+      if (
+  !can('edit_all_expenses') &&
+  !can('edit_own_expenses')
+) {
+  return fail(
+    'You do not have permission to pin expenses.',
+    403
+  );
+}
+
       const e = (await db('tracker_entries', {
         filters: {
           tracker_id: 'eq.' + id,
@@ -2715,6 +2968,22 @@ if (
       if (!e)
         return fail('Expense not found', 404);
 
+      
+if (
+  !can('edit_all_expenses') &&
+  (
+    !can('edit_own_expenses') ||
+    String(e.created_by).toLowerCase() !==
+      String(me.id).toLowerCase()
+  )
+) {
+  return fail(
+    'You do not have permission to pin this expense.',
+    403
+  );
+}
+
+      
       await db('tracker_entries', {
         method: 'PATCH',
         filters: {
