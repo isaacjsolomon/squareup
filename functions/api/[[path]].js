@@ -1895,7 +1895,16 @@ if (!validCurrency(currency)) {
   return fail('Tracker not found.', 404);
 }
 
- const owner = m.role === 'owner';
+const trackerOwnerRecord = (await db('trackers', {
+  filters: {
+    id: 'eq.' + id
+  },
+  limit: 1
+}))[0];
+
+const owner =
+  String(trackerOwnerRecord?.owner_id).toLowerCase() ===
+  String(me.id).toLowerCase();
 const sub = parts[2];
 
 // Tracker permissions
