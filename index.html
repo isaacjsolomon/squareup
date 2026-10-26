@@ -1238,6 +1238,13 @@ body.notifications-view #tracker-dashboard,body.notifications-view #split-page,b
 .tracker-tile-menu-panel hr{border:0;border-top:1px solid #38566b;width:100%;margin:7px 0}
 .tracker-tile-menu-panel .tracker-settings-back{font-weight:700;font-size:16px;width:100%;text-align:left;padding:12px 10px;margin-bottom:4px}
 .tracker-tile-menu-panel .danger .tracker-menu-glyph{color:#ffb2c0}
+
+/* Tutorial shortcut beside the Square Up heading, only on About */
+.sq-title-and-tour{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.sq-header-tour-btn{display:none;align-items:center;gap:7px;padding:9px 14px;border-radius:12px;border:1px solid #4b7b8f;background:#102f46;color:#e9fbff;font:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s}
+body.about-view .sq-header-tour-btn{display:inline-flex}
+.sq-header-tour-btn:hover{background:#1d4c65}
+.sq-header-tour-btn:focus-visible{outline:3px solid #35dfb8;outline-offset:2px}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -1500,6 +1507,31 @@ body.friends-view .wrap #friends-page{display:block!important}
 .sq-perm-note{padding:13px;background:#e8f0ff;border-radius:12px;color:#354a80;font-size:13px;margin:16px 0}.sq-perm-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #e7eaf4}.sq-perm-row label{font-size:14px;font-weight:600;flex:1}.sq-perm-row input{width:19px;height:19px;accent-color:#515cf4}.sq-perm-panel select{width:100%;border:1px solid #cfd8ee;background:white;border-radius:12px;padding:12px;color:#142342;font:inherit}
 .sq-perm-save{border:0;border-radius:12px;background:#4f5cf4;color:white;padding:12px 20px;font-weight:700;cursor:pointer}.sq-perm-save:disabled{opacity:.55}.sq-perm-actions{display:flex;justify-content:space-between;gap:12px;margin-top:18px}
 </style>
+<style id="sq-inbox-layout-2026">
+.sq-about-topline{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:15px}
+.sq-about-topline .about-kicker{margin:0}
+.sq-about-topline .sq-header-tour-btn{display:inline-flex!important;background:#16405a;border:1px solid #4b8499;color:#eaffff;white-space:nowrap}
+#notifications-page .sq-notifications-header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+#notifications-page #notifications-panel{width:100%;max-width:none;padding:clamp(15px,2.5vw,28px);border-radius:22px;background:#0c2338;border:1px solid #30516b;box-sizing:border-box}
+#notifications-page .notification-panel-heading{font-size:17px;font-weight:750;margin-bottom:14px}
+#notifications-page .sq-notification-tools{padding:12px 0 20px;margin:0}
+#notifications-page #sq-notification-filter{border:1px solid #52758e;background:#17364e;color:white;padding:10px 14px;border-radius:12px;max-width:100%;font:inherit}
+.sq-inbox-columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.sq-inbox-column{background:#102c43;border:1px solid #294b63;border-radius:18px;padding:14px;min-width:0}
+.sq-inbox-column[hidden]{display:none!important}
+.sq-inbox-column-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:14px;padding:3px 2px 12px;border-bottom:1px solid #2c4e65}
+.sq-inbox-column-title h3{font-size:17px;margin:0;color:#f4fbff}
+.sq-inbox-count{font-size:12px;font-weight:750;border-radius:999px;background:#234b61;color:#8cf0d0;min-width:25px;padding:5px 8px;text-align:center}
+.sq-inbox-items{display:grid;gap:10px}
+#notifications-page .sq-inbox-items .entry{display:flex;flex-wrap:wrap;align-items:start;gap:10px;padding:14px!important;margin:0!important;border:1px solid #35546c;border-radius:13px;background:#17364c;min-width:0;overflow-wrap:anywhere}
+#notifications-page .sq-inbox-items .entry[hidden]{display:none!important}
+#notifications-page .sq-inbox-items .entry .text{flex:1 1 160px;min-width:0}
+#notifications-page .sq-inbox-items .entry .note{font-size:12px;line-height:1.5;margin-top:6px;overflow-wrap:anywhere}
+#notifications-page .sq-inbox-items .entry .small-btn{max-width:100%;white-space:normal}
+#notifications-page .sq-unread-notification{border-left:3px solid #3de3b4!important}
+@media(max-width:1050px){.sq-inbox-columns{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:690px){.sq-inbox-columns{grid-template-columns:minmax(0,1fr);gap:12px}.sq-inbox-column{padding:12px}.sq-about-topline{gap:10px}.sq-about-topline .sq-header-tour-btn{font-size:12px;padding:8px 10px}#notifications-page #notifications-panel{padding:13px;border-radius:16px}}
+</style>
 </head>
 <body>
 <button type="button" id="guest-auth-button" hidden>Log in or create account</button>
@@ -1532,7 +1564,6 @@ body.friends-view .wrap #friends-page{display:block!important}
   <button type="button" id="nav-analytics" class="sq-nav-link"><span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 16v-5m5 5V7m5 9V5"/></svg></span><span class="sq-nav-label">Analytics</span></button>
   <button type="button" id="nav-profile" class="sq-nav-link"><span class="sq-nav-icon profile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="sq-nav-label">Account</span></button>
   <button type="button" id="nav-about" class="sq-nav-link"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".7" fill="currentColor" stroke="none"/></svg></span><span class="sq-nav-label">About</span></button>
-  <button type="button" id="nav-tutorial" class="sq-nav-link" title="Open site tutorial"><span class="sq-nav-icon">❔</span><span class="sq-nav-label">Site tutorial</span></button>
   <button type="button" id="btn-settings" class="sq-nav-link" style="display:none!important" aria-hidden="true" tabindex="-1"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2 2-.07-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.56V21h-2.83v-.9a1.7 1.7 0 0 0-1-1.56 1.7 1.7 0 0 0-1.87.34l-.07.06-2-2 .06-.06A1.7 1.7 0 0 0 7.5 15a1.7 1.7 0 0 0-1.56-1H5v-2.83h.94a1.7 1.7 0 0 0 1.56-1 1.7 1.7 0 0 0-.34-1.87L7.1 8.24l2-2 .07.06a1.7 1.7 0 0 0 1.87.34 1.7 1.7 0 0 0 1-1.56V4h2.83v1.08a1.7 1.7 0 0 0 1 1.56 1.7 1.7 0 0 0 1.87-.34l.07-.06 2 2-.06.06a1.7 1.7 0 0 0-.34 1.87 1.7 1.7 0 0 0 1.56 1H22V14h-1.04a1.7 1.7 0 0 0-1.56 1Z" transform="translate(-.5 -.5)"/></svg></span><span class="sq-nav-label">Settings</span></button>
 </nav>
     <div class="settings">
@@ -1566,7 +1597,7 @@ body.friends-view .wrap #friends-page{display:block!important}
 </aside>
 <div class="wrap"><div class="sq-mobile-top"><span class="sq-brand"><img src="/images/logo.png" alt="">Square Up</span><span class="sq-mobile-header-actions"><button type="button" id="sq-mobile-about" aria-label="Open About" title="About Square Up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none"/></svg></button><button type="button" id="sq-mobile-notifications" class="sq-mobile-notification-button" aria-label="Open Notification Center" title="Notifications" aria-controls="notifications-page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span id="sq-mobile-notifications-count" class="sq-mobile-notifications-count" hidden></span></button><button type="button" id="sq-mobile-chat" aria-label="Open group chat" title="Group chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5Z"/></svg></button><button type="button" id="sq-mobile-friends" aria-label="Open Friends" title="Friends" ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2"/><path d="M18 8v8M14 12h8"/></svg></button></span></div>
   <header class="tracker-heading">
-    <h1>💸 Square Up</h1>
+    <div class="sq-title-and-tour"><h1>💸 Square Up</h1></div>
     <p>Track who owes who. Debts that go both ways cancel out automatically.</p>
   </header>
 
@@ -1840,7 +1871,7 @@ body.friends-view .wrap #friends-page{display:block!important}
 </section>
 <section id="about-page" aria-label="About Square Up">
   <div class="about-hero">
-    <div class="about-hero-copy"><div class="about-kicker">ABOUT SQUARE UP</div><h2>Keeping money<br>between friends <em>simple.</em></h2><p>Square Up makes it easy to track shared expenses, split bills, and settle up with friends. No awkward conversations, no spreadsheets — just a simple way to stay even.</p></div>
+    <div class="about-hero-copy"><div class="sq-about-topline"><div class="about-kicker">ABOUT SQUARE UP</div><button type="button" id="sq-replay-tour" class="sq-header-tour-btn">❔ Site tutorial</button></div><h2>Keeping money<br>between friends <em>simple.</em></h2><p>Square Up makes it easy to track shared expenses, split bills, and settle up with friends. No awkward conversations, no spreadsheets — just a simple way to stay even.</p></div>
     <div class="about-hero-art" aria-hidden="true"><div class="about-float-card one"><div class="about-dot"></div><div class="about-fake-lines">━━━━━━<br>━━━━</div><strong>+$18.50</strong></div><div class="about-float-card two"><div class="about-dot violet"></div><div class="about-fake-lines">━━━━━━<br>━━━━</div><strong>−$24.00</strong></div></div>
   </div>
   <div class="about-feature-grid">
@@ -1860,7 +1891,7 @@ body.friends-view .wrap #friends-page{display:block!important}
       <li><span class="about-build-number">6</span><div class="about-build-step"><span class="about-build-emoji" aria-hidden="true">📈</span><div><h3>Constantly Improving</h3><p>Square Up continues to evolve through testing, fixing bugs, and ideas from the people who use it.</p></div><span class="about-build-date">Ongoing</span></div></li>
     </ol>
   </section>
-  <div class="about-mission"><div><div class="about-kicker">OUR MISSION</div><h2>Less confusion. <em>More time together.</em></h2><p>Square Up was built to make managing shared money effortless, so you can focus on what actually matters — your friends, experiences, and memories.</p><div class="sq-about-actions"><button type="button" id="about-start" class="about-start">Go to your trackers →</button><button type="button" id="sq-replay-tour" class="about-start sq-tour-launch">▶ Replay site tutorial</button></div></div><div class="about-sunset" aria-hidden="true"><div class="about-sun"></div><div class="about-hills"></div><div class="about-sea"></div></div></div>
+  <div class="about-mission"><div><div class="about-kicker">OUR MISSION</div><h2>Less confusion. <em>More time together.</em></h2><p>Square Up was built to make managing shared money effortless, so you can focus on what actually matters — your friends, experiences, and memories.</p><div class="sq-about-actions"><button type="button" id="about-start" class="about-start">Go to your trackers →</button></div></div><div class="about-sunset" aria-hidden="true"><div class="about-sun"></div><div class="about-hills"></div><div class="about-sea"></div></div></div>
 </section>
 
 <div id="sq-tour-overlay" hidden aria-hidden="true">
@@ -5004,7 +5035,7 @@ if(typeof supabase!=='undefined'&&supabase.auth){supabase.auth.onAuthStateChange
 function notificationType(kind){kind=String(kind||'').toLowerCase();if(kind.includes('mention'))return 'mentions';if(kind.includes('message')||kind.includes('chat'))return 'messages';if(kind.includes('payment')||kind.includes('confirm')||kind.includes('dispute'))return 'payments';if(kind.includes('due')||kind.includes('remind'))return 'reminders';return 'expenses';}
 var inboxEl=document.getElementById('notifications-list');
 function filterInbox(){if(!inboxEl)return;var rows=Array.from(inboxEl.querySelectorAll(':scope > .entry'));var notifications=(typeof inbox!=='undefined'&&Array.isArray(inbox))?inbox:[];rows.forEach(function(row,i){var type=i<notifications.length?notificationType(notifications[i].kind):'reminders';row.hidden=prefs[type]===false;});}
-if(inboxEl){new MutationObserver(filterInbox).observe(inboxEl,{childList:true});filterInbox();}
+if(inboxEl){filterInbox();}
 })();
 </script>
 
@@ -5030,7 +5061,6 @@ if(inboxEl){new MutationObserver(filterInbox).observe(inboxEl,{childList:true});
  var title=document.getElementById('sq-tour-title'),desc=document.getElementById('sq-tour-description'),label=document.getElementById('sq-tour-step-label'),bar=document.getElementById('sq-tour-progress-fill'),back=document.getElementById('sq-tour-back'),next=document.getElementById('sq-tour-next'),close=document.getElementById('sq-tour-close');
  function paint(){title.textContent=steps[i][0];desc.textContent=steps[i][1];label.textContent='SQUARE UP GUIDE · '+(i+1)+' OF '+steps.length;bar.style.width=((i+1)/steps.length*100)+'%';back.disabled=i===0;next.textContent=i===steps.length-1?'Finish ✓':'Next →';}
  function dismiss(){overlay.hidden=true;overlay.setAttribute('aria-hidden','true');document.body.style.removeProperty('overflow');if(previousFocus&&previousFocus.focus)previousFocus.focus();}
- document.getElementById('nav-tutorial')?.addEventListener('click',function(){launch.click();});
  launch.addEventListener('click',function(){previousFocus=document.activeElement;i=0;paint();overlay.hidden=false;overlay.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';close.focus();});
  close.addEventListener('click',dismiss);back.addEventListener('click',function(){if(i>0){i--;paint();}});next.addEventListener('click',function(){if(i<steps.length-1){i++;paint();}else dismiss();});
  overlay.addEventListener('click',function(e){if(e.target===overlay)dismiss();});
@@ -5053,10 +5083,61 @@ exportButton?.addEventListener('click',function(){
  const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='squareup-expenses-'+new Date().toISOString().slice(0,10)+'.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 });
 const notificationList=document.getElementById('notifications-list'),notificationFilter=document.getElementById('sq-notification-filter');
-function decorateInbox(){if(!notificationList)return;notificationList.querySelectorAll('.sq-inbox-group').forEach(x=>x.remove());const rows=Array.from(notificationList.querySelectorAll(':scope > .entry'));const source=typeof inbox!=='undefined'&&Array.isArray(inbox)?inbox:[];let last='';const today=new Date().toDateString();const yesterday=new Date(Date.now()-86400000).toDateString();if(!rows.length){return;}rows.forEach((row,i)=>{const n=source[i];const date=n?.created_at?new Date(n.created_at):null;const group=date&&!isNaN(date)?date.toDateString()===today?'Today':date.toDateString()===yesterday?'Yesterday':'Earlier':'Earlier';const kind=String(n?.kind||'').toLowerCase();const category=kind.includes('payment')||kind.includes('confirm')?'payments':kind.includes('chat')||kind.includes('message')||kind.includes('mention')?'messages':'expenses';row.dataset.sqInboxCategory=category;row.dataset.sqInboxUnread=n&&!n.read_at?'true':'false';if(group!==last){const header=document.createElement('div');header.className='sq-inbox-group';header.textContent=group;row.before(header);last=group;}});filterRows();}
-function filterRows(){if(!notificationList)return;const rows=Array.from(notificationList.querySelectorAll(':scope > .entry'));const selection=notificationFilter?.value||'all';rows.forEach(row=>{const type=row.dataset.sqInboxCategory;const pref=typeof prefs!=='undefined'?prefs:{};const allowed=pref[type]!==false;const matches=selection==='all'||(selection==='unread'&&row.dataset.sqInboxUnread==='true')||selection===type;row.hidden=!allowed||!matches;});let group=null,hasVisible=false;Array.from(notificationList.children).forEach(el=>{if(el.classList.contains('sq-inbox-group')){if(group)group.hidden=!hasVisible;group=el;hasVisible=false;}else if(el.classList.contains('entry')&&!el.hidden){hasVisible=true;}});if(group)group.hidden=!hasVisible;}
+function notificationBucket(dateValue){
+ const d=new Date(dateValue),now=new Date();if(isNaN(d.getTime()))return 'Earlier';
+ const start=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+ const yesterday=new Date(start);yesterday.setDate(start.getDate()-1);
+ return d>=start?'Today':d>=yesterday?'Yesterday':'Earlier';
+}
+function notificationCategory(kind){const k=String(kind||'').toLowerCase();return /payment|confirm|dispute/.test(k)?'payments':/chat|message|mention/.test(k)?'messages':'expenses';}
+function organizeInbox(){
+ if(!notificationList)return;
+ const old=notificationList.querySelector('.sq-inbox-columns');
+ if(old){Array.from(old.querySelectorAll('.entry')).forEach(el=>notificationList.append(el));old.remove();}
+ notificationList.querySelectorAll('.sq-inbox-group').forEach(el=>el.remove());
+ const rows=Array.from(notificationList.querySelectorAll(':scope > .entry'));
+ if(!rows.length)return;
+ const source=typeof inbox!=='undefined'&&Array.isArray(inbox)?inbox:[];
+ const columns=document.createElement('div');columns.className='sq-inbox-columns';
+ const buckets={};
+ ['Today','Yesterday','Earlier'].forEach(name=>{
+  const section=document.createElement('section');section.className='sq-inbox-column';section.dataset.bucket=name;
+  const heading=document.createElement('div');heading.className='sq-inbox-column-title';
+  const title=document.createElement('h3');title.textContent=name;
+  const count=document.createElement('span');count.className='sq-inbox-count';heading.append(title,count);
+  const items=document.createElement('div');items.className='sq-inbox-items';section.append(heading,items);
+  columns.append(section);buckets[name]={section,items,count};
+ });
+ rows.forEach((row,i)=>{
+  const n=source[i];const bucket=notificationBucket(n?.created_at);
+  row.dataset.sqInboxCategory=n?notificationCategory(n.kind):'expenses';
+  row.dataset.sqInboxUnread=n&&!n.read_at?'true':'false';
+  row.classList.toggle('sq-unread-notification',row.dataset.sqInboxUnread==='true');
+  buckets[bucket].items.append(row);
+ });
+ notificationList.prepend(columns);filterRows();
+}
+function filterRows(){
+ if(!notificationList)return;
+ const selection=notificationFilter?.value||'all';
+ notificationList.querySelectorAll('.sq-inbox-column').forEach(section=>{
+  let visible=0;
+  section.querySelectorAll('.entry').forEach(row=>{
+   const type=row.dataset.sqInboxCategory;
+   const matches=selection==='all'||(selection==='unread'&&row.dataset.sqInboxUnread==='true')||selection===type;
+   row.hidden=!matches; if(matches)visible++;
+  });
+  section.hidden=visible===0;section.querySelector('.sq-inbox-count').textContent=String(visible);
+ });
+}
 notificationFilter?.addEventListener('change',filterRows);
-if(notificationList){const observer=new MutationObserver(records=>{if(!records.some(r=>Array.from(r.addedNodes).some(n=>n.nodeType===1&&n.classList.contains('entry'))||Array.from(r.removedNodes).some(n=>n.nodeType===1&&n.classList.contains('entry'))))return;observer.disconnect();decorateInbox();observer.observe(notificationList,{childList:true});});decorateInbox();observer.observe(notificationList,{childList:true});}
+if(notificationList){
+ const observer=new MutationObserver(records=>{
+  if(!records.some(r=>Array.from(r.addedNodes).some(n=>n.nodeType===1&&n.classList.contains('entry'))))return;
+  observer.disconnect();organizeInbox();observer.observe(notificationList,{childList:true});
+ });
+ organizeInbox();observer.observe(notificationList,{childList:true});
+}
 const tour=document.getElementById('sq-replay-tour');if(tour){const original=tour.click.bind(tour);let prompted=false;function maybeTour(){if(prompted)return;prompted=true;try{if(localStorage.getItem('sq_tour_seen_v1'))return;localStorage.setItem('sq_tour_seen_v1','1');}catch(e){return;}if(document.getElementById('sq-tour-overlay')?.hidden)original();}window.addEventListener('load',()=>{setTimeout(()=>{if(document.querySelector('#tracker-dashboard')&&!document.body.classList.contains('auth-view')&&document.body.classList.contains('logged-in'))maybeTour();},1800);});}
 })();
 </script>
