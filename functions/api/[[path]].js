@@ -532,8 +532,8 @@ if (
             const preference = preferencesByUser.get(s.user_id) || {};
 
             const allowedRows = recipientRows.filter(
-              r => preference[pushCategory(r.kind)] !== false
-            );
+  r => allowedPush(r)
+);
 
             if (!allowedRows.length) return;
 
@@ -1469,6 +1469,30 @@ if (
     
     // NOTIFICATIONS
     if (parts[0] === 'notifications') {
+      // Mark all notifications as read for the signed-in user.
+if (
+  parts.length === 2 &&
+  parts[1] === 'read-all' &&
+  method === 'PATCH'
+) {
+  const readAt = new Date().toISOString();
+
+  await db('squareup_notifications', {
+    method: 'PATCH',
+    filters: {
+      recipient_id: 'eq.' + me.id,
+      read_at: 'is.null'
+    },
+    body: {
+      read_at: readAt
+    }
+  });
+
+  return json({
+    ok: true,
+    read_at: readAt
+  });
+}
       if (parts.length === 1 && method === 'GET') {
         const rows = await db('squareup_notifications', {
           filters: { recipient_id: 'eq.' + me.id },
