@@ -1520,9 +1520,9 @@ body.friends-view .wrap #friends-page{display:block!important}
     <p>Track who owes who. Debts that go both ways cancel out automatically.</p>
   </header>
 
-  <section id="notifications-page" aria-label="Notification Center" hidden>
+  <section id="notifications-page" aria-label="Notification Center">
     <div class="sq-notifications-header"><div><h2>Notification Center</h2><p>Expenses, payments, invitations, and group updates in one place.</p></div><button type="button" id="notifications-back" class="small-btn">← Back to Home</button></div>
-    <div id="notifications-panel" class="sidebar-notification-panel"><div class="notification-panel-heading">Your updates</div><div id="notifications-list"></div></div>
+    <div id="notifications-panel" class="sidebar-notification-panel"><div class="notification-panel-heading">Your updates</div><div id="notifications-list"><p>Loading notifications…</p></div></div>
   </section>
   <div id="tracker-dashboard">
   <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="budget" role="tab" aria-selected="false">Budget</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button></div>
@@ -3969,7 +3969,7 @@ if (!startUser && pendingJoin() && !$("auth-modal").classList.contains("open")) 
 var inbox=[];
 async function refreshInbox(){
  if(!currentUser){inbox=[];drawInbox();return;}
- try {var regular=await api('notifications');var social=await api('social/notifications');inbox=[...regular,...social.map(x=>({...x,_social:true}))].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));drawInbox();}catch(e){console.warn('Notifications unavailable',e);}
+ try {var regular=await api('notifications');var social=await api('social/notifications');inbox=[...regular,...social.map(x=>({...x,_social:true}))].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));drawInbox();}catch(e){console.warn('Notifications unavailable',e);drawInbox();var list=document.getElementById('notifications-list');if(list&&!inbox.length)list.innerHTML='<p>Notifications could not be loaded right now. Please try again shortly.</p>';}
 }
 function drawInbox(){
  var count=inbox.filter(n=>!n.read_at).length;
