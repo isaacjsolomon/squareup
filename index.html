@@ -1675,6 +1675,7 @@ body.friends-view .wrap #friends-page{display:block!important}
       <article class="sq-return-panel"><div class="sq-return-head"><h3>Recent activity</h3><button type="button" data-return-tab="expenses">View all ↗</button></div><div id="sq-return-activity" class="sq-return-rows"></div></article>
       <article class="sq-return-panel"><div class="sq-return-head"><h3>Tracker members</h3><button type="button" data-return-tab="members">View all ↗</button></div><div id="sq-return-members" class="sq-return-rows"></div></article>
       <article class="sq-return-panel"><div class="sq-return-head"><h3>Balances by person</h3><button type="button" data-return-tab="expenses">Who owes whom</button></div><div id="sq-return-balances" class="sq-return-rows"></div></article>
+      <article class="sq-return-panel sq-return-smart-panel"><div class="sq-return-head"><h3>Smart settle-up</h3></div><div id="sq-return-smart-host"></div></article>
     </div>
   </section>
   <section id="sq-template-dashboard" class="sq-template-dashboard" hidden aria-label="Tracker template overview"></section>
@@ -5396,6 +5397,28 @@ input.addEventListener('input',draw);
 })();
 </script>
 
+
+<style id="sq-return-theme-2026">
+/* Overview: original solid navy cards, no glossy glass overlays. */
+#tracker-dashboard .sq-return-summary{margin:8px 0 24px;color:#f5f9ff}
+#tracker-dashboard .sq-return-welcome h2{font-size:clamp(30px,3.2vw,46px);margin:8px 0 19px;text-align:left;letter-spacing:-.035em}
+#tracker-dashboard .sq-return-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:16px}
+#tracker-dashboard .sq-return-panel{background:#102a40;border:1px solid #36546a;border-radius:18px;padding:23px;backdrop-filter:none;-webkit-backdrop-filter:none;min-height:200px;box-shadow:none}
+#tracker-dashboard .sq-return-head{margin-bottom:17px}
+#tracker-dashboard .sq-return-head h3{font-size:19px}
+#tracker-dashboard .sq-return-head button{background:#1a3a52;border:1px solid #48677e;border-radius:12px;padding:9px 13px;font-size:13px;font-weight:700}
+#tracker-dashboard .sq-return-row{background:#17384f;border:1px solid #35566e;border-radius:12px;padding:12px}
+#tracker-dashboard .sq-return-icon{background:#23516a;color:#50e7c2}
+#tracker-dashboard .sq-return-copy small{color:#bcd0e0}
+#tracker-dashboard .sq-return-summary .sq-clean-balance{margin:0 0 14px!important}
+#tracker-dashboard .sq-return-summary .dashboard-actions{margin:0 0 20px!important}
+#tracker-dashboard .sq-return-smart-panel #smart-settle-card{display:block!important;position:static!important;margin:0!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;order:initial!important}
+#tracker-dashboard .sq-return-smart-panel #smart-settle-card>summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 14px;border-radius:11px;background:#17384f;border:1px solid #35566e}
+#tracker-dashboard .sq-return-smart-panel #smart-settle-card .tracker-collapsible-body{padding:14px 4px 0}
+#tracker-dashboard .sq-return-smart-panel .sq-return-head{margin-bottom:13px}
+#tracker-dashboard:not(.sq-tab-overview) .sq-return-summary{display:none!important}
+@media(max-width:740px){#tracker-dashboard .sq-return-grid{grid-template-columns:1fr}#tracker-dashboard .sq-return-panel{min-height:0;padding:18px}#tracker-dashboard .sq-return-welcome h2{margin-bottom:15px}}
+</style>
 <script id="sq-restored-summary-script">
 (function(){
  'use strict';
@@ -5419,7 +5442,7 @@ input.addEventListener('input',draw);
   const members=tracker&&typeof window.squareUpExpenseMembers==='function'?window.squareUpExpenseMembers():[];
   const mine=members.find(m=>m.isYou);
   const user=typeof currentUser!=='undefined'?currentUser:null;
-  const name=str(mine?.name||mine?.displayName||user?.user_metadata?.full_name||user?.name).trim();
+  const name=str(user?.name||user?.displayName||user?.user_metadata?.display_name||user?.user_metadata?.full_name||mine?.displayName||mine?.name).trim();
   byId('sq-return-greeting').textContent='Welcome back'+(name?', '+name.split(' ')[0]:'');
   const display=n=>{const found=members.find(m=>[m.name,m.email,m.username,m.displayName].some(v=>str(v).toLowerCase()===str(n).toLowerCase()));return found?.name||found?.displayName||str(n);};
   const date=e=>{const d=new Date(e.date||e.created_at||e.createdAt||0);return Number.isFinite(d.getTime())?d.getTime():0;};
@@ -5429,9 +5452,18 @@ input.addEventListener('input',draw);
   fill('sq-return-balances',pairs.slice(0,5).map(p=>makeRow('↔',display(p.from)+' → '+display(p.to),'Outstanding balance',p.amount)),'Everyone is squared up');
  }catch(err){console.warn('Could not refresh tracker summary',err);}}
  document.querySelectorAll('[data-return-tab]').forEach(b=>b.addEventListener('click',()=>document.querySelector('[data-sq-tab="'+b.dataset.returnTab+'"]')?.click()));
+ const summary=byId('sq-return-summary'),grid=summary?.querySelector('.sq-return-grid');
+ const balance=byId('sq-clean-balance'),actions=document.querySelector('#tracker-dashboard .dashboard-actions');
+ if(summary&&grid&&balance&&actions){summary.insertBefore(balance,grid);summary.insertBefore(actions,grid);}
+ const smart=byId('smart-settle-card'),smartHost=byId('sq-return-smart-host');
+ if(smart&&smartHost)smartHost.append(smart);
  const history=byId('history');if(history){const observer=new MutationObserver(()=>{if(!window.sqReturnQueued){window.sqReturnQueued=true;requestAnimationFrame(()=>{window.sqReturnQueued=false;refresh();});}});observer.observe(history,{childList:true});}
  document.querySelectorAll('[data-sq-tab]').forEach(b=>b.addEventListener('click',refresh));
  window.sqRefreshRestoredSummary=refresh;
+ const originalShowUser=window.showUser;
+ if(typeof originalShowUser==='function'){window.showUser=function(){const result=originalShowUser.apply(this,arguments);refresh();return result;};}
+ const originalApplyDetail=window.applyDetail;
+ if(typeof originalApplyDetail==='function'){window.applyDetail=function(){const result=originalApplyDetail.apply(this,arguments);refresh();return result;};}
  refresh();
 })();
 </script>
