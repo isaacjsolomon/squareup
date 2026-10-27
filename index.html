@@ -1666,15 +1666,15 @@ body.friends-view .wrap #friends-page{display:block!important}
     <div class="sq-notifications-header"><div><h2>Notification Center</h2><p>Expenses, payments, invitations, and group updates in one place.</p></div><button type="button" id="notifications-back" class="small-btn">← Back to Home</button></div>
     <div id="notifications-panel" class="sidebar-notification-panel"><div class="notification-panel-heading">Your updates</div><div class="sq-notification-tools"><label>Show <select id="sq-notification-filter"><option value="all">All notifications</option><option value="unread">Unread only</option><option value="payments">Payments</option><option value="messages">Messages</option><option value="expenses">Expenses & invites</option></select></label></div><div id="notifications-list"><p>Loading notifications…</p></div></div>
   </section>
-  <div id="tracker-dashboard">
+  <div id="tracker-dashboard" class="sq-tab-overview">
   <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="budget" role="tab" aria-selected="false">Budget</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button></div>
 
   <section class="sq-return-summary" id="sq-return-summary" aria-label="Tracker summary">
     <header class="sq-return-welcome"><h2 id="sq-return-greeting">Welcome back</h2></header>
     <div class="sq-return-grid">
-      <article class="sq-return-panel"><div class="sq-return-head"><h3>Recent activity</h3><button type="button" data-return-tab="expenses">View all ↗</button></div><div id="sq-return-activity" class="sq-return-rows"></div></article>
-      <article class="sq-return-panel"><div class="sq-return-head"><h3>Tracker members</h3><button type="button" data-return-tab="members">View all ↗</button></div><div id="sq-return-members" class="sq-return-rows"></div></article>
-      <article class="sq-return-panel"><div class="sq-return-head"><h3>Balances by person</h3><button type="button" data-return-tab="expenses">Who owes whom</button></div><div id="sq-return-balances" class="sq-return-rows"></div></article>
+      <article class="sq-return-panel"><div class="sq-return-head"><h3>Recent activity</h3><button type="button" data-return-tab="expenses">View all ↗</button></div><div id="sq-return-activity" class="sq-return-rows"><p class="sq-return-empty">Loading recent activity…</p></div></article>
+      <article class="sq-return-panel"><div class="sq-return-head"><h3>Tracker members</h3><button type="button" data-return-tab="members">View all ↗</button></div><div id="sq-return-members" class="sq-return-rows"><p class="sq-return-empty">Loading tracker members…</p></div></article>
+      <article class="sq-return-panel"><div class="sq-return-head"><h3>Balances by person</h3><button type="button" data-return-tab="expenses">Who owes whom</button></div><div id="sq-return-balances" class="sq-return-rows"><p class="sq-return-empty">Loading balances…</p></div></article>
       <article class="sq-return-panel sq-return-smart-panel"><div class="sq-return-head"><h3>Smart settle-up</h3></div><div id="sq-return-smart-host"></div></article>
     </div>
   </section>
@@ -4042,6 +4042,7 @@ function applyDetail(detail) {
     loadTrackerChat();loadRecurring();
     if ($("share-modal").classList.contains("open")) renderShareMembers();
   }
+  if(typeof window.sqRefreshRestoredSummary === "function") window.sqRefreshRestoredSummary();
 }
 
 async function openTracker(id) {
@@ -5438,12 +5439,14 @@ input.addEventListener('input',draw);
  function fill(id,rows,empty){const host=byId(id);if(!host)return;host.replaceChildren();if(!rows.length){const p=document.createElement('p');p.className='sq-return-empty';p.textContent=empty;host.append(p);}else rows.forEach(r=>host.append(r));}
  function refresh(){try{
   const tracker=typeof current!=='undefined'?current:null;
+  if(!tracker)return;
   const all=tracker&&typeof entries!=='undefined'&&Array.isArray(entries)?entries:[];
   const members=tracker&&typeof window.squareUpExpenseMembers==='function'?window.squareUpExpenseMembers():[];
   const mine=members.find(m=>m.isYou);
   const user=typeof currentUser!=='undefined'?currentUser:null;
-  const name=str(user?.name||user?.displayName||user?.user_metadata?.display_name||user?.user_metadata?.full_name||mine?.displayName||mine?.name).trim();
+  const name=str(user?.displayName||user?.display_name||user?.user_metadata?.display_name||user?.user_metadata?.full_name||user?.name||mine?.displayName||mine?.name).trim();
   byId('sq-return-greeting').textContent='Welcome back'+(name?', '+name.split(' ')[0]:'');
+  if(name)try{sessionStorage.setItem('sq-last-display-name',name.split(' ')[0]);}catch(_){}
   const display=n=>{const found=members.find(m=>[m.name,m.email,m.username,m.displayName].some(v=>str(v).toLowerCase()===str(n).toLowerCase()));return found?.name||found?.displayName||str(n);};
   const date=e=>{const d=new Date(e.date||e.created_at||e.createdAt||0);return Number.isFinite(d.getTime())?d.getTime():0;};
   fill('sq-return-activity',all.slice().sort((a,b)=>date(b)-date(a)).slice(0,4).map(e=>makeRow(e.type==='payment'?'↗':'▤',str(e.note||(e.type==='payment'?'Payment':'Expense')),display(e.from)+' → '+display(e.to),e.amount)),'No recent activity in this tracker');
@@ -5452,6 +5455,7 @@ input.addEventListener('input',draw);
   fill('sq-return-balances',pairs.slice(0,5).map(p=>makeRow('↔',display(p.from)+' → '+display(p.to),'Outstanding balance',p.amount)),'Everyone is squared up');
  }catch(err){console.warn('Could not refresh tracker summary',err);}}
  document.querySelectorAll('[data-return-tab]').forEach(b=>b.addEventListener('click',()=>document.querySelector('[data-sq-tab="'+b.dataset.returnTab+'"]')?.click()));
+ try {const saved=sessionStorage.getItem('sq-last-display-name');if(saved)byId('sq-return-greeting').textContent='Welcome back, '+saved;}catch(_){}
  const summary=byId('sq-return-summary'),grid=summary?.querySelector('.sq-return-grid');
  const balance=byId('sq-clean-balance'),actions=document.querySelector('#tracker-dashboard .dashboard-actions');
  if(summary&&grid&&balance&&actions){summary.insertBefore(balance,grid);summary.insertBefore(actions,grid);}
