@@ -3977,7 +3977,12 @@ async function mutate(path, method, body) {
   var status = $("sync-status");
   if (status) status.textContent = "Saving…";
   try {
-    applyDetail(await api(path, method, body));
+    var savedDetail = await api(path, method, body);
+    applyDetail(savedDetail);
+    // Open the existing expense-details dialog only after a successful new expense save.
+    if (method === "POST" && /\/entries$/.test(path) && body && body.type === "debt") {
+      window.dispatchEvent(new CustomEvent('squareup:expense-saved', {detail: {entry: body, tracker: savedDetail}}));
+    }
   } catch (err) {
     if (status) status.textContent = "Not saved";
     alert(err.message);
@@ -5156,6 +5161,19 @@ document.getElementById('sq-details-close').addEventListener('click',close);docu
 overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
 function show(entry){if(!entry)return;var parsed=unpack(entry.note);var data=[['Type',entry.type==='payment'?'Payment':'Expense'],['Amount',Number(entry.amount||0).toLocaleString(undefined,{style:'currency',currency:entry.currency||'USD'})],['From',entry.from||'—'],['To',entry.to||'—'],['Category',entry.type==='payment'?'Payment':parsed.category],['Description',parsed.note||'No description'],['Date',entry.date||'—'],['Due date',entry.dueDate||'None'],['Status',entry.paymentStatus||'—'],['Created by',entry.createdBy||'—'],['Pinned',entry.pinned?'Yes':'No']];document.getElementById('sq-details-amount').textContent=data[1][1];grid.replaceChildren();data.forEach(function(row){var dt=document.createElement('dt');dt.textContent=row[0];var dd=document.createElement('dd');dd.textContent=row[1];grid.append(dt,dd);});overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.getElementById('sq-details-close').focus();}
+// Show the saved expense in the existing Details dialog after the server confirms it.
+window.addEventListener('squareup:expense-saved',function(event){
+ var payload=event.detail||{}, wanted=payload.entry||{}, tracker=payload.tracker||{};
+ var candidates=Array.isArray(tracker.entries)?tracker.entries:[];
+ var matching=candidates.filter(function(e){
+   return e.type==='debt' && String(e.from||'')===String(wanted.from||'') &&
+     String(e.to||'')===String(wanted.to||'') &&
+     Math.abs(Number(e.amount)-Number(wanted.amount))<0.001 &&
+     String(e.note||'')===String(wanted.note||'');
+ });
+ var latest=matching.length?matching[matching.length-1]:null;
+ if(latest)show(latest);
+});
 var historyEl=document.getElementById('history');
 function decorate(){if(!historyEl)return;historyEl.querySelectorAll('.entry').forEach(function(row){if(row.dataset.sqEnhanced)return;var del=row.querySelector('[data-del]');if(!del)return;row.dataset.sqEnhanced='1';var id=del.dataset.del;var entry=(typeof entries!=='undefined'&&Array.isArray(entries))?entries.find(function(x){return String(x.id)===String(id);}):null;if(!entry)return;var parsed=unpack(entry.note);if(entry.type==='debt'){var chip=document.createElement('span');chip.className='sq-cat-chip';chip.textContent=parsed.category;var noteEl=row.querySelector('.note');if(noteEl){if(pattern.test(String(entry.note||'')))noteEl.textContent=noteEl.textContent.replace(pattern,'');noteEl.prepend(chip);}}var btn=document.createElement('button');btn.type='button';btn.className='small-btn sq-detail-btn';btn.textContent='Details';btn.addEventListener('click',function(){var fresh=(typeof entries!=='undefined'&&Array.isArray(entries))?entries.find(function(x){return String(x.id)===String(id);}):entry;show(fresh);});row.insertBefore(btn,del);});}
 if(historyEl){new MutationObserver(function(){decorate();}).observe(historyEl,{childList:true});decorate();}
