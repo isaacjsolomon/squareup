@@ -4696,8 +4696,7 @@ function squareUpPaintPin(){var el=$('sq-chat-pin');if(!current){el.hidden=true;
 $('sq-chat-pin-toggle').onclick=()=>{squareUpPaintPin();if($('sq-chat-pin').hidden)alert('Pin a message using its 📌 Pin button.');else $('sq-chat-pin').scrollIntoView({block:'nearest',behavior:'smooth'});};
 $('sq-chat-pin').addEventListener('click',async e=>{if(e.target.id==='sq-unpin-chat'){await squareUpPinMessage(null);}if(e.target.id==='sq-jump-chat'){var row=Array.from(document.querySelectorAll('[data-chat-id]')).find(x=>x.dataset.chatId===sqSharedPinId);row?.scrollIntoView({behavior:'smooth',block:'center'});}});
 
-</script>
-<script>
+
 
 // Template dashboards: all amounts are calculated from actual saved entries.
 // The chosen template is remembered in this browser, without altering tracker records.
@@ -4756,6 +4755,7 @@ document.getElementById('sq-template-dashboard').addEventListener('click',functi
 var sqOriginalDrawTemplates=sqDrawTemplates;
 sqDrawTemplates=function(){sqOriginalDrawTemplates();var box=document.getElementById('sq-template-detail');if(sqTemplateSelected>=0){var p=sqTemplateProfiles[sqTemplateSelected];var preview=document.createElement('div');preview.className='sq-td-template-preview';preview.textContent=p.icon+' '+p.name+' dashboard · '+p.cats.join(' / ')+' · Quick actions: '+p.actions.map(a=>a[0]).join(', ');box.append(preview);}};
 sqDrawTemplates();
+
 
 </script>
 <nav aria-label="Mobile navigation" class="sq-mobile-nav"><button class="active" data-target="nav-home" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path><path d="M7 10v-1m10 1V9"></path></svg></span>Home</button><button data-target="nav-trackers" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="m4 7 2 2 3-4"></path><path d="M12 7h9"></path><circle cx="6" cy="17" r="2"></circle><path d="M12 17h9"></path></svg></span>Trackers</button><button class="sq-add" data-target="quick-expense" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2" viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></span>Add</button><button data-target="nav-analytics" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="M3 3v18h18"></path><path d="M7 16v-5m5 5V7m5 9V5"></path></svg></span>Analytics</button><button data-target="nav-profile" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>Account</button></nav>
