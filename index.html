@@ -1267,9 +1267,12 @@ body.about-view .sq-header-tour-btn{display:inline-flex}
 .sq-entry-heading,.sq-receipt-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
 .sq-entry-heading{margin-bottom:14px}
 .sq-entry-heading h2{margin:0}
-.sq-panel-x{flex:0 0 38px;width:38px;height:38px;display:grid;place-items:center;border:1px solid rgba(155,194,217,.35);border-radius:11px;background:rgba(8,27,44,.45);color:#c4d8e6;font-size:29px;line-height:1;cursor:pointer;padding:0}
-.sq-panel-x:hover,.sq-panel-x:focus-visible{background:#25475f;color:white;border-color:#43dfba}
-@media(max-width:540px){.sq-panel-x{flex-basis:34px;width:34px;height:34px;font-size:26px}}
+.sq-panel-x{flex:0 0 38px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;border:1px solid rgba(155,194,217,.32);border-radius:12px;background:rgba(20,48,68,.65);color:#c4d8e6;cursor:pointer;padding:0;appearance:none;-webkit-appearance:none;transition:background .15s ease,border-color .15s ease,color .15s ease,transform .15s ease}
+.sq-panel-x svg{display:block;flex:none;width:18px;height:18px;pointer-events:none}
+.sq-panel-x:hover{background:#25475f;color:#fff;border-color:#43dfba}
+.sq-panel-x:active{transform:scale(.95)}
+.sq-panel-x:focus-visible{outline:2px solid #43dfba;outline-offset:3px}
+@media(max-width:540px){.sq-panel-x{flex-basis:36px;width:36px;height:36px;border-radius:11px}.sq-panel-x svg{width:17px;height:17px}}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -1661,7 +1664,7 @@ body.friends-view .wrap #friends-page{display:block!important}
   </div>
 
   <div class="card sq-receipt-panel" id="receipt-card" hidden>
-    <div class="sq-receipt-heading"><div><span class="sq-receipt-kicker">SMART RECEIPT SPLIT</span><h2>🧾 Review your receipt</h2><p>Check the scanned items, then choose who ordered each one. Nothing is saved until you confirm.</p></div><button type="button" class="sq-panel-x" id="sq-receipt-x" aria-label="Collapse receipt review" title="Collapse receipt review">&times;</button></div>
+    <div class="sq-receipt-heading"><div><span class="sq-receipt-kicker">SMART RECEIPT SPLIT</span><h2>🧾 Review your receipt</h2><p>Check the scanned items, then choose who ordered each one. Nothing is saved until you confirm.</p></div><button type="button" class="sq-panel-x" id="sq-receipt-x" aria-label="Collapse receipt review" title="Collapse receipt review"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div class="sq-receipt-section"><div class="sq-receipt-section-title">1 · Receipt photo</div><label for="receipt-file" class="sq-receipt-upload">📷 Take or upload another photo</label><input type="file" id="receipt-file" accept="image/*" capture="environment" aria-label="Receipt photo"><div id="receipt-status" role="status" class="sq-receipt-status"></div></div>
     <div class="sq-receipt-section"><div class="sq-receipt-section-title">2 · Who paid the restaurant?</div><select id="receipt-payer" aria-label="Person who paid"></select></div>
     <div class="sq-receipt-section"><div class="sq-receipt-title-row"><div><div class="sq-receipt-section-title">3 · Items and who ordered them</div><p class="sq-receipt-hint">Select one or more people per item. Tap a price or name to correct OCR mistakes.</p></div><span id="sq-receipt-count" class="sq-receipt-count">0 items</span></div><div id="receipt-items"></div><button type="button" class="small-btn receipt-add-item-btn" id="receipt-add-item">＋ Add missing item</button></div>
@@ -1671,7 +1674,7 @@ body.friends-view .wrap #friends-page{display:block!important}
   </div>
   <!-- ENTRY FORM: shown by quick actions -->
   <div class="card" id="entry-card">
-    <div class="sq-entry-heading"><h2 id="entry-title">Add Expense</h2><button type="button" class="sq-panel-x" id="sq-entry-x" aria-label="Collapse Add Expense" title="Collapse Add Expense">&times;</button></div>
+    <div class="sq-entry-heading"><h2 id="entry-title">Add Expense</h2><button type="button" class="sq-panel-x" id="sq-entry-x" aria-label="Collapse Add Expense" title="Collapse Add Expense"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div class="toggle">
       <button type="button" id="mode-debt" class="active">Owes money</button>
       <button type="button" id="mode-payment">Paid back</button>
