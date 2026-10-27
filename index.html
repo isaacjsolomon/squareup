@@ -1671,6 +1671,22 @@ body.friends-view .wrap #friends-page{display:block!important}
 
   <section class="sq-return-summary" id="sq-return-summary" aria-label="Tracker summary">
     <header class="sq-return-welcome"><h2 id="sq-return-greeting">Welcome back</h2></header>
+
+  <section class="sq-clean-balance" id="sq-clean-balance" aria-label="Your balance">
+    <div class="sq-clean-balance-copy"><span class="sq-clean-eyebrow">Your net balance</span><strong id="sq-clean-net">—</strong><span id="sq-clean-explanation">Your tracker balance</span></div>
+    <div class="sq-clean-balance-actions"><button type="button" class="sq-clean-settle" id="sq-clean-settle">Settle up</button><button type="button" class="sq-clean-remind" id="sq-clean-remind">Send reminder</button></div>
+  </section>
+  <!-- QUICK ACTIONS -->
+  <div class="dashboard-actions" aria-label="Tracker actions">
+    <button type="button" class="dashboard-action" id="quick-pay-now"><span class="action-icon">↗</span>Pay Now<span class="action-sub">Send via Venmo or Cash App</span></button>
+    <button type="button" class="dashboard-action expense" id="quick-expense" aria-expanded="false" aria-controls="entry-card"><span class="action-icon">＋</span>Add Expense<span class="action-sub">Manually add an expense</span></button>
+    <button type="button" class="dashboard-action" id="quick-payment" hidden aria-expanded="false" aria-controls="entry-card"><span class="action-icon">▤</span>Log Payment<span class="action-sub">Record a payment you made</span></button>
+    <button type="button" class="dashboard-action" id="quick-receipt"><span class="action-icon">▧</span>Scan Receipt<span class="action-sub">Assign items to friends</span></button>
+    <button type="button" class="dashboard-action" id="quick-split"><span class="action-icon" aria-hidden="true"><svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Split a Bill<span class="action-sub">Divide an expense with friends</span></button>
+  </div>
+
+  <div class="sq-overview-stats" id="sq-overview-stats"><div class="sq-stat negative"><span>You owe</span><strong id="sq-stat-owe">—</strong></div><div class="sq-stat"><span>Owed to you</span><strong id="sq-stat-owed">—</strong></div><div class="sq-stat neutral"><span>Net balance</span><strong id="sq-stat-net">—</strong></div></div>
+
     <div class="sq-return-grid">
       <article class="sq-return-panel"><div class="sq-return-head"><h3>Recent activity</h3><button type="button" data-return-tab="expenses">View all ↗</button></div><div id="sq-return-activity" class="sq-return-rows"><p class="sq-return-empty">Loading recent activity…</p></div></article>
       <article class="sq-return-panel"><div class="sq-return-head"><h3>Tracker members</h3><button type="button" data-return-tab="members">View all ↗</button></div><div id="sq-return-members" class="sq-return-rows"><p class="sq-return-empty">Loading tracker members…</p></div></article>
@@ -1679,10 +1695,6 @@ body.friends-view .wrap #friends-page{display:block!important}
     </div>
   </section>
   <section id="sq-template-dashboard" class="sq-template-dashboard" hidden aria-label="Tracker template overview"></section>
-  <section class="sq-clean-balance" id="sq-clean-balance" aria-label="Your balance">
-    <div class="sq-clean-balance-copy"><span class="sq-clean-eyebrow">Your net balance</span><strong id="sq-clean-net">—</strong><span id="sq-clean-explanation">Your tracker balance</span></div>
-    <div class="sq-clean-balance-actions"><button type="button" class="sq-clean-settle" id="sq-clean-settle">Settle up</button><button type="button" class="sq-clean-remind" id="sq-clean-remind">Send reminder</button></div>
-  </section>
   <!-- CURRENT BALANCES: EXPENSES TAB -->
   <div class="card" id="balances-card">
     <h2>Current balances</h2>
@@ -1695,17 +1707,6 @@ body.friends-view .wrap #friends-page{display:block!important}
     <div class="sq-members-heading"><div><h2>Tracker members</h2><p>People sharing this tracker</p></div></div>
     <div id="sq-tracker-profiles" class="sq-member-profiles-grid"><p class="sq-members-empty">Open a tracker to see its members.</p></div>
   </div>
-
-  <!-- QUICK ACTIONS -->
-  <div class="dashboard-actions" aria-label="Tracker actions">
-    <button type="button" class="dashboard-action" id="quick-pay-now"><span class="action-icon">↗</span>Pay Now<span class="action-sub">Send via Venmo or Cash App</span></button>
-    <button type="button" class="dashboard-action expense" id="quick-expense" aria-expanded="false" aria-controls="entry-card"><span class="action-icon">＋</span>Add Expense<span class="action-sub">Manually add an expense</span></button>
-    <button type="button" class="dashboard-action" id="quick-payment" hidden aria-expanded="false" aria-controls="entry-card"><span class="action-icon">▤</span>Log Payment<span class="action-sub">Record a payment you made</span></button>
-    <button type="button" class="dashboard-action" id="quick-receipt"><span class="action-icon">▧</span>Scan Receipt<span class="action-sub">Assign items to friends</span></button>
-    <button type="button" class="dashboard-action" id="quick-split"><span class="action-icon" aria-hidden="true"><svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Split a Bill<span class="action-sub">Divide an expense with friends</span></button>
-  </div>
-
-  <div class="sq-overview-stats" id="sq-overview-stats"><div class="sq-stat negative"><span>You owe</span><strong id="sq-stat-owe">—</strong></div><div class="sq-stat"><span>Owed to you</span><strong id="sq-stat-owed">—</strong></div><div class="sq-stat neutral"><span>Net balance</span><strong id="sq-stat-net">—</strong></div></div>
 
   <details class="card tracker-collapsible" id="recurring-card"><summary><span class="tool-heading-label">↻ &nbsp; Recurring expenses</span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Manage repeating expenses for this tracker.</p><div id="recurring-list"></div></div></details>
 
