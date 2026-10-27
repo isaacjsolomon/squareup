@@ -1562,6 +1562,8 @@ body.friends-view .wrap #friends-page{display:block!important}
 .sq-inbox-column-title h3{font-size:17px;margin:0;color:#f4fbff}
 .sq-inbox-count{font-size:12px;font-weight:750;border-radius:999px;background:#234b61;color:#8cf0d0;min-width:25px;padding:5px 8px;text-align:center}
 .sq-inbox-items{display:grid;gap:10px}
+.sq-inbox-empty{color:#a8c1d1;font-size:13px;line-height:1.5;margin:6px 2px 10px}
+.sq-inbox-column-title h3{min-width:0;overflow-wrap:anywhere}
 #notifications-page .sq-inbox-items .entry{display:flex;flex-wrap:wrap;align-items:start;gap:10px;padding:14px!important;margin:0!important;border:1px solid #35546c;border-radius:13px;background:#17364c;min-width:0;overflow-wrap:anywhere}
 #notifications-page .sq-inbox-items .entry[hidden]{display:none!important}
 #notifications-page .sq-inbox-items .entry .text{flex:1 1 160px;min-width:0}
@@ -3571,6 +3573,7 @@ async function renderTrackerGallery(){
     var list=await api('trackers');
     if(serial!==trackerGallerySerial)return;
     trackers=list;
+    if(document.body.classList.contains('notifications-view')){try{window.dispatchEvent(new Event('sq-trackers-updated'));}catch(_){}}
     renderPicker();
     if(!list.length){gallery.innerHTML='<div class="trackers-empty">No trackers yet. Create your first tracker to get started.</div>';return;}
     var details=await Promise.all(list.map(async function(t){try{return await api('trackers/'+encodeURIComponent(t.id));}catch(err){return {loadError:err.message};}}));
@@ -5273,9 +5276,10 @@ function organizeInbox(){
  if(old){Array.from(old.querySelectorAll('.entry')).forEach(el=>notificationList.append(el));old.remove();}
  notificationList.querySelectorAll('.sq-inbox-group').forEach(el=>el.remove());
  const rows=Array.from(notificationList.querySelectorAll(':scope > .entry'));
- if(!rows.length)return;
  const source=typeof inbox!=='undefined'&&Array.isArray(inbox)?inbox:[];
- const known=typeof trackers!=='undefined'&&Array.isArray(trackers)?trackers:[];
+ const known=typeof trackers!=='undefined'&&Array.isArray(trackers)?trackers.slice():[];
+ if(typeof current!=='undefined'&&current&&current.id&&!known.some(t=>String(t.id)===String(current.id)))known.push(current);
+ if(!rows.length)return;
  const columns=document.createElement('div');columns.className='sq-inbox-columns';
  const groups=new Map();
  function groupFor(key,label){
@@ -5287,17 +5291,31 @@ function organizeInbox(){
   const items=document.createElement('div');items.className='sq-inbox-items';section.append(heading,items);
   columns.append(section);const group={section,items,count};groups.set(key,group);return group;
  }
+ // Show a dedicated column for every tracker in the account, even when it has no updates.
+ known.forEach(t=>groupFor('tracker:'+String(t.id),t.name||t.title||'Unnamed tracker'));
+ let unmatched=0;
  rows.forEach((row,i)=>{
   const n=source[i];
-  const trackerId=n&&(n.tracker_id||n.trackerId);
-  const tracker=trackerId&&(known.find(t=>String(t.id)===String(trackerId))||(typeof current!=='undefined'&&current&&String(current.id)===String(trackerId)?current:null));
-  const name=tracker?(tracker.name||tracker.title||'Unnamed tracker'):(trackerId?'Other tracker updates':'General notifications');
-  const key=tracker?'tracker:'+trackerId:(trackerId?'unknown:'+trackerId:'general');
-  const group=groupFor(key,name);
+  let trackerId=n&&(n.tracker_id||n.trackerId||n.tracker?.id||n.metadata?.tracker_id||n.data?.tracker_id);
+  if(!trackerId&&n&&n.entry_id&&typeof current!=='undefined'&&current&&Array.isArray(current.entries)&&current.entries.some(e=>String(e.id)===String(n.entry_id)))trackerId=current.id;
+  // Older notifications sometimes omit tracker_id; match an explicit tracker name in the message only when unambiguous.
+  if(!trackerId&&n){
+   const body=String(n.message||'')+' '+String(n.title||'');
+   const matches=known.filter(t=>{const name=String(t.name||t.title||'').trim();return name.length>=3&&body.toLowerCase().includes(name.toLowerCase());});
+   if(matches.length===1)trackerId=matches[0].id;
+  }
+  const tracker=known.find(t=>String(t.id)===String(trackerId));
+  // Never guess which tracker an untagged notification belongs to.
+  const group=tracker?groupFor('tracker:'+String(tracker.id),tracker.name||tracker.title||'Unnamed tracker'):groupFor('unassigned','Unassigned updates');
+  if(!tracker)unmatched++;
   row.dataset.sqInboxCategory=n?notificationCategory(n.kind):'expenses';
   row.dataset.sqInboxUnread=n&&!n.read_at?'true':'false';
   row.classList.toggle('sq-unread-notification',row.dataset.sqInboxUnread==='true');
   group.items.append(row);
+ });
+ known.forEach(t=>{
+  const g=groups.get('tracker:'+String(t.id));
+  if(g&&!g.items.children.length){const empty=document.createElement('p');empty.className='sq-inbox-empty';empty.textContent='No notifications for this tracker yet.';g.items.append(empty);}
  });
  notificationList.prepend(columns);filterRows();
 }
@@ -5315,6 +5333,7 @@ function filterRows(){
  });
 }
 notificationFilter?.addEventListener('change',filterRows);
+window.addEventListener('sq-trackers-updated',organizeInbox);
 if(notificationList){
  const observer=new MutationObserver(records=>{
   if(!records.some(r=>Array.from(r.addedNodes).some(n=>n.nodeType===1&&n.classList.contains('entry'))))return;
