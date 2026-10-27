@@ -1602,8 +1602,21 @@ body.friends-view .wrap #friends-page{display:block!important}
 @media(max-width:1050px){.sq-inbox-columns{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:690px){.sq-inbox-columns{grid-template-columns:minmax(0,1fr);gap:12px}.sq-inbox-column{padding:12px}.sq-about-topline{gap:10px}.sq-about-topline .sq-header-tour-btn{font-size:12px;padding:8px 10px}#notifications-page #notifications-panel{padding:13px;border-radius:16px}}
 </style>
+<style id="sq-startup-overlay-css">
+#sq-startup-overlay{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:24px;background:rgba(6,21,36,.76);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);color:#f6fbff;text-align:center}
+#sq-startup-overlay[hidden]{display:none!important}
+.sq-startup-content{display:flex;flex-direction:column;align-items:center;gap:14px;padding:28px 35px;border-radius:22px;border:1px solid rgba(255,255,255,.22);background:rgba(14,43,63,.92);box-shadow:0 18px 65px rgba(0,0,0,.3);font:500 14px system-ui,sans-serif}
+.sq-startup-content strong{font-size:19px;font-weight:750}
+.sq-startup-content>span:last-child{color:#b8cddc}
+.sq-startup-ring{width:52px;height:52px;border-radius:50%;border:5px solid rgba(65,227,190,.22);border-top-color:#41e3be;animation:sq-startup-spin .8s linear infinite}
+@keyframes sq-startup-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.sq-startup-ring{animation-duration:2s}}
+</style>
 </head>
 <body>
+<div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
+  <div class="sq-startup-content"><span class="sq-startup-ring" aria-hidden="true"></span><strong>Loading Square Up…</strong><span>Getting your tracker ready</span></div>
+</div>
 <button type="button" id="guest-auth-button" hidden>Log in or create account</button>
 <div id="backdrop" aria-hidden="true"></div>
 <aside class="sidebar" aria-label="Account and trackers">
@@ -4086,6 +4099,8 @@ function sqSetTrackerLoading(loading) {
   var indicator=document.getElementById('sq-tracker-loading');
   if (!indicator) return;
   indicator.hidden=!loading;
+  var startup=document.getElementById('sq-startup-overlay');
+  if(startup) startup.hidden=!loading;
   indicator.setAttribute('aria-busy', loading?'true':'false');
 }
 
@@ -4165,6 +4180,7 @@ async function syncTrackers(user) {
     lastSnapshot = "";
     applyBackdrop();
     useEntries(null, null);
+    sqSetTrackerLoading(false);
     return;
   }
   // Paint previously loaded tracker data without waiting for a network round trip.
@@ -4456,6 +4472,7 @@ try {
 }
 var startUser = await getUser();
 showUser(startUser);
+if (!startUser) sqSetTrackerLoading(false);
 if (startUser) maybeShowOnboarding(startUser);
 if (!startUser && pendingJoin() && !$("auth-modal").classList.contains("open")) openAuth("signup");
 // --- Notifications, payment approval and itemized receipt split ---
