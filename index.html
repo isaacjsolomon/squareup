@@ -2973,6 +2973,22 @@ window.squareUpExpenseMembers = function () {
 };
 var lastSnapshot = "";
 var pollTimer = null;
+// Fast mobile reload: a short-lived, account-scoped session snapshot is shown
+// immediately while the server independently supplies the authoritative data.
+function sqStartupCacheKey(userId){return 'sq-startup-detail-v1:'+String(userId||'');}
+function sqReadStartupDetail(user){
+  if(!user||!user.id)return null;
+  try{
+    var record=JSON.parse(sessionStorage.getItem(sqStartupCacheKey(user.id))||'null');
+    if(!record||Date.now()-record.savedAt>12*60*60*1000)return null;
+    var d=record.detail;
+    return d&&typeof d.id==='string'&&Array.isArray(d.entries)&&Array.isArray(d.members)?d:null;
+  }catch(_){return null;}
+}
+function sqWriteStartupDetail(detail){
+  if(!currentUser||!currentUser.id||!detail||!detail.id)return;
+  try{sessionStorage.setItem(sqStartupCacheKey(currentUser.id),JSON.stringify({savedAt:Date.now(),detail:detail}));}catch(_){}
+}
 
 function store(key, value) {
   try { value == null ? localStorage.removeItem(key) : localStorage.setItem(key, value); } catch (e) {}
@@ -4042,6 +4058,7 @@ function applyDetail(detail) {
   var snapshot = JSON.stringify(detail);
   current = detail;
   window.sqLastOpenedTrackerDetail = detail;
+  sqWriteStartupDetail(detail);
   window.dispatchEvent(new CustomEvent("squareup:tracker-detail", {detail:{id:detail.id}}));
   sqFillCurrencies();
   sqRenderBudget();
@@ -4133,6 +4150,17 @@ async function syncTrackers(user) {
     applyBackdrop();
     useEntries(null, null);
     return;
+  }
+  // Paint previously loaded tracker data without waiting for a network round trip.
+  // Only reuse the snapshot for the same authenticated account and tracker.
+  var cached=sqReadStartupDetail(user);
+  var preferred=read(CURRENT_KEY);
+  if(cached&&(!preferred||cached.id===preferred)){
+    try{
+      current=cached;
+      window.sqLastOpenedTrackerDetail=cached;
+      if(typeof window.sqRefreshRestoredSummary==='function')window.sqRefreshRestoredSummary();
+    }catch(err){console.warn('Cached dashboard preview unavailable',err);}
   }
   var joined = await joinPending();
   await loadTrackers(joined);
