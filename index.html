@@ -2308,6 +2308,9 @@ function useEntries(list, cloudApi) {
   entries = list || loadEntries();
   document.getElementById("clear").textContent = cloud ? "Clear everything in this tracker" : "Clear everything";
   render();
+  // The overview summary must refresh after entries have been installed,
+  // not only when the tracker detail first arrives.
+  if (typeof window.sqRefreshRestoredSummary === "function") window.sqRefreshRestoredSummary();
 }
 
 function addEntry(type, from, to, amount, note) {
@@ -5420,6 +5423,14 @@ input.addEventListener('input',draw);
 #tracker-dashboard:not(.sq-tab-overview) .sq-return-summary{display:none!important}
 @media(max-width:740px){#tracker-dashboard .sq-return-grid{grid-template-columns:1fr}#tracker-dashboard .sq-return-panel{min-height:0;padding:18px}#tracker-dashboard .sq-return-welcome h2{margin-bottom:15px}}
 </style>
+<style id="sq-summary-mobile-visibility-fix">
+/* Mobile keeps the balance, actions, tabs and existing Smart Settle-Up elsewhere;
+   desktop summary cards are hidden only on narrow screens. */
+@media(max-width:740px){
+ #tracker-dashboard #sq-return-summary .sq-return-grid{display:none!important}
+ #tracker-dashboard #sq-return-summary .sq-return-welcome{display:block!important}
+}
+</style>
 <script id="sq-restored-summary-script">
 (function(){
  'use strict';
@@ -5439,7 +5450,12 @@ input.addEventListener('input',draw);
  function fill(id,rows,empty){const host=byId(id);if(!host)return;host.replaceChildren();if(!rows.length){const p=document.createElement('p');p.className='sq-return-empty';p.textContent=empty;host.append(p);}else rows.forEach(r=>host.append(r));}
  function refresh(){try{
   const tracker=typeof current!=='undefined'?current:null;
-  if(!tracker)return;
+  if(!tracker){
+   fill('sq-return-activity',[],'Open a tracker to see recent activity');
+   fill('sq-return-members',[],'Open a tracker to see members');
+   fill('sq-return-balances',[],'Open a tracker to see balances');
+   return;
+  }
   const all=tracker&&typeof entries!=='undefined'&&Array.isArray(entries)?entries:[];
   const members=tracker&&typeof window.squareUpExpenseMembers==='function'?window.squareUpExpenseMembers():[];
   const mine=members.find(m=>m.isYou);
@@ -5460,7 +5476,15 @@ input.addEventListener('input',draw);
  const balance=byId('sq-clean-balance'),actions=document.querySelector('#tracker-dashboard .dashboard-actions');
  if(summary&&grid&&balance&&actions){summary.insertBefore(balance,grid);summary.insertBefore(actions,grid);}
  const smart=byId('smart-settle-card'),smartHost=byId('sq-return-smart-host');
- if(smart&&smartHost)smartHost.append(smart);
+ if(smart&&smartHost){
+   const originalParent=summary?.parentElement;
+   const mobilePlacement=()=>{
+     if(window.matchMedia('(max-width:740px)').matches){
+       if(originalParent && smart.parentElement===smartHost) originalParent.append(smart);
+     }else if(smart.parentElement!==smartHost){smartHost.append(smart);}
+   };
+   mobilePlacement();window.addEventListener('resize',mobilePlacement,{passive:true});
+ }
  const history=byId('history');if(history){const observer=new MutationObserver(()=>{if(!window.sqReturnQueued){window.sqReturnQueued=true;requestAnimationFrame(()=>{window.sqReturnQueued=false;refresh();});}});observer.observe(history,{childList:true});}
  document.querySelectorAll('[data-sq-tab]').forEach(b=>b.addEventListener('click',refresh));
  window.sqRefreshRestoredSummary=refresh;
@@ -5517,5 +5541,6 @@ body{background-attachment:fixed!important}
 @media(max-width:600px){#tracker-dashboard .sq-return-grid{grid-template-columns:minmax(0,1fr)!important}#tracker-dashboard .sq-return-panel{min-height:0!important}#tracker-dashboard .sq-return-head{gap:7px}#tracker-dashboard .sq-return-head h3{font-size:17px}#tracker-dashboard .sq-return-head button{font-size:12px;padding:8px!important}#entry-card #form>.row{flex-direction:column}#entry-card #form>.row>*{width:100%;max-width:100%}}
 @media(prefers-reduced-motion:reduce){#tracker-dashboard .dashboard-action{transition:none}}
 </style>
+<style id="sq-mobile-summary-final-fix">@media(max-width:740px){#tracker-dashboard #sq-return-summary .sq-return-grid{display:none!important}}</style>
 </body>
 </html>
