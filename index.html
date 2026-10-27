@@ -1285,6 +1285,15 @@ body.about-view .sq-header-tour-btn{display:inline-flex}
 .sq-details-card{position:relative}.sq-details-card .sq-details-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.sq-details-card .sq-details-x{border:1px solid #45677d;background:#1d3d53;color:#f3faff;border-radius:10px;min-width:40px;min-height:40px;font-size:23px;cursor:pointer}.sq-details-card .sq-details-amount{font-size:clamp(28px,5vw,42px);color:#52e4bb;font-weight:850;margin:8px 0 14px}.sq-details-card .sq-details-grid{border-top:1px solid #3a566a;padding-top:15px}
 @media(max-width:650px){.sq-search-launch kbd{display:none}.sq-search-launch{padding:9px 11px;font-size:13px}.sq-global-search{padding-top:25px}.sq-search-panel{max-height:88vh}.sq-details-grid{grid-template-columns:105px 1fr}}
 
+
+/* Glass dashboard is the sole Overview surface; legacy data widgets remain mounted for existing logic. */
+#tracker-dashboard.sq-tab-overview > .card,#tracker-dashboard.sq-tab-overview > .tracker-tools-grid,#tracker-dashboard.sq-tab-overview > .dashboard-actions,#tracker-dashboard.sq-tab-overview > #sq-clean-balance,#tracker-dashboard.sq-tab-overview > #sq-overview-stats,#tracker-dashboard.sq-tab-overview > #sq-template-dashboard{display:none!important}
+#tracker-dashboard .sq-workspace-tabs{position:relative;top:auto;z-index:4;margin:0 0 18px;max-width:max-content}
+#tracker-dashboard .sq-glass-home.sq-tab-hidden{display:none!important}
+#tracker-dashboard.sq-tab-overview > .card.sq-glass-action-visible{display:block!important}
+#tracker-dashboard.sq-tab-overview > .card.sq-glass-action-visible[hidden]{display:none!important}
+@media(max-width:650px){#tracker-dashboard .sq-workspace-tabs{max-width:100%;width:100%;overflow-x:auto}}
+
 /* Glassy Dashboard — existing user-selected backdrop remains the source of color/photo. */
 body .sidebar{background:rgba(9,32,53,.83)!important;backdrop-filter:blur(24px) saturate(135%);-webkit-backdrop-filter:blur(24px) saturate(135%);border-right:1px solid rgba(255,255,255,.19)!important}
 body .sq-nav-link{background:transparent!important;border:1px solid transparent!important;color:#f1f7ff!important;border-radius:13px!important}
@@ -1672,12 +1681,13 @@ body.friends-view .wrap #friends-page{display:block!important}
     <div id="notifications-panel" class="sidebar-notification-panel"><div class="notification-panel-heading">Your updates</div><div class="sq-notification-tools"><label>Show <select id="sq-notification-filter"><option value="all">All notifications</option><option value="unread">Unread only</option><option value="payments">Payments</option><option value="messages">Messages</option><option value="expenses">Expenses & invites</option></select></label></div><div id="notifications-list"><p>Loading notifications…</p></div></div>
   </section>
   <div id="tracker-dashboard">
+  <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="budget" role="tab" aria-selected="false">Budget</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button></div>
   <section id="sq-glass-home" class="sq-glass-home" aria-label="SquareUp overview">
     <div class="sq-glass-welcome"><div><h2 id="sq-glass-greeting">Welcome back</h2><p>Here's what's happening with your trackers.</p></div><span class="sq-glass-tag" id="sq-glass-active-tracker">Your shared expenses</span></div>
     <div class="sq-glass-metrics">
       <article class="sq-glass-tile"><span class="sq-glass-ico">↔</span><div><small>Your net balance</small><strong id="sq-glass-balance">—</strong><small>In the open tracker</small></div></article>
       <article class="sq-glass-tile"><span class="sq-glass-ico">▤</span><div><small>Total expenses</small><strong id="sq-glass-total">—</strong><small>Confirmed and pending</small></div></article>
-      <article class="sq-glass-tile"><span class="sq-glass-ico">▣</span><div><small>Active trackers</small><strong id="sq-glass-trackers">—</strong><small>Shared spaces</small></div></article>
+      <article class="sq-glass-tile"><span class="sq-glass-ico">▣</span><div><small>Tracker members</small><strong id="sq-glass-trackers">—</strong><small>People in this tracker</small></div></article>
       <article class="sq-glass-tile"><span class="sq-glass-ico">◷</span><div><small>Expenses to review</small><strong id="sq-glass-pending">—</strong><small>Pending approval or payment</small></div></article>
     </div>
     <div class="sq-glass-three">
@@ -1687,12 +1697,12 @@ body.friends-view .wrap #friends-page{display:block!important}
     </div>
     <div class="sq-glass-bottom">
       <article class="sq-glass-panel"><div class="sq-glass-panel-title"><h3>Recent activity</h3><button type="button" data-glass-action="expenses">View all ↗</button></div><div id="sq-glass-activity" class="sq-glass-rows"></div></article>
-      <article class="sq-glass-panel"><div class="sq-glass-panel-title"><h3>Your trackers</h3><button type="button" data-glass-action="trackers">View all ↗</button></div><div id="sq-glass-tracker-list" class="sq-glass-rows"></div></article>
+      <article class="sq-glass-panel"><div class="sq-glass-panel-title"><h3>Tracker members</h3><button type="button" data-glass-action="members">View all ↗</button></div><div id="sq-glass-tracker-list" class="sq-glass-rows"></div></article>
       <article class="sq-glass-panel"><div class="sq-glass-panel-title"><h3>Quick actions</h3></div><div class="sq-glass-actions"><button type="button" data-glass-action="expense"><b>＋</b>Add Expense</button><button type="button" data-glass-action="receipt"><b>▧</b>Scan Receipt</button><button type="button" data-glass-action="split"><b>♧</b>Split a Bill</button><button type="button" data-glass-action="pay"><b>↗</b>Pay Now</button></div></article>
     </div>
     <article class="sq-glass-panel sq-glass-recurring"><div class="sq-glass-panel-title"><h3>Upcoming & recurring</h3><button type="button" data-glass-action="expenses">Manage ↗</button></div><div id="sq-glass-upcoming" class="sq-glass-upcoming-list"></div></article>
   </section>
-  <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="budget" role="tab" aria-selected="false">Budget</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button></div>
+
   <section id="sq-template-dashboard" class="sq-template-dashboard" hidden aria-label="Tracker template overview"></section>
   <section class="sq-clean-balance" id="sq-clean-balance" aria-label="Your balance">
     <div class="sq-clean-balance-copy"><span class="sq-clean-eyebrow">Your net balance</span><strong id="sq-clean-net">—</strong><span id="sq-clean-explanation">Your tracker balance</span></div>
@@ -2323,6 +2333,7 @@ function useEntries(list, cloudApi) {
   entries = list || loadEntries();
   document.getElementById("clear").textContent = cloud ? "Clear everything in this tracker" : "Clear everything";
   render();
+  queueMicrotask(()=>window.sqRefreshGlassDashboard?.());
 }
 
 function addEntry(type, from, to, amount, note) {
@@ -3620,7 +3631,7 @@ async function renderTrackerGallery(){
     trackers=list;
     if(document.body.classList.contains('notifications-view')){try{window.dispatchEvent(new Event('sq-trackers-updated'));}catch(_){}}
     renderPicker();
-    if(!list.length){gallery.innerHTML='<div class="trackers-empty">No trackers yet. Create your first tracker to get started.</div>';return;}
+    if(!list.length){gallery.innerHTML='<div class="trackers-empty">No trackers yet. Open a tracker to see its members.</div>';return;}
     var details=await Promise.all(list.map(async function(t){try{return await api('trackers/'+encodeURIComponent(t.id));}catch(err){return {loadError:err.message};}}));
     if(serial!==trackerGallerySerial)return;
     gallery.replaceChildren();
@@ -4878,11 +4889,12 @@ sqDrawTemplates();
  function tab(name){
   tabs.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.sqTab===name)));
   cards.forEach(e=>e.classList.toggle('sq-tab-hidden',name!=='overview'));
-  document.getElementById('sq-overview-stats').classList.toggle('sq-tab-hidden',name!=='overview');
-  document.getElementById('sq-template-dashboard').classList.toggle('sq-tab-hidden',name!=='overview');
-  document.getElementById('sq-clean-balance').classList.toggle('sq-tab-hidden',name!=='overview');
+  document.getElementById('sq-overview-stats').classList.add('sq-tab-hidden');
+  document.getElementById('sq-glass-home').classList.toggle('sq-tab-hidden',name!=='overview');
+  document.getElementById('sq-template-dashboard').classList.add('sq-tab-hidden');
+  document.getElementById('sq-clean-balance').classList.add('sq-tab-hidden');
   dashboard.classList.remove('sq-tab-overview','sq-tab-expenses','sq-tab-members','sq-tab-chat','sq-tab-budget');dashboard.classList.add('sq-tab-'+name);
-  if(name==='overview'){tools.querySelectorAll('.tracker-collapsible,#recurring-card').forEach(e=>e.classList.remove('sq-tab-hidden'));return;}
+  if(name==='overview'){tools.classList.add('sq-tab-hidden');return;}
   if(name==='expenses'){
     const history=document.getElementById('history');const matrix=document.getElementById('matrix');
     [history,matrix].forEach(el=>{const card=el&&el.closest('.card');if(card)card.classList.remove('sq-tab-hidden')});
@@ -5422,25 +5434,50 @@ function row(icon,title,sub,value){const el=document.createElement('div');el.cla
 function fill(id,els,empty){const host=$g(id);if(!host)return;host.replaceChildren();if(!els.length){const p=document.createElement('p');p.className='sq-glass-empty';p.textContent=empty;host.append(p);}else els.forEach(el=>host.append(el));}
 function update(){try{
  const all=typeof entries!=='undefined'&&Array.isArray(entries)?entries:[];
- const debts=all.filter(e=>e.type==='debt');const total=debts.reduce((a,e)=>a+(Number(e.amount)||0),0);
- const pending=all.filter(e=>e.paymentStatus&&e.paymentStatus!=='confirmed').length;
- const ts=typeof trackers!=='undefined'&&Array.isArray(trackers)?trackers:[];
  const t=typeof current!=='undefined'?current:null;
+ const members=typeof window.squareUpExpenseMembers==='function'?window.squareUpExpenseMembers():[];
+ const mine=members.find(m=>m.isYou);
+ const identity=new Set(['you',mine?.name,mine?.displayName,mine?.display_name,mine?.email,mine?.username].map(v=>safe(v).trim().toLowerCase()).filter(Boolean));
  const user=typeof currentUser!=='undefined'?currentUser:null;
- const name=user&&(user.name||user.displayName)||'';
+ const name=(mine?.name||mine?.displayName||user?.user_metadata?.full_name||user?.name||'').trim();
  $g('sq-glass-greeting').textContent='Welcome back'+(name?', '+name.split(' ')[0]:'');
- $g('sq-glass-active-tracker').textContent=t&&t.name?t.name:'Your shared expenses';
- $g('sq-glass-total').textContent=fmt(total);$g('sq-glass-trackers').textContent=safe(ts.length|| (t?1:0));$g('sq-glass-pending').textContent=safe(pending);
- let net=0;const me=(name||'').trim().toLowerCase();all.forEach(e=>{if(e.paymentStatus&&e.paymentStatus!=='confirmed')return;const a=safe(e.from).toLowerCase(),b=safe(e.to).toLowerCase(),amt=Number(e.amount)||0;if(a===me)net+=(e.type==='debt'?-amt:amt);if(b===me)net+=(e.type==='debt'?amt:-amt);});$g('sq-glass-balance').textContent=fmt(net);
+ $g('sq-glass-active-tracker').textContent=t?.name||'Select a tracker';
+ const debts=all.filter(e=>e.type==='debt');
+ const total=debts.reduce((sum,e)=>sum+(Number(e.amount)||0),0);
+ const pending=all.filter(e=>e.paymentStatus&&e.paymentStatus!=='confirmed').length;
+ $g('sq-glass-total').textContent=fmt(total);
+ $g('sq-glass-trackers').textContent=String(members.length||t?.members?.length||0);
+ $g('sq-glass-pending').textContent=String(pending);
+ const pairs=typeof computeNet==='function'?computeNet().pairs:[];
+ let owe=0,owed=0;
+ pairs.forEach(p=>{if(identity.has(safe(p.from).toLowerCase()))owe+=Number(p.amount)||0;if(identity.has(safe(p.to).toLowerCase()))owed+=Number(p.amount)||0;});
+ // Reuse the existing balance calculation displayed by the original tracker overview.
+ const existingBalance=$g('sq-stat-net')?.textContent?.trim();
+ const net=owed-owe;
+ $g('sq-glass-balance').textContent=existingBalance&&existingBalance!=='—'?existingBalance:(net<0?'−':net>0?'+':'')+fmt(Math.abs(net));
+ const parseDate=e=>{const raw=e.date||e.created_at||e.createdAt||'';if(!raw)return null;const d=new Date(raw);return Number.isNaN(d.getTime())?null:d;};
  const now=new Date();const months=Array.from({length:6},(_,i)=>{const d=new Date(now.getFullYear(),now.getMonth()-5+i,1);return {key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleDateString(undefined,{month:'short'}),total:0};});
- debts.forEach(e=>{const date=safe(e.date||e.created_at||e.createdAt).slice(0,7);const item=months.find(m=>m.key===date);if(item)item.total+=Number(e.amount)||0;});const max=Math.max(1,...months.map(m=>m.total));const bars=$g('sq-glass-bars');bars.replaceChildren();months.forEach(m=>{const wrap=document.createElement('div');wrap.className='sq-glass-bar-wrap';const bar=document.createElement('div');bar.className='sq-glass-bar';bar.style.height=Math.max(3,m.total/max*145)+'px';bar.title=m.label+': '+fmt(m.total);const label=document.createElement('small');label.textContent=m.label;wrap.append(bar,label);bars.append(wrap);});
- const categories=new Map();debts.forEach(e=>{const cat=safe(e.category||'Other')||'Other';categories.set(cat,(categories.get(cat)||0)+(Number(e.amount)||0));});const sorted=[...categories].sort((a,b)=>b[1]-a[1]).slice(0,6);const colors=['#6baeff','#ff7688','#9a64f5','#42d795','#ffd45d','#a8b8c9'];let at=0;const stops=[];sorted.forEach(([cat,n],i)=>{const end=at+(total?100*n/total:0);stops.push(colors[i]+' '+at+'% '+end+'%');at=end;});$g('sq-glass-donut').style.background=stops.length?'conic-gradient('+stops.join(',')+')':'conic-gradient(#6baeff 0 100%)';$g('sq-glass-donut-total').textContent=fmt(total);const catHost=$g('sq-glass-categories');catHost.replaceChildren();sorted.forEach(([cat,n],i)=>{const r=document.createElement('div');r.className='sq-glass-category-row';const dot=document.createElement('i');dot.style.background=colors[i];const label=document.createElement('span');label.textContent=cat;const percent=document.createElement('b');percent.textContent=(total?Math.round(n/total*100):0)+'%';r.append(dot,label,percent);catHost.append(r);});if(!sorted.length)catHost.textContent='No expenses yet';
- const pairs=typeof computeNet==='function'?computeNet().pairs:[];fill('sq-glass-people',pairs.slice(0,5).map(p=>row('↔',safe(p.from)+' → '+safe(p.to),'Outstanding balance',fmt(p.amount))),'Everyone is squared up');
- const recent=all.slice().sort((a,b)=>safe(b.date||b.created_at).localeCompare(safe(a.date||a.created_at))).slice(0,4);fill('sq-glass-activity',recent.map(e=>row(e.type==='payment'?'↗':'▤',safe(e.note|| (e.type==='payment'?'Payment':'Expense')),safe(e.from)+' → '+safe(e.to),fmt(e.amount))),'No recent activity');
- fill('sq-glass-tracker-list',ts.slice(0,4).map(t=>{const el=row('▣',safe(t.name),'Open tracker','›');el.style.cursor='pointer';el.tabIndex=0;el.setAttribute('role','button');const go=()=>{document.getElementById('nav-home').click();if(typeof openTracker==='function')openTracker(t.id).catch(console.error)};el.addEventListener('click',go);el.addEventListener('keydown',e=>{if(e.key==='Enter'){go();}});return el;}),'Create your first tracker to get started');
- const upcoming=all.filter(e=>e.dueDate||e.repeat||e.recurring).slice(0,3);fill('sq-glass-upcoming',upcoming.map(e=>row('◷',safe(e.note||'Scheduled expense'),safe(e.dueDate||'Recurring'),fmt(e.amount))),'No upcoming expenses in this tracker');
+ debts.forEach(e=>{const d=parseDate(e);if(!d)return;const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');const m=months.find(x=>x.key===key);if(m)m.total+=Number(e.amount)||0;});
+ const max=Math.max(1,...months.map(m=>m.total));const bars=$g('sq-glass-bars');bars.replaceChildren();months.forEach(m=>{const wrap=document.createElement('div');wrap.className='sq-glass-bar-wrap';const bar=document.createElement('div');bar.className='sq-glass-bar';bar.style.height=Math.max(3,m.total/max*145)+'px';bar.title=m.label+': '+fmt(m.total);const label=document.createElement('small');label.textContent=m.label;wrap.append(bar,label);bars.append(wrap);});
+ const categories=new Map();debts.forEach(e=>{const cat=safe(e.category||'Other')||'Other';categories.set(cat,(categories.get(cat)||0)+(Number(e.amount)||0));});
+ const sorted=[...categories].sort((a,b)=>b[1]-a[1]);const visible=sorted.slice(0,5);if(sorted.length>5)visible.push(['Other categories',sorted.slice(5).reduce((a,b)=>a+b[1],0)]);
+ const colors=['#6baeff','#ff7688','#9a64f5','#42d795','#ffd45d','#a8b8c9'];let at=0;const stops=[];visible.forEach(([cat,n],i)=>{const end=at+(total?100*n/total:0);stops.push(colors[i]+' '+at+'% '+end+'%');at=end;});
+ $g('sq-glass-donut').style.background=stops.length?'conic-gradient('+stops.join(',')+')':'conic-gradient(#6baeff 0 100%)';$g('sq-glass-donut-total').textContent=fmt(total);
+ const catHost=$g('sq-glass-categories');catHost.replaceChildren();visible.forEach(([cat,n],i)=>{const r=document.createElement('div');r.className='sq-glass-category-row';const dot=document.createElement('i');dot.style.background=colors[i];const label=document.createElement('span');label.textContent=cat;const percent=document.createElement('b');percent.textContent=(total?Math.round(n/total*100):0)+'%';r.append(dot,label,percent);catHost.append(r);});if(!visible.length)catHost.textContent='No expenses yet';
+ const display=n=>{const m=members.find(m=>[m.name,m.email,m.username].some(v=>safe(v).toLowerCase()===safe(n).toLowerCase()));return m?.name||safe(n);};
+ fill('sq-glass-people',pairs.slice(0,5).map(p=>row('↔',display(p.from)+' → '+display(p.to),'Outstanding balance',fmt(p.amount))),'Everyone is squared up');
+ const recent=all.slice().sort((a,b)=>(parseDate(b)?.getTime()||0)-(parseDate(a)?.getTime()||0)).slice(0,4);
+ fill('sq-glass-activity',recent.map(e=>row(e.type==='payment'?'↗':'▤',safe(e.note||(e.type==='payment'?'Payment':'Expense')),display(e.from)+' → '+display(e.to),fmt(e.amount))),'No recent activity');
+ fill('sq-glass-tracker-list',members.slice(0,5).map(m=>row('♙',safe(m.name||m.displayName||m.email||'Member'),m.isYou?'You':'Tracker member',null)),'No tracker members loaded');
+ const upcoming=all.filter(e=>e.dueDate||e.repeat||e.recurring).slice(0,3);
+ fill('sq-glass-upcoming',upcoming.map(e=>row('◷',safe(e.note||'Scheduled expense'),safe(e.dueDate||'Recurring'),fmt(e.amount))),'No upcoming expenses in this tracker');
  }catch(err){console.warn('Glass dashboard could not refresh',err);}}
- document.querySelectorAll('[data-glass-action]').forEach(btn=>btn.addEventListener('click',()=>{const type=btn.dataset.glassAction;const ids={expense:'quick-expense',receipt:'quick-receipt',split:'quick-split',pay:'quick-pay-now',trackers:'nav-trackers'};if(type==='expenses'){document.querySelector('[data-sq-tab="expenses"]')?.click();return;}const target=document.getElementById(ids[type]);if(target){target.click();if(type!=='trackers')setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'center'}),80);}}));
+ document.querySelectorAll('[data-glass-action]').forEach(btn=>btn.addEventListener('click',()=>{const type=btn.dataset.glassAction;const ids={expense:'quick-expense',receipt:'quick-receipt',split:'quick-split',pay:'quick-pay-now',trackers:'nav-trackers'};if(type==='expenses'||type==='members'){document.querySelector('[data-sq-tab="'+type+'"]')?.click();return;}const target=document.getElementById(ids[type]);if(target){target.click();if(type!=='trackers'){
+ const panelId=type==='receipt'?'receipt-card':type==='split'?'split-card':'entry-card';
+ const panel=document.getElementById(panelId);
+ document.querySelectorAll('#tracker-dashboard > .card.sq-glass-action-visible').forEach(e=>e.classList.remove('sq-glass-action-visible'));
+ if(panel){panel.classList.add('sq-glass-action-visible');setTimeout(()=>{if(!panel.hidden)panel.scrollIntoView({behavior:'smooth',block:'center'});},100);}
+ }}}));
  window.sqRefreshGlassDashboard=update;
  // Updates after render, tracker changes and async data fetches without altering any API calls.
  const target=$g('history');if(target){const observer=new MutationObserver(()=>{if(!window.sqGlassRefreshQueued){window.sqGlassRefreshQueued=true;requestAnimationFrame(()=>{window.sqGlassRefreshQueued=false;update();});}});observer.observe(target,{childList:true});}
