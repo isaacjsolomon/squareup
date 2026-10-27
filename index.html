@@ -1612,6 +1612,16 @@ body.friends-view .wrap #friends-page{display:block!important}
 @keyframes sq-startup-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.sq-startup-ring{animation-duration:2s}}
 </style>
+<style id="sq-mobile-status-clearance">
+/* Keep the Square Up header and its buttons below the iPhone status area. */
+@media (max-width: 900px) {
+  html { background-color: #071827; }
+  body, body.side-collapsed {
+    padding-top: max(78px, calc(env(safe-area-inset-top, 0px) + 20px)) !important;
+  }
+  .sq-mobile-top { position: relative; z-index: 2; }
+}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
