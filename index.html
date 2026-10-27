@@ -4029,6 +4029,8 @@ async function mutate(path, method, body) {
 function applyDetail(detail) {
   var snapshot = JSON.stringify(detail);
   current = detail;
+  window.sqLastOpenedTrackerDetail = detail;
+  window.dispatchEvent(new CustomEvent("squareup:tracker-detail", {detail:{id:detail.id}}));
   sqFillCurrencies();
   sqRenderBudget();
   if (typeof sqRenderTemplateDashboard === "function") sqRenderTemplateDashboard();
@@ -4051,6 +4053,7 @@ function applyDetail(detail) {
 async function openTracker(id) {
   store(CURRENT_KEY, id);
   lastSnapshot = "";
+  if (window.sqLastOpenedTrackerDetail && window.sqLastOpenedTrackerDetail.id !== id) window.sqLastOpenedTrackerDetail = null;
   if (id === "local" || !trackers.some(function (t) { return t.id === id; })) {
     current = null;
     renderPicker();
@@ -4061,7 +4064,9 @@ async function openTracker(id) {
   }
   $("tb-members").textContent = "Loading…";
   try {
-    applyDetail(await api("trackers/" + id));
+    var openedDetail = await api("trackers/" + id);
+    window.sqLastOpenedTrackerDetail = openedDetail;
+    applyDetail(openedDetail);
     // Refresh the restored overview after tracker data and entries are installed.
     if (typeof window.sqRefreshRestoredSummary === "function") {
       window.sqRefreshRestoredSummary();
@@ -5453,8 +5458,15 @@ input.addEventListener('input',draw);
   return el;
  }
  function fill(id,rows,empty){const host=byId(id);if(!host)return;host.replaceChildren();if(!rows.length){const p=document.createElement('p');p.className='sq-return-empty';p.textContent=empty;host.append(p);}else rows.forEach(r=>host.append(r));}
+ function calculateTrackerPairs(rows){
+  const debt=new Map(), labels=new Map();
+  rows.forEach(e=>{if(e.paymentStatus&&e.paymentStatus!=='confirmed')return;const a=str(e.from).trim().toLowerCase(),b=str(e.to).trim().toLowerCase();if(!a||!b||a===b)return;labels.set(a,str(e.from));labels.set(b,str(e.to));const key=a+'\u0000'+b;debt.set(key,(debt.get(key)||0)+(e.type==='debt'?1:-1)*(Number(e.amount)||0));});
+  const people=[...labels.keys()],pairs=[];
+  people.forEach(a=>people.forEach(b=>{if(a>=b)return;const diff=Math.round(((debt.get(a+'\u0000'+b)||0)-(debt.get(b+'\u0000'+a)||0))*100)/100;if(diff>0)pairs.push({from:labels.get(a),to:labels.get(b),amount:diff});else if(diff<0)pairs.push({from:labels.get(b),to:labels.get(a),amount:-diff});}));
+  return pairs;
+ }
  function refresh(){try{
-  const tracker=typeof current!=='undefined'?current:null;
+  const tracker=(typeof current!=='undefined'&&current&&current.id)?current:(window.sqLastOpenedTrackerDetail||null);
   if(!tracker){
    fill('sq-return-activity',[],'Open a tracker to see recent activity');
    fill('sq-return-members',[],'Open a tracker to see members');
@@ -5472,7 +5484,7 @@ input.addEventListener('input',draw);
   const date=e=>{const d=new Date(e.date||e.created_at||e.createdAt||0);return Number.isFinite(d.getTime())?d.getTime():0;};
   fill('sq-return-activity',all.slice().sort((a,b)=>date(b)-date(a)).slice(0,4).map(e=>makeRow(e.type==='payment'?'↗':'▤',str(e.note||(e.type==='payment'?'Payment':'Expense')),display(e.from)+' → '+display(e.to),e.amount)),'No recent activity in this tracker');
   fill('sq-return-members',members.slice(0,5).map(m=>makeRow('♙',str(m.name||m.displayName||m.email||'Member'),m.isYou?'You':'Tracker member',null)),'No members loaded');
-  const pairs=tracker&&typeof computeNet==='function'?computeNet().pairs:[];
+  const pairs=tracker&&typeof computeNet==='function'&&typeof current!=='undefined'&&current&&current.id===tracker.id?computeNet().pairs:calculateTrackerPairs(all);
   fill('sq-return-balances',pairs.slice(0,5).map(p=>makeRow('↔',display(p.from)+' → '+display(p.to),'Outstanding balance',p.amount)),'Everyone is squared up');
  }catch(err){console.warn('Could not refresh tracker summary',err);}}
  document.querySelectorAll('[data-return-tab]').forEach(b=>b.addEventListener('click',()=>document.querySelector('[data-sq-tab="'+b.dataset.returnTab+'"]')?.click()));
@@ -5493,6 +5505,11 @@ input.addEventListener('input',draw);
  const history=byId('history');if(history){const observer=new MutationObserver(()=>{if(!window.sqReturnQueued){window.sqReturnQueued=true;requestAnimationFrame(()=>{window.sqReturnQueued=false;refresh();});}});observer.observe(history,{childList:true});}
  document.querySelectorAll('[data-sq-tab]').forEach(b=>b.addEventListener('click',refresh));
  window.sqRefreshRestoredSummary=refresh;
+ window.addEventListener('squareup:tracker-detail',refresh);
+ // The gallery can navigate to Overview after the API response; update again once visible.
+ const gallery=document.getElementById('tracker-gallery');
+ if(gallery){gallery.addEventListener('click',function(e){if(e.target.closest('.tile-open')){requestAnimationFrame(refresh);setTimeout(refresh,350);}});}
+
  const originalShowUser=window.showUser;
  if(typeof originalShowUser==='function'){window.showUser=function(){const result=originalShowUser.apply(this,arguments);refresh();return result;};}
  document.addEventListener('visibilitychange',function(){if(!document.hidden)refresh();});
