@@ -5471,5 +5471,51 @@ input.addEventListener('input',draw);
  refresh();
 })();
 </script>
+
+<style id="sq-glass-v4-2026">
+/* SquareUp glass visual system. Only presentation: preserve all live IDs, handlers, data and forms. */
+:root{--sq-glass:rgba(24,32,43,.46);--sq-glass-strong:rgba(16,28,42,.68);--sq-glass-border:rgba(255,255,255,.27);--sq-glass-light:rgba(255,255,255,.095)}
+body{background-attachment:fixed!important}
+/* Keep the user's own image / gradient backdrop visible. */
+.wrap{isolation:isolate}
+#tracker-dashboard .sq-workspace-tabs{background:rgba(11,25,39,.59)!important;border:1px solid rgba(255,255,255,.21)!important;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 12px 28px rgba(0,0,0,.13)}
+#tracker-dashboard .sq-workspace-tabs button{color:#f0f4f7!important}
+#tracker-dashboard .sq-workspace-tabs button[aria-selected=true]{background:#37e0b9!important;color:#08283a!important}
+#tracker-dashboard .sq-return-welcome h2{font-size:clamp(29px,3.5vw,47px);text-shadow:0 2px 20px rgba(0,0,0,.23)}
+#tracker-dashboard .sq-return-panel,#tracker-dashboard .sq-clean-balance,#tracker-dashboard .dashboard-action,#tracker-dashboard .sq-overview-stats .sq-stat,#tracker-dashboard .card,#tracker-dashboard details.card,#tracker-dashboard .sq-expense-filters,#tracker-dashboard .sq-side-action,#tracker-dashboard .sq-member-profile,#tracker-dashboard .sq-template-dashboard,#notifications-panel,.sidebar-notification-panel,.sq-notification-group,.sq-analytics-panel{background:var(--sq-glass)!important;border:1px solid var(--sq-glass-border)!important;backdrop-filter:blur(22px) saturate(135%)!important;-webkit-backdrop-filter:blur(22px) saturate(135%)!important;box-shadow:0 14px 35px rgba(0,0,0,.13),inset 0 1px rgba(255,255,255,.10)!important;border-radius:21px!important}
+#tracker-dashboard .sq-return-panel{min-height:190px}
+#tracker-dashboard .sq-return-row,#tracker-dashboard .sq-member-profile,#tracker-dashboard.sq-tab-expenses #nets .net,#tracker-dashboard .sq-clean-matrix-card .matrix-row,#tracker-dashboard .sq-expense-filters select{background:var(--sq-glass-light)!important;border:1px solid rgba(255,255,255,.16)!important;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+#tracker-dashboard .sq-return-head button,#tracker-dashboard button.small-btn,#tracker-dashboard .sq-clean-remind{background:rgba(255,255,255,.11)!important;border:1px solid rgba(255,255,255,.24)!important;color:#fff!important;border-radius:13px!important}
+#tracker-dashboard .sq-clean-settle,#tracker-dashboard .primary,#tracker-dashboard button.primary{background:#37e0b9!important;color:#062838!important;border-radius:12px!important}
+#tracker-dashboard .dashboard-action{transition:transform .2s ease,background .2s ease,border-color .2s ease;min-width:0}
+#tracker-dashboard .dashboard-action:hover{transform:translateY(-3px);background:rgba(255,255,255,.16)!important;border-color:rgba(99,248,209,.65)!important}
+#tracker-dashboard .sq-return-smart-panel #smart-settle-card{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+#tracker-dashboard .sq-return-smart-panel #smart-settle-card>summary{background:rgba(17,57,70,.54)!important;border:1px solid rgba(255,255,255,.18)!important}
+#tracker-dashboard .sq-overview-stats .sq-stat{padding:18px!important}
+#tracker-dashboard .sq-clean-balance{background:linear-gradient(112deg,rgba(18,56,69,.64),rgba(17,31,48,.47))!important}
+#tracker-dashboard.sq-tab-expenses #balances-card,#tracker-dashboard.sq-tab-expenses #sq-activity-card{background:var(--sq-glass)!important}
+#tracker-dashboard.sq-tab-expenses #history>.entry{border-bottom-color:rgba(255,255,255,.17)!important}
+#tracker-dashboard.sq-tab-budget #budget-card{width:100%;max-width:960px;margin:0 auto 24px!important;padding:25px!important}
+#tracker-dashboard.sq-tab-budget #budget-card>summary{font-size:23px;font-weight:800}
+#tracker-dashboard.sq-tab-budget #budget-card .tracker-collapsible-body{padding-top:20px}
+#tracker-dashboard.sq-tab-budget #sq-budget-display{padding:22px;border-radius:18px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);margin:14px 0 22px;font-size:18px}
+#tracker-dashboard.sq-tab-budget #sq-budget-form{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+#tracker-dashboard.sq-tab-budget #sq-budget-amount{flex:1;min-width:180px}
+#tracker-dashboard.sq-tab-members #sq-tracker-profiles-card{width:100%;max-width:1050px;margin:0 auto 25px!important}
+#tracker-dashboard .sq-member-profile{background:rgba(255,255,255,.095)!important}
+#entry-card{max-width:820px;margin:18px auto 28px!important;padding:clamp(18px,3vw,30px)!important}
+#entry-card input,#entry-card select,#entry-card button:not(.primary),#tracker-dashboard input,#tracker-dashboard select{border-radius:12px}
+#entry-card #form{display:grid;gap:13px}
+#entry-card #form>.row{gap:12px}
+#entry-card #form>.row>*{min-width:0}
+#entry-card .sq-entry-heading{margin-bottom:18px}
+#entry-card .sq-entry-heading h2{font-size:clamp(23px,2.4vw,30px)}
+#notifications-list .notification,#notifications-list .sq-notification-card{background:rgba(255,255,255,.09)!important;border:1px solid rgba(255,255,255,.16)!important;border-radius:17px!important}
+#tracker-dashboard .sq-return-copy strong{overflow-wrap:break-word}
+@media(min-width:901px){#tracker-dashboard .sq-return-grid{gap:16px}#tracker-dashboard .sq-return-panel{padding:23px}}
+@media(max-width:900px){#tracker-dashboard .sq-return-panel,#tracker-dashboard .sq-clean-balance,#tracker-dashboard .dashboard-action,#tracker-dashboard .sq-overview-stats .sq-stat,#tracker-dashboard .card{backdrop-filter:blur(15px) saturate(125%)!important;-webkit-backdrop-filter:blur(15px) saturate(125%)!important}}
+@media(max-width:600px){#tracker-dashboard .sq-return-grid{grid-template-columns:minmax(0,1fr)!important}#tracker-dashboard .sq-return-panel{min-height:0!important}#tracker-dashboard .sq-return-head{gap:7px}#tracker-dashboard .sq-return-head h3{font-size:17px}#tracker-dashboard .sq-return-head button{font-size:12px;padding:8px!important}#entry-card #form>.row{flex-direction:column}#entry-card #form>.row>*{width:100%;max-width:100%}}
+@media(prefers-reduced-motion:reduce){#tracker-dashboard .dashboard-action{transition:none}}
+</style>
 </body>
 </html>
