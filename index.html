@@ -5566,5 +5566,19 @@ body{background-attachment:fixed!important}
 @media(prefers-reduced-motion:reduce){#tracker-dashboard .dashboard-action{transition:none}}
 </style>
 <style id="sq-mobile-summary-final-fix">@media(max-width:740px){#tracker-dashboard #sq-return-summary .sq-return-grid{display:none!important}}</style>
+<style id="sq-smart-settle-no-dropdown">
+/* The Smart settle-up card itself is the heading; show suggestions directly. */
+#smart-settle-card > summary { display:none !important; }
+#tracker-dashboard .sq-return-smart-panel #smart-settle-card .tracker-collapsible-body { padding:0 !important; }
+#tracker-dashboard .sq-return-smart-panel #smart-settle-card { margin:0 !important; }
+</style>
+<script id="sq-smart-settle-always-visible">
+(function(){
+  const panel=document.getElementById('smart-settle-card');
+  if(!panel)return;
+  panel.open=true;
+  panel.addEventListener('toggle',function(){if(!panel.open)panel.open=true;});
+})();
+</script>
 </body>
 </html>
