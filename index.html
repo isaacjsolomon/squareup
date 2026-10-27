@@ -1622,6 +1622,32 @@ body.friends-view .wrap #friends-page{display:block!important}
   .sq-mobile-top { position: relative; z-index: 2; }
 }
 </style>
+<style id="sq-mobile-header-visibility-fix">
+/* A real layout spacer, rather than body padding, keeps tappable header controls
+   below iOS standalone's translucent status bar. */
+@media (max-width: 900px) {
+  body, body.side-collapsed, body:not(.side-collapsed) {
+    padding-top: 0 !important;
+  }
+  .wrap::before {
+    content: "";
+    display: block;
+    width: 100%;
+    height: calc(72px + env(safe-area-inset-top, 0px));
+    pointer-events: none;
+  }
+  .sq-mobile-top {
+    position: relative !important;
+    z-index: 10 !important;
+    min-height: 54px;
+    overflow: visible !important;
+  }
+  .sq-mobile-header-actions, .sq-mobile-header-actions > button {
+    pointer-events: auto !important;
+    touch-action: manipulation;
+  }
+}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
