@@ -5255,6 +5255,15 @@ if(inboxEl){filterInbox();}
     font-size:clamp(16px,4.3vw,19px)!important;
   }
 }
+<style id="sq-flat-notifications-style">
+/* Full-width responsive notification cards without tracker/unassigned headings. */
+#notifications-page .sq-inbox-flat{display:block;width:100%}
+#notifications-page .sq-inbox-flat .sq-inbox-column{display:block;background:transparent;border:0;border-radius:0;padding:0;width:100%}
+#notifications-page .sq-inbox-flat .sq-inbox-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:stretch;width:100%}
+#notifications-page .sq-inbox-flat .entry{height:100%;box-sizing:border-box}
+@media(max-width:1100px){#notifications-page .sq-inbox-flat .sq-inbox-items{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:690px){#notifications-page .sq-inbox-flat .sq-inbox-items{grid-template-columns:minmax(0,1fr);gap:12px}}
+</style>
 </style>
 <script id="sq-2026-enhancements-script">
 (function(){
@@ -5271,80 +5280,28 @@ exportButton?.addEventListener('click',function(){
 const notificationList=document.getElementById('notifications-list'),notificationFilter=document.getElementById('sq-notification-filter');
 function notificationCategory(kind,title){const k=(String(kind||'')+' '+String(title||'')).toLowerCase();return /payment|paid back|settle|confirm|dispute/.test(k)?'payments':/chat|message|mention/.test(k)?'messages':'expenses';}
 let inboxOrganizeRequest=0;
-async function organizeInbox(){
- const requestId=++inboxOrganizeRequest;
+function organizeInbox(){
  if(!notificationList)return;
+ // Preserve the existing notification elements and their action handlers.
  const old=notificationList.querySelector('.sq-inbox-columns');
- if(old){Array.from(old.querySelectorAll('.entry')).forEach(el=>notificationList.append(el));old.remove();}
+ if(old){old.querySelectorAll('.entry').forEach(row=>notificationList.append(row));old.remove();}
  notificationList.querySelectorAll('.sq-inbox-group').forEach(el=>el.remove());
  const rows=Array.from(notificationList.querySelectorAll(':scope > .entry'));
- const source=typeof inbox!=='undefined'&&Array.isArray(inbox)?inbox:[];
- const known=typeof trackers!=='undefined'&&Array.isArray(trackers)?trackers.slice():[];
- if(!known.length&&typeof api==='function'){try{const fetched=await api('trackers');if(Array.isArray(fetched))known.push(...fetched);}catch(e){console.warn('Could not load tracker names for notifications',e);}}
- if(requestId!==inboxOrganizeRequest)return;
- if(typeof current!=='undefined'&&current&&current.id&&!known.some(t=>String(t.id)===String(current.id)))known.push(current);
  if(!rows.length)return;
- const columns=document.createElement('div');columns.className='sq-inbox-columns';
- const groups=new Map();
- function groupFor(key,label){
-  if(groups.has(key))return groups.get(key);
-  const section=document.createElement('section');section.className='sq-inbox-column';
-  const heading=document.createElement('div');heading.className='sq-inbox-column-title';
-  const title=document.createElement('h3');title.textContent=label;
-  const count=document.createElement('span');count.className='sq-inbox-count';heading.append(title,count);
-  const items=document.createElement('div');items.className='sq-inbox-items';section.append(heading,items);
-  columns.append(section);const group={section,items,count};groups.set(key,group);return group;
- }
- // Show a dedicated column for every tracker in the account, even when it has no updates.
- known.forEach(t=>groupFor('tracker:'+String(t.id),t.name||t.title||'Unnamed tracker'));
- // Older notifications may not have a tracker_id. Resolve them against actual
- // tracker entries, never by assuming that they belong to the open tracker.
- const unresolved=source.filter(n=>n&&!((n.tracker_id||n.trackerId||n.tracker?.id||n.metadata?.tracker_id||n.data?.tracker_id)));
- const details=new Map();
- if(unresolved.length&&known.length&&typeof api==='function'){
-  await Promise.all(known.map(async t=>{
-   try{
-    const detail=(typeof current!=='undefined'&&current&&String(current.id)===String(t.id))?current:await api('trackers/'+encodeURIComponent(t.id));
-    details.set(String(t.id),detail);
-   }catch(e){console.warn('Notification matching unavailable for tracker',t.id,e);}
-  }));
- }
- if(requestId!==inboxOrganizeRequest)return;
- function inferTracker(n){
-  if(!n)return null;
-  const entryId=n.entry_id||n.entryId||n.metadata?.entry_id||n.data?.entry_id;
-  if(entryId){
-   const matches=known.filter(t=>(details.get(String(t.id))?.entries||[]).some(e=>String(e.id)===String(entryId)));
-   if(matches.length===1)return matches[0].id;
-  }
-  const message=String(n.message||'')+' '+String(n.title||'');
-  const byName=known.filter(t=>{const name=String(t.name||t.title||'').trim();return name.length>=3&&message.toLowerCase().includes(name.toLowerCase());});
-  if(byName.length===1)return byName[0].id;
-  // Match an expense description only if it is distinctive and belongs to
-  // exactly one tracker. Avoid guessing based on shared member names.
-  const byExpense=known.filter(t=>(details.get(String(t.id))?.entries||[]).some(e=>{
-   const description=String(e.note||e.description||'').trim();
-   return description.length>=5&&message.toLowerCase().includes(description.toLowerCase());
-  }));
-  return byExpense.length===1?byExpense[0].id:null;
- }
+ const source=typeof inbox!=='undefined'&&Array.isArray(inbox)?inbox:[];
+ const columns=document.createElement('div');columns.className='sq-inbox-columns sq-inbox-flat';
+ const section=document.createElement('section');section.className='sq-inbox-column';
+ const items=document.createElement('div');items.className='sq-inbox-items';
+ section.append(items);columns.append(section);
  rows.forEach((row,i)=>{
   const n=source[i];
-  let trackerId=n&&(n.tracker_id||n.trackerId||n.tracker?.id||n.metadata?.tracker_id||n.data?.tracker_id);
-  if(!trackerId)trackerId=inferTracker(n);
-  const tracker=known.find(t=>String(t.id)===String(trackerId));
-  // Never guess which tracker an untagged notification belongs to.
-  const group=tracker?groupFor('tracker:'+String(tracker.id),tracker.name||tracker.title||'Unnamed tracker'):groupFor('unassigned','Unassigned updates');
   row.dataset.sqInboxCategory=n?notificationCategory(n.kind,n.title):notificationCategory('',row.querySelector('b')?.textContent);
   row.dataset.sqInboxUnread=n&&!n.read_at?'true':'false';
   row.classList.toggle('sq-unread-notification',row.dataset.sqInboxUnread==='true');
-  group.items.append(row);
+  items.append(row);
  });
- known.forEach(t=>{
-  const g=groups.get('tracker:'+String(t.id));
-  if(g&&!g.items.children.length){const empty=document.createElement('p');empty.className='sq-inbox-empty';empty.textContent='No notifications for this tracker yet.';g.items.append(empty);}
- });
- notificationList.prepend(columns);filterRows();
+ notificationList.prepend(columns);
+ filterRows();
 }
 function filterRows(){
  if(!notificationList)return;
@@ -5356,7 +5313,7 @@ function filterRows(){
    const matches=selection==='all'||(selection==='unread'&&row.dataset.sqInboxUnread==='true')||selection===type;
    row.hidden=!matches; if(matches)visible++;
   });
-  section.hidden=visible===0;section.querySelector('.sq-inbox-count').textContent=String(visible);
+  section.hidden=visible===0;const count=section.querySelector('.sq-inbox-count');if(count)count.textContent=String(visible);
  });
  // Never leave a blank notification panel with no explanation when a filter has no matches.
  let empty=notificationList.querySelector('.sq-inbox-filter-empty');
