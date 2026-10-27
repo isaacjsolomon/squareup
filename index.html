@@ -1273,6 +1273,17 @@ body.about-view .sq-header-tour-btn{display:inline-flex}
 .sq-panel-x:active{transform:scale(.95)}
 .sq-panel-x:focus-visible{outline:2px solid #43dfba;outline-offset:3px}
 @media(max-width:540px){.sq-panel-x{flex-basis:36px;width:36px;height:36px;border-radius:11px}.sq-panel-x svg{width:17px;height:17px}}
+
+/* SquareUp search, polished details, and nonblocking loading states */
+.sq-search-launch{display:inline-flex;align-items:center;gap:9px;border:1px solid #3c6179;background:#16344c;color:#eaf8ff;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap}
+.sq-search-launch:hover{border-color:#42e5bd;background:#1b4258}.sq-search-launch kbd{font-size:11px;color:#b8d1df;border:1px solid #527086;border-radius:5px;padding:2px 5px}
+.sq-global-search{position:fixed;inset:0;z-index:1000;background:#05121dc9;display:none;align-items:flex-start;justify-content:center;padding:clamp(30px,10vh,110px) 16px 16px}.sq-global-search.open{display:flex}
+.sq-search-panel{width:min(640px,100%);max-height:min(76vh,700px);overflow:hidden;background:#102a40;color:#edf9ff;border:1px solid #41647b;border-radius:20px;box-shadow:0 28px 80px #0009;display:flex;flex-direction:column}
+.sq-search-head{display:flex;align-items:center;gap:10px;padding:15px;border-bottom:1px solid #35526a}.sq-search-head input{min-width:0;flex:1;background:#071d30;border:1px solid #45667d;border-radius:10px;color:#fff;font:inherit;padding:13px}.sq-search-head button{background:#203e55;border:1px solid #496981;color:#fff;border-radius:10px;padding:11px;cursor:pointer}
+.sq-search-results{overflow:auto;padding:10px 14px 18px}.sq-search-group{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#94b7ca;margin:16px 5px 7px;font-weight:800}.sq-search-hit{display:flex;width:100%;gap:12px;align-items:center;text-align:left;border:1px solid #2d4e65;border-radius:12px;padding:12px;margin:6px 0;background:#17364c;color:#f0faff;cursor:pointer}.sq-search-hit:hover,.sq-search-hit:focus-visible{border-color:#4ce6c1;background:#214a60}.sq-search-hit small{display:block;color:#aec9d9;margin-top:3px}.sq-search-empty{padding:18px;color:#b4cbdb}
+.sq-loading-skeleton{height:250px;border:1px solid #36566c;border-radius:20px;background:linear-gradient(110deg,#102b40 8%,#24455a 20%,#102b40 32%);background-size:250% 100%;animation:sq-shimmer 1.7s ease-in-out infinite}.sq-loading-skeleton:nth-child(2){animation-delay:.18s}@keyframes sq-shimmer{to{background-position-x:-250%}}@media(prefers-reduced-motion:reduce){.sq-loading-skeleton{animation:none}}
+.sq-details-card{position:relative}.sq-details-card .sq-details-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.sq-details-card .sq-details-x{border:1px solid #45677d;background:#1d3d53;color:#f3faff;border-radius:10px;min-width:40px;min-height:40px;font-size:23px;cursor:pointer}.sq-details-card .sq-details-amount{font-size:clamp(28px,5vw,42px);color:#52e4bb;font-weight:850;margin:8px 0 14px}.sq-details-card .sq-details-grid{border-top:1px solid #3a566a;padding-top:15px}
+@media(max-width:650px){.sq-search-launch kbd{display:none}.sq-search-launch{padding:9px 11px;font-size:13px}.sq-global-search{padding-top:25px}.sq-search-panel{max-height:88vh}.sq-details-grid{grid-template-columns:105px 1fr}}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -3555,7 +3566,7 @@ async function renderTrackerGallery(){
   var serial=++trackerGallerySerial;
   if(!currentUser){gallery.innerHTML='<div class="trackers-empty">Log in to create and share trackers.</div>';return;}
   // Keep existing cards visible while fresh data loads; avoid a blank gallery on refresh.
-  if(!gallery.querySelector('.tracker-tile')) gallery.innerHTML='<div class="trackers-empty">Loading your trackers…</div>';
+  if(!gallery.querySelector('.tracker-tile')) gallery.innerHTML='<div class="sq-loading-skeleton" aria-label="Loading trackers"></div><div class="sq-loading-skeleton" aria-hidden="true"></div>';
   try{
     var list=await api('trackers');
     if(serial!==trackerGallerySerial)return;
@@ -5122,7 +5133,7 @@ if ('serviceWorker' in navigator) {
   selectTab('profile');
 })();
 </script>
-<div id="sq-details-overlay" class="sq-details-overlay" role="dialog" aria-modal="true" aria-labelledby="sq-details-title" aria-hidden="true"><div class="sq-details-card"><h2 id="sq-details-title">Expense details</h2><dl class="sq-details-grid" id="sq-details-grid"></dl><button class="settings-action primary" type="button" id="sq-details-close">Close</button></div></div>
+<div id="sq-details-overlay" class="sq-details-overlay" role="dialog" aria-modal="true" aria-labelledby="sq-details-title" aria-hidden="true"><div class="sq-details-card"><div class="sq-details-top"><h2 id="sq-details-title">Expense details</h2><button type="button" class="sq-details-x" id="sq-details-x" aria-label="Close expense details">×</button></div><div class="sq-details-amount" id="sq-details-amount"></div><dl class="sq-details-grid" id="sq-details-grid"></dl><button class="settings-action primary" type="button" id="sq-details-close">Close</button></div></div>
 <script id="sq-four-features-script">
 (function(){
 'use strict';
@@ -5141,10 +5152,10 @@ if(form)form.addEventListener('submit',function(){
 },true);
 var overlay=document.getElementById('sq-details-overlay'), grid=document.getElementById('sq-details-grid');
 function close(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');}
-document.getElementById('sq-details-close').addEventListener('click',close);
+document.getElementById('sq-details-close').addEventListener('click',close);document.getElementById('sq-details-x').addEventListener('click',close);
 overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
-function show(entry){if(!entry)return;var parsed=unpack(entry.note);var data=[['Type',entry.type==='payment'?'Payment':'Expense'],['Amount',Number(entry.amount||0).toLocaleString(undefined,{style:'currency',currency:entry.currency||'USD'})],['From',entry.from||'—'],['To',entry.to||'—'],['Category',entry.type==='payment'?'Payment':parsed.category],['Description',parsed.note||'No description'],['Date',entry.date||'—'],['Due date',entry.dueDate||'None'],['Status',entry.paymentStatus||'—'],['Created by',entry.createdBy||'—'],['Pinned',entry.pinned?'Yes':'No']];grid.replaceChildren();data.forEach(function(row){var dt=document.createElement('dt');dt.textContent=row[0];var dd=document.createElement('dd');dd.textContent=row[1];grid.append(dt,dd);});overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.getElementById('sq-details-close').focus();}
+function show(entry){if(!entry)return;var parsed=unpack(entry.note);var data=[['Type',entry.type==='payment'?'Payment':'Expense'],['Amount',Number(entry.amount||0).toLocaleString(undefined,{style:'currency',currency:entry.currency||'USD'})],['From',entry.from||'—'],['To',entry.to||'—'],['Category',entry.type==='payment'?'Payment':parsed.category],['Description',parsed.note||'No description'],['Date',entry.date||'—'],['Due date',entry.dueDate||'None'],['Status',entry.paymentStatus||'—'],['Created by',entry.createdBy||'—'],['Pinned',entry.pinned?'Yes':'No']];document.getElementById('sq-details-amount').textContent=data[1][1];grid.replaceChildren();data.forEach(function(row){var dt=document.createElement('dt');dt.textContent=row[0];var dd=document.createElement('dd');dd.textContent=row[1];grid.append(dt,dd);});overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.getElementById('sq-details-close').focus();}
 var historyEl=document.getElementById('history');
 function decorate(){if(!historyEl)return;historyEl.querySelectorAll('.entry').forEach(function(row){if(row.dataset.sqEnhanced)return;var del=row.querySelector('[data-del]');if(!del)return;row.dataset.sqEnhanced='1';var id=del.dataset.del;var entry=(typeof entries!=='undefined'&&Array.isArray(entries))?entries.find(function(x){return String(x.id)===String(id);}):null;if(!entry)return;var parsed=unpack(entry.note);if(entry.type==='debt'){var chip=document.createElement('span');chip.className='sq-cat-chip';chip.textContent=parsed.category;var noteEl=row.querySelector('.note');if(noteEl){if(pattern.test(String(entry.note||'')))noteEl.textContent=noteEl.textContent.replace(pattern,'');noteEl.prepend(chip);}}var btn=document.createElement('button');btn.type='button';btn.className='small-btn sq-detail-btn';btn.textContent='Details';btn.addEventListener('click',function(){var fresh=(typeof entries!=='undefined'&&Array.isArray(entries))?entries.find(function(x){return String(x.id)===String(id);}):entry;show(fresh);});row.insertBefore(btn,del);});}
 if(historyEl){new MutationObserver(function(){decorate();}).observe(historyEl,{childList:true});decorate();}
@@ -5294,6 +5305,31 @@ if(notificationList){
  organizeInbox();observer.observe(notificationList,{childList:true});
 }
 const tour=document.getElementById('sq-replay-tour');if(tour){const original=tour.click.bind(tour);let prompted=false;function maybeTour(){if(prompted)return;prompted=true;try{if(localStorage.getItem('sq_tour_seen_v1'))return;localStorage.setItem('sq_tour_seen_v1','1');}catch(e){return;}if(document.getElementById('sq-tour-overlay')?.hidden)original();}window.addEventListener('load',()=>{setTimeout(()=>{if(document.querySelector('#tracker-dashboard')&&!document.body.classList.contains('auth-view')&&document.body.classList.contains('logged-in'))maybeTour();},1800);});}
+})();
+</script>
+
+<div id="sq-global-search" class="sq-global-search" role="dialog" aria-modal="true" aria-label="Search SquareUp" aria-hidden="true"><div class="sq-search-panel"><div class="sq-search-head"><input id="sq-global-query" type="search" placeholder="Search trackers, members, expenses…" autocomplete="off" aria-label="Search SquareUp"><button type="button" id="sq-search-close" aria-label="Close search">✕</button></div><div class="sq-search-results" id="sq-search-results" aria-live="polite"><p class="sq-search-empty">Search your loaded trackers and expenses.</p></div></div></div>
+<script id="sq-global-search-script">
+(function(){
+'use strict';
+const overlay=document.getElementById('sq-global-search'),input=document.getElementById('sq-global-query'),results=document.getElementById('sq-search-results');
+const launch=document.createElement('button');launch.type='button';launch.className='sq-search-launch';launch.innerHTML='<span aria-hidden="true">⌕</span> Search <kbd>⌘ K</kbd>';launch.setAttribute('aria-label','Search SquareUp');
+const title=document.querySelector('.tracker-heading .sq-title-and-tour')||document.querySelector('.tracker-heading');if(title)title.append(launch);
+let returnFocus=null;
+function open(){returnFocus=document.activeElement;overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');input.value='';draw();input.focus();}
+function close(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');if(returnFocus&&returnFocus.focus)returnFocus.focus();}
+launch.addEventListener('click',open);document.getElementById('sq-search-close').addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();overlay.classList.contains('open')?close():open();}else if(e.key==='Escape'&&overlay.classList.contains('open'))close();});
+function label(value){return String(value==null?'':value)}
+function group(name,items){if(!items.length)return;const head=document.createElement('div');head.className='sq-search-group';head.textContent=name;results.append(head);items.forEach(item=>{const btn=document.createElement('button');btn.type='button';btn.className='sq-search-hit';const icon=document.createElement('span');icon.textContent=item.icon;const body=document.createElement('span');const strong=document.createElement('strong');strong.textContent=item.title;const small=document.createElement('small');small.textContent=item.sub;body.append(strong,small);btn.append(icon,body);btn.addEventListener('click',async()=>{close();try{await item.action()}catch(err){console.error('Search navigation:',err);alert(err.message||'Could not open result.')}});results.append(btn);});}
+function draw(){const q=input.value.trim().toLocaleLowerCase();results.replaceChildren();if(!q){const p=document.createElement('p');p.className='sq-search-empty';p.textContent='Type to search your trackers, members, and currently loaded expenses.';results.append(p);return;}
+const list=typeof trackers!=='undefined'&&Array.isArray(trackers)?trackers:[];
+const trackerHits=list.filter(t=>label(t.name).toLowerCase().includes(q)).slice(0,15).map(t=>({icon:'▣',title:label(t.name),sub:'Tracker',action:async()=>{document.getElementById('nav-home')?.click();await openTracker(t.id);}}));
+const active=typeof current!=='undefined'?current:null;
+const memberHits=(active&&Array.isArray(active.members)?active.members:[]).filter(m=>label(m.name||m.email).toLowerCase().includes(q)).slice(0,12).map(m=>({icon:'♙',title:label(m.name||m.email),sub:'Member · '+label(active.name),action:async()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab="members"]')?.click();}}));
+const expenseHits=(active&&Array.isArray(active.entries)?active.entries:[]).filter(e=>[e.note,e.from,e.to,e.amount,e.date].some(v=>label(v).toLowerCase().includes(q))).slice(0,20).map(e=>({icon:'▤',title:label(e.note|| (e.type==='payment'?'Payment':'Expense')),sub:label(e.from)+' → '+label(e.to)+' · '+label(e.amount),action:async()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab="expenses"]')?.click();const row=[...document.querySelectorAll('#history > .entry')].find(r=>r.querySelector('[data-del]')?.dataset.del===String(e.id));if(row){row.scrollIntoView({behavior:'smooth',block:'center'});row.querySelector('.sq-detail-btn')?.click();}}}));
+group('Trackers',trackerHits);group('Members in open tracker',memberHits);group('Expenses in open tracker',expenseHits);if(!trackerHits.length&&!memberHits.length&&!expenseHits.length){const p=document.createElement('p');p.className='sq-search-empty';p.textContent='No matches in the data currently loaded. Open a tracker to search its expenses and members.';results.append(p);}}
+input.addEventListener('input',draw);
 })();
 </script>
 </body>
