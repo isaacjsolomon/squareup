@@ -5184,6 +5184,20 @@ if(inboxEl){filterInbox();}
 @media(max-width:690px){.sq-overview-stats .sq-stat strong{font-size:clamp(15px,4vw,23px)!important}.sq-overview-stats .sq-stat{padding:12px 9px!important}}
 @media(max-width:390px){.sq-overview-stats{gap:6px!important}.sq-overview-stats .sq-stat strong{font-size:clamp(13px,3.8vw,17px)!important;letter-spacing:-.06em}}
 .sq-inbox-column-title h3{overflow-wrap:anywhere;line-height:1.25}
+/* Larger mobile balance amounts, while preventing currency values from wrapping. */
+@media (max-width:690px){
+  #tracker-dashboard .sq-overview-stats .sq-stat strong{
+    font-size:clamp(18px,4.25vw,25px)!important;
+    line-height:1.18!important;
+    letter-spacing:-.055em!important;
+    white-space:nowrap!important;
+  }
+}
+@media (max-width:380px){
+  #tracker-dashboard .sq-overview-stats .sq-stat strong{
+    font-size:clamp(16px,4.3vw,19px)!important;
+  }
+}
 </style>
 <script id="sq-2026-enhancements-script">
 (function(){
