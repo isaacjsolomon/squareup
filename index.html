@@ -1676,6 +1676,9 @@ body.friends-view .wrap #friends-page{display:block!important}
     <div id="notifications-panel" class="sidebar-notification-panel"><div class="notification-panel-heading">Your updates</div><div class="sq-notification-tools"><label>Show <select id="sq-notification-filter"><option value="all">All notifications</option><option value="unread">Unread only</option><option value="payments">Payments</option><option value="messages">Messages</option><option value="expenses">Expenses & invites</option></select></label></div><div id="notifications-list"><p>Loading notifications…</p></div></div>
   </section>
   <div id="tracker-dashboard" class="sq-tab-overview">
+  <div id="sq-tracker-loading" class="sq-tracker-loading" role="status" aria-live="polite" hidden>
+    <span class="sq-tracker-spinner" aria-hidden="true"></span><span>Loading tracker data…</span>
+  </div>
   <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="budget" role="tab" aria-selected="false">Budget</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button></div>
 
   <section class="sq-return-summary" id="sq-return-summary" aria-label="Tracker summary">
@@ -4079,7 +4082,15 @@ function applyDetail(detail) {
   if(typeof window.sqRefreshRestoredSummary === "function") window.sqRefreshRestoredSummary();
 }
 
+function sqSetTrackerLoading(loading) {
+  var indicator=document.getElementById('sq-tracker-loading');
+  if (!indicator) return;
+  indicator.hidden=!loading;
+  indicator.setAttribute('aria-busy', loading?'true':'false');
+}
+
 async function openTracker(id) {
+  sqSetTrackerLoading(true);
   store(CURRENT_KEY, id);
   lastSnapshot = "";
   if (window.sqLastOpenedTrackerDetail && window.sqLastOpenedTrackerDetail.id !== id) window.sqLastOpenedTrackerDetail = null;
@@ -4089,6 +4100,7 @@ async function openTracker(id) {
     renderMembers();
     applyBackdrop();
     useEntries(null, null);
+    sqSetTrackerLoading(false);
     return;
   }
   $("tb-members").textContent = "Loading…";
@@ -4105,14 +4117,18 @@ async function openTracker(id) {
     $("tb-members").textContent = 'Could not load tracker: ' + err.message;
     console.error('SquareUp tracker load failed:', id, err);
     alert('Could not load your tracker. Your saved expenses have NOT been deleted. Error: ' + err.message);
+  } finally {
+    sqSetTrackerLoading(false);
   }
 }
 
 async function loadTrackers(preferId) {
+  sqSetTrackerLoading(true);
   try {
     trackers = await api("trackers");
   } catch (err) {
     $("tb-members").textContent = err.message;
+    sqSetTrackerLoading(false);
     return;
   }
   var want = preferId || (current && current.id) || read(CURRENT_KEY);
@@ -5620,5 +5636,12 @@ body{background-attachment:fixed!important}
   panel.addEventListener('toggle',function(){if(!panel.open)panel.open=true;});
 })();
 </script>
+<style id="sq-tracker-loading-style">
+#sq-tracker-loading[hidden]{display:none!important}
+#sq-tracker-loading{position:sticky;top:12px;z-index:150;display:flex;align-items:center;justify-content:center;gap:11px;width:max-content;max-width:calc(100% - 24px);margin:8px auto 14px;padding:12px 18px;border:1px solid rgba(255,255,255,.27);border-radius:999px;background:rgba(12,39,57,.9);color:#f6fbff;font-size:14px;font-weight:650;box-shadow:0 8px 26px rgba(0,0,0,.22);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
+.sq-tracker-spinner{width:21px;height:21px;flex:none;border-radius:50%;border:3px solid rgba(71,231,193,.22);border-top-color:#49ebc2;animation:sq-tracker-spin .8s linear infinite}
+@keyframes sq-tracker-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.sq-tracker-spinner{animation-duration:2s}}
+</style>
 </body>
 </html>
