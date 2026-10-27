@@ -5269,7 +5269,7 @@ exportButton?.addEventListener('click',function(){
  const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='squareup-expenses-'+new Date().toISOString().slice(0,10)+'.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 });
 const notificationList=document.getElementById('notifications-list'),notificationFilter=document.getElementById('sq-notification-filter');
-function notificationCategory(kind){const k=String(kind||'').toLowerCase();return /payment|confirm|dispute/.test(k)?'payments':/chat|message|mention/.test(k)?'messages':'expenses';}
+function notificationCategory(kind,title){const k=(String(kind||'')+' '+String(title||'')).toLowerCase();return /payment|paid back|settle|confirm|dispute/.test(k)?'payments':/chat|message|mention/.test(k)?'messages':'expenses';}
 let inboxOrganizeRequest=0;
 async function organizeInbox(){
  const requestId=++inboxOrganizeRequest;
@@ -5335,7 +5335,7 @@ async function organizeInbox(){
   const tracker=known.find(t=>String(t.id)===String(trackerId));
   // Never guess which tracker an untagged notification belongs to.
   const group=tracker?groupFor('tracker:'+String(tracker.id),tracker.name||tracker.title||'Unnamed tracker'):groupFor('unassigned','Unassigned updates');
-  row.dataset.sqInboxCategory=n?notificationCategory(n.kind):'expenses';
+  row.dataset.sqInboxCategory=n?notificationCategory(n.kind,n.title):notificationCategory('',row.querySelector('b')?.textContent);
   row.dataset.sqInboxUnread=n&&!n.read_at?'true':'false';
   row.classList.toggle('sq-unread-notification',row.dataset.sqInboxUnread==='true');
   group.items.append(row);
@@ -5358,8 +5358,15 @@ function filterRows(){
   });
   section.hidden=visible===0;section.querySelector('.sq-inbox-count').textContent=String(visible);
  });
+ // Never leave a blank notification panel with no explanation when a filter has no matches.
+ let empty=notificationList.querySelector('.sq-inbox-filter-empty');
+ const hasMatches=Array.from(notificationList.querySelectorAll('.sq-inbox-column')).some(section=>!section.hidden);
+ if(!hasMatches){
+  if(!empty){empty=document.createElement('p');empty.className='sq-inbox-filter-empty';empty.setAttribute('role','status');notificationList.append(empty);}
+  empty.textContent=selection==='all'?'No notifications to display.':'No notifications match this filter. Choose All notifications to see everything.';
+ }else if(empty){empty.remove();}
 }
-notificationFilter?.addEventListener('change',filterRows);
+notificationFilter?.addEventListener('change',function(){if(!notificationList.querySelector('.sq-inbox-columns')){organizeInbox();}else{filterRows();}});
 window.addEventListener('sq-trackers-updated',organizeInbox);
 if(notificationList){
  const observer=new MutationObserver(records=>{
