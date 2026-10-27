@@ -4837,14 +4837,19 @@ sqDrawTemplates();
  // The sidebar Chat button opens the existing tracker chat view and retains its message, reply, reaction and attachment handlers.
  const chatNav=document.getElementById('nav-chat');
  if(chatNav)chatNav.addEventListener('click',()=>{
-  if(typeof settingsRoute==='function')settingsRoute('dashboard');
+  // Follow the same complete navigation path as Home before selecting Chat.
+  // This resets page-specific views and hidden dashboard sections regardless
+  // of which sidebar page the user is currently visiting.
+  if(homeNav)homeNav.click();
+  else if(typeof settingsRoute==='function')settingsRoute('dashboard');
   tab('chat');
   document.querySelectorAll('.sq-nav-link').forEach(b=>{
    const active=b===chatNav;
    b.classList.toggle('active',active);
    if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
   });
-  document.getElementById('chat-card')?.scrollIntoView({block:'start',behavior:'smooth'});
+  const chatCard=document.getElementById('chat-card');
+  if(chatCard){chatCard.open=true;requestAnimationFrame(()=>chatCard.scrollIntoView({block:'start',behavior:'smooth'}));}
  });
  tabs.forEach(b=>b.addEventListener('click',()=>{
   tab(b.dataset.sqTab);
