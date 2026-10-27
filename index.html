@@ -1256,6 +1256,12 @@ body.about-view .sq-header-tour-btn{display:inline-flex}
  #tracker-dashboard .sq-overview-stats .sq-stat span{font-size:clamp(9px,2vw,11px)!important}
 }
 @media(max-width:380px){#tracker-dashboard .sq-overview-stats .sq-stat strong{font-size:12px!important}}
+
+/* Seven distinct, data-driven tracker template dashboards */
+.sq-template-dashboard{--sq-tint:#4de3b8;--sq-soft:#183b4e;margin:0 0 18px;padding:22px;background:linear-gradient(145deg,#10283e,#0d2236);border:1px solid #34516a;border-radius:22px;color:#f4faff;overflow:hidden}
+.sq-template-dashboard[hidden],.sq-template-dashboard.sq-tab-hidden{display:none!important}
+.sq-td-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.sq-td-kicker{font-size:11px;letter-spacing:.15em;font-weight:800;color:#a9c7d8}.sq-td-head h2{font-size:clamp(21px,3vw,30px);margin:5px 0}.sq-td-symbol{font-size:34px}.sq-td-hero{border-radius:14px;min-height:130px;padding:24px;background:linear-gradient(120deg,var(--sq-soft),#133149 70%,#1c4760);display:flex;flex-direction:column;justify-content:center;gap:7px;margin-bottom:15px;position:relative;overflow:hidden}.sq-td-hero::after{content:attr(data-icon);position:absolute;right:20px;top:5px;font-size:88px;opacity:.14}.sq-td-hero strong{font-size:clamp(19px,3vw,28px);max-width:70%;line-height:1.2}.sq-td-hero small{color:#c2d9e6;max-width:70%}.sq-td-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}.sq-td-grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}.sq-td-tile{background:#1b3b50;border:1px solid #31536a;border-radius:13px;padding:15px;min-width:0}.sq-td-tile small{display:block;color:#b5cddc;margin-bottom:8px;font-size:12px}.sq-td-tile strong{display:block;color:#f6fcff;font-size:clamp(15px,2vw,23px);overflow-wrap:anywhere}.sq-td-list{background:#19384d;border-radius:13px;padding:12px 16px;margin:12px 0}.sq-td-list h3{font-size:15px;margin:3px 0 10px}.sq-td-line{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid #315168;font-size:14px}.sq-td-line:first-of-type{border-top:0}.sq-td-line span{color:#c6dbe6}.sq-td-line strong{color:var(--sq-tint)}.sq-td-chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.sq-td-chips span{background:#23475c;border:1px solid #416478;border-radius:100px;padding:7px 12px;font-size:12px;color:#d6ecf6}.sq-td-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}.sq-td-actions button{border:1px solid #466a7a;background:#22475c;color:#e8f9ff;border-radius:11px;padding:11px 14px;font-weight:750;cursor:pointer}.sq-td-actions button:first-child{background:var(--sq-tint);color:#082939;border-color:transparent}.sq-td-progress{height:10px;border-radius:20px;background:#345369;overflow:hidden;margin:12px 0}.sq-td-progress div{height:100%;background:var(--sq-tint)}.sq-td-foot{font-size:12px;color:#a9c6d6;margin-top:12px}.sq-td-days{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.sq-td-day{padding:16px 8px;background:#1b3b50;border-radius:13px;text-align:center}.sq-td-day strong{display:block;color:var(--sq-tint);font-size:14px}.sq-td-day small{color:#b7cedb}.sq-td-dining{background:#1b3b50;border-radius:14px;padding:17px}.sq-td-dining .sq-td-line:last-of-type{border-bottom:1px solid #35546a}.sq-td-dining-total{display:flex;justify-content:space-between;padding-top:15px;align-items:center}.sq-td-dining-total strong{color:var(--sq-tint);font-size:24px}.sq-td-edit{font-size:12px;color:#b9d1e0;margin:10px 0}.sq-td-template-preview{margin-top:10px;padding:11px;border-radius:10px;background:#193b4e;color:#cbe6ed;font-size:12px}
+@media(max-width:650px){.sq-template-dashboard{padding:15px;border-radius:17px}.sq-td-grid,.sq-td-grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}.sq-td-hero{min-height:115px;padding:17px}.sq-td-tile{padding:12px}.sq-td-head h2{font-size:21px}.sq-td-actions button{flex:1;min-width:120px}.sq-td-hero strong,.sq-td-hero small{max-width:83%}}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -1618,6 +1624,7 @@ body.friends-view .wrap #friends-page{display:block!important}
   </section>
   <div id="tracker-dashboard">
   <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="budget" role="tab" aria-selected="false">Budget</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button></div>
+  <section id="sq-template-dashboard" class="sq-template-dashboard" hidden aria-label="Tracker template overview"></section>
   <section class="sq-clean-balance" id="sq-clean-balance" aria-label="Your balance">
     <div class="sq-clean-balance-copy"><span class="sq-clean-eyebrow">Your net balance</span><strong id="sq-clean-net">—</strong><span id="sq-clean-explanation">Your tracker balance</span></div>
     <div class="sq-clean-balance-actions"><button type="button" class="sq-clean-settle" id="sq-clean-settle">Settle up</button><button type="button" class="sq-clean-remind" id="sq-clean-remind">Send reminder</button></div>
@@ -3929,6 +3936,7 @@ function applyDetail(detail) {
   current = detail;
   sqFillCurrencies();
   sqRenderBudget();
+  if (typeof sqRenderTemplateDashboard === "function") sqRenderTemplateDashboard();
   if(document.body.classList.contains("analytics-view"))renderSquareUpAnalytics();
   refreshInbox();
   var t = trackers.find(function (x) { return x.id === detail.id; });
@@ -4066,6 +4074,9 @@ $("new-form").addEventListener("submit", async function (e) {
       currency: $("new-currency").value,
       entries: withLocal ? loadEntries() : []
     });
+    if (sqTemplateSelected >= 0) {
+      try { localStorage.setItem("sq_tracker_template_" + detail.id, String(sqTemplateSelected)); } catch (_) {}
+    }
     closeModals();
     trackers.push({ id: detail.id, name: detail.name, role: detail.role, memberCount: 1 });
     store(CURRENT_KEY, detail.id);
@@ -4686,6 +4697,67 @@ $('sq-chat-pin-toggle').onclick=()=>{squareUpPaintPin();if($('sq-chat-pin').hidd
 $('sq-chat-pin').addEventListener('click',async e=>{if(e.target.id==='sq-unpin-chat'){await squareUpPinMessage(null);}if(e.target.id==='sq-jump-chat'){var row=Array.from(document.querySelectorAll('[data-chat-id]')).find(x=>x.dataset.chatId===sqSharedPinId);row?.scrollIntoView({behavior:'smooth',block:'center'});}});
 
 </script>
+<script>
+
+// Template dashboards: all amounts are calculated from actual saved entries.
+// The chosen template is remembered in this browser, without altering tracker records.
+var sqTemplateProfiles=[
+ {name:'Roommates',icon:'🏠',accent:'#4de3b8',soft:'#174c48',cats:['Rent','Electricity','Groceries','Utilities'],actions:[['Add a bill','expense','Rent'],['Recurring expenses','recurring'],['Settle up','pay']]},
+ {name:'Vacation',icon:'✈️',accent:'#65c9ff',soft:'#204b70',cats:['Flights','Hotels','Food & Dining','Activities'],actions:[['Add travel expense','expense','Flights'],['Scan receipt','receipt'],['Trip budget','budget']]},
+ {name:'School Trip',icon:'🎓',accent:'#b5a0ff',soft:'#443e70',cats:['Transportation','Food & Dining','Tickets','Supplies'],actions:[['Add group expense','expense','Transportation'],['Group budget','budget'],['Split a bill','split']]},
+ {name:'Weekend Getaway',icon:'🌴',accent:'#f9cb70',soft:'#62512e',cats:['Lodging','Food & Dining','Activities','Transportation'],actions:[['Quick expense','expense','Lodging'],['Split a bill','split'],['Settle up','pay']]},
+ {name:'Shared Household',icon:'👥',accent:'#4de3b8',soft:'#214d52',cats:['Cleaning supplies','Paper towels','Kitchen supplies','Groceries'],actions:[['Add purchase','expense','Cleaning supplies'],['Scan receipt','receipt'],['Recurring expenses','recurring']]},
+ {name:'Camping Trip',icon:'🏕️',accent:'#9ad68e',soft:'#365638',cats:['Campsite','Firewood','Food & Dining','Gear'],actions:[['Add camping expense','expense','Campsite'],['Split a bill','split'],['Trip budget','budget']]},
+ {name:'Food & Dining',icon:'🍴',accent:'#f4bb75',soft:'#67462c',cats:['Meals','Drinks','Tax + tip','Groceries'],actions:[['Split this bill','split'],['Scan receipt','receipt'],['Add meal','expense','Meals']]}
+];
+function sqTemplateIndexForTracker(){
+ if(!current||!current.id)return -1;
+ try{var raw=localStorage.getItem('sq_tracker_template_'+current.id);if(raw!==null){var n=Number(raw);return Number.isInteger(n)&&n>=0&&n<sqTemplateProfiles.length?n:-1;}}catch(_){}
+ return -1;
+}
+function sqTemplateAmount(n){try{return new Intl.NumberFormat('en-US',{style:'currency',currency:current.currency||'USD'}).format(n||0);}catch(_){return '$'+(n||0).toFixed(2);}}
+function sqRenderTemplateDashboard(){
+ var el=document.getElementById('sq-template-dashboard');if(!el)return;
+ var i=sqTemplateIndexForTracker();if(i<0){el.hidden=true;return;}var p=sqTemplateProfiles[i];el.hidden=false;
+ el.style.setProperty('--sq-tint',p.accent);el.style.setProperty('--sq-soft',p.soft);
+ var all=(current.entries||[]).filter(e=>e.type==='debt'&&String(e.paymentStatus||'confirmed').toLowerCase()!=='rejected');
+ var total=all.reduce((sum,e)=>sum+(Number(e.amount)||0),0);
+ var byCat={};all.forEach(e=>{var m=String(e.note||'').match(/^\[Category: ([^\]]+)\]/);var c=m?m[1]:'Other';byCat[c]=(byCat[c]||0)+(Number(e.amount)||0);});
+ var money=sqTemplateAmount;
+ function tile(label,val){return '<div class="sq-td-tile"><small>'+esc(label)+'</small><strong>'+esc(val)+'</strong></div>';}
+ function rows(cats){return '<div class="sq-td-list"><h3>Expense breakdown</h3>'+cats.map(c=>'<div class="sq-td-line"><span>'+esc(c)+'</span><strong>'+esc(money(byCat[c]||0))+'</strong></div>').join('')+'</div>';}
+ function chips(){return '<div class="sq-td-chips">'+p.cats.map(c=>'<span>'+esc(c)+'</span>').join('')+'</div>';}
+ var budget=Number(current.budget)||0;
+ var heroTitle=['Shared bills, made simple','Your travel spending, together','Stay on track as a group','A weekend worth sharing','Everyday household purchases','Your outdoor adventure fund','Split meals without the math'][i];
+ var heroSub=['Rent, utilities and groceries in one place','Flights, hotels, food and activities','Transportation, meals and tickets','Travel, activities and shared stays','Supplies, groceries and household essentials','Campsite, firewood, food and gear','Itemized bills, tax, tip and everyone’s share'][i];
+ var html='<div class="sq-td-head"><div><div class="sq-td-kicker">'+esc(p.name.toUpperCase())+'</div><h2>'+esc(current.name||p.name)+'</h2></div><span class="sq-td-symbol">'+p.icon+'</span></div>'+
+ '<div class="sq-td-hero" data-icon="'+p.icon+'"><strong>'+esc(heroTitle)+'</strong><small>'+esc(heroSub)+'</small></div>';
+ if(i===0){html+='<div class="sq-td-grid">'+tile('Shared bills',money(total))+tile('Expenses logged',String(all.length))+tile('This month',money(all.filter(e=>String(e.date||'').slice(0,7)===new Date().toISOString().slice(0,7)).reduce((s,e)=>s+Number(e.amount||0),0)))+'</div>'+rows(p.cats);}
+ if(i===1){html+='<div class="sq-td-grid">'+tile('Flights',money(byCat.Flights||0))+tile('Hotels',money(byCat.Hotels||0))+tile('Food',money(byCat['Food & Dining']||0))+'</div>'+rows(p.cats);}
+ if(i===2){html+='<div class="sq-td-list"><h3>Group budget</h3><strong>'+esc(money(total))+(budget?' of '+esc(money(budget)):' spent')+'</strong>'+(budget?'<div class="sq-td-progress"><div style="width:'+Math.min(100,Math.max(0,total/budget*100))+'%"></div></div><small>'+Math.round(total/budget*100)+'% used</small>':'<p class="sq-td-foot">Set a budget in the Budget tab to track progress.</p>')+'</div>'+chips()+rows(p.cats);}
+ if(i===3){html+='<div class="sq-td-days"><div class="sq-td-day"><strong>Friday</strong><small>Travel</small></div><div class="sq-td-day"><strong>Saturday</strong><small>Activities</small></div><div class="sq-td-day"><strong>Sunday</strong><small>Checkout</small></div></div><div class="sq-td-grid">'+tile('Total expenses',money(total))+tile('Cost per member',money(total/Math.max(1,(current.members||[]).length)))+tile('Expenses logged',String(all.length))+'</div>'+rows(p.cats);}
+ if(i===4){html+='<div class="sq-td-grid">'+tile('Household purchases',money(total))+tile('Purchases logged',String(all.length))+tile('Members',String((current.members||[]).length))+'</div>'+rows(p.cats);}
+ if(i===5){html+='<div class="sq-td-grid four">'+p.cats.map(c=>tile(c,money(byCat[c]||0))).join('')+'</div>'+rows(p.cats);}
+ if(i===6){html+='<div class="sq-td-dining"><h3>Dining expenses</h3>'+p.cats.map(c=>'<div class="sq-td-line"><span>'+esc(c)+'</span><strong>'+esc(money(byCat[c]||0))+'</strong></div>').join('')+'<div class="sq-td-dining-total"><span>Total</span><strong>'+esc(money(total))+'</strong></div></div>';}
+ html+='<div class="sq-td-actions">'+p.actions.map((a,j)=>'<button type="button" data-sq-template-action="'+j+'">'+esc(a[0])+'</button>').join('')+'</div><div class="sq-td-foot">Showing real expenses only. No sample charges have been created.</div>';
+ el.innerHTML=html;
+ var category=document.getElementById('sq-category');if(category){var old=category.value;var base=['Food & Dining','Groceries','Transportation','Shopping','Entertainment','Travel','Housing','Utilities','School','Other'];var opts=[...new Set([...p.cats,...base])];category.replaceChildren(...opts.map(c=>{var o=document.createElement('option');o.value=c;o.textContent=c;return o;}));category.value=opts.includes(old)?old:p.cats[0];}
+}
+document.getElementById('sq-template-dashboard').addEventListener('click',function(e){
+ var b=e.target.closest('[data-sq-template-action]');if(!b)return;var idx=sqTemplateIndexForTracker();if(idx<0)return;var a=sqTemplateProfiles[idx].actions[Number(b.dataset.sqTemplateAction)];if(!a)return;
+ if(a[1]==='expense'){document.getElementById('quick-expense').click();if(a[2]){var cat=document.getElementById('sq-category');if(cat&&Array.from(cat.options).some(o=>o.value===a[2]))cat.value=a[2];}}
+ if(a[1]==='receipt')document.getElementById('quick-receipt').click();
+ if(a[1]==='split')document.getElementById('quick-split').click();
+ if(a[1]==='pay')document.getElementById('quick-pay-now').click();
+ if(a[1]==='budget')document.querySelector('[data-sq-tab="budget"]')?.click();
+ if(a[1]==='recurring'){document.getElementById('recurring-card')?.scrollIntoView({behavior:'smooth',block:'center'});}
+});
+// Preview template content before creating a tracker.
+var sqOriginalDrawTemplates=sqDrawTemplates;
+sqDrawTemplates=function(){sqOriginalDrawTemplates();var box=document.getElementById('sq-template-detail');if(sqTemplateSelected>=0){var p=sqTemplateProfiles[sqTemplateSelected];var preview=document.createElement('div');preview.className='sq-td-template-preview';preview.textContent=p.icon+' '+p.name+' dashboard · '+p.cats.join(' / ')+' · Quick actions: '+p.actions.map(a=>a[0]).join(', ');box.append(preview);}};
+sqDrawTemplates();
+
+</script>
 <nav aria-label="Mobile navigation" class="sq-mobile-nav"><button class="active" data-target="nav-home" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path><path d="M7 10v-1m10 1V9"></path></svg></span>Home</button><button data-target="nav-trackers" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="m4 7 2 2 3-4"></path><path d="M12 7h9"></path><circle cx="6" cy="17" r="2"></circle><path d="M12 17h9"></path></svg></span>Trackers</button><button class="sq-add" data-target="quick-expense" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2" viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></span>Add</button><button data-target="nav-analytics" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="M3 3v18h18"></path><path d="M7 16v-5m5 5V7m5 9V5"></path></svg></span>Analytics</button><button data-target="nav-profile" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>Account</button></nav>
 <script>
 (function(){
@@ -4698,6 +4770,7 @@ $('sq-chat-pin').addEventListener('click',async e=>{if(e.target.id==='sq-unpin-c
   tabs.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.sqTab===name)));
   cards.forEach(e=>e.classList.toggle('sq-tab-hidden',name!=='overview'));
   document.getElementById('sq-overview-stats').classList.toggle('sq-tab-hidden',name!=='overview');
+  document.getElementById('sq-template-dashboard').classList.toggle('sq-tab-hidden',name!=='overview');
   document.getElementById('sq-clean-balance').classList.toggle('sq-tab-hidden',name!=='overview');
   dashboard.classList.remove('sq-tab-overview','sq-tab-expenses','sq-tab-members','sq-tab-chat','sq-tab-budget');dashboard.classList.add('sq-tab-'+name);
   if(name==='overview'){tools.querySelectorAll('.tracker-collapsible,#recurring-card').forEach(e=>e.classList.remove('sq-tab-hidden'));return;}
@@ -5003,7 +5076,7 @@ if ('serviceWorker' in navigator) {
 <script id="sq-four-features-script">
 (function(){
 'use strict';
-var categories=['Food & Dining','Groceries','Transportation','Shopping','Entertainment','Travel','Housing','Utilities','School','Other'];
+var categories=['Food & Dining','Groceries','Transportation','Shopping','Entertainment','Travel','Housing','Utilities','School','Other','Rent','Electricity','Flights','Hotels','Activities','Meals','Tickets','Supplies','Cleaning supplies','Kitchen supplies','Paper towels','Campsite','Firewood','Gear','Lodging','Fuel','Transport','Camping','Tips'];
 var pattern=/^\[Category: ([^\]]+)\]\s*/;
 function unpack(note){var raw=String(note||'');var m=raw.match(pattern);return {category:m&&categories.includes(m[1])?m[1]:'Other',note:raw.replace(pattern,'')};}
 var form=document.getElementById('form'), note=document.getElementById('note'), cat=document.getElementById('sq-category');
