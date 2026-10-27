@@ -3534,16 +3534,17 @@ async function renderTrackerGallery(){
   var gallery=$('trackers-gallery');
   var serial=++trackerGallerySerial;
   if(!currentUser){gallery.innerHTML='<div class="trackers-empty">Log in to create and share trackers.</div>';return;}
-  gallery.innerHTML='<div class="trackers-empty">Loading your trackers…</div>';
+  // Keep existing cards visible while fresh data loads; avoid a blank gallery on refresh.
+  if(!gallery.querySelector('.tracker-tile')) gallery.innerHTML='<div class="trackers-empty">Loading your trackers…</div>';
   try{
     var list=await api('trackers');
     if(serial!==trackerGallerySerial)return;
     trackers=list;
     renderPicker();
     if(!list.length){gallery.innerHTML='<div class="trackers-empty">No trackers yet. Create your first tracker to get started.</div>';return;}
-    gallery.replaceChildren();
     var details=await Promise.all(list.map(async function(t){try{return await api('trackers/'+encodeURIComponent(t.id));}catch(err){return {loadError:err.message};}}));
     if(serial!==trackerGallerySerial)return;
+    gallery.replaceChildren();
     list.forEach(function(t,i){
       var d=details[i];
       var card=document.createElement('article');card.className='tracker-tile';
@@ -3663,6 +3664,28 @@ async function renderTrackerGallery(){
     });
   }catch(err){if(serial===trackerGallerySerial)gallery.textContent='Could not load trackers: '+(err.message||'Unknown error');}
 }
+// The gallery may first render before authentication finishes on a hard reload.
+// Refresh when the session becomes available, and when returning to the tab.
+var sqGalleryLastRefresh=0;
+function sqRefreshGalleryWhenVisible(force){
+  if(!document.body.classList.contains('trackers-view') || !currentUser)return;
+  var now=Date.now();
+  if(!force && now-sqGalleryLastRefresh<12000)return;
+  sqGalleryLastRefresh=now;
+  renderTrackerGallery();
+}
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible')sqRefreshGalleryWhenVisible(false);
+});
+window.addEventListener('pageshow',function(){sqRefreshGalleryWhenVisible(true);});
+// Auth session initialization can complete after the initial #trackers route.
+var sqGalleryAuthWatch=setInterval(function(){
+  if(!document.body.classList.contains('trackers-view'))return;
+  if(!currentUser)return;
+  clearInterval(sqGalleryAuthWatch);
+  sqRefreshGalleryWhenVisible(true);
+},350);
+setTimeout(function(){clearInterval(sqGalleryAuthWatch);},15000);
 $('tracker-gallery-new').onclick=function(){$('tb-new').click();};
 
 // ============ BACKDROP ============
@@ -4079,6 +4102,8 @@ $("new-form").addEventListener("submit", async function (e) {
     }
     closeModals();
     trackers.push({ id: detail.id, name: detail.name, role: detail.role, memberCount: 1 });
+    // Refresh the gallery immediately after creation, even while the share dialog is open.
+    renderTrackerGallery().catch(function(err){console.warn('Tracker gallery refresh:',err);});
     store(CURRENT_KEY, detail.id);
     lastSnapshot = "";
     applyDetail(detail);
