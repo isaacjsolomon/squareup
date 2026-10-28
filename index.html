@@ -4577,8 +4577,8 @@ function drawInbox(){
  var badge=document.getElementById('notifications-count');badge.textContent=count>99?'99+':String(count);badge.hidden=!count;
  var mobileBadge=document.getElementById('sq-mobile-notifications-count');if(mobileBadge){mobileBadge.textContent=count>99?'99+':String(count);mobileBadge.hidden=!count;}
  var due=(current?.entries||[]).filter(e=>e.type==='debt'&&e.dueDate&&e.dueDate<=new Date(Date.now()+3*86400000).toISOString().slice(0,10)&&e.paymentStatus!=='disputed');
- var dueHtml=due.map(e=>'<div class="entry"><div class="text"><b>'+esc(e.dueDate<new Date().toISOString().slice(0,10)?'Overdue':'Due soon')+'</b> · '+esc(e.from)+' owes '+esc(e.to)+' '+money(e.amount)+'<div class="note">Due '+esc(e.dueDate)+'</div></div></div>').join('');
- document.getElementById('notifications-list').innerHTML=(inbox.map(n=>'<div class="entry"><div class="text"><b>'+esc(n.title)+'</b><div class="note">'+esc(n.message)+' · '+esc(new Date(n.created_at).toLocaleString())+'</div>'+(n.kind==='tracker_invite'&&n.invitation_id?'<button class="small-btn" data-invite-accept="'+esc(n.invitation_id)+'">Accept tracker</button> <button class="small-btn danger" data-invite-decline="'+esc(n.invitation_id)+'">Decline</button>':'')+(n.kind==='payment_pending'&&n.entry_id?'<button class="small-btn" data-confirm-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Confirm payment</button> <button class="small-btn danger" data-dispute-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Dispute</button>':'')+'</div>'+(n.read_at?'':'<button class="small-btn" data-read-notification="'+esc(n.id)+'">Mark read</button>')+'</div>').join('')||'<p>No notifications yet.</p>')+dueHtml;
+ var dueHtml=due.map(e=>'<div class="entry sq-notification-link" role="link" tabindex="0" data-due-entry="'+esc(e.id)+'"><div class="text"><b>'+esc(e.dueDate<new Date().toISOString().slice(0,10)?'Overdue':'Due soon')+'</b> · '+esc(e.from)+' owes '+esc(e.to)+' '+money(e.amount)+'<div class="note">Due '+esc(e.dueDate)+'</div></div></div>').join('');
+ document.getElementById('notifications-list').innerHTML=(inbox.map(n=>'<div class="entry sq-notification-link" role="link" tabindex="0" data-notification-index="'+inbox.indexOf(n)+'"><div class="text"><b>'+esc(n.title)+'</b><div class="note">'+esc(n.message)+' · '+esc(new Date(n.created_at).toLocaleString())+'</div>'+(n.kind==='tracker_invite'&&n.invitation_id?'<button class="small-btn" data-invite-accept="'+esc(n.invitation_id)+'">Accept tracker</button> <button class="small-btn danger" data-invite-decline="'+esc(n.invitation_id)+'">Decline</button>':'')+(n.kind==='payment_pending'&&n.entry_id?'<button class="small-btn" data-confirm-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Confirm payment</button> <button class="small-btn danger" data-dispute-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Dispute</button>':'')+'</div>'+(n.read_at?'':'<button class="small-btn" data-read-notification="'+esc(n.id)+'">Mark read</button>')+'</div>').join('')||'<p>No notifications yet.</p>')+dueHtml;
 }
 document.getElementById('notifications-toggle').onclick=function(){
  settingsRoute('home');document.body.classList.add('notifications-view');
@@ -5942,5 +5942,65 @@ body.about-view #about-page .about-mission{display:grid!important;visibility:vis
 @media(max-width:950px){body.about-view #about-page .about-hero{grid-template-columns:1fr!important}body.about-view #about-page .about-hero-art{display:none!important}}
 @media(max-width:600px){body.about-view #about-page .about-hero{padding:23px 20px!important}body.about-view #about-page .about-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}body.about-view #about-page .about-mission{grid-template-columns:1fr!important}}
 </style>
+
+<style id="sq-mobile-tracker-and-inbox-navigation">
+@media(max-width:740px){
+  .sq-workspace-tabs [data-sq-tab="friends"]{display:none!important}
+  body.trackers-view #trackers-page{margin-top:0!important;padding-top:0!important}
+  body.trackers-view #trackers-page .trackers-header{margin:0 0 10px!important}
+  body.trackers-view #trackers-gallery{margin-top:0!important}
+}
+#notifications-list .sq-notification-link{cursor:pointer;transition:background .15s ease,border-color .15s ease}
+#notifications-list .sq-notification-link:hover,#notifications-list .sq-notification-link:focus-visible{background:rgba(255,255,255,.13)!important;border-color:rgba(64,235,199,.6)!important;outline-offset:2px}
+</style>
+<script id="sq-notification-click-navigation">
+(function(){
+ const list=document.getElementById('notifications-list');if(!list)return;
+ function tab(name){document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab="'+name+'"]')?.click();}
+ async function navigate(row){
+   const index=row.getAttribute('data-notification-index');
+   const n=index!==null&&typeof inbox!=='undefined'?inbox[Number(index)]:null;
+   const due=row.getAttribute('data-due-entry');
+   const kind=String(n?.kind||'').toLowerCase(),title=String(n?.title||'').toLowerCase();
+   const trackerId=n?.tracker_id;
+   document.body.classList.remove('notifications-view');
+   document.getElementById('notifications-toggle')?.setAttribute('aria-expanded','false');
+   if(n&&!n.read_at){
+     n.read_at=new Date().toISOString();
+     try{await api((n._social?'social/notifications/':'notifications/')+encodeURIComponent(n.id),'PATCH',{});}catch(err){console.warn('Could not mark notification read',err);}
+   }
+   if(/invite|friend.request|friend_accept|friend/.test(kind+' '+title)){
+     if(/tracker_invite/.test(kind)){document.getElementById('nav-trackers')?.click();}
+     else if(typeof settingsRoute==='function')settingsRoute('friends');
+     else document.getElementById('sq-mobile-friends')?.click();
+     return;
+   }
+   if(trackerId&&(!current||String(current.id)!==String(trackerId))){
+     document.getElementById('nav-trackers')?.click();
+     if(typeof openTracker==='function')await openTracker(String(trackerId));
+   }
+   if(/chat|message|mention/.test(kind+' '+title)){document.getElementById('nav-chat')?.click();return;}
+   if(/budget/.test(kind+' '+title)){tab('budget');return;}
+   if(/member/.test(kind+' '+title)){tab('members');return;}
+   if(/tracker/.test(kind+' '+title)&&!n?.entry_id&&!due){document.getElementById('nav-trackers')?.click();return;}
+   tab('expenses');
+   const entryId=n?.entry_id||due;
+   if(entryId){
+     requestAnimationFrame(()=>{
+       const rows=[...document.querySelectorAll('#history .entry')];
+       const match=rows.find(el=>el.querySelector('[data-del="'+CSS.escape(String(entryId))+'"]')||el.querySelector('[data-entry-id="'+CSS.escape(String(entryId))+'"]'));
+       if(match){match.scrollIntoView({behavior:'smooth',block:'center'});match.querySelector('.sq-detail-btn')?.click();}
+     });
+   }
+ }
+ list.addEventListener('click',function(e){
+   if(e.target.closest('button,a,input,select,textarea'))return;
+   const row=e.target.closest('.sq-notification-link');if(row)navigate(row).catch(err=>alert('Could not open notification: '+err.message));
+ });
+ list.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.matches('.sq-notification-link')){e.preventDefault();navigate(e.target).catch(err=>alert(err.message));}});
+ const mobileTrackers=document.querySelector('.sq-mobile-nav [data-target="nav-trackers"]');
+ mobileTrackers?.addEventListener('click',()=>{const gallery=document.getElementById('trackers-gallery');if(gallery&&!gallery.querySelector('.tracker-tile')&&!gallery.querySelector('.sq-loading-skeleton'))gallery.innerHTML='<div class="sq-loading-skeleton" aria-label="Loading trackers"></div>';},true);
+})();
+</script>
 </body>
 </html>
