@@ -1313,6 +1313,16 @@ body.about-view .sq-header-tour-btn{display:inline-flex}
 .sq-return-empty{opacity:.75;margin:8px 0}
 @media(max-width:740px){.sq-return-grid{grid-template-columns:1fr}.sq-return-panel{padding:18px}.sq-return-welcome h2{margin-bottom:16px}}
 #tracker-dashboard:not(.sq-tab-overview) #sq-return-summary{display:none!important}
+
+/* Payment dispute dialog */
+.sq-dispute-overlay{position:fixed;inset:0;z-index:30000;background:rgba(2,10,23,.78);backdrop-filter:blur(14px);display:grid;place-items:center;padding:18px}
+.sq-dispute-overlay[hidden]{display:none!important}
+.sq-dispute-dialog{width:min(460px,100%);border:1px solid rgba(122,176,209,.43);border-radius:27px;background:linear-gradient(150deg,#122c46,#06182d);color:#f4faff;box-shadow:0 30px 90px #000a;padding:28px;text-align:center}
+.sq-dispute-mark{width:70px;height:70px;margin:0 auto 18px;display:grid;place-items:center;border:3px solid #ff5d78;border-radius:50%;font-size:42px;color:#ff637d}
+.sq-dispute-dialog h2{margin:0 0 10px;font-size:27px}.sq-dispute-dialog p{color:#c0d2e3;line-height:1.6}
+.sq-dispute-dialog textarea{width:100%;min-height:100px;resize:vertical;box-sizing:border-box;background:#071a2e;border:1px solid #49657d;color:white;border-radius:12px;padding:14px;font:inherit;text-align:left}
+.sq-dispute-actions{display:flex;gap:10px;margin-top:17px}.sq-dispute-actions button{flex:1;border-radius:13px;padding:13px;cursor:pointer;font:inherit;font-weight:700;border:1px solid #536f86;background:#213c58;color:#fff}.sq-dispute-actions .sq-dispute-confirm{background:#f04764;border-color:#f04764}
+.sq-dispute-dialog .sq-dispute-error{color:#ff9bb0;font-size:13px;min-height:18px}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -4604,7 +4614,7 @@ document.getElementById('notifications-list').addEventListener('click',async fun
  var id=t.dataset.confirmPayment||t.dataset.disputePayment;
  if(id){
   var action=t.dataset.confirmPayment?'confirm':'dispute';
-  if(!confirm((action==='confirm'?'Confirm you received':'Dispute')+' this payment?'))return;
+  if(action==='dispute'){var disputeChoice=await window.squareUpAskPaymentDispute(t.dataset.trackerId,id);if(!disputeChoice)return;}else if(!confirm('Confirm you received this payment?'))return;
   t.disabled=true;
   try{
    var detail=await api('trackers/'+t.dataset.trackerId+'/payments/'+id+'/'+action,'POST',{});
@@ -5356,7 +5366,7 @@ if(form)form.addEventListener('submit',function(){
  var val=note.value.replace(pattern,'').trim();note.value='[Category: '+cat.value+'] '+val;
 },true);
 var overlay=document.getElementById('sq-details-overlay'), grid=document.getElementById('sq-details-grid');
-function close(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');}
+function close(){friendSearchSerial++;clearTimeout(friendSearchTimer);overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');}
 document.getElementById('sq-details-close').addEventListener('click',close);document.getElementById('sq-details-x').addEventListener('click',close);
 overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
@@ -5540,13 +5550,23 @@ const tour=document.getElementById('sq-replay-tour');if(tour){const original=tou
 </script>
 
 <div id="sq-global-search" class="sq-global-search" role="dialog" aria-modal="true" aria-label="Search SquareUp" aria-hidden="true"><div class="sq-search-panel"><div class="sq-search-head"><input id="sq-global-query" type="search" placeholder="Search trackers, members, expenses…" autocomplete="off" aria-label="Search SquareUp"><button type="button" id="sq-search-close" aria-label="Close search">✕</button></div><div class="sq-search-results" id="sq-search-results" aria-live="polite"><p class="sq-search-empty">Search your loaded trackers and expenses.</p></div></div></div>
+<div class="sq-dispute-overlay" id="sq-payment-dispute-overlay" hidden><div class="sq-dispute-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-dispute-heading"><div class="sq-dispute-mark" aria-hidden="true">!</div><h2 id="sq-dispute-heading">Dispute this payment?</h2><p id="sq-dispute-summary">This will notify the person who reported the payment. The balance will remain unchanged until the payment is resolved.</p><textarea id="sq-dispute-reason" maxlength="200" placeholder="Add a reason (optional)" aria-label="Reason for dispute"></textarea><p class="sq-dispute-error" id="sq-dispute-error" role="alert"></p><div class="sq-dispute-actions"><button type="button" id="sq-dispute-cancel">Cancel</button><button type="button" class="sq-dispute-confirm" id="sq-dispute-submit">Dispute payment</button></div></div></div>
+<script id="sq-payment-dispute-script">(function(){
+const box=document.getElementById('sq-payment-dispute-overlay'),reason=document.getElementById('sq-dispute-reason'),error=document.getElementById('sq-dispute-error'),submit=document.getElementById('sq-dispute-submit');let pending=null;
+function close(){box.hidden=true;pending=null;submit.disabled=false;}
+document.getElementById('sq-dispute-cancel').onclick=close;box.addEventListener('click',e=>{if(e.target===box)close()});
+window.squareUpAskPaymentDispute=function(trackerId,paymentId){return new Promise(resolve=>{pending={trackerId,paymentId,resolve};reason.value='';error.textContent='';box.hidden=false;reason.focus();});};
+document.getElementById('sq-dispute-cancel').onclick=()=>{if(pending)pending.resolve(false);close()};
+submit.onclick=()=>{if(!pending)return;const done=pending;close();done.resolve({reason:reason.value.trim()});};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!box.hidden){if(pending)pending.resolve(false);close();}});
+})();</script>
 <script id="sq-global-search-script">
 (function(){
 'use strict';
 const overlay=document.getElementById('sq-global-search'),input=document.getElementById('sq-global-query'),results=document.getElementById('sq-search-results');
 const launch=document.createElement('button');launch.type='button';launch.className='sq-search-launch';launch.innerHTML='<span aria-hidden="true">⌕</span> Search <kbd>⌘ K</kbd>';launch.setAttribute('aria-label','Search SquareUp');
 const title=document.querySelector('.tracker-heading .sq-title-and-tour')||document.querySelector('.tracker-heading');if(title)title.append(launch);
-let returnFocus=null;
+let returnFocus=null,friendSearchTimer=null,friendSearchSerial=0;
 function open(){returnFocus=document.activeElement;overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');input.value='';draw();input.focus();}
 function close(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');if(returnFocus&&returnFocus.focus)returnFocus.focus();}
 launch.addEventListener('click',open);document.getElementById('sq-search-close').addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
@@ -5581,7 +5601,15 @@ const features=[
  ['New tracker','Create a tracker',()=>{document.getElementById('nav-trackers')?.click();document.getElementById('tracker-gallery-new')?.click()}]
  ];
 const featureHits=features.filter(f=>(f[0]+' '+f[1]).toLocaleLowerCase().includes(q)).map(f=>({icon:'↗',title:f[0],sub:f[1],action:f[2]}));
-group('Pages & features',featureHits);group('Trackers',trackerHits);group('Members in open tracker',memberHits);group('Expenses in open tracker',expenseHits);if(!featureHits.length&&!trackerHits.length&&!memberHits.length&&!expenseHits.length){const p=document.createElement('p');p.className='sq-search-empty';p.textContent='No matches in the data currently loaded. Open a tracker to search its expenses and members.';results.append(p);}}
+group('Pages & features',featureHits);group('Trackers',trackerHits);group('Members in open tracker',memberHits);group('Expenses in open tracker',expenseHits);const serial=++friendSearchSerial;clearTimeout(friendSearchTimer);
+if(q.length>=3){const loading=document.createElement('p');loading.className='sq-search-empty';loading.textContent='Searching SquareUp profiles…';results.append(loading);friendSearchTimer=setTimeout(async()=>{try{
+ if(typeof supabase==='undefined'||!supabase?.rpc)return;
+ const response=await supabase.rpc('sq_find_users',{search_term:input.value.trim()});
+ if(serial!==friendSearchSerial||!overlay.classList.contains('open'))return;
+ loading.remove();if(response.error){const p=document.createElement('p');p.className='sq-search-empty';p.textContent='Profile search unavailable. Check Friends setup.';results.append(p);return;}
+ const matches=(Array.isArray(response.data)?response.data:[]).slice(0,12).map(u=>({icon:'♙',title:label(u.display_name||u.username||'SquareUp user'),sub:'@'+label(u.username)+' · SquareUp profile',action:async()=>{settingsRoute('friends');const field=document.getElementById('sq-friend-query');if(field)field.value=label(u.username);document.querySelector('[data-friends-tab="find"]')?.click();}}));group('Friend profiles',matches);
+ }catch(err){loading.remove();console.warn('Profile search:',err)}},350);}
+if(!featureHits.length&&!trackerHits.length&&!memberHits.length&&!expenseHits.length){const p=document.createElement('p');p.className='sq-search-empty';p.textContent='No matches in the data currently loaded. Open a tracker to search its expenses and members.';results.append(p);}}
 input.addEventListener('input',draw);
 })();
 </script>
