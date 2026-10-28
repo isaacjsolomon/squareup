@@ -1713,7 +1713,7 @@ body.friends-view .wrap #friends-page{display:block!important}
   <button type="button" id="nav-home" class="sq-nav-link active" aria-current="page"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/><path d="M7 10v-1m10 1V9"/></svg></span><span class="sq-nav-label">Home</span></button>
   <button type="button" id="nav-trackers" class="sq-nav-link"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 7 2 2 3-4"/><path d="M12 7h9"/><circle cx="6" cy="17" r="2"/><path d="M12 17h9"/></svg></span><span class="sq-nav-label">Trackers</span></button>
   <button type="button" id="nav-chat" class="sq-nav-link" aria-label="Open tracker group chat"><span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8A8.5 8.5 0 0 1 12.5 20a8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 12.5 3H13a8.5 8.5 0 0 1 8 8v.5Z"/></svg></span><span class="sq-nav-label">Chat</span></button>
-  <button type="button" id="nav-friends" class="sq-nav-link"><span class="sq-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2"/><path d="M18 8v8M14 12h8"/></svg></span><span class="sq-nav-label">Friends</span></button>
+  <button type="button" id="nav-friends" class="sq-nav-link" hidden aria-hidden="true" tabindex="-1"><span class="sq-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2"/><path d="M18 8v8M14 12h8"/></svg></span><span class="sq-nav-label">Friends</span></button>
   <button type="button" id="nav-analytics" class="sq-nav-link"><span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 16v-5m5 5V7m5 9V5"/></svg></span><span class="sq-nav-label">Analytics</span></button>
   <button type="button" id="nav-profile" class="sq-nav-link"><span class="sq-nav-icon profile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="sq-nav-label">Account</span></button>
   <button type="button" id="nav-about" class="sq-nav-link"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".7" fill="currentColor" stroke="none"/></svg></span><span class="sq-nav-label">About</span></button>
@@ -1762,7 +1762,7 @@ body.friends-view .wrap #friends-page{display:block!important}
   <div id="sq-tracker-loading" class="sq-tracker-loading" role="status" aria-live="polite" hidden>
     <span class="sq-tracker-spinner" aria-hidden="true"></span><span>Loading tracker data…</span>
   </div>
-  <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="budget" role="tab" aria-selected="false">Budget</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button></div>
+  <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="budget" role="tab" aria-selected="false">Budget</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button><button type="button" data-sq-tab="friends" role="tab" aria-selected="false">Friends</button></div>
 
   <section class="sq-return-summary" id="sq-return-summary" aria-label="Tracker summary">
     <header class="sq-return-welcome"><h2 id="sq-return-greeting">Welcome back</h2></header>
@@ -5544,13 +5544,35 @@ launch.addEventListener('click',open);document.getElementById('sq-search-close')
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();overlay.classList.contains('open')?close():open();}else if(e.key==='Escape'&&overlay.classList.contains('open'))close();});
 function label(value){return String(value==null?'':value)}
 function group(name,items){if(!items.length)return;const head=document.createElement('div');head.className='sq-search-group';head.textContent=name;results.append(head);items.forEach(item=>{const btn=document.createElement('button');btn.type='button';btn.className='sq-search-hit';const icon=document.createElement('span');icon.textContent=item.icon;const body=document.createElement('span');const strong=document.createElement('strong');strong.textContent=item.title;const small=document.createElement('small');small.textContent=item.sub;body.append(strong,small);btn.append(icon,body);btn.addEventListener('click',async()=>{close();try{await item.action()}catch(err){console.error('Search navigation:',err);alert(err.message||'Could not open result.')}});results.append(btn);});}
-function draw(){const q=input.value.trim().toLocaleLowerCase();results.replaceChildren();if(!q){const p=document.createElement('p');p.className='sq-search-empty';p.textContent='Type to search your trackers, members, and currently loaded expenses.';results.append(p);return;}
+function draw(){const q=input.value.trim().toLocaleLowerCase();results.replaceChildren();if(!q){const p=document.createElement('p');p.className='sq-search-empty';p.textContent='Search pages, features, trackers, members, and expenses.';results.append(p);return;}
 const list=typeof trackers!=='undefined'&&Array.isArray(trackers)?trackers:[];
 const trackerHits=list.filter(t=>label(t.name).toLowerCase().includes(q)).slice(0,15).map(t=>({icon:'▣',title:label(t.name),sub:'Tracker',action:async()=>{document.getElementById('nav-home')?.click();await openTracker(t.id);}}));
 const active=typeof current!=='undefined'?current:null;
 const memberHits=(active&&Array.isArray(active.members)?active.members:[]).filter(m=>label(m.name||m.email).toLowerCase().includes(q)).slice(0,12).map(m=>({icon:'♙',title:label(m.name||m.email),sub:'Member · '+label(active.name),action:async()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab="members"]')?.click();}}));
 const expenseHits=(active&&Array.isArray(active.entries)?active.entries:[]).filter(e=>[e.note,e.from,e.to,e.amount,e.date].some(v=>label(v).toLowerCase().includes(q))).slice(0,20).map(e=>({icon:'▤',title:label(e.note|| (e.type==='payment'?'Payment':'Expense')),sub:label(e.from)+' → '+label(e.to)+' · '+label(e.amount),action:async()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab="expenses"]')?.click();const row=[...document.querySelectorAll('#history > .entry')].find(r=>r.querySelector('[data-del]')?.dataset.del===String(e.id));if(row){row.scrollIntoView({behavior:'smooth',block:'center'});row.querySelector('.sq-detail-btn')?.click();}}}));
-group('Trackers',trackerHits);group('Members in open tracker',memberHits);group('Expenses in open tracker',expenseHits);if(!trackerHits.length&&!memberHits.length&&!expenseHits.length){const p=document.createElement('p');p.className='sq-search-empty';p.textContent='No matches in the data currently loaded. Open a tracker to search its expenses and members.';results.append(p);}}
+const features=[
+ ['Home','Dashboard, overview',()=>document.getElementById('nav-home')?.click()],
+ ['Trackers','My trackers, groups',()=>document.getElementById('nav-trackers')?.click()],
+ ['Friends','Friend requests, find friends',()=>settingsRoute('friends')],
+ ['Chat','Group messages',()=>document.getElementById('nav-chat')?.click()],
+ ['Analytics','Charts, spending insights',()=>document.getElementById('nav-analytics')?.click()],
+ ['Account','Profile, payment accounts',()=>document.getElementById('nav-profile')?.click()],
+ ['Settings','Account settings',()=>document.getElementById('nav-profile')?.click()],
+ ['About','About Square Up, tutorial',()=>document.getElementById('nav-about')?.click()],
+ ['Notifications','Notification Center, alerts',()=>document.getElementById('nav-notifications')?.click()||document.getElementById('sq-mobile-notifications')?.click()],
+ ['Expenses','Expense history, filters',()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab=expenses]')?.click()}],
+ ['Budget','Budget planner',()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab=budget]')?.click()}],
+ ['Members','Tracker members',()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab=members]')?.click()}],
+ ['Add Expense','Create expense, owe money',()=>{document.getElementById('nav-home')?.click();document.getElementById('quick-expense')?.click()}],
+ ['Pay Now','Record payment, settle balance',()=>{document.getElementById('nav-home')?.click();document.getElementById('quick-pay')?.click()}],
+ ['Scan Receipt','Receipt photo, itemized split',()=>{document.getElementById('nav-home')?.click();document.getElementById('quick-receipt')?.click()}],
+ ['Split a Bill','Split expenses with friends',()=>{document.getElementById('nav-home')?.click();document.getElementById('quick-split')?.click()}],
+ ['Smart settle-up','Suggested payments',()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab=overview]')?.click();document.getElementById('sq-smart-settle-card')?.scrollIntoView({behavior:'smooth'})}],
+ ['Recurring expenses','Repeat scheduled expenses',()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab=overview]')?.click();document.getElementById('recurring-card')?.scrollIntoView({behavior:'smooth'})}],
+ ['New tracker','Create a tracker',()=>{document.getElementById('nav-trackers')?.click();document.getElementById('tracker-gallery-new')?.click()}]
+ ];
+const featureHits=features.filter(f=>(f[0]+' '+f[1]).toLocaleLowerCase().includes(q)).map(f=>({icon:'↗',title:f[0],sub:f[1],action:f[2]}));
+group('Pages & features',featureHits);group('Trackers',trackerHits);group('Members in open tracker',memberHits);group('Expenses in open tracker',expenseHits);if(!featureHits.length&&!trackerHits.length&&!memberHits.length&&!expenseHits.length){const p=document.createElement('p');p.className='sq-search-empty';p.textContent='No matches in the data currently loaded. Open a tracker to search its expenses and members.';results.append(p);}}
 input.addEventListener('input',draw);
 })();
 </script>
@@ -5802,5 +5824,25 @@ body{background:transparent!important}
  #tracker-dashboard .card,#tracker-dashboard .dashboard-action,#tracker-dashboard .sq-side-action{border-radius:23px!important}
 }
 </style>
+<style id="sq-navigation-gap-fix-v7">
+/* Keep tracker gallery directly below the header rather than a viewport-height gap. */
+body.trackers-view #trackers-page{display:block!important;min-height:0!important;height:auto!important;margin:0 auto 30px!important;padding-top:0!important;transform:none!important}
+body.trackers-view .trackers-header{min-height:0!important;margin:0 0 18px!important;padding-top:12px!important;padding-bottom:14px!important}
+body.trackers-view #trackers-gallery{margin-top:0!important;padding-top:0!important;align-content:start!important;grid-auto-rows:auto!important}
+body.trackers-view .wrap{align-content:start!important;justify-content:flex-start!important}
+#nav-friends{display:none!important}
+#tracker-dashboard .sq-workspace-tabs{min-width:0!important;max-width:100%!important;flex-wrap:nowrap!important}
+#tracker-dashboard .sq-workspace-tabs [data-sq-tab="friends"]{min-width:0!important}
+@media(max-width:600px){#tracker-dashboard .sq-workspace-tabs{gap:2px!important;padding:5px!important}#tracker-dashboard .sq-workspace-tabs button{padding:10px 4px!important;font-size:clamp(10px,2.6vw,14px)!important}}
+</style>
+<script id="sq-friends-tab-routing-v7">
+(function(){
+ const friendsTab=document.querySelector('[data-sq-tab="friends"]');
+ if(!friendsTab)return;
+ friendsTab.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();
+  if(typeof settingsRoute==='function')settingsRoute('friends');else document.getElementById('nav-friends')?.click();
+ },true);
+})();
+</script>
 </body>
 </html>
