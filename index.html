@@ -1648,10 +1648,44 @@ body.friends-view .wrap #friends-page{display:block!important}
   }
 }
 </style>
+<style id="sq-premium-visual-upgrades">
+/* Frosted navigation, desktop and mobile */
+.sq-workspace-tabs,.sq-mobile-bottom-nav,.sq-mobile-nav,.sidebar{background:rgba(8,29,46,.72)!important;backdrop-filter:blur(24px) saturate(145%)!important;-webkit-backdrop-filter:blur(24px) saturate(145%)!important;border-color:rgba(185,229,240,.24)!important}
+.sq-workspace-tabs{box-shadow:0 10px 30px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.12)!important}
+/* Vertical activity timeline; the existing entries remain real tracker entries. */
+#sq-return-activity{position:relative;padding-left:18px;gap:11px}
+#sq-return-activity:before{content:"";position:absolute;left:6px;top:18px;bottom:18px;width:2px;background:linear-gradient(#46e7c3,rgba(65,220,202,.16))}
+#sq-return-activity .sq-return-row{position:relative;background:rgba(9,28,42,.35);border:1px solid rgba(196,233,243,.17);transition:transform .18s ease,background .18s ease}
+#sq-return-activity .sq-return-row:before{content:"";position:absolute;left:-19px;top:24px;width:10px;height:10px;border-radius:50%;background:#4ce7c6;box-shadow:0 0 0 4px rgba(76,231,198,.14),0 0 12px rgba(76,231,198,.38)}
+#sq-return-activity .sq-return-row:hover{transform:translateX(3px);background:rgba(27,63,78,.65)}
+/* Fintech-style details dialog */
+.sq-details-overlay{background:rgba(1,10,19,.82)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.sq-details-card{width:min(100%,530px)!important;background:radial-gradient(ellipse at 50% 0%,rgba(26,106,111,.48),transparent 53%),linear-gradient(150deg,#112e3a,#071722 76%)!important;border:1px solid rgba(164,234,224,.29)!important;border-radius:28px!important;padding:30px!important;box-shadow:0 32px 90px #0009,inset 0 1px rgba(255,255,255,.12)!important}
+.sq-details-top{flex-direction:row-reverse}.sq-details-top h2{font-size:14px!important;font-weight:650!important;color:#b6d3da!important;margin:0!important;letter-spacing:.06em;text-transform:uppercase}
+.sq-details-x{border-radius:50%!important;background:rgba(255,255,255,.09)!important;width:42px;height:42px}
+.sq-details-hero{text-align:center;padding:10px 0 23px;border-bottom:1px solid rgba(195,236,236,.19)}
+.sq-details-symbol{display:grid;place-items:center;margin:0 auto 12px;width:56px;height:56px;border-radius:19px;background:rgba(47,224,186,.13);color:#4ee8c7;font-size:29px}
+.sq-details-description{font-size:21px;font-weight:800;line-height:1.25;overflow-wrap:anywhere}
+.sq-details-card .sq-details-amount{font-size:clamp(39px,8vw,55px)!important;margin:10px 0 6px!important;color:#f5fbff!important;letter-spacing:-.04em}
+.sq-details-category{display:inline-block;background:rgba(68,215,188,.13);border:1px solid rgba(77,224,196,.26);border-radius:30px;padding:6px 15px;color:#b4f4e8;font-size:12px;font-weight:700}
+.sq-details-grid{grid-template-columns:minmax(100px,38%) minmax(0,1fr)!important;gap:0!important;margin:18px 0!important;padding:0!important;border-top:0!important}
+.sq-details-grid dt,.sq-details-grid dd{padding:11px 0;border-bottom:1px solid rgba(191,230,237,.12);font-size:14px}.sq-details-grid dd{text-align:right;font-weight:650}.sq-details-grid dt{color:#aac6d1}
+#sq-details-close{width:100%;border-radius:14px!important;min-height:47px;background:#34dfbb!important;color:#062c34!important;font-weight:800}
+/* Centered branded startup screen, no simulated loading percentages. */
+#sq-startup-overlay{background:linear-gradient(155deg,rgba(5,22,35,.94),rgba(5,43,52,.92))!important}
+.sq-startup-content{width:min(90vw,390px);padding:43px 30px!important;background:rgba(10,42,55,.68)!important;border:1px solid rgba(103,233,210,.24)!important;border-radius:30px!important;box-shadow:0 25px 90px #0007!important}
+.sq-startup-ring{width:72px!important;height:72px!important;border-width:5px!important;box-shadow:0 0 28px rgba(52,223,187,.12)}
+.sq-startup-content strong{font-size:25px!important;letter-spacing:-.03em}
+.sq-startup-progress{height:5px;width:100%;border-radius:12px;overflow:hidden;background:rgba(171,225,228,.16);margin-top:9px}
+.sq-startup-progress:before{content:"";display:block;height:100%;width:35%;background:#41eac3;border-radius:12px;animation:sq-progress 1.6s ease-in-out infinite alternate}
+@keyframes sq-progress{from{transform:translateX(0)}to{transform:translateX(185%)}}
+@media(max-width:650px){.sq-details-card{padding:22px!important;max-height:88dvh!important}.sq-details-grid dt,.sq-details-grid dd{font-size:13px}.sq-startup-content{padding:35px 23px!important}}
+@media(prefers-reduced-motion:reduce){.sq-startup-progress:before{animation:none}#sq-return-activity .sq-return-row{transition:none}}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
-  <div class="sq-startup-content"><span class="sq-startup-ring" aria-hidden="true"></span><strong>Loading Square Up…</strong><span>Getting your tracker ready</span></div>
+  <div class="sq-startup-content"><span class="sq-startup-ring" aria-hidden="true"></span><strong>Loading Square Up…</strong><span>Getting your tracker ready</span><div class="sq-startup-progress" aria-hidden="true"></div></div>
 </div>
 <button type="button" id="guest-auth-button" hidden>Log in or create account</button>
 <div id="backdrop" aria-hidden="true"></div>
@@ -5294,7 +5328,7 @@ if ('serviceWorker' in navigator) {
   selectTab('profile');
 })();
 </script>
-<div id="sq-details-overlay" class="sq-details-overlay" role="dialog" aria-modal="true" aria-labelledby="sq-details-title" aria-hidden="true"><div class="sq-details-card"><div class="sq-details-top"><h2 id="sq-details-title">Expense details</h2><button type="button" class="sq-details-x" id="sq-details-x" aria-label="Close expense details">×</button></div><div class="sq-details-amount" id="sq-details-amount"></div><dl class="sq-details-grid" id="sq-details-grid"></dl><button class="settings-action primary" type="button" id="sq-details-close">Close</button></div></div>
+<div id="sq-details-overlay" class="sq-details-overlay" role="dialog" aria-modal="true" aria-labelledby="sq-details-title" aria-hidden="true"><div class="sq-details-card"><div class="sq-details-top"><h2 id="sq-details-title">Expense details</h2><button type="button" class="sq-details-x" id="sq-details-x" aria-label="Close expense details">×</button></div><div class="sq-details-hero"><span class="sq-details-symbol" aria-hidden="true">▤</span><div class="sq-details-description" id="sq-details-description">Expense</div><div class="sq-details-amount" id="sq-details-amount"></div><span class="sq-details-category" id="sq-details-category">Expense</span></div><dl class="sq-details-grid" id="sq-details-grid"></dl><button class="settings-action primary" type="button" id="sq-details-close">Close</button></div></div>
 <script id="sq-four-features-script">
 (function(){
 'use strict';
@@ -5316,7 +5350,7 @@ function close(){overlay.classList.remove('open');overlay.setAttribute('aria-hid
 document.getElementById('sq-details-close').addEventListener('click',close);document.getElementById('sq-details-x').addEventListener('click',close);
 overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
-function show(entry){if(!entry)return;var parsed=unpack(entry.note);var data=[['Type',entry.type==='payment'?'Payment':'Expense'],['Amount',Number(entry.amount||0).toLocaleString(undefined,{style:'currency',currency:entry.currency||'USD'})],['From',entry.from||'—'],['To',entry.to||'—'],['Category',entry.type==='payment'?'Payment':parsed.category],['Description',parsed.note||'No description'],['Date',entry.date||'—'],['Due date',entry.dueDate||'None'],['Status',entry.paymentStatus||'—'],['Created by',entry.createdBy||'—'],['Pinned',entry.pinned?'Yes':'No']];document.getElementById('sq-details-amount').textContent=data[1][1];grid.replaceChildren();data.forEach(function(row){var dt=document.createElement('dt');dt.textContent=row[0];var dd=document.createElement('dd');dd.textContent=row[1];grid.append(dt,dd);});overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.getElementById('sq-details-close').focus();}
+function show(entry){if(!entry)return;var parsed=unpack(entry.note);var data=[['Type',entry.type==='payment'?'Payment':'Expense'],['Amount',Number(entry.amount||0).toLocaleString(undefined,{style:'currency',currency:entry.currency||'USD'})],['From',entry.from||'—'],['To',entry.to||'—'],['Category',entry.type==='payment'?'Payment':parsed.category],['Description',parsed.note||'No description'],['Date',entry.date||'—'],['Due date',entry.dueDate||'None'],['Status',entry.paymentStatus||'—'],['Created by',entry.createdBy||'—'],['Pinned',entry.pinned?'Yes':'No']];document.getElementById('sq-details-amount').textContent=data[1][1];document.getElementById('sq-details-description').textContent=parsed.note|| (entry.type==='payment'?'Payment':'Expense');document.getElementById('sq-details-category').textContent=data[4][1];grid.replaceChildren();data.forEach(function(row){var dt=document.createElement('dt');dt.textContent=row[0];var dd=document.createElement('dd');dd.textContent=row[1];grid.append(dt,dd);});overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.getElementById('sq-details-close').focus();}
 // Show the saved expense in the existing Details dialog after the server confirms it.
 window.addEventListener('squareup:expense-saved',function(event){
  var payload=event.detail||{}, wanted=payload.entry||{}, tracker=payload.tracker||{};
