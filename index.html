@@ -1864,6 +1864,7 @@ body.friends-view .wrap #friends-page{display:block!important}
     <button class="sq-side-action" type="button" data-sq-quick="quick-expense"><span class="sq-side-icon">＋</span><span class="sq-side-copy"><strong>Add an expense</strong><small>Quick add options</small></span><span aria-hidden="true">›</span></button>
     <button class="sq-side-action" type="button" data-sq-quick="quick-receipt"><span class="sq-side-icon">▧</span><span class="sq-side-copy"><strong>Scan receipt</strong><small>Assign items to friends</small></span><span aria-hidden="true">›</span></button>
     <button class="sq-side-action" type="button" data-sq-quick="quick-split"><span class="sq-side-icon">♧</span><span class="sq-side-copy"><strong>Split a bill</strong><small>Divide an expense with friends</small></span><span aria-hidden="true">›</span></button>
+    <button class="sq-side-action" type="button" data-sq-quick="quick-pay-now"><span class="sq-side-icon">↗</span><span class="sq-side-copy"><strong>Pay Now</strong><small>Send via Venmo or Cash App</small></span><span aria-hidden="true">›</span></button>
     <div class="sq-expense-filters"><h3>Filters</h3><p>Filter expenses by category or person</p><label>Category<select id="sq-expense-category"><option value="all">All categories</option></select></label><label>Member<select id="sq-expense-member"><option value="all">All members</option></select></label></div>
   </aside>
 
@@ -5731,6 +5732,32 @@ body{background:transparent!important}
 .sq-tracker-spinner{width:21px;height:21px;flex:none;border-radius:50%;border:3px solid rgba(71,231,193,.22);border-top-color:#49ebc2;animation:sq-tracker-spin .8s linear infinite}
 @keyframes sq-tracker-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.sq-tracker-spinner{animation-duration:2s}}
+</style>
+
+<style id="sq-glass-narrow-sidebar-v5">
+/* Desktop mockup refinement: narrower floating navigation and more room for content. */
+@media (min-width:901px){
+ body:not(.side-collapsed){padding-left:244px!important}
+ .sidebar{left:14px!important;top:16px!important;bottom:16px!important;width:208px!important;padding:18px 12px!important;border-radius:29px!important;overflow-x:hidden;overflow-y:auto}
+ body.side-collapsed{padding-left:92px!important}
+ body.side-collapsed .sidebar{width:66px!important;top:16px!important;bottom:auto!important}
+ .sidebar .side-nav button,.sidebar .side-nav a{border-radius:17px!important}
+ body>.wrap,body .wrap{max-width:1500px!important}
+}
+@media (min-width:901px){
+ .sidebar{background:linear-gradient(145deg,rgba(44,38,58,.53),rgba(15,26,43,.55))!important;border:1px solid rgba(255,255,255,.26)!important;box-shadow:0 16px 50px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.12)!important;backdrop-filter:blur(28px) saturate(145%)!important;-webkit-backdrop-filter:blur(28px) saturate(145%)!important}
+}
+/* Rounded translucent panels and buttons, keeping backdrop visible. */
+#tracker-dashboard.sq-tab-expenses #balances-card,
+#tracker-dashboard.sq-tab-expenses #sq-activity-card,
+#tracker-dashboard.sq-tab-expenses .sq-side-action,
+#tracker-dashboard.sq-tab-expenses .sq-expense-filters{border-radius:25px!important;background:rgba(35,29,45,.43)!important;border:1px solid rgba(255,255,255,.29)!important;backdrop-filter:blur(24px) saturate(145%)!important;-webkit-backdrop-filter:blur(24px) saturate(145%)!important;box-shadow:0 14px 32px rgba(0,0,0,.15),inset 0 1px rgba(255,255,255,.10)!important}
+#tracker-dashboard.sq-tab-expenses .sq-side-action{min-height:90px;transition:transform .18s ease,border-color .18s ease}
+#tracker-dashboard.sq-tab-expenses .sq-side-action:hover{transform:translateY(-2px);border-color:#43e7c1!important}
+#tracker-dashboard.sq-tab-expenses #nets .net{border-radius:18px!important}
+#tracker-dashboard.sq-tab-expenses .sq-expense-side .sq-side-icon{border-radius:18px!important}
+#tracker-dashboard.sq-tab-expenses .sq-workspace-tabs{border-radius:24px!important}
+@media (min-width:601px) and (max-width:900px){#tracker-dashboard.sq-tab-expenses .sq-expense-side{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </body>
 </html>
