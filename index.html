@@ -1544,7 +1544,7 @@ th,td{border-color:#2c4b61!important}
 <style id="sq-feature-upgrade-styles">
 /* SquareUp Friends / Templates / Enhanced Chat */
 body.friends-view #friends-page{display:block} body.friends-view #tracker-dashboard,body.friends-view #trackers-page,body.friends-view #about-page,body.friends-view #analytics-page,body.friends-view #settings-page{display:none!important}#friends-page{display:none}
-body.friends-view .wrap> :not(#friends-page):not(.sq-mobile-top):not(.sq-mobile-nav){display:none!important}
+body.friends-view .wrap> :not(.sq-mobile-top):not(.sq-mobile-nav){display:none!important}
 body.friends-view .wrap #friends-page{display:block!important}
 @media(max-width:900px){body.friends-view #friends-page{display:block!important;visibility:visible!important}body.friends-view .sq-mobile-top{display:flex!important}}
 .sq-friends-layout{max-width:1050px;margin:24px auto 80px}.sq-feature-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}.sq-feature-head h2{font-size:clamp(28px,4vw,40px);margin:0}.sq-feature-head p{color:#a8c5d5}.sq-friend-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.sq-friend-tabs button,.sq-template-tabs button{border:1px solid #32586d;border-radius:10px;background:#15354b;color:#cfe2ed;padding:11px 16px;cursor:pointer}.sq-friend-tabs button[aria-selected=true],.sq-template-tabs button[aria-selected=true]{background:#43dfb3;color:#062a35}.sq-friend-list{display:grid;gap:10px}.sq-friend-row{display:flex;align-items:center;gap:14px;padding:16px;background:#102a40;border:1px solid #2c5065;border-radius:14px}.sq-friend-avatar{width:43px;height:43px;border-radius:50%;display:grid;place-items:center;background:#235d64;color:#75ffd2;font-weight:800;flex:none}.sq-friend-info{flex:1;min-width:0}.sq-friend-info strong{display:block}.sq-friend-info small{color:#abc2d4}.sq-friend-actions{display:flex;gap:7px;flex-wrap:wrap}.sq-friend-actions button,.sq-feature-btn{background:#244e67;border:1px solid #43816f;color:#e8fff5;padding:9px 12px;border-radius:9px;cursor:pointer}.sq-feature-btn.primary{background:#43dfb3;color:#072c37}.sq-friend-search{width:100%;margin-top:12px}.sq-feature-status{color:#a8c7d8;font-size:13px;min-height:20px}.sq-template-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}.sq-template-card{padding:14px;border:1px solid #355a70;border-radius:13px;background:#102b41;color:#e8f6ff;text-align:left;cursor:pointer;display:flex;gap:10px;align-items:flex-start}.sq-template-card[aria-pressed=true]{border-color:#51f0bb;background:#15483f}.sq-template-icon{font-size:27px}.sq-template-card small{display:block;color:#acc5d5;margin-top:5px}.sq-template-tags{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.sq-template-tags span{background:#24465b;color:#aef4da;border-radius:20px;padding:5px 10px;font-size:12px}.sq-chat-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}.sq-chat-tools input{min-width:0;flex:1}.sq-chat-tools button{border-radius:10px;background:#193f52;border:1px solid #356b70;color:#d8f8ef;padding:10px;cursor:pointer}.sq-chat-pin{border:1px solid #37687b;background:#17384c;border-radius:11px;padding:10px 12px;margin:9px 0;color:#d2f8ea}.sq-chat-pin button{background:none;border:0;color:#9bf4d0;cursor:pointer}.sq-chat-empty{padding:12px;color:#a8bfd0}.sq-chat-message-hidden{display:none!important}
@@ -3126,7 +3126,7 @@ function settingsRoute(page) {
   document.querySelectorAll('.sq-nav-link').forEach(function(b){var active=b.id===(page==='settings'?'nav-profile':'nav-'+(page==='about'?'about':page==='trackers'?'trackers':'home'));b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
   if (page==='settings') document.body.classList.add('settings-view');
   if(page==='analytics')renderSquareUpAnalytics();
-  if(page==='friends')squareUpLoadFriends();
+  if(page==='friends'){var friendsPage=document.getElementById('friends-page');if(friendsPage){friendsPage.hidden=false;friendsPage.removeAttribute('aria-hidden');}Promise.resolve().then(()=>squareUpLoadFriends()).catch(err=>{var status=document.getElementById('sq-friends-status');if(status)status.textContent=String(err?.message||err);});}
   var url=page==='settings'?'#settings':page==='about'?'#about':page==='trackers'?'#trackers':page==='analytics'?'#analytics':page==='friends'?'#friends':'';
   history.replaceState(null,'',location.pathname+location.search+url);
   window.scrollTo(0,0);
@@ -5834,6 +5834,27 @@ body.trackers-view .wrap{align-content:start!important;justify-content:flex-star
 #tracker-dashboard .sq-workspace-tabs{min-width:0!important;max-width:100%!important;flex-wrap:nowrap!important}
 #tracker-dashboard .sq-workspace-tabs [data-sq-tab="friends"]{min-width:0!important}
 @media(max-width:600px){#tracker-dashboard .sq-workspace-tabs{gap:2px!important;padding:5px!important}#tracker-dashboard .sq-workspace-tabs button{padding:10px 4px!important;font-size:clamp(10px,2.6vw,14px)!important}}
+</style>
+<style id="sq-trackers-about-layout-v9">
+/* Standalone pages follow the shared header without reserving dashboard height. */
+body.trackers-view > .wrap, body.about-view > .wrap, body.friends-view > .wrap {
+  min-height:0!important;height:auto!important; padding-bottom:0!important;
+  margin-bottom:0!important;
+}
+body.trackers-view > .wrap > #tracker-dashboard,
+body.about-view > .wrap > #tracker-dashboard,
+body.friends-view > .wrap > #tracker-dashboard {display:none!important}
+body.trackers-view #trackers-page {margin-top:12px!important}
+body.trackers-view #trackers-page .trackers-header {margin-bottom:12px!important}
+body.trackers-view #trackers-gallery {margin-top:0!important}
+/* Preserve the original About artwork, timeline, and sections. */
+body.about-view #about-page {display:block!important;margin-top:12px!important}
+</style>
+<style id="sq-friends-page-visibility-fix-v8">
+/* Friends is a direct child of body, not of .wrap. Keep the standalone page visible. */
+body.friends-view #friends-page{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2!important;width:calc(100% - 48px)!important;max-width:1100px!important;margin:25px auto 90px!important;min-height:350px!important}
+body.friends-view #friends-page .sq-friends-layout{display:block!important;visibility:visible!important}
+@media(max-width:900px){body.friends-view #friends-page{width:100%!important;margin:15px auto 100px!important}}
 </style>
 <script id="sq-friends-tab-routing-v7">
 (function(){
