@@ -5667,8 +5667,10 @@ input.addEventListener('input',draw);
 /* SquareUp glass visual system. Only presentation: preserve all live IDs, handlers, data and forms. */
 :root{--sq-glass:rgba(24,32,43,.46);--sq-glass-strong:rgba(16,28,42,.68);--sq-glass-border:rgba(255,255,255,.27);--sq-glass-light:rgba(255,255,255,.095)}
 body{background-attachment:fixed!important}
-/* Keep the user's own image / gradient backdrop visible. */
-.wrap{isolation:isolate}
+/* Restore tracker-selected photos and gradients behind the glass UI. */
+body{background:transparent!important}
+#backdrop{position:fixed!important;inset:0!important;z-index:0!important;pointer-events:none!important;background-position:center!important;background-size:cover!important;background-repeat:no-repeat!important}
+.wrap{position:relative;z-index:1;isolation:isolate}
 #tracker-dashboard .sq-workspace-tabs{background:rgba(11,25,39,.59)!important;border:1px solid rgba(255,255,255,.21)!important;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 12px 28px rgba(0,0,0,.13)}
 #tracker-dashboard .sq-workspace-tabs button{color:#f0f4f7!important}
 #tracker-dashboard .sq-workspace-tabs button[aria-selected=true]{background:#37e0b9!important;color:#08283a!important}
