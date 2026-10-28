@@ -1315,6 +1315,7 @@ body.about-view .sq-header-tour-btn{display:inline-flex}
 #tracker-dashboard:not(.sq-tab-overview) #sq-return-summary{display:none!important}
 
 /* Payment dispute dialog */
+body.sq-dispute-open{overflow:hidden}
 .sq-dispute-overlay{position:fixed;inset:0;z-index:30000;background:rgba(2,10,23,.78);backdrop-filter:blur(14px);display:grid;place-items:center;padding:18px}
 .sq-dispute-overlay[hidden]{display:none!important}
 .sq-dispute-dialog{width:min(460px,100%);border:1px solid rgba(122,176,209,.43);border-radius:27px;background:linear-gradient(150deg,#122c46,#06182d);color:#f4faff;box-shadow:0 30px 90px #000a;padding:28px;text-align:center}
@@ -2531,9 +2532,9 @@ document.getElementById('sq-approvals-list').addEventListener('click',async func
  if(!btn||!approvalTracker)return;
  var id=btn.dataset.sqApprove||btn.dataset.sqDispute;if(!id)return;
  var action=btn.dataset.sqApprove?'approve':'dispute';
- if(!confirm((action==='approve'?'Approve':'Dispute')+' this expense?'))return;
+ if(action==='dispute'){var disputeChoice=await window.squareUpAskPaymentDispute(approvalTracker.id,id,'expense');if(!disputeChoice)return;}else if(!confirm('Approve this expense?'))return;
  btn.disabled=true;
- try{await window.squareUpReviewExpense(id,action);}
+ try{await window.squareUpReviewExpense(id,action,action==='dispute'?disputeChoice.reason:'');}
  catch(err){alert('Could not '+action+' expense: '+err.message);btn.disabled=false;}
 });
 // ============ SPLIT A BILL (separate view, same existing tracker) ============
@@ -3059,12 +3060,12 @@ var trackers = [];          // [{ id, name, role, memberCount }]
 var current = null;         // full detail of the open shared tracker, or null for "this device"
 // Bridge expense approvals from the classic script to this module's tracker state and API.
 window.squareUpApprovalTracker = function(){ return current; };
-window.squareUpReviewExpense = async function(entryId, action){
+window.squareUpReviewExpense = async function(entryId, action, reason){
   if (!current || !current.id) throw new Error('Open a shared tracker first.');
   var endpoint = 'trackers/'+encodeURIComponent(current.id)+'/entries/'+encodeURIComponent(entryId)+'/approval';
   var updated;
   try {
-    updated = await api(endpoint,'PATCH',{action:action});
+    updated = await api(endpoint,'PATCH',{action:action,reason:reason||''});
   } catch (err) {
     if (err.status === 404) {
       throw new Error('The expense approval endpoint was not found on the deployed backend (PATCH /api/'+endpoint+'). Update and deploy functions/api/[[path]].js with the approval route; the frontend cannot create that route.');
@@ -4617,7 +4618,7 @@ document.getElementById('notifications-list').addEventListener('click',async fun
   if(action==='dispute'){var disputeChoice=await window.squareUpAskPaymentDispute(t.dataset.trackerId,id);if(!disputeChoice)return;}else if(!confirm('Confirm you received this payment?'))return;
   t.disabled=true;
   try{
-   var detail=await api('trackers/'+t.dataset.trackerId+'/payments/'+id+'/'+action,'POST',{});
+   var detail=await api('trackers/'+t.dataset.trackerId+'/payments/'+id+'/'+action,'POST',action==='dispute'?{reason:disputeChoice.reason}:{});
    if(current&&current.id===detail.id)applyDetail(detail);
    await refreshInbox();
   }catch(err){
@@ -5550,15 +5551,41 @@ const tour=document.getElementById('sq-replay-tour');if(tour){const original=tou
 </script>
 
 <div id="sq-global-search" class="sq-global-search" role="dialog" aria-modal="true" aria-label="Search SquareUp" aria-hidden="true"><div class="sq-search-panel"><div class="sq-search-head"><input id="sq-global-query" type="search" placeholder="Search trackers, members, expenses…" autocomplete="off" aria-label="Search SquareUp"><button type="button" id="sq-search-close" aria-label="Close search">✕</button></div><div class="sq-search-results" id="sq-search-results" aria-live="polite"><p class="sq-search-empty">Search your loaded trackers and expenses.</p></div></div></div>
-<div class="sq-dispute-overlay" id="sq-payment-dispute-overlay" hidden><div class="sq-dispute-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-dispute-heading"><div class="sq-dispute-mark" aria-hidden="true">!</div><h2 id="sq-dispute-heading">Dispute this payment?</h2><p id="sq-dispute-summary">This will notify the person who reported the payment. The balance will remain unchanged until the payment is resolved.</p><textarea id="sq-dispute-reason" maxlength="200" placeholder="Add a reason (optional)" aria-label="Reason for dispute"></textarea><p class="sq-dispute-error" id="sq-dispute-error" role="alert"></p><div class="sq-dispute-actions"><button type="button" id="sq-dispute-cancel">Cancel</button><button type="button" class="sq-dispute-confirm" id="sq-dispute-submit">Dispute payment</button></div></div></div>
+<div class="sq-dispute-overlay" id="sq-payment-dispute-overlay" hidden><div class="sq-dispute-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-dispute-heading"><div class="sq-dispute-mark" aria-hidden="true">!</div><h2 id="sq-dispute-heading">Dispute this payment?</h2><p id="sq-dispute-summary">This will notify the person who reported the payment. The balance will remain unchanged until the payment is resolved.</p><textarea id="sq-dispute-reason" maxlength="200" placeholder="Why are you disputing this payment? (required)" aria-label="Reason for dispute (required)"></textarea><p class="sq-dispute-error" id="sq-dispute-error" role="alert"></p><div class="sq-dispute-actions"><button type="button" id="sq-dispute-cancel">Cancel</button><button type="button" class="sq-dispute-confirm" id="sq-dispute-submit">Dispute payment</button></div></div></div>
 <script id="sq-payment-dispute-script">(function(){
-const box=document.getElementById('sq-payment-dispute-overlay'),reason=document.getElementById('sq-dispute-reason'),error=document.getElementById('sq-dispute-error'),submit=document.getElementById('sq-dispute-submit');let pending=null;
-function close(){box.hidden=true;pending=null;submit.disabled=false;}
-document.getElementById('sq-dispute-cancel').onclick=close;box.addEventListener('click',e=>{if(e.target===box)close()});
-window.squareUpAskPaymentDispute=function(trackerId,paymentId){return new Promise(resolve=>{pending={trackerId,paymentId,resolve};reason.value='';error.textContent='';box.hidden=false;reason.focus();});};
-document.getElementById('sq-dispute-cancel').onclick=()=>{if(pending)pending.resolve(false);close()};
-submit.onclick=()=>{if(!pending)return;const done=pending;close();done.resolve({reason:reason.value.trim()});};
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!box.hidden){if(pending)pending.resolve(false);close();}});
+'use strict';
+const box=document.getElementById('sq-payment-dispute-overlay');
+const reason=document.getElementById('sq-dispute-reason');
+const error=document.getElementById('sq-dispute-error');
+const submit=document.getElementById('sq-dispute-submit');
+const cancel=document.getElementById('sq-dispute-cancel');
+const heading=document.getElementById('sq-dispute-heading');
+const summary=document.getElementById('sq-dispute-summary');
+let pending=null;
+function finish(result){const prior=pending;pending=null;box.hidden=true;document.body.classList.remove('sq-dispute-open');if(prior)prior.resolve(result);}
+function dismiss(){finish(false);}
+cancel.addEventListener('click',dismiss);
+box.addEventListener('click',e=>{if(e.target===box)dismiss();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!box.hidden){e.preventDefault();dismiss();}});
+window.squareUpAskPaymentDispute=function(trackerId,paymentId,kind){
+ if(pending)finish(false);
+ return new Promise(resolve=>{
+  pending={trackerId,paymentId,resolve};
+  const expense=kind==='expense';
+  heading.textContent=expense?'Dispute this expense?':'Dispute this payment?';
+  summary.textContent=expense?'Explain why this expense is incorrect. The other person will be notified and the expense will be marked as disputed.':'Explain why you are disputing this payment. The other person will be notified, and the balance will remain unchanged until the dispute is resolved.';
+  submit.textContent=expense?'Dispute expense':'Dispute payment';
+  reason.value='';error.textContent='';box.hidden=false;document.body.classList.add('sq-dispute-open');
+  requestAnimationFrame(()=>reason.focus());
+ });
+};
+submit.addEventListener('click',()=>{
+ if(!pending)return;
+ const message=reason.value.trim();
+ if(!message){error.textContent='Please enter a reason before submitting the dispute.';reason.focus();return;}
+ finish({reason:message});
+});
+reason.addEventListener('input',()=>{error.textContent='';});
 })();</script>
 <script id="sq-global-search-script">
 (function(){
