@@ -5956,74 +5956,72 @@ body.about-view #about-page .about-mission{display:grid!important;visibility:vis
 <script id="sq-notification-click-navigation">
 (function(){
  const list=document.getElementById('notifications-list');if(!list)return;
- function tab(name){document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab="'+name+'"]')?.click();}
- async function navigate(row){
-   const index=row.getAttribute('data-notification-index');
-   const n=index!==null&&typeof inbox!=='undefined'?inbox[Number(index)]:null;
-   const due=row.getAttribute('data-due-entry');
-   const kind=String(n?.kind||'').toLowerCase(),title=String(n?.title||'').toLowerCase();
-   const trackerId=n?.tracker_id;
-   document.body.classList.remove('notifications-view');
-   document.getElementById('notifications-toggle')?.setAttribute('aria-expanded','false');
-   if(n&&!n.read_at){
-     n.read_at=new Date().toISOString();
-     try{await api((n._social?'social/notifications/':'notifications/')+encodeURIComponent(n.id),'PATCH',{});}catch(err){console.warn('Could not mark notification read',err);}
-   }
-   // Route social notifications before any expense fallback or tracker lookup.
-   // Social events can have a tracker_id too, but that does not make them expenses.
-      if(/friend|friend_request|friend_accept/.test(kind+' '+title)){
-     if(/tracker.invite/.test(kind+' '+title))document.getElementById('nav-trackers')?.click();
-     else settingsRoute('friends');
-     return;
-   }
-   if(/chat|message|mention|group.message/.test(kind+' '+title)){
-     if(trackerId&&(!current||String(current.id)!==String(trackerId))){
-       await openTracker(String(trackerId));
-     }
-     document.getElementById('nav-chat')?.click();
-     // Force the actual Chat tab even if the sidebar handler was bypassed.
-     if(typeof window.squareUpSelectTab==='function')window.squareUpSelectTab('chat');
-     document.getElementById('chat-card')?.scrollIntoView({block:'start'});
-     return;
-   }
-   if(trackerId&&(!current||String(current.id)!==String(trackerId))){
-     await openTracker(String(trackerId));
-   }
-   if(/budget/.test(kind+' '+title)){tab('budget');return;}
-   if(/member/.test(kind+' '+title)){tab('members');return;}
-   if(/tracker/.test(kind+' '+title)&&!n?.entry_id&&!due){document.getElementById('nav-trackers')?.click();return;}
-   tab('expenses');
-   const entryId=n?.entry_id||due;
-   if(entryId){
-     requestAnimationFrame(()=>{
-       const rows=[...document.querySelectorAll('#history .entry')];
-       const match=rows.find(el=>el.querySelector('[data-del="'+CSS.escape(String(entryId))+'"]')||el.querySelector('[data-entry-id="'+CSS.escape(String(entryId))+'"]'));
-       if(match){match.scrollIntoView({behavior:'smooth',block:'center'});match.querySelector('.sq-detail-btn')?.click();}
-     });
-   }
+ function navigate(row){
+  const idx=row.getAttribute('data-notification-index');
+  const n=idx!==null && typeof inbox!=='undefined' ? inbox[Number(idx)] : null;
+  const title=(n?.title||row.querySelector('b')?.textContent||'').toLowerCase();
+  const kind=String(n?.kind||'').toLowerCase();
+  const message=String(n?.message||'').toLowerCase();
+  const signal=kind+' '+title+' '+message;
+  const trackerId=n?.tracker_id;
+  const isFriend=/friend|request.accepted|request.received/.test(signal);
+  const isChat=/chat|group.message|new.message|message.from|sent a message/.test(signal);
+  const isInvite=/tracker.invite|invitation to.*tracker/.test(signal);
+  const isBudget=/budget/.test(signal);
+  const isMember=/member/.test(signal);
+  // Navigate synchronously. Never wait for PATCH before showing the destination.
+  if(isFriend){settingsRoute('friends');}
+  else if(isInvite){document.getElementById('nav-trackers')?.click();}
+  else if(isChat){
+    // Chat's existing click handler switches to the actual chat panel.
+    document.getElementById('nav-chat')?.click();
+    if(trackerId && (!current || String(current.id)!==String(trackerId))){
+      Promise.resolve(openTracker(String(trackerId))).then(()=>document.getElementById('nav-chat')?.click()).catch(err=>console.warn('Chat tracker unavailable',err));
+    }
+  }else{
+    const showDestination=()=>{
+      document.getElementById('nav-home')?.click();
+      document.querySelector('[data-sq-tab="'+(isBudget?'budget':isMember?'members':'expenses')+'"]')?.click();
+    };
+    if(trackerId && (!current || String(current.id)!==String(trackerId))){
+      Promise.resolve(openTracker(String(trackerId))).then(showDestination).catch(err=>console.warn('Notification tracker unavailable',err));
+    }else showDestination();
+  }
+  document.body.classList.remove('notifications-view');
+  document.getElementById('notifications-toggle')?.setAttribute('aria-expanded','false');
+  if(n&&!n.read_at){
+    n.read_at=new Date().toISOString();
+    Promise.resolve(api((n._social?'social/notifications/':'notifications/')+encodeURIComponent(n.id),'PATCH',{})).catch(err=>console.warn('Notification read update failed',err));
+  }
  }
+ // Capture phase ensures row navigation does not get overridden by a later handler.
  list.addEventListener('click',function(e){
    if(e.target.closest('button,a,input,select,textarea'))return;
-   const row=e.target.closest('.sq-notification-link');if(row)navigate(row).catch(err=>alert('Could not open notification: '+err.message));
- });
- list.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.matches('.sq-notification-link')){e.preventDefault();navigate(e.target).catch(err=>alert(err.message));}});
- const mobileTrackers=document.querySelector('.sq-mobile-nav [data-target="nav-trackers"]');
- mobileTrackers?.addEventListener('click',()=>{const gallery=document.getElementById('trackers-gallery');if(gallery&&!gallery.querySelector('.tracker-tile')&&!gallery.querySelector('.sq-loading-skeleton'))gallery.innerHTML='<div class="sq-loading-skeleton" aria-label="Loading trackers"></div>';},true);
+   const row=e.target.closest('[data-notification-index],[data-due-entry]');
+   if(!row)return;
+   e.preventDefault();e.stopImmediatePropagation();navigate(row);
+ },true);
+ list.addEventListener('keydown',function(e){
+   if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-notification-index],[data-due-entry]')){
+     e.preventDefault();e.stopImmediatePropagation();navigate(e.target);
+   }
+ },true);
 })();
 </script>
 
-<style id="sq-tracker-gap-and-notification-route-fix-v11">
-/* Previous glossy header set a 74px bottom margin; remove that reserved space on tracker listing. */
-body.trackers-view .tracker-heading{margin-bottom:0!important;padding-bottom:12px!important;min-height:0!important}
-body.trackers-view .tracker-heading p{display:none!important}
-body.trackers-view > .wrap{display:flex!important;flex-direction:column!important;justify-content:flex-start!important;gap:0!important;min-height:0!important}
-body.trackers-view > .wrap > #trackers-page{order:2!important;margin:0 auto 24px!important;padding:0!important;min-height:0!important;align-self:stretch!important}
-body.trackers-view #trackers-page .trackers-header{margin:0 0 8px!important;padding:6px 0 10px!important}
-body.trackers-view #trackers-gallery{margin:0!important;padding:0!important;align-content:start!important}
+<style id="sq-tracker-gap-and-notification-route-fix-v12">
+/* Trackers is a compact standalone page; no dashboard-sized empty spacer. */
+body.trackers-view > .wrap{display:flex!important;flex-direction:column!important;justify-content:flex-start!important;align-content:flex-start!important;gap:0!important;height:auto!important;min-height:0!important;padding-top:0!important}
+body.trackers-view > .wrap > .tracker-heading{order:0!important;flex:0 0 auto!important;margin:0 0 8px!important;min-height:0!important}
+body.trackers-view > .wrap > #trackers-page{order:1!important;flex:0 0 auto!important;position:static!important;display:block!important;align-self:stretch!important;max-width:1220px!important;width:100%!important;margin:0 auto 20px!important;padding:0!important;min-height:0!important;height:auto!important;transform:none!important}
+body.trackers-view #trackers-page .trackers-header{margin:0 0 10px!important;padding:5px 0 10px!important;min-height:0!important}
+body.trackers-view #trackers-gallery{margin:0!important;padding:0!important;align-content:start!important;min-height:0!important}
+body.trackers-view > .wrap > :not(.tracker-heading):not(.sq-mobile-top):not(#trackers-page){display:none!important}
 @media(max-width:900px){
- body.trackers-view > .wrap > .sq-mobile-top{order:0!important;margin-bottom:6px!important}
- body.trackers-view > .wrap > #trackers-page{order:1!important;margin-top:0!important}
- body.trackers-view .trackers-header{margin-bottom:8px!important}
+ body.trackers-view > .wrap > .sq-mobile-top{order:0!important;margin:0 0 6px!important}
+ body.trackers-view > .wrap > .tracker-heading{display:none!important}
+ body.trackers-view > .wrap > #trackers-page{order:1!important;margin:0 auto 16px!important}
+ body.trackers-view #trackers-page .trackers-header{margin:0 0 6px!important;padding:0 0 6px!important}
 }
 </style>
 </body>
