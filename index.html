@@ -5969,17 +5969,26 @@ body.about-view #about-page .about-mission{display:grid!important;visibility:vis
      n.read_at=new Date().toISOString();
      try{await api((n._social?'social/notifications/':'notifications/')+encodeURIComponent(n.id),'PATCH',{});}catch(err){console.warn('Could not mark notification read',err);}
    }
-   if(/invite|friend.request|friend_accept|friend/.test(kind+' '+title)){
-     if(/tracker_invite/.test(kind)){document.getElementById('nav-trackers')?.click();}
-     else if(typeof settingsRoute==='function')settingsRoute('friends');
-     else document.getElementById('sq-mobile-friends')?.click();
+   // Route social notifications before any expense fallback or tracker lookup.
+   // Social events can have a tracker_id too, but that does not make them expenses.
+      if(/friend|friend_request|friend_accept/.test(kind+' '+title)){
+     if(/tracker.invite/.test(kind+' '+title))document.getElementById('nav-trackers')?.click();
+     else settingsRoute('friends');
+     return;
+   }
+   if(/chat|message|mention|group.message/.test(kind+' '+title)){
+     if(trackerId&&(!current||String(current.id)!==String(trackerId))){
+       await openTracker(String(trackerId));
+     }
+     document.getElementById('nav-chat')?.click();
+     // Force the actual Chat tab even if the sidebar handler was bypassed.
+     if(typeof window.squareUpSelectTab==='function')window.squareUpSelectTab('chat');
+     document.getElementById('chat-card')?.scrollIntoView({block:'start'});
      return;
    }
    if(trackerId&&(!current||String(current.id)!==String(trackerId))){
-     document.getElementById('nav-trackers')?.click();
-     if(typeof openTracker==='function')await openTracker(String(trackerId));
+     await openTracker(String(trackerId));
    }
-   if(/chat|message|mention/.test(kind+' '+title)){document.getElementById('nav-chat')?.click();return;}
    if(/budget/.test(kind+' '+title)){tab('budget');return;}
    if(/member/.test(kind+' '+title)){tab('members');return;}
    if(/tracker/.test(kind+' '+title)&&!n?.entry_id&&!due){document.getElementById('nav-trackers')?.click();return;}
@@ -6002,5 +6011,20 @@ body.about-view #about-page .about-mission{display:grid!important;visibility:vis
  mobileTrackers?.addEventListener('click',()=>{const gallery=document.getElementById('trackers-gallery');if(gallery&&!gallery.querySelector('.tracker-tile')&&!gallery.querySelector('.sq-loading-skeleton'))gallery.innerHTML='<div class="sq-loading-skeleton" aria-label="Loading trackers"></div>';},true);
 })();
 </script>
+
+<style id="sq-tracker-gap-and-notification-route-fix-v11">
+/* Previous glossy header set a 74px bottom margin; remove that reserved space on tracker listing. */
+body.trackers-view .tracker-heading{margin-bottom:0!important;padding-bottom:12px!important;min-height:0!important}
+body.trackers-view .tracker-heading p{display:none!important}
+body.trackers-view > .wrap{display:flex!important;flex-direction:column!important;justify-content:flex-start!important;gap:0!important;min-height:0!important}
+body.trackers-view > .wrap > #trackers-page{order:2!important;margin:0 auto 24px!important;padding:0!important;min-height:0!important;align-self:stretch!important}
+body.trackers-view #trackers-page .trackers-header{margin:0 0 8px!important;padding:6px 0 10px!important}
+body.trackers-view #trackers-gallery{margin:0!important;padding:0!important;align-content:start!important}
+@media(max-width:900px){
+ body.trackers-view > .wrap > .sq-mobile-top{order:0!important;margin-bottom:6px!important}
+ body.trackers-view > .wrap > #trackers-page{order:1!important;margin-top:0!important}
+ body.trackers-view .trackers-header{margin-bottom:8px!important}
+}
+</style>
 </body>
 </html>
