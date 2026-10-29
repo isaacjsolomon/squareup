@@ -1703,6 +1703,11 @@ body.trackers-view #trackers-page .trackers-header {margin:0 0 12px!important;mi
 body.trackers-view #trackers-gallery {margin:0!important;padding:0!important;align-content:start!important;}
 @media(max-width:900px){body.trackers-view > .wrap > .tracker-heading{display:none!important;}body.trackers-view > .wrap > .sq-mobile-top{order:0!important;}body.trackers-view > .wrap > #trackers-page{order:1!important;}}
 </style>
+<style id="sq-stage-one-css">
+#sq-monthly-recap{margin-bottom:18px}#sq-monthly-recap input[type=month]{max-width:175px;border:1px solid rgba(180,220,235,.35);border-radius:12px;background:rgba(8,31,47,.6);color:inherit;padding:9px;color-scheme:dark}
+.sq-recap-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}.sq-recap-stat{border-radius:17px;padding:18px;background:rgba(12,41,58,.55);border:1px solid rgba(175,221,237,.18);display:grid;gap:8px}.sq-recap-stat span{font-size:13px;opacity:.8}.sq-recap-stat strong{font-size:clamp(18px,2vw,27px);overflow-wrap:anywhere}.sq-recap-breakdown{font-size:12px;opacity:.7;margin-top:12px;line-height:1.5}#sq-percent-total{margin-top:10px}
+@media(max-width:800px){.sq-recap-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
@@ -1904,6 +1909,11 @@ body.trackers-view #trackers-gallery {margin:0!important;padding:0!important;ali
         <div><h2>Spending Analytics</h2><p id="analytics-tracker-title">Select a tracker to see its spending.</p></div>
         <label class="sq-analytics-filter">Time range <select id="analytics-range" aria-label="Analytics time range"><option value="6">Last 6 months</option><option value="12">Last 12 months</option><option value="all">All time</option></select></label>
       </div>
+      <section class="sq-analytics-panel" id="sq-monthly-recap" aria-label="Monthly spending recap">
+        <div class="sq-analytics-panel-heading"><div><h3>Monthly spending recap</h3><p>Recorded expense entries in the currently open tracker</p></div><label class="sq-analytics-filter">Month <input type="month" id="sq-recap-month" aria-label="Choose recap month"></label></div>
+        <div id="sq-recap-summary" class="sq-recap-grid" aria-live="polite"><p>Open a tracker to see its monthly recap.</p></div>
+        <div id="sq-recap-breakdown" class="sq-recap-breakdown"></div>
+      </section>
       <div class="analytics-stats" id="analytics-stats"></div>
       <div class="sq-analytics-charts">
         <section class="sq-analytics-panel"><div class="sq-analytics-panel-heading"><div><h3>Monthly spending</h3><p>Total recorded expenses by month</p></div></div><div id="analytics-months" class="sq-month-chart"></div></section>
@@ -1933,6 +1943,7 @@ body.trackers-view #trackers-gallery {margin:0!important;padding:0!important;ali
             <button type="button" id="split-equal" class="active">Split equally</button>
             <button type="button" id="split-custom">Exact amounts</button><button type="button" id="split-percent">Percentages</button><button type="button" id="split-shares">Shares</button>
           </div>
+          <div class="split-message" id="sq-percent-total" role="status" aria-live="polite" hidden></div>
           <div class="split-message" id="split-custom-help" hidden>Enter each person’s share. Exact amounts must total the bill, percentages must total 100%, and shares must be positive whole numbers.</div>
         </div>
         <div class="split-panel" style="margin-top:14px">
@@ -2622,6 +2633,9 @@ function renderSplitPage() {
   document.getElementById("split-percent").classList.toggle("active",splitState.method==="percent");
   document.getElementById("split-shares").classList.toggle("active",splitState.method==="shares");
   document.getElementById("split-custom-help").hidden=splitState.method==="equal";
+  var percentHint=document.getElementById('sq-percent-total');
+  if(percentHint){var sum=splitState.people.filter(p=>splitState.selected[p]).reduce((n,p)=>n+(Number(splitState.percent[p])||0),0);percentHint.hidden=splitState.method!=='percent';percentHint.textContent='Assigned '+sum.toFixed(2).replace(/\.00$/,'')+'% of 100%. '+(Math.abs(sum-100)<0.00001?'Ready to save.':'Adjust percentages to exactly 100% before saving.');}
+
   document.getElementById("split-count").textContent="("+splitState.people.filter(function(p){return splitState.selected[p];}).length+" selected)";
   if (!splitState.people.length) {
     participants.textContent="No people yet. Invite friends to your tracker or add an expense with their names first.";
@@ -4860,8 +4874,30 @@ function squareUpBarList(target,values){
 }
 function squareUpEntries(){return Array.isArray(current?.entries)?current.entries:[];}
 function squareUpConfirmedExpense(e){return e.type==='debt'&&(!e.paymentStatus||e.paymentStatus==='confirmed');}
+// Stage 1: read-only monthly recap, derived from existing tracker entries.
+function sqRenderMonthlyRecap(){
+ var out=document.getElementById('sq-recap-summary'),breakdown=document.getElementById('sq-recap-breakdown'),picker=document.getElementById('sq-recap-month');
+ if(!out||!breakdown||!picker)return;
+ var now=new Date();if(!picker.value)picker.value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+ if(!current){out.textContent='Open a tracker to view its recap.';breakdown.textContent='';return;}
+ var selected=picker.value,prevDate=new Date(Number(selected.slice(0,4)),Number(selected.slice(5,7))-2,1);
+ var prev=prevDate.getFullYear()+'-'+String(prevDate.getMonth()+1).padStart(2,'0');
+ var totals={},counts={};
+ squareUpEntries().filter(squareUpConfirmedExpense).forEach(function(e){
+  var raw=e.date||e.dateLabel||e.createdAt||e.created_at;if(!raw)return;
+  var d=new Date(raw);if(Number.isNaN(d.getTime()))return;
+  var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+  var amount=Number(e.amount);if(!Number.isFinite(amount)||amount<=0)return;
+  totals[key]=(totals[key]||0)+amount;counts[key]=(counts[key]||0)+1;
+ });
+ var amount=totals[selected]||0,previous=totals[prev]||0,count=counts[selected]||0;
+ var cards=[['Recorded expenses',squareUpMoney(amount)],['Expense entries',String(count)],['Previous month',squareUpMoney(previous)],['Month-over-month',previous?((amount-previous)/previous*100).toFixed(1)+'%':'Not available']];
+ out.innerHTML=cards.map(function(c){return '<div class="sq-recap-stat"><span>'+esc(c[0])+'</span><strong>'+esc(c[1])+'</strong></div>';}).join('');
+ breakdown.textContent='Based on recorded debt entries dated in this month. Split bills can create multiple entries; totals reflect entries, not unique receipts. Undated and pending/disputed entries are excluded.';
+}
 function renderSquareUpAnalytics(){
  var title=document.getElementById('analytics-tracker-title'),stats=document.getElementById('analytics-stats'),friends=document.getElementById('analytics-friends'),monthsEl=document.getElementById('analytics-months'),peopleEl=document.getElementById('analytics-people'),recentEl=document.getElementById('analytics-recent');
+ sqRenderMonthlyRecap();
  if(!current){title.textContent='Open a shared tracker first, then choose Analytics.';stats.innerHTML='';monthsEl.innerHTML=peopleEl.innerHTML=recentEl.innerHTML='<p class="sq-analytics-empty">Open a tracker to view analytics.</p>';friends.innerHTML='';document.getElementById('friend-profile-detail').hidden=true;return;}
  title.textContent='Showing data for '+current.name+' only';
  var range=document.getElementById('analytics-range').value;
@@ -4901,6 +4937,7 @@ function openSquareUpFriendProfile(index){
 document.getElementById('analytics-friends').addEventListener('click',e=>{var btn=e.target.closest('[data-friend-index]');if(btn)openSquareUpFriendProfile(Number(btn.dataset.friendIndex));});
 document.getElementById('nav-analytics').addEventListener('click',()=>settingsRoute('analytics'));
 document.getElementById('analytics-range').addEventListener('change',renderSquareUpAnalytics);
+document.getElementById('sq-recap-month').addEventListener('change',sqRenderMonthlyRecap);
 // Browser-based receipt recognition is provided as an assistive first pass, not a guaranteed extraction.
 var squareUpScannedLines=[];
 document.getElementById('split-receipt-file').addEventListener('change',async function(){
