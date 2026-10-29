@@ -3791,6 +3791,14 @@ async function renderTrackerGallery(){
         var arrow=document.createElement('span');arrow.className='tracker-menu-chevron';arrow.textContent='›';btn.append(arrow);settingsView.append(btn);
       }
       settingsAction('▧','Change banner',async function(){await sqBannerEdit(t.id,t.name,banner);});
+      settingsAction('▧','Change tracker backdrop',async function(){
+        try {
+          await openTracker(t.id);
+          if (!current || current.id !== t.id) throw new Error('Tracker could not be opened.');
+          document.getElementById('btn-backdrop').click();
+        } catch (err) { alert('Could not open backdrop settings: '+(err.message||err)); }
+      });
+
       if(t.role==='owner'||(d&&d.role==='owner')) settingsAction('✎','Rename tracker',async function(){
         var overlay=document.createElement('div');overlay.className='tracker-banner-editor';
         var dialog=document.createElement('form');dialog.className='tracker-banner-dialog';
@@ -3849,7 +3857,7 @@ async function renderTrackerGallery(){
           }catch(err){status.textContent='Could not save: '+(err.message||err);save.disabled=false;toggle.disabled=false;}
         };
       });
-      var settingsButton=makeMenuButton('⚙','Tracker settings','tracker-settings-entry',function(){mainView.hidden=true;settingsView.hidden=false;},'Banner, name, permissions, approvals');
+      var settingsButton=makeMenuButton('⚙','Tracker settings','tracker-settings-entry',function(){mainView.hidden=true;settingsView.hidden=false;},'Banner, backdrop, name, permissions, approvals');
       var arrow=document.createElement('span');arrow.className='tracker-menu-chevron';arrow.textContent='›';settingsButton.append(arrow);mainView.append(settingsButton);
       mainView.append(document.createElement('hr'));
       mainView.append(makeMenuButton('↥','Share tracker','',async function(){menu.open=false;await openTracker(t.id);if(current&&current.id===t.id)await openShare();}));
