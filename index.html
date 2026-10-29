@@ -6388,6 +6388,13 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
 @media(max-width:360px){body.trackers-view #trackers-gallery{grid-template-columns:1fr!important}}
 </style>
 
+<style id="sq-header-help-position">
+.tracker-heading .sq-header-help{display:inline-flex!important;align-items:center;justify-content:center;gap:9px;width:auto!important;min-width:0!important;min-height:43px;padding:10px 17px!important;border-radius:22px!important;border:1px solid rgba(255,255,255,.28)!important;background:rgba(20,22,38,.27)!important;color:#eef7ff!important;font-size:14px!important;font-weight:700!important;white-space:nowrap;flex:0 0 auto;cursor:pointer}
+.tracker-heading .sq-header-help:hover,.tracker-heading .sq-header-help.active{background:rgba(35,95,141,.65)!important;border-color:#51d8da!important}
+.tracker-heading .sq-header-help .sq-nav-icon{display:inline-flex;align-items:center;justify-content:center;color:#55e9df;font-size:19px}
+.tracker-heading .sq-header-help .sq-nav-label{display:inline!important}
+@media(max-width:650px){.tracker-heading .sq-header-help{padding:9px 11px!important;font-size:12px!important}.tracker-heading .sq-header-help .sq-nav-label{display:none!important}}
+</style>
 <style id="sq-ai-styles">
 #sq-ai-launch{position:fixed;right:22px;bottom:22px;z-index:9500;display:flex;align-items:center;gap:9px;border:1px solid #8e8aff66;border-radius:28px;background:linear-gradient(120deg,#182d58,#5940e8);color:#fff;box-shadow:0 9px 28px #050b22a8;padding:11px 17px;font:700 13px inherit;cursor:pointer}#sq-ai-launch .sq-ai-mark,.sq-ai-avatar{display:grid;place-items:center;width:33px;height:33px;border-radius:50%;background:linear-gradient(145deg,#075878,#18386e);color:#5af4ef;font-size:23px}#sq-ai-launch:hover{filter:brightness(1.15)}
 #sq-ai-window{position:fixed;z-index:9501;right:22px;bottom:84px;width:min(370px,calc(100vw - 28px));height:min(580px,calc(100dvh - 105px));background:linear-gradient(150deg,#0b1b39,#06162b);border:1px solid #5065aa;border-radius:22px;box-shadow:0 20px 65px #0009;color:#eef4ff;display:flex;flex-direction:column;overflow:hidden}#sq-ai-window[hidden],#sq-help-page[hidden]{display:none!important}.sq-ai-head{display:flex;align-items:center;gap:10px;padding:17px 17px 13px;border-bottom:1px solid #ffffff15}.sq-ai-head strong{display:block;font-size:16px}.sq-ai-head small{color:#7beba9}.sq-ai-head button{border:0;background:none;color:#d9e5ff;font-size:23px;cursor:pointer;margin-left:auto}.sq-ai-stream{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:13px}.sq-ai-message{max-width:95%;padding:12px 14px;border:1px solid #ffffff14;border-radius:15px;background:#1c3155;color:#eaf0ff;font-size:13px;line-height:1.55;white-space:pre-line;overflow-wrap:anywhere}.sq-ai-message.user{align-self:flex-end;background:#5134ce;border-color:#816bff}.sq-ai-message a{color:#8ae3ff}.sq-ai-quick{display:flex;flex-direction:column;gap:7px}.sq-ai-quick button{background:#192e52;border:1px solid #30466b;border-radius:11px;color:#f1f5ff;text-align:left;padding:10px 12px;cursor:pointer;font-size:12px}.sq-ai-quick button:hover{background:#274472}.sq-ai-input{display:flex;gap:8px;padding:10px 13px}.sq-ai-input input{flex:1;min-width:0;background:#172b4d;border:1px solid #354b72;border-radius:24px;padding:12px;color:#fff}.sq-ai-input button{border:0;border-radius:50%;width:39px;height:39px;background:#3269ed;color:#fff;cursor:pointer}.sq-ai-support{display:block;text-align:center;color:#e1eaff;text-decoration:none;font-size:12px;padding:8px 12px 13px}.sq-ai-support:hover{text-decoration:underline}
@@ -6424,6 +6431,14 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  function ask(q){q=String(q||'').trim().slice(0,500);if(!q)return;const quick=document.getElementById('sq-ai-quick');if(quick)quick.remove();bubble(q,true);const found=faq.find(([re])=>re.test(q));bubble(found?found[1]:'I don’t have a verified answer to that question yet. Please use Contact Support below to email the SquareUp team. You can also ask about trackers, expenses, bill splitting, balances, account access, and settings.',false);}
  form.addEventListener('submit',e=>{e.preventDefault();ask(input.value);input.value='';input.focus();});stream.addEventListener('click',e=>{const btn=e.target.closest('.sq-ai-quick button');if(btn)ask(btn.textContent)});
  function openHelp(){document.body.classList.remove('split-view','settings-view','about-view','trackers-view','analytics-view','friends-view','notifications-view');document.body.classList.add('sq-help-view');document.querySelectorAll('.sq-nav-link').forEach(b=>{b.classList.toggle('active',b.id==='nav-help-center');b.removeAttribute('aria-current')});document.getElementById('nav-help-center').setAttribute('aria-current','page');history.replaceState(null,'',location.pathname+location.search+'#help');window.scrollTo(0,0);}
+ // Move Help Center from the sidebar into the header, immediately after Search.
+ const helpNav=document.getElementById('nav-help-center');
+ const headerSearch=document.querySelector('.tracker-heading .sq-search-launch');
+ if(helpNav && headerSearch){
+   headerSearch.insertAdjacentElement('afterend',helpNav);
+   helpNav.classList.add('sq-header-help');
+   helpNav.setAttribute('aria-label','Open Help Center');
+ }
  document.getElementById('nav-help-center').addEventListener('click',openHelp);
  document.getElementById('sq-help-open-chat').addEventListener('click',()=>setOpen(true));document.getElementById('sq-help-topics').addEventListener('click',e=>{const btn=e.target.closest('button[data-question]');if(btn){setOpen(true);ask(btn.dataset.question)}});
  // Existing site navigation remains authoritative; clear the help-only page state on any other nav selection.
