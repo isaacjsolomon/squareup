@@ -1944,6 +1944,505 @@ const owner =
   (!trackerOwnerRecord?.owner_id && m.role === 'owner');
 const sub = parts[2];
 
+// Only uniquely identified tracker members can be
+// treated as payment participants.
+async function sqPaymentParticipants(entry) {
+  const members = await db('tracker_members', {
+    filters: { tracker_id: 'eq.' + id }
+  });
+
+  const match = name => members.filter(x =>
+    String(x.name || '').trim().toLowerCase() ===
+    String(name || '').trim().toLowerCase()
+  );
+
+  const from = match(entry.from_name);
+  const to = match(entry.to_name);
+
+  if (
+    from.length !== 1 ||
+    to.length !== 1 ||
+    !from[0].user_id ||
+    !to[0].user_id ||
+    from[0].user_id === to[0].user_id
+  ) {
+    return null;
+  }
+
+  return {
+    fromId: from[0].user_id,
+    toId: to[0].user_id
+  };
+}
+
+// Download attachments only after tracker membership
+// has been verified by the existing backend.
+if (
+  sub === 'feature-attachment' &&
+  parts.length === 4 &&
+  method === 'GET'
+) {
+  const record = (await db('squareup_expense_attachments', {
+    filters: {
+      id: 'eq.' + parts[3],
+      tracker_id: 'eq.' + id
+    },
+    limit: 1
+  }))[0];
+
+  if (!record) {
+    return fail('Attachment not found.', 404);
+  }
+
+  const response = await storage(
+    'squareup-expense-attachments',
+    record.storage_path,
+    'GET'
+  );
+
+  if (!response) {
+    return fail('Attachment unavailable.', 404);
+  }
+
+  return new Response(response.body, {
+    headers: {
+      'Content-Type': record.mime_type,
+      'Content-Disposition':
+        'attachment; filename="attachment"',
+      'Cache-Control': 'private, no-store',
+      'X-Content-Type-Options': 'nosniff'
+    }
+  });
+}
+
+if (sub === 'features' && parts.length >= 4) {
+  const feature = parts[3];
+  const entryId = parts[4];
+
+  const permitted = [
+    'comments',
+    'reactions',
+    'attachments',
+    'goals',
+    'contributions',
+    'disputes'
+  ];
+
+  if (!permitted.includes(feature)) {
+    return fail('Unknown feature.', 404);
+  }
+
+  const table = {
+    comments: 'squareup_expense_comments',
+    reactions: 'squareup_expense_reactions',
+    attachments: 'squareup_expense_attachments',
+    goals: 'squareup_savings_goals',
+    contributions: 'squareup_goal_contributions',
+    disputes: 'squareup_dispute_resolutions'
+  }[feature];
+
+  const isEntryFeature = [
+    'comments',
+    'reactions',
+    'attachments',
+    'disputes'
+  ].includes(feature);
+
+  if (isEntryFeature) {
+    if (
+      !uuid.test(entryId || '') ||
+      !(await db('tracker_entries', {
+        filters: {
+          id: 'eq.' + entryId,
+          tracker_id: 'eq.' + id
+        },
+        limit: 1
+      })).length
+    ) {
+      return fail('Expense not found.', 404);
+    }
+  }
+
+  if (feature === 'contributions') {
+    if (
+      !uuid.test(entryId || '') ||
+      !(await db('squareup_savings_goals', {
+        filters: {
+          id: 'eq.' + entryId,
+          tracker_id: 'eq.' + id
+        },
+        limit: 1
+      })).length
+    ) {
+      return fail('Goal not found.', 404);
+    }
+  }
+
+  const filters = { tracker_id: 'eq.' + id };
+
+  if (isEntryFeature) {
+    filters.entry_id = 'eq.' + entryId;
+  }
+
+  if (feature === 'contributions') {
+    filters.goal_id = 'eq.' + entryId;
+  }
+
+  // Read feature data.
+  if (method === 'GET') {
+    const rows = await db(table, {
+      filters,
+      order: 'created_at.asc',
+      limit: 300
+    });
+
+    if (feature === 'attachments') {
+      return json(
+        rows.map(({ storage_path, ...rest }) => rest)
+      );
+    }
+
+    return json(rows);
+  }
+
+  // Create feature data.
+  if (method === 'POST') {
+    if (m.role === 'viewer') {
+      return fail(
+        'Viewers cannot change tracker data.',
+        403
+      );
+    }
+
+    // Expense comments
+    if (feature === 'comments') {
+      const text = clean(body.text, 1500);
+
+      if (!text) {
+        return fail('Enter a comment.');
+      }
+
+      return json((await db(table, {
+        method: 'POST',
+        body: {
+          tracker_id: id,
+          entry_id: entryId,
+          user_id: me.id,
+          display_name: me.name,
+          text
+        }
+      }))[0], 201);
+    }
+
+    // Expense reactions
+    if (feature === 'reactions') {
+      const emoji = String(body.emoji || '');
+
+      if (!['👍', '🎉', '❤️', '👀', '😄'].includes(emoji)) {
+        return fail('Invalid reaction.');
+      }
+
+      const existing = await db(table, {
+        filters: {
+          ...filters,
+          user_id: 'eq.' + me.id,
+          emoji: 'eq.' + emoji
+        },
+        limit: 1
+      });
+
+      if (existing.length) {
+        await db(table, {
+          method: 'DELETE',
+          filters: { id: 'eq.' + existing[0].id }
+        });
+
+        return json({ removed: true });
+      }
+
+      return json((await db(table, {
+        method: 'POST',
+        body: {
+          tracker_id: id,
+          entry_id: entryId,
+          user_id: me.id,
+          display_name: me.name,
+          emoji
+        }
+      }))[0], 201);
+    }
+
+    // Shared savings goals
+    if (feature === 'goals') {
+      const title = clean(body.title, 100);
+      const target = Number(body.target);
+
+      if (
+        !title ||
+        !Number.isFinite(target) ||
+        target <= 0 ||
+        target > 100000000
+      ) {
+        return fail('Enter a valid goal and target.');
+      }
+
+      return json((await db(table, {
+        method: 'POST',
+        body: {
+          tracker_id: id,
+          created_by: me.id,
+          title,
+          target_amount: Math.round(target * 100) / 100
+        }
+      }))[0], 201);
+    }
+
+    // Savings goal contributions
+    if (feature === 'contributions') {
+      const amount = Number(body.amount);
+
+      if (
+        !Number.isFinite(amount) ||
+        amount <= 0 ||
+        amount > 100000000
+      ) {
+        return fail('Enter a valid contribution.');
+      }
+
+      return json((await db(table, {
+        method: 'POST',
+        body: {
+          tracker_id: id,
+          goal_id: entryId,
+          user_id: me.id,
+          display_name: me.name,
+          amount: Math.round(amount * 100) / 100,
+          note: clean(body.note, 200)
+        }
+      }))[0], 201);
+    }
+
+    // Open a payment dispute
+    if (feature === 'disputes') {
+      const entry = (await db('tracker_entries', {
+        filters: {
+          id: 'eq.' + entryId,
+          tracker_id: 'eq.' + id
+        },
+        limit: 1
+      }))[0];
+
+      if (entry.type !== 'payment') {
+        return fail(
+          'Disputes in this center apply to payments.',
+          400
+        );
+      }
+
+      const people = await sqPaymentParticipants(entry);
+
+      if (
+        !people ||
+        ![people.fromId, people.toId].includes(me.id)
+      ) {
+        return fail(
+          'Only verified payment participants can open disputes.',
+          403
+        );
+      }
+
+      const reason = clean(body.reason, 1200);
+
+      if (!reason) {
+        return fail('Enter a reason.');
+      }
+
+      const existing = await db(table, {
+        filters,
+        limit: 1
+      });
+
+      if (existing.length) {
+        return fail(
+          'A dispute already exists for this payment.',
+          409
+        );
+      }
+
+      return json((await db(table, {
+        method: 'POST',
+        body: {
+          tracker_id: id,
+          entry_id: entryId,
+          opened_by: me.id,
+          reason,
+          status: 'open',
+          approvals: []
+        }
+      }))[0], 201);
+    }
+
+    // Expense file attachments
+    if (feature === 'attachments') {
+      const filename = clean(body.filename, 120);
+      const mime = String(body.mime || '');
+      const base64 = String(body.base64 || '');
+
+      if (
+        ![
+          'image/png',
+          'image/jpeg',
+          'image/webp',
+          'application/pdf'
+        ].includes(mime) ||
+        base64.length > 1400000 ||
+        !base64
+      ) {
+        return fail(
+          'Use a PNG, JPG, WebP, or PDF under 1 MB.'
+        );
+      }
+
+      let bytes;
+
+      try {
+        bytes = Uint8Array.from(
+          atob(base64),
+          c => c.charCodeAt(0)
+        );
+      } catch {
+        return fail('Invalid attachment.');
+      }
+
+      if (bytes.length > 1024 * 1024) {
+        return fail('File too large.');
+      }
+
+      const realMime = mime === 'application/pdf'
+        ? bytes[0] === 37 &&
+          bytes[1] === 80 &&
+          bytes[2] === 68 &&
+          bytes[3] === 70
+        : kind(bytes) === mime;
+
+      if (!realMime) {
+        return fail(
+          'File content does not match its type.'
+        );
+      }
+
+      const path =
+        id + '/' + entryId + '/' + crypto.randomUUID();
+
+      await storage(
+        'squareup-expense-attachments',
+        path,
+        'POST',
+        bytes,
+        mime
+      );
+
+      try {
+        return json((await db(table, {
+          method: 'POST',
+          body: {
+            tracker_id: id,
+            entry_id: entryId,
+            user_id: me.id,
+            display_name: me.name,
+            filename: filename || 'Attachment',
+            mime_type: mime,
+            storage_path: path
+          }
+        }))[0], 201);
+      } catch (e) {
+        await storage(
+          'squareup-expense-attachments',
+          path,
+          'DELETE'
+        ).catch(() => {});
+
+        throw e;
+      }
+    }
+  }
+
+  // Both payment participants must approve resolution.
+  if (
+    feature === 'disputes' &&
+    method === 'PATCH' &&
+    parts[5] === 'agree'
+  ) {
+    const rows = await db(table, {
+      filters,
+      limit: 1
+    });
+
+    const dispute = rows[0];
+
+    if (!dispute) {
+      return fail('Dispute not found.', 404);
+    }
+
+    if (dispute.status === 'resolved') {
+      return json(dispute);
+    }
+
+    const entry = (await db('tracker_entries', {
+      filters: {
+        id: 'eq.' + entryId,
+        tracker_id: 'eq.' + id
+      },
+      limit: 1
+    }))[0];
+
+    const people = await sqPaymentParticipants(entry);
+
+    if (
+      !people ||
+      ![people.fromId, people.toId].includes(me.id)
+    ) {
+      return fail(
+        'Only the two verified payment participants can agree.',
+        403
+      );
+    }
+
+    const { fromId, toId } = people;
+
+    const rpc = await fetch(
+      URL_BASE + '/rest/v1/rpc/squareup_approve_dispute',
+      {
+        method: 'POST',
+        headers: {
+          ...baseHeaders,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          p_dispute_id: dispute.id,
+          p_actor_id: me.id,
+          p_from_id: fromId,
+          p_to_id: toId
+        })
+      }
+    );
+
+    const result = await rpc.json().catch(() => null);
+
+    if (!rpc.ok) {
+      return fail(
+        result?.message || 'Could not record approval.',
+        409
+      );
+    }
+
+    return json(result);
+  }
+
+  return fail('Method not allowed.', 405);
+}
+
+    
 // Resolve payment participants using unique tracker member IDs.
 async function paymentParticipants(entry) {
   const members = await db('tracker_members', {
