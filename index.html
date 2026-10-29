@@ -2553,17 +2553,19 @@ document.getElementById('sq-approvals-list').addEventListener('click',async func
 var splitState = { people:[], payer:"", selected:{}, custom:{}, percent:{}, shares:{}, method:"equal", saving:false };
 function splitMoney(cents) { return "$" + (cents/100).toFixed(2); }
 function splitMembers() {
-  var found = {}, list = [];
-  function add(name) {
-    name = String(name || "").trim();
-    if (!name || found[norm(name)]) return;
-    found[norm(name)] = true;
-    list.push(name);
-  }
-  var sharedMembers = typeof window.squareUpSplitMembers === "function" ? window.squareUpSplitMembers() : [];
-  sharedMembers.forEach(add);
-  Object.keys(nameMap()).forEach(function(k) { add(nameMap()[k]); });
-  return list;
+  // Use only the currently opened tracker's real members. Historical entry names
+  // can include removed people and must not create phantom split participants.
+  var members = typeof window.squareUpSplitMembers === "function" ? window.squareUpSplitMembers() : [];
+  var found = new Set();
+  return members.map(function(m){return String(m.name || "").trim();}).filter(function(name){
+    var key=norm(name); if(!key || found.has(key)) return false;
+    found.add(key); return true;
+  });
+}
+function splitLabel(person) {
+  var members=typeof window.squareUpSplitMembers === "function" ? window.squareUpSplitMembers() : [];
+  var mine=members.find(function(m){return m.isYou && norm(m.name)===norm(person);});
+  return mine ? "You ("+person+")" : person;
 }
 function openSplitPage() {
   splitState.people = splitMembers();
@@ -2613,7 +2615,7 @@ function renderSplitPage() {
     var radio = document.createElement("input"); radio.type="radio"; radio.name="split-payer"; radio.checked=splitState.payer===person;
     radio.addEventListener("change",function(){splitState.payer=person;renderSplitSummary();});
     var av=document.createElement("span"); av.className="split-avatar"; av.style.background=COLORS[i%COLORS.length]; av.textContent=person.charAt(0).toUpperCase();
-    var name=document.createElement("span"); name.className="split-name"; name.textContent=person;
+    var name=document.createElement("span"); name.className="split-name"; name.textContent=splitLabel(person);
     payerLabel.append(radio,av,name); payers.append(payerLabel);
     var label=document.createElement("label"); label.className="split-person";
     var check=document.createElement("input"); check.type="checkbox"; check.checked=!!splitState.selected[person];
@@ -2649,12 +2651,12 @@ function renderSplitSummary() {
   document.getElementById("split-summary-total").textContent=splitMoney(result.cents);
   function line(parent,name,cents,cls) {
     var row=document.createElement("div"); row.className="split-summary-line";
-    var left=document.createElement("span"); left.textContent=name;
+    var left=document.createElement("span"); left.textContent=splitLabel(name);
     var right=document.createElement("strong"); right.textContent=splitMoney(cents); if(cls)right.className=cls;
     row.append(left,right); parent.append(row);
   }
   result.shares.forEach(function(p){line(summary,p.name,p.cents);});
-  document.getElementById("split-owed-heading").textContent="Payments owed to "+(splitState.payer||"payer");
+  document.getElementById("split-owed-heading").textContent="Payments owed to "+(splitState.payer?splitLabel(splitState.payer):"payer");
   result.shares.filter(function(p){return p.name!==splitState.payer && p.cents>0;}).forEach(function(p){line(owed,p.name,p.cents,"split-due");});
   if ((splitState.method==="custom" || splitState.method==="percent" || splitState.method==="shares") && !result.valid) {
     var warning=document.createElement("div");warning.className="split-message";warning.textContent=splitState.method==="percent"?"Percentages must total 100%.":splitState.method==="shares"?"Shares must be nonnegative whole numbers with at least one positive share.":"Assigned "+splitMoney(result.assigned)+" of "+splitMoney(result.cents)+". Adjust amounts to match.";summary.append(warning);
@@ -3371,7 +3373,9 @@ window.squareUpSendReminder = function (fromKey, toKey, shownAmount) {
   }
 };
 window.squareUpSplitMembers = function () {
-  return current && Array.isArray(current.members) ? current.members.map(displayName) : [];
+  return current && Array.isArray(current.members) ? current.members.map(function(m) {
+    return {name: String(m.ledgerName || m.name || m.email || "").trim(), isYou: !!m.isYou};
+  }) : [];
 };
 window.squareUpSplitSave = async function (entry) {
   if (!current || !current.id) throw new Error("Open a shared tracker first.");
