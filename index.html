@@ -3865,6 +3865,7 @@ async function renderTrackerGallery(){
       var sub=document.createElement('div');sub.className='tracker-sub';sub.textContent=t.role==='owner'?'Created by you':'Shared with you';
       nameWrap.append(title,sub);head.append(ico,nameWrap);
       var members=Array.isArray(d&&d.members)?d.members:[];
+      var countBadge=document.createElement('span');countBadge.className='sq-gallery-member-count';countBadge.textContent=(members.length||t.memberCount||0)+' members';banner.append(countBadge);
       var debts=Array.isArray(d&&d.entries)?d.entries.filter(function(e){return e.type==='debt';}):[];
       var total=debts.reduce(function(sum,e){return sum+(Number(e.amount)||0);},0);
       var stats=document.createElement('div');stats.className='tracker-stats';
@@ -6301,6 +6302,42 @@ body{background:radial-gradient(ellipse at 78% 0%,#10294b 0%,transparent 48%),li
  .sq-mobile-nav button.active{color:#38ebba!important}
 }
 @media(max-width:520px){#tracker-dashboard .sq-overview-stats{grid-template-columns:repeat(3,minmax(0,1fr))!important}#tracker-dashboard .sq-overview-stats .sq-stat{padding:10px 7px!important}#tracker-dashboard .sq-overview-stats .sq-stat strong{font-size:15px!important}}
+</style>
+<style id="sq-reference-tracker-gallery">
+
+/* SquareUp tracker gallery — compact photo cards matching the approved reference. */
+body.trackers-view #trackers-page{max-width:1180px!important}
+body.trackers-view #trackers-page .trackers-header{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:8px 0 18px!important;margin:0!important;align-items:center!important}
+body.trackers-view #trackers-page .trackers-header .eyebrow,body.trackers-view #trackers-page .trackers-header p{display:none!important}
+body.trackers-view #trackers-page .trackers-header h2{font-size:clamp(26px,3vw,34px)!important;margin:0!important;letter-spacing:-.035em!important}
+body.trackers-view #trackers-page .trackers-header h2 span{color:inherit!important}
+body.trackers-view #trackers-page .tracker-create{background:linear-gradient(110deg,#5755f6,#8654f6)!important;color:#fff!important;border:1px solid #a99bff45!important;border-radius:10px!important;padding:11px 18px!important;box-shadow:0 6px 18px #4b33dc33!important}
+body.trackers-view #trackers-gallery{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:18px!important;align-items:start!important}
+body.trackers-view .tracker-tile{position:relative!important;min-height:260px!important;height:260px!important;overflow:hidden!important;border:1px solid #355570!important;border-radius:18px!important;background:#102d48!important;box-shadow:0 8px 24px #0004!important;padding:0!important;isolation:isolate}
+body.trackers-view .tracker-tile-banner{position:absolute!important;inset:0!important;height:100%!important;border-radius:0!important;overflow:hidden!important;background-size:cover!important;background-position:center!important}
+body.trackers-view .tracker-tile-banner::after{content:''!important;position:absolute!important;inset:0!important;background:linear-gradient(180deg,rgba(3,14,28,.48) 0%,rgba(3,14,28,.12) 35%,rgba(3,14,28,.55) 65%,rgba(3,14,28,.94) 100%)!important;pointer-events:none!important}
+body.trackers-view .tracker-tile-body{position:absolute!important;inset:0!important;z-index:2!important;padding:18px!important;display:flex!important;flex-direction:column!important;justify-content:flex-end!important;pointer-events:none!important;background:transparent!important}
+body.trackers-view .tracker-tile-head{position:absolute!important;top:16px!important;left:18px!important;right:54px!important;display:block!important;padding:0!important;margin:0!important;pointer-events:none!important}
+body.trackers-view .tracker-tile-head .tracker-tile-icon{display:none!important}
+body.trackers-view .tracker-tile-head h3{font-size:clamp(17px,2vw,22px)!important;line-height:1.2!important;color:#fff!important;text-shadow:0 2px 9px #000a!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+body.trackers-view .tracker-tile-head .tracker-sub{display:none!important}
+body.trackers-view .sq-gallery-member-count{position:absolute!important;z-index:3!important;top:46px!important;left:18px!important;font-size:12px!important;font-weight:600!important;color:#e5edf7!important;text-shadow:0 1px 6px #000b!important}
+body.trackers-view .tracker-stats{display:none!important}
+body.trackers-view .tracker-tile-members{min-height:0!important;margin:0 0 12px!important;display:block!important}
+body.trackers-view .tracker-tile-members>strong,body.trackers-view .tracker-people-names{display:none!important}
+body.trackers-view .tracker-people{display:block!important}
+body.trackers-view .tracker-avatars{padding-left:7px!important}
+body.trackers-view .tracker-avatar{width:35px!important;height:35px!important;margin-left:-7px!important;border:2px solid #e4edf8!important;box-shadow:0 2px 6px #0008!important;font-size:13px!important}
+body.trackers-view .tracker-tile-actions{display:block!important;pointer-events:auto!important}
+body.trackers-view .tracker-tile-actions .tile-open{display:block!important;width:100%!important;min-height:40px!important;padding:10px 14px!important;background:rgba(107,139,173,.55)!important;backdrop-filter:blur(8px)!important;color:#fff!important;border:1px solid #ffffff30!important;border-radius:9px!important;font-size:14px!important;font-weight:750!important}
+body.trackers-view .tracker-tile-actions .tile-open:hover{background:rgba(126,157,190,.8)!important}
+body.trackers-view .tracker-tile-actions .tile-backdrop,body.trackers-view .tracker-tile-actions .tile-share{display:none!important}
+body.trackers-view .tracker-tile-menu{z-index:10!important;top:12px!important;right:12px!important}
+body.trackers-view .tracker-tile-menu summary{width:32px!important;height:30px!important;font-size:20px!important;background:#091b30aa!important;border:1px solid #ffffff55!important}
+body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
+@media(min-width:1350px){body.trackers-view #trackers-gallery{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:680px){body.trackers-view #trackers-page .trackers-header{display:flex!important;padding:8px 0 15px!important}body.trackers-view #trackers-page .tracker-create{width:auto!important;margin:0!important;padding:10px 12px!important;font-size:12px!important}body.trackers-view #trackers-gallery{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}body.trackers-view .tracker-tile{height:210px!important;min-height:210px!important;border-radius:14px!important}body.trackers-view .tracker-tile-body{padding:10px!important}body.trackers-view .tracker-tile-head{top:12px!important;left:10px!important;right:36px!important}body.trackers-view .tracker-tile-head h3{font-size:15px!important}body.trackers-view .sq-gallery-member-count{top:34px!important;left:10px!important;font-size:11px!important}body.trackers-view .tracker-avatar{width:27px!important;height:27px!important;font-size:11px!important}body.trackers-view .tracker-tile-members{margin-bottom:8px!important}body.trackers-view .tracker-tile-actions .tile-open{font-size:12px!important;min-height:34px!important;padding:7px!important}body.trackers-view .tracker-tile-menu{top:8px!important;right:7px!important}body.trackers-view .tracker-tile-menu summary{width:26px!important;height:26px!important}}
+@media(max-width:360px){body.trackers-view #trackers-gallery{grid-template-columns:1fr!important}}
 </style>
 </body>
 </html>
