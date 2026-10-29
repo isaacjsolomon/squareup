@@ -6061,5 +6061,68 @@ body.trackers-view > .wrap > :not(.tracker-heading):not(.sq-mobile-top):not(#tra
  body.trackers-view #trackers-page .trackers-header{margin:0 0 6px!important;padding:0 0 6px!important}
 }
 </style>
+<style id="sq-collab-features-style">
+#sq-features-launch{position:fixed;right:18px;bottom:95px;z-index:1100;border:1px solid #72d9c0;background:#0e3648;color:white;padding:12px 17px;border-radius:20px;box-shadow:0 10px 35px #0006;font-weight:750;cursor:pointer}
+#sq-features-overlay[hidden]{display:none!important}#sq-features-overlay{position:fixed;inset:0;z-index:1200;background:#00111bd9;display:grid;place-items:center;padding:16px}
+#sq-features-panel{width:min(820px,100%);max-height:92vh;overflow:auto;background:#0b2537;color:#f5fbff;border:1px solid #6ca4b566;border-radius:23px;padding:22px;box-shadow:0 30px 80px #0009}
+#sq-features-panel button,#sq-features-panel select,#sq-features-panel input,#sq-features-panel textarea{font:inherit;border-radius:10px;padding:9px;color:inherit;background:#1b4153;border:1px solid #668999}#sq-features-panel button{cursor:pointer}#sq-features-panel button:focus-visible{outline:3px solid #5af0c5}#sq-features-panel textarea,#sq-features-panel input:not([type=file]){width:100%;box-sizing:border-box}#sq-features-panel .sq-feature-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}#sq-features-panel .sq-feature-tabs button[aria-selected=true]{background:#187a73;border-color:#6ef5d2}#sq-features-panel .sq-feature-card{background:#17384a;padding:14px;border-radius:15px;margin:12px 0}#sq-features-panel .sq-feature-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}#sq-features-panel .sq-feature-muted{color:#bfd3db;font-size:13px}#sq-features-panel .sq-feature-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}#sq-features-panel label{display:block;margin:10px 0}#sq-features-panel .sq-feature-positive{background:#14685b;border-color:#46c7a8}
+@media(max-width:700px){#sq-features-launch{bottom:78px;right:12px}#sq-features-panel{padding:15px}}
+</style>
+<button id="sq-features-launch" type="button" hidden>Goals &amp; expenses</button>
+<div id="sq-features-overlay" hidden role="dialog" aria-modal="true" aria-label="SquareUp collaborative features"><section id="sq-features-panel">
+ <div class="sq-feature-row"><h2 style="margin:0">Tracker extras</h2><button id="sq-features-close" type="button">Close ✕</button></div>
+ <p class="sq-feature-muted">Savings goals, expense comments, attachments, and disputes. All data belongs to the open tracker.</p>
+ <div class="sq-feature-tabs" role="tablist"><button data-sq-feature-tab="goals" aria-selected="true">Savings goals</button><button data-sq-feature-tab="comments">Comments &amp; reactions</button><button data-sq-feature-tab="attachments">Attachments</button><button data-sq-feature-tab="disputes">Dispute center</button><button data-sq-feature-tab="offline">Offline view</button></div>
+ <div id="sq-features-content" aria-live="polite"></div>
+ <p id="sq-features-message" role="status" class="sq-feature-muted"></p>
+</section></div>
+<script id="sq-collab-features-js">
+(function(){
+ const launch=document.getElementById('sq-features-launch'),overlay=document.getElementById('sq-features-overlay'),content=document.getElementById('sq-features-content'),message=document.getElementById('sq-features-message');
+ let mode='goals';let cache=null;const escapeHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const tracker=()=>typeof current!=='undefined'&&current?.id?current:null;
+ const path=(feature,entry='')=>'trackers/'+encodeURIComponent(tracker().id)+'/features/'+feature+(entry?'/'+encodeURIComponent(entry):'');
+ const msg=s=>{message.textContent=s};
+ async function get(feature,entry){return api(path(feature,entry))}
+ async function send(feature,entry,data,method='POST'){return api(path(feature,entry),method,data)}
+ function expensePicker(paymentsOnly=false){const list=(tracker()?.entries||[]).filter(x=>!paymentsOnly||x.type==='payment');return '<label>Choose an '+(paymentsOnly?'payment':'expense')+'<select id="sq-feat-expense">'+list.map(e=>'<option value="'+escapeHTML(e.id)+'">'+escapeHTML((e.note||e.from+' → '+e.to).slice(0,65))+' · '+Number(e.amount||0).toFixed(2)+'</option>').join('')+'</select></label>'}
+ function chosen(){return document.getElementById('sq-feat-expense')?.value}
+ function offlineKey(){const uid=typeof supabase!=='undefined'?'account':'account';return 'sq-offline-preview-'+uid}
+ function saveOffline(){if(!tracker())return;try{sessionStorage.setItem(offlineKey(),JSON.stringify({saved:Date.now(),id:tracker().id,name:tracker().name,entries:(tracker().entries||[]).map(e=>({type:e.type,amount:e.amount,note:e.note,date:e.date}))}));}catch{}}
+ async function draw(){msg('');const t=tracker();if(!t){content.innerHTML='<p>Open a tracker first.</p>';return;}saveOffline();
+  try{
+   if(mode==='goals'){
+    const goals=await get('goals');const blocks=await Promise.all(goals.map(async g=>{const c=await get('contributions',g.id);const total=c.reduce((s,x)=>s+Number(x.amount),0);return '<div class="sq-feature-card"><strong>'+escapeHTML(g.title)+'</strong><p>$'+total.toFixed(2)+' of $'+Number(g.target_amount).toFixed(2)+'</p><progress style="width:100%" max="100" value="'+Math.min(100,total/Number(g.target_amount)*100)+'"></progress><div class="sq-feature-actions"><input style="max-width:160px" type="number" min="0.01" step="0.01" placeholder="Contribution $" data-contribution="'+g.id+'"><button data-contribute="'+g.id+'">Record contribution</button></div><p class="sq-feature-muted">'+c.length+' recorded contributions. These do not affect expense balances.</p></div>'}));
+    content.innerHTML='<h3>Shared savings goals</h3>'+blocks.join('')+'<div class="sq-feature-card"><strong>Create a goal</strong><label>Goal name<input id="sq-goal-title" maxlength="100" placeholder="Summer trip"></label><label>Target amount<input id="sq-goal-target" type="number" min="0.01" step="0.01"></label><button class="sq-feature-positive" id="sq-create-goal">Create goal</button></div>';
+   }else if(mode==='offline'){
+    const saved=JSON.parse(sessionStorage.getItem(offlineKey())||'null');content.innerHTML='<h3>Read-only offline preview</h3><p>Previously viewed entries are saved only for this browser tab/session. This is not a full offline sync.</p>'+(saved?'<p>Saved: '+new Date(saved.saved).toLocaleString()+' · '+escapeHTML(saved.name)+'</p><div class="sq-feature-card">'+saved.entries.slice(-30).reverse().map(e=>'<p>'+escapeHTML(e.note||e.type)+' — $'+Number(e.amount).toFixed(2)+'</p>').join('')+'</div>':'<p>No offline snapshot yet.</p>')+'<button id="sq-clear-offline">Clear offline snapshot</button>';
+   }else{
+    const pay=mode==='disputes';content.innerHTML='<h3>'+({comments:'Expense comments & reactions',attachments:'Expense attachments',disputes:'Dispute resolution center'}[mode])+'</h3>'+expensePicker(pay)+'<div id="sq-feat-detail">Select an entry.</div>';
+    document.getElementById('sq-feat-expense')?.addEventListener('change',detail);await detail();
+   }
+  }catch(e){msg(e.message||'Could not load features. Install the backend and SQL first.');content.textContent='This feature is not available yet.'}
+ }
+ async function detail(){const id=chosen();const area=document.getElementById('sq-feat-detail');if(!id||!area)return;area.textContent='Loading…';try{
+  if(mode==='comments'){const [comments,reactions]=await Promise.all([get('comments',id),get('reactions',id)]);area.innerHTML='<div class="sq-feature-card"><strong>Reactions</strong><div class="sq-feature-actions">'+['👍','🎉','❤️','👀','😄'].map(e=>'<button data-reaction="'+e+'">'+e+' '+reactions.filter(r=>r.emoji===e).length+'</button>').join('')+'</div></div>'+comments.map(c=>'<div class="sq-feature-card"><strong>'+escapeHTML(c.display_name)+'</strong><p>'+escapeHTML(c.text)+'</p></div>').join('')+'<label>New comment<textarea id="sq-new-comment" rows="3" maxlength="1500"></textarea></label><button id="sq-post-comment">Post comment</button>'}
+  if(mode==='attachments'){const files=await get('attachments',id);area.innerHTML=files.map(f=>'<div class="sq-feature-card sq-feature-row"><span>'+escapeHTML(f.filename)+' <small>('+escapeHTML(f.display_name)+')</small></span><button data-download="'+f.id+'">Download</button></div>').join('')+'<label>Attach a receipt, photo, or PDF (up to 1 MB)<input type="file" id="sq-attachment-file" accept="image/png,image/jpeg,image/webp,application/pdf"></label><button id="sq-upload-attachment">Upload attachment</button>'}
+  if(mode==='disputes'){const rows=await get('disputes',id);const d=rows[0];area.innerHTML=d?'<div class="sq-feature-card"><strong>Status: '+escapeHTML(d.status)+'</strong><p>'+escapeHTML(d.reason)+'</p><p>'+((d.approvals||[]).length)+' of 2 participant approvals recorded</p>'+(d.status!=='resolved'?'<button id="sq-agree-dispute">I agree to resolve</button>':'<p>Both participants agreed.</p>')+'</div>':'<label>Reason for dispute<textarea id="sq-dispute-reason" rows="3" maxlength="1200"></textarea></label><button id="sq-open-dispute">Open dispute</button>';}
+ }catch(e){area.textContent=e.message}}
+ async function action(e){const btn=e.target.closest('button');if(!btn)return;const id=chosen();try{
+  if(btn.id==='sq-create-goal'){await send('goals','',{title:document.getElementById('sq-goal-title').value,target:document.getElementById('sq-goal-target').value});await draw()}
+  else if(btn.dataset.contribute){const field=document.querySelector('[data-contribution="'+btn.dataset.contribute+'"]');await send('contributions',btn.dataset.contribute,{amount:field.value});await draw()}
+  else if(btn.dataset.reaction){await send('reactions',id,{emoji:btn.dataset.reaction});await detail()}
+  else if(btn.id==='sq-post-comment'){await send('comments',id,{text:document.getElementById('sq-new-comment').value});await detail()}
+  else if(btn.id==='sq-open-dispute'){await send('disputes',id,{reason:document.getElementById('sq-dispute-reason').value});await detail()}
+  else if(btn.id==='sq-agree-dispute'){await send('disputes',id+'/agree',{},'PATCH');await detail()}
+  else if(btn.id==='sq-clear-offline'){sessionStorage.removeItem(offlineKey());await draw()}
+  else if(btn.dataset.download){const response=await fetch('/api/trackers/'+encodeURIComponent(tracker().id)+'/feature-attachment/'+encodeURIComponent(btn.dataset.download),{headers:await authHeaders()});if(!response.ok)throw Error('Download failed');const blob=await response.blob();const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='attachment';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+  else if(btn.id==='sq-upload-attachment'){const file=document.getElementById('sq-attachment-file').files[0];if(!file||file.size>1024*1024)throw Error('Choose a file under 1 MB.');const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file)});await send('attachments',id,{filename:file.name,mime:file.type,base64});await detail()}
+ }catch(err){msg(err.message||'Request failed')}}
+ launch.addEventListener('click',()=>{overlay.hidden=false;draw()});document.getElementById('sq-features-close').addEventListener('click',()=>overlay.hidden=true);overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.hidden=true});content.addEventListener('click',action);document.querySelectorAll('[data-sq-feature-tab]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.sqFeatureTab;document.querySelectorAll('[data-sq-feature-tab]').forEach(x=>x.setAttribute('aria-selected',String(x===b)));draw()}));
+ const update=()=>{launch.hidden=!tracker();if(tracker())saveOffline()};setInterval(update,2500);update();
+ window.addEventListener('offline',()=>{if(!overlay.hidden&&mode==='offline')draw()});
+})();
+</script>
+
 </body>
 </html>
