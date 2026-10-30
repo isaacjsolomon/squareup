@@ -6997,5 +6997,16 @@ document.addEventListener('click',function(event){var trigger=event.target.close
 })();
 </script>
 
+
+<!-- SquareUp: compact mobile header-to-Trackers spacing -->
+<style id="sq-compact-mobile-trackers-gap">
+@media (max-width: 680px) {
+  body.trackers-view > .wrap::before { display: none !important; content: none !important; height: 0 !important; }
+  body.trackers-view > .wrap { gap: 0 !important; padding-top: 0 !important; }
+  body.trackers-view > .wrap > .sq-mobile-top { margin-bottom: 0 !important; }
+  body.trackers-view > .wrap > #trackers-page { margin-top: 0 !important; padding-top: 0 !important; }
+  body.trackers-view #trackers-page .sq-mobile-trackers-title { margin-top: 4px !important; margin-bottom: 12px !important; }
+}
+</style>
 </body>
 </html>
