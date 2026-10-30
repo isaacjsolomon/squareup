@@ -1761,7 +1761,13 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
 @media(max-width:550px){#budget-card .sb-category-add{flex-wrap:wrap}#budget-card .sb-category-add button{width:100%}}
 </style>
 <style id="sq-budget-retired">#budget-card{display:none!important}#tracker-dashboard.sq-tab-budget #budget-card{display:none!important}</style>
-</head>
+<style id="sq-four-improvements">
+.sq-enhanced-empty{display:flex;flex-direction:column;align-items:flex-start;gap:7px;padding:22px 18px;border:1px dashed rgba(159,205,230,.27);border-radius:15px;background:rgba(255,255,255,.035);color:#c3d8e8;line-height:1.5}
+.sq-enhanced-empty strong{color:#f5fbff;font-size:15px}.sq-enhanced-empty span{font-size:13px}
+#notifications-list .sq-notification-action{margin-top:9px;margin-right:8px;background:#27d5b6!important;color:#052c36!important;border:0!important;font-weight:700}
+#notifications-list .sq-notification-link:focus-within{outline:2px solid #4de8cf;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.sq-loading-skeleton,.sq-startup-ring{animation:none!important}}
+</style></head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
   <div class="sq-startup-content"><span class="sq-startup-ring" aria-hidden="true"></span><strong>Loading Square Up…</strong><span>Getting your tracker ready</span><div class="sq-startup-progress" aria-hidden="true"></div></div>
@@ -2445,11 +2451,11 @@ function render() {
       '" data-amt="' + p.amount + '">Settle up</button>' +
       '<button class="small-btn" data-remind-from="' + esc(p.from) + '" data-remind-to="' + esc(p.to) + '" data-remind-amount="' + p.amount + '">Send reminder</button></div>';
   }).join("");
-  document.getElementById("nets").innerHTML = netsHtml || '<div class="empty">Everyone is squared up 🎉</div>';
+  document.getElementById("nets").innerHTML = netsHtml || '<div class="sq-enhanced-empty"><strong>All squared up!</strong><span>No outstanding balances in this tracker.</span></div>';
 
   // matrix table
   if (people.length < 2) {
-    document.getElementById("matrix").innerHTML = '<div class="empty">Add an entry to see the table.</div>';
+    document.getElementById("matrix").innerHTML = '<div class="sq-enhanced-empty"><strong>No balances to compare yet</strong><span>Add an expense involving two members to see a breakdown.</span></div>';
   } else {
     var t = '<table><tr><th class="corner">owes ↓ &nbsp; to →</th>' +
       people.map(function (p) { return "<th>" + esc(names[p]) + "</th>"; }).join("") + "</tr>";
@@ -3426,10 +3432,15 @@ window.squareUpSendReminder = function (fromKey, toKey, shownAmount) {
   });
   if (cents<=0) { alert('There is no outstanding balance to remind this friend about.'); return; }
   var amount=(cents/100).toFixed(2);
+  // This reminder is a draft only. A local cooldown reduces accidental repeat drafts;
+  // it never claims an email was sent and does not affect another device.
+  var reminderKey='sq-reminder-draft:'+String(current.id)+':'+String(debtor.email).toLowerCase();
+  try { var lastDraft=Number(localStorage.getItem(reminderKey)||0);if(lastDraft&&Date.now()-lastDraft<24*60*60*1000){if(!confirm('You prepared a reminder for this person within the last 24 hours. Open another draft anyway?'))return;} }catch(_){}
   var subject='SquareUp payment reminder: $'+amount;
   var message='Hi '+(debtor.name||'there')+',\n\nJust a friendly reminder that you have an outstanding balance of $'+amount+' owed to '+(creditor.name||creditor.email)+' in our SquareUp tracker "'+current.name+'".\n\nPlease check the tracker for details and let me know when you have paid.\n\nThanks!';
   // Open Gmail compose directly: mailto: depends on a configured system email handler.
   var composeUrl='https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(debtor.email)+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(message);
+  try{localStorage.setItem(reminderKey,String(Date.now()));}catch(_){}
   var composeTab=window.open(composeUrl,'_blank');
   if (!composeTab) {
     // Fallback when pop-ups are blocked.
@@ -4724,7 +4735,7 @@ if (!startUser && pendingJoin() && !$("auth-modal").classList.contains("open")) 
 var inbox=[];
 async function refreshInbox(){
  if(!currentUser){inbox=[];drawInbox();return;}
- try {var regular=await api('notifications');var social=await api('social/notifications');inbox=[...regular,...social.map(x=>({...x,_social:true}))].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));drawInbox();}catch(e){console.warn('Notifications unavailable',e);drawInbox();var list=document.getElementById('notifications-list');if(list&&!inbox.length)list.innerHTML='<p>Notifications could not be loaded right now. Please try again shortly.</p>';}
+ try {var results=await Promise.allSettled([api('notifications'),api('social/notifications')]);if(results.every(r=>r.status==='rejected'))throw results[0].reason;var regular=results[0].status==='fulfilled'&&Array.isArray(results[0].value)?results[0].value:[];var social=results[1].status==='fulfilled'&&Array.isArray(results[1].value)?results[1].value:[];inbox=[...regular,...social.map(x=>({...x,_social:true}))].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));drawInbox();}catch(e){console.warn('Notifications unavailable',e);drawInbox();var list=document.getElementById('notifications-list');if(list&&!inbox.length)list.innerHTML='<p>Notifications could not be loaded right now. Please try again shortly.</p>';}
 }
 function drawInbox(){
  var count=inbox.filter(n=>!n.read_at).length;
@@ -4732,7 +4743,7 @@ function drawInbox(){
  var mobileBadge=document.getElementById('sq-mobile-notifications-count');if(mobileBadge){mobileBadge.textContent=count>99?'99+':String(count);mobileBadge.hidden=!count;}
  var due=(current?.entries||[]).filter(e=>e.type==='debt'&&e.dueDate&&e.dueDate<=new Date(Date.now()+3*86400000).toISOString().slice(0,10)&&e.paymentStatus!=='disputed');
  var dueHtml=due.map(e=>'<div class="entry sq-notification-link" role="link" tabindex="0" data-due-entry="'+esc(e.id)+'"><div class="text"><b>'+esc(e.dueDate<new Date().toISOString().slice(0,10)?'Overdue':'Due soon')+'</b> · '+esc(e.from)+' owes '+esc(e.to)+' '+money(e.amount)+'<div class="note">Due '+esc(e.dueDate)+'</div></div></div>').join('');
- document.getElementById('notifications-list').innerHTML=(inbox.map(n=>'<div class="entry sq-notification-link" role="link" tabindex="0" data-notification-index="'+inbox.indexOf(n)+'"><div class="text"><b>'+esc(n.title)+'</b><div class="note">'+esc(n.message)+' · '+esc(new Date(n.created_at).toLocaleString())+'</div>'+(n.kind==='tracker_invite'&&n.invitation_id?'<button class="small-btn" data-invite-accept="'+esc(n.invitation_id)+'">Accept tracker</button> <button class="small-btn danger" data-invite-decline="'+esc(n.invitation_id)+'">Decline</button>':'')+(n.kind==='payment_pending'&&n.entry_id?'<button class="small-btn" data-confirm-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Confirm payment</button> <button class="small-btn danger" data-dispute-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Dispute</button>':'')+'</div>'+(n.read_at?'':'<button class="small-btn" data-read-notification="'+esc(n.id)+'">Mark read</button>')+'</div>').join('')||'<p>No notifications yet.</p>')+dueHtml;
+ document.getElementById('notifications-list').innerHTML=(inbox.map(n=>'<div class="entry sq-notification-link" role="link" tabindex="0" data-notification-index="'+inbox.indexOf(n)+'"><div class="text"><b>'+esc(n.title)+'</b><div class="note">'+esc(n.message)+' · '+esc(new Date(n.created_at).toLocaleString())+'</div>'+(n.kind==='tracker_invite'&&n.invitation_id?'<button class="small-btn" data-invite-accept="'+esc(n.invitation_id)+'">Accept tracker</button> <button class="small-btn danger" data-invite-decline="'+esc(n.invitation_id)+'">Decline</button>':'')+(n.kind==='payment_pending'&&n.entry_id?'<button class="small-btn" data-confirm-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Confirm payment</button> <button class="small-btn danger" data-dispute-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Dispute</button>':'')+'</div>'+'<button type="button" class="small-btn sq-notification-action" data-notification-open="'+inbox.indexOf(n)+'">'+(/chat|message/i.test(String(n.kind)+' '+String(n.title))?'Open chat':/friend/i.test(String(n.kind)+' '+String(n.title))?'View friends':/member/i.test(String(n.kind)+' '+String(n.title))?'View members':/invite/i.test(String(n.kind)+' '+String(n.title))?'View trackers':'View expense')+'</button>'+(n.read_at?'':'<button class="small-btn" data-read-notification="'+esc(n.id)+'">Mark read</button>')+'</div>').join('')||'<div class="sq-enhanced-empty"><strong>All caught up</strong><span>Payment updates, invitations and messages will appear here.</span></div>')+dueHtml;
 }
 document.getElementById('notifications-toggle').onclick=function(){
  settingsRoute('home');document.body.classList.add('notifications-view');
@@ -4745,6 +4756,7 @@ document.getElementById('notifications-list').addEventListener('click',async fun
  // Use closest() so clicks on text inside a button work too.
  var t=e.target.closest('button');
  if(!t || t.disabled)return;
+ if(t.hasAttribute('data-notification-open'))return;
  if(t.hasAttribute('data-invite-accept')||t.hasAttribute('data-invite-decline')){var accept=t.hasAttribute('data-invite-accept');var inviteId=t.getAttribute(accept?'data-invite-accept':'data-invite-decline');t.disabled=true;try{await api('social/invitations/'+inviteId+'/'+(accept?'accept':'decline'),'POST',{});await refreshInbox();if(accept){await loadTrackers();alert('Tracker invitation accepted.');}}catch(err){alert(err.message);t.disabled=false;}return;}
  if(t.hasAttribute('data-read-notification')){
   var notificationId=t.getAttribute('data-read-notification');
@@ -5864,7 +5876,7 @@ input.addEventListener('input',draw);
   if(amount!==null){const a=document.createElement('span');a.className='sq-return-amount';a.textContent=money(amount);el.append(a);}
   return el;
  }
- function fill(id,rows,empty){const host=byId(id);if(!host)return;host.replaceChildren();if(!rows.length){const p=document.createElement('p');p.className='sq-return-empty';p.textContent=empty;host.append(p);}else rows.forEach(r=>host.append(r));}
+ function fill(id,rows,empty){const host=byId(id);if(!host)return;host.replaceChildren();if(!rows.length){const panel=document.createElement('div');panel.className='sq-enhanced-empty';const heading=document.createElement('strong');heading.textContent=id==='sq-return-activity'?'No activity yet':id==='sq-return-balances'?'No outstanding balances':'No members to show';const p=document.createElement('span');p.textContent=empty;panel.append(heading,p);host.append(panel);}else rows.forEach(r=>host.append(r));}
  function calculateTrackerPairs(rows){
   const debt=new Map(), labels=new Map();
   rows.forEach(e=>{if(e.paymentStatus&&e.paymentStatus!=='confirmed')return;const a=str(e.from).trim().toLowerCase(),b=str(e.to).trim().toLowerCase();if(!a||!b||a===b)return;labels.set(a,str(e.from));labels.set(b,str(e.to));const key=a+'\u0000'+b;debt.set(key,(debt.get(key)||0)+(e.type==='debt'?1:-1)*(Number(e.amount)||0));});
@@ -6144,7 +6156,7 @@ body.about-view #about-page .about-mission{display:grid!important;visibility:vis
   const isFriend=/friend|request.accepted|request.received/.test(signal);
   const isChat=/chat|group.message|new.message|message.from|sent a message/.test(signal);
   const isInvite=/tracker.invite|invitation to.*tracker/.test(signal);
-  const isBudget=/budget/.test(signal);
+  const isBudget=false; // Budget page was retired; send related notices to Expenses.
   const isMember=/member/.test(signal);
   // Navigate synchronously. Never wait for PATCH before showing the destination.
   if(isFriend){settingsRoute('friends');}
@@ -6173,6 +6185,7 @@ body.about-view #about-page .about-mission{display:grid!important;visibility:vis
  }
  // Capture phase ensures row navigation does not get overridden by a later handler.
  list.addEventListener('click',function(e){
+   const action=e.target.closest('[data-notification-open]');if(action){const row=action.closest('[data-notification-index]');if(row){e.preventDefault();e.stopImmediatePropagation();navigate(row);}return;}
    if(e.target.closest('button,a,input,select,textarea'))return;
    const row=e.target.closest('[data-notification-index],[data-due-entry]');
    if(!row)return;
