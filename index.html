@@ -6938,5 +6938,64 @@ document.addEventListener('click',function(event){var trigger=event.target.close
   document.addEventListener('touchcancel',()=>{start=null;},{passive:true});
 })();
 </script>
+
+<!-- SquareUp one-time Instagram invitation: 2 minutes after page launch -->
+<style>
+#sq-instagram-invite[hidden]{display:none!important}
+#sq-instagram-invite{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(2,12,27,.76);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#sq-instagram-invite .sq-ig-card{position:relative;width:min(100%,420px);max-height:calc(100dvh - 44px);overflow:auto;box-sizing:border-box;padding:34px 26px 28px;border:1px solid rgba(106,203,225,.33);border-radius:25px;background:linear-gradient(150deg,#102d4a,#071c31 85%);box-shadow:0 24px 85px rgba(0,0,0,.55);color:#f6fbff;text-align:center;font-family:inherit}
+#sq-instagram-invite .sq-ig-mark{width:64px;height:64px;border-radius:19px;margin:0 auto 17px;display:grid;place-items:center;background:linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5);font-size:33px}
+#sq-instagram-invite h2{font-size:25px;line-height:1.2;margin:0 0 12px;color:white}
+#sq-instagram-invite p{color:#b8ccdc;font-size:15px;line-height:1.55;margin:0 0 21px}
+#sq-instagram-invite .sq-ig-follow{display:block;box-sizing:border-box;width:100%;padding:15px 16px;border-radius:13px;background:#28ddba;color:#05253a;font-size:16px;font-weight:800;text-decoration:none}
+#sq-instagram-invite .sq-ig-follow:focus-visible,#sq-instagram-invite button:focus-visible{outline:3px solid white;outline-offset:3px}
+#sq-instagram-invite .sq-ig-later{margin-top:13px;padding:10px 15px;border:0;background:transparent;color:#bdd2e2;font:inherit;cursor:pointer}
+#sq-instagram-invite .sq-ig-x{position:absolute;right:12px;top:10px;border:0;background:rgba(255,255,255,.08);color:white;border-radius:50%;height:36px;width:36px;font-size:24px;cursor:pointer}
+</style>
+<div id="sq-instagram-invite" hidden>
+ <div class="sq-ig-card" role="dialog" aria-modal="true" aria-labelledby="sq-ig-title" aria-describedby="sq-ig-description">
+  <button type="button" class="sq-ig-x" aria-label="Close Instagram invitation">&times;</button>
+  <div class="sq-ig-mark" aria-hidden="true">◎</div>
+  <h2 id="sq-ig-title">Follow SquareUp on Instagram!</h2>
+  <p id="sq-ig-description">Get updates, new features, and tips for splitting expenses. Find us at <strong>@squareupwithfriends</strong>.</p>
+  <a class="sq-ig-follow" href="https://www.instagram.com/squareupwithfriends/" target="_blank" rel="noopener noreferrer">Follow on Instagram ↗</a>
+  <button type="button" class="sq-ig-later">No thanks</button>
+ </div>
+</div>
+<script>
+(function(){
+ const key='squareup_instagram_invite_shown_v1';
+ const invite=document.getElementById('sq-instagram-invite');
+ if(!invite)return;
+ let shown=false,previousFocus=null;
+ try{if(localStorage.getItem(key)==='yes')return;}catch(e){}
+ const close=()=>{invite.hidden=true;document.body.style.removeProperty('--sq-ig-open');if(previousFocus&&previousFocus.isConnected)previousFocus.focus();};
+ invite.querySelector('.sq-ig-x').addEventListener('click',close);
+ invite.querySelector('.sq-ig-later').addEventListener('click',close);
+ invite.querySelector('.sq-ig-follow').addEventListener('click',close);
+ invite.addEventListener('click',e=>{if(e.target===invite)close();});
+ invite.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){const nodes=[...invite.querySelectorAll('button,a')];const i=nodes.indexOf(document.activeElement);if(e.shiftKey&&i===0){e.preventDefault();nodes[nodes.length-1].focus();}else if(!e.shiftKey&&i===nodes.length-1){e.preventDefault();nodes[0].focus();}}});
+ function anotherPopupOpen(){
+  return [...document.querySelectorAll('.modal-bg,.sq-legal-overlay,.sq-tour-overlay,dialog,[role="dialog"],[aria-modal="true"]')].some(el=>{
+   if(el===invite||invite.contains(el)||el.closest('#sq-instagram-invite'))return false;
+   if(el.hidden||el.getAttribute('aria-hidden')==='true')return false;
+   const st=getComputedStyle(el);return st.display!=='none'&&st.visibility!=='hidden'&&Number(st.opacity)!==0&&el.getClientRects().length>0;
+  });
+ }
+ function showWhenReady(){
+  if(shown)return;
+  try{if(localStorage.getItem(key)==='yes')return;}catch(e){}
+  if(document.visibilityState==='hidden'||anotherPopupOpen()){setTimeout(showWhenReady,1500);return;}
+  shown=true;
+  try{localStorage.setItem(key,'yes');}catch(e){}
+  previousFocus=document.activeElement;
+  invite.hidden=false;
+  invite.querySelector('.sq-ig-x').focus();
+ }
+ // Count two minutes from this page launch, not every two minutes thereafter.
+ setTimeout(showWhenReady,120000);
+})();
+</script>
+
 </body>
 </html>
