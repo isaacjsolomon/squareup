@@ -6551,8 +6551,6 @@ function refreshCategoryManager(){
  if(!custom.length){const empty=document.createElement('small');empty.className='sb-muted';empty.textContent='No custom categories yet.';container.append(empty)}
  const previous=select.value;const existing=[...select.options].map(o=>o.value);const all=[...new Set([...baseCategories,...existing.filter(v=>!custom.includes(v)),...custom])];select.replaceChildren(...all.map(name=>{const option=document.createElement('option');option.value=name;option.textContent=name;return option}));select.value=all.includes(previous)?previous:'Other';
 }
-$('sb-add-category').addEventListener('click',()=>{const field=$('sb-new-category');const name=field.value.trim().replace(/\s+/g,' ');if(!current)return alert('Open a tracker first.');if(!name)return field.focus();if(/[\[\]<>]/.test(name))return alert('Category names cannot contain brackets or angle brackets.');if([...baseCategories,...customCategories()].some(x=>x.toLowerCase()===name.toLowerCase()))return alert('That category already exists.');const next=[...customCategories(),name];localStorage.setItem(categoryKey(),JSON.stringify(next));field.value='';refreshCategoryManager();});
-$('sb-new-category').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('sb-add-category').click()}});
 
 function config(){try{return JSON.parse(localStorage.getItem(key())||'{"period":"all"}')}catch(_){return {period:'all'}}}
 function range(c){
@@ -6589,6 +6587,12 @@ window.sqSmartBudgetRefresh=render;window.sqRenderBudget=render;
 // Replace old submit listeners by cloning the form and clear button before attaching ours.
 const oldForm=$('sq-budget-form'),newForm=oldForm.cloneNode(true);oldForm.replaceWith(newForm);
 const oldClear=$('sq-budget-clear'),newClear=oldClear.cloneNode(true);oldClear.replaceWith(newClear);
+// Attach category controls only AFTER the budget form has been cloned.
+// The clone discards all listeners attached to the original form descendants.
+$('sb-add-category').addEventListener('click',()=>{const field=$('sb-new-category');const name=field.value.trim().replace(/\s+/g,' ');if(!current)return alert('Open a tracker first.');if(!name)return field.focus();if(/[\[\]<>]/.test(name))return alert('Category names cannot contain brackets or angle brackets.');if([...baseCategories,...customCategories()].some(x=>x.toLowerCase()===name.toLowerCase()))return alert('That category already exists.');const next=[...customCategories(),name];localStorage.setItem(categoryKey(),JSON.stringify(next));field.value='';refreshCategoryManager();});
+$('sb-new-category').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('sb-add-category').click()}});
+
+
 const viewDetails=document.createElement('div');viewDetails.id='sb-view-details';viewDetails.setAttribute('aria-live','polite');viewDetails.className='sb-view-details';root.querySelector('.sb-head').insertAdjacentElement('afterend',viewDetails);
 function selectView(next){
  view=next;root.dataset.sbView=next;
