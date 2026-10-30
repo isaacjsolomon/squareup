@@ -6820,5 +6820,38 @@ document.addEventListener('click',function(event){var trigger=event.target.close
  window.sqOpenLegal=openLegal;
 })();
 </script>
+
+<!-- SquareUp: full-width stacked tracker cards on mobile -->
+<style id="sq-mobile-stacked-tracker-cards">
+@media (max-width: 680px) {
+  body.trackers-view #trackers-gallery.trackers-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 14px !important;
+    width: 100% !important;
+  }
+  body.trackers-view #trackers-gallery > .tracker-tile {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    height: 235px !important;
+    min-height: 235px !important;
+  }
+  body.trackers-view #trackers-gallery > .sq-create-tracker-row {
+    grid-column: 1 / -1 !important;
+  }
+  body.trackers-view #trackers-gallery .tracker-tile-head h3 {
+    font-size: 20px !important;
+  }
+  body.trackers-view #trackers-gallery .sq-gallery-member-count {
+    font-size: 13px !important;
+  }
+  body.trackers-view #trackers-gallery .tracker-tile-actions .tile-open {
+    font-size: 14px !important;
+    min-height: 42px !important;
+  }
+}
+</style>
 </body>
 </html>
