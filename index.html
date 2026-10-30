@@ -1849,9 +1849,10 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
 }
 </style>
 
-<!-- Mobile-only title for the Trackers page -->
+<!-- Responsive Trackers title for mobile and desktop -->
 <style id="sq-mobile-trackers-heading-style">
-.sq-mobile-trackers-title{display:none!important;}
+.sq-mobile-trackers-title{display:block!important;margin:0 0 18px!important;padding:0 2px!important;color:#fff!important;font-size:clamp(28px,3vw,38px)!important;font-weight:800!important;line-height:1.2!important;letter-spacing:-.035em!important;}
+@media (min-width:681px){body.trackers-view #trackers-page .trackers-header{display:none!important;}}
 @media (max-width:680px){
   body.trackers-view #trackers-page .sq-mobile-trackers-title{
     display:block!important;position:relative!important;visibility:visible!important;
