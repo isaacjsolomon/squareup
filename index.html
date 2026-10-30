@@ -1324,6 +1324,14 @@ body.sq-dispute-open{overflow:hidden}
 .sq-dispute-dialog textarea{width:100%;min-height:100px;resize:vertical;box-sizing:border-box;background:#071a2e;border:1px solid #49657d;color:white;border-radius:12px;padding:14px;font:inherit;text-align:left}
 .sq-dispute-actions{display:flex;gap:10px;margin-top:17px}.sq-dispute-actions button{flex:1;border-radius:13px;padding:13px;cursor:pointer;font:inherit;font-weight:700;border:1px solid #536f86;background:#213c58;color:#fff}.sq-dispute-actions .sq-dispute-confirm{background:#f04764;border-color:#f04764}
 .sq-dispute-dialog .sq-dispute-error{color:#ff9bb0;font-size:13px;min-height:18px}
+
+/* SquareUp legal center */
+.sq-legal-footer{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin:22px auto;padding:16px;color:#a9c3d6;font-size:12px;text-align:center}
+.sq-legal-footer button,.sq-legal-inline{border:0;background:transparent;color:#8de0db;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font:inherit;padding:2px}
+#sq-legal-overlay[hidden]{display:none!important}
+#sq-legal-overlay{position:fixed;inset:0;z-index:2147483000;background:rgba(1,10,23,.85);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:16px}
+.sq-legal-dialog{width:min(760px,100%);max-height:min(88vh,900px);overflow:auto;background:linear-gradient(145deg,#123657,#071c33);border:1px solid #35627c;border-radius:22px;box-shadow:0 30px 90px #0009;color:#eaf4ff;padding:clamp(18px,4vw,34px)}
+.sq-legal-dialog h2{font-size:clamp(25px,4vw,34px);margin:5px 0 10px}.sq-legal-dialog h3{font-size:17px;margin:23px 0 7px;color:#b5efec}.sq-legal-dialog p,.sq-legal-dialog li{line-height:1.65;color:#d2e0ed;font-size:14px}.sq-legal-dialog a{color:#8de0db}.sq-legal-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.sq-legal-close{background:#204a68;border:1px solid #42718c;border-radius:10px;color:white;padding:8px 13px;cursor:pointer}.sq-legal-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.sq-legal-tabs button{background:#123a59;border:1px solid #37627a;color:#d4e8f4;border-radius:10px;padding:9px 12px;cursor:pointer}.sq-legal-tabs button[aria-selected=true]{background:#216b7a;color:white;border-color:#62b8b8}.sq-legal-contact{padding:12px;border:1px solid #3b657a;border-radius:12px;background:#0b2842}.sq-legal-consent{font-size:12px;color:#bfd2e3;line-height:1.5;margin:12px 0;display:flex;align-items:flex-start;gap:8px}.sq-legal-consent input{margin-top:3px;flex:none}
 </style>
 <style>
 .feature-field{display:block;margin:12px 0;color:var(--muted);font-weight:600}.feature-field select{width:100%;margin-top:7px}.feature-field small{display:block;font-weight:400;margin-top:6px;font-size:12px;line-height:1.4}
@@ -2232,6 +2240,45 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
   <div class="sq-tour-actions"><button type="button" id="sq-tour-back">← Back</button><button type="button" id="sq-tour-next">Next →</button></div>
  </div>
 </div>
+
+<div id="sq-legal-overlay" hidden>
+ <section class="sq-legal-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-legal-title">
+  <div class="sq-legal-top"><span style="font-size:12px;letter-spacing:.13em;color:#88d6d4">SQUAREUP · LEGAL CENTER</span><button type="button" id="sq-legal-close" class="sq-legal-close" aria-label="Close legal information">Close ×</button></div>
+  <h2 id="sq-legal-title">Privacy Policy</h2>
+  <p style="margin-top:0;font-size:12px;color:#a8bfd0">Effective October 30, 2026 · Draft for review before publication</p>
+  <div class="sq-legal-tabs" role="tablist" aria-label="Legal documents"><button type="button" data-legal="privacy" aria-selected="true">Privacy Policy</button><button type="button" data-legal="terms" aria-selected="false">Terms of Service</button><button type="button" data-legal="finance" aria-selected="false">Financial Disclaimer</button></div>
+  <div id="sq-legal-content"></div>
+  <p class="sq-legal-contact">Questions, privacy requests, or account deletion help: <a href="mailto:help.squareupwith@gmail.com">help.squareupwith@gmail.com</a></p>
+ </section>
+</div>
+<template id="sq-legal-privacy"><div>
+<p>SquareUp is a shared-expense tracking website. This notice describes how information may be handled when you use the service. This draft must be checked against SquareUp's actual backend, retention settings, and third-party services before publication.</p>
+<h3>Information you provide</h3><p>Depending on the features you use, SquareUp may handle your email address, account and display names, username, profile image, payment-app usernames, tracker membership, expense descriptions and amounts, split allocations, payment records you enter, messages, receipt images, and other uploaded content.</p>
+<h3>How it is used and shared</h3><p>Information is used to operate accounts, calculate and display shared balances, manage trackers, display messages and activity, and provide requested features. Members of a shared tracker may see information relevant to that tracker, including expenses, balances, member profiles, and chat content. Do not add sensitive information you do not want other tracker members to see.</p>
+<h3>Service providers and storage</h3><p>SquareUp uses Supabase for authentication and application data and Cloudflare Pages to host its website. These providers may process information needed to deliver the service. The site may also use browser storage to keep preferences or session-related information. Any additional analytics, email, image-processing, or payment providers should be identified here before publication if they are used.</p>
+<h3>Security and retention</h3><p>SquareUp aims to restrict access to account and tracker information, but no online service can guarantee complete security. Information may remain in account records, shared tracker history, backups, or logs for different periods. Specific retention and deletion periods have not yet been verified.</p>
+<h3>Your choices</h3><p>You can update certain profile information in Settings. To ask about access, correction, or deletion of your information, email the address below. Removing an account may not automatically erase shared records that other tracker members rely on; the actual deletion process and any legal obligations should be verified.</p>
+<h3>Children and location</h3><p>SquareUp's minimum permitted user age and rules for minors need to be established before this policy is published. Privacy rights and consent requirements may vary by location.</p>
+<h3>Updates</h3><p>This policy may be updated when SquareUp's features or data practices change. Material changes should be communicated appropriately.</p>
+</div></template>
+<template id="sq-legal-terms"><div>
+<p>These draft Terms of Service describe rules for using SquareUp. They should be reviewed by an appropriate adult or qualified legal professional before being presented as a binding agreement.</p>
+<h3>What SquareUp does</h3><p>SquareUp provides tools for users to record shared expenses, calculate balances, coordinate groups, and record payments they report. SquareUp is not a bank, payment processor, lender, or escrow service.</p>
+<h3>Accounts and eligibility</h3><p>Provide accurate account information, protect your login credentials, and use only accounts you are authorized to access. A minimum user age, any parental consent requirements, and the identity of the service operator must be established before these terms go live.</p>
+<h3>Shared trackers</h3><p>You are responsible for the accuracy of expenses and payments you enter. Other members may rely on the information you submit. Resolve disagreements directly with the people involved; SquareUp does not adjudicate debts or guarantee repayment.</p>
+<h3>Acceptable use</h3><p>Do not misuse the service, impersonate others, upload unlawful or harmful content, access trackers without permission, or attempt to disrupt accounts or infrastructure. Respect the privacy of other members.</p>
+<h3>Availability and changes</h3><p>Features may change or become unavailable. Data exports and backups are recommended for important records. SquareUp does not promise uninterrupted access or error-free calculations.</p>
+<h3>Limitations</h3><p>Balances and records are informational and may contain mistakes. Any warranty disclaimers, liability limits, governing law, termination procedures, and dispute terms require legal review for enforceability and should not be assumed from this draft.</p>
+<h3>Contact</h3><p>Contact SquareUp at the email below with service questions or concerns.</p>
+</div></template>
+<template id="sq-legal-finance"><div>
+<p><strong>SquareUp is an expense-tracking and coordination tool, not a payment service.</strong></p>
+<h3>No money movement</h3><p>SquareUp does not itself hold, transfer, receive, or safeguard funds between tracker members. When you open an external payment app such as Venmo or Cash App, that service handles any actual transfer under its own terms.</p>
+<h3>Recorded does not mean verified</h3><p>A payment marked as completed in SquareUp reflects information recorded by a user. SquareUp does not independently confirm that a transfer occurred, cleared, or reached the intended recipient.</p>
+<h3>Check before paying</h3><p>Confirm the recipient, amount, and transaction status in the external payment service. Keep the external service's receipt as proof of payment. SquareUp's calculated balances may be affected by incorrect, duplicated, disputed, or unapproved entries.</p>
+<h3>No financial advice or debt collection</h3><p>SquareUp does not provide financial, tax, or legal advice, and it does not collect debts or resolve disputes between users.</p>
+</div></template>
+
 <!-- AUTH MODAL -->
 <div class="modal-bg" id="auth-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
@@ -2246,7 +2293,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
       <input id="auth-name" placeholder="Your name" autocomplete="name" hidden>
       <input id="auth-email" type="email" placeholder="Email" autocomplete="email" required>
       <input id="auth-password" type="password" placeholder="Password" autocomplete="current-password" required minlength="6">
-      <div class="msg" id="auth-msg"></div>
+      <p id="sq-auth-legal-note" style="font-size:12px;line-height:1.5;color:#bdd3e4" hidden>Before creating an account, review the <button type="button" class="sq-legal-inline" data-open-legal="terms">Terms of Service</button> and <button type="button" class="sq-legal-inline" data-open-legal="privacy">Privacy Policy</button>. These are drafts pending review.</p><div class="msg" id="auth-msg"></div>
       <button class="primary" type="submit" id="auth-submit">Log in</button>
       <div style="text-align:center"><button type="button" class="link-btn" id="auth-forgot">Forgot password?</button></div>
     </form>
@@ -2977,6 +3024,7 @@ function setAuthMode(m) {
   $("auth-submit").hidden = false;
   $("tab-login").classList.toggle("active", m === "login");
   $("tab-signup").classList.toggle("active", m === "signup");
+  $("sq-auth-legal-note").hidden = m !== "signup";
   $("auth-name").hidden = m !== "signup";
   $("auth-email").hidden = m === "reset";
   $("auth-email").required = m !== "reset";
@@ -6740,6 +6788,20 @@ function modal(title,subtitle,fields,receipt){
 }
 window.sqShowPaymentReceipt=function(d){modal('Payment recorded','SquareUp has recorded your self-reported payment. This is not proof that funds were transferred.',[['Amount','$'+Number(d.amount).toFixed(2)],['From',d.from],['To',d.to],['Payment method',d.provider],['Recorded',d.date],['Remaining balance','$'+Number(d.remaining).toFixed(2)]],true)};
 document.addEventListener('click',function(event){var trigger=event.target.closest('[data-sq-detail]');if(!trigger)return;var id=trigger.getAttribute('data-sq-detail');var tracker=typeof current!=='undefined'?current:null;var entry=tracker&&Array.isArray(tracker.entries)?tracker.entries.find(function(e){return String(e.id)===id}):null;if(!entry)return;modal(entry.type==='payment'?'Payment details':'Expense details','Information saved in this tracker.',[['Amount','$'+Number(entry.amount||0).toFixed(2)],['From',entry.from||'—'],['To',entry.to||'—'],['Description',entry.note||'No description'],['Date',entry.date||'—'],['Status',entry.paymentStatus||'Confirmed'],['Due date',entry.dueDate||'Not set']],false)});
+})();
+</script>
+<nav class="sq-legal-footer" aria-label="Legal and support links"><span>© 2026 SquareUp</span><button type="button" data-open-legal="privacy">Privacy Policy</button><button type="button" data-open-legal="terms">Terms of Service</button><button type="button" data-open-legal="finance">Financial Disclaimer</button><a href="mailto:help.squareupwith@gmail.com" style="color:#8de0db">Contact</a></nav>
+<script>
+(function(){
+ const overlay=document.getElementById('sq-legal-overlay');const content=document.getElementById('sq-legal-content');const title=document.getElementById('sq-legal-title');let previousFocus;
+ const names={privacy:'Privacy Policy',terms:'Terms of Service',finance:'Financial Disclaimer'};
+ function openLegal(which){if(!names[which])return;previousFocus=document.activeElement;content.replaceChildren(document.getElementById('sq-legal-'+which).content.cloneNode(true));title.textContent=names[which];overlay.querySelectorAll('[data-legal]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.legal===which)));overlay.hidden=false;document.getElementById('sq-legal-close').focus();}
+ function closeLegal(){overlay.hidden=true;if(previousFocus&&previousFocus.focus)previousFocus.focus();}
+ document.addEventListener('click',function(e){const trigger=e.target.closest('[data-open-legal]');if(trigger){e.preventDefault();openLegal(trigger.dataset.openLegal);}const tab=e.target.closest('[data-legal]');if(tab&&overlay.contains(tab))openLegal(tab.dataset.legal);});
+ document.getElementById('sq-legal-close').addEventListener('click',closeLegal);
+ overlay.addEventListener('click',e=>{if(e.target===overlay)closeLegal();});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)closeLegal();});
+ window.sqOpenLegal=openLegal;
 })();
 </script>
 </body>
