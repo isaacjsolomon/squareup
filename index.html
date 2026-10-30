@@ -1846,10 +1846,13 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
   <section class="sq-return-summary" id="sq-return-summary" aria-label="Tracker summary">
     <header class="sq-return-welcome"><h2 id="sq-return-greeting">Welcome back</h2></header>
 
+  <div class="sq-desktop-balance-layout" id="sq-desktop-balance-layout">
   <section class="sq-clean-balance" id="sq-clean-balance" aria-label="Your balance">
     <div class="sq-clean-balance-copy"><span class="sq-clean-eyebrow">Your net balance</span><strong id="sq-clean-net">—</strong><span id="sq-clean-explanation">Your tracker balance</span></div>
     <div class="sq-clean-balance-actions"><button type="button" class="sq-clean-settle" id="sq-clean-settle">Settle up</button><button type="button" class="sq-clean-remind" id="sq-clean-remind">Send reminder</button></div>
   </section>
+  <div class="sq-overview-stats" id="sq-overview-stats"><div class="sq-stat negative"><span>You owe</span><strong id="sq-stat-owe">—</strong></div><div class="sq-stat"><span>Owed to you</span><strong id="sq-stat-owed">—</strong></div><div class="sq-stat neutral"><span>Net balance</span><strong id="sq-stat-net">—</strong></div></div>
+  </div>
   <!-- QUICK ACTIONS -->
   <div class="dashboard-actions" aria-label="Tracker actions">
     <button type="button" class="dashboard-action" id="quick-pay-now"><span class="action-icon">↗</span>Pay Now<span class="action-sub">Send via Venmo or Cash App</span></button>
@@ -1859,7 +1862,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
     <button type="button" class="dashboard-action" id="quick-split"><span class="action-icon" aria-hidden="true"><svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Split a Bill<span class="action-sub">Divide an expense with friends</span></button>
   </div>
 
-  <div class="sq-overview-stats" id="sq-overview-stats"><div class="sq-stat negative"><span>You owe</span><strong id="sq-stat-owe">—</strong></div><div class="sq-stat"><span>Owed to you</span><strong id="sq-stat-owed">—</strong></div><div class="sq-stat neutral"><span>Net balance</span><strong id="sq-stat-net">—</strong></div></div>
+
 
     <div class="sq-return-grid">
       <article class="sq-return-panel"><div class="sq-return-head"><h3>Recent activity</h3><button type="button" data-return-tab="expenses">View all ↗</button></div><div id="sq-return-activity" class="sq-return-rows"><p class="sq-return-empty">Loading recent activity…</p></div></article>
@@ -5894,8 +5897,8 @@ input.addEventListener('input',draw);
  document.querySelectorAll('[data-return-tab]').forEach(b=>b.addEventListener('click',()=>document.querySelector('[data-sq-tab="'+b.dataset.returnTab+'"]')?.click()));
  try {const saved=sessionStorage.getItem('sq-last-display-name');if(saved)byId('sq-return-greeting').textContent='Welcome back, '+saved;}catch(_){}
  const summary=byId('sq-return-summary'),grid=summary?.querySelector('.sq-return-grid');
- const balance=byId('sq-clean-balance'),actions=document.querySelector('#tracker-dashboard .dashboard-actions');
- if(summary&&grid&&balance&&actions){summary.insertBefore(balance,grid);summary.insertBefore(actions,grid);}
+ const balanceLayout=byId('sq-desktop-balance-layout'),actions=document.querySelector('#tracker-dashboard .dashboard-actions');
+ if(summary&&grid&&balanceLayout&&actions){summary.insertBefore(balanceLayout,grid);summary.insertBefore(actions,grid);}
  const smart=byId('smart-settle-card'),smartHost=byId('sq-return-smart-host');
  if(smart&&smartHost){
    const originalParent=summary?.parentElement;
@@ -6614,5 +6617,18 @@ updateControls();refreshCategoryManager();selectView('overview');
 let lastSignature='';setInterval(()=>{if(!current||!root.getClientRects().length)return;const entries=current.entries||[];const signature=String(current.id)+'|'+entries.length+'|'+entries.map(e=>[e.id,e.amount,e.type,e.paymentStatus].join(':')).join('|')+'|'+String(current.budget);if(signature!==lastSignature){lastSignature=signature;refreshCategoryManager();render();}},2500);
 })();
 </script>
+
+<style id="sq-desktop-balance-layout-style">
+/* Desktop-only layout change: preserve all existing balance controls and data IDs. */
+@media (min-width:901px){
+ #tracker-dashboard .sq-return-summary .sq-desktop-balance-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr);gap:14px;align-items:stretch;margin:0 0 15px}
+ #tracker-dashboard .sq-return-summary .sq-desktop-balance-layout .sq-clean-balance{margin:0!important;min-width:0;min-height:260px;display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:space-between!important;gap:20px;padding:25px 27px!important}
+ #tracker-dashboard .sq-desktop-balance-layout .sq-clean-balance-actions{display:flex;flex-wrap:wrap;gap:10px;width:100%}
+ #tracker-dashboard .sq-desktop-balance-layout .sq-clean-balance-actions button{padding:12px 16px!important}
+ #tracker-dashboard .sq-desktop-balance-layout .sq-overview-stats{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:repeat(3,minmax(0,1fr));gap:10px!important;margin:0!important;min-width:0}
+ #tracker-dashboard .sq-desktop-balance-layout .sq-overview-stats .sq-stat{display:flex;flex-direction:column;justify-content:center;min-height:0;padding:12px 19px!important}
+ #tracker-dashboard .sq-desktop-balance-layout .sq-overview-stats .sq-stat strong{font-size:clamp(20px,2.1vw,29px)!important}
+}
+</style>
 </body>
 </html>
