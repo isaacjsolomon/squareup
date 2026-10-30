@@ -1832,6 +1832,22 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
   #tracker-dashboard .sq-workspace-tabs [data-sq-tab="friends"]{display:none!important;}
 }
 </style>
+<style id="sq-share-mobile-scroll-fix">
+/* Keep the share dialog within the visible viewport and scroll its own content. */
+#share-modal.modal-bg{box-sizing:border-box!important;align-items:center!important;justify-content:center!important;padding:12px!important;overflow:hidden!important;z-index:10030!important;}
+#share-modal .card.modal{box-sizing:border-box!important;position:relative!important;width:min(100%,620px)!important;max-width:620px!important;min-height:0!important;max-height:calc(100vh - 24px)!important;max-height:calc(100dvh - 24px)!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-y!important;margin:0 auto!important;padding:22px 20px 35px!important;scrollbar-width:thin;}
+#share-modal .card.modal>.close{position:sticky!important;top:0!important;float:right!important;display:grid!important;place-items:center!important;z-index:20!important;width:42px!important;height:42px!important;min-width:42px!important;border-radius:50%!important;background:#24435b!important;color:#fff!important;border:1px solid #52748c!important;font-size:27px!important;line-height:1!important;cursor:pointer!important;margin:-5px -4px 0 8px!important;}
+#share-modal .card.modal>.close:focus-visible{outline:3px solid #36e2c7!important;outline-offset:2px!important;}
+#share-modal #invite-qr{height:auto!important;max-width:100%!important;}
+#share-modal #invite-qr canvas,#share-modal #invite-qr img{max-width:100%!important;height:auto!important;}
+@media(max-width:650px){
+ #share-modal.modal-bg{padding:8px!important;}
+ #share-modal .card.modal{max-height:calc(100vh - 16px)!important;max-height:calc(100dvh - 16px)!important;padding:16px 15px 95px!important;border-radius:18px!important;}
+ #share-modal .card.modal>.close{top:0!important;margin:-2px -2px 0 8px!important;}
+ #share-modal .invite-row{min-width:0!important;}
+ #share-modal #invite-link{min-width:0!important;}
+}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
