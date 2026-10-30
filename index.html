@@ -1848,6 +1848,19 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
  #share-modal #invite-link{min-width:0!important;}
 }
 </style>
+
+<!-- Mobile-only title for the Trackers page -->
+<style id="sq-mobile-trackers-heading-style">
+.sq-mobile-trackers-title{display:none!important;}
+@media (max-width:680px){
+  body.trackers-view #trackers-page .sq-mobile-trackers-title{
+    display:block!important;position:relative!important;visibility:visible!important;
+    margin:0 0 14px!important;padding:0 2px!important;
+    color:#fff!important;font-size:28px!important;font-weight:800!important;
+    line-height:1.2!important;letter-spacing:-.035em!important;
+  }
+}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
@@ -2215,7 +2228,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
 
 <section id="trackers-page" aria-label="Your trackers">
   <div class="trackers-header"><div><div class="eyebrow">YOUR SHARED SPACES</div><h2>My <span style="color:#60edaf">Trackers</span></h2><p>Keep every group organized. Open, share, or manage a tracker below.</p></div></div>
-  <button type="button" class="sq-feature-btn" id="sq-friends-mobile-link" style="margin:0 0 15px">♧ Friends & Requests</button><div id="trackers-gallery" class="trackers-grid" aria-live="polite"><div class="sq-create-tracker-row"><button type="button" id="tracker-gallery-new" class="tracker-create">＋ Create new tracker</button><span>Choose from 7 templates or start with a blank tracker.</span></div></div>
+  <button type="button" class="sq-feature-btn" id="sq-friends-mobile-link" style="margin:0 0 15px">♧ Friends & Requests</button><h2 class="sq-mobile-trackers-title">Trackers</h2><div id="trackers-gallery" class="trackers-grid" aria-live="polite"><div class="sq-create-tracker-row"><button type="button" id="tracker-gallery-new" class="tracker-create">＋ Create new tracker</button><span>Choose from 7 templates or start with a blank tracker.</span></div></div>
 </section>
 <section id="friends-page" aria-label="Friends">
  <div class="sq-friends-layout"><div class="sq-feature-head"><div><div class="eyebrow">YOUR CIRCLE</div><h2>Friends <span style="color:#60edaf">System</span></h2><p>Find friends by username and manage friend requests.</p></div><button type="button" id="sq-friends-refresh" class="sq-feature-btn">↻ Refresh</button></div>
@@ -6859,7 +6872,9 @@ document.addEventListener('click',function(event){var trigger=event.target.close
 (function(){
   const pages=['nav-home','nav-trackers','nav-analytics','nav-profile'];
   const navSelector='.sq-mobile-nav button[data-target]';
-  let start=null;
+  let start=null,transitioning=false;
+  const viewIds=["tracker-dashboard","trackers-page","analytics-page","settings-page"];
+  const activeView=()=>viewIds.map(id=>document.getElementById(id)).find(el=>visible(el));
   const mobile=()=>window.matchMedia('(max-width: 900px)').matches;
   const visible=el=>!!(el&&el.getClientRects().length&&getComputedStyle(el).visibility!=='hidden');
   function blocked(target){
@@ -6894,7 +6909,31 @@ document.addEventListener('click',function(event){var trigger=event.target.close
     const next=currentIndex()+(dx<0?1:-1);
     if(next<0||next>=pages.length)return;
     const button=document.querySelector('.sq-mobile-nav button[data-target="'+pages[next]+'"]');
-    if(button){button.click();window.scrollTo({top:0,behavior:'instant'});}
+    if(!button||transitioning)return;
+    const outgoing=activeView();
+    const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduceMotion){button.click();window.scrollTo(0,0);return;}
+    transitioning=true;
+    const direction=dx<0?-1:1;
+    // Animate the existing page away, then reveal the destination in the opposite direction.
+    const exit=outgoing?.animate([
+      {transform:'translate3d(0,0,0)',opacity:1},
+      {transform:`translate3d(${direction*22}px,0,0)`,opacity:0.35}
+    ],{duration:125,easing:'ease-in',fill:'forwards'});
+    const navigate=()=>{
+      exit?.cancel();
+      button.click();
+      window.scrollTo(0,0);
+      const incoming=activeView();
+      const enter=incoming?.animate([
+        {transform:`translate3d(${-direction*34}px,0,0)`,opacity:0.3},
+        {transform:'translate3d(0,0,0)',opacity:1}
+      ],{duration:260,easing:'cubic-bezier(.2,.8,.2,1)'});
+      if(enter){enter.onfinish=()=>{transitioning=false;};enter.oncancel=()=>{transitioning=false;};}
+      else transitioning=false;
+    };
+    if(exit){exit.onfinish=navigate;exit.oncancel=()=>{transitioning=false;};}
+    else navigate();
   },{passive:true});
   document.addEventListener('touchcancel',()=>{start=null;},{passive:true});
 })();
