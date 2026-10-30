@@ -2278,7 +2278,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
       <input id="share-name" maxlength="80" required aria-label="Tracker name">
       <button type="submit" class="small-btn">Rename</button>
     </form>
-    <p class="section-label">Invite link</p>
+    <div class="sq-invite-preview" id="sq-invite-preview"><strong>Invite to your tracker</strong><span>Only share this invitation with people you trust. Anyone with the link may request to join.</span></div><p class="section-label">Invite link</p>
     <p class="hint">Send this link to a friend. Once they log in or create an account, they can see and manage this tracker with you.</p>
     <div class="invite-row" style="margin-top:8px">
       <input id="invite-link" readonly aria-label="Invite link">
@@ -2477,7 +2477,7 @@ function render() {
     var text = e.type === "debt"
       ? "<b>" + from + "</b> owes <b>" + to + "</b> " + money(e.amount)
       : "<b>" + from + "</b> paid <b>" + to + "</b> back " + money(e.amount);
-    return '<div class="entry"><span class="tag ' + e.type + '">' + (e.type === "debt" ? "OWES" : "PAID") + "</span>" +
+    return '<div class="entry sq-detail-entry"><button type="button" class="sq-expense-detail-trigger" data-sq-detail="' + esc(String(e.id)) + '" aria-label="View expense details">Details</button><span class="tag ' + e.type + '">' + (e.type === "debt" ? "OWES" : "PAID") + "</span>" +
       '<div class="text">' + text + '<div class="note">' + esc(e.note || "No note") + " · " + esc(e.date) +
       (e.createdBy ? " · added by " + esc(e.createdBy) : "") + (e.dueDate ? " · Due " + esc(e.dueDate) + (e.type === "debt" && e.dueDate < new Date().toISOString().slice(0,10) ? " (overdue)" : "") : "") + (" · " + esc(e.paymentStatus || "confirmed")) + "</div></div>" +
       '<button type="button" class="entry-pin-btn' + (e.pinned ? ' is-pinned' : '') + '" data-pin="' + e.id + '" aria-label="' + (e.pinned ? 'Unpin activity' : 'Pin activity') + '" title="' + (e.pinned ? 'Unpin activity' : 'Pin activity') + '" aria-pressed="' + (!!e.pinned) + '"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3l5 5-3 1-3 5 1 3-2 2-4-4-6 6 6-6-4-4 2-2 3 1 5-3z"/></svg></button><button class="small-btn danger" data-del="' + e.id + '">Delete</button></div>';
@@ -3406,7 +3406,7 @@ window.squareUpPayNow = async function () {
       note:'Paid via '+chosen.provider+' (self-reported)', date:new Date().toLocaleDateString()
     });
     if (current && current.id === trackerId) applyDetail(detail);
-    alert('Payment recorded! Remaining balance: $'+((cents-paidCents)/100).toFixed(2)+'.');
+    sqShowPaymentReceipt({amount:paidCents/100,from:from,to:to,provider:chosen.provider,remaining:(cents-paidCents)/100,date:new Date().toLocaleString()});
   } catch (err) {
     alert('The payment was NOT recorded in SquareUp: '+(err.message||'Save failed')+'. If you paid externally, use Log Payment to record it.');
   }
@@ -4001,6 +4001,9 @@ async function renderTrackerGallery(){
       var countBadge=document.createElement('span');countBadge.className='sq-gallery-member-count';countBadge.textContent=(members.length||t.memberCount||0)+' members';banner.append(countBadge);
       var debts=Array.isArray(d&&d.entries)?d.entries.filter(function(e){return e.type==='debt';}):[];
       var total=debts.reduce(function(sum,e){return sum+(Number(e.amount)||0);},0);
+      var lastActivity=document.createElement('div');lastActivity.className='sq-tile-last';
+      var dated=(d&&Array.isArray(d.entries)?d.entries:[]).map(function(e){return Date.parse(e.created_at||e.createdAt||e.date||'');}).filter(Number.isFinite).sort(function(a,b){return b-a;});
+      lastActivity.textContent=d&&d.loadError?'Activity unavailable':dated.length?'Last activity · '+new Date(dated[0]).toLocaleDateString():'No activity yet';
       var stats=document.createElement('div');stats.className='tracker-stats';
       [[members.length||t.memberCount||'—','Members'],[d&&d.loadError?'—':money(total),'Total expenses'],[d&&d.loadError?'—':debts.length,'Entries']].forEach(function(item){var el=document.createElement('div');el.className='tracker-stat';var value=document.createElement('b');value.textContent=item[0];var label=document.createElement('span');label.textContent=item[1];el.append(value,label);stats.append(el);});
       var people=document.createElement('div');people.className='tracker-tile-members';
@@ -4015,7 +4018,7 @@ async function renderTrackerGallery(){
       var open=document.createElement('button');open.type='button';open.className='tile-open';open.textContent='Open tracker  →';open.onclick=async function(){await openTracker(t.id);if(current&&current.id===t.id)settingsRoute('dashboard');};actions.append(open);
       var backdropButton=document.createElement('button');backdropButton.type='button';backdropButton.className='tile-backdrop';backdropButton.innerHTML='<span aria-hidden="true">▧</span> Change backdrop';backdropButton.setAttribute('aria-label','Change backdrop for '+t.name);backdropButton.onclick=async function(){try{await openTracker(t.id);if(current&&current.id===t.id){settingsRoute('trackers');$('btn-backdrop').click();}}catch(err){alert('Could not open backdrop settings: '+(err.message||err));}};actions.append(backdropButton);
       var shareButton=document.createElement('button');shareButton.type='button';shareButton.className='tile-share';shareButton.innerHTML='<span aria-hidden="true">↗</span> Share tracker';shareButton.setAttribute('aria-label','Share tracker '+t.name);shareButton.onclick=async function(){try{await openTracker(t.id);if(current&&current.id===t.id)await openShare();else alert('Could not select this tracker. Please try again.');}catch(err){alert('Could not share tracker: '+(err.message||err));}};actions.append(shareButton);
-      body.append(head,stats,people,actions);card.append(banner,body);gallery.append(card);
+      body.append(head,stats,lastActivity,people,actions);card.append(banner,body);gallery.append(card);
     });
   }catch(err){if(serial===trackerGallerySerial){sqGalleryKeepCreateRow(gallery);var msg=document.createElement('div');msg.className='trackers-empty';msg.textContent='Could not load trackers: '+(err.message||'Unknown error');gallery.append(msg);}}
 }
@@ -4586,6 +4589,7 @@ async function openShare() {
   updateInviteQR();
   $("invite-native").hidden = !navigator.share;
   renderShareMembers();
+  var invitePreview=document.getElementById("sq-invite-preview");if(invitePreview){invitePreview.querySelector("strong").textContent="Join "+String(current.name||"this tracker");}
   $("share-modal").classList.add("open");
   try {
     var r = await api("trackers/" + current.id + "/invite", "POST", {});
@@ -6643,5 +6647,43 @@ let lastSignature='';setInterval(()=>{if(!current||!root.getClientRects().length
  #tracker-dashboard .sq-desktop-balance-layout .sq-overview-stats .sq-stat strong{font-size:clamp(20px,2.1vw,29px)!important}
 }
 </style>
+
+<!-- SquareUp UI enhancements: source entries remain unchanged -->
+<style id="sq-polish-2026">
+#tracker-dashboard .sq-return-panel,#settings-page .settings-panel,.tracker-tile{transition:box-shadow .2s ease,transform .2s ease,border-color .2s ease}
+@media(hover:hover){.tracker-tile:hover{transform:translateY(-2px);box-shadow:0 14px 35px rgba(5,19,45,.13)}}
+.sq-tile-last{font-size:12px;color:#64748b;margin:0 0 12px;padding:0 2px}
+.sq-detail-entry{position:relative;flex-wrap:wrap}
+.sq-expense-detail-trigger{order:3;border:1px solid #cbd5e1;border-radius:9px;background:transparent;color:inherit;font:inherit;font-size:12px;font-weight:700;padding:8px 11px;cursor:pointer}
+.sq-expense-detail-trigger:hover{border-color:#4e9f89}
+.sq-invite-preview{display:flex;flex-direction:column;gap:6px;padding:15px 17px;border-radius:14px;background:linear-gradient(135deg,#e9faf4,#eef4ff);color:#183a51;margin:14px 0}
+.sq-invite-preview span{font-size:13px;line-height:1.5}
+.sq-ui-overlay{position:fixed;inset:0;background:rgba(6,18,37,.67);display:flex;align-items:center;justify-content:center;padding:20px;z-index:200000}
+.sq-ui-dialog{background:#fff;color:#152b3f;border-radius:20px;max-width:480px;width:100%;padding:26px;box-shadow:0 24px 70px #071b3445;max-height:85vh;overflow:auto}
+.sq-ui-dialog h2{margin:0 0 8px;font-size:23px}.sq-ui-dialog p{color:#64748b;margin:0 0 18px}
+.sq-ui-line{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid #e8eef4;padding:11px 0;font-size:14px;overflow-wrap:anywhere}
+.sq-ui-line strong{text-align:right;max-width:65%}
+.sq-ui-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:22px;flex-wrap:wrap}
+.sq-ui-actions button{background:#102e49;color:#fff;border:0;border-radius:10px;padding:11px 16px;cursor:pointer;font-weight:700}
+.sq-ui-actions button.sq-ui-secondary{background:#edf3f7;color:#173047}
+@media(max-width:650px){.sq-ui-dialog{padding:20px}.sq-detail-entry .sq-expense-detail-trigger{order:2}}
+</style>
+<script>
+(function(){
+function modal(title,subtitle,fields,receipt){
+ var overlay=document.createElement('div');overlay.className='sq-ui-overlay';
+ var dialog=document.createElement('div');dialog.className='sq-ui-dialog';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label',title);
+ var h=document.createElement('h2');h.textContent=title;dialog.append(h);
+ var p=document.createElement('p');p.textContent=subtitle;dialog.append(p);
+ fields.forEach(function(pair){var line=document.createElement('div');line.className='sq-ui-line';var k=document.createElement('span');k.textContent=pair[0];var v=document.createElement('strong');v.textContent=String(pair[1]??'—');line.append(k,v);dialog.append(line);});
+ var actions=document.createElement('div');actions.className='sq-ui-actions';
+ if(receipt){var copy=document.createElement('button');copy.type='button';copy.className='sq-ui-secondary';copy.textContent='Copy receipt';copy.onclick=function(){var txt=[title,subtitle].concat(fields.map(function(x){return x[0]+': '+x[1]})).join('\n');if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(function(){copy.textContent='Copied!';}).catch(function(){window.prompt('Copy receipt:',txt)});else window.prompt('Copy receipt:',txt)};actions.append(copy);}
+ var close=document.createElement('button');close.type='button';close.textContent='Close';close.onclick=function(){overlay.remove();document.removeEventListener('keydown',esc)};actions.append(close);dialog.append(actions);overlay.append(dialog);
+ overlay.addEventListener('click',function(e){if(e.target===overlay)close.click()});function esc(e){if(e.key==='Escape')close.click()};document.addEventListener('keydown',esc);document.body.append(overlay);close.focus();
+}
+window.sqShowPaymentReceipt=function(d){modal('Payment recorded','SquareUp has recorded your self-reported payment. This is not proof that funds were transferred.',[['Amount','$'+Number(d.amount).toFixed(2)],['From',d.from],['To',d.to],['Payment method',d.provider],['Recorded',d.date],['Remaining balance','$'+Number(d.remaining).toFixed(2)]],true)};
+document.addEventListener('click',function(event){var trigger=event.target.closest('[data-sq-detail]');if(!trigger)return;var id=trigger.getAttribute('data-sq-detail');var tracker=typeof current!=='undefined'?current:null;var entry=tracker&&Array.isArray(tracker.entries)?tracker.entries.find(function(e){return String(e.id)===id}):null;if(!entry)return;modal(entry.type==='payment'?'Payment details':'Expense details','Information saved in this tracker.',[['Amount','$'+Number(entry.amount||0).toFixed(2)],['From',entry.from||'—'],['To',entry.to||'—'],['Description',entry.note||'No description'],['Date',entry.date||'—'],['Status',entry.paymentStatus||'Confirmed'],['Due date',entry.dueDate||'Not set']],false)});
+})();
+</script>
 </body>
 </html>
