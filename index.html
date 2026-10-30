@@ -1767,7 +1767,55 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
 #notifications-list .sq-notification-action{margin-top:9px;margin-right:8px;background:#27d5b6!important;color:#052c36!important;border:0!important;font-weight:700}
 #notifications-list .sq-notification-link:focus-within{outline:2px solid #4de8cf;outline-offset:2px}
 @media(prefers-reduced-motion:reduce){.sq-loading-skeleton,.sq-startup-ring{animation:none!important}}
-</style></head>
+</style>
+<style id="sq-full-visual-redesign-20261030">
+/* Visual-only redesign. Existing elements, IDs, events and Supabase integration are retained. */
+:root{--sq-visual-cyan:#24e2c1;--sq-visual-deep:#061b2b;--sq-visual-line:rgba(105,210,228,.22);--sq-visual-shadow:0 18px 48px rgba(0,13,31,.24)}
+#tracker-dashboard .sq-return-summary{position:relative;isolation:isolate}
+#tracker-dashboard .sq-return-welcome{margin-bottom:18px!important}
+#tracker-dashboard .sq-return-welcome h2{font-size:clamp(24px,2.4vw,34px)!important;font-weight:800!important;letter-spacing:-.045em!important;line-height:1.15!important}
+#tracker-dashboard .sq-desktop-balance-layout .sq-clean-balance{position:relative;overflow:hidden;border:1px solid rgba(54,220,205,.38)!important;border-radius:20px!important;background:linear-gradient(125deg,rgba(4,60,77,.96),rgba(5,30,53,.97) 70%)!important;box-shadow:0 12px 36px rgba(0,19,37,.22),inset 0 1px rgba(255,255,255,.12)!important}
+#tracker-dashboard .sq-desktop-balance-layout .sq-clean-balance:before{content:"";position:absolute;pointer-events:none;width:310px;height:310px;border:1px solid rgba(64,228,208,.13);border-radius:50%;right:-160px;top:-175px;box-shadow:0 0 0 55px rgba(64,228,208,.025),0 0 0 110px rgba(64,228,208,.02)}
+#tracker-dashboard .sq-desktop-balance-layout .sq-clean-balance-copy,#tracker-dashboard .sq-desktop-balance-layout .sq-clean-balance-actions{position:relative;z-index:1}
+#tracker-dashboard .sq-desktop-balance-layout .sq-clean-eyebrow{font-size:13px!important;letter-spacing:.025em!important;opacity:.84}
+#tracker-dashboard .sq-desktop-balance-layout #sq-clean-net{font-size:clamp(33px,3.5vw,49px)!important;line-height:1.2!important;font-weight:850!important;letter-spacing:-.055em!important;color:#3ceacb!important;text-shadow:0 3px 25px rgba(29,226,195,.16)}
+#tracker-dashboard .sq-desktop-balance-layout #sq-clean-explanation{font-size:13px!important;line-height:1.55!important;opacity:.86}
+#tracker-dashboard .sq-desktop-balance-layout .sq-clean-settle{background:linear-gradient(115deg,#22ddba,#42e6c8)!important;color:#042b32!important;border-color:transparent!important;font-weight:800!important;box-shadow:0 5px 18px rgba(18,211,178,.18)}
+#tracker-dashboard .sq-desktop-balance-layout .sq-clean-remind{background:rgba(19,64,88,.65)!important;color:#e8faff!important;border:1px solid rgba(141,222,238,.24)!important}
+#tracker-dashboard .sq-desktop-balance-layout .sq-overview-stats .sq-stat{border-radius:17px!important;border:1px solid var(--sq-visual-line)!important;background:linear-gradient(130deg,rgba(8,43,65,.94),rgba(5,27,47,.94))!important;box-shadow:inset 0 1px rgba(255,255,255,.05),0 6px 22px rgba(0,15,32,.13)!important}
+#tracker-dashboard .sq-desktop-balance-layout .sq-overview-stats .sq-stat span{font-size:12px!important;font-weight:600!important;opacity:.8}
+#tracker-dashboard .sq-desktop-balance-layout .sq-overview-stats .sq-stat strong{font-weight:800!important;letter-spacing:-.035em!important}
+#tracker-dashboard .dashboard-actions{gap:12px!important}
+#tracker-dashboard .dashboard-action{position:relative;overflow:hidden;border-radius:17px!important;border:1px solid rgba(99,208,226,.23)!important;background:linear-gradient(145deg,rgba(7,50,71,.94),rgba(6,30,50,.96))!important;box-shadow:inset 0 1px rgba(255,255,255,.07),0 7px 20px rgba(0,14,33,.14)!important;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease!important}
+#tracker-dashboard .dashboard-action .action-icon{border-radius:13px!important;color:#36ebcb!important;text-shadow:0 0 20px rgba(41,224,191,.25)}
+#tracker-dashboard .dashboard-action .action-sub{font-size:11px!important;line-height:1.35!important;opacity:.72}
+#tracker-dashboard .sq-return-grid{gap:14px!important}
+#tracker-dashboard .sq-return-panel{border-radius:19px!important;border:1px solid rgba(109,202,221,.22)!important;background:linear-gradient(145deg,rgba(7,42,61,.95),rgba(5,26,46,.97))!important;box-shadow:inset 0 1px rgba(255,255,255,.055),0 10px 28px rgba(0,12,30,.13)!important;overflow:hidden}
+#tracker-dashboard .sq-return-head{border-bottom:1px solid rgba(112,205,220,.12)!important;padding-bottom:13px!important;margin-bottom:8px!important}
+#tracker-dashboard .sq-return-head h3{font-weight:800!important;letter-spacing:-.025em!important}
+#tracker-dashboard .sq-return-head button{color:#7fe7e2!important;font-weight:650!important}
+#tracker-dashboard .sq-return-rows>*+*{border-top-color:rgba(126,201,218,.13)!important}
+#tracker-dashboard .sq-return-rows{position:relative}
+#tracker-dashboard .sq-return-panel:first-child .sq-return-rows{border-left:2px solid rgba(68,218,211,.27);margin-left:7px;padding-left:12px}
+#tracker-dashboard .sq-return-panel:first-child .sq-return-rows>*{position:relative}
+#tracker-dashboard .sq-return-panel:first-child .sq-return-rows>*:before{content:"";position:absolute;left:-17px;top:50%;width:8px;height:8px;border-radius:50%;background:#45dcd0;box-shadow:0 0 0 4px rgba(36,226,193,.11);pointer-events:none}
+#tracker-dashboard button:focus-visible,#tracker-dashboard [role="tab"]:focus-visible{outline:2px solid #45f2d4!important;outline-offset:3px!important}
+@media(hover:hover) and (pointer:fine){#tracker-dashboard .dashboard-action:hover{transform:translateY(-3px)!important;border-color:rgba(60,234,209,.55)!important;box-shadow:0 14px 30px rgba(0,13,30,.22)!important}}
+@media(min-width:901px){
+ #tracker-dashboard .sq-desktop-balance-layout{grid-template-columns:minmax(0,1.15fr) minmax(245px,.85fr)!important;gap:14px!important}
+ #tracker-dashboard .sq-desktop-balance-layout .sq-clean-balance{min-height:255px!important}
+ #tracker-dashboard .sq-desktop-balance-layout .sq-overview-stats{gap:10px!important}
+ #tracker-dashboard .sq-desktop-balance-layout .sq-overview-stats .sq-stat{padding:14px 21px!important}
+}
+@media(max-width:900px){
+ #tracker-dashboard .sq-return-welcome h2{font-size:27px!important}
+ #tracker-dashboard .sq-desktop-balance-layout .sq-clean-balance{border-radius:19px!important}
+ #tracker-dashboard .dashboard-action{border-radius:14px!important}
+ #tracker-dashboard .sq-return-panel{border-radius:16px!important}
+}
+@media(prefers-reduced-motion:reduce){#tracker-dashboard .dashboard-action{transition:none!important}}
+</style>
+</head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
   <div class="sq-startup-content"><span class="sq-startup-ring" aria-hidden="true"></span><strong>Loading Square Up…</strong><span>Getting your tracker ready</span><div class="sq-startup-progress" aria-hidden="true"></div></div>
