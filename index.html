@@ -6939,7 +6939,7 @@ document.addEventListener('click',function(event){var trigger=event.target.close
 })();
 </script>
 
-<!-- SquareUp one-time Instagram invitation: 2 minutes after page launch -->
+<!-- SquareUp one-time Instagram invitation: 30 seconds after page launch -->
 <style>
 #sq-instagram-invite[hidden]{display:none!important}
 #sq-instagram-invite{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(2,12,27,.76);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
@@ -6992,8 +6992,8 @@ document.addEventListener('click',function(event){var trigger=event.target.close
   invite.hidden=false;
   invite.querySelector('.sq-ig-x').focus();
  }
- // Count two minutes from this page launch, not every two minutes thereafter.
- setTimeout(showWhenReady,120000);
+ // Count 30 seconds from this page launch, not every two minutes thereafter.
+ setTimeout(showWhenReady,30000);
 })();
 </script>
 
