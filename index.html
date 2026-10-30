@@ -1719,6 +1719,13 @@ body.trackers-view #trackers-page .sq-create-tracker-row .tracker-create{display
 body.trackers-view #trackers-page .sq-create-tracker-row span{color:#c2d3e3;font-size:13px}
 @media(max-width:600px){body.trackers-view #trackers-page .sq-create-tracker-row{gap:8px;margin-bottom:14px}body.trackers-view #trackers-page .sq-create-tracker-row .tracker-create{min-height:43px;padding:10px 16px!important;font-size:13px!important}body.trackers-view #trackers-page .sq-create-tracker-row span{font-size:12px}}
 </style>
+<style id="sq-gallery-create-visible-fix">
+/* The create control belongs to the grid itself, directly above its first card. */
+body.trackers-view #trackers-gallery > .sq-create-tracker-row{grid-column:1/-1!important;grid-row:auto!important;display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:5!important;align-items:center!important;gap:12px!important;min-height:58px!important;margin:0 0 2px!important;padding:0!important;transform:none!important}
+body.trackers-view #trackers-gallery > .sq-create-tracker-row > #tracker-gallery-new{display:inline-flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;width:auto!important;min-width:215px!important;min-height:48px!important;padding:12px 22px!important;background:linear-gradient(110deg,#5658f7,#8150f5)!important;color:#fff!important;border:1px solid #b5a6ff80!important;border-radius:13px!important;font-size:15px!important;font-weight:800!important;box-shadow:0 9px 24px #3021a750!important;cursor:pointer!important}
+body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inline!important;color:#e0e7ff!important;font-size:13px!important}
+@media(max-width:600px){body.trackers-view #trackers-gallery > .sq-create-tracker-row{flex-wrap:wrap!important;gap:5px!important}body.trackers-view #trackers-gallery > .sq-create-tracker-row > #tracker-gallery-new{min-width:0!important;width:100%!important}body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{font-size:11px!important}}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
@@ -2082,8 +2089,8 @@ body.trackers-view #trackers-page .sq-create-tracker-row span{color:#c2d3e3;font
 </section>
 
 <section id="trackers-page" aria-label="Your trackers">
-  <div class="trackers-header"><div><div class="eyebrow">YOUR SHARED SPACES</div><h2>My <span style="color:#60edaf">Trackers</span></h2><p>Keep every group organized. Open, share, or manage a tracker below.</p></div></div><div class="sq-create-tracker-row"><button type="button" id="tracker-gallery-new" class="tracker-create">＋ Create new tracker</button><span>Choose from 7 templates or start with a blank tracker.</span></div>
-  <button type="button" class="sq-feature-btn" id="sq-friends-mobile-link" style="margin:0 0 15px">♧ Friends & Requests</button><div id="trackers-gallery" class="trackers-grid" aria-live="polite"></div>
+  <div class="trackers-header"><div><div class="eyebrow">YOUR SHARED SPACES</div><h2>My <span style="color:#60edaf">Trackers</span></h2><p>Keep every group organized. Open, share, or manage a tracker below.</p></div></div>
+  <button type="button" class="sq-feature-btn" id="sq-friends-mobile-link" style="margin:0 0 15px">♧ Friends & Requests</button><div id="trackers-gallery" class="trackers-grid" aria-live="polite"><div class="sq-create-tracker-row"><button type="button" id="tracker-gallery-new" class="tracker-create">＋ Create new tracker</button><span>Choose from 7 templates or start with a blank tracker.</span></div></div>
 </section>
 <section id="friends-page" aria-label="Friends">
  <div class="sq-friends-layout"><div class="sq-feature-head"><div><div class="eyebrow">YOUR CIRCLE</div><h2>Friends <span style="color:#60edaf">System</span></h2><p>Find friends by username and manage friend requests.</p></div><button type="button" id="sq-friends-refresh" class="sq-feature-btn">↻ Refresh</button></div>
@@ -3769,22 +3776,35 @@ async function sqManagePermissions(tracker) {
 
 // Tracker gallery uses existing authenticated tracker endpoints and share dialog.
 var trackerGallerySerial=0;
+// Keep the create control INSIDE the gallery, as the first full-width grid item.
+// Gallery refreshes must never erase it.
+function sqGalleryKeepCreateRow(gallery){
+  var row=gallery.querySelector('.sq-create-tracker-row');
+  if(!row){
+    row=document.createElement('div');row.className='sq-create-tracker-row';
+    var button=document.createElement('button');button.type='button';button.id='tracker-gallery-new';button.className='tracker-create';button.textContent='＋ Create new tracker';
+    button.addEventListener('click',function(){document.getElementById('tb-new')?.click();});
+    var hint=document.createElement('span');hint.textContent='Choose from 7 templates or start with a blank tracker.';
+    row.append(button,hint);
+  }
+  gallery.replaceChildren(row);
+}
 async function renderTrackerGallery(){
   var gallery=$('trackers-gallery');
   var serial=++trackerGallerySerial;
-  if(!currentUser){gallery.innerHTML='<div class="trackers-empty">Log in to create and share trackers.</div>';return;}
+  if(!currentUser){sqGalleryKeepCreateRow(gallery);gallery.insertAdjacentHTML('beforeend','<div class="trackers-empty">Log in to create and share trackers.</div>');return;}
   // Keep existing cards visible while fresh data loads; avoid a blank gallery on refresh.
-  if(!gallery.querySelector('.tracker-tile')) gallery.innerHTML='<div class="sq-loading-skeleton" aria-label="Loading trackers"></div><div class="sq-loading-skeleton" aria-hidden="true"></div>';
+  if(!gallery.querySelector('.tracker-tile')){sqGalleryKeepCreateRow(gallery);gallery.insertAdjacentHTML('beforeend','<div class="sq-loading-skeleton" aria-label="Loading trackers"></div><div class="sq-loading-skeleton" aria-hidden="true"></div>');}
   try{
     var list=await api('trackers');
     if(serial!==trackerGallerySerial)return;
     trackers=list;
     if(document.body.classList.contains('notifications-view')){try{window.dispatchEvent(new Event('sq-trackers-updated'));}catch(_){}}
     renderPicker();
-    if(!list.length){gallery.innerHTML='<div class="trackers-empty">No trackers yet. Create your first tracker to get started.</div>';return;}
+    if(!list.length){sqGalleryKeepCreateRow(gallery);gallery.insertAdjacentHTML('beforeend','<div class="trackers-empty">No trackers yet. Create your first tracker to get started.</div>');return;}
     var details=await Promise.all(list.map(async function(t){try{return await api('trackers/'+encodeURIComponent(t.id));}catch(err){return {loadError:err.message};}}));
     if(serial!==trackerGallerySerial)return;
-    gallery.replaceChildren();
+    sqGalleryKeepCreateRow(gallery);
     list.forEach(function(t,i){
       var d=details[i];
       var card=document.createElement('article');card.className='tracker-tile';
@@ -3948,7 +3968,7 @@ async function renderTrackerGallery(){
       var shareButton=document.createElement('button');shareButton.type='button';shareButton.className='tile-share';shareButton.innerHTML='<span aria-hidden="true">↗</span> Share tracker';shareButton.setAttribute('aria-label','Share tracker '+t.name);shareButton.onclick=async function(){try{await openTracker(t.id);if(current&&current.id===t.id)await openShare();else alert('Could not select this tracker. Please try again.');}catch(err){alert('Could not share tracker: '+(err.message||err));}};actions.append(shareButton);
       body.append(head,stats,people,actions);card.append(banner,body);gallery.append(card);
     });
-  }catch(err){if(serial===trackerGallerySerial)gallery.textContent='Could not load trackers: '+(err.message||'Unknown error');}
+  }catch(err){if(serial===trackerGallerySerial){sqGalleryKeepCreateRow(gallery);var msg=document.createElement('div');msg.className='trackers-empty';msg.textContent='Could not load trackers: '+(err.message||'Unknown error');gallery.append(msg);}}
 }
 // The gallery may first render before authentication finishes on a hard reload.
 // Refresh when the session becomes available, and when returning to the tab.
