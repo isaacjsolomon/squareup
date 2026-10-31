@@ -7521,5 +7521,23 @@ body.trackers-view .sq-favorite-toggle[aria-pressed="true"]{background:#123c55!i
 }
 @media(max-width:480px){#sq-layout-panel .sq-layout-options{grid-template-columns:1fr}}
 </style>
+<style id="sq-full-width-balance-when-actions-hidden">
+/* When Quick actions is disabled, reclaim its grid column on desktop. */
+@media (min-width:901px) {
+  #tracker-dashboard.sq-tab-overview.sq-pref-hide-actions .sq-return-summary {
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+  #tracker-dashboard.sq-tab-overview.sq-pref-hide-actions .sq-desktop-balance-layout {
+    grid-column:1 / -1!important;
+    grid-row:2!important;
+    width:100%!important;
+    max-width:none!important;
+  }
+  #tracker-dashboard.sq-tab-overview.sq-pref-hide-actions .sq-desktop-balance-layout .sq-clean-balance {
+    width:100%!important;
+    max-width:none!important;
+  }
+}
+</style>
 </body>
 </html>
