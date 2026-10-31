@@ -7019,6 +7019,21 @@ document.addEventListener('click',function(event){var trigger=event.target.close
 }
 </style>
 
+<style id="sq-quick-calculator-placement">
+/* Desktop: beneath the action cards, centered on the gap between Add Expense and Scan Receipt. */
+#tracker-dashboard #sq-quick-calc-launch{
+  display:block; width:max-content; max-width:calc(100% - 24px);
+  margin:12px 0 26px 62.5%; transform:translateX(-50%);
+  position:relative; z-index:1;
+}
+/* Mobile: directly below the three balance stats, centered above the action cards. */
+@media(max-width:680px){
+  #tracker-dashboard #sq-quick-calc-launch{
+    margin:12px auto 20px; transform:none;
+    text-align:center; width:max-content; max-width:calc(100% - 24px);
+  }
+}
+</style>
 <style id="sq-four-practical-features-css">
 .sq-favorite-toggle{align-self:flex-start;margin:8px 0;border:1px solid #527b98;border-radius:999px;padding:7px 13px;background:#102e49;color:#d8eafa;font-size:13px;cursor:pointer}.sq-favorite-toggle[aria-pressed=true]{background:#234b66;color:#ffe58a;border-color:#c7a650}
 .sq-practical-btn{border:1px solid #4787a1;background:#123954;color:#fff;border-radius:12px;padding:11px 15px;cursor:pointer;font-weight:700}.sq-practical-btn:hover{background:#1b5776}.sq-practical-actions{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}.sq-practical-overlay{position:fixed;inset:0;z-index:2147483000;background:#001322d9;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}.sq-practical-overlay[hidden]{display:none!important}.sq-practical-modal{background:#0a263e;border:1px solid #416a86;border-radius:22px;max-width:460px;width:100%;max-height:calc(100dvh - 40px);overflow:auto;padding:24px;box-sizing:border-box;color:white;box-shadow:0 25px 75px #0009}.sq-practical-modal h2{margin:0 0 14px}.sq-practical-modal label{display:block;margin:12px 0;color:#c6d7e5}.sq-practical-modal input{display:block;width:100%;box-sizing:border-box;margin-top:6px;border:1px solid #6487a0;background:#102f49;color:white;padding:12px;border-radius:12px;font:inherit}.sq-practical-modal .sq-practical-btn{margin-top:8px}.sq-practical-modal .sq-practical-primary{background:#18cdb4;color:#062c36;border-color:#18cdb4}.sq-practical-modal .sq-practical-result{padding:15px;background:#143a51;border-radius:12px;margin:14px 0;font-size:22px;font-weight:750}
@@ -7029,7 +7044,19 @@ document.addEventListener('click',function(event){var trigger=event.target.close
 'use strict';
 const modal=document.getElementById('sq-quick-calculator'),total=document.getElementById('sq-calc-total'),tip=document.getElementById('sq-calc-tip'),people=document.getElementById('sq-calc-people');
 const calcButton=document.createElement('button');calcButton.type='button';calcButton.className='sq-practical-btn';calcButton.textContent='÷ Quick split calculator';
-const splitButton=document.getElementById('quick-split');if(splitButton)splitButton.insertAdjacentElement('afterend',calcButton);
+const actionGrid=document.querySelector('#tracker-dashboard .dashboard-actions');
+const balanceLayout=document.getElementById('sq-desktop-balance-layout');
+// Keep a single functional calculator button, but place it differently by viewport.
+function placeCalculator(){
+  if(window.matchMedia('(max-width: 680px)').matches){
+    if(balanceLayout && calcButton.previousElementSibling!==balanceLayout) balanceLayout.insertAdjacentElement('afterend',calcButton);
+  }else if(actionGrid && calcButton.previousElementSibling!==actionGrid){
+    actionGrid.insertAdjacentElement('afterend',calcButton);
+  }
+}
+calcButton.id='sq-quick-calc-launch';
+placeCalculator();
+window.addEventListener('resize',placeCalculator,{passive:true});
 function calculate(){const amount=Number(total.value),rate=Number(tip.value),count=Number(people.value),out=document.getElementById('sq-calc-result'),note=document.getElementById('sq-calc-explanation');if(!Number.isFinite(amount)||amount<0||!Number.isFinite(rate)||rate<0||rate>100||!Number.isInteger(count)||count<1||count>1000){out.textContent='Enter valid amounts and people';note.textContent='';return}const cents=Math.round(amount*100),tipCents=Math.round(cents*rate/100),grand=cents+tipCents,base=Math.floor(grand/count),extra=grand%count;const usd=c=>(c/100).toLocaleString(undefined,{style:'currency',currency:'USD'});out.textContent=usd(base)+(extra?'–'+usd(base+1):'')+' per person';note.textContent='Total including tip: '+usd(grand)+(extra?' · '+extra+' person(s) pay one cent more so the total matches exactly.':'');}
 calcButton.addEventListener('click',()=>{modal.hidden=false;calculate();total.focus()});document.getElementById('sq-calc-close').addEventListener('click',()=>modal.hidden=true);modal.addEventListener('click',e=>{if(e.target===modal)modal.hidden=true});[total,tip,people].forEach(el=>el.addEventListener('input',calculate));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)modal.hidden=true});
 // These actions use the existing expense-details event, so they operate on the actual selected entry.
