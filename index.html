@@ -1862,6 +1862,20 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
   }
 }
 </style>
+<style id="sq-overview-dropdown-styles">
+/* Collapsible overview panels: preserve existing content and navigation links. */
+#tracker-dashboard .sq-return-grid > .sq-return-panel{min-height:0!important;transition:background .2s ease}
+#tracker-dashboard .sq-return-grid > .sq-return-panel.sq-panel-collapsed{padding-bottom:16px!important}
+#tracker-dashboard .sq-return-grid > .sq-return-panel.sq-panel-collapsed > :not(.sq-return-head){display:none!important}
+#tracker-dashboard .sq-return-grid > .sq-return-panel.sq-panel-collapsed .sq-return-head{border-bottom:0!important;margin-bottom:0!important;padding-bottom:0!important}
+#tracker-dashboard .sq-return-head .sq-panel-collapse-toggle{display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 36px;width:36px;height:36px;padding:6px!important;border:1px solid rgba(116,209,221,.26)!important;border-radius:11px!important;color:#6de6d7!important;background:rgba(255,255,255,.06)!important;cursor:pointer}
+#tracker-dashboard .sq-return-head .sq-panel-collapse-toggle svg{transition:transform .2s ease}
+#tracker-dashboard .sq-return-panel:not(.sq-panel-collapsed) .sq-panel-collapse-toggle svg{transform:rotate(180deg)}
+#tracker-dashboard .sq-return-head{display:flex;align-items:center;gap:10px}
+#tracker-dashboard .sq-return-head h3{margin-right:auto}
+#tracker-dashboard .sq-return-grid > .sq-return-panel.sq-panel-collapsed{align-self:start}
+@media(prefers-reduced-motion:reduce){#tracker-dashboard .sq-return-head .sq-panel-collapse-toggle svg{transition:none}}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
@@ -1966,10 +1980,10 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
 
 
     <div class="sq-return-grid">
-      <article class="sq-return-panel"><div class="sq-return-head"><h3>Recent activity</h3><button type="button" data-return-tab="expenses">View all ↗</button></div><div id="sq-return-activity" class="sq-return-rows"><p class="sq-return-empty">Loading recent activity…</p></div></article>
-      <article class="sq-return-panel sq-return-smart-panel"><div class="sq-return-head"><h3>Smart settle-up</h3></div><div id="sq-return-smart-host"></div></article>
-      <article class="sq-return-panel"><div class="sq-return-head"><h3>Balances by person</h3><button type="button" data-return-tab="expenses">Who owes whom</button></div><div id="sq-return-balances" class="sq-return-rows"><p class="sq-return-empty">Loading balances…</p></div></article>
-      <article class="sq-return-panel"><div class="sq-return-head"><h3>Tracker members</h3><button type="button" data-return-tab="members">View all ↗</button></div><div id="sq-return-members" class="sq-return-rows"><p class="sq-return-empty">Loading tracker members…</p></div></article>
+      <article class="sq-return-panel sq-panel-collapsed"><div class="sq-return-head"><h3>Recent activity</h3><button type="button" data-return-tab="expenses">View all ↗</button><button type="button" class="sq-panel-collapse-toggle" aria-expanded="false" aria-label="Expand Recent activity" title="Expand or collapse Recent activity"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><div id="sq-return-activity" class="sq-return-rows"><p class="sq-return-empty">Loading recent activity…</p></div></article>
+      <article class="sq-return-panel sq-return-smart-panel sq-panel-collapsed"><div class="sq-return-head"><h3>Smart settle-up</h3><button type="button" class="sq-panel-collapse-toggle" aria-expanded="false" aria-label="Expand Smart settle-up" title="Expand or collapse Smart settle-up"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><div id="sq-return-smart-host"></div></article>
+      <article class="sq-return-panel sq-panel-collapsed"><div class="sq-return-head"><h3>Balances by person</h3><button type="button" data-return-tab="expenses">Who owes whom</button><button type="button" class="sq-panel-collapse-toggle" aria-expanded="false" aria-label="Expand Balances by person" title="Expand or collapse Balances by person"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><div id="sq-return-balances" class="sq-return-rows"><p class="sq-return-empty">Loading balances…</p></div></article>
+      <article class="sq-return-panel sq-panel-collapsed"><div class="sq-return-head"><h3>Tracker members</h3><button type="button" data-return-tab="members">View all ↗</button><button type="button" class="sq-panel-collapse-toggle" aria-expanded="false" aria-label="Expand Tracker members" title="Expand or collapse Tracker members"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><div id="sq-return-members" class="sq-return-rows"><p class="sq-return-empty">Loading tracker members…</p></div></article>
     </div>
   </section>
   <section id="sq-template-dashboard" class="sq-template-dashboard" hidden aria-label="Tracker template overview"></section>
@@ -7185,5 +7199,24 @@ share.addEventListener('click',async()=>{if(!selected)return;const tracker=selec
 }
 @media(min-width:681px){#sq-mobile-extra-balances{display:none!important}}
 </style>
+<script id="sq-overview-dropdown-behavior">
+(function(){
+  function setup(){
+    document.querySelectorAll('#tracker-dashboard .sq-return-grid > .sq-return-panel').forEach(function(panel){
+      var button=panel.querySelector('.sq-panel-collapse-toggle');
+      if(!button || button.dataset.sqBound) return;
+      button.dataset.sqBound='true';
+      button.addEventListener('click',function(){
+        var closed=panel.classList.toggle('sq-panel-collapsed');
+        button.setAttribute('aria-expanded',String(!closed));
+        button.setAttribute('aria-label',(closed?'Expand ':'Collapse ')+panel.querySelector('h3').textContent.trim());
+        button.title=(closed?'Expand ':'Collapse ')+panel.querySelector('h3').textContent.trim();
+      });
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setup);
+  else setup();
+})();
+</script>
 </body>
 </html>
