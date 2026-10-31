@@ -7778,29 +7778,26 @@ document.getElementById('sq-social-launch').onclick=()=>{modal.hidden=false;rend
 })();
 </script>
 
-<style id="sq-social-launch-visible-fix">
-#sq-social-launch{position:fixed!important;right:24px!important;bottom:110px!important;z-index:2147483000!important;display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;max-width:calc(100vw - 32px)!important}
-#sq-social-launch.sq-social-in-sidebar{position:static!important;right:auto!important;bottom:auto!important;display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;min-height:45px!important;margin:9px 0!important}
-@media(max-width:900px){#sq-social-launch:not(.sq-social-in-sidebar){right:12px!important;bottom:calc(155px + env(safe-area-inset-bottom))!important;font-size:13px!important}}
+<style id="sq-social-under-friends-20261031">
+#sq-social-launch.sq-social-under-friends{position:static!important;inset:auto!important;display:flex!important;align-items:center!important;justify-content:center!important;width:calc(25% - 10px)!important;max-width:none!important;min-height:52px!important;margin:12px 0 0 auto!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;background:#123d59!important;border:1px solid #317b96!important;border-radius:14px!important;box-shadow:none!important;font-size:17px!important}
+@media(max-width:900px){#sq-social-launch.sq-social-under-friends{width:calc(50% - 6px)!important;min-height:44px!important;margin-top:9px!important;font-size:13px!important}}
 </style>
-<script id="sq-social-launch-placement-fix">
+<script id="sq-social-under-friends-placement">
 (function(){
  const launch=document.getElementById('sq-social-launch');
  if(!launch)return;
- // Put the feature beside the existing overview customization control when possible.
- const place=()=>{
-  const tools=document.getElementById('sq-layout-tools');
-  if(tools&&tools.isConnected){
-   if(launch.parentElement!==tools)tools.insertBefore(launch,tools.firstChild);
-   launch.classList.add('sq-social-in-sidebar');
-   return true;
-  }
-  return false;
- };
+ function place(){
+  const tabs=document.querySelector('.sq-workspace-tabs');
+  if(!tabs)return false;
+  if(launch.previousElementSibling!==tabs)tabs.insertAdjacentElement('afterend',launch);
+  launch.classList.remove('sq-social-in-sidebar');
+  launch.classList.add('sq-social-under-friends');
+  return true;
+ }
  if(!place()){
   const observer=new MutationObserver(()=>{if(place())observer.disconnect()});
   observer.observe(document.body,{childList:true,subtree:true});
-  window.addEventListener('load',()=>{if(place())observer.disconnect()},{once:true});
+  window.addEventListener('load',()=>{place();observer.disconnect()},{once:true});
  }
 })();
 </script>
