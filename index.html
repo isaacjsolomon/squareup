@@ -7020,18 +7020,23 @@ document.addEventListener('click',function(event){var trigger=event.target.close
 </style>
 
 <style id="sq-quick-calculator-placement">
-/* Desktop: beneath the action cards, centered on the gap between Add Expense and Scan Receipt. */
-#tracker-dashboard #sq-quick-calc-launch{
-  display:block; width:max-content; max-width:calc(100% - 24px);
-  margin:12px 0 26px 62.5%; transform:translateX(-50%);
-  position:relative; z-index:1;
+/* On desktop the calculator is a fifth quick-action card, between Add Expense and Scan Receipt. */
+@media (min-width:901px){
+  #tracker-dashboard .dashboard-actions{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  #tracker-dashboard #sq-quick-calc-launch{background:linear-gradient(135deg,#12687a,#10354f)!important}
 }
-/* Mobile: directly below the three balance stats, centered above the action cards. */
-@media(max-width:680px){
+/* On mobile retain the calculator beneath the balance cards. */
+@media (max-width:900px){
   #tracker-dashboard #sq-quick-calc-launch{
-    margin:12px auto 20px; transform:none;
-    text-align:center; width:max-content; max-width:calc(100% - 24px);
+    display:flex;align-items:center;justify-content:center;gap:9px;
+    width:max-content;max-width:calc(100% - 24px);
+    margin:12px auto 20px;padding:12px 18px;
+    border:1px solid #4787a1;border-radius:12px;
+    background:#123954;color:#fff;font-weight:750;
   }
+  #tracker-dashboard #sq-quick-calc-launch .action-icon{display:inline-flex;width:22px;height:22px;align-items:center;justify-content:center}
+  #tracker-dashboard #sq-quick-calc-launch .action-icon svg{width:21px;height:21px}
+  #tracker-dashboard #sq-quick-calc-launch .action-sub{display:none}
 }
 </style>
 <style id="sq-four-practical-features-css">
@@ -7043,15 +7048,17 @@ document.addEventListener('click',function(event){var trigger=event.target.close
 (function(){
 'use strict';
 const modal=document.getElementById('sq-quick-calculator'),total=document.getElementById('sq-calc-total'),tip=document.getElementById('sq-calc-tip'),people=document.getElementById('sq-calc-people');
-const calcButton=document.createElement('button');calcButton.type='button';calcButton.className='sq-practical-btn';calcButton.textContent='÷ Quick split calculator';
+const calcButton=document.createElement('button');calcButton.type='button';calcButton.className='dashboard-action sq-calculator-action';
+calcButton.innerHTML='<span class="action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="29" height="29" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8 6.5h8v3H8zM8.5 13h1m5 0h1m-7 4h1m5 0h1m-4-4h1m-1 4h1"/></svg></span><span class="sq-calc-label">Quick Split Calculator</span><span class="action-sub">Calculate everyone’s share</span>';
 const actionGrid=document.querySelector('#tracker-dashboard .dashboard-actions');
 const balanceLayout=document.getElementById('sq-desktop-balance-layout');
 // Keep a single functional calculator button, but place it differently by viewport.
 function placeCalculator(){
   if(window.matchMedia('(max-width: 680px)').matches){
     if(balanceLayout && calcButton.previousElementSibling!==balanceLayout) balanceLayout.insertAdjacentElement('afterend',calcButton);
-  }else if(actionGrid && calcButton.previousElementSibling!==actionGrid){
-    actionGrid.insertAdjacentElement('afterend',calcButton);
+  }else if(actionGrid && calcButton.parentElement!==actionGrid){
+    const receipt=document.getElementById('quick-receipt');
+    actionGrid.insertBefore(calcButton,receipt);
   }
 }
 calcButton.id='sq-quick-calc-launch';
