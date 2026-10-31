@@ -4007,13 +4007,47 @@ async function renderTrackerGallery(){
       var d=details[i];
       var card=document.createElement('article');card.className='tracker-tile';
       card.dataset.trackerId=String(t.id);
+      // Favorite state is scoped to the signed-in account and survives refreshes.
       var favKey='sq-favorites-'+String(currentUser&&currentUser.id||'local');
-      function getFavs(){try{return JSON.parse(localStorage.getItem(favKey)||'[]')}catch(_){return []}}
-      function isFav(){return getFavs().includes(String(t.id))}
-      function reorderFavs(){Array.from(gallery.querySelectorAll('.tracker-tile')).sort(function(a,b){return Number(getFavs().includes(b.dataset.trackerId))-Number(getFavs().includes(a.dataset.trackerId))}).forEach(function(el){gallery.append(el)})}
-      var favorite=document.createElement('button');favorite.type='button';favorite.className='sq-favorite-toggle';favorite.setAttribute('aria-label','Favorite '+t.name);
-      function updateFavorite(){favorite.textContent=isFav()?'★ Favorite':'☆ Favorite';favorite.setAttribute('aria-pressed',String(isFav()))}
-      favorite.onclick=function(){var f=getFavs();f=isFav()?f.filter(function(x){return x!==String(t.id)}):f.concat(String(t.id));try{localStorage.setItem(favKey,JSON.stringify(f))}catch(_){}updateFavorite();reorderFavs()};updateFavorite();
+      function getFavs(){
+        try { var value=JSON.parse(localStorage.getItem(favKey)||'[]');return Array.isArray(value)?value.map(String):[]; }
+        catch(_){return [];}
+      }
+      function isFav(){return getFavs().includes(String(t.id));}
+      function reorderFavs(){
+        var favorites=getFavs();
+        Array.from(gallery.querySelectorAll('.tracker-tile')).sort(function(a,b){
+          var aFav=favorites.includes(a.dataset.trackerId),bFav=favorites.includes(b.dataset.trackerId);
+          if(aFav!==bFav)return aFav?-1:1;
+          return Number(a.dataset.originalIndex||0)-Number(b.dataset.originalIndex||0);
+        }).forEach(function(el){gallery.appendChild(el);});
+      }
+      card.dataset.originalIndex=String(i);
+      var favorite=document.createElement('button');
+      favorite.type='button';favorite.className='sq-favorite-toggle';
+      favorite.setAttribute('aria-label','Toggle favorite for '+t.name);
+      function updateFavorite(){
+        var selected=isFav();
+        favorite.textContent=selected?'★ Favorited':'☆ Favorite';
+        favorite.setAttribute('aria-pressed',String(selected));
+        favorite.title=selected?'Remove from favorites':'Add to favorites';
+        card.classList.toggle('sq-is-favorite',selected);
+      }
+      favorite.addEventListener('click',function(event){
+        event.preventDefault();event.stopPropagation();
+        var current=getFavs(),id=String(t.id);
+        var next=current.includes(id)?current.filter(function(x){return x!==id;}):current.concat(id);
+        try {localStorage.setItem(favKey,JSON.stringify(next));}
+        catch(err){alert('Unable to save favorites in this browser. Check browser storage permissions.');return;}
+        gallery.querySelectorAll('.tracker-tile').forEach(function(tile){
+          var btn=tile.querySelector('.sq-favorite-toggle');
+          var selected=next.includes(tile.dataset.trackerId);
+          tile.classList.toggle('sq-is-favorite',selected);
+          if(btn){btn.textContent=selected?'★ Favorited':'☆ Favorite';btn.setAttribute('aria-pressed',String(selected));btn.title=selected?'Remove from favorites':'Add to favorites';}
+        });
+        reorderFavs();
+      });
+      updateFavorite();
 
       var banner=document.createElement('div');banner.className='tracker-tile-banner';
       sqBannerGet(t.id).then(function(v){sqBannerApply(banner,v)});
@@ -7289,6 +7323,11 @@ share.addEventListener('click',async()=>{if(!selected)return;const tracker=selec
  #tracker-dashboard .sq-return-grid .sq-return-head h3 {font-size:17px!important;margin:0 auto 0 0!important}
  #tracker-dashboard .sq-return-grid .sq-return-head>button:not(.sq-panel-collapse-toggle){margin-left:auto!important}
 }
+
+/* Tracker favorites and last activity */
+body.trackers-view .sq-tile-last{color:#000!important;opacity:1!important;text-shadow:none!important}
+body.trackers-view .sq-favorite-toggle{pointer-events:auto!important;position:relative;z-index:6}
+body.trackers-view .sq-favorite-toggle[aria-pressed="true"]{background:#123c55!important;color:#ffdc75!important;border-color:#f3c65b!important}
 </style>
 <script id="sq-calm-desktop-overview-placement">
 (function(){
