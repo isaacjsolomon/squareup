@@ -7433,10 +7433,10 @@ body.trackers-view .sq-favorite-toggle[aria-pressed="true"]{background:#123c55!i
  function apply(){
    options.forEach(([id])=>dashboard.classList.toggle('sq-pref-hide-'+id,saved[id]===false));
  }
- function close(discard){if(discard){draft={...saved};syncChecks();}panel.hidden=true;toggle.setAttribute('aria-expanded','false');}
+ function close(discard){if(discard){draft={...saved};syncChecks();}panel.hidden=true;toggle.setAttribute('aria-expanded','false');if(panel.parentNode!==tools)tools.appendChild(panel);}
  toggle.addEventListener('click',()=>{
    if(!panel.hidden){close(true);return;}
-   draft={...saved};syncChecks();panel.hidden=false;toggle.setAttribute('aria-expanded','true');
+   draft={...saved};syncChecks();if(window.matchMedia('(max-width:900px)').matches)document.body.appendChild(panel);panel.hidden=false;toggle.setAttribute('aria-expanded','true');
  });
  save.addEventListener('click',()=>{
    const next={...draft};
@@ -7669,6 +7669,29 @@ body.trackers-view .sq-favorite-toggle[aria-pressed="true"]{background:#123c55!i
     white-space:nowrap!important;
     padding:11px 8px!important;
   }
+}
+</style>
+<style id="sq-customize-mobile-portal-fix">
+/* The panel is moved to <body> while open so dashboard clipping and stacking
+   contexts cannot hide it behind the balance card or bottom navigation. */
+@media(max-width:900px){
+ body > #sq-layout-panel:not([hidden]){
+  display:flex!important;flex-direction:column!important;
+  position:fixed!important;
+  top:calc(env(safe-area-inset-top, 0px) + 12px)!important;
+  bottom:calc(env(safe-area-inset-bottom, 0px) + 92px)!important;
+  left:12px!important;right:12px!important;
+  width:auto!important;max-width:none!important;max-height:none!important;
+  margin:0!important;padding:18px 14px 12px!important;
+  box-sizing:border-box!important;overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;
+  z-index:2147483647!important;background:#0b2942!important;
+  border:1px solid #3d6980!important;border-radius:18px!important;
+  box-shadow:0 20px 70px #000b!important;
+ }
+ body > #sq-layout-panel .sq-layout-options{display:grid!important;grid-template-columns:1fr!important;gap:9px!important}
+ body > #sq-layout-panel .sq-layout-buttons{position:sticky!important;bottom:-12px!important;margin-top:auto!important;padding:14px 0 12px!important;background:#0b2942!important;z-index:2!important;display:flex!important;flex-wrap:wrap!important;gap:8px!important}
+ body > #sq-layout-panel .sq-layout-buttons button{flex:1 1 28%!important;min-width:0!important}
 }
 </style>
 </body>
