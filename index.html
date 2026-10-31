@@ -4003,10 +4003,20 @@ async function renderTrackerGallery(){
     var details=await Promise.all(list.map(async function(t){try{return await api('trackers/'+encodeURIComponent(t.id));}catch(err){return {loadError:err.message};}}));
     if(serial!==trackerGallerySerial)return;
     sqGalleryKeepCreateRow(gallery);
+    // Keep archived trackers retrievable, without modifying Supabase records.
+    var archiveKey='sq-archived-'+String(currentUser&&currentUser.id||'local');
+    var archivedIds=[];try{archivedIds=JSON.parse(localStorage.getItem(archiveKey)||'[]')}catch(e){}
+    var archiveToggle=document.createElement('button');archiveToggle.type='button';archiveToggle.className='small-btn sq-archive-toggle';
+    archiveToggle.textContent='Archived trackers ('+archivedIds.length+')';
+    var archivedWrap=document.createElement('div');archivedWrap.className='sq-archived-wrap';archivedWrap.hidden=true;
+    archiveToggle.onclick=function(){archivedWrap.hidden=!archivedWrap.hidden;archiveToggle.setAttribute('aria-expanded',String(!archivedWrap.hidden));};
+    archiveToggle.setAttribute('aria-expanded','false');
+    gallery.append(archiveToggle,archivedWrap);
     list.forEach(function(t,i){
       var d=details[i];
       var card=document.createElement('article');card.className='tracker-tile';
       card.dataset.trackerId=String(t.id);
+      var isArchived=archivedIds.includes(String(t.id));
       // Favorite state is scoped to the signed-in account and survives refreshes.
       var favKey='sq-favorites-'+String(currentUser&&currentUser.id||'local');
       function getFavs(){
@@ -4101,6 +4111,12 @@ async function renderTrackerGallery(){
           }catch(error){alert('Could not rename tracker: '+(error.message||error));save.disabled=false;save.textContent='Save name';}
         };
         document.body.append(overlay);input.focus();input.select();
+      });
+      // Archiving is a personal, reversible view preference until a server-side archive endpoint is installed.
+      settingsAction('▣','Archive tracker',async function(){
+        if(!confirm('Archive '+t.name+' from your tracker list on this browser? Expenses and members will NOT be deleted.'))return;
+        try{var key='sq-archived-'+String(currentUser&&currentUser.id||'local');var ids=JSON.parse(localStorage.getItem(key)||'[]');if(!ids.includes(String(t.id)))ids.push(String(t.id));localStorage.setItem(key,JSON.stringify(ids));await renderTrackerGallery();}
+        catch(e){alert('Could not archive this tracker: '+e.message);}
       });
       settingsAction('♙','Manage permissions',async function(){await sqManagePermissions(t);});
       if(t.role==='owner'||(d&&d.role==='owner')) settingsAction('✓','Expense approval',async function(){
@@ -4210,7 +4226,13 @@ async function renderTrackerGallery(){
       var open=document.createElement('button');open.type='button';open.className='tile-open';open.textContent='Open tracker  →';open.onclick=async function(){await openTracker(t.id);if(current&&current.id===t.id)settingsRoute('dashboard');};actions.append(open);
       var backdropButton=document.createElement('button');backdropButton.type='button';backdropButton.className='tile-backdrop';backdropButton.innerHTML='<span aria-hidden="true">▧</span> Change backdrop';backdropButton.setAttribute('aria-label','Change backdrop for '+t.name);backdropButton.onclick=async function(){try{await openTracker(t.id);if(current&&current.id===t.id){settingsRoute('trackers');$('btn-backdrop').click();}}catch(err){alert('Could not open backdrop settings: '+(err.message||err));}};actions.append(backdropButton);
       var shareButton=document.createElement('button');shareButton.type='button';shareButton.className='tile-share';shareButton.innerHTML='<span aria-hidden="true">↗</span> Share tracker';shareButton.setAttribute('aria-label','Share tracker '+t.name);shareButton.onclick=async function(){try{await openTracker(t.id);if(current&&current.id===t.id)await openShare();else alert('Could not select this tracker. Please try again.');}catch(err){alert('Could not share tracker: '+(err.message||err));}};actions.append(shareButton);
-      body.append(head,favorite,stats,lastActivity,people,actions);card.append(banner,body);gallery.append(card);reorderFavs();
+      body.append(head,favorite,stats,lastActivity,people,actions);card.append(banner,body);
+      if(isArchived){
+        var restore=document.createElement('button');restore.type='button';restore.className='small-btn sq-restore-tracker';restore.textContent='Restore tracker';
+        restore.onclick=async function(){try{var ids=JSON.parse(localStorage.getItem(archiveKey)||'[]');localStorage.setItem(archiveKey,JSON.stringify(ids.filter(x=>x!==String(t.id))));await renderTrackerGallery();}catch(err){alert('Could not restore: '+err.message)}};
+        body.append(restore);archivedWrap.append(card);
+      }else gallery.append(card);
+      reorderFavs();
     });
   }catch(err){if(serial===trackerGallerySerial){sqGalleryKeepCreateRow(gallery);var msg=document.createElement('div');msg.className='trackers-empty';msg.textContent='Could not load trackers: '+(err.message||'Unknown error');gallery.append(msg);}}
 }
@@ -7352,6 +7374,48 @@ body.trackers-view .sq-favorite-toggle[aria-pressed="true"]{background:#123c55!i
    }
  }
  place();window.addEventListener('resize',place,{passive:true});
+})();
+</script>
+<style id="sq-new-tools-styles">
+.sq-archive-toggle{margin:12px 0!important;display:block!important}.sq-archived-wrap[hidden]{display:none!important}.sq-archived-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:16px;margin:10px 0 24px}.sq-restore-tracker{width:100%;margin-top:10px}
+#sq-upcoming{margin:16px 0;border:1px solid #3d6980;border-radius:18px;background:#0b2942;color:#f0f7ff;padding:16px}
+#sq-upcoming summary{cursor:pointer;font-weight:750;display:flex;justify-content:space-between;gap:10px;align-items:center;list-style:none}#sq-upcoming summary::-webkit-details-marker{display:none}
+#sq-upcoming-list{margin-top:14px;display:grid;gap:9px}.sq-upcoming-row{display:flex;justify-content:space-between;gap:12px;padding:12px;border:1px solid #33556e;border-radius:12px;background:#123550}.sq-upcoming-row small{display:block;color:#bad0df;margin-top:4px}.sq-upcoming-row strong{white-space:nowrap}
+#sq-layout-tools{margin:14px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center}#sq-layout-tools button{border:1px solid #507a90;background:#123550;color:white;border-radius:11px;padding:9px 12px;cursor:pointer}#sq-layout-panel{display:flex;flex-wrap:wrap;gap:12px;padding:12px;background:#0b2942;border:1px solid #3d6980;border-radius:14px}#sq-layout-panel[hidden]{display:none!important}#sq-layout-panel label{color:#e3f5ff;font-size:14px;display:flex;gap:6px;align-items:center}
+</style>
+<script id="sq-new-tools-js">
+(function(){'use strict';
+ const dashboard=document.getElementById('tracker-dashboard');if(!dashboard)return;
+ const stats=document.getElementById('sq-overview-stats');
+ const actions=document.getElementById('quick-pay-now')?.parentElement;
+ const history=document.getElementById('history');
+ const upcoming=document.createElement('details');upcoming.id='sq-upcoming';
+ upcoming.innerHTML='<summary><span>Upcoming payments</span><span id="sq-upcoming-count">View due dates ▾</span></summary><div id="sq-upcoming-list"></div>';
+ const anchor=document.getElementById('recurring-card');if(anchor)anchor.parentElement.insertBefore(upcoming,anchor);
+ function updateUpcoming(){
+   const list=document.getElementById('sq-upcoming-list'),count=document.getElementById('sq-upcoming-count');if(!list)return;
+   const tracker=typeof current!=='undefined'?current:null;
+   const all=tracker&&Array.isArray(tracker.entries)?tracker.entries:[];
+   const rows=all.filter(e=>e.type==='debt'&&e.dueDate&&e.paymentStatus!=='confirmed'&&e.paymentStatus!=='paid').sort((a,b)=>String(a.dueDate).localeCompare(String(b.dueDate)));
+   count.textContent=rows.length+' due date'+(rows.length===1?'':'s')+' ▾';list.replaceChildren();
+   if(!rows.length){const p=document.createElement('p');p.textContent='No outstanding expenses with due dates in this tracker.';list.append(p);return;}
+   rows.forEach(e=>{const row=document.createElement('div');row.className='sq-upcoming-row';const left=document.createElement('div');const name=document.createElement('b');name.textContent=String(e.note||'Expense').replace(/^\[Category:[^\]]+\]\s*/,'').slice(0,90)||'Expense';const info=document.createElement('small');info.textContent='Due '+e.dueDate+' · '+(e.from||'Member')+' → '+(e.to||'Member');left.append(name,info);const amount=document.createElement('strong');amount.textContent=Number(e.amount||0).toLocaleString(undefined,{style:'currency',currency:e.currency||'USD'});row.append(left,amount);list.append(row);});
+ }
+ // Render happens after data loads; refresh on the application's existing render event and history updates.
+ let scheduled=false;function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;updateUpcoming()})}
+ if(history)new MutationObserver(schedule).observe(history,{childList:true});
+ document.addEventListener('click',e=>{if(e.target.closest('#sq-upcoming'))schedule()});schedule();
+ const tools=document.createElement('div');tools.id='sq-layout-tools';
+ const toggle=document.createElement('button');toggle.type='button';toggle.textContent='Customize overview';toggle.setAttribute('aria-expanded','false');
+ const panel=document.createElement('div');panel.id='sq-layout-panel';panel.hidden=true;
+ const sections=[['balance','Balance breakdown',stats],['actions','Quick actions',actions],['upcoming','Upcoming payments',upcoming],['recurring','Recurring expenses',anchor],['settle','Smart settle-up',document.getElementById('smart-settle-card')]];
+ const key='sq-dashboard-layout-'+String(typeof currentUser!=='undefined'&&currentUser&&currentUser.id||'local');
+ let prefs={};try{prefs=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){}
+ function apply(){sections.forEach(([id,label,el])=>{if(el)el.classList.toggle('sq-user-hidden',prefs[id]===false)});}
+ sections.forEach(([id,label,el])=>{if(!el)return;const item=document.createElement('label');const check=document.createElement('input');check.type='checkbox';check.checked=prefs[id]!==false;check.addEventListener('change',()=>{prefs[id]=check.checked;try{localStorage.setItem(key,JSON.stringify(prefs))}catch(e){}apply()});item.append(check,document.createTextNode(label));panel.append(item)});
+ toggle.onclick=()=>{panel.hidden=!panel.hidden;toggle.setAttribute('aria-expanded',String(!panel.hidden))};tools.append(toggle,panel);
+ if(stats)stats.parentElement.insertBefore(tools,stats);else dashboard.prepend(tools);
+ const style=document.createElement('style');style.textContent='.sq-user-hidden{display:none!important}';document.head.append(style);apply();
 })();
 </script>
 </body>
