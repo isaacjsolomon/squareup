@@ -1944,6 +1944,76 @@ const owner =
   (!trackerOwnerRecord?.owner_id && m.role === 'owner');
 const sub = parts[2];
 
+
+ // =============================================
+ // SQUAREUP GROUP PROFILES
+ // =============================================
+
+if (sub === 'group-profile' && parts.length === 3) {
+
+  if (method === 'GET') {
+    const rows = await db('squareup_group_profiles', {
+      filters: { tracker_id: 'eq.' + id },
+      limit: 1
+    });
+
+    return json(rows[0] || {
+      tracker_id: id,
+      title: trackerOwnerRecord.name,
+      description: '',
+      emoji: '👥'
+    });
+  }
+
+  if (method === 'PATCH') {
+    if (!owner) {
+      return fail(
+        'Only the tracker owner can edit the group profile.',
+        403
+      );
+    }
+
+    const title = clean(body.title, 80);
+    const description = clean(body.description, 300);
+    const emoji = clean(body.emoji, 8) || '👥';
+
+    const existing = await db('squareup_group_profiles', {
+      filters: { tracker_id: 'eq.' + id },
+      limit: 1
+    });
+
+    const changes = {
+      title: title || trackerOwnerRecord.name,
+      description,
+      emoji,
+      updated_by: me.id,
+      updated_at: new Date().toISOString()
+    };
+
+    const saved = await db(
+      'squareup_group_profiles',
+      existing.length
+        ? {
+            method: 'PATCH',
+            filters: { tracker_id: 'eq.' + id },
+            body: changes
+          }
+        : {
+            method: 'POST',
+            body: {
+              tracker_id: id,
+              ...changes
+            }
+          }
+    );
+
+    return json(saved[0]);
+  }
+
+  return fail('Method not allowed', 405);
+}
+
+    
 // Only uniquely identified tracker members can be
 // treated as payment participants.
 async function sqPaymentParticipants(entry) {
