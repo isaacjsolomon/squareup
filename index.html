@@ -7778,27 +7778,22 @@ document.getElementById('sq-social-launch').onclick=()=>{modal.hidden=false;rend
 })();
 </script>
 
-<style id="sq-social-under-friends-20261031">
-#sq-social-launch.sq-social-under-friends{position:static!important;inset:auto!important;display:flex!important;align-items:center!important;justify-content:center!important;width:calc(25% - 10px)!important;max-width:none!important;min-height:52px!important;margin:12px 0 0 auto!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;background:#123d59!important;border:1px solid #317b96!important;border-radius:14px!important;box-shadow:none!important;font-size:17px!important}
-@media(max-width:900px){#sq-social-launch.sq-social-under-friends{width:calc(50% - 6px)!important;min-height:44px!important;margin-top:9px!important;font-size:13px!important}}
+<style id="sq-social-friends-only-20261031">
+/* Social entry belongs to the Friends page, never the tracker Overview. */
+#sq-social-launch.sq-social-friends-only{position:static!important;inset:auto!important;display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;max-width:360px!important;min-height:48px!important;margin:18px 0!important;background:#123d59!important;border:1px solid #317b96!important;border-radius:14px!important;box-shadow:none!important;font-size:16px!important;color:#fff!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important}
+@media(max-width:900px){#sq-social-launch.sq-social-friends-only{max-width:none!important;font-size:14px!important}}
 </style>
-<script id="sq-social-under-friends-placement">
+<script id="sq-social-friends-only-placement">
 (function(){
  const launch=document.getElementById('sq-social-launch');
- if(!launch)return;
- function place(){
-  const tabs=document.querySelector('.sq-workspace-tabs');
-  if(!tabs)return false;
-  if(launch.previousElementSibling!==tabs)tabs.insertAdjacentElement('afterend',launch);
-  launch.classList.remove('sq-social-in-sidebar');
-  launch.classList.add('sq-social-under-friends');
-  return true;
- }
- if(!place()){
-  const observer=new MutationObserver(()=>{if(place())observer.disconnect()});
-  observer.observe(document.body,{childList:true,subtree:true});
-  window.addEventListener('load',()=>{place();observer.disconnect()},{once:true});
- }
+ const friends=document.getElementById('friends-page');
+ if(!launch||!friends)return;
+ const layout=friends.querySelector('.sq-friends-layout')||friends;
+ const heading=layout.querySelector('.sq-feature-head');
+ if(heading)heading.insertAdjacentElement('afterend',launch);
+ else layout.insertAdjacentElement('afterbegin',launch);
+ launch.classList.remove('sq-social-under-friends','sq-social-in-sidebar');
+ launch.classList.add('sq-social-friends-only');
 })();
 </script>
 
