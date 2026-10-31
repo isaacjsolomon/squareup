@@ -7839,5 +7839,47 @@ document.getElementById('sq-social-launch').onclick=()=>{modal.hidden=false;rend
 }
 </style>
 
+
+<style id="sq-activity-premium-redesign-v2">
+/* Calm, legible expense list: information first, actions second. */
+#tracker-dashboard.sq-tab-expenses #sq-activity-card{padding:clamp(18px,3vw,30px)!important}
+#tracker-dashboard.sq-tab-expenses #sq-activity-toggle{margin-bottom:18px!important}
+#tracker-dashboard.sq-tab-expenses #sq-activity-toggle strong{font-size:clamp(21px,2.3vw,27px)!important;letter-spacing:-.5px}
+#tracker-dashboard.sq-tab-expenses #sq-activity-toggle small{font-size:14px!important;margin-top:5px!important}
+#tracker-dashboard.sq-tab-expenses #sq-activity-content .sq-activity-filters{margin:0 0 12px!important;padding:0!important}
+#tracker-dashboard.sq-tab-expenses #sq-activity-content .sq-activity-filters>div{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:10px!important}
+#tracker-dashboard.sq-tab-expenses #sq-expense-search{width:100%!important;min-width:0!important;max-width:none!important;height:45px!important}
+#tracker-dashboard.sq-tab-expenses #sq-expense-time{height:45px!important;max-width:160px!important}
+#tracker-dashboard.sq-tab-expenses .sq-expense-extra{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;margin:0 0 20px!important;padding:0!important}
+#tracker-dashboard.sq-tab-expenses .sq-expense-extra label{display:flex!important;align-items:center!important;gap:9px!important;font-size:13px!important;color:#b9cfe0!important}
+#tracker-dashboard.sq-tab-expenses .sq-expense-extra select{height:40px!important}
+#tracker-dashboard.sq-tab-expenses #history{display:grid!important;gap:11px!important}
+#tracker-dashboard #history>.sq-detail-entry{display:grid!important;grid-template-columns:minmax(0,1fr) auto auto auto!important;grid-template-rows:auto auto!important;align-items:center!important;gap:12px 9px!important;margin:0!important;padding:18px 20px!important;min-width:0!important;border:1px solid rgba(166,202,224,.17)!important;border-radius:18px!important;background:linear-gradient(125deg,rgba(15,39,62,.55),rgba(20,47,74,.37))!important;box-shadow:none!important}
+#tracker-dashboard #history>.sq-detail-entry:hover{border-color:rgba(83,219,196,.45)!important;background:linear-gradient(125deg,rgba(19,49,74,.7),rgba(27,55,82,.48))!important}
+#tracker-dashboard #history>.sq-detail-entry>.tag{grid-column:1!important;grid-row:1!important;justify-self:start!important;align-self:center!important;margin:0!important;font-size:11px!important;letter-spacing:.7px!important;padding:5px 9px!important}
+#tracker-dashboard #history>.sq-detail-entry>.text{grid-column:1 / -1!important;grid-row:2!important;min-width:0!important;width:100%!important;max-width:none!important;font-size:16px!important;line-height:1.4!important;overflow-wrap:normal!important;word-break:normal!important}
+#tracker-dashboard #history>.sq-detail-entry>.text>b{font-weight:750!important}
+#tracker-dashboard #history>.sq-detail-entry .note{font-size:13px!important;line-height:1.55!important;margin-top:8px!important;color:#b5c9dc!important;overflow-wrap:break-word!important}
+#tracker-dashboard #history>.sq-detail-entry>.entry-pin-btn{grid-column:2!important;grid-row:1!important;width:38px!important;height:38px!important;border-radius:11px!important}
+#tracker-dashboard #history>.sq-detail-entry>.sq-detail-btn{grid-column:3!important;grid-row:1!important;min-height:38px!important;padding:8px 14px!important;font-size:13px!important;white-space:nowrap!important}
+#tracker-dashboard #history>.sq-detail-entry>[data-del]{grid-column:4!important;grid-row:1!important;min-height:38px!important;padding:8px 13px!important;font-size:13px!important;white-space:nowrap!important}
+#tracker-dashboard.sq-tab-expenses #sq-expense-count{margin-top:14px!important;font-size:12px!important;color:#b5c9dc!important}
+#tracker-dashboard.sq-tab-expenses .sq-clean-activity-heading{margin-top:12px!important}
+@media(max-width:600px){
+ #tracker-dashboard.sq-tab-expenses #sq-activity-content .sq-activity-filters>div{grid-template-columns:minmax(0,1fr)!important}
+ #tracker-dashboard.sq-tab-expenses #sq-expense-time{max-width:none!important;width:100%!important}
+ #tracker-dashboard.sq-tab-expenses .sq-expense-extra{flex-wrap:wrap!important}
+ #tracker-dashboard #history>.sq-detail-entry{grid-template-columns:minmax(0,1fr) auto auto auto!important;padding:15px!important;gap:11px 7px!important}
+ #tracker-dashboard #history>.sq-detail-entry>.text{font-size:15px!important}
+ #tracker-dashboard #history>.sq-detail-entry>.sq-detail-btn,#tracker-dashboard #history>.sq-detail-entry>[data-del]{padding:8px 10px!important;font-size:12px!important}
+}
+@media(max-width:365px){
+ #tracker-dashboard #history>.sq-detail-entry{grid-template-columns:1fr auto auto!important}
+ #tracker-dashboard #history>.sq-detail-entry>.tag{grid-column:1!important}
+ #tracker-dashboard #history>.sq-detail-entry>.entry-pin-btn{grid-column:1!important;grid-row:3!important;justify-self:start!important}
+ #tracker-dashboard #history>.sq-detail-entry>.sq-detail-btn{grid-column:2!important;grid-row:3!important}
+ #tracker-dashboard #history>.sq-detail-entry>[data-del]{grid-column:3!important;grid-row:3!important}
+}
+</style>
 </body>
 </html>
