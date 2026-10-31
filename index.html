@@ -7078,5 +7078,33 @@ duplicate.addEventListener('click',()=>{if(!selected||selected.type!=='debt')ret
 share.addEventListener('click',async()=>{if(!selected)return;const tracker=selectedTracker();const money=Number(selected.amount||0).toLocaleString(undefined,{style:'currency',currency:selected.currency||'USD'});const msg=['SquareUp expense summary',tracker?'Tracker: '+tracker.name:null,'Description: '+(cleanNote(selected.note)||'Expense'),'Amount: '+money,'Owed by: '+(selected.from||'—'),'Owed to: '+(selected.to||'—'),'Date: '+(selected.date||'—'),'Status: '+(selected.paymentStatus||'Recorded'),'Shared for reference; verify payments separately.'].filter(Boolean).join('\n');try{if(navigator.share){await navigator.share({title:'SquareUp expense summary',text:msg});return}if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(msg);alert('Expense summary copied.');return}const area=document.createElement('textarea');area.value=msg;document.body.append(area);area.select();const ok=document.execCommand('copy');area.remove();if(ok)alert('Expense summary copied.');else prompt('Copy this expense summary:',msg)}catch(e){if(e.name!=='AbortError')prompt('Copy this expense summary:',msg)}});
 })();
 </script>
+
+<style id="sq-mobile-quick-calc-compact-bar">
+/* Mobile: a full-width, compact action bar immediately beneath the balance stats. */
+@media (max-width:680px){
+  #tracker-dashboard #sq-quick-calc-launch{
+    display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;
+    gap:12px!important;box-sizing:border-box!important;
+    width:100%!important;max-width:100%!important;min-width:0!important;
+    min-height:62px!important;height:62px!important;
+    margin:12px 0 18px!important;padding:10px 16px!important;
+    border-radius:16px!important;border:1px solid rgba(72,170,178,.65)!important;
+    background:linear-gradient(115deg,#075d59,#0c364b)!important;
+    color:#fff!important;box-shadow:0 5px 16px rgba(0,0,0,.15)!important;
+    text-align:center!important;
+  }
+  #tracker-dashboard #sq-quick-calc-launch .action-icon{
+    display:inline-flex!important;flex:0 0 32px!important;width:32px!important;height:32px!important;
+    align-items:center!important;justify-content:center!important;margin:0!important;
+    padding:0!important;border-radius:9px!important;background:rgba(255,255,255,.12)!important;
+  }
+  #tracker-dashboard #sq-quick-calc-launch .action-icon svg{width:21px!important;height:21px!important}
+  #tracker-dashboard #sq-quick-calc-launch .sq-calc-label{
+    display:inline!important;font-size:16px!important;line-height:1.2!important;font-weight:800!important;
+    white-space:normal!important;margin:0!important;
+  }
+  #tracker-dashboard #sq-quick-calc-launch .action-sub{display:none!important}
+}
+</style>
 </body>
 </html>
