@@ -7932,5 +7932,68 @@ document.getElementById('sq-social-launch').onclick=()=>{modal.hidden=false;rend
  #tracker-dashboard #history > .sq-detail-entry > [data-del]{grid-column:3!important;grid-row:3!important;width:100%!important}
 }
 </style>
+<style id="sq-activity-roomier-cards-20261031">
+/* Give every expense a taller, full-width card with a dedicated action row. */
+#tracker-dashboard #sq-activity-card #history > .sq-detail-entry {
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-height:235px!important;
+  padding:26px 28px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 48px 112px 100px!important;
+  grid-template-rows:minmax(105px,auto) 52px!important;
+  gap:20px 14px!important;
+  align-items:center!important;
+  overflow:visible!important;
+}
+#tracker-dashboard #sq-activity-card #history > .sq-detail-entry > .text {
+  grid-column:1 / -1!important;
+  grid-row:1!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  align-self:start!important;
+  line-height:1.55!important;
+}
+#tracker-dashboard #sq-activity-card #history > .sq-detail-entry > .tag {
+  grid-column:1!important;grid-row:2!important;
+  justify-self:start!important;align-self:center!important;
+}
+#tracker-dashboard #sq-activity-card #history > .sq-detail-entry > .entry-pin-btn {
+  grid-column:2!important;grid-row:2!important;
+  width:48px!important;height:48px!important;justify-self:stretch!important;
+}
+#tracker-dashboard #sq-activity-card #history > .sq-detail-entry > .sq-detail-btn {
+  grid-column:3!important;grid-row:2!important;
+  width:100%!important;min-height:48px!important;justify-self:stretch!important;
+}
+#tracker-dashboard #sq-activity-card #history > .sq-detail-entry > [data-del] {
+  grid-column:4!important;grid-row:2!important;
+  width:100%!important;min-height:48px!important;justify-self:stretch!important;
+}
+@media(max-width:680px){
+ #tracker-dashboard #sq-activity-card #history > .sq-detail-entry {
+   padding:20px!important;min-height:245px!important;
+   grid-template-columns:minmax(0,1fr) 44px minmax(70px,1fr) minmax(70px,1fr)!important;
+   grid-template-rows:minmax(110px,auto) 48px!important;
+   gap:14px 8px!important;
+ }
+ #tracker-dashboard #sq-activity-card #history > .sq-detail-entry > .entry-pin-btn{width:44px!important;height:44px!important}
+ #tracker-dashboard #sq-activity-card #history > .sq-detail-entry > .sq-detail-btn,
+ #tracker-dashboard #sq-activity-card #history > .sq-detail-entry > [data-del]{padding:8px!important;font-size:13px!important}
+}
+@media(max-width:410px){
+ #tracker-dashboard #sq-activity-card #history > .sq-detail-entry {
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-rows:auto auto 48px!important;
+  min-height:265px!important;
+ }
+ #tracker-dashboard #sq-activity-card #history > .sq-detail-entry > .tag{grid-column:1/-1!important;grid-row:2!important}
+ #tracker-dashboard #sq-activity-card #history > .sq-detail-entry > .entry-pin-btn{grid-column:1!important;grid-row:3!important;width:100%!important}
+ #tracker-dashboard #sq-activity-card #history > .sq-detail-entry > .sq-detail-btn{grid-column:2!important;grid-row:3!important}
+ #tracker-dashboard #sq-activity-card #history > .sq-detail-entry > [data-del]{grid-column:3!important;grid-row:3!important}
+}
+</style>
 </body>
 </html>
