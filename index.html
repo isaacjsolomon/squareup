@@ -7623,5 +7623,53 @@ body.trackers-view .sq-favorite-toggle[aria-pressed="true"]{background:#123c55!i
  }
 }
 </style>
+
+<style id="sq-mobile-customize-scroll-and-actions-fix">
+/* Keep the customization menu inside the visible phone viewport, rather than
+   letting the absolute-positioned menu cover the page and lose its footer. */
+@media (max-width:900px) {
+  #tracker-dashboard.sq-tab-overview #sq-layout-panel:not([hidden]) {
+    position:fixed!important;
+    top:calc(env(safe-area-inset-top, 0px) + 76px)!important;
+    bottom:calc(env(safe-area-inset-bottom, 0px) + 94px)!important;
+    left:12px!important;
+    right:12px!important;
+    width:auto!important;
+    max-width:none!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:16px 14px 12px!important;
+    box-sizing:border-box!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+    z-index:99999!important;
+    border-radius:18px!important;
+    box-shadow:0 18px 55px rgba(0,0,0,.55)!important;
+  }
+  #tracker-dashboard.sq-tab-overview #sq-layout-panel .sq-layout-options {
+    grid-template-columns:1fr!important;
+    gap:9px!important;
+  }
+  #tracker-dashboard.sq-tab-overview #sq-layout-panel .sq-layout-buttons {
+    position:sticky!important;
+    bottom:-12px!important;
+    display:flex!important;
+    justify-content:space-between!important;
+    flex-wrap:wrap!important;
+    gap:8px!important;
+    padding:12px 0 max(12px,env(safe-area-inset-bottom, 0px))!important;
+    margin-top:14px!important;
+    background:#0b2942!important;
+    z-index:2!important;
+  }
+  #tracker-dashboard.sq-tab-overview #sq-layout-panel .sq-layout-buttons button {
+    flex:1 1 auto!important;
+    min-width:0!important;
+    white-space:nowrap!important;
+    padding:11px 8px!important;
+  }
+}
+</style>
 </body>
 </html>
