@@ -7777,5 +7777,32 @@ document.getElementById('sq-social-launch').onclick=()=>{modal.hidden=false;rend
 })();
 </script>
 
+<style id="sq-social-launch-visible-fix">
+#sq-social-launch{position:fixed!important;right:24px!important;bottom:110px!important;z-index:2147483000!important;display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;max-width:calc(100vw - 32px)!important}
+#sq-social-launch.sq-social-in-sidebar{position:static!important;right:auto!important;bottom:auto!important;display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;min-height:45px!important;margin:9px 0!important}
+@media(max-width:900px){#sq-social-launch:not(.sq-social-in-sidebar){right:12px!important;bottom:calc(155px + env(safe-area-inset-bottom))!important;font-size:13px!important}}
+</style>
+<script id="sq-social-launch-placement-fix">
+(function(){
+ const launch=document.getElementById('sq-social-launch');
+ if(!launch)return;
+ // Put the feature beside the existing overview customization control when possible.
+ const place=()=>{
+  const tools=document.getElementById('sq-layout-tools');
+  if(tools&&tools.isConnected){
+   if(launch.parentElement!==tools)tools.insertBefore(launch,tools.firstChild);
+   launch.classList.add('sq-social-in-sidebar');
+   return true;
+  }
+  return false;
+ };
+ if(!place()){
+  const observer=new MutationObserver(()=>{if(place())observer.disconnect()});
+  observer.observe(document.body,{childList:true,subtree:true});
+  window.addEventListener('load',()=>{if(place())observer.disconnect()},{once:true});
+ }
+})();
+</script>
+
 </body>
 </html>
