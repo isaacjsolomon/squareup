@@ -4030,7 +4030,7 @@ async function renderTrackerGallery(){
           var aFav=favorites.includes(a.dataset.trackerId),bFav=favorites.includes(b.dataset.trackerId);
           if(aFav!==bFav)return aFav?-1:1;
           return Number(a.dataset.originalIndex||0)-Number(b.dataset.originalIndex||0);
-        }).forEach(function(el){gallery.appendChild(el);});
+        }).forEach(function(el){gallery.insertBefore(el,archiveToggle);});
       }
       card.dataset.originalIndex=String(i);
       var favorite=document.createElement('button');
@@ -4234,6 +4234,8 @@ async function renderTrackerGallery(){
       }else gallery.append(card);
       reorderFavs();
     });
+    // Keep archive controls below the active tracker cards.
+    gallery.append(archiveToggle,archivedWrap);
   }catch(err){if(serial===trackerGallerySerial){sqGalleryKeepCreateRow(gallery);var msg=document.createElement('div');msg.className='trackers-empty';msg.textContent='Could not load trackers: '+(err.message||'Unknown error');gallery.append(msg);}}
 }
 // The gallery may first render before authentication finishes on a hard reload.
@@ -7389,34 +7391,51 @@ body.trackers-view .sq-favorite-toggle[aria-pressed="true"]{background:#123c55!i
  const stats=document.getElementById('sq-overview-stats');
  const actions=document.getElementById('quick-pay-now')?.parentElement;
  const history=document.getElementById('history');
- const upcoming=document.createElement('details');upcoming.id='sq-upcoming';
- upcoming.innerHTML='<summary><span>Upcoming payments</span><span id="sq-upcoming-count">View due dates ▾</span></summary><div id="sq-upcoming-list"></div>';
- const anchor=document.getElementById('recurring-card');if(anchor)anchor.parentElement.insertBefore(upcoming,anchor);
- function updateUpcoming(){
-   const list=document.getElementById('sq-upcoming-list'),count=document.getElementById('sq-upcoming-count');if(!list)return;
-   const tracker=typeof current!=='undefined'?current:null;
-   const all=tracker&&Array.isArray(tracker.entries)?tracker.entries:[];
-   const rows=all.filter(e=>e.type==='debt'&&e.dueDate&&e.paymentStatus!=='confirmed'&&e.paymentStatus!=='paid').sort((a,b)=>String(a.dueDate).localeCompare(String(b.dueDate)));
-   count.textContent=rows.length+' due date'+(rows.length===1?'':'s')+' ▾';list.replaceChildren();
-   if(!rows.length){const p=document.createElement('p');p.textContent='No outstanding expenses with due dates in this tracker.';list.append(p);return;}
-   rows.forEach(e=>{const row=document.createElement('div');row.className='sq-upcoming-row';const left=document.createElement('div');const name=document.createElement('b');name.textContent=String(e.note||'Expense').replace(/^\[Category:[^\]]+\]\s*/,'').slice(0,90)||'Expense';const info=document.createElement('small');info.textContent='Due '+e.dueDate+' · '+(e.from||'Member')+' → '+(e.to||'Member');left.append(name,info);const amount=document.createElement('strong');amount.textContent=Number(e.amount||0).toLocaleString(undefined,{style:'currency',currency:e.currency||'USD'});row.append(left,amount);list.append(row);});
- }
- // Render happens after data loads; refresh on the application's existing render event and history updates.
- let scheduled=false;function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;updateUpcoming()})}
- if(history)new MutationObserver(schedule).observe(history,{childList:true});
- document.addEventListener('click',e=>{if(e.target.closest('#sq-upcoming'))schedule()});schedule();
  const tools=document.createElement('div');tools.id='sq-layout-tools';
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent='Customize overview';toggle.setAttribute('aria-expanded','false');
  const panel=document.createElement('div');panel.id='sq-layout-panel';panel.hidden=true;
- const sections=[['balance','Balance breakdown',stats],['actions','Quick actions',actions],['upcoming','Upcoming payments',upcoming],['recurring','Recurring expenses',anchor],['settle','Smart settle-up',document.getElementById('smart-settle-card')]];
+ const sections=[['balance','Balance breakdown',stats],['actions','Quick actions',actions],['recurring','Recurring expenses',anchor],['settle','Smart settle-up',document.getElementById('smart-settle-card')]];
  const key='sq-dashboard-layout-'+String(typeof currentUser!=='undefined'&&currentUser&&currentUser.id||'local');
  let prefs={};try{prefs=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){}
  function apply(){sections.forEach(([id,label,el])=>{if(el)el.classList.toggle('sq-user-hidden',prefs[id]===false)});}
  sections.forEach(([id,label,el])=>{if(!el)return;const item=document.createElement('label');const check=document.createElement('input');check.type='checkbox';check.checked=prefs[id]!==false;check.addEventListener('change',()=>{prefs[id]=check.checked;try{localStorage.setItem(key,JSON.stringify(prefs))}catch(e){}apply()});item.append(check,document.createTextNode(label));panel.append(item)});
  toggle.onclick=()=>{panel.hidden=!panel.hidden;toggle.setAttribute('aria-expanded',String(!panel.hidden))};tools.append(toggle,panel);
- if(stats)stats.parentElement.insertBefore(tools,stats);else dashboard.prepend(tools);
+ const summary=document.getElementById('sq-return-summary');
+ const returnGrid=summary&&summary.querySelector('.sq-return-grid');
+ if(returnGrid)summary.insertBefore(tools,returnGrid);else dashboard.prepend(tools);
  const style=document.createElement('style');style.textContent='.sq-user-hidden{display:none!important}';document.head.append(style);apply();
 })();
 </script>
+<style id="sq-tracker-gallery-desktop-grid-fix">
+@media (min-width: 761px) {
+  body.trackers-view #trackers-gallery.trackers-grid {
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:20px!important;
+    align-items:stretch!important;
+  }
+  body.trackers-view #trackers-gallery > .sq-create-tracker-row,
+  body.trackers-view #trackers-gallery > .sq-archive-toggle,
+  body.trackers-view #trackers-gallery > .sq-archived-wrap,
+  body.trackers-view #trackers-gallery > .trackers-empty {
+    grid-column:1 / -1!important;
+  }
+  body.trackers-view #trackers-gallery > .tracker-tile {
+    grid-column:auto!important;
+    min-width:0!important;
+    width:100%!important;
+  }
+}
+</style>
+<style id="sq-layout-tools-visible-fix">
+/* Place Customize overview in its own row, never behind the balance cards. */
+#tracker-dashboard #sq-layout-tools{position:relative!important;z-index:2!important;clear:both!important;min-width:0!important;box-sizing:border-box!important;margin:0 0 4px!important;align-self:stretch!important}
+#tracker-dashboard #sq-layout-tools>button{display:inline-flex!important;align-items:center!important;min-height:40px!important;background:#123c59!important;border:1px solid #4c8298!important;color:#fff!important;font-weight:700!important}
+@media(min-width:901px){
+ #tracker-dashboard.sq-tab-overview #sq-layout-tools{grid-column:1/-1!important;grid-row:3!important;justify-self:start!important}
+ #tracker-dashboard.sq-tab-overview .sq-return-grid{grid-row:4!important}
+}
+@media(max-width:900px){#tracker-dashboard #sq-layout-tools{width:100%!important;padding:0 4px!important}}
+</style>
 </body>
 </html>
