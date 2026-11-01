@@ -7046,36 +7046,38 @@ document.addEventListener('click',function(event){var trigger=event.target.close
 </div>
 <script>
 (function(){
- const key='squareup_instagram_invite_shown_v1';
+ // One invitation per browser tab session, 20 seconds after each new session starts.
+ const key='squareup_instagram_invite_shown_session_v2';
  const invite=document.getElementById('sq-instagram-invite');
  if(!invite)return;
- let shown=false,previousFocus=null;
- try{if(localStorage.getItem(key)==='yes')return;}catch(e){}
- const close=()=>{invite.hidden=true;document.body.style.removeProperty('--sq-ig-open');if(previousFocus&&previousFocus.isConnected)previousFocus.focus();};
+ let shown=false, previousFocus=null;
+ try{if(sessionStorage.getItem(key)==='yes')return;}catch(e){}
+ function close(){
+   invite.hidden=true;
+   if(previousFocus && previousFocus.isConnected)previousFocus.focus();
+ }
  invite.querySelector('.sq-ig-x').addEventListener('click',close);
  invite.querySelector('.sq-ig-later').addEventListener('click',close);
  invite.querySelector('.sq-ig-follow').addEventListener('click',close);
  invite.addEventListener('click',e=>{if(e.target===invite)close();});
- invite.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){const nodes=[...invite.querySelectorAll('button,a')];const i=nodes.indexOf(document.activeElement);if(e.shiftKey&&i===0){e.preventDefault();nodes[nodes.length-1].focus();}else if(!e.shiftKey&&i===nodes.length-1){e.preventDefault();nodes[0].focus();}}});
- function anotherPopupOpen(){
-  return [...document.querySelectorAll('.modal-bg,.sq-legal-overlay,.sq-tour-overlay,dialog,[role="dialog"],[aria-modal="true"]')].some(el=>{
-   if(el===invite||invite.contains(el)||el.closest('#sq-instagram-invite'))return false;
-   if(el.hidden||el.getAttribute('aria-hidden')==='true')return false;
-   const st=getComputedStyle(el);return st.display!=='none'&&st.visibility!=='hidden'&&Number(st.opacity)!==0&&el.getClientRects().length>0;
-  });
+ invite.addEventListener('keydown',e=>{
+   if(e.key==='Escape'){e.preventDefault();close();}
+   if(e.key==='Tab'){
+     const nodes=[...invite.querySelectorAll('button,a')];
+     const i=nodes.indexOf(document.activeElement);
+     if(e.shiftKey&&i===0){e.preventDefault();nodes[nodes.length-1].focus();}
+     else if(!e.shiftKey&&i===nodes.length-1){e.preventDefault();nodes[0].focus();}
+   }
+ });
+ function show(){
+   if(shown)return;
+   shown=true;
+   try{sessionStorage.setItem(key,'yes');}catch(e){}
+   previousFocus=document.activeElement;
+   invite.hidden=false;
+   invite.querySelector('.sq-ig-x').focus();
  }
- function showWhenReady(){
-  if(shown)return;
-  try{if(localStorage.getItem(key)==='yes')return;}catch(e){}
-  if(document.visibilityState==='hidden'||anotherPopupOpen()){setTimeout(showWhenReady,1500);return;}
-  shown=true;
-  try{localStorage.setItem(key,'yes');}catch(e){}
-  previousFocus=document.activeElement;
-  invite.hidden=false;
-  invite.querySelector('.sq-ig-x').focus();
- }
- // Count 30 seconds from this page launch, not every two minutes thereafter.
- setTimeout(showWhenReady,30000);
+ setTimeout(show,20000);
 })();
 </script>
 
