@@ -5249,16 +5249,48 @@ sqChatInput.addEventListener('input',()=>{var m=sqMentionMatch();if(!m||!current
 sqMentionList.addEventListener('click',e=>{var btn=e.target.closest('[data-mention-id]');if(!btn||!current)return;var member=current.members.find(x=>String(x.id)===btn.dataset.mentionId),m=sqMentionMatch();if(!member||!m)return;var pos=sqChatInput.selectionStart;sqChatInput.value=sqChatInput.value.slice(0,m.start)+'@'+member.name+' '+sqChatInput.value.slice(pos);sqMentionIds.add(member.id);sqMentionList.hidden=true;sqChatInput.focus();});
 async function sqUploadPhoto(file){if(!file)return null;if(file.size>4*1024*1024)throw Error('Photo must be under 4 MB.');var headers=await authHeaders({'Content-Type':file.type});var response=await fetch('/api/trackers/'+current.id+'/chat-photo',{method:'POST',headers,body:file});var data=await response.json().catch(()=>({}));if(!response.ok)throw Error(data.error||'Photo upload failed');return data.photoId;}
 var chatTrackerId=null;
+function sqChatRichMessage(message){
+ const raw=String(message||'');
+ const re=/\[(Group poll|Expense)\] ([^\n]*?) \((?:Poll|Expense) ID: ([0-9a-f-]{36})\)/gi;
+ let out='',start=0,match;
+ while((match=re.exec(raw))){
+  out+=esc(raw.slice(start,match.index));
+  const kind=match[1].toLowerCase()==='group poll'?'poll':'expense';
+  out+='<button type="button" class="sq-chat-linked-card" data-sq-linked="'+kind+'" data-sq-linked-id="'+esc(match[3])+'"><span class="sq-chat-linked-icon">'+(kind==='poll'?'▤':'▣')+'</span><span><small>'+(kind==='poll'?'GROUP POLL':'TRACKER EXPENSE')+'</small><strong>'+esc(match[2])+'</strong><small>Tap to view →</small></span></button>';
+  start=re.lastIndex;
+ }
+ return out+esc(raw.slice(start));
+}
 async function loadTrackerChat(){var box=document.getElementById('tracker-chat-messages');if(!box)return;if(!current){box.textContent='Open a shared tracker to chat.';return;}
  try{var id=current.id,rows=await api('trackers/'+id+'/chat');if(!current||current.id!==id)return;squareUpChatRows=rows;
  var byId=new Map(rows.map(m=>[String(m.id),m]));
  box.innerHTML=rows.map(m=>{var mine=String(m.senderId)===String(currentUser?.id)||current.members.some(x=>x.isYou&&(String(x.userId||x.user_id||'')===String(m.senderId)||x.name===m.senderName)),parent=m.replyTo?byId.get(String(m.replyTo)):null;
  var reply=parent?'<div class="chat-reply-preview">'+esc(parent.senderName)+': '+esc(parent.message.slice(0,120))+'</div>':'';
  var reactions=(m.reactions||[]).map(r=>'<button class="chat-reaction'+(r.mine?' selected':'')+'" data-react="'+esc(m.id)+'" data-emoji="'+esc(r.emoji)+'">'+esc(r.emoji)+' '+r.count+'</button>').join('');
- return '<div class="chat-line '+(mine?'mine':'theirs')+'" data-chat-id="'+esc(m.id)+'">'+(mine?'':'<div class="chat-sender">'+esc(m.senderName)+'</div>')+'<div class="chat-bubble">'+reply+esc(m.message)+(m.photoId?'<a href="/api/trackers/'+encodeURIComponent(id)+'/chat-photo/'+encodeURIComponent(m.photoId)+'" target="_blank" rel="noopener"><img class="sq-chat-image" data-photo="'+esc(m.photoId)+'" alt="Shared photo"></a>':'')+'</div><div class="chat-reactions">'+reactions+'</div><div class="chat-message-actions"><button type="button" data-pin="'+esc(m.id)+'">📌 Pin</button><button type="button" data-reply="'+esc(m.id)+'">↩ Reply</button>'+['❤️','👍','😂','🎉'].map(emoji=>'<button type="button" data-react="'+esc(m.id)+'" data-emoji="'+emoji+'">'+emoji+'</button>').join('')+'</div><div class="chat-time">'+esc(new Date(m.createdAt).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}))+'</div></div>';}).join('')||'<p class="dashboard-subheading">No messages yet. Say hello!</p>';
+ return '<div class="chat-line '+(mine?'mine':'theirs')+'" data-chat-id="'+esc(m.id)+'">'+(mine?'':'<div class="chat-sender">'+esc(m.senderName)+'</div>')+'<div class="chat-bubble">'+reply+sqChatRichMessage(m.message)+(m.photoId?'<a href="/api/trackers/'+encodeURIComponent(id)+'/chat-photo/'+encodeURIComponent(m.photoId)+'" target="_blank" rel="noopener"><img class="sq-chat-image" data-photo="'+esc(m.photoId)+'" alt="Shared photo"></a>':'')+'</div><div class="chat-reactions">'+reactions+'</div><div class="chat-message-actions"><button type="button" data-pin="'+esc(m.id)+'">📌 Pin</button><button type="button" data-reply="'+esc(m.id)+'">↩ Reply</button>'+['❤️','👍','😂','🎉'].map(emoji=>'<button type="button" data-react="'+esc(m.id)+'" data-emoji="'+emoji+'">'+emoji+'</button>').join('')+'</div><div class="chat-time">'+esc(new Date(m.createdAt).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}))+'</div></div>';}).join('')||'<p class="dashboard-subheading">No messages yet. Say hello!</p>';
  squareUpApplyChatSearch();await squareUpRefreshPin();
  box.querySelectorAll('img[data-photo]').forEach(async img=>{try{var response=await fetch('/api/trackers/'+encodeURIComponent(id)+'/chat-photo/'+encodeURIComponent(img.dataset.photo),{headers:await authHeaders()});if(!response.ok)return;var blob=await response.blob();var url=URL.createObjectURL(blob);img.src=url;img.closest('a').href=url;img.onload=()=>setTimeout(()=>URL.revokeObjectURL(url),60000);}catch(e){}});
  }catch(err){box.textContent='Chat unavailable: '+err.message;}}
+document.getElementById('tracker-chat-messages')?.addEventListener('click',async e=>{
+ const link=e.target.closest('[data-sq-linked]');if(!link)return;
+ e.preventDefault();e.stopPropagation();
+ const id=link.dataset.sqLinkedId;
+ if(link.dataset.sqLinked==='poll'){
+  const section=document.getElementById('sq-chat-polls');
+  const expand=document.getElementById('sq-polls-expand');
+  if(expand?.getAttribute('aria-expanded')!=='true')expand?.click();
+  if(typeof window.sqLoadChatPolls==='function')await window.sqLoadChatPolls();
+  const poll=Array.from(section?.querySelectorAll('[data-poll-card-id]')||[]).find(x=>x.dataset.pollCardId===id);
+  (poll||section)?.scrollIntoView({behavior:'smooth',block:'center'});
+  if(poll){poll.classList.add('sq-chat-linked-highlight');setTimeout(()=>poll.classList.remove('sq-chat-linked-highlight'),2200)}
+ }else{
+  const expenseTab=document.querySelector('[data-sq-tab="expenses"]');
+  if(expenseTab)expenseTab.click();
+  const entry=Array.from(document.querySelectorAll('#history [data-entry-id],#history [data-id],#history [data-expense-id]')).find(x=>[x.dataset.entryId,x.dataset.id,x.dataset.expenseId].includes(id));
+  (entry||document.getElementById('sq-activity-card'))?.scrollIntoView({behavior:'smooth',block:'center'});
+  if(!entry){const toggle=document.getElementById('sq-activity-toggle');if(toggle?.getAttribute('aria-expanded')==='false')toggle.click()}
+ }
+});
 async function loadRecurring(){var el=document.getElementById('recurring-list');if(!el)return;if(!current){el.textContent='Open a shared tracker to manage recurring expenses.';return;}
  try{var id=current.id;var rows=await api('trackers/'+id+'/recurring');if(!current||current.id!==id)return;el.innerHTML=rows.filter(x=>x.active).map(x=>'<div class="recurring-row"><div><b>'+esc(x.from_name)+' → '+esc(x.to_name)+'</b> · '+money(Number(x.amount))+'<small>'+esc(x.note||'Recurring expense')+' · '+esc(x.frequency)+' · Next '+esc(x.next_date)+'</small></div><button class="small-btn danger" data-stop-recurring="'+esc(x.id)+'">Stop</button></div>').join('')||'<p class="dashboard-subheading">No active recurring expenses.</p>';}catch(err){el.textContent='Schedules unavailable: '+err.message;}}
 document.getElementById('recurring-list').addEventListener('click',async function(ev){var id=ev.target.dataset.stopRecurring;if(!id||!current)return;if(!confirm('Stop future repeats? Existing expenses will remain.'))return;try{await api('trackers/'+current.id+'/recurring/'+id,'DELETE');await loadRecurring();}catch(err){alert(err.message);}});
@@ -8064,7 +8096,7 @@ panel.insertBefore(pollExpand,pollHeader);panel.appendChild(body);
 pollExpand.onclick=()=>{const expanded=pollExpand.getAttribute('aria-expanded')==='true';pollExpand.setAttribute('aria-expanded',String(!expanded));body.hidden=expanded;};
 const messages=chat.querySelector('#tracker-chat-messages');chat.insertBefore(panel,messages);
 const status=panel.querySelector('#sq-poll-status');panel.querySelector('#sq-poll-toggle').onclick=()=>panel.querySelector('#sq-poll-compose').classList.toggle('open');
-async function loadPolls(){const list=panel.querySelector('#sq-poll-list');if(!active()){list.innerHTML='<p>Open a tracker to see its polls.</p>';return}try{const id=active().id,rows=await call('polls');if(active()?.id!==id)return;list.innerHTML=rows.map(p=>'<article class="sq-poll-card"><h4>'+esc(p.question)+'</h4><div class="sq-poll-options">'+(p.options||[]).map(o=>'<button type="button" class="sq-poll-option" aria-pressed="'+(o.mine?'true':'false')+'" data-poll="'+esc(p.id)+'" data-option="'+esc(o.id)+'"><span>'+esc(o.label)+'</span><span>'+Number(o.votes||0)+' vote(s)</span></button>').join('')+'</div><small class="sq-poll-meta">'+Number(p.totalVotes||0)+' total votes · '+(p.closed?'Closed':'Open')+'</small>'+(p.canClose&&!p.closed?'<div><button type="button" data-close-poll="'+esc(p.id)+'">Close poll</button></div>':'')+'</article>').join('')||'<p>No polls yet. Start a group decision.</p>';status.textContent=''}catch(err){status.textContent='Polls unavailable: '+err.message}}
+async function loadPolls(){const list=panel.querySelector('#sq-poll-list');if(!active()){list.innerHTML='<p>Open a tracker to see its polls.</p>';return}try{const id=active().id,rows=await call('polls');if(active()?.id!==id)return;list.innerHTML=rows.map(p=>'<article class="sq-poll-card" data-poll-card-id="'+esc(p.id)+'"><h4>'+esc(p.question)+'</h4><div class="sq-poll-options">'+(p.options||[]).map(o=>'<button type="button" class="sq-poll-option" aria-pressed="'+(o.mine?'true':'false')+'" data-poll="'+esc(p.id)+'" data-option="'+esc(o.id)+'"><span>'+esc(o.label)+'</span><span>'+Number(o.votes||0)+' vote(s)</span></button>').join('')+'</div><small class="sq-poll-meta">'+Number(p.totalVotes||0)+' total votes · '+(p.closed?'Closed':'Open')+'</small>'+(p.canClose&&!p.closed?'<div><button type="button" data-close-poll="'+esc(p.id)+'">Close poll</button></div>':'')+'</article>').join('')||'<p>No polls yet. Start a group decision.</p>';status.textContent=''}catch(err){status.textContent='Polls unavailable: '+err.message}}
 panel.querySelector('#sq-poll-compose').onsubmit=async e=>{e.preventDefault();const btn=e.target.querySelector('button');btn.disabled=true;try{const options=[1,2,3,4].map(n=>panel.querySelector('#sq-poll-opt'+n).value.trim()).filter(Boolean);await call('polls','POST',{question:panel.querySelector('#sq-poll-question').value,options});e.target.reset();e.target.classList.remove('open');await loadPolls()}catch(err){status.textContent=err.message}finally{btn.disabled=false}};
 panel.querySelector('#sq-poll-list').onclick=async e=>{const vote=e.target.closest('[data-poll]'),close=e.target.closest('[data-close-poll]');if(!vote&&!close)return;const btn=vote||close;btn.disabled=true;try{await call('polls/'+encodeURIComponent(vote?vote.dataset.poll:close.dataset.closePoll),'PATCH',vote?{action:'vote',optionId:vote.dataset.option}:{action:'close'});await loadPolls()}catch(err){status.textContent=err.message}finally{btn.disabled=false}};
 window.sqLoadChatPolls=loadPolls;document.getElementById('nav-chat')?.addEventListener('click',()=>setTimeout(loadPolls,250));document.getElementById('sq-mobile-chat')?.addEventListener('click',()=>setTimeout(loadPolls,250));document.getElementById('chat-card')?.addEventListener('toggle',()=>{if(document.getElementById('chat-card').open)loadPolls()});}
@@ -8140,5 +8172,56 @@ window.sqLoadChatPolls=loadPolls;document.getElementById('nav-chat')?.addEventLi
  container.querySelectorAll('.chat-bubble').forEach(b=>{b.tabIndex=0;b.dataset.sqHoldReady='1';});
 })();
 </script>
+<style id="sq-chat-plus-menu-style">
+#tracker-chat-form{position:relative!important}
+#tracker-chat-form .sq-photo-button{display:none!important}
+#sq-chat-plus-wrap{position:relative;flex:0 0 auto;display:flex;align-items:center}
+#sq-chat-plus-button{width:45px;height:45px;border:1px solid #56d8b5;border-radius:15px;background:#173b4d;color:#69efc7;font-size:30px;line-height:1;display:grid;place-items:center;cursor:pointer;transition:background .15s,transform .15s}
+#sq-chat-plus-button[aria-expanded="true"]{background:#285968;transform:rotate(45deg)}
+#sq-chat-plus-menu{position:absolute;bottom:calc(100% + 12px);left:0;z-index:100;width:min(295px,calc(100vw - 45px));padding:9px;background:#112b3d;border:1px solid #3b6779;border-radius:17px;box-shadow:0 15px 40px #0008;display:grid;gap:4px}
+#sq-chat-plus-menu[hidden],#sq-chat-connect-panel[hidden]{display:none!important}
+#sq-chat-plus-menu button{display:flex;align-items:center;gap:11px;text-align:left;width:100%;padding:13px;border:0;border-radius:11px;background:transparent;color:#e8f6fc;font-size:14px;cursor:pointer}
+#sq-chat-plus-menu button:hover,#sq-chat-plus-menu button:focus-visible{background:#244a5b}
+#sq-chat-connect-panel{position:absolute;bottom:calc(100% + 12px);left:0;z-index:101;width:min(420px,calc(100vw - 42px));max-height:min(380px,60vh);overflow:auto;background:#102c40;border:1px solid #477b87;border-radius:17px;box-shadow:0 18px 48px #0009;padding:15px;color:#e8f6fc}
+#sq-chat-connect-panel .sq-connect-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+#sq-chat-connect-panel .sq-connect-head button{border:0;background:#25485c;color:white;border-radius:9px;padding:6px 10px;cursor:pointer}
+#sq-chat-connect-panel .sq-connect-choice{width:100%;text-align:left;background:#193c50;color:#e9f8fb;border:1px solid #356378;border-radius:11px;padding:11px;margin:5px 0;cursor:pointer;overflow-wrap:anywhere}
+#sq-chat-connect-panel .sq-connect-choice:hover{border-color:#54e0b6}
+#sq-chat-connect-panel .sq-connect-choice small{display:block;color:#a4c5d4;margin-top:4px}
+@media(max-width:600px){#sq-chat-plus-button{width:40px;height:40px;font-size:27px}#sq-chat-connect-panel{max-height:45vh}}
+</style>
+<script id="sq-chat-plus-menu-js">
+(()=>{
+const form=document.getElementById('tracker-chat-form');const photo=document.getElementById('sq-chat-photo-input');if(!form||!photo)return;
+const wrap=document.createElement('div');wrap.id='sq-chat-plus-wrap';
+wrap.innerHTML='<button type="button" id="sq-chat-plus-button" aria-label="Add to chat" aria-haspopup="menu" aria-expanded="false">+</button><div id="sq-chat-plus-menu" role="menu" hidden><button type="button" data-connect="attachment" role="menuitem">📎 Add attachment</button><button type="button" data-connect="poll" role="menuitem">▤ Connect group poll</button><button type="button" data-connect="expense" role="menuitem">▣ Connect expense</button></div><div id="sq-chat-connect-panel" hidden></div>';
+form.insertBefore(wrap,form.firstChild);
+const toggle=wrap.querySelector('#sq-chat-plus-button'),menu=wrap.querySelector('#sq-chat-plus-menu'),panel=wrap.querySelector('#sq-chat-connect-panel');
+const close=()=>{menu.hidden=true;panel.hidden=true;toggle.setAttribute('aria-expanded','false')};
+toggle.addEventListener('click',()=>{const wasOpen=!menu.hidden;close();if(!wasOpen){menu.hidden=false;toggle.setAttribute('aria-expanded','true')}});
+const escapeText=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function showPanel(title,items,type){menu.hidden=true;toggle.setAttribute('aria-expanded','true');panel.hidden=false;panel.innerHTML='<div class="sq-connect-head"><strong>'+escapeText(title)+'</strong><button type="button" data-connect-close aria-label="Close">✕</button></div>'+(items.length?items.map((it,i)=>'<button type="button" class="sq-connect-choice" data-connect-index="'+i+'"><strong>'+escapeText(it.label)+'</strong>'+(it.detail?'<small>'+escapeText(it.detail)+'</small>':'')+'</button>').join(''):'<p>No '+(type==='poll'?'polls':'expenses')+' in this tracker yet.</p>');
+ panel.onclick=e=>{if(e.target.closest('[data-connect-close]')){close();return}const btn=e.target.closest('[data-connect-index]');if(!btn)return;const item=items[Number(btn.dataset.connectIndex)];if(!item)return;const input=document.getElementById('tracker-chat-input');const prefix=input.value.trim();const reference=type==='poll'?'[Group poll] '+item.label+' (Poll ID: '+item.id+')':'[Expense] '+item.label+' (Expense ID: '+item.id+')';input.value=(prefix?prefix+'\n':'')+reference;input.focus();close();};
+}
+menu.addEventListener('click',async e=>{const btn=e.target.closest('[data-connect]');if(!btn)return;const kind=btn.dataset.connect;
+ if(kind==='attachment'){close();photo.click();return}
+ const tracker=window.sqLastOpenedTrackerDetail;if(!tracker?.id){close();alert('Open a tracker first.');return}
+ if(kind==='expense'){const entries=(tracker.entries||[]).filter(x=>x.type==='debt'&&x.id);showPanel('Connect an expense',entries.map(x=>({id:x.id,label:x.description||x.note||x.title||'Expense',detail:(x.amount!=null?'$'+Number(x.amount).toFixed(2):'')})),'expense');return}
+ showPanel('Connect a group poll',[],'poll');panel.innerHTML='<div class="sq-connect-head"><strong>Connect a group poll</strong><button type="button" data-connect-close>✕</button></div><p>Loading polls…</p>';
+ try{const rows=await window.squareUpApi('trackers/'+encodeURIComponent(tracker.id)+'/polls');if(window.sqLastOpenedTrackerDetail?.id!==tracker.id)return;showPanel('Connect a group poll',(Array.isArray(rows)?rows:[]).map(x=>({id:x.id,label:x.question,detail:(x.totalVotes||0)+' votes · '+(x.closed?'Closed':'Open')})),'poll')}catch(err){panel.innerHTML='<div class="sq-connect-head"><strong>Group polls</strong><button type="button" data-connect-close>✕</button></div><p>Could not load polls: '+escapeText(err.message)+'</p>'}
+});
+document.addEventListener('pointerdown',e=>{if(!wrap.contains(e.target))close()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+})();
+</script>
+<style id="sq-chat-connected-content-fixes">
+#tracker-chat-form>label[for="sq-chat-photo-input"]{display:none!important}
+#tracker-chat-messages .sq-chat-linked-card{display:flex;align-items:center;gap:12px;text-align:left;width:min(320px,100%);max-width:100%;margin:9px 0 3px;padding:13px;border-radius:14px;background:#173e51;border:1px solid #428a88;color:#e9fbf5;cursor:pointer}
+#tracker-chat-messages .sq-chat-linked-card span:nth-child(2){display:grid;gap:4px;min-width:0}
+#tracker-chat-messages .sq-chat-linked-card strong{font-size:14px;overflow-wrap:anywhere}
+#tracker-chat-messages .sq-chat-linked-card small{font-size:10px;letter-spacing:.04em;color:#9ed1cc}
+#tracker-chat-messages .sq-chat-linked-icon{font-size:26px;color:#4ce2b6}
+.sq-chat-linked-highlight{outline:2px solid #4ce2b6;outline-offset:4px}
+</style>
 </body>
 </html>
