@@ -1944,6 +1944,293 @@ const owner =
   (!trackerOwnerRecord?.owner_id && m.role === 'owner');
 const sub = parts[2];
 
+    
+/* =========================================
+   SQUAREUP WISHLISTS AND CHAT POLLS
+   Add immediately below: const sub = parts[2];
+========================================= */
+
+if (sub === 'wishlist') {
+  if (parts.length === 3 && method === 'GET') {
+    const items = await db('squareup_wishlist_items', {
+      filters: { tracker_id: 'eq.' + id },
+      order: 'created_at.desc'
+    });
+
+    const votes = await db('squareup_wishlist_votes', {
+      filters: {
+        item_id: 'in.(' + (
+          items.map(x => x.id).join(',') ||
+          '00000000-0000-0000-0000-000000000000'
+        ) + ')'
+      }
+    });
+
+    return json(items.map(item => ({
+      ...item,
+      votes: votes.filter(v => v.item_id === item.id).length
+    })));
+  }
+
+  if (parts.length === 3 && method === 'POST') {
+    const title = clean(body?.title, 100);
+    const link = clean(body?.link, 500);
+
+    if (!title) return fail('Enter an idea.', 400);
+
+    if (link) {
+      try {
+        const url = new URL(link);
+        if (!['https:', 'http:'].includes(url.protocol)) {
+          return fail('Use an HTTP or HTTPS link.', 400);
+        }
+      } catch {
+        return fail('Invalid link.', 400);
+      }
+    }
+
+    const saved = await db('squareup_wishlist_items', {
+      method: 'POST',
+      body: {
+        tracker_id: id,
+        title,
+        link,
+        created_by: me.id
+      }
+    });
+
+    return json(saved[0], 201);
+  }
+
+  if (parts.length === 4 && method === 'PATCH') {
+    const itemId = parts[3];
+
+    const item = (await db('squareup_wishlist_items', {
+      filters: {
+        id: 'eq.' + itemId,
+        tracker_id: 'eq.' + id
+      },
+      limit: 1
+    }))[0];
+
+    if (!item) return fail('Wishlist item not found.', 404);
+
+    if (body?.action === 'vote') {
+      const existing = await db('squareup_wishlist_votes', {
+        filters: {
+          item_id: 'eq.' + itemId,
+          user_id: 'eq.' + me.id
+        },
+        limit: 1
+      });
+
+      if (existing.length) {
+        await db('squareup_wishlist_votes', {
+          method: 'DELETE',
+          filters: {
+            item_id: 'eq.' + itemId,
+            user_id: 'eq.' + me.id
+          }
+        });
+      } else {
+        await db('squareup_wishlist_votes', {
+          method: 'POST',
+          body: { item_id: itemId, user_id: me.id }
+        });
+      }
+
+      return json({ success: true });
+    }
+
+    if (body?.action === 'toggle') {
+      if (!owner && item.created_by !== me.id) {
+        return fail('Only the creator or tracker owner can change this.', 403);
+      }
+
+      await db('squareup_wishlist_items', {
+        method: 'PATCH',
+        filters: {
+          id: 'eq.' + itemId,
+          tracker_id: 'eq.' + id
+        },
+        body: { completed: !item.completed }
+      });
+
+      return json({ success: true });
+    }
+
+    return fail('Invalid wishlist action.', 400);
+  }
+
+  return fail('Method not allowed.', 405);
+}
+
+if (sub === 'polls') {
+  if (parts.length === 3 && method === 'GET') {
+    const polls = await db('squareup_polls', {
+      filters: { tracker_id: 'eq.' + id },
+      order: 'created_at.desc',
+      limit: 30
+    });
+
+    if (!polls.length) return json([]);
+
+    const pollIds = polls.map(p => p.id).join(',');
+
+    const options = await db('squareup_poll_options', {
+      filters: { poll_id: 'in.(' + pollIds + ')' },
+      order: 'position.asc'
+    });
+
+    const votes = await db('squareup_poll_votes', {
+      filters: { poll_id: 'in.(' + pollIds + ')' }
+    });
+
+    return json(polls.map(p => {
+      const pollVotes = votes.filter(v => v.poll_id === p.id);
+
+      return {
+        id: p.id,
+        question: p.question,
+        closed: p.closed,
+        totalVotes: pollVotes.length,
+        canClose: owner || p.created_by === me.id,
+        options: options
+          .filter(o => o.poll_id === p.id)
+          .map(o => ({
+            id: o.id,
+            label: o.label,
+            votes: pollVotes.filter(v => v.option_id === o.id).length,
+            mine: pollVotes.some(
+              v => v.option_id === o.id && v.user_id === me.id
+            )
+          }))
+      };
+    }));
+  }
+
+  if (parts.length === 3 && method === 'POST') {
+    const question = clean(body?.question, 160);
+    const options = Array.isArray(body?.options)
+      ? body.options.map(v => clean(v, 100)).filter(Boolean)
+      : [];
+
+    if (!question || options.length < 2 || options.length > 4) {
+      return fail('Enter a question and 2–4 options.', 400);
+    }
+
+    const created = await db('squareup_polls', {
+      method: 'POST',
+      body: {
+        tracker_id: id,
+        question,
+        created_by: me.id
+      }
+    });
+
+    const poll = created[0];
+
+    try {
+      await db('squareup_poll_options', {
+        method: 'POST',
+        body: options.map((label, position) => ({
+          poll_id: poll.id,
+          label,
+          position
+        }))
+      });
+    } catch (err) {
+      await db('squareup_polls', {
+        method: 'DELETE',
+        filters: { id: 'eq.' + poll.id }
+      });
+      throw err;
+    }
+
+    return json({ success: true, id: poll.id }, 201);
+  }
+
+  if (parts.length === 4 && method === 'PATCH') {
+    const pollId = parts[3];
+
+    const poll = (await db('squareup_polls', {
+      filters: {
+        id: 'eq.' + pollId,
+        tracker_id: 'eq.' + id
+      },
+      limit: 1
+    }))[0];
+
+    if (!poll) return fail('Poll not found.', 404);
+
+    if (body?.action === 'close') {
+      if (!owner && poll.created_by !== me.id) {
+        return fail('Only the creator or owner can close the poll.', 403);
+      }
+
+      await db('squareup_polls', {
+        method: 'PATCH',
+        filters: {
+          id: 'eq.' + pollId,
+          tracker_id: 'eq.' + id
+        },
+        body: { closed: true }
+      });
+
+      return json({ success: true });
+    }
+
+    if (body?.action === 'vote') {
+      if (poll.closed) return fail('This poll is closed.', 400);
+
+      const option = (await db('squareup_poll_options', {
+        filters: {
+          id: 'eq.' + String(body.optionId || ''),
+          poll_id: 'eq.' + pollId
+        },
+        limit: 1
+      }))[0];
+
+      if (!option) return fail('Invalid poll option.', 400);
+
+      // One vote per member per poll.
+      const existing = await db('squareup_poll_votes', {
+        filters: {
+          poll_id: 'eq.' + pollId,
+          user_id: 'eq.' + me.id
+        },
+        limit: 1
+      });
+
+      if (existing.length) {
+        await db('squareup_poll_votes', {
+          method: 'PATCH',
+          filters: {
+            poll_id: 'eq.' + pollId,
+            user_id: 'eq.' + me.id
+          },
+          body: { option_id: option.id }
+        });
+      } else {
+        await db('squareup_poll_votes', {
+          method: 'POST',
+          body: {
+            poll_id: pollId,
+            user_id: me.id,
+            option_id: option.id
+          }
+        });
+      }
+
+      return json({ success: true });
+    }
+
+    return fail('Invalid poll action.', 400);
+  }
+
+  return fail('Method not allowed.', 405);
+}
+
 
  // =============================================
  // SQUAREUP GROUP PROFILES
