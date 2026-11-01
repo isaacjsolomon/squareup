@@ -8070,5 +8070,75 @@ panel.querySelector('#sq-poll-list').onclick=async e=>{const vote=e.target.close
 window.sqLoadChatPolls=loadPolls;document.getElementById('nav-chat')?.addEventListener('click',()=>setTimeout(loadPolls,250));document.getElementById('sq-mobile-chat')?.addEventListener('click',()=>setTimeout(loadPolls,250));document.getElementById('chat-card')?.addEventListener('toggle',()=>{if(document.getElementById('chat-card').open)loadPolls()});}
 })();
 </script>
+
+<style id="sq-chat-longpress-actions">
+/* Message actions appear only after a long press, right-click or keyboard menu key. */
+#chat-card .chat-line .chat-message-actions,
+#chat-card .chat-line:hover .chat-message-actions,
+#chat-card .chat-line:focus-within .chat-message-actions,
+#chat-card .chat-line .chat-reactions {
+  display:none!important;
+}
+#chat-card .chat-line.sq-message-menu-open .chat-message-actions {
+  display:flex!important;opacity:1!important;visibility:visible!important;
+  gap:5px!important;flex-wrap:wrap!important;align-items:center!important;
+  padding:8px!important;margin:5px 0!important;border-radius:13px!important;
+  background:#17384c!important;border:1px solid #37677a!important;
+  box-shadow:0 10px 25px rgba(0,0,0,.22)!important;
+  max-width:min(100%,360px)!important;
+}
+#chat-card .chat-line.sq-message-menu-open .chat-message-actions button {
+  font-size:14px!important;padding:8px 10px!important;
+  border-radius:9px!important;color:#e4f5fa!important;
+}
+#chat-card .chat-line.sq-message-menu-open .chat-message-actions button:focus-visible {
+  outline:2px solid #4de1b3!important;outline-offset:2px;
+}
+#chat-card .chat-line .chat-bubble {touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:context-menu;}
+#chat-card .chat-line .chat-time{opacity:.7;font-size:10px!important}
+</style>
+<script id="sq-chat-longpress-actions-js">
+(()=>{
+ const container=document.getElementById('tracker-chat-messages');
+ if(!container)return;
+ let holdTimer=null,origin=null,suppressClick=false;
+ const close=()=>container.querySelectorAll('.sq-message-menu-open').forEach(el=>el.classList.remove('sq-message-menu-open'));
+ const open=(line)=>{if(!line)return;close();line.classList.add('sq-message-menu-open');};
+ const cancel=()=>{if(holdTimer!==null){clearTimeout(holdTimer);holdTimer=null;}origin=null;};
+ container.addEventListener('pointerdown',e=>{
+   const bubble=e.target.closest('.chat-bubble');
+   if(!bubble||e.target.closest('a,button')||e.button!==0)return;
+   cancel();origin={x:e.clientX,y:e.clientY};
+   holdTimer=setTimeout(()=>{holdTimer=null;open(bubble.closest('.chat-line'));suppressClick=true;},480);
+ });
+ container.addEventListener('pointermove',e=>{if(origin&&Math.hypot(e.clientX-origin.x,e.clientY-origin.y)>12)cancel();});
+ ['pointerup','pointercancel','pointerleave'].forEach(type=>container.addEventListener(type,cancel));
+ container.addEventListener('contextmenu',e=>{
+   const bubble=e.target.closest('.chat-bubble');if(!bubble)return;
+   e.preventDefault();cancel();open(bubble.closest('.chat-line'));
+ });
+ container.addEventListener('click',e=>{
+   if(suppressClick){suppressClick=false;if(e.target.closest('.chat-bubble')){e.preventDefault();return;}}
+   if(e.target.closest('.chat-message-actions button')){close();return;}
+   if(!e.target.closest('.chat-message-actions'))close();
+ });
+ document.addEventListener('pointerdown',e=>{if(!e.target.closest('#tracker-chat-messages'))close();});
+ document.addEventListener('keydown',e=>{
+   if(e.key==='Escape'){close();return;}
+   if(e.key==='ContextMenu'||(e.shiftKey&&e.key==='F10')){
+     const bubble=document.activeElement?.closest?.('.chat-bubble');
+     if(bubble){e.preventDefault();open(bubble.closest('.chat-line'));}
+   }
+ });
+ // Make messages keyboard accessible without changing the existing message data.
+ const observer=new MutationObserver(()=>{
+   container.querySelectorAll('.chat-bubble:not([data-sq-hold-ready])').forEach(b=>{
+     b.dataset.sqHoldReady='1';b.tabIndex=0;b.setAttribute('aria-label','Message. Press Shift F10 for reactions, reply and pin options.');
+   });
+ });
+ observer.observe(container,{childList:true,subtree:true});
+ container.querySelectorAll('.chat-bubble').forEach(b=>{b.tabIndex=0;b.dataset.sqHoldReady='1';});
+})();
+</script>
 </body>
 </html>
