@@ -8327,5 +8327,56 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
  #tracker-dashboard.sq-tab-overview .sq-return-summary .sq-return-welcome h2 {font-size:20px!important}
 }
 </style>
+
+<style id="sq-mobile-trackers-chat-cohesive-20261101">
+/* Mobile-only hierarchy cleanup for the Trackers and Chat screens. */
+@media (max-width: 900px) {
+ body.trackers-view .sq-mobile-top, body.chat-view .sq-mobile-top {margin-bottom:18px!important;min-height:60px!important;padding:12px 14px!important;border-radius:18px!important;box-shadow:0 8px 20px rgba(0,0,0,.14)!important}
+ body.trackers-view #trackers-page {padding:0 0 135px!important;margin:0!important}
+ body.trackers-view #trackers-page .sq-mobile-trackers-title {margin:4px 0 17px!important;font-size:27px!important;line-height:1.2!important;letter-spacing:-.035em!important}
+ body.trackers-view #trackers-gallery {gap:15px!important;align-items:stretch!important}
+ body.trackers-view #trackers-gallery>.sq-create-tracker-row {margin:0 0 8px!important;gap:9px!important;min-height:0!important}
+ body.trackers-view #trackers-gallery>.sq-create-tracker-row>#tracker-gallery-new {min-height:49px!important;border-radius:14px!important;font-size:15px!important;box-shadow:none!important}
+ body.trackers-view #trackers-gallery>.sq-create-tracker-row>span {font-size:12px!important;line-height:1.4!important;opacity:.85!important}
+ body.trackers-view #trackers-gallery>.tracker-tile {height:auto!important;min-height:0!important;border-radius:19px!important;overflow:visible!important;background:linear-gradient(145deg,#112c43,#10273d)!important;border:1px solid rgba(129,185,205,.28)!important;box-shadow:0 7px 22px rgba(0,12,27,.15)!important}
+ body.trackers-view #trackers-gallery .tracker-tile-banner {height:0!important;min-height:0!important}
+ body.trackers-view #trackers-gallery .tracker-tile-body {padding:19px 17px 17px!important;display:flex!important;flex-direction:column!important;gap:12px!important}
+ body.trackers-view #trackers-gallery .tracker-tile-head {position:static!important;transform:none!important;margin:0!important;min-height:0!important;padding-right:40px!important}
+ body.trackers-view #trackers-gallery .tracker-tile-head h3 {font-size:20px!important;line-height:1.2!important;letter-spacing:-.02em!important}
+ body.trackers-view #trackers-gallery .sq-gallery-member-count {position:static!important;display:none!important}
+ body.trackers-view #trackers-gallery .tracker-tile-head .tracker-sub {font-size:12px!important;margin-top:4px!important;color:#a9c3d4!important}
+ body.trackers-view #trackers-gallery .tracker-tile-menu {top:15px!important;right:15px!important}
+ body.trackers-view #trackers-gallery .tracker-tile-menu summary {width:36px!important;height:36px!important;border-radius:11px!important}
+ body.trackers-view #trackers-gallery .sq-tile-last {color:#b9cedb!important;font-size:12px!important;line-height:1.4!important;margin:0!important}
+ body.trackers-view #trackers-gallery .tracker-tile-members {margin:0!important;min-height:0!important}
+ body.trackers-view #trackers-gallery .tracker-people {gap:10px!important}
+ body.trackers-view #trackers-gallery .tracker-tile-actions {margin-top:2px!important}
+ body.trackers-view #trackers-gallery .tracker-tile-actions .tile-open {min-height:45px!important;border-radius:12px!important;font-size:14px!important;background:#2f6f84!important;color:#fff!important;border:1px solid rgba(182,225,234,.24)!important}
+ /* Chat: remove the nested gray panel and visually separate controls from conversation. */
+ #chat-card {margin:0 0 125px!important;padding:0!important;border-radius:20px!important;overflow:visible!important;background:linear-gradient(160deg,#102b41,#0d2237)!important;border:1px solid rgba(119,181,195,.28)!important;box-shadow:0 8px 24px rgba(0,10,25,.15)!important}
+ #chat-card>summary {padding:16px 17px!important;border-radius:20px 20px 0 0!important;background:transparent!important;border-bottom:1px solid rgba(157,207,215,.12)!important;font-size:17px!important;min-height:58px!important}
+ #chat-card .tracker-collapsible-body {padding:14px!important;background:transparent!important;border:0!important}
+ #chat-card .tracker-collapsible-body>.dashboard-subheading {display:none!important}
+ #chat-card .sq-chat-tools {display:flex!important;align-items:stretch!important;gap:8px!important;margin:0 0 13px!important}
+ #chat-card #sq-chat-search {min-width:0!important;flex:1!important;font-size:14px!important;min-height:43px!important;padding:9px 12px!important}
+ #chat-card #sq-chat-pin-toggle {flex:0 0 auto!important;min-height:43px!important;padding:9px 12px!important;font-size:12px!important}
+ #chat-card #sq-chat-polls {padding:12px 14px!important;margin:0 0 13px!important;border-radius:14px!important;background:#0b2439!important}
+ #chat-card #sq-chat-polls .sq-polls-expand {font-size:14px!important}
+ #chat-card #sq-chat-polls .sq-collab-primary {min-height:37px!important;font-size:12px!important;padding:8px 12px!important}
+ #chat-card #tracker-chat-messages {height:52dvh!important;min-height:310px!important;max-height:620px!important;padding:16px 12px!important;border-radius:16px!important;border:1px solid rgba(110,176,194,.23)!important;background:#071d30!important;gap:11px!important}
+ #chat-card .chat-line {gap:3px!important}
+ #chat-card .chat-bubble {max-width:83%!important;padding:10px 13px!important;border-radius:15px!important;font-size:14px!important;line-height:1.4!important}
+ #chat-card .chat-time {font-size:10px!important;opacity:.75!important}
+ #chat-card .chat-compose {margin:12px 0 0!important;padding:7px!important;gap:7px!important;border-radius:16px!important;min-height:53px!important}
+ #chat-card .chat-compose #tracker-chat-input {min-width:0!important;font-size:14px!important}
+ #chat-card .chat-compose button[type=submit] {min-height:39px!important;padding:8px 13px!important;font-size:13px!important}
+}
+@media (max-width: 390px) {
+ body.trackers-view #trackers-gallery .tracker-tile-body {padding:16px 14px!important}
+ #chat-card .tracker-collapsible-body {padding:10px!important}
+ #chat-card #tracker-chat-messages {padding:12px 9px!important}
+}
+</style>
+
 </body>
 </html>
