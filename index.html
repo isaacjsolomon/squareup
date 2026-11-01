@@ -8456,5 +8456,72 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
 @media(max-width:900px){#sq-chat-mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:#081e31;border:1px solid #2d586c;border-radius:14px;margin:3px 0 14px}#sq-chat-mode-switch button{min-height:40px;border:0;border-radius:11px;background:transparent;color:#c7dce8;font-weight:750}#sq-chat-mode-switch button[aria-pressed="true"]{background:linear-gradient(110deg,#0a797a,#135b6c);color:#fff}#chat-card #sq-chat-polls:has(+*){margin-bottom:12px!important}}
 @media(min-width:901px){#sq-chat-mode-switch{display:none}}
 </style>
+<style id="sq-desktop-cohesive-mockup-v2">
+/* Desktop counterpart to the approved SquareUp mobile mockups.
+   Presentation only: no markup relocation, event changes or data changes. */
+@media (min-width: 901px) {
+  :root { --sq-desktop-edge:rgba(113,193,204,.30); --sq-desktop-glass:rgba(7,30,48,.92); --sq-desktop-mint:#2be4b5; }
+  body { font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important; }
+  .wrap { max-width:1480px!important; }
+  #tracker-dashboard, #trackers-page, #friends-page, #analytics-page, #notifications-page { min-width:0; }
+  #tracker-dashboard .sq-workspace-tabs { display:grid!important;grid-template-columns:repeat(4,minmax(130px,1fr))!important;width:100%!important;max-width:none!important;gap:7px!important;padding:7px!important;margin:0 0 26px!important;border-radius:18px!important;background:rgba(6,27,44,.94)!important;border:1px solid var(--sq-desktop-edge)!important;box-shadow:0 12px 32px #00131e33!important; }
+  #tracker-dashboard .sq-workspace-tabs button { min-height:48px!important;padding:11px 18px!important;border-radius:12px!important;font-size:14px!important;letter-spacing:.01em!important; }
+  #tracker-dashboard .sq-workspace-tabs button[aria-selected="true"] {background:linear-gradient(115deg,#0c7e80,#155e74)!important;color:#fff!important;box-shadow:inset 0 0 0 1px #40d9c077!important;}
+  #tracker-dashboard .sq-return-summary {max-width:none!important;margin-top:0!important;}
+  #tracker-dashboard .sq-return-welcome {display:flex!important;align-items:center!important;justify-content:space-between!important;gap:18px!important;margin:0 0 20px!important;}
+  #tracker-dashboard .sq-return-welcome h2 {font-size:clamp(26px,2.6vw,38px)!important;line-height:1.16!important;letter-spacing:-.035em!important;margin:0!important;}
+  #tracker-dashboard .sq-desktop-balance-layout {gap:20px!important;align-items:stretch!important;}
+  #tracker-dashboard .sq-desktop-balance-layout .sq-clean-balance {padding:29px 32px!important;min-height:240px!important;border-radius:22px!important;background:linear-gradient(135deg,rgba(6,58,72,.96),rgba(6,28,49,.97))!important;border:1px solid rgba(57,216,191,.46)!important;box-shadow:0 16px 34px #00121e36!important;}
+  #tracker-dashboard .sq-clean-balance #sq-clean-net {font-size:clamp(40px,4vw,62px)!important;letter-spacing:-.045em!important;line-height:1.12!important;}
+  #tracker-dashboard .sq-clean-balance .sq-clean-balance-actions {gap:12px!important;}
+  #tracker-dashboard .sq-clean-balance .sq-clean-balance-actions button {min-height:46px!important;border-radius:12px!important;font-weight:750!important;}
+  #tracker-dashboard .dashboard-actions {gap:14px!important;}
+  #tracker-dashboard .dashboard-action:not([hidden]) {border-radius:18px!important;min-height:120px!important;padding:18px!important;border:1px solid rgba(142,208,217,.22)!important;box-shadow:0 9px 23px #00152133!important;transition:transform .17s ease,border-color .17s ease,box-shadow .17s ease!important;}
+  #tracker-dashboard .dashboard-action:not([hidden]):hover {transform:translateY(-2px)!important;border-color:rgba(89,231,205,.6)!important;box-shadow:0 13px 27px #00152155!important;}
+  #tracker-dashboard .sq-return-grid {gap:17px!important;}
+  #tracker-dashboard .sq-return-panel {min-width:0!important;padding:22px!important;border-radius:20px!important;background:var(--sq-desktop-glass)!important;border:1px solid var(--sq-desktop-edge)!important;box-shadow:0 10px 26px #00152230!important;}
+  #tracker-dashboard .sq-return-head {gap:12px!important;align-items:center!important;}
+  #tracker-dashboard .sq-return-head h3 {font-size:17px!important;letter-spacing:-.02em!important;}
+  #tracker-dashboard .card, #tracker-dashboard details.card, #friends-page .card, #notifications-page .card {border-radius:20px!important;border-color:var(--sq-desktop-edge)!important;box-shadow:0 8px 26px #00152125!important;}
+  /* Tracker gallery: card banner above content, no positioning hacks. */
+  body.trackers-view #trackers-page {padding-bottom:65px!important;}
+  body.trackers-view #trackers-gallery.trackers-grid {display:grid!important;grid-template-columns:repeat(auto-fit,minmax(285px,1fr))!important;align-items:stretch!important;gap:20px!important;position:relative!important;}
+  body.trackers-view #trackers-gallery>.sq-create-tracker-row {grid-column:1/-1!important;display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:14px!important;margin:0 0 8px!important;position:relative!important;}
+  body.trackers-view #trackers-gallery>.sq-create-tracker-row>#tracker-gallery-new {border-radius:13px!important;min-height:49px!important;padding:12px 24px!important;background:linear-gradient(110deg,#2ce5ba,#1ed3aa)!important;color:#052a3b!important;font-weight:800!important;}
+  body.trackers-view #trackers-gallery>.tracker-tile {position:relative!important;inset:auto!important;display:flex!important;flex-direction:column!important;min-width:0!important;width:100%!important;height:auto!important;min-height:310px!important;overflow:hidden!important;border-radius:20px!important;background:rgba(7,31,49,.96)!important;border:1px solid var(--sq-desktop-edge)!important;box-shadow:0 14px 32px #00131e44!important;transition:transform .18s ease,box-shadow .18s ease!important;}
+  body.trackers-view #trackers-gallery>.tracker-tile:hover {transform:translateY(-3px)!important;box-shadow:0 18px 40px #00131e66!important;}
+  body.trackers-view #trackers-gallery>.tracker-tile>.tracker-tile-banner {position:relative!important;inset:auto!important;width:100%!important;min-height:128px!important;height:128px!important;flex:none!important;background-position:center!important;background-size:cover!important;}
+  body.trackers-view #trackers-gallery>.tracker-tile>.tracker-tile-body {position:relative!important;inset:auto!important;display:flex!important;flex-direction:column!important;gap:10px!important;flex:1!important;width:100%!important;min-width:0!important;height:auto!important;padding:18px!important;background:rgba(7,30,48,.98)!important;}
+  body.trackers-view #trackers-gallery .tracker-tile-head {position:relative!important;inset:auto!important;}
+  body.trackers-view #trackers-gallery .tracker-tile-head h3 {font-size:20px!important;line-height:1.25!important;white-space:normal!important;overflow-wrap:anywhere!important;}
+  body.trackers-view #trackers-gallery .tracker-tile-actions {position:relative!important;inset:auto!important;margin-top:auto!important;display:flex!important;}
+  body.trackers-view #trackers-gallery .tracker-tile-actions .tile-open {width:100%!important;min-height:45px!important;border-radius:12px!important;background:#224c65!important;color:white!important;}
+  body.trackers-view #trackers-gallery .sq-tile-last {color:#b9d1df!important;font-size:12px!important;position:relative!important;inset:auto!important;}
+  /* Chat has a compact header and a dedicated conversation surface. */
+  #chat-card {border-radius:22px!important;background:rgba(7,29,47,.96)!important;border:1px solid var(--sq-desktop-edge)!important;box-shadow:0 12px 32px #00121d38!important;overflow:visible!important;}
+  #chat-card>summary {padding:20px 24px!important;background:transparent!important;border:0!important;font-size:19px!important;}
+  #chat-card .tracker-collapsible-body {padding:8px 24px 23px!important;}
+  #chat-card .dashboard-subheading {display:none!important;}
+  #chat-card .sq-chat-tools {gap:10px!important;margin:0 0 15px!important;}
+  #chat-card #sq-chat-search {min-height:43px!important;border-radius:12px!important;background:#071b2d!important;}
+  #chat-card #sq-chat-polls {border-radius:15px!important;background:#0b2a40!important;border:1px solid #2a6172!important;margin-bottom:16px!important;}
+  #chat-card #tracker-chat-messages {background:#061b2d!important;border:1px solid #284c62!important;border-radius:18px!important;min-height:380px!important;max-height:58vh!important;padding:22px!important;overflow-y:auto!important;}
+  #chat-card .chat-bubble {border-radius:17px!important;box-shadow:none!important;}
+  #chat-card .chat-compose {display:flex!important;align-items:center!important;gap:10px!important;padding:9px 12px!important;margin-top:14px!important;background:#0a2a40!important;border:1px solid #326278!important;border-radius:16px!important;}
+  #chat-card #tracker-chat-input {flex:1!important;min-width:0!important;background:transparent!important;}
+  #chat-card .chat-compose button[type="submit"] {min-height:42px!important;border-radius:12px!important;padding:9px 20px!important;}
+  /* Consistent desktop modal treatment without hiding any controls. */
+  #sq-social-modal #sq-social-panel {border-radius:24px!important;background:linear-gradient(145deg,#0a2a40,#071c30)!important;border:1px solid #356579!important;}
+  #sq-social-modal #sq-social-download {background:#2be4b5!important;color:#062738!important;border-radius:12px!important;min-height:46px!important;}
+}
+@media (min-width:901px) and (max-width:1180px) {
+  body.trackers-view #trackers-gallery.trackers-grid {grid-template-columns:repeat(auto-fit,minmax(255px,1fr))!important;}
+  #tracker-dashboard .sq-workspace-tabs {grid-template-columns:repeat(4,minmax(0,1fr))!important;}
+}
+@media (prefers-reduced-motion:reduce) {
+  body.trackers-view #trackers-gallery>.tracker-tile, #tracker-dashboard .dashboard-action {transition:none!important;}
+}
+</style>
+
 </body>
 </html>
