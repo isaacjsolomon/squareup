@@ -8523,5 +8523,63 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
 }
 </style>
 
+
+<!-- SquareUp UX upgrades: additive, no database changes -->
+<style id="sq-ux-upgrades-20261101">
+:root{--sq-ux-accent:#58e6bd;--sq-ux-accent-soft:rgba(88,230,189,.13)}
+@media(prefers-reduced-motion:no-preference){
+  .card,.tracker-tile,.dashboard-action,.sq-search-hit,#notifications-list .entry{transition:transform .19s ease,box-shadow .19s ease,border-color .19s ease,background-color .19s ease}
+  @media(hover:hover){.dashboard-action:hover,.tracker-tile:hover{transform:translateY(-2px)}.sq-search-hit:hover{transform:translateX(2px)}}
+  .sq-ux-pop{animation:sqUxPop .2s ease-out both}@keyframes sqUxPop{from{opacity:.45;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important}}
+#sq-ux-toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:10px 0 18px}
+#sq-ux-toolbar button,#sq-ux-toolbar select{background:#17374d;color:#e5f7f7;border:1px solid #3b6575;border-radius:12px;padding:10px 12px;min-height:42px;font:inherit;font-size:13px}
+#sq-ux-toolbar button{cursor:pointer}#sq-ux-toolbar button:hover{border-color:var(--sq-ux-accent)}
+#sq-ux-toolbar label{font-size:12px;color:#a8c6d2;display:flex;align-items:center;gap:7px}
+#sq-ux-toolbar button:focus-visible,#sq-ux-toolbar select:focus-visible{outline:2px solid var(--sq-ux-accent);outline-offset:3px}
+#sq-ux-actions{position:relative}#sq-ux-action-menu{position:absolute;top:calc(100% + 6px);left:0;z-index:30;background:#102a3f;border:1px solid #41657a;border-radius:14px;padding:8px;min-width:210px;box-shadow:0 16px 35px #0007;display:grid;gap:5px}
+#sq-ux-action-menu[hidden]{display:none!important}#sq-ux-action-menu button{width:100%;text-align:left;background:transparent;border:0;color:#e6f5f6}#sq-ux-action-menu button:hover{background:#24465b}
+#notifications-page .sq-notifications-header{margin-bottom:20px}#notifications-page #notifications-panel{background:rgba(14,36,56,.9);border-radius:20px;padding:clamp(16px,3vw,28px);max-height:none}
+#notifications-page #notifications-list .entry{border:1px solid rgba(131,180,197,.18);border-radius:14px;background:#17344b;padding:15px;margin:0 0 10px;line-height:1.5}
+#notifications-page #notifications-list .entry:last-child{border-bottom:1px solid rgba(131,180,197,.18)}
+#notifications-page #sq-notification-filter{min-height:40px;border-radius:10px}
+#receipt-card .sq-receipt-section{border-radius:16px}#receipt-card input:focus-visible,#receipt-card select:focus-visible{outline:2px solid var(--sq-ux-accent);outline-offset:2px}
+#sq-ux-receipt-guide{padding:12px 14px;border:1px solid #37667a;border-radius:13px;background:rgba(88,230,189,.07);color:#c8e6e7;font-size:13px;line-height:1.55;margin-bottom:14px}
+#sq-ux-receipt-guide strong{color:#7df4c9}
+.sq-ux-skeleton{background:linear-gradient(100deg,#18394d 20%,#285068 45%,#18394d 70%);background-size:200% 100%;border-radius:11px;animation:sqUxShimmer 1.35s linear infinite;min-height:16px}
+@keyframes sqUxShimmer{to{background-position-x:-200%}}
+@media(prefers-reduced-motion:reduce){.sq-ux-skeleton{animation:none}}
+@media(max-width:650px){#sq-ux-toolbar{gap:7px;margin:8px 0 14px}#sq-ux-toolbar label{flex:1 1 140px}#sq-ux-toolbar select{max-width:150px}#sq-ux-toolbar button{font-size:12px;padding:9px}}
+</style>
+<script id="sq-ux-upgrades-script">
+(function(){'use strict';
+const $=id=>document.getElementById(id);
+const dashboard=$('tracker-dashboard');if(!dashboard)return;
+// Reuse the existing universal search, receipt scanner, and navigation handlers.
+const toolbar=document.createElement('div');toolbar.id='sq-ux-toolbar';toolbar.innerHTML='<div id="sq-ux-actions"><button type="button" id="sq-ux-action-toggle" aria-expanded="false" aria-controls="sq-ux-action-menu">＋ Quick actions ▾</button><div id="sq-ux-action-menu" hidden><button type="button" data-sq-ux-target="quick-expense">＋ Add expense</button><button type="button" data-sq-ux-target="quick-pay-now">↗ Pay now</button><button type="button" data-sq-ux-target="quick-receipt">▧ Scan receipt</button><button type="button" data-sq-ux-target="quick-split">⇄ Split a bill</button><button type="button" data-sq-ux-target="nav-chat">◌ Open chat</button></div></div><button type="button" id="sq-ux-search">⌕ Search all</button><label for="sq-ux-theme">Tracker theme <select id="sq-ux-theme" aria-label="Tracker accent theme"><option value="mint">Mint</option><option value="sky">Sky</option><option value="violet">Violet</option><option value="coral">Coral</option></select></label>';
+const header=dashboard.querySelector('.sq-welcome-row,.sq-dashboard-header,.dashboard-header,.welcome-row')||dashboard;
+if(header===dashboard)dashboard.insertBefore(toolbar,dashboard.firstChild);else header.insertAdjacentElement('afterend',toolbar);
+const menu=$('sq-ux-action-menu'),toggle=$('sq-ux-action-toggle');
+function closeMenu(){menu.hidden=true;toggle.setAttribute('aria-expanded','false')}
+toggle.addEventListener('click',()=>{menu.hidden=!menu.hidden;toggle.setAttribute('aria-expanded',String(!menu.hidden))});
+menu.addEventListener('click',e=>{const b=e.target.closest('[data-sq-ux-target]');if(!b)return;closeMenu();const target=$(b.dataset.sqUxTarget);if(target&&!target.disabled){target.click()}else{alert('This action is not available until you open a tracker.')}});
+document.addEventListener('click',e=>{if(!e.target.closest('#sq-ux-actions'))closeMenu()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
+$('sq-ux-search').addEventListener('click',()=>{const existing=document.querySelector('.sq-search-launch');if(existing)existing.click();else alert('Search is unavailable right now.')});
+// Tracker-specific theme preferences are visual and local to this browser; no Supabase writes.
+const themes={mint:['#58e6bd','rgba(88,230,189,.13)'],sky:['#69c9ff','rgba(105,201,255,.13)'],violet:['#b5a0ff','rgba(181,160,255,.13)'],coral:['#ffad98','rgba(255,173,152,.13)']};
+const themeSelect=$('sq-ux-theme');let lastTracker='';
+function activeTrackerId(){try{if(typeof current!=='undefined'&&current&&current.id)return String(current.id)}catch(e){}return ''}
+function applyTheme(){const id=activeTrackerId();if(id!==lastTracker){lastTracker=id;let saved='mint';try{saved=localStorage.getItem('sq-ux-theme-'+id)||'mint'}catch(e){}themeSelect.value=themes[saved]?saved:'mint'}const pair=themes[themeSelect.value]||themes.mint;dashboard.style.setProperty('--sq-ux-accent',pair[0]);dashboard.style.setProperty('--sq-ux-accent-soft',pair[1]);toolbar.style.setProperty('--sq-ux-accent',pair[0]);toolbar.style.setProperty('--sq-ux-accent-soft',pair[1]);}
+themeSelect.addEventListener('change',()=>{const id=activeTrackerId();if(id)try{localStorage.setItem('sq-ux-theme-'+id,themeSelect.value)}catch(e){}applyTheme()});
+applyTheme();document.addEventListener('click',()=>setTimeout(applyTheme,100));
+// Explain the existing receipt verification workflow without changing OCR or expense-saving logic.
+const receipt=$('receipt-card');if(receipt){const guide=document.createElement('div');guide.id='sq-ux-receipt-guide';guide.innerHTML='<strong>Review before saving</strong> · Check each scanned item, confirm who ordered it, and compare the total with the printed receipt. Nothing is added to balances until you select “Save assigned expenses.”';const section=receipt.querySelector('.sq-receipt-section');if(section)section.insertAdjacentElement('beforebegin',guide)}
+// Improve empty/loading notification states, preserving the existing notification filter and renderer.
+const notif=$('notifications-list');if(notif){const obs=new MutationObserver(()=>{const text=notif.textContent.trim();if(text==='Loading notifications…'||text==='Loading notifications...'){notif.setAttribute('aria-busy','true')}else notif.removeAttribute('aria-busy')});obs.observe(notif,{childList:true,subtree:true});}
+})();
+</script>
+
 </body>
 </html>
