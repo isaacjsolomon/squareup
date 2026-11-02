@@ -8592,5 +8592,86 @@ body.friends-view #sq-friends-workspace-tabs{display:grid!important}
  const layout=page.querySelector('.sq-friends-layout');if(layout)page.insertBefore(bar,layout);else page.prepend(bar);
 })();
 </script>
+ 
+<style id="sq-nov-polish">
+/* Non-destructive UI polish: original handlers, data and forms remain intact. */
+#tracker-dashboard .sq-workspace-tabs{position:sticky;top:8px;z-index:65;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 12px 30px rgba(0,12,26,.18)}
+#sq-friends-workspace-tabs{position:sticky;top:8px;z-index:65;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+#sq-layout-panel{max-width:min(740px,calc(100vw - 32px));box-shadow:0 24px 70px rgba(0,0,0,.35)}
+.sq-friend-row{transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease}
+.sq-friend-row:hover{border-color:#40c9b4;box-shadow:0 10px 25px rgba(0,12,26,.2)}
+.sq-friend-row .sq-friend-avatar{flex-shrink:0;box-shadow:0 0 0 2px rgba(63,222,184,.18)}
+.sq-friend-row .sq-friend-actions{display:flex;flex-wrap:wrap;gap:7px}
+.sq-friend-row button{min-height:36px;border-radius:10px}
+.sq-friend-profile-toggle{background:#163b51;color:#eafff9;border:1px solid #3e7886;padding:8px 11px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.sq-friend-profile-details{flex-basis:100%;margin-top:5px;padding:12px 14px;background:rgba(4,22,37,.42);border:1px solid #34586a;border-radius:12px;color:#c9e3ed;overflow-wrap:anywhere}
+.sq-friend-profile-details[hidden]{display:none!important}
+.sq-friend-profile-details strong{display:block;color:#f3ffff;margin-bottom:5px}
+#sq-chat-search-tools{display:flex;align-items:center;gap:8px;margin:10px 0 12px;max-width:100%}
+#sq-chat-search-tools input{width:100%;min-width:0;background:#0b263c;border:1px solid #42667a;border-radius:11px;color:#fff;padding:10px 13px;font:inherit}
+#sq-chat-search-tools input:focus-visible{outline:2px solid #44d9b8;outline-offset:2px}
+#sq-chat-search-tools button{border:1px solid #42667a;background:#163b51;color:#fff;border-radius:10px;padding:10px;cursor:pointer}
+.sq-chat-search-no-match{font-size:13px;color:#c5dce8;padding:8px 0}
+.sq-chat-filter-hidden{display:none!important}
+.sq-expense-detail-trigger{transition:background .18s ease,border-color .18s ease,transform .18s ease}
+.sq-expense-detail-trigger:hover{background:rgba(44,210,175,.12);transform:translateY(-1px)}
+#sq-invite-preview{border:1px solid rgba(72,216,185,.28);background:linear-gradient(120deg,rgba(17,75,87,.65),rgba(12,39,63,.7))}
+#invite-copy{transition:transform .16s ease,background .16s ease}
+#invite-copy:active{transform:scale(.97)}
+@media(max-width:900px){#tracker-dashboard .sq-workspace-tabs,#sq-friends-workspace-tabs{top:4px}.sq-friend-row{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.sq-friend-row,.sq-expense-detail-trigger,#invite-copy{transition:none!important}}
+</style>
+<script id="sq-nov-functional-enhancements">
+(function(){
+ 'use strict';
+ // Keep the existing Friends navigation in sync when the page is shown again.
+ function refreshFriendNav(){
+  var bar=document.getElementById('sq-friends-workspace-tabs');
+  if(!bar)return;
+  bar.querySelectorAll('[data-friend-nav-tab]').forEach(function(btn){btn.setAttribute('aria-selected',String(btn.dataset.friendNavTab==='friends'));});
+ }
+ // Friend profile preview: uses only text already rendered by the existing Friends UI.
+ var friendRoot=document.getElementById('sq-friends-results');
+ function enhanceFriendRows(){
+  if(!friendRoot)return;
+  friendRoot.querySelectorAll('.sq-friend-row').forEach(function(row){
+   if(row.dataset.sqEnhancedProfile)return;
+   row.dataset.sqEnhancedProfile='1';
+   var details=document.createElement('div');details.className='sq-friend-profile-details';details.hidden=true;
+   var name=row.querySelector('.sq-friend-name, strong, b');
+   var username=row.querySelector('.sq-friend-username, small');
+   var title=document.createElement('strong');title.textContent=name?name.textContent.trim():'Friend profile';
+   var info=document.createElement('div');info.textContent=username?username.textContent.trim():'Use the existing buttons above to manage this friendship.';
+   details.append(title,info);
+   var button=document.createElement('button');button.type='button';button.className='sq-friend-profile-toggle';button.textContent='View profile';button.setAttribute('aria-expanded','false');
+   button.addEventListener('click',function(){details.hidden=!details.hidden;button.setAttribute('aria-expanded',String(!details.hidden));button.textContent=details.hidden?'View profile':'Hide profile';});
+   row.append(button,details);
+  });
+ }
+ if(friendRoot){enhanceFriendRows();var friendTimer=0;new MutationObserver(function(){clearTimeout(friendTimer);friendTimer=setTimeout(enhanceFriendRows,70);}).observe(friendRoot,{childList:true,subtree:true});}
+ refreshFriendNav();
+ // Local chat search: filters visible, already-loaded messages; does not alter chat data.
+ var chat=document.getElementById('chat-card');var messages=document.getElementById('tracker-chat-messages');
+ if(chat&&messages&&!document.getElementById('sq-chat-search-tools')){
+  var tools=document.createElement('div');tools.id='sq-chat-search-tools';
+  var search=document.createElement('input');search.type='search';search.placeholder='Find a message in this conversation';search.setAttribute('aria-label','Search loaded chat messages');
+  var clear=document.createElement('button');clear.type='button';clear.textContent='Clear';
+  tools.append(search,clear);messages.parentNode.insertBefore(tools,messages);
+  function filterMessages(){
+   var query=search.value.trim().toLocaleLowerCase();
+   Array.from(messages.children).forEach(function(el){el.classList.toggle('sq-chat-filter-hidden',!!query&&!el.textContent.toLocaleLowerCase().includes(query));});
+  }
+  search.addEventListener('input',filterMessages);clear.addEventListener('click',function(){search.value='';filterMessages();search.focus();});
+  var chatTimer=0;new MutationObserver(function(){if(!search.value)return;clearTimeout(chatTimer);chatTimer=setTimeout(filterMessages,60);}).observe(messages,{childList:true,subtree:true});
+ }
+ // Copy confirmation, using the existing invitation-copy behavior.
+ var copy=document.getElementById('invite-copy');if(copy){copy.addEventListener('click',function(){
+  var link=document.getElementById('invite-link');if(!link||!link.value)return;
+  var old=copy.textContent;setTimeout(function(){if(copy.isConnected){copy.textContent='Copied link';setTimeout(function(){if(copy.isConnected&&copy.textContent==='Copied link')copy.textContent=old;},1800);}},100);
+ });}
+ // Defer below-the-fold images to improve first render, without changing image sources.
+ document.querySelectorAll('#trackers-gallery img,#friends-page img,#chat-card img').forEach(function(img){if(!img.hasAttribute('loading'))img.loading='lazy';if(!img.hasAttribute('decoding'))img.decoding='async';});
+})();
+</script>
 </body>
 </html>
