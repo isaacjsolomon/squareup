@@ -2968,6 +2968,253 @@ function can(permission) {
   return myPermissions?.permissions?.[permission] === true;
 }
 
+
+/*
+  SQUAREUP NEW FEATURES BACKEND
+
+  Supports:
+  - Subscription & Bill Manager
+  - Trip Mode planning
+  - Shared receipt references
+
+  Requires the Supabase tables:
+  - squareup_bills
+  - squareup_trips
+  - squareup_receipt_refs
+
+  Uses existing:
+  - Supabase authentication
+  - Tracker membership verification
+  - db() database helper
+  - can() permission helper
+  - owner, me, id, parts, method, body
+*/
+
+if (['bills', 'trips', 'vault'].includes(sub)) {
+
+  const tables = {
+    bills: 'squareup_bills',
+    trips: 'squareup_trips',
+    vault: 'squareup_receipt_refs'
+  };
+
+  const table = tables[sub];
+  const recordId = parts[3];
+
+  // Validate record IDs
+  if (
+    parts.length > 4 ||
+    (recordId && !uuid.test(recordId))
+  ) {
+    return fail('Invalid record ID.', 400);
+  }
+
+  // GET: Load saved records
+  if (method === 'GET' && !recordId) {
+
+    const records = await db(table, {
+      filters: {
+        tracker_id: 'eq.' + id
+      },
+      order: 'created_at.desc',
+      limit: 200
+    });
+
+    return json(records);
+  }
+
+  // POST: Create new record
+  if (method === 'POST' && !recordId) {
+
+    if (!can('add_expenses')) {
+      return fail(
+        'You cannot add records to this tracker.',
+        403
+      );
+    }
+
+    // Date validation
+    const date = value =>
+      /^\d{4}-\d{2}-\d{2}$/.test(value || '') &&
+      !Number.isNaN(
+        Date.parse(value + 'T12:00:00Z')
+      )
+        ? value
+        : null;
+
+    // Amount validation
+    const amount = value =>
+      value === '' || value == null
+        ? null
+        : Number(value);
+
+    let record = {
+      tracker_id: id,
+      created_by: me.id
+    };
+
+    // SUBSCRIPTION & BILL MANAGER
+    if (sub === 'bills') {
+
+      const name = clean(body.name, 90);
+      const due = date(body.due);
+      const value = amount(body.amount);
+      const frequency = String(
+        body.frequency || ''
+      );
+
+      if (
+        !name ||
+        !due ||
+        !Number.isFinite(value) ||
+        value < 0 ||
+        value > 1e9 ||
+        ![
+          'weekly',
+          'monthly',
+          'yearly'
+        ].includes(frequency)
+      ) {
+        return fail(
+          'Invalid bill information.',
+          400
+        );
+      }
+
+      record = {
+        ...record,
+        name,
+        due,
+        amount: Math.round(value * 100) / 100,
+        frequency
+      };
+    }
+
+    // TRIP MODE
+    else if (sub === 'trips') {
+
+      const name = clean(body.name, 90);
+
+      if (
+        !name ||
+        (body.date && !date(body.date))
+      ) {
+        return fail(
+          'Invalid trip.',
+          400
+        );
+      }
+
+      record = {
+        ...record,
+        name,
+        date: date(body.date)
+      };
+    }
+
+    // RECEIPT VAULT REFERENCES
+    else {
+
+      const merchant = clean(
+        body.merchant,
+        100
+      );
+
+      const value = amount(body.amount);
+
+      if (
+        !merchant ||
+        (
+          value !== null &&
+          (
+            !Number.isFinite(value) ||
+            value < 0 ||
+            value > 1e9
+          )
+        ) ||
+        (
+          body.date &&
+          !date(body.date)
+        )
+      ) {
+        return fail(
+          'Invalid receipt reference.',
+          400
+        );
+      }
+
+      record = {
+        ...record,
+        merchant,
+        amount:
+          value === null
+            ? null
+            : Math.round(value * 100) / 100,
+        date: date(body.date),
+        note: clean(body.note, 200)
+      };
+    }
+
+    // Save record to Supabase
+    const saved = await db(table, {
+      method: 'POST',
+      body: record
+    });
+
+    return json(saved[0], 201);
+  }
+
+  // DELETE: Remove existing record
+  if (method === 'DELETE' && recordId) {
+
+    const existing = (
+      await db(table, {
+        filters: {
+          tracker_id: 'eq.' + id,
+          id: 'eq.' + recordId
+        },
+        limit: 1
+      })
+    )[0];
+
+    if (!existing) {
+      return fail(
+        'Record not found.',
+        404
+      );
+    }
+
+    // Only creator or tracker owner can delete
+    if (
+      !owner &&
+      existing.created_by !== me.id
+    ) {
+      return fail(
+        'Only the creator or tracker owner can remove this record.',
+        403
+      );
+    }
+
+    await db(table, {
+      method: 'DELETE',
+      filters: {
+        tracker_id: 'eq.' + id,
+        id: 'eq.' + recordId
+      }
+    });
+
+    return json({
+      ok: true
+    });
+  }
+
+  return fail(
+    'Method not allowed.',
+    405
+  );
+}
+
+    
 // =============================================
 // GET TRACKER MEMBER PERMISSIONS
 // =============================================
