@@ -8892,6 +8892,18 @@ body.friends-view #sq-friends-workspace-tabs{display:grid!important}
   });
 })();
 </script>
+<style id="sq-bills-visibility-repair">
+/* Keep the dedicated bill manager visible even if another view was active before opening it. */
+body.sq-bills-open #trackers-page {display:block!important;visibility:visible!important;opacity:1!important;}
+body.sq-bills-open #sq-bills-page {display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:1!important;}
+body.sq-bills-open #trackers-page #trackers-gallery,
+body.sq-bills-open #trackers-page #sq-bills-directory,
+body.sq-bills-open #trackers-page .trackers-header,
+body.sq-bills-open #trackers-page .sq-mobile-trackers-title,
+body.sq-bills-open #trackers-page #sq-friends-mobile-link {display:none!important;}
+body.sq-bills-open > .wrap {display:flex!important;flex-direction:column!important;height:auto!important;min-height:0!important;}
+body.sq-bills-open > .wrap > #trackers-page {display:block!important;width:100%!important;max-width:1220px!important;margin:16px auto 50px!important;}
+</style>
 <script id="sq-bills-directory-script">
 (function(){
 'use strict';
@@ -8902,9 +8914,15 @@ const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 let generation=0;
 function notice(t){msg.textContent=t;}
 function api(path,method='GET',data){if(typeof window.squareUpApi!=='function')throw Error('Please sign in before using Bills.');return window.squareUpApi(path,method,data);}
-function resetView(){document.body.classList.remove('sq-bills-open');page.hidden=true;}
+function resetView(){document.body.classList.remove('sq-bills-open');page.hidden=true;generation++;}
 async function openBills(){
-  $('nav-trackers')?.click();document.body.classList.add('sq-bills-open');page.hidden=false;
+  // Navigate first, then display Bills independently of tracker/dashboard state.
+  if(typeof settingsRoute==='function')settingsRoute('trackers');
+  else $('nav-trackers')?.click();
+  document.body.classList.remove('sq-help-view');
+  document.body.classList.add('trackers-view','sq-bills-open');
+  page.hidden=false;
+  page.removeAttribute('aria-hidden');
   notice('');list.textContent='Select a tracker to see its bills.';selector.replaceChildren(new Option('Loading trackers…',''));
   const token=++generation;
   try{
@@ -8955,7 +8973,7 @@ $('sq-bills-create').addEventListener('submit',async e=>{
 });
 // The existing Bills tab now opens the dedicated page instead of the small embedded form.
 const original=$('sq-next-hub')?.querySelector('[data-next-tab="bills"]');
-if(original){original.addEventListener('click',()=>{openBills();},true);}
+if(original){original.addEventListener('click',(event)=>{event.preventDefault();event.stopImmediatePropagation();openBills();},true);}
 // Return to normal tracker list when navigating elsewhere.
 document.querySelectorAll('#nav-home,#nav-chat,#nav-settings,#nav-about').forEach(el=>el.addEventListener('click',resetView));
 })();
