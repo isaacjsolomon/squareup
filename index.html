@@ -2308,7 +2308,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
   <div class="sq-bills-title"><div><span class="sq-bills-kicker">SQUARE UP · BILL MANAGER</span><h2>Subscriptions & Bills</h2><p>Organize recurring payments by tracker, see upcoming due dates, and remove bills you no longer need.</p></div></div>
   <div class="sq-bills-top-grid">
   <div class="sq-bills-card"><label for="sq-bills-tracker">Select a tracker</label><select id="sq-bills-tracker"><option value="">Loading trackers…</option></select><p class="sq-bills-help">Bills are shared with members of the selected tracker. Adding a bill does not charge anyone or automatically create an expense.</p></div>
-  <div class="sq-bills-card"><h3>Add a bill or subscription</h3><p class="sq-bills-help">Choose whether this is a bill or a subscription before saving.</p><form id="sq-bills-create" class="sq-bills-form"><select name="kind" id="sq-bills-kind" aria-label="Bill or subscription" required><option value="" selected disabled>Type</option><option value="bill">Bill</option><option value="subscription">Subscription</option></select><div class="sq-icon-wrap"><button type="button" id="sq-icon-trigger" class="sq-icon-trigger" aria-label="Choose subscription icon" aria-expanded="false"><span id="sq-icon-current">＋</span><span>⌄</span></button><div id="sq-icon-picker" class="sq-icon-picker" hidden><strong>Choose an icon</strong><div id="sq-icon-tabs" class="sq-icon-tabs"></div><div id="sq-icon-grid" class="sq-icon-grid"></div></div></div><input name="name" placeholder="Bill or subscription name" maxlength="90" required aria-label="Bill name"><input name="amount" type="number" min="0" max="1000000000" step="0.01" placeholder="Amount ($)" required aria-label="Amount"><input name="due" type="date" required aria-label="Next due date"><select name="frequency" aria-label="Billing frequency"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option></select><button type="submit">Add bill</button></form></div>
+  <div class="sq-bills-card"><h3>Add a bill or subscription</h3><p class="sq-bills-help">Choose whether this is a bill or a subscription before saving.</p><form id="sq-bills-create" class="sq-bills-form"><select name="kind" id="sq-bills-kind" aria-label="Bill or subscription" required><option value="" selected disabled>Type</option><option value="bill">Bill</option><option value="subscription">Subscription</option></select><div class="sq-icon-wrap"><button type="button" id="sq-icon-trigger" class="sq-icon-trigger" aria-label="Choose subscription icon" aria-expanded="false"><span id="sq-icon-current">＋</span><span>⌄</span></button><div id="sq-icon-picker" class="sq-icon-picker" hidden><strong>Choose an icon</strong><div id="sq-icon-tabs" class="sq-icon-tabs"></div><div id="sq-icon-grid" class="sq-icon-grid"></div></div></div><input name="name" placeholder="Bill or subscription name" maxlength="90" required aria-label="Bill name"><input name="amount" type="number" min="0" max="1000000000" step="0.01" placeholder="Amount ($)" required aria-label="Amount"><input name="due" type="date" required aria-label="Next due date"><select name="frequency" aria-label="Billing frequency"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option></select><div class="sq-bill-assign" id="sq-bill-assign"><label for="sq-bill-paid-by">Paid by</label><select id="sq-bill-paid-by" required><option value="">Choose payer</option></select><label for="sq-bill-split-mode">Assign bill</label><select id="sq-bill-split-mode"><option value="single">One person</option><option value="equal">Split equally</option><option value="custom">Custom amounts</option></select><div id="sq-bill-split-people" class="sq-bill-split-people"></div><small>On each due date, assigned members owe the payer. Existing bills are unaffected.</small></div><button type="submit">Add bill</button></form></div>
   </div>
   <div class="sq-bills-columns"><div class="sq-bills-card sq-bills-column"><div class="sq-bills-list-head"><h3>Bills</h3><span id="sq-bills-bill-count"></span></div><div id="sq-bills-bill-list" aria-live="polite">Select a tracker to see bills.</div></div><div class="sq-bills-card sq-bills-column"><div class="sq-bills-list-head"><h3>Subscriptions</h3><span id="sq-bills-sub-count"></span></div><div id="sq-bills-sub-list" aria-live="polite">Select a tracker to see subscriptions.</div></div></div><div id="sq-bills-list" hidden></div><span id="sq-bills-total" hidden></span>
   <p id="sq-bills-message" role="status" aria-live="polite"></p>
@@ -8973,7 +8973,36 @@ const $=id=>document.getElementById(id);
 const page=$('sq-bills-page'), selector=$('sq-bills-tracker'), list=$('sq-bills-list'), msg=$('sq-bills-message'), total=$('sq-bills-total');
 if(!page)return;
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-let generation=0;
+let generation=0, billMembers=[];
+const paidBy=document.getElementById('sq-bill-paid-by'),splitMode=document.getElementById('sq-bill-split-mode'),splitPeople=document.getElementById('sq-bill-split-people');
+function renderSplit(){
+ splitPeople.replaceChildren();
+ const mode=splitMode.value;
+ billMembers.forEach(member=>{
+  if(member.id===paidBy.value)return;
+  const line=document.createElement('label');line.className='sq-bill-person';
+  const check=document.createElement('input');check.type=mode==='single'?'radio':'checkbox';check.name='sq-bill-member';check.value=member.id;
+  if(mode==='single')check.required=true;
+  const name=document.createElement('span');name.textContent=member.name;
+  line.append(check,name);
+  if(mode==='custom'){const amount=document.createElement('input');amount.type='number';amount.min='0.01';amount.step='0.01';amount.placeholder='$ amount';amount.className='sq-bill-share';line.append(amount);}
+  splitPeople.append(line);
+ });
+ if(!splitPeople.children.length){const note=document.createElement('small');note.textContent='Add another member to this tracker to assign a bill.';splitPeople.append(note);}
+}
+async function loadBillMembers(){
+ billMembers=[];paidBy.replaceChildren(new Option('Choose payer',''));splitPeople.replaceChildren();
+ if(!uuid.test(selector.value))return;
+ try{
+  const detail=await api('trackers/'+selector.value);
+  if(selector.value!==detail.id)return;
+  billMembers=(detail.members||[]).filter(x=>uuid.test(x.id)&&x.name).map(x=>({id:x.id,name:x.name}));
+  billMembers.forEach(x=>paidBy.add(new Option(x.name,x.id)));
+  const self=billMembers.find(x=>x.id===detail.members?.find(y=>y.isYou)?.id);if(self)paidBy.value=self.id;
+  renderSplit();
+ }catch(e){notice('Could not load tracker members: '+e.message);}
+}
+paidBy.addEventListener('change',renderSplit);splitMode.addEventListener('change',renderSplit);
 const services=[
  ['netflix','Netflix','N','Streaming'],['disney','Disney+','Disney+','Streaming'],['max','Max','max','Streaming'],['prime','Prime Video','prime','Streaming'],['hulu','Hulu','hulu','Streaming'],['apple','Apple TV+','tv+','Streaming'],
  ['chatgpt','ChatGPT','◎','Apps & AI'],['claude','Claude','✳','Apps & AI'],['spotify','Spotify','≋','Streaming'],['youtube','YouTube','▶','Streaming'],['dropbox','Dropbox','◆','Apps & AI'],['drive','Google Drive','▲','Apps & AI'],
@@ -9031,7 +9060,7 @@ function iconNode(key){
 function inferIcon(name){const n=String(name||'').toLowerCase();return services.find(x=>x[0]!=='other'&&(n.includes(x[0])||n.includes(x[1].toLowerCase())))?.[0]||(n.includes('openai')?'chatgpt':n.includes('amazon')?'prime':n.includes('electric')||n.includes('energy')?'power':n.includes('gas')?'gas':n.includes('rent')?'rent':n.includes('water')?'water':'other');}
 function kindStorageKey(tracker,id){return 'squareup-bill-kind:'+tracker+':'+id;}
 function inferredKind(item){const n=String(item.name||'').toLowerCase();return /netflix|disney|hulu|spotify|youtube|chat ?gpt|openai|claude|prime|apple ?tv|dropbox|google drive|subscription|membership|max/.test(n)?'subscription':'bill';}
-function getKind(tracker,item){try{return localStorage.getItem(kindStorageKey(tracker,item.id))||inferredKind(item)}catch(_){return inferredKind(item)}}
+function getKind(tracker,item){if(['bill','subscription'].includes(item.kind))return item.kind;try{return localStorage.getItem(kindStorageKey(tracker,item.id))||inferredKind(item)}catch(_){return inferredKind(item)}}
 function iconStorageKey(tracker,id){return 'squareup-bill-icon:'+tracker+':'+id;}
 function setIcon(key){chosenIcon=key;$('sq-icon-current').replaceChildren(iconNode(key));iconTrigger.setAttribute('aria-label','Icon: '+(services.find(x=>x[0]===key)?.[1]||'Other'));iconPicker.hidden=true;iconTrigger.setAttribute('aria-expanded','false');}
 function renderIcons(){iconTabs.replaceChildren();['Popular','Streaming','Apps & AI','Utilities','Other'].forEach(category=>{const b=document.createElement('button');b.type='button';b.textContent=category;b.classList.toggle('active',category===currentCategory);b.addEventListener('click',()=>{currentCategory=category;renderIcons()});iconTabs.append(b)});iconGrid.replaceChildren();services.filter(x=>currentCategory==='Popular'||x[3]===currentCategory).forEach(spec=>{const b=document.createElement('button');b.type='button';b.title=spec[1];b.setAttribute('aria-label',spec[1]);b.classList.toggle('selected',chosenIcon===spec[0]);b.append(iconNode(spec[0]));b.addEventListener('click',()=>setIcon(spec[0]));iconGrid.append(b)})}
@@ -9059,7 +9088,7 @@ async function openBills(){
     const preferred=localStorage.getItem('squareup-current-tracker');
     if(preferred&&Array.from(selector.options).some(o=>o.value===preferred))selector.value=preferred;
     else if(selector.options.length===2)selector.selectedIndex=1;
-    await loadBills();
+    await loadBills();await loadBillMembers();
   }catch(e){selector.replaceChildren(new Option('Could not load trackers',''));notice(e.message||'Could not load trackers.');}
 }
 async function loadBills(){
@@ -9074,26 +9103,48 @@ async function loadBills(){
       const info=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('small');
       title.textContent=(item.name||'Bill')+' · $'+Number(item.amount||0).toFixed(2);
       detail.textContent=(item.frequency||'Recurring')+' · Next due '+(item.due||'not set');
-      info.append(title,detail);const infoWrap=document.createElement('div');infoWrap.className='sq-bill-info';let savedIcon=null;try{savedIcon=localStorage.getItem(iconStorageKey(id,item.id))}catch(_){}infoWrap.append(iconNode(savedIcon||inferIcon(item.name)),info);
+      if(item.recurring_enabled){const state=item.active===false?'Paused':'Automatic';detail.textContent+=' · '+state;}
+
+      info.append(title,detail);const infoWrap=document.createElement('div');infoWrap.className='sq-bill-info';let savedIcon=null;try{savedIcon=localStorage.getItem(iconStorageKey(id,item.id))}catch(_){}infoWrap.append(iconNode(item.icon&&item.icon!=='other'?item.icon:(savedIcon||inferIcon(item.name))),info);
       const remove=document.createElement('button');remove.type='button';remove.textContent='Remove';
       remove.addEventListener('click',async()=>{
         if(!confirm('Remove this bill?'))return;
         remove.disabled=true;
         try{await api('trackers/'+id+'/bills/'+item.id,'DELETE');try{localStorage.removeItem(iconStorageKey(id,item.id));localStorage.removeItem(kindStorageKey(id,item.id))}catch(_){}await loadBills();notice('Bill removed.');}
         catch(e){notice(e.message||'Could not remove bill.');remove.disabled=false;}
-      });row.append(infoWrap,remove);(getKind(id,item)==='subscription'?subList:billList).append(row);
+      });if(item.recurring_enabled){
+        const toggle=document.createElement('button');toggle.type='button';toggle.textContent=item.active===false?'Resume':'Pause';
+        toggle.addEventListener('click',async()=>{toggle.disabled=true;try{await api('trackers/'+id+'/bills/'+item.id,'PATCH',{active:item.active===false});await loadBills();}catch(e){notice(e.message);toggle.disabled=false;}});
+        row.append(toggle);
+      }
+      row.append(infoWrap,remove);(getKind(id,item)==='subscription'?subList:billList).append(row);
     });
   }catch(e){if(token!==generation)return;$('sq-bills-bill-list').textContent='Unable to load bills.';$('sq-bills-sub-list').textContent='Unable to load subscriptions.';notice(e.message||'Please try again.');}
 }
 $('sq-bills-open').addEventListener('click',openBills);
 $('sq-bills-back').addEventListener('click',resetView);
-selector.addEventListener('change',loadBills);
+selector.addEventListener('change',async()=>{await loadBills();await loadBillMembers();});
 $('sq-bills-create').addEventListener('submit',async e=>{
   e.preventDefault();const id=selector.value;if(!uuid.test(id)){notice('Select a tracker first.');return;}
   const form=e.currentTarget,btn=form.querySelector('[type=submit]');const data=Object.fromEntries(new FormData(form));
   if(!['bill','subscription'].includes(data.kind)||!data.name.trim()||!data.due||!Number.isFinite(Number(data.amount))){notice('Complete all bill fields.');return;}
   btn.disabled=true;notice('Saving bill…');
-  try{const result=await api('trackers/'+id+'/bills','POST',{name:data.name.trim(),amount:Number(data.amount),due:data.due,frequency:data.frequency});const saved=Array.isArray(result)?result[0]:result;if(saved?.id){try{localStorage.setItem(iconStorageKey(id,saved.id),chosenIcon);localStorage.setItem(kindStorageKey(id,saved.id),data.kind)}catch(_){}}form.reset();setIcon('other');await loadBills();notice((data.kind==='subscription'?'Subscription':'Bill')+' saved to SquareUp.');}
+  try{
+    const payerId=paidBy.value, mode=splitMode.value;
+    if(!billMembers.some(x=>x.id===payerId))throw Error('Choose who paid.');
+    const selected=Array.from(splitPeople.querySelectorAll('input[name="sq-bill-member"]:checked'));
+    if(!selected.length)throw Error('Choose at least one person to assign the bill to.');
+    const amountCents=Math.round(Number(data.amount)*100);
+    if(amountCents<1)throw Error('Enter an amount greater than zero.');
+    let shares=[];
+    if(mode==='custom'){
+      shares=selected.map(x=>({user_id:x.value,amount_cents:Math.round(Number(x.closest('label').querySelector('.sq-bill-share').value)*100)}));
+      if(shares.some(x=>!Number.isFinite(x.amount_cents)||x.amount_cents<1)||shares.reduce((a,x)=>a+x.amount_cents,0)!==amountCents)throw Error('Custom amounts must add up to the bill total.');
+    }else{
+      if(amountCents<selected.length)throw Error('Amount is too small to split among everyone.');
+      shares=selected.map((x,i)=>({user_id:x.value,amount_cents:Math.floor(amountCents/selected.length)+(i<amountCents%selected.length?1:0)}));
+    }
+    const result=await api('trackers/'+id+'/bills','POST',{name:data.name.trim(),amount:Number(data.amount),due:data.due,frequency:data.frequency,kind:data.kind,icon:chosenIcon,recurring_enabled:true,payer_id:payerId,split_mode:mode,shares});const saved=Array.isArray(result)?result[0]:result;if(saved?.id){try{localStorage.setItem(iconStorageKey(id,saved.id),chosenIcon);localStorage.setItem(kindStorageKey(id,saved.id),data.kind)}catch(_){}}form.reset();setIcon('other');renderSplit();await loadBills();notice((data.kind==='subscription'?'Subscription':'Bill')+' saved to SquareUp.');}
   catch(err){notice(err.message||'Could not save bill.');}finally{btn.disabled=false;}
 });
 // The existing Bills tab now opens the dedicated page instead of the small embedded form.
@@ -9236,6 +9287,18 @@ body.trackers-view:not(.sq-bills-open) #trackers-page #trackers-gallery .sq-crea
 #sq-bills-page .sq-bills-top-grid .sq-bills-form button[type=submit]{grid-column:1/-1}
 @media(max-width:1100px){#sq-bills-page .sq-bills-top-grid{grid-template-columns:1fr}#sq-bills-page .sq-bills-top-grid .sq-bills-form{grid-template-columns:minmax(0,1fr) 76px minmax(0,1.5fr) minmax(0,1fr)!important}}
 @media(max-width:580px){#sq-bills-page .sq-bills-top-grid .sq-bills-form{grid-template-columns:minmax(0,1fr) 76px!important}#sq-bills-page .sq-bills-top-grid .sq-bills-form #sq-bills-kind{grid-column:1}#sq-bills-page .sq-bills-top-grid .sq-bills-form .sq-icon-wrap{grid-column:2}#sq-bills-page .sq-bills-top-grid .sq-bills-form input[name=name],#sq-bills-page .sq-bills-top-grid .sq-bills-form input[name=amount],#sq-bills-page .sq-bills-top-grid .sq-bills-form input[name=due],#sq-bills-page .sq-bills-top-grid .sq-bills-form select[name=frequency],#sq-bills-page .sq-bills-top-grid .sq-bills-form button[type=submit]{grid-column:1/-1}}
+</style>
+<style id="sq-bills-recurring-assignment-style">
+#sq-bills-page .sq-bill-assign{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;margin:8px 0;padding:15px;border:1px solid rgba(119,191,204,.25);border-radius:14px;background:rgba(4,22,37,.22)}
+#sq-bills-page .sq-bill-assign>label{font-size:13px;font-weight:700;color:#b7d0dc}
+#sq-bills-page .sq-bill-assign>select{min-width:0;width:100%;height:48px;border-radius:11px;background:#102c43;color:#fff;border:1px solid rgba(119,191,204,.35);padding:0 10px}
+#sq-bills-page .sq-bill-assign>small,#sq-bills-page .sq-bill-split-people{grid-column:1/-1;color:#b7d0dc}
+#sq-bills-page .sq-bill-split-people{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+#sq-bills-page .sq-bill-person{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid rgba(119,191,204,.2);border-radius:10px;background:rgba(255,255,255,.04);font-size:14px}
+#sq-bills-page .sq-bill-person input[type=checkbox],#sq-bills-page .sq-bill-person input[type=radio]{accent-color:#20d2b7;width:17px;height:17px}
+#sq-bills-page .sq-bill-share{min-width:0;width:92px;margin-left:auto;padding:7px;background:#102c43;color:#fff;border:1px solid #38586b;border-radius:8px}
+#sq-bills-page .sq-bills-row>button{margin-left:6px}
+@media(max-width:580px){#sq-bills-page .sq-bill-assign{grid-template-columns:1fr}}
 </style>
 </body>
 </html>
