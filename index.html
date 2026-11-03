@@ -9119,5 +9119,42 @@ body.trackers-view:not(.sq-bills-open) #trackers-gallery > .sq-create-tracker-ro
  body.trackers-view:not(.sq-bills-open) #sq-bills-directory .sq-bills-directory-button{padding:13px 15px!important}
 }
 </style>
+
+<!-- SquareUp Trackers navigation refinement -->
+<style id="sq-trackers-bills-navigation-fix">
+/* The extra tools card is no longer part of the tracker overview. */
+#tracker-dashboard #sq-next-hub { display:none!important; }
+/* Show the Bills shortcut immediately before the Create Tracker row. */
+body.trackers-view:not(.sq-bills-open) #trackers-page #sq-bills-directory {
+ display:block!important; visibility:visible!important; opacity:1!important;
+ position:relative!important; width:100%!important; max-width:none!important;
+ height:auto!important; min-height:0!important; margin:0 0 14px!important;
+ padding:0!important; transform:none!important;
+}
+body.trackers-view:not(.sq-bills-open) #trackers-page #sq-bills-open {
+ display:flex!important; width:100%!important; min-height:76px!important;
+ align-items:center!important; cursor:pointer!important;
+}
+body.trackers-view:not(.sq-bills-open) #trackers-page #trackers-gallery {
+ margin-top:0!important; padding-top:0!important;
+}
+body.trackers-view:not(.sq-bills-open) #trackers-page #trackers-gallery .sq-create-tracker-row {
+ margin-top:0!important;
+}
+@media(max-width:680px){
+ body.trackers-view:not(.sq-bills-open) #trackers-page #sq-bills-open {min-height:66px!important;}
+}
+</style>
+<script id="sq-trackers-bills-navigation-fix-script">
+(function(){
+  'use strict';
+  const page=document.getElementById('trackers-page');
+  const shortcut=document.getElementById('sq-bills-directory');
+  const gallery=document.getElementById('trackers-gallery');
+  if(page&&shortcut&&gallery&&shortcut.nextElementSibling!==gallery){
+    page.insertBefore(shortcut,gallery);
+  }
+})();
+</script>
 </body>
 </html>
