@@ -9055,5 +9055,48 @@ if(original){original.addEventListener('click',(event)=>{event.preventDefault();
 document.querySelectorAll('#nav-home,#nav-chat,#nav-settings,#nav-about').forEach(el=>el.addEventListener('click',resetView));
 })();
 </script>
+<style id="sq-trackers-bills-layout-v13">
+/* Keep the Bills entry immediately above Create Tracker, without a large spacer. */
+body.trackers-view:not(.sq-bills-open) > .wrap {
+  display:flex!important;flex-direction:column!important;justify-content:flex-start!important;
+  align-items:stretch!important;align-content:flex-start!important;gap:0!important;
+  height:auto!important;min-height:0!important;padding-top:0!important;
+}
+body.trackers-view:not(.sq-bills-open) > .wrap > .tracker-heading {
+  order:0!important;flex:none!important;margin:0 0 12px!important;
+}
+body.trackers-view:not(.sq-bills-open) > .wrap > #trackers-page {
+  order:1!important;position:static!important;top:auto!important;transform:none!important;
+  flex:none!important;align-self:stretch!important;display:block!important;
+  height:auto!important;min-height:0!important;margin:0 auto 24px!important;
+  padding:0!important;width:100%!important;max-width:1220px!important;
+}
+body.trackers-view:not(.sq-bills-open) #trackers-page .trackers-header {display:none!important}
+body.trackers-view:not(.sq-bills-open) #trackers-page .sq-mobile-trackers-title {display:none!important}
+body.trackers-view:not(.sq-bills-open) #sq-bills-directory {
+  display:block!important;position:static!important;visibility:visible!important;
+  margin:0 0 12px!important;padding:0!important;min-height:0!important;
+}
+body.trackers-view:not(.sq-bills-open) #sq-bills-directory .sq-bills-directory-button {
+  display:flex!important;align-items:center!important;width:100%!important;
+  padding:15px 19px!important;border-radius:17px!important;
+  background:linear-gradient(115deg,#0b3046,#123e50)!important;
+  border:1px solid rgba(75,223,201,.55)!important;
+  box-shadow:0 8px 20px rgba(0,0,0,.12)!important;
+}
+body.trackers-view:not(.sq-bills-open) #sq-bills-directory .sq-bills-directory-button strong {font-size:18px!important}
+body.trackers-view:not(.sq-bills-open) #trackers-gallery {
+  margin:0!important;padding:0!important;min-height:0!important;
+  align-content:start!important;align-items:start!important;
+}
+body.trackers-view:not(.sq-bills-open) #trackers-gallery > .sq-create-tracker-row {
+  margin:0 0 14px!important;padding:0!important;min-height:0!important;
+}
+@media(max-width:900px){
+ body.trackers-view:not(.sq-bills-open) > .wrap > .tracker-heading{display:none!important}
+ body.trackers-view:not(.sq-bills-open) > .wrap > #trackers-page{margin-top:6px!important}
+ body.trackers-view:not(.sq-bills-open) #sq-bills-directory .sq-bills-directory-button{padding:13px 15px!important}
+}
+</style>
 </body>
 </html>
