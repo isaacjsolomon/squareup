@@ -2307,7 +2307,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
   <button type="button" id="sq-bills-back" class="sq-bills-back">← Back to Trackers</button>
   <div class="sq-bills-title"><div><span class="sq-bills-kicker">SQUARE UP · BILL MANAGER</span><h2>Subscriptions & Bills</h2><p>Organize recurring payments by tracker, see upcoming due dates, and remove bills you no longer need.</p></div></div>
   <div class="sq-bills-card"><label for="sq-bills-tracker">Select a tracker</label><select id="sq-bills-tracker"><option value="">Loading trackers…</option></select><p class="sq-bills-help">Bills are shared with members of the selected tracker. Adding a bill does not charge anyone or automatically create an expense.</p></div>
-  <div class="sq-bills-card"><h3>Add a bill or subscription</h3><form id="sq-bills-create" class="sq-bills-form"><input name="name" placeholder="Bill or subscription name" maxlength="90" required aria-label="Bill name"><input name="amount" type="number" min="0" max="1000000000" step="0.01" placeholder="Amount ($)" required aria-label="Amount"><input name="due" type="date" required aria-label="Next due date"><select name="frequency" aria-label="Billing frequency"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option></select><button type="submit">Add bill</button></form></div>
+  <div class="sq-bills-card"><h3>Add a bill or subscription</h3><form id="sq-bills-create" class="sq-bills-form"><div class="sq-icon-wrap"><button type="button" id="sq-icon-trigger" class="sq-icon-trigger" aria-label="Choose subscription icon" aria-expanded="false"><span id="sq-icon-current">＋</span><span>⌄</span></button><div id="sq-icon-picker" class="sq-icon-picker" hidden><strong>Choose an icon</strong><div id="sq-icon-tabs" class="sq-icon-tabs"></div><div id="sq-icon-grid" class="sq-icon-grid"></div></div></div><input name="name" placeholder="Bill or subscription name" maxlength="90" required aria-label="Bill name"><input name="amount" type="number" min="0" max="1000000000" step="0.01" placeholder="Amount ($)" required aria-label="Amount"><input name="due" type="date" required aria-label="Next due date"><select name="frequency" aria-label="Billing frequency"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option></select><button type="submit">Add bill</button></form></div>
   <div class="sq-bills-card"><div class="sq-bills-list-head"><h3>Saved bills</h3><span id="sq-bills-total"></span></div><div id="sq-bills-list" aria-live="polite">Select a tracker to see its bills.</div></div>
   <p id="sq-bills-message" role="status" aria-live="polite"></p>
 </section>
@@ -8904,6 +8904,36 @@ body.sq-bills-open #trackers-page #sq-friends-mobile-link {display:none!importan
 body.sq-bills-open > .wrap {display:flex!important;flex-direction:column!important;height:auto!important;min-height:0!important;}
 body.sq-bills-open > .wrap > #trackers-page {display:block!important;width:100%!important;max-width:1220px!important;margin:16px auto 50px!important;}
 </style>
+<style id="sq-bill-icon-styles">
+#sq-bills-page .sq-bills-form{grid-template-columns:96px 2fr 1fr 1.3fr 1fr auto}
+#sq-bills-page .sq-icon-wrap{position:relative;min-width:0}
+#sq-bills-page .sq-icon-trigger{display:flex;align-items:center;justify-content:space-around;gap:7px;width:100%;height:52px;padding:6px;border-radius:13px;border:1px solid #26bda9;background:#103248;color:#f4ffff;cursor:pointer;font-size:20px}
+#sq-bills-page .sq-icon-trigger #sq-icon-current{display:flex;align-items:center;justify-content:center;width:35px;height:35px;border-radius:9px;background:#091e31}
+#sq-bills-page .sq-icon-picker{position:absolute;top:calc(100% + 12px);left:0;z-index:500;width:min(440px,calc(100vw - 55px));max-height:380px;overflow:auto;padding:16px;border:1px solid #397e8b;border-radius:18px;background:#082438;box-shadow:0 18px 40px #0009}
+#sq-bills-page .sq-icon-picker[hidden]{display:none!important}
+#sq-bills-page .sq-icon-tabs{display:flex;flex-wrap:wrap;gap:5px;margin:13px 0}
+#sq-bills-page .sq-icon-tabs button{background:#13354b;border:1px solid #37627b;color:white;border-radius:22px;padding:8px 10px;font-size:12px;cursor:pointer}
+#sq-bills-page .sq-icon-tabs button.active{background:#19cfb5;color:#062c37}
+#sq-bills-page .sq-icon-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+#sq-bills-page .sq-icon-grid button{height:53px;min-width:0;padding:5px;background:#123047;border:1px solid #34586d;border-radius:12px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#sq-bills-page .sq-icon-grid button.selected{border:2px solid #26e5c8}
+#sq-bills-page .sq-service-icon{display:inline-flex;align-items:center;justify-content:center;width:39px;height:39px;border-radius:10px;background:#101a2b;color:white;font-weight:800;font-size:18px;letter-spacing:-.04em;flex-shrink:0}
+#sq-bills-page .sq-service-icon.netflix{color:#e50914;background:#080808;font-size:27px}
+#sq-bills-page .sq-service-icon.spotify{color:#1ed760;background:#0b1910}
+#sq-bills-page .sq-service-icon.youtube{color:white;background:#e62117}
+#sq-bills-page .sq-service-icon.hulu{color:#1ce783;background:#071e18}
+#sq-bills-page .sq-service-icon.max{color:#fff;background:#23137c}
+#sq-bills-page .sq-service-icon.disney{color:#fff;background:#083d77;font-size:13px}
+#sq-bills-page .sq-service-icon.prime{color:#fff;background:#0073ad;font-size:12px}
+#sq-bills-page .sq-service-icon.apple{color:#fff;background:#080808;font-size:15px}
+#sq-bills-page .sq-service-icon.claude{color:#fff;background:#c76547}
+#sq-bills-page .sq-service-icon.chatgpt{color:#fff;background:#171d22}
+#sq-bills-page .sq-service-icon.dropbox{background:#0061ff}
+#sq-bills-page .sq-service-icon.drive{background:#178b57}
+#sq-bills-page .sq-bills-row .sq-bill-info{display:flex;align-items:center;gap:13px;min-width:0}
+@media(max-width:950px){#sq-bills-page .sq-bills-form{grid-template-columns:90px repeat(2,minmax(0,1fr))}#sq-bills-page .sq-bills-form button[type=submit]{grid-column:auto}}
+@media(max-width:600px){#sq-bills-page .sq-bills-form{grid-template-columns:80px minmax(0,1fr)}#sq-bills-page .sq-bills-form input[name=name]{grid-column:2}#sq-bills-page .sq-bills-form button[type=submit]{grid-column:1/-1}}
+</style>
 <script id="sq-bills-directory-script">
 (function(){
 'use strict';
@@ -8912,6 +8942,22 @@ const page=$('sq-bills-page'), selector=$('sq-bills-tracker'), list=$('sq-bills-
 if(!page)return;
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 let generation=0;
+const services=[
+ ['netflix','Netflix','N','Streaming'],['disney','Disney+','Disney+','Streaming'],['max','Max','max','Streaming'],['prime','Prime Video','prime','Streaming'],['hulu','Hulu','hulu','Streaming'],['apple','Apple TV+','tv+','Streaming'],
+ ['chatgpt','ChatGPT','◎','Apps & AI'],['claude','Claude','✳','Apps & AI'],['spotify','Spotify','≋','Streaming'],['youtube','YouTube','▶','Streaming'],['dropbox','Dropbox','◆','Apps & AI'],['drive','Google Drive','▲','Apps & AI'],
+ ['calendar','Calendar','▦','Utilities'],['power','Electricity','ϟ','Utilities'],['water','Water','♧','Utilities'],['wifi','Internet','◉','Utilities'],['phone','Phone','▯','Utilities'],['other','Other','＋','Other']
+];
+let chosenIcon='other',currentCategory='Popular';
+const iconPicker=$('sq-icon-picker'),iconTrigger=$('sq-icon-trigger'),iconGrid=$('sq-icon-grid'),iconTabs=$('sq-icon-tabs');
+function iconNode(key){const spec=services.find(x=>x[0]===key)||services.at(-1);const span=document.createElement('span');span.className='sq-service-icon '+spec[0];span.textContent=spec[2];span.title=spec[1];return span;}
+function inferIcon(name){const n=String(name||'').toLowerCase();return services.find(x=>x[0]!=='other'&&(n.includes(x[0])||n.includes(x[1].toLowerCase())))?.[0]||(n.includes('openai')?'chatgpt':n.includes('amazon')?'prime':n.includes('electric')?'power':'other');}
+function iconStorageKey(tracker,id){return 'squareup-bill-icon:'+tracker+':'+id;}
+function setIcon(key){chosenIcon=key;$('sq-icon-current').replaceChildren(iconNode(key));iconTrigger.setAttribute('aria-label','Icon: '+(services.find(x=>x[0]===key)?.[1]||'Other'));iconPicker.hidden=true;iconTrigger.setAttribute('aria-expanded','false');}
+function renderIcons(){iconTabs.replaceChildren();['Popular','Streaming','Apps & AI','Utilities','Other'].forEach(category=>{const b=document.createElement('button');b.type='button';b.textContent=category;b.classList.toggle('active',category===currentCategory);b.addEventListener('click',()=>{currentCategory=category;renderIcons()});iconTabs.append(b)});iconGrid.replaceChildren();services.filter(x=>currentCategory==='Popular'||x[3]===currentCategory).forEach(spec=>{const b=document.createElement('button');b.type='button';b.title=spec[1];b.setAttribute('aria-label',spec[1]);b.classList.toggle('selected',chosenIcon===spec[0]);b.append(iconNode(spec[0]));b.addEventListener('click',()=>setIcon(spec[0]));iconGrid.append(b)})}
+iconTrigger.addEventListener('click',()=>{iconPicker.hidden=!iconPicker.hidden;iconTrigger.setAttribute('aria-expanded',String(!iconPicker.hidden));if(!iconPicker.hidden)renderIcons()});
+document.addEventListener('click',e=>{if(!e.target.closest('.sq-icon-wrap')){iconPicker.hidden=true;iconTrigger.setAttribute('aria-expanded','false')}});
+setIcon('other');
+
 function notice(t){msg.textContent=t;}
 function api(path,method='GET',data){if(typeof window.squareUpApi!=='function')throw Error('Please sign in before using Bills.');return window.squareUpApi(path,method,data);}
 function resetView(){document.body.classList.remove('sq-bills-open');page.hidden=true;generation++;}
@@ -8949,14 +8995,14 @@ async function loadBills(){
       const info=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('small');
       title.textContent=(item.name||'Bill')+' · $'+Number(item.amount||0).toFixed(2);
       detail.textContent=(item.frequency||'Recurring')+' · Next due '+(item.due||'not set');
-      info.append(title,detail);
+      info.append(title,detail);const infoWrap=document.createElement('div');infoWrap.className='sq-bill-info';let savedIcon=null;try{savedIcon=localStorage.getItem(iconStorageKey(id,item.id))}catch(_){}infoWrap.append(iconNode(savedIcon||inferIcon(item.name)),info);
       const remove=document.createElement('button');remove.type='button';remove.textContent='Remove';
       remove.addEventListener('click',async()=>{
         if(!confirm('Remove this bill?'))return;
         remove.disabled=true;
-        try{await api('trackers/'+id+'/bills/'+item.id,'DELETE');await loadBills();notice('Bill removed.');}
+        try{await api('trackers/'+id+'/bills/'+item.id,'DELETE');try{localStorage.removeItem(iconStorageKey(id,item.id))}catch(_){}await loadBills();notice('Bill removed.');}
         catch(e){notice(e.message||'Could not remove bill.');remove.disabled=false;}
-      });row.append(info,remove);list.append(row);
+      });row.append(infoWrap,remove);list.append(row);
     });
   }catch(e){if(token!==generation)return;list.textContent='Unable to load bills.';notice(e.message||'Please try again.');}
 }
@@ -8968,7 +9014,7 @@ $('sq-bills-create').addEventListener('submit',async e=>{
   const form=e.currentTarget,btn=form.querySelector('[type=submit]');const data=Object.fromEntries(new FormData(form));
   if(!data.name.trim()||!data.due||!Number.isFinite(Number(data.amount))){notice('Complete all bill fields.');return;}
   btn.disabled=true;notice('Saving bill…');
-  try{await api('trackers/'+id+'/bills','POST',{name:data.name.trim(),amount:Number(data.amount),due:data.due,frequency:data.frequency});form.reset();await loadBills();notice('Bill saved to SquareUp.');}
+  try{const result=await api('trackers/'+id+'/bills','POST',{name:data.name.trim(),amount:Number(data.amount),due:data.due,frequency:data.frequency});const saved=Array.isArray(result)?result[0]:result;if(saved?.id){try{localStorage.setItem(iconStorageKey(id,saved.id),chosenIcon)}catch(_){}}form.reset();setIcon('other');await loadBills();notice('Bill saved to SquareUp.');}
   catch(err){notice(err.message||'Could not save bill.');}finally{btn.disabled=false;}
 });
 // The existing Bills tab now opens the dedicated page instead of the small embedded form.
