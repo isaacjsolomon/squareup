@@ -8930,6 +8930,17 @@ body.sq-bills-open > .wrap > #trackers-page {display:block!important;width:100%!
 #sq-bills-page .sq-service-icon.chatgpt{color:#fff;background:#171d22}
 #sq-bills-page .sq-service-icon.dropbox{background:#0061ff}
 #sq-bills-page .sq-service-icon.drive{background:#178b57}
+#sq-bills-page .sq-service-icon{overflow:hidden;box-shadow:inset 0 0 0 1px #ffffff14,0 2px 8px #0003}
+#sq-bills-page .sq-service-icon .sq-brand-logo{width:26px;height:26px;object-fit:contain;display:block;filter:drop-shadow(0 1px 2px #0003)}
+#sq-bills-page .sq-service-icon.netflix .sq-brand-logo{height:29px}
+#sq-bills-page .sq-service-icon.disney .sq-brand-logo,#sq-bills-page .sq-service-icon.prime .sq-brand-logo,#sq-bills-page .sq-service-icon.max .sq-brand-logo{width:31px}
+#sq-bills-page .sq-service-icon.spotify{background:#101b15}
+#sq-bills-page .sq-service-icon.youtube{background:#e62117}
+#sq-bills-page .sq-service-icon.drive{background:#ffffff}
+#sq-bills-page .sq-service-icon.drive .sq-brand-logo{filter:none}
+#sq-bills-page .sq-service-icon.chatgpt{background:#121c20}
+#sq-bills-page .sq-service-icon.claude{background:#cc785c}
+#sq-bills-page .sq-icon-grid button:hover{border-color:#32e4cc;transform:translateY(-1px)}
 #sq-bills-page .sq-bills-row .sq-bill-info{display:flex;align-items:center;gap:13px;min-width:0}
 @media(max-width:950px){#sq-bills-page .sq-bills-form{grid-template-columns:90px repeat(2,minmax(0,1fr))}#sq-bills-page .sq-bills-form button[type=submit]{grid-column:auto}}
 @media(max-width:600px){#sq-bills-page .sq-bills-form{grid-template-columns:80px minmax(0,1fr)}#sq-bills-page .sq-bills-form input[name=name]{grid-column:2}#sq-bills-page .sq-bills-form button[type=submit]{grid-column:1/-1}}
@@ -8949,7 +8960,27 @@ const services=[
 ];
 let chosenIcon='other',currentCategory='Popular';
 const iconPicker=$('sq-icon-picker'),iconTrigger=$('sq-icon-trigger'),iconGrid=$('sq-icon-grid'),iconTabs=$('sq-icon-tabs');
-function iconNode(key){const spec=services.find(x=>x[0]===key)||services.at(-1);const span=document.createElement('span');span.className='sq-service-icon '+spec[0];span.textContent=spec[2];span.title=spec[1];return span;}
+// Brand artwork is loaded from Simple Icons. A styled text symbol remains available offline.
+const brandArtwork={
+ netflix:['netflix','E50914'],disney:['disneyplus','FFFFFF'],max:['max','FFFFFF'],
+ prime:['amazonprimevideo','FFFFFF'],hulu:['hulu','1CE783'],apple:['appletv','FFFFFF'],
+ chatgpt:['openai','FFFFFF'],claude:['claude','FFFFFF'],spotify:['spotify','1ED760'],
+ youtube:['youtube','FFFFFF'],dropbox:['dropbox','FFFFFF'],drive:['googledrive','FFFFFF']
+};
+function iconNode(key){
+ const spec=services.find(x=>x[0]===key)||services[services.length-1];
+ const span=document.createElement('span');span.className='sq-service-icon '+spec[0];
+ span.title=spec[1];span.setAttribute('aria-label',spec[1]);
+ const art=brandArtwork[spec[0]];
+ if(art){
+   const img=document.createElement('img');
+   img.className='sq-brand-logo';img.alt='';img.loading='lazy';img.decoding='async';
+   img.src='https://cdn.simpleicons.org/'+art[0]+'/'+art[1];
+   img.onerror=()=>{img.remove();span.textContent=spec[2];};
+   span.append(img);
+ }else{span.textContent=spec[2];}
+ return span;
+}
 function inferIcon(name){const n=String(name||'').toLowerCase();return services.find(x=>x[0]!=='other'&&(n.includes(x[0])||n.includes(x[1].toLowerCase())))?.[0]||(n.includes('openai')?'chatgpt':n.includes('amazon')?'prime':n.includes('electric')?'power':'other');}
 function iconStorageKey(tracker,id){return 'squareup-bill-icon:'+tracker+':'+id;}
 function setIcon(key){chosenIcon=key;$('sq-icon-current').replaceChildren(iconNode(key));iconTrigger.setAttribute('aria-label','Icon: '+(services.find(x=>x[0]===key)?.[1]||'Other'));iconPicker.hidden=true;iconTrigger.setAttribute('aria-expanded','false');}
