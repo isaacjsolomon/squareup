@@ -1913,7 +1913,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
 <style id="sq-next-tools-styles">
 #sq-next-hub{margin:16px 0 24px;padding:17px;border:1px solid rgba(65,223,194,.32);border-radius:22px;background:linear-gradient(125deg,rgba(6,31,50,.96),rgba(13,54,71,.92));color:#edfaff;box-shadow:0 12px 30px rgba(0,0,0,.12)}
 #sq-next-hub *{box-sizing:border-box}#sq-next-hub .sq-next-head{display:flex;align-items:center;justify-content:space-between;gap:16px}#sq-next-hub .sq-next-head strong{display:block;font-size:17px;color:#f4ffff}#sq-next-hub .sq-next-head small{display:block;color:#b5d0da;margin-top:5px}#sq-next-hub button{cursor:pointer;border:1px solid rgba(86,227,202,.35);background:#10374b;color:#f5ffff;border-radius:12px;padding:10px 13px;font:inherit}#sq-next-hub button:hover,#sq-next-hub button:focus-visible{border-color:#39e6b8;background:#155269}#sq-next-hub .sq-next-tabs{display:flex;gap:8px;overflow-x:auto;padding:17px 0 12px}#sq-next-hub .sq-next-tabs button{white-space:nowrap}#sq-next-hub .sq-next-tabs button[aria-selected="true"]{background:#0d8c87;border-color:#54ead4}#sq-next-hub .sq-next-panel{padding:15px;background:rgba(4,21,37,.52);border:1px solid rgba(111,196,205,.17);border-radius:15px}#sq-next-hub .sq-next-panel[hidden],#sq-next-hub #sq-next-body[hidden]{display:none!important}#sq-next-hub h3{color:#f6ffff;margin:0 0 8px}#sq-next-hub p{color:#c1d7df;line-height:1.5;margin:0 0 14px}#sq-next-hub .sq-next-form{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:12px}#sq-next-hub input,#sq-next-hub select{background:#102d42;color:#fff;border:1px solid #426778;border-radius:10px;padding:11px;min-width:0;flex:1 1 135px;font:inherit}#sq-next-hub input::placeholder{color:#a8c1cc}#sq-next-hub .sq-next-form button{background:#10bba1;color:#032b31;font-weight:750}#sq-next-hub .sq-next-items{display:grid;gap:9px}#sq-next-hub .sq-next-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;background:#12364a;border:1px solid #315a6b;border-radius:12px;overflow-wrap:anywhere}#sq-next-hub .sq-next-item small{display:block;color:#b9d1dc;margin-top:3px}#sq-next-hub .sq-next-item button{flex-shrink:0}#sq-next-hub .sq-next-answer{padding:14px;background:#10374b;border-radius:12px;color:#e8f9ff}#sq-next-hub .sq-next-local-note{font-size:12px;margin:14px 0 0;color:#aac5d0}#sq-next-hub #sq-next-vault-search{width:100%;margin:0 0 12px}@media(max-width:680px){#sq-next-hub{padding:12px;margin:12px 0 18px}#sq-next-hub .sq-next-head{align-items:flex-start}#sq-next-hub .sq-next-head strong{font-size:15px}#sq-next-hub .sq-next-head small{font-size:12px}#sq-next-hub .sq-next-form{display:grid;grid-template-columns:1fr 1fr}#sq-next-hub .sq-next-form input:first-child{grid-column:1/-1}#sq-next-hub .sq-next-form button{grid-column:1/-1}#sq-next-hub .sq-next-head button{white-space:nowrap;font-size:12px}}
-</style>
+#sq-next-hub .sq-trip-detail{width:100%;margin-top:12px;padding:15px;border:1px solid #3a7881;border-radius:12px;background:#09293a}#sq-next-hub .sq-trip-detail h4{margin:0 0 10px;color:#fff}#sq-next-hub .sq-trip-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #295066;color:#e6f6fa}#sq-next-hub .sq-trip-item span{flex:1}#sq-next-hub .sq-trip-item.done span{text-decoration:line-through;opacity:.65}#sq-next-hub .sq-trip-item input{flex:0 0 auto}#sq-next-hub .sq-trip-detail .sq-next-form{margin-top:12px}#sq-next-hub .sq-trip-detail .sq-trip-delete{padding:5px 9px}#sq-next-hub .sq-trip-wrap{display:grid;gap:10px}#sq-next-hub .sq-trip-actions{display:flex;gap:8px;flex-wrap:wrap}</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
@@ -1997,17 +1997,14 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
   <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button><button type="button" data-sq-tab="friends" role="tab" aria-selected="false">Friends</button></div>
 
   <section id="sq-next-hub" class="sq-next-hub" aria-label="More tracker tools">
-  <div class="sq-next-head"><div><strong>More ways to Square Up</strong><small>Plan trips, track bills, and keep receipts together.</small></div><button type="button" id="sq-next-toggle" aria-expanded="false" aria-controls="sq-next-body">Explore tools ▾</button></div>
+  <div class="sq-next-head"><div><strong>More ways to Square Up</strong><small>Plan trips, manage bills, and get help with SquareUp.</small></div><button type="button" id="sq-next-toggle" aria-expanded="false" aria-controls="sq-next-body">Explore tools ▾</button></div>
   <div id="sq-next-body" hidden>
     <div class="sq-next-tabs" role="tablist" aria-label="More tools">
-      <button type="button" data-next-tab="bills" aria-selected="true">Bills</button><button type="button" data-next-tab="trips">Trip Mode</button><button type="button" data-next-tab="assistant">SquareUp AI</button><button type="button" data-next-tab="guests">Guest splitting</button><button type="button" data-next-tab="vault">Receipt vault</button>
+      <button type="button" data-next-tab="bills" aria-selected="true">Bills</button><button type="button" data-next-tab="trips">Trip Mode</button><button type="button" data-next-tab="assistant" aria-label="Open SquareUp AI help chat">SquareUp AI</button>
     </div>
     <div class="sq-next-panel" data-next-panel="bills"><h3>Subscription & bill manager</h3><p>Keep a private list of recurring bills and their next due dates. This planning list does not create expenses automatically.</p><form id="sq-next-bill-form" class="sq-next-form"><input name="name" placeholder="Bill name" aria-label="Bill name" required maxlength="90"><input name="amount" type="number" min="0" step="0.01" placeholder="Amount ($)" aria-label="Bill amount" required><input name="due" type="date" aria-label="Next due date" required><select name="frequency" aria-label="Frequency"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option></select><button type="submit">Add bill</button></form><div id="sq-next-bills-list" class="sq-next-items"></div></div>
-    <div class="sq-next-panel" data-next-panel="trips" hidden><h3>Trip Mode</h3><p>Plan a trip with an itinerary and packing checklist. Use the existing tracker expenses to split costs.</p><form id="sq-next-trip-form" class="sq-next-form"><input name="name" placeholder="Trip name" aria-label="Trip name" required maxlength="90"><input name="date" type="date" aria-label="Trip date"><button type="submit">Create trip</button></form><div id="sq-next-trips-list" class="sq-next-items"></div></div>
-    <div class="sq-next-panel" data-next-panel="assistant" hidden><h3>SquareUp assistant</h3><p>Get help navigating the tools in this tracker. Answers here are guidance, not AI analysis of private Supabase data.</p><form id="sq-next-ai-form" class="sq-next-form"><input name="question" placeholder="How do I split a bill?" aria-label="Ask SquareUp" required maxlength="400"><button type="submit">Ask</button></form><div id="sq-next-ai-answer" class="sq-next-answer" role="status" aria-live="polite">Try asking about receipts, bills, balances, or inviting friends.</div></div>
-    <div class="sq-next-panel" data-next-panel="guests" hidden><h3>Guest expense splitting</h3><p>Invite people to your tracker using its existing sharing flow. Anonymous guest participation requires additional secure server support and is not enabled yet.</p><button type="button" id="sq-next-invite">Open existing invitation options</button><div id="sq-next-invite-status" role="status"></div></div>
-    <div class="sq-next-panel" data-next-panel="vault" hidden><h3>Shared receipt vault</h3><p>Organize receipt references in this browser. Files are not uploaded or shared with other members by this feature yet.</p><form id="sq-next-vault-form" class="sq-next-form"><input name="merchant" placeholder="Merchant or receipt name" aria-label="Merchant" required maxlength="100"><input name="amount" type="number" min="0" step="0.01" placeholder="Total ($)" aria-label="Receipt total"><input name="date" type="date" aria-label="Receipt date"><input name="note" placeholder="Notes / expense reference" aria-label="Receipt notes" maxlength="200"><button type="submit">Save reference</button></form><input type="search" id="sq-next-vault-search" placeholder="Search saved receipts" aria-label="Search saved receipts"><div id="sq-next-vault-list" class="sq-next-items"></div></div>
-    <p class="sq-next-local-note">Bills, trips and receipt references sync through SquareUp. Bills do not create expenses automatically; receipt files, guest access and live AI are not enabled. Existing expenses and payments are unchanged.</p>
+    <div class="sq-next-panel" data-next-panel="trips" hidden><h3>Trip Mode</h3><p>Create a trip, then open it to add itinerary stops and a shared packing checklist. Trip plans save for tracker members.</p><form id="sq-next-trip-form" class="sq-next-form"><input name="name" placeholder="Trip name" aria-label="Trip name" required maxlength="90"><input name="date" type="date" aria-label="Trip date"><button type="submit">Create trip</button></form><div id="sq-next-trips-list" class="sq-next-items"></div></div>
+    <p class="sq-next-local-note">Bills and trips sync through SquareUp. Bills do not create expenses automatically. SquareUp AI opens the existing help assistant; live financial AI is not enabled. Existing expenses and payments are unchanged.</p>
   </div>
 </section>
 
@@ -8701,8 +8698,8 @@ body.friends-view #sq-friends-workspace-tabs{display:grid!important}
   if (!root) return;
   const $ = id => document.getElementById(id);
   const toggle = $('sq-next-toggle'), panel = $('sq-next-body');
-  const types = ['bills','trips','vault'];
-  const cache = { bills: [], trips: [], vault: [] };
+  const types = ['bills','trips'];
+  const cache = { bills: [], trips: [] };
   const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   const getTracker = () => {
     const id = localStorage.getItem('squareup-current-tracker') || '';
@@ -8720,8 +8717,8 @@ body.friends-view #sq-friends-workspace-tabs{display:grid!important}
   function message(text){status.textContent=text;}
   function draw(kind){
     const list = $('sq-next-'+kind+'-list'); list.replaceChildren();
-    const query = kind==='vault' ? $('sq-next-vault-search').value.trim().toLowerCase() : '';
-    const rows = cache[kind].filter(item=>!query||JSON.stringify(item).toLowerCase().includes(query));
+    const query = ''; 
+    const rows = cache[kind];
     rows.forEach(item=>{
       const row=node('div'); row.className='sq-next-item';
       const info=node('div'), title=node('strong'), small=node('small');
@@ -8738,12 +8735,62 @@ body.friends-view #sq-friends-workspace-tabs{display:grid!important}
       del.addEventListener('click',async()=>{
         if(!confirm('Remove this record?'))return;
         del.disabled=true;
-        try { await api(kind,'DELETE',undefined,item.id); await refresh(kind); message('Record removed.'); }
+        try { await api(kind,'DELETE',undefined,item.id); if(kind==='trips'&&openedTrip===item.id)openedTrip=null; await refresh(kind); message('Record removed.'); }
         catch(e){message(e.message);del.disabled=false;}
       });
-      info.append(title,small);row.append(info,del);list.append(row);
+      info.append(title,small);
+      if(kind==='trips'){
+        const actions=node('div');actions.className='sq-trip-actions';
+        const open=node('button',openedTrip===item.id?'Close details':'Open trip');open.type='button';
+        open.addEventListener('click',()=>openTrip(item.id));actions.append(open,del);
+        row.append(info,actions);list.append(row);
+        if(openedTrip===item.id)drawTripDetails(item.id,list);
+      }else{row.append(info,del);list.append(row);}
     });
     if(!rows.length)list.append(node('p',query?'No matching receipts.':'Nothing saved yet.'));
+  }
+  const tripItems = new Map();
+  let openedTrip = null;
+  function tripItemApi(tripId, method='GET', data, itemId){
+    const tracker=getTracker();
+    if(!tracker) throw Error('Open a tracker first.');
+    return window.squareUpApi('trackers/'+tracker+'/trips/'+tripId+'/items'+(itemId?'/'+itemId:''),method,data);
+  }
+  async function openTrip(tripId){
+    openedTrip=openedTrip===tripId?null:tripId;
+    if(!openedTrip){draw('trips');return;}
+    message('Loading trip details…');
+    try{tripItems.set(tripId,await tripItemApi(tripId));draw('trips');message('Trip details loaded.');}
+    catch(e){message('Could not load trip details: '+e.message);}
+  }
+  function drawTripDetails(tripId, container){
+    const wrap=node('section');wrap.className='sq-trip-detail';
+    const items=tripItems.get(tripId)||[];
+    for(const type of ['itinerary','packing']){
+      const title=node('h4',type==='itinerary'?'Itinerary':'Packing checklist');wrap.append(title);
+      const relevant=items.filter(i=>i.type===type);
+      if(!relevant.length)wrap.append(node('p',type==='itinerary'?'No plans yet. Add your first stop.':'Nothing on the packing list yet.'));
+      relevant.forEach(item=>{
+        const line=node('div');line.className='sq-trip-item'+(item.done?' done':'');
+        const check=node('input');check.type='checkbox';check.checked=!!item.done;check.setAttribute('aria-label','Mark '+item.title+' complete');
+        check.addEventListener('change',async()=>{check.disabled=true;try{await tripItemApi(tripId,'PATCH',{done:check.checked},item.id);tripItems.set(tripId,await tripItemApi(tripId));draw('trips');}catch(e){message(e.message);check.disabled=false;}});
+        const label=node('span',item.title+(item.date?' · '+item.date:''));
+        const remove=node('button','×');remove.type='button';remove.className='sq-trip-delete';remove.setAttribute('aria-label','Remove '+item.title);
+        remove.addEventListener('click',async()=>{remove.disabled=true;try{await tripItemApi(tripId,'DELETE',undefined,item.id);tripItems.set(tripId,await tripItemApi(tripId));draw('trips');message('Item removed.');}catch(e){message(e.message);remove.disabled=false;}});
+        line.append(check,label,remove);wrap.append(line);
+      });
+      const form=node('form');form.className='sq-next-form';
+      const input=node('input');input.required=true;input.maxLength=140;input.placeholder=type==='itinerary'?'Activity or destination':'Item to pack';input.setAttribute('aria-label',input.placeholder);
+      const date=node('input');date.type='date';date.setAttribute('aria-label','Activity date');
+      const submit=node('button',type==='itinerary'?'Add activity':'Add packing item');submit.type='submit';
+      form.append(input);if(type==='itinerary')form.append(date);form.append(submit);
+      form.addEventListener('submit',async event=>{event.preventDefault();submit.disabled=true;try{
+        await tripItemApi(tripId,'POST',{title:input.value,type,date:type==='itinerary'?date.value:null});
+        tripItems.set(tripId,await tripItemApi(tripId));draw('trips');message('Saved to trip.');
+      }catch(e){message('Could not save item: '+e.message);submit.disabled=false;}});
+      wrap.append(form);
+    }
+    container.append(wrap);
   }
   async function refresh(kind){
     const tracker=getTracker();
@@ -8767,11 +8814,17 @@ body.friends-view #sq-friends-workspace-tabs{display:grid!important}
   });
   root.querySelectorAll('[data-next-tab]').forEach(button=>button.addEventListener('click',()=>{
     const tab=button.dataset.nextTab;
+    if(tab==='assistant'){
+      const chat=$('sq-ai-window');
+      if(chat && chat.hidden) $('sq-ai-launch')?.click();
+      else if(chat) $('sq-ai-question')?.focus();
+      return;
+    }
     root.querySelectorAll('[data-next-tab]').forEach(b=>b.setAttribute('aria-selected',String(b===button)));
     root.querySelectorAll('[data-next-panel]').forEach(p=>p.hidden=p.dataset.nextPanel!==tab);
   }));
   types.forEach(kind=>{
-    const form=$('sq-next-'+(kind==='bills'?'bill':kind==='trips'?'trip':'vault')+'-form');
+    const form=$('sq-next-'+(kind==='bills'?'bill':'trip')+'-form');
     form.addEventListener('submit',async event=>{
       event.preventDefault();const button=form.querySelector('[type="submit"]');button.disabled=true;
       try {
@@ -8780,17 +8833,6 @@ body.friends-view #sq-friends-workspace-tabs{display:grid!important}
       } catch(e){message('Could not save: '+e.message);}
       finally{button.disabled=false;}
     });
-  });
-  $('sq-next-vault-search').addEventListener('input',()=>draw('vault'));
-  $('sq-next-ai-form').addEventListener('submit',event=>{
-    event.preventDefault();
-    $('sq-next-ai-answer').textContent='Live AI financial analysis is not enabled. Use the Expenses tab to view actual records. An AI provider and secure server endpoint are required before this feature can analyze your data.';
-  });
-  $('sq-next-invite').addEventListener('click',()=>{
-    const button=['#share-tracker','#share-tracker-btn','#share-btn','#tracker-share','#sq-share-tracker','[data-action="share"]']
-      .map(s=>document.querySelector(s)).find(Boolean);
-    if(button)button.click();
-    else $('sq-next-invite-status').textContent='Use your tracker Share button to invite registered members. Guest access is not enabled.';
   });
   window.addEventListener('storage',e=>{
     if(e.key==='squareup-current-tracker'&&!panel.hidden)refreshAll();
