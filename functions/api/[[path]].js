@@ -3053,42 +3053,105 @@ if (['bills', 'trips', 'vault'].includes(sub)) {
       created_by: me.id
     };
 
-    // SUBSCRIPTION & BILL MANAGER
-    if (sub === 'bills') {
+    
+if (sub === 'bills') {
+  const name = clean(body.name, 90);
+  const due = date(body.due);
+  const value = amount(body.amount);
+  const frequency = String(body.frequency || '');
 
-      const name = clean(body.name, 90);
-      const due = date(body.due);
-      const value = amount(body.amount);
-      const frequency = String(
-        body.frequency || ''
-      );
+  if (
+    !name ||
+    !due ||
+    !Number.isFinite(value) ||
+    value < 0 ||
+    value > 1e9 ||
+    !['weekly', 'monthly', 'yearly'].includes(frequency)
+  ) {
+    return fail('Invalid bill information.', 400);
+  }
 
+  const enabled = body.recurring_enabled === true;
+  const kind = String(body.kind || 'bill');
+  const icon = clean(body.icon, 30) || 'other';
+
+  if (!['bill', 'subscription'].includes(kind)) {
+    return fail('Invalid bill type.', 400);
+  }
+
+  let payerId = null;
+  let shares = [];
+  let splitMode = null;
+
+  if (enabled) {
+    payerId = String(body.payer_id || '');
+    splitMode = String(body.split_mode || '');
+
+    if (
+      !uuid.test(payerId) ||
+      !['single', 'equal', 'custom'].includes(splitMode)
+    ) {
+      return fail('Invalid bill assignment.', 400);
+    }
+
+    const members = await db('tracker_members', {
+      filters: { tracker_id: 'eq.' + id }
+    });
+
+    if (!members.some(x => x.user_id === payerId)) {
+      return fail('Payer must belong to the tracker.', 400);
+    }
+
+    shares = Array.isArray(body.shares) ? body.shares : [];
+
+    if (
+      !shares.length ||
+      shares.length > 100 ||
+      (splitMode === 'single' && shares.length !== 1)
+    ) {
+      return fail('Choose valid bill recipients.', 400);
+    }
+
+    const used = new Set();
+    let cents = 0;
+
+    for (const x of shares) {
       if (
-        !name ||
-        !due ||
-        !Number.isFinite(value) ||
-        value < 0 ||
-        value > 1e9 ||
-        ![
-          'weekly',
-          'monthly',
-          'yearly'
-        ].includes(frequency)
+        !uuid.test(x?.user_id) ||
+        x.user_id === payerId ||
+        used.has(x.user_id) ||
+        !members.some(m => m.user_id === x.user_id) ||
+        !Number.isSafeInteger(x.amount_cents) ||
+        x.amount_cents < 1
       ) {
-        return fail(
-          'Invalid bill information.',
-          400
-        );
+        return fail('Invalid bill split.', 400);
       }
 
-      record = {
-        ...record,
-        name,
-        due,
-        amount: Math.round(value * 100) / 100,
-        frequency
-      };
+      used.add(x.user_id);
+      cents += x.amount_cents;
     }
+
+    if (cents !== Math.round(value * 100)) {
+      return fail('Bill shares must equal the full amount.', 400);
+    }
+  }
+
+  record = {
+    ...record,
+    name,
+    due,
+    amount: Math.round(value * 100) / 100,
+    frequency,
+    kind,
+    icon,
+    recurring_enabled: enabled,
+    active: true,
+    payer_id: payerId,
+    split_mode: splitMode,
+    shares
+  };
+}
+
 
     // TRIP MODE
     else if (sub === 'trips') {
