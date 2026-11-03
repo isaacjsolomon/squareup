@@ -2307,8 +2307,8 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
   <button type="button" id="sq-bills-back" class="sq-bills-back">← Back to Trackers</button>
   <div class="sq-bills-title"><div><span class="sq-bills-kicker">SQUARE UP · BILL MANAGER</span><h2>Subscriptions & Bills</h2><p>Organize recurring payments by tracker, see upcoming due dates, and remove bills you no longer need.</p></div></div>
   <div class="sq-bills-card"><label for="sq-bills-tracker">Select a tracker</label><select id="sq-bills-tracker"><option value="">Loading trackers…</option></select><p class="sq-bills-help">Bills are shared with members of the selected tracker. Adding a bill does not charge anyone or automatically create an expense.</p></div>
-  <div class="sq-bills-card"><h3>Add a bill or subscription</h3><form id="sq-bills-create" class="sq-bills-form"><div class="sq-icon-wrap"><button type="button" id="sq-icon-trigger" class="sq-icon-trigger" aria-label="Choose subscription icon" aria-expanded="false"><span id="sq-icon-current">＋</span><span>⌄</span></button><div id="sq-icon-picker" class="sq-icon-picker" hidden><strong>Choose an icon</strong><div id="sq-icon-tabs" class="sq-icon-tabs"></div><div id="sq-icon-grid" class="sq-icon-grid"></div></div></div><input name="name" placeholder="Bill or subscription name" maxlength="90" required aria-label="Bill name"><input name="amount" type="number" min="0" max="1000000000" step="0.01" placeholder="Amount ($)" required aria-label="Amount"><input name="due" type="date" required aria-label="Next due date"><select name="frequency" aria-label="Billing frequency"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option></select><button type="submit">Add bill</button></form></div>
-  <div class="sq-bills-card"><div class="sq-bills-list-head"><h3>Saved bills</h3><span id="sq-bills-total"></span></div><div id="sq-bills-list" aria-live="polite">Select a tracker to see its bills.</div></div>
+  <div class="sq-bills-card"><h3>Add a bill or subscription</h3><p class="sq-bills-help">Choose whether this is a bill or a subscription before saving.</p><form id="sq-bills-create" class="sq-bills-form"><select name="kind" id="sq-bills-kind" aria-label="Bill or subscription" required><option value="" selected disabled>Bill or subscription?</option><option value="bill">Bill</option><option value="subscription">Subscription</option></select><div class="sq-icon-wrap"><button type="button" id="sq-icon-trigger" class="sq-icon-trigger" aria-label="Choose subscription icon" aria-expanded="false"><span id="sq-icon-current">＋</span><span>⌄</span></button><div id="sq-icon-picker" class="sq-icon-picker" hidden><strong>Choose an icon</strong><div id="sq-icon-tabs" class="sq-icon-tabs"></div><div id="sq-icon-grid" class="sq-icon-grid"></div></div></div><input name="name" placeholder="Bill or subscription name" maxlength="90" required aria-label="Bill name"><input name="amount" type="number" min="0" max="1000000000" step="0.01" placeholder="Amount ($)" required aria-label="Amount"><input name="due" type="date" required aria-label="Next due date"><select name="frequency" aria-label="Billing frequency"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option></select><button type="submit">Add bill</button></form></div>
+  <div class="sq-bills-columns"><div class="sq-bills-card sq-bills-column"><div class="sq-bills-list-head"><h3>Bills</h3><span id="sq-bills-bill-count"></span></div><div id="sq-bills-bill-list" aria-live="polite">Select a tracker to see bills.</div></div><div class="sq-bills-card sq-bills-column"><div class="sq-bills-list-head"><h3>Subscriptions</h3><span id="sq-bills-sub-count"></span></div><div id="sq-bills-sub-list" aria-live="polite">Select a tracker to see subscriptions.</div></div></div><div id="sq-bills-list" hidden></div><span id="sq-bills-total" hidden></span>
   <p id="sq-bills-message" role="status" aria-live="polite"></p>
 </section>
 <div id="trackers-gallery" class="trackers-grid" aria-live="polite"><div class="sq-create-tracker-row"><button type="button" id="tracker-gallery-new" class="tracker-create">＋ Create new tracker</button><span>Choose from 7 templates or start with a blank tracker.</span></div></div>
@@ -8953,6 +8953,17 @@ body.sq-bills-open > .wrap > #trackers-page {display:block!important;width:100%!
 @media(max-width:950px){#sq-bills-page .sq-bills-form{grid-template-columns:90px repeat(2,minmax(0,1fr))}#sq-bills-page .sq-bills-form button[type=submit]{grid-column:auto}}
 @media(max-width:600px){#sq-bills-page .sq-bills-form{grid-template-columns:80px minmax(0,1fr)}#sq-bills-page .sq-bills-form input[name=name]{grid-column:2}#sq-bills-page .sq-bills-form button[type=submit]{grid-column:1/-1}}
 </style>
+<style id="sq-bills-two-column-layout">
+#sq-bills-page .sq-bills-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start;margin-top:18px}
+#sq-bills-page .sq-bills-columns>.sq-bills-card{margin-top:0;min-width:0;min-height:200px}
+#sq-bills-page .sq-bills-columns .sq-bills-row{min-width:0}
+#sq-bills-page .sq-bills-columns .sq-bill-info{min-width:0;overflow-wrap:anywhere}
+#sq-bills-page .sq-bills-form{grid-template-columns:minmax(160px,1fr) 86px minmax(160px,2fr) minmax(110px,1fr) minmax(145px,1.3fr) minmax(110px,1fr) auto!important}
+#sq-bills-page #sq-bills-kind{font-weight:650;border-color:#35cdb8}
+@media(max-width:1200px){#sq-bills-page .sq-bills-form{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:720px){#sq-bills-page .sq-bills-columns{grid-template-columns:1fr}#sq-bills-page .sq-bills-form{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:460px){#sq-bills-page .sq-bills-form{grid-template-columns:1fr!important}}
+</style>
 <script id="sq-bills-directory-script">
 (function(){
 'use strict';
@@ -9003,6 +9014,9 @@ function iconNode(key){
  return span;
 }
 function inferIcon(name){const n=String(name||'').toLowerCase();return services.find(x=>x[0]!=='other'&&(n.includes(x[0])||n.includes(x[1].toLowerCase())))?.[0]||(n.includes('openai')?'chatgpt':n.includes('amazon')?'prime':n.includes('electric')?'power':'other');}
+function kindStorageKey(tracker,id){return 'squareup-bill-kind:'+tracker+':'+id;}
+function inferredKind(item){const n=String(item.name||'').toLowerCase();return /netflix|disney|hulu|spotify|youtube|chat ?gpt|openai|claude|prime|apple ?tv|dropbox|google drive|subscription|membership|max/.test(n)?'subscription':'bill';}
+function getKind(tracker,item){try{return localStorage.getItem(kindStorageKey(tracker,item.id))||inferredKind(item)}catch(_){return inferredKind(item)}}
 function iconStorageKey(tracker,id){return 'squareup-bill-icon:'+tracker+':'+id;}
 function setIcon(key){chosenIcon=key;$('sq-icon-current').replaceChildren(iconNode(key));iconTrigger.setAttribute('aria-label','Icon: '+(services.find(x=>x[0]===key)?.[1]||'Other'));iconPicker.hidden=true;iconTrigger.setAttribute('aria-expanded','false');}
 function renderIcons(){iconTabs.replaceChildren();['Popular','Streaming','Apps & AI','Utilities','Other'].forEach(category=>{const b=document.createElement('button');b.type='button';b.textContent=category;b.classList.toggle('active',category===currentCategory);b.addEventListener('click',()=>{currentCategory=category;renderIcons()});iconTabs.append(b)});iconGrid.replaceChildren();services.filter(x=>currentCategory==='Popular'||x[3]===currentCategory).forEach(spec=>{const b=document.createElement('button');b.type='button';b.title=spec[1];b.setAttribute('aria-label',spec[1]);b.classList.toggle('selected',chosenIcon===spec[0]);b.append(iconNode(spec[0]));b.addEventListener('click',()=>setIcon(spec[0]));iconGrid.append(b)})}
@@ -9021,7 +9035,7 @@ async function openBills(){
   document.body.classList.add('trackers-view','sq-bills-open');
   page.hidden=false;
   page.removeAttribute('aria-hidden');
-  notice('');list.textContent='Select a tracker to see its bills.';selector.replaceChildren(new Option('Loading trackers…',''));
+  notice('');list.textContent='';$('sq-bills-bill-list').textContent='Select a tracker to see bills.';$('sq-bills-sub-list').textContent='Select a tracker to see subscriptions.';selector.replaceChildren(new Option('Loading trackers…',''));
   const token=++generation;
   try{
     const trackers=await api('trackers');if(token!==generation)return;
@@ -9035,13 +9049,11 @@ async function openBills(){
 }
 async function loadBills(){
   const id=selector.value,token=++generation;
-  if(!uuid.test(id)){list.textContent='Choose a tracker to see its bills.';total.textContent='';return;}
-  list.textContent='Loading bills…';notice('');
+  if(!uuid.test(id)){$('sq-bills-bill-list').textContent='Choose a tracker to see bills.';$('sq-bills-sub-list').textContent='Choose a tracker to see subscriptions.';total.textContent='';return;}
+  $('sq-bills-bill-list').textContent='Loading…';$('sq-bills-sub-list').textContent='Loading…';notice('');
   try{
     const rows=await api('trackers/'+id+'/bills');if(token!==generation)return;
-    list.replaceChildren();const items=Array.isArray(rows)?rows:[];
-    total.textContent=items.length+' saved';
-    if(!items.length){list.textContent='No bills saved for this tracker yet.';return;}
+    const items=Array.isArray(rows)?rows:[];const billList=$('sq-bills-bill-list'),subList=$('sq-bills-sub-list');billList.replaceChildren();subList.replaceChildren();const bills=items.filter(x=>getKind(id,x)==='bill'),subs=items.filter(x=>getKind(id,x)==='subscription');$('sq-bills-bill-count').textContent=bills.length+' saved';$('sq-bills-sub-count').textContent=subs.length+' saved';if(!bills.length)billList.textContent='No bills yet.';if(!subs.length)subList.textContent='No subscriptions yet.';
     items.forEach(item=>{
       const row=document.createElement('div');row.className='sq-bills-row';
       const info=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('small');
@@ -9052,11 +9064,11 @@ async function loadBills(){
       remove.addEventListener('click',async()=>{
         if(!confirm('Remove this bill?'))return;
         remove.disabled=true;
-        try{await api('trackers/'+id+'/bills/'+item.id,'DELETE');try{localStorage.removeItem(iconStorageKey(id,item.id))}catch(_){}await loadBills();notice('Bill removed.');}
+        try{await api('trackers/'+id+'/bills/'+item.id,'DELETE');try{localStorage.removeItem(iconStorageKey(id,item.id));localStorage.removeItem(kindStorageKey(id,item.id))}catch(_){}await loadBills();notice('Bill removed.');}
         catch(e){notice(e.message||'Could not remove bill.');remove.disabled=false;}
-      });row.append(infoWrap,remove);list.append(row);
+      });row.append(infoWrap,remove);(getKind(id,item)==='subscription'?subList:billList).append(row);
     });
-  }catch(e){if(token!==generation)return;list.textContent='Unable to load bills.';notice(e.message||'Please try again.');}
+  }catch(e){if(token!==generation)return;$('sq-bills-bill-list').textContent='Unable to load bills.';$('sq-bills-sub-list').textContent='Unable to load subscriptions.';notice(e.message||'Please try again.');}
 }
 $('sq-bills-open').addEventListener('click',openBills);
 $('sq-bills-back').addEventListener('click',resetView);
@@ -9064,9 +9076,9 @@ selector.addEventListener('change',loadBills);
 $('sq-bills-create').addEventListener('submit',async e=>{
   e.preventDefault();const id=selector.value;if(!uuid.test(id)){notice('Select a tracker first.');return;}
   const form=e.currentTarget,btn=form.querySelector('[type=submit]');const data=Object.fromEntries(new FormData(form));
-  if(!data.name.trim()||!data.due||!Number.isFinite(Number(data.amount))){notice('Complete all bill fields.');return;}
+  if(!['bill','subscription'].includes(data.kind)||!data.name.trim()||!data.due||!Number.isFinite(Number(data.amount))){notice('Complete all bill fields.');return;}
   btn.disabled=true;notice('Saving bill…');
-  try{const result=await api('trackers/'+id+'/bills','POST',{name:data.name.trim(),amount:Number(data.amount),due:data.due,frequency:data.frequency});const saved=Array.isArray(result)?result[0]:result;if(saved?.id){try{localStorage.setItem(iconStorageKey(id,saved.id),chosenIcon)}catch(_){}}form.reset();setIcon('other');await loadBills();notice('Bill saved to SquareUp.');}
+  try{const result=await api('trackers/'+id+'/bills','POST',{name:data.name.trim(),amount:Number(data.amount),due:data.due,frequency:data.frequency});const saved=Array.isArray(result)?result[0]:result;if(saved?.id){try{localStorage.setItem(iconStorageKey(id,saved.id),chosenIcon);localStorage.setItem(kindStorageKey(id,saved.id),data.kind)}catch(_){}}form.reset();setIcon('other');await loadBills();notice((data.kind==='subscription'?'Subscription':'Bill')+' saved to SquareUp.');}
   catch(err){notice(err.message||'Could not save bill.');}finally{btn.disabled=false;}
 });
 // The existing Bills tab now opens the dedicated page instead of the small embedded form.
