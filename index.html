@@ -8940,6 +8940,14 @@ body.sq-bills-open > .wrap > #trackers-page {display:block!important;width:100%!
 #sq-bills-page .sq-service-icon.drive .sq-brand-logo{filter:none}
 #sq-bills-page .sq-service-icon.chatgpt{background:#121c20}
 #sq-bills-page .sq-service-icon.claude{background:#cc785c}
+#sq-bills-page .sq-service-icon.disney .sq-brand-logo,
+#sq-bills-page .sq-service-icon.max .sq-brand-logo,
+#sq-bills-page .sq-service-icon.chatgpt .sq-brand-logo,
+#sq-bills-page .sq-service-icon.drive .sq-brand-logo{width:30px;height:30px;max-width:100%;max-height:100%;object-fit:contain}
+#sq-bills-page .sq-service-icon.disney{background:#071b42}
+#sq-bills-page .sq-service-icon.max{background:#211069}
+#sq-bills-page .sq-service-icon.chatgpt{background:#ffffff}
+#sq-bills-page .sq-service-icon.drive{background:#ffffff}
 #sq-bills-page .sq-icon-grid button:hover{border-color:#32e4cc;transform:translateY(-1px)}
 #sq-bills-page .sq-bills-row .sq-bill-info{display:flex;align-items:center;gap:13px;min-width:0}
 @media(max-width:950px){#sq-bills-page .sq-bills-form{grid-template-columns:90px repeat(2,minmax(0,1fr))}#sq-bills-page .sq-bills-form button[type=submit]{grid-column:auto}}
@@ -8972,11 +8980,24 @@ function iconNode(key){
  const span=document.createElement('span');span.className='sq-service-icon '+spec[0];
  span.title=spec[1];span.setAttribute('aria-label',spec[1]);
  const art=brandArtwork[spec[0]];
+ const brandDomains={
+   netflix:'netflix.com',disney:'disneyplus.com',max:'max.com',
+   prime:'primevideo.com',hulu:'hulu.com',apple:'tv.apple.com',
+   chatgpt:'chatgpt.com',claude:'claude.ai',spotify:'spotify.com',
+   youtube:'youtube.com',dropbox:'dropbox.com',drive:'drive.google.com'
+ };
  if(art){
    const img=document.createElement('img');
    img.className='sq-brand-logo';img.alt='';img.loading='lazy';img.decoding='async';
-   img.src='https://cdn.simpleicons.org/'+art[0]+'/'+art[1];
-   img.onerror=()=>{img.remove();span.textContent=spec[2];};
+   // Some Simple Icons slugs no longer exist, and some wordmarks get cropped.
+   // Use full-size recognizable service favicons for these brands instead.
+   const favicon='https://www.google.com/s2/favicons?domain='+encodeURIComponent(brandDomains[spec[0]])+'&sz=128';
+   const useFavicon=['disney','max','chatgpt','drive'].includes(spec[0]);
+   img.src=useFavicon?favicon:'https://cdn.simpleicons.org/'+art[0]+'/'+art[1];
+   img.onerror=()=>{
+     if(!useFavicon && !img.dataset.fallback){img.dataset.fallback='1';img.src=favicon;return;}
+     img.remove();span.textContent=spec[2];
+   };
    span.append(img);
  }else{span.textContent=spec[2];}
  return span;
