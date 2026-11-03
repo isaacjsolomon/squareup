@@ -2007,7 +2007,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
     <div class="sq-next-panel" data-next-panel="assistant" hidden><h3>SquareUp assistant</h3><p>Get help navigating the tools in this tracker. Answers here are guidance, not AI analysis of private Supabase data.</p><form id="sq-next-ai-form" class="sq-next-form"><input name="question" placeholder="How do I split a bill?" aria-label="Ask SquareUp" required maxlength="400"><button type="submit">Ask</button></form><div id="sq-next-ai-answer" class="sq-next-answer" role="status" aria-live="polite">Try asking about receipts, bills, balances, or inviting friends.</div></div>
     <div class="sq-next-panel" data-next-panel="guests" hidden><h3>Guest expense splitting</h3><p>Invite people to your tracker using its existing sharing flow. Anonymous guest participation requires additional secure server support and is not enabled yet.</p><button type="button" id="sq-next-invite">Open existing invitation options</button><div id="sq-next-invite-status" role="status"></div></div>
     <div class="sq-next-panel" data-next-panel="vault" hidden><h3>Shared receipt vault</h3><p>Organize receipt references in this browser. Files are not uploaded or shared with other members by this feature yet.</p><form id="sq-next-vault-form" class="sq-next-form"><input name="merchant" placeholder="Merchant or receipt name" aria-label="Merchant" required maxlength="100"><input name="amount" type="number" min="0" step="0.01" placeholder="Total ($)" aria-label="Receipt total"><input name="date" type="date" aria-label="Receipt date"><input name="note" placeholder="Notes / expense reference" aria-label="Receipt notes" maxlength="200"><button type="submit">Save reference</button></form><input type="search" id="sq-next-vault-search" placeholder="Search saved receipts" aria-label="Search saved receipts"><div id="sq-next-vault-list" class="sq-next-items"></div></div>
-    <p class="sq-next-local-note">Planning data in these new tools is saved only in this browser, not in Supabase. Existing expenses and payments are unchanged.</p>
+    <p class="sq-next-local-note">Bills, trips and receipt references sync through SquareUp. Bills do not create expenses automatically; receipt files, guest access and live AI are not enabled. Existing expenses and payments are unchanged.</p>
   </div>
 </section>
 
@@ -8697,21 +8697,109 @@ body.friends-view #sq-friends-workspace-tabs{display:grid!important}
 <script id="sq-next-tools-script">
 (function(){
   'use strict';
-  var root=document.getElementById('sq-next-hub');if(!root)return;
-  var toggle=document.getElementById('sq-next-toggle'),body=document.getElementById('sq-next-body');
-  toggle.addEventListener('click',function(){body.hidden=!body.hidden;toggle.setAttribute('aria-expanded',String(!body.hidden));toggle.textContent=body.hidden?'Explore tools ▾':'Close tools ▴';});
-  root.querySelectorAll('[data-next-tab]').forEach(function(b){b.addEventListener('click',function(){var tab=b.dataset.nextTab;root.querySelectorAll('[data-next-tab]').forEach(function(x){x.setAttribute('aria-selected',String(x===b));});root.querySelectorAll('[data-next-panel]').forEach(function(x){x.hidden=x.dataset.nextPanel!==tab;});});});
-  function trackerKey(){try{var v=localStorage.getItem('sq_current_tracker_id')||localStorage.getItem('squareup_current_tracker')||'';return v.slice(0,100)||'browser';}catch(e){return 'browser';}}
-  function read(kind){try{var v=JSON.parse(localStorage.getItem('sq-next-'+kind+'-'+trackerKey())||'[]');return Array.isArray(v)?v:[];}catch(e){return [];}}
-  function write(kind,items){try{localStorage.setItem('sq-next-'+kind+'-'+trackerKey(),JSON.stringify(items));return true;}catch(e){alert('Unable to save in this browser. Check storage settings.');return false;}}
-  function el(tag,cls,txt){var n=document.createElement(tag);if(cls)n.className=cls;if(txt!==undefined)n.textContent=String(txt);return n;}
-  function row(container,title,subtitle,onRemove){var r=el('div','sq-next-item'),copy=el('div');copy.append(el('strong','',title),el('small','',subtitle));var del=el('button','','Remove');del.type='button';del.addEventListener('click',onRemove);r.append(copy,del);container.append(r);}
-  function draw(kind){var list=document.getElementById('sq-next-'+kind+'-list');if(!list)return;list.replaceChildren();var q=kind==='vault'?(document.getElementById('sq-next-vault-search').value||'').toLowerCase():'';var entries=read(kind);entries.forEach(function(item,i){if(q&&!JSON.stringify(item).toLowerCase().includes(q))return;var title='',subtitle='';if(kind==='bills'){title=item.name+' · $'+Number(item.amount).toFixed(2);subtitle=item.frequency+' · Next due '+item.due;}else if(kind==='trips'){title=item.name;subtitle=item.date?'Starts '+item.date:'Date not set';}else{title=item.merchant+(item.amount?' · $'+Number(item.amount).toFixed(2):'');subtitle=[item.date,item.note].filter(Boolean).join(' · ')||'Receipt reference';}row(list,title,subtitle,function(){var next=read(kind);next.splice(i,1);if(write(kind,next))draw(kind);});});if(!list.children.length)list.append(el('p','',q?'No matching receipts.':'Nothing saved yet.'));}
-  ['bills','trips','vault'].forEach(function(kind){var form=document.getElementById('sq-next-'+(kind==='bills'?'bill':kind==='trips'?'trip':'vault')+'-form');form.addEventListener('submit',function(e){e.preventDefault();var d=Object.fromEntries(new FormData(form).entries());if(kind==='bills'&&(!d.name||!d.due||!Number.isFinite(Number(d.amount))||Number(d.amount)<0))return;var items=read(kind);items.push(d);if(write(kind,items)){form.reset();draw(kind);}});draw(kind);});
-  document.getElementById('sq-next-vault-search').addEventListener('input',function(){draw('vault');});
-  document.getElementById('sq-next-ai-form').addEventListener('submit',function(e){e.preventDefault();var q=(new FormData(e.currentTarget).get('question')||'').toLowerCase(),a='I can help you find SquareUp features. Try asking how to add an expense, split a bill, or invite a friend.';if(/receipt|scan|photo/.test(q))a='Use Scan Receipt to review a bill and assign items. The Receipt Vault here currently stores private references in this browser only.';else if(/bill|subscription|recurr/.test(q))a='Open Bills in More ways to Square Up to track upcoming payments. To record money owed, use the existing Add Expense flow.';else if(/trip|travel|packing/.test(q))a='Use Trip Mode to note your trip dates. Keep trip expenses in the current tracker so balances remain accurate.';else if(/friend|invite|guest|share/.test(q))a='Use the existing Share or Invite controls to invite members. Anonymous guest splitting is not enabled until secure backend support is added.';else if(/owe|balance|pay|settle/.test(q))a='Open Overview to see your current balance, or select Pay Now / Settle Up. This assistant does not read live financial data.';else if(/chat|message/.test(q))a='Open Chat to message your tracker members and view polls.';document.getElementById('sq-next-ai-answer').textContent=a;});
-  document.getElementById('sq-next-invite').addEventListener('click',function(){var selectors=['#share-tracker','#share-tracker-btn','#share-btn','#tracker-share','#sq-share-tracker','[data-action="share"]'];var btn=selectors.map(function(x){return document.querySelector(x);}).find(function(x){return x&&x!==document.activeElement;});if(btn&&typeof btn.click==='function'){btn.click();}else document.getElementById('sq-next-invite-status').textContent='Open your tracker’s Share or Invite button to get its invitation link.';});
-  window.addEventListener('storage',function(){['bills','trips','vault'].forEach(draw);});
+  const root = document.getElementById('sq-next-hub');
+  if (!root) return;
+  const $ = id => document.getElementById(id);
+  const toggle = $('sq-next-toggle'), panel = $('sq-next-body');
+  const types = ['bills','trips','vault'];
+  const cache = { bills: [], trips: [], vault: [] };
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const getTracker = () => {
+    const id = localStorage.getItem('squareup-current-tracker') || '';
+    return uuid.test(id) ? id : null;
+  };
+  const api = (kind, method='GET', data, recordId) => {
+    const id = getTracker();
+    if (!id) throw Error('Open a tracker first.');
+    if (typeof window.squareUpApi !== 'function') throw Error('SquareUp login is still loading.');
+    return window.squareUpApi('trackers/' + id + '/' + kind + (recordId ? '/' + recordId : ''), method, data);
+  };
+  const node = (tag, value) => { const n=document.createElement(tag); if(value!==undefined)n.textContent=value; return n; };
+  const status = node('p'); status.id='sq-next-status'; status.setAttribute('role','status');
+  root.append(status);
+  function message(text){status.textContent=text;}
+  function draw(kind){
+    const list = $('sq-next-'+kind+'-list'); list.replaceChildren();
+    const query = kind==='vault' ? $('sq-next-vault-search').value.trim().toLowerCase() : '';
+    const rows = cache[kind].filter(item=>!query||JSON.stringify(item).toLowerCase().includes(query));
+    rows.forEach(item=>{
+      const row=node('div'); row.className='sq-next-item';
+      const info=node('div'), title=node('strong'), small=node('small');
+      if(kind==='bills'){
+        title.textContent=item.name+' · $'+Number(item.amount).toFixed(2);
+        small.textContent=item.frequency+' · Due '+item.due+' · Planning only';
+      }else if(kind==='trips'){
+        title.textContent=item.name; small.textContent=item.date?'Trip date '+item.date:'No date set';
+      }else{
+        title.textContent=item.merchant+(item.amount!=null?' · $'+Number(item.amount).toFixed(2):'');
+        small.textContent=[item.date,item.note].filter(Boolean).join(' · ')||'Receipt reference only';
+      }
+      const del=node('button','Remove'); del.type='button';
+      del.addEventListener('click',async()=>{
+        if(!confirm('Remove this record?'))return;
+        del.disabled=true;
+        try { await api(kind,'DELETE',undefined,item.id); await refresh(kind); message('Record removed.'); }
+        catch(e){message(e.message);del.disabled=false;}
+      });
+      info.append(title,small);row.append(info,del);list.append(row);
+    });
+    if(!rows.length)list.append(node('p',query?'No matching receipts.':'Nothing saved yet.'));
+  }
+  async function refresh(kind){
+    const tracker=getTracker();
+    if(!tracker){cache[kind]=[];draw(kind);message('Open a tracker to use these tools.');return;}
+    const data=await api(kind);
+    if(tracker!==getTracker())return;
+    cache[kind]=Array.isArray(data)?data:[];
+    draw(kind);
+  }
+  async function refreshAll(){
+    message('Loading saved records…');
+    const result=await Promise.allSettled(types.map(refresh));
+    const failure=result.find(x=>x.status==='rejected');
+    message(failure?'Could not load records: '+failure.reason.message:'Saved records are synced with SquareUp.');
+  }
+  toggle.addEventListener('click',()=>{
+    panel.hidden=!panel.hidden;
+    toggle.setAttribute('aria-expanded',String(!panel.hidden));
+    toggle.textContent=panel.hidden?'Explore tools ▾':'Close tools ▴';
+    if(!panel.hidden)refreshAll();
+  });
+  root.querySelectorAll('[data-next-tab]').forEach(button=>button.addEventListener('click',()=>{
+    const tab=button.dataset.nextTab;
+    root.querySelectorAll('[data-next-tab]').forEach(b=>b.setAttribute('aria-selected',String(b===button)));
+    root.querySelectorAll('[data-next-panel]').forEach(p=>p.hidden=p.dataset.nextPanel!==tab);
+  }));
+  types.forEach(kind=>{
+    const form=$('sq-next-'+(kind==='bills'?'bill':kind==='trips'?'trip':'vault')+'-form');
+    form.addEventListener('submit',async event=>{
+      event.preventDefault();const button=form.querySelector('[type="submit"]');button.disabled=true;
+      try {
+        const data=Object.fromEntries(new FormData(form).entries());
+        await api(kind,'POST',data);form.reset();await refresh(kind);message('Saved to SquareUp.');
+      } catch(e){message('Could not save: '+e.message);}
+      finally{button.disabled=false;}
+    });
+  });
+  $('sq-next-vault-search').addEventListener('input',()=>draw('vault'));
+  $('sq-next-ai-form').addEventListener('submit',event=>{
+    event.preventDefault();
+    $('sq-next-ai-answer').textContent='Live AI financial analysis is not enabled. Use the Expenses tab to view actual records. An AI provider and secure server endpoint are required before this feature can analyze your data.';
+  });
+  $('sq-next-invite').addEventListener('click',()=>{
+    const button=['#share-tracker','#share-tracker-btn','#share-btn','#tracker-share','#sq-share-tracker','[data-action="share"]']
+      .map(s=>document.querySelector(s)).find(Boolean);
+    if(button)button.click();
+    else $('sq-next-invite-status').textContent='Use your tracker Share button to invite registered members. Guest access is not enabled.';
+  });
+  window.addEventListener('storage',e=>{
+    if(e.key==='squareup-current-tracker'&&!panel.hidden)refreshAll();
+  });
+  document.addEventListener('click',event=>{
+    if(event.target.closest('[data-tracker-id],#trackers-gallery')){
+      if(!panel.hidden)setTimeout(refreshAll,700);
+    }
+  });
 })();
 </script>
 </body>
