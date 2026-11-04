@@ -9490,32 +9490,38 @@ form.addEventListener('reset',()=>queueMicrotask(()=>setKind(tabs.find(t=>t.getA
 })();
 </script>
 
-<style id="sq-bills-mobile-collapse-v6">
-/* Only phones get the compact, expandable editor. Desktop stays unchanged. */
-#sq-bills-page .sq-bill-mobile-toggle{display:none}
-@media(max-width:760px){
-  #sq-bills-page .sq-bill-create-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
-  #sq-bills-page .sq-bill-mobile-toggle{display:flex;flex:none;align-items:center;justify-content:center;width:43px;height:43px;border:1px solid #326078;border-radius:12px;background:#0b172b;color:#fff;font-size:29px;font-weight:800;line-height:1;cursor:pointer}
-  #sq-bills-page .sq-bill-mobile-toggle span{display:block;line-height:1}
-  #sq-bills-page .sq-bill-create-card.sq-mobile-collapsed #sq-bills-create{display:none!important}
-  #sq-bills-page .sq-bill-create-card.sq-mobile-collapsed .sq-bill-create-heading .sq-bills-help{margin-bottom:0!important}
-}
+<style id="sq-bills-expandable-editor-v7">
+/* Compact add-bill dropdown on desktop and mobile. */
+#sq-bills-page .sq-bill-create-heading{display:flex!important;align-items:center;justify-content:space-between;gap:16px}
+#sq-bills-page .sq-bill-mobile-toggle{display:flex!important;flex:none;align-items:center;justify-content:center;width:54px;height:54px;border:1px solid #326078;border-radius:15px;background:#0b172b;color:#fff;font-size:31px;font-weight:800;line-height:1;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+#sq-bills-page .sq-bill-mobile-toggle:hover{background:#133d50;border-color:#22d8bd}
+#sq-bills-page .sq-bill-mobile-toggle:focus-visible{outline:3px solid #20d8c2;outline-offset:3px}
+#sq-bills-page .sq-bill-mobile-toggle span{display:block;line-height:1;transition:transform .2s}
+#sq-bills-page .sq-bill-create-card:not(.sq-mobile-collapsed) .sq-bill-mobile-toggle span{transform:rotate(45deg)}
+#sq-bills-page .sq-bill-create-card.sq-mobile-collapsed #sq-bills-create{display:none!important}
+#sq-bills-page .sq-bill-create-card.sq-mobile-collapsed .sq-bill-create-heading .sq-bills-help{margin-bottom:0!important}
+#sq-bills-page .sq-bill-create-card.sq-mobile-collapsed{padding-top:18px!important;padding-bottom:18px!important}
+@media(max-width:760px){#sq-bills-page .sq-bill-mobile-toggle{width:46px;height:46px;font-size:29px}}
 </style>
-<script id="sq-bills-mobile-collapse-script">
+<script id="sq-bills-expandable-editor-script-v7">
 (()=>{
   const card=document.querySelector('#sq-bills-page .sq-bill-create-card');
   const toggle=document.getElementById('sq-bill-mobile-toggle');
-  if(!card||!toggle)return;
-  const mobile=window.matchMedia('(max-width:760px)');
+  const form=document.getElementById('sq-bills-create');
+  if(!card||!toggle||!form)return;
   let expanded=false;
   function sync(){
-    card.classList.toggle('sq-mobile-collapsed',mobile.matches&&!expanded);
-    toggle.setAttribute('aria-expanded',String(mobile.matches&&expanded));
-    toggle.setAttribute('aria-label',expanded?'Collapse add a bill or subscription':'Expand add a bill or subscription');
+    card.classList.toggle('sq-mobile-collapsed',!expanded);
+    toggle.setAttribute('aria-expanded',String(expanded));
+    toggle.setAttribute('aria-label',expanded?'Close add bill or subscription form':'Open add bill or subscription form');
+    toggle.title=expanded?'Close form':'Add a bill or subscription';
+    form.setAttribute('aria-hidden',String(!expanded));
   }
   toggle.addEventListener('click',()=>{expanded=!expanded;sync();});
-  if(mobile.addEventListener)mobile.addEventListener('change',sync);
-  else mobile.addListener(sync);
+  form.addEventListener('submit',()=>{
+    // Keep the form visible while validation and saving run.
+    expanded=true;sync();
+  });
   sync();
 })();
 </script>
