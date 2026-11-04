@@ -1919,6 +1919,30 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
 #sq-bills-directory{margin:0 0 20px}#sq-bills-directory .sq-bills-directory-button{width:100%;display:flex;align-items:center;gap:15px;text-align:left;border:1px solid #3b7986;border-radius:18px;background:linear-gradient(120deg,#0b3548,#13334f);color:#f3ffff;padding:19px 22px;cursor:pointer;box-shadow:0 10px 26px #0002}#sq-bills-directory .sq-bills-directory-button:hover{border-color:#32dfc1}#sq-bills-directory .sq-bills-directory-button strong{display:block;font-size:20px}#sq-bills-directory .sq-bills-directory-button small{display:block;color:#b8d4df;margin-top:4px;font-size:13px}#sq-bills-directory .sq-bills-directory-icon{font-size:29px;color:#30e0bd}#sq-bills-directory .sq-bills-directory-chevron{margin-left:auto;font-size:30px;color:#73e5d5}
 #sq-bills-page[hidden]{display:none!important}body.sq-bills-open #trackers-page .trackers-header,body.sq-bills-open #trackers-page #sq-friends-mobile-link,body.sq-bills-open #trackers-page .sq-mobile-trackers-title,body.sq-bills-open #trackers-page #trackers-gallery,body.sq-bills-open #sq-bills-directory{display:none!important}body.trackers-view.sq-bills-open #sq-bills-page{display:block!important}#sq-bills-page{color:#f2faff;padding-bottom:60px}#sq-bills-page .sq-bills-back{background:#123a50;border:1px solid #42818c;color:#fff;border-radius:12px;padding:11px 17px;cursor:pointer;margin-bottom:22px}#sq-bills-page .sq-bills-title h2{font-size:clamp(25px,4vw,38px);margin:6px 0}#sq-bills-page .sq-bills-title p,#sq-bills-page .sq-bills-help{color:#bad0dc}#sq-bills-page .sq-bills-kicker{color:#40e1c4;font-size:12px;letter-spacing:.12em;font-weight:700}#sq-bills-page .sq-bills-card{border:1px solid #356879;border-radius:18px;background:linear-gradient(135deg,#0a2438,#13354a);padding:22px;margin-top:18px}#sq-bills-page .sq-bills-card h3{margin:0 0 15px}#sq-bills-page label{display:block;margin-bottom:9px;font-weight:650}#sq-bills-page input,#sq-bills-page select{background:#0c263c;color:#fff;border:1px solid #41677d;border-radius:12px;min-height:48px;padding:10px 13px;width:100%;min-width:0;color-scheme:dark}#sq-bills-page #sq-bills-tracker{max-width:520px}#sq-bills-page .sq-bills-form{display:grid;grid-template-columns:2fr 1fr 1.3fr 1fr auto;gap:10px;align-items:center}#sq-bills-page .sq-bills-form button{min-height:48px;background:#1ad1b5;color:#072c35;border:0;border-radius:12px;padding:0 19px;font-weight:750;cursor:pointer}#sq-bills-page .sq-bills-list-head{display:flex;justify-content:space-between;align-items:center;gap:12px}#sq-bills-page .sq-bills-row{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px 0;border-top:1px solid #35576c}#sq-bills-page .sq-bills-row strong{display:block}#sq-bills-page .sq-bills-row small{display:block;color:#b6ceda;margin-top:5px}#sq-bills-page .sq-bills-row button{background:transparent;color:#e9f9ff;border:1px solid #478493;border-radius:10px;padding:9px 13px;cursor:pointer}#sq-bills-page #sq-bills-message{color:#bcece3;min-height:20px}@media(max-width:850px){#sq-bills-page .sq-bills-form{grid-template-columns:repeat(2,minmax(0,1fr))}#sq-bills-page .sq-bills-form button{grid-column:1/-1}}@media(max-width:500px){#sq-bills-page .sq-bills-form{grid-template-columns:1fr}#sq-bills-page .sq-bills-form button{grid-column:auto}#sq-bills-page .sq-bills-card{padding:15px}}
 </style>
+<style id="sq-icon-simple-button-fix">
+/* Icon picker: single navy plus button, no teal surround or arrow. */
+#sq-bills-page .sq-icon-trigger {
+  width:52px!important;
+  height:52px!important;
+  min-width:52px!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:#091e31!important;
+  border:1px solid #365b72!important;
+  border-radius:13px!important;
+  box-shadow:none!important;
+}
+#sq-bills-page .sq-icon-trigger #sq-icon-current {
+  width:100%!important;
+  height:100%!important;
+  background:transparent!important;
+  border-radius:inherit!important;
+}
+#sq-bills-page .sq-icon-trigger:hover {border-color:#25d9bf!important;}
+#sq-bills-page .sq-icon-trigger:focus-visible {outline:2px solid #25d9bf;outline-offset:3px;}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
@@ -2313,7 +2337,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
 <div class="sq-bill-type-tabs" role="group" aria-label="Choose bill or subscription"><button type="button" class="sq-bill-type-tab" data-kind="subscription" aria-pressed="true">Subscription</button><button type="button" class="sq-bill-type-tab" data-kind="bill" aria-pressed="false">Bill</button></div>
 <div class="sq-bill-section-label"><span class="sq-bill-step">1</span><span id="sq-bill-details-title">Subscription details</span></div>
 <div class="sq-bill-kind-field"><label for="sq-bills-kind">Type</label><select name="kind" id="sq-bills-kind" required><option value="" selected disabled>Choose type</option><option value="bill">Bill</option><option value="subscription">Subscription</option></select></div>
-<div class="sq-bill-icon-field"><label for="sq-icon-trigger">Icon</label><div class="sq-icon-wrap"><button type="button" id="sq-icon-trigger" class="sq-icon-trigger" aria-label="Choose bill or subscription icon" aria-expanded="false"><span id="sq-icon-current">＋</span><span>⌄</span></button><div id="sq-icon-picker" class="sq-icon-picker" hidden><strong>Choose an icon</strong><div id="sq-icon-tabs" class="sq-icon-tabs"></div><div id="sq-icon-grid" class="sq-icon-grid"></div></div></div></div>
+<div class="sq-bill-icon-field"><label for="sq-icon-trigger">Icon</label><div class="sq-icon-wrap"><button type="button" id="sq-icon-trigger" class="sq-icon-trigger" aria-label="Choose bill or subscription icon" aria-expanded="false"><span id="sq-icon-current">＋</span></button><div id="sq-icon-picker" class="sq-icon-picker" hidden><strong>Choose an icon</strong><div id="sq-icon-tabs" class="sq-icon-tabs"></div><div id="sq-icon-grid" class="sq-icon-grid"></div></div></div></div>
 <div class="sq-bill-name-field"><label for="sq-bill-name">Name</label><input id="sq-bill-name" name="name" placeholder="e.g. Netflix, rent, electricity" maxlength="90" required></div>
 <div class="sq-bill-amount-field"><label for="sq-bill-amount">Amount</label><input id="sq-bill-amount" name="amount" type="number" min="0" max="1000000000" step="0.01" placeholder="$0.00" required></div>
 <div class="sq-bill-date-field"><label for="sq-bill-date">First due date</label><input id="sq-bill-date" name="due" type="date" required></div>
