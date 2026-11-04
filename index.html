@@ -9502,24 +9502,47 @@ form.addEventListener('reset',()=>queueMicrotask(()=>setKind(tabs.find(t=>t.getA
 </style>
 <script id="sq-bills-expandable-editor-script-v7">
 (()=>{
-  const card=document.querySelector('#sq-bills-page .sq-bill-create-card');
-  const toggle=document.getElementById('sq-bill-mobile-toggle');
-  const form=document.getElementById('sq-bills-create');
-  if(!card||!toggle||!form)return;
-  let expanded=false;
-  function sync(){
-    card.classList.toggle('sq-mobile-collapsed',!expanded);
-    toggle.setAttribute('aria-expanded',String(expanded));
-    toggle.setAttribute('aria-label',expanded?'Close add bill or subscription form':'Open add bill or subscription form');
-    toggle.title=expanded?'Close form':'Add a bill or subscription';
-    form.setAttribute('aria-hidden',String(!expanded));
-  }
-  toggle.addEventListener('click',()=>{expanded=!expanded;sync();});
-  form.addEventListener('submit',()=>{
-    // Keep the form visible while validation and saving run.
-    expanded=true;sync();
-  });
-  sync();
+ const card=document.querySelector('#sq-bills-page .sq-bill-create-card');
+ const toggle=document.getElementById('sq-bill-mobile-toggle');
+ const form=document.getElementById('sq-bills-create');
+ if(!card||!toggle||!form)return;
+ const backdrop=document.createElement('div');backdrop.className='sq-bill-modal-backdrop';backdrop.hidden=true;
+ document.body.append(backdrop);
+ let expanded=false,previousFocus=null;
+ const close=()=>{if(!expanded)return;expanded=false;sync();};
+ function sync(){
+   card.classList.toggle('sq-mobile-collapsed',!expanded);
+   card.classList.toggle('sq-bill-modal-open',expanded);
+   toggle.setAttribute('aria-expanded',String(expanded));
+   toggle.setAttribute('aria-label',expanded?'Close add bill or subscription popup':'Open add bill or subscription popup');
+   toggle.title=expanded?'Close':'Add a bill or subscription';
+   toggle.querySelector('span').textContent=expanded?'×':'+';
+   form.setAttribute('aria-hidden',String(!expanded));
+   backdrop.hidden=!expanded;
+   document.body.classList.toggle('sq-bill-dialog-active',expanded);
+   if(expanded){card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-label','Add a bill or subscription');requestAnimationFrame(()=>form.querySelector('.sq-bill-type-tab')?.focus());}
+   else{card.removeAttribute('role');card.removeAttribute('aria-modal');card.removeAttribute('aria-label');if(previousFocus?.isConnected)previousFocus.focus({preventScroll:true});}
+ }
+ toggle.addEventListener('click',()=>{if(expanded)close();else{previousFocus=document.activeElement;expanded=true;sync();}});
+ backdrop.addEventListener('click',close);
+ document.addEventListener('keydown',e=>{
+   if(!expanded)return;
+   if(e.key==='Escape'){e.preventDefault();close();}
+   if(e.key==='Tab'){
+     const controls=[...card.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex="0"]')].filter(x=>x.getClientRects().length);
+     if(!controls.length)return;
+     const first=controls[0],last=controls[controls.length-1];
+     if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+     else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+   }
+ });
+ // Close after successful save; validation errors keep the popup open.
+ const observer=new MutationObserver(()=>{
+   const msg=document.getElementById('sq-bills-message');
+   if(expanded&&msg&&/saved to SquareUp/i.test(msg.textContent||''))close();
+ });
+ const msg=document.getElementById('sq-bills-message');if(msg)observer.observe(msg,{childList:true,subtree:true,characterData:true});
+ sync();
 })();
 </script>
 
@@ -9674,6 +9697,31 @@ render();
  #sq-bills-page #sq-bills-create .sq-bill-amount-field,
  #sq-bills-page #sq-bills-create .sq-bill-date-field,
  #sq-bills-page #sq-bills-create .sq-bill-frequency-field{grid-column:1/-1!important}
+}
+</style>
+
+<style id="sq-bills-modal-editor-v9">
+/* The compact add tile stays in the dashboard grid; only the opened card floats. */
+body.sq-bill-dialog-active{overflow:hidden!important}
+.sq-bill-modal-backdrop[hidden]{display:none!important}
+.sq-bill-modal-backdrop{position:fixed;inset:0;background:rgba(2,10,22,.77);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);z-index:2147483000}
+#sq-bills-page .sq-premium-overview:has(>.sq-bill-modal-open){grid-template-rows:repeat(3,minmax(0,1fr))!important}
+#sq-bills-page .sq-premium-overview>.sq-bill-create-card.sq-bill-modal-open{
+ position:fixed!important;inset:50% auto auto 50%!important;transform:translate(-50%,-50%)!important;
+ width:min(1000px,calc(100vw - 40px))!important;max-width:1000px!important;
+ height:auto!important;max-height:min(90dvh,940px)!important;overflow-y:auto!important;overscroll-behavior:contain;
+ display:block!important;grid-column:auto!important;grid-row:auto!important;
+ margin:0!important;padding:26px 30px!important;z-index:2147483001!important;
+ border:1px solid rgba(117,213,228,.28)!important;border-radius:24px!important;
+ box-shadow:0 28px 90px rgba(0,0,0,.65)!important;background:#0c2b3d!important;
+}
+#sq-bills-page .sq-premium-overview>.sq-bill-modal-open #sq-bills-create{display:grid!important;width:100%!important;max-width:none!important}
+#sq-bills-page .sq-bill-modal-open .sq-bill-create-heading{position:relative;padding-right:66px}
+#sq-bills-page .sq-bill-modal-open #sq-bill-mobile-toggle{position:absolute;right:0;top:0;width:48px;height:48px;font-size:32px;z-index:2}
+#sq-bills-page .sq-bill-modal-open #sq-bill-mobile-toggle span{transform:none!important}
+@media(max-width:760px){
+ #sq-bills-page .sq-premium-overview>.sq-bill-create-card.sq-bill-modal-open{width:calc(100vw - 20px)!important;max-height:calc(100dvh - 24px)!important;padding:18px 16px!important;border-radius:18px!important}
+ #sq-bills-page .sq-bill-modal-open .sq-bill-create-heading{padding-right:54px}
 }
 </style>
 </body>
