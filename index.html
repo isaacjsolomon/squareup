@@ -10129,5 +10129,27 @@ body.sq-bills-open > .wrap > #trackers-page {display:block!important;width:100%!
 @media(max-width:900px){.sq-bill-modal-portal #sq-bills-create{grid-template-columns:70px repeat(3,minmax(0,1fr))!important}.sq-bill-modal-portal #sq-bills-create .sq-bill-name-field{grid-column:2/5!important}.sq-bill-modal-portal #sq-bills-create .sq-bill-amount-field{grid-column:1/3!important}.sq-bill-modal-portal #sq-bills-create .sq-bill-date-field{grid-column:3!important}.sq-bill-modal-portal #sq-bills-create .sq-bill-frequency-field{grid-column:4!important}}
 @media(max-width:600px){.sq-bill-modal-portal #sq-bills-create{grid-template-columns:64px minmax(0,1fr)!important}.sq-bill-modal-portal #sq-bills-create .sq-bill-name-field{grid-column:2!important}.sq-bill-modal-portal #sq-bills-create .sq-bill-amount-field,.sq-bill-modal-portal #sq-bills-create .sq-bill-date-field,.sq-bill-modal-portal #sq-bills-create .sq-bill-frequency-field{grid-column:1/-1!important}.sq-bill-modal-portal #sq-bills-create .sq-bill-assign{grid-template-columns:1fr!important}.sq-bill-modal-portal .sq-bill-assign>label[for="sq-bill-split-mode"]{grid-column:1!important;grid-row:3!important}.sq-bill-modal-portal .sq-bill-assign>#sq-bill-split-mode{grid-column:1!important;grid-row:4!important}.sq-bill-modal-portal .sq-bill-people-group{grid-column:1!important;grid-row:5!important}.sq-bill-modal-portal .sq-bill-assign>small{grid-column:1!important;grid-row:6!important}}
 </style>
+
+<style id="sq-bills-modal-visibility-final-fix">
+/* Fix: an older Bills view rule changed the modal portal to position:relative,
+   causing only the dimmed backdrop to appear. Keep the portal above it. */
+html body .sq-bill-modal-portal[hidden] {display:none!important;visibility:hidden!important;}
+html body.sq-bill-dialog-active .sq-bill-modal-portal:not([hidden]) {
+  position:fixed!important;inset:0!important;z-index:2147483001!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  visibility:visible!important;opacity:1!important;
+  padding:18px!important;pointer-events:none!important;
+}
+html body.sq-bill-dialog-active .sq-bill-modal-portal:not([hidden]) > .sq-bill-create-card {
+  display:block!important;visibility:visible!important;opacity:1!important;
+  position:relative!important;z-index:1!important;pointer-events:auto!important;
+  width:min(100%,1000px)!important;max-height:calc(100dvh - 36px)!important;
+  overflow-y:auto!important;
+}
+html body.sq-bill-dialog-active .sq-bill-modal-backdrop:not([hidden]) {
+  position:fixed!important;inset:0!important;z-index:2147483000!important;
+}
+@media(max-width:760px){html body.sq-bill-dialog-active .sq-bill-modal-portal:not([hidden]){padding:10px!important}}
+</style>
 </body>
 </html>
