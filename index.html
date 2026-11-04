@@ -2342,8 +2342,8 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
 <div class="sq-bill-amount-field"><label for="sq-bill-amount">Amount</label><input id="sq-bill-amount" name="amount" type="number" min="0" max="1000000000" step="0.01" placeholder="$0.00" required></div>
 <div class="sq-bill-date-field"><label for="sq-bill-date">First due date</label><input id="sq-bill-date" name="due" type="date" required></div>
 <div class="sq-bill-frequency-field"><label for="sq-bill-frequency">Repeats</label><select id="sq-bill-frequency" name="frequency"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option></select></div>
-<div class="sq-bill-section-label sq-bill-section-label-second"><span class="sq-bill-step">2</span><span>Who pays and who owes?</span></div>
-<div class="sq-bill-assign" id="sq-bill-assign"><label for="sq-bill-paid-by">Who paid?</label><select id="sq-bill-paid-by" required><option value="">Choose payer</option></select><label for="sq-bill-split-mode">How is it split?</label><select id="sq-bill-split-mode"><option value="single">One person owes all</option><option value="equal">Split equally</option><option value="custom">Custom amounts</option></select><div id="sq-bill-split-people" class="sq-bill-split-people"></div><small>Selected members owe the payer on each due date. No money is charged automatically.</small></div>
+<div class="sq-bill-section-label sq-bill-section-label-second"><span class="sq-bill-step">2</span><span>Payment &amp; splitting</span></div>
+<div class="sq-bill-assign" id="sq-bill-assign"><label for="sq-bill-paid-by">Paid by</label><select id="sq-bill-paid-by" required><option value="">Choose payer</option></select><label for="sq-bill-split-mode">Split method</label><select id="sq-bill-split-mode"><option value="single">One person owes all</option><option value="equal">Split equally</option><option value="custom">Custom amounts</option></select><div class="sq-bill-people-group"><span class="sq-bill-people-title">Who owes?</span><div id="sq-bill-split-people" class="sq-bill-split-people"></div></div><small>A new expense is recorded on each due date. No automatic payment is charged.</small></div>
 <button type="submit">＋ Add recurring bill</button></form></div>
   </div>
   <div class="sq-bills-columns"><div class="sq-bills-card sq-bills-column"><div class="sq-bills-list-head"><h3>Bills</h3><span id="sq-bills-bill-count"></span></div><div id="sq-bills-bill-list" aria-live="polite">Select a tracker to see bills.</div></div><div class="sq-bills-card sq-bills-column"><div class="sq-bills-list-head"><h3>Subscriptions</h3><span id="sq-bills-sub-count"></span></div><div id="sq-bills-sub-list" aria-live="polite">Select a tracker to see subscriptions.</div></div></div><div id="sq-bills-list" hidden></div><span id="sq-bills-total" hidden></span>
@@ -9514,5 +9514,38 @@ body.sq-bills-open #tracker-dashboard{display:none!important}
  },false);
 })();
 </script>
+
+<style id="sq-bills-clean-redesign-v7">
+/* Compact two-step bill editor; all functional field IDs and scripts are unchanged. */
+#sq-bills-page .sq-bill-create-card{padding:20px 24px!important}
+#sq-bills-page .sq-bill-create-heading h3{font-size:22px!important;line-height:1.2}
+#sq-bills-page .sq-bills-top-grid .sq-bills-form{column-gap:12px!important;row-gap:11px!important}
+#sq-bills-page .sq-bill-type-tabs{margin:0 0 3px!important}
+#sq-bills-page .sq-bills-form .sq-bill-section-label{margin:4px 0 1px!important;font-size:14px!important}
+#sq-bills-page .sq-bills-form .sq-bill-section-label-second{padding-top:14px!important;margin-top:5px!important;border-top:1px solid rgba(112,171,189,.23)}
+#sq-bills-page .sq-bill-assign{border:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;padding:0!important;margin:0!important;display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:5px 14px!important;align-items:end!important}
+#sq-bills-page .sq-bill-assign>label[for="sq-bill-paid-by"]{grid-column:1!important;grid-row:1!important}
+#sq-bills-page .sq-bill-assign>#sq-bill-paid-by{grid-column:1!important;grid-row:2!important;width:100%}
+#sq-bills-page .sq-bill-assign>label[for="sq-bill-split-mode"]{grid-column:2!important;grid-row:1!important}
+#sq-bills-page .sq-bill-assign>#sq-bill-split-mode{grid-column:2!important;grid-row:2!important;width:100%}
+#sq-bills-page .sq-bill-assign>label{font-size:12px!important;font-weight:700!important;color:#bad1de!important;margin:0!important}
+#sq-bills-page .sq-bill-people-group{grid-column:1/-1!important;grid-row:3!important;margin-top:5px;min-width:0}
+#sq-bills-page .sq-bill-people-title{display:block;font-size:12px;font-weight:700;color:#bad1de;margin:0 0 6px}
+#sq-bills-page .sq-bill-split-people{display:flex!important;flex-wrap:wrap;gap:7px!important;min-width:0}
+#sq-bills-page .sq-bill-person{display:inline-flex!important;flex:0 1 auto;min-height:36px!important;padding:6px 11px!important;background:rgba(129,187,206,.065)!important;border:1px solid rgba(122,177,194,.2)!important;border-radius:9px!important}
+#sq-bills-page .sq-bill-assign>small{grid-column:1/-1!important;grid-row:4!important;color:#9eb9c7!important;margin-top:3px!important;font-size:12px!important}
+#sq-bills-page .sq-bills-form>button[type="submit"]{margin-top:7px!important}
+#sq-bills-page .sq-bill-icon-field .sq-icon-trigger{width:48px!important;max-width:48px!important}
+@media(max-width:650px){
+#sq-bills-page .sq-bill-create-card{padding:16px!important}
+#sq-bills-page .sq-bill-assign{grid-template-columns:minmax(0,1fr)!important;gap:6px!important}
+#sq-bills-page .sq-bill-assign>label[for="sq-bill-paid-by"]{grid-column:1!important;grid-row:1!important}
+#sq-bills-page .sq-bill-assign>#sq-bill-paid-by{grid-column:1!important;grid-row:2!important}
+#sq-bills-page .sq-bill-assign>label[for="sq-bill-split-mode"]{grid-column:1!important;grid-row:3!important;margin-top:5px!important}
+#sq-bills-page .sq-bill-assign>#sq-bill-split-mode{grid-column:1!important;grid-row:4!important}
+#sq-bills-page .sq-bill-people-group{grid-column:1!important;grid-row:5!important}
+#sq-bills-page .sq-bill-assign>small{grid-column:1!important;grid-row:6!important}
+}
+</style>
 </body>
 </html>
