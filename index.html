@@ -10151,5 +10151,23 @@ html body.sq-bill-dialog-active .sq-bill-modal-backdrop:not([hidden]) {
 }
 @media(max-width:760px){html body.sq-bill-dialog-active .sq-bill-modal-portal:not([hidden]){padding:10px!important}}
 </style>
+<style id="sq-bill-modal-close-icon-fix">
+/* Keep the collapsed tile as +, but show a clear X when the editor is open. */
+.sq-bill-modal-portal .sq-bill-create-card.sq-bill-modal-open #sq-bill-mobile-toggle > span {
+  display:none!important;
+}
+.sq-bill-modal-portal .sq-bill-create-card.sq-bill-modal-open #sq-bill-mobile-toggle::after {
+  content:"\00d7"!important;
+  display:block!important;
+  font-family:Arial,sans-serif!important;
+  font-size:38px!important;
+  font-weight:500!important;
+  line-height:1!important;
+  transform:none!important;
+}
+.sq-bill-modal-portal .sq-bill-create-card.sq-bill-modal-open #sq-bill-mobile-toggle {
+  cursor:pointer!important;
+}
+</style>
 </body>
 </html>
