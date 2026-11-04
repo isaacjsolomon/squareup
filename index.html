@@ -2332,7 +2332,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
   <div class="sq-bills-title"><div><span class="sq-bills-kicker">SQUARE UP · BILL MANAGER</span><h2>Subscriptions & Bills</h2><p>Organize recurring payments by tracker, see upcoming due dates, and remove bills you no longer need.</p></div><div class="sq-bills-tracker-compact"><label for="sq-bills-tracker">Select a tracker</label><select id="sq-bills-tracker"><option value="">Loading trackers…</option></select></div></div>
   <div class="sq-bills-top-grid">
   
-  <div class="sq-bills-card sq-bill-create-card"><div class="sq-bill-create-heading"><div><h3>Add a bill or subscription</h3><p class="sq-bills-help">Set up a recurring expense for your tracker.</p></div></div>
+  <div class="sq-bills-card sq-bill-create-card"><div class="sq-bill-create-heading"><div><h3>Add a bill or subscription</h3><p class="sq-bills-help">Set up a recurring expense for your tracker.</p></div><button type="button" id="sq-bill-mobile-toggle" class="sq-bill-mobile-toggle" aria-controls="sq-bills-create" aria-expanded="false" aria-label="Expand add a bill or subscription"><span aria-hidden="true">⌄</span></button></div>
 <form id="sq-bills-create" class="sq-bills-form">
 <div class="sq-bill-type-tabs" role="group" aria-label="Choose bill or subscription"><button type="button" class="sq-bill-type-tab" data-kind="subscription" aria-pressed="true">Subscription</button><button type="button" class="sq-bill-type-tab" data-kind="bill" aria-pressed="false">Bill</button></div>
 <div class="sq-bill-section-label"><span class="sq-bill-step">1</span><span id="sq-bill-details-title">Subscription details</span></div>
@@ -9437,6 +9437,37 @@ function setKind(value){if(!['bill','subscription'].includes(value))return;kind.
 tabs.forEach(tab=>tab.addEventListener('click',()=>setKind(tab.dataset.kind)));
 setKind('subscription');
 form.addEventListener('reset',()=>queueMicrotask(()=>setKind(tabs.find(t=>t.getAttribute('aria-pressed')==='true')?.dataset.kind||'subscription')));
+})();
+</script>
+
+<style id="sq-bills-mobile-collapse-v6">
+/* Only phones get the compact, expandable editor. Desktop stays unchanged. */
+#sq-bills-page .sq-bill-mobile-toggle{display:none}
+@media(max-width:760px){
+  #sq-bills-page .sq-bill-create-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  #sq-bills-page .sq-bill-mobile-toggle{display:flex;flex:none;align-items:center;justify-content:center;width:43px;height:43px;border:1px solid #326078;border-radius:12px;background:#153a50;color:#e6fcff;font-size:28px;cursor:pointer}
+  #sq-bills-page .sq-bill-mobile-toggle span{display:block;transition:transform .2s ease}
+  #sq-bills-page .sq-bill-mobile-toggle[aria-expanded="true"] span{transform:rotate(180deg)}
+  #sq-bills-page .sq-bill-create-card.sq-mobile-collapsed #sq-bills-create{display:none!important}
+  #sq-bills-page .sq-bill-create-card.sq-mobile-collapsed .sq-bill-create-heading .sq-bills-help{margin-bottom:0!important}
+}
+</style>
+<script id="sq-bills-mobile-collapse-script">
+(()=>{
+  const card=document.querySelector('#sq-bills-page .sq-bill-create-card');
+  const toggle=document.getElementById('sq-bill-mobile-toggle');
+  if(!card||!toggle)return;
+  const mobile=window.matchMedia('(max-width:760px)');
+  let expanded=false;
+  function sync(){
+    card.classList.toggle('sq-mobile-collapsed',mobile.matches&&!expanded);
+    toggle.setAttribute('aria-expanded',String(mobile.matches&&expanded));
+    toggle.setAttribute('aria-label',expanded?'Collapse add a bill or subscription':'Expand add a bill or subscription');
+  }
+  toggle.addEventListener('click',()=>{expanded=!expanded;sync();});
+  if(mobile.addEventListener)mobile.addEventListener('change',sync);
+  else mobile.addListener(sync);
+  sync();
 })();
 </script>
 </body>
