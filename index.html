@@ -2338,10 +2338,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
 <section id="sq-bills-page" class="sq-bills-page" hidden aria-label="Subscriptions and bill manager">
   <button type="button" id="sq-bills-back" class="sq-bills-back">← Back to Home</button>
   <div class="sq-bills-title"><div><span class="sq-bills-kicker">SQUARE UP · BILL MANAGER</span><h2>Subscriptions & Bills</h2><p>Organize recurring payments by tracker, see upcoming due dates, and remove bills you no longer need.</p></div><div class="sq-bills-tracker-compact"><label for="sq-bills-tracker">Select a tracker</label><select id="sq-bills-tracker"><option value="">Loading trackers…</option></select></div></div>
-  <section class="sq-premium-overview" aria-label="Bills overview"><div class="sq-premium-metrics"><article><span>Estimated monthly recurring</span><strong id="sq-premium-monthly">$0.00</strong><small>Based on saved schedules</small></article><article><span>Active subscriptions</span><strong id="sq-premium-active">0</strong><small>In selected tracker</small></article><article><span>Upcoming in 30 days</span><strong id="sq-premium-upcoming">0</strong><small>Scheduled, not automatically paid</small></article></div><div class="sq-premium-calendar"><div class="sq-premium-calhead"><h3>Billing calendar</h3><div><button type="button" id="sq-premium-prev" aria-label="Previous month">‹</button><strong id="sq-premium-month"></strong><button type="button" id="sq-premium-next" aria-label="Next month">›</button></div></div><div class="sq-premium-days" id="sq-premium-days"></div><div id="sq-premium-selected" class="sq-premium-selected" aria-live="polite">Select a date to view scheduled bills.</div></div></section>
-  <div class="sq-bills-top-grid">
-  
-  <div class="sq-bills-card sq-bill-create-card"><div class="sq-bill-create-heading"><div><h3>Add a bill or subscription</h3><p class="sq-bills-help">Set up a recurring expense for your tracker.</p></div><button type="button" id="sq-bill-mobile-toggle" class="sq-bill-mobile-toggle" aria-controls="sq-bills-create" aria-expanded="false" aria-label="Expand add a bill or subscription"><span aria-hidden="true">+</span></button></div>
+  <section class="sq-premium-overview" aria-label="Bills overview"><div class="sq-premium-metrics"><article><span>Estimated monthly recurring</span><strong id="sq-premium-monthly">$0.00</strong><small>Based on saved schedules</small></article><article><span>Active subscriptions</span><strong id="sq-premium-active">0</strong><small>In selected tracker</small></article><span id="sq-premium-upcoming" hidden aria-hidden="true">0</span></div><div class="sq-premium-calendar"><div class="sq-premium-calhead"><h3>Billing calendar</h3><div><button type="button" id="sq-premium-prev" aria-label="Previous month">‹</button><strong id="sq-premium-month"></strong><button type="button" id="sq-premium-next" aria-label="Next month">›</button></div></div><div class="sq-premium-days" id="sq-premium-days"></div><div id="sq-premium-selected" class="sq-premium-selected" aria-live="polite">Select a date to view scheduled bills.</div></div>  <div class="sq-bills-card sq-bill-create-card"><div class="sq-bill-create-heading"><div><h3>Add a bill or subscription</h3><p class="sq-bills-help">Set up a recurring expense for your tracker.</p></div><button type="button" id="sq-bill-mobile-toggle" class="sq-bill-mobile-toggle" aria-controls="sq-bills-create" aria-expanded="false" aria-label="Expand add a bill or subscription"><span aria-hidden="true">+</span></button></div>
 <form id="sq-bills-create" class="sq-bills-form">
 <div class="sq-bill-type-tabs" role="group" aria-label="Choose bill or subscription"><button type="button" class="sq-bill-type-tab" data-kind="subscription" aria-pressed="true">Subscription</button><button type="button" class="sq-bill-type-tab" data-kind="bill" aria-pressed="false">Bill</button></div>
 <div class="sq-bill-section-label"><span class="sq-bill-step">1</span><span id="sq-bill-details-title">Subscription details</span></div>
@@ -2354,7 +2351,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
 <div class="sq-bill-section-label sq-bill-section-label-second"><span class="sq-bill-step">2</span><span>Payment &amp; splitting</span></div>
 <div class="sq-bill-assign" id="sq-bill-assign"><label for="sq-bill-paid-by">Paid by</label><select id="sq-bill-paid-by" required><option value="">Choose payer</option></select><label for="sq-bill-split-mode">Split method</label><select id="sq-bill-split-mode"><option value="single">One person owes all</option><option value="equal" selected>Split equally</option><option value="custom">Custom amounts</option></select><div class="sq-bill-people-group"><span class="sq-bill-people-title">Who owes?</span><div id="sq-bill-split-people" class="sq-bill-split-people"></div></div><small>A new expense is recorded on each due date. No automatic payment is charged.</small></div>
 <button type="submit">＋ Add recurring bill</button></form></div>
-  </div>
+</section>
   <div class="sq-bills-columns"><div class="sq-bills-card sq-bills-column"><div class="sq-bills-list-head"><h3>Bills</h3><span id="sq-bills-bill-count"></span></div><div id="sq-bills-bill-list" aria-live="polite">Select a tracker to see bills.</div></div><div class="sq-bills-card sq-bills-column"><div class="sq-bills-list-head"><h3>Subscriptions</h3><span id="sq-bills-sub-count"></span></div><div id="sq-bills-sub-list" aria-live="polite">Select a tracker to see subscriptions.</div></div></div><div id="sq-bills-list" hidden></div><span id="sq-bills-total" hidden></span>
   <p id="sq-bills-message" role="status" aria-live="polite"></p>
 </section>
@@ -9618,5 +9615,35 @@ window.sqPremiumDetails=function(item){document.querySelector('.sq-premium-modal
 render();
 })();
 </script>
+
+<style id="sq-bills-compact-dashboard-layout-v8">
+/* Add-bill tile first, followed by two metrics; calendar fills the right column. */
+#sq-bills-page .sq-premium-overview{display:grid!important;grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr)!important;grid-template-rows:repeat(3,minmax(0,1fr));align-items:stretch;gap:14px!important;margin-bottom:24px}
+#sq-bills-page .sq-premium-metrics{display:contents!important}
+#sq-bills-page .sq-premium-metrics article{grid-column:1;min-width:0;margin:0!important;display:flex;flex-direction:column;justify-content:center}
+#sq-bills-page .sq-premium-metrics article:nth-child(1){grid-row:2}
+#sq-bills-page .sq-premium-metrics article:nth-child(2){grid-row:3}
+#sq-bills-page .sq-premium-calendar{grid-column:2;grid-row:1 / 4;min-width:0}
+#sq-bills-page .sq-premium-overview>.sq-bill-create-card{grid-column:1;grid-row:1;min-width:0;min-height:0;height:100%!important;margin:0!important;display:flex;flex-direction:column;justify-content:center;padding:18px 20px!important;border-radius:20px!important}
+#sq-bills-page .sq-premium-overview>.sq-bill-create-card .sq-bill-create-heading h3{font-size:clamp(17px,1.6vw,23px)!important;margin:0 0 5px!important}
+#sq-bills-page .sq-premium-overview>.sq-bill-create-card .sq-bill-create-heading .sq-bills-help{font-size:13px!important;margin:0!important}
+#sq-bills-page .sq-premium-overview>.sq-bill-create-card .sq-bill-mobile-toggle{width:50px;height:50px}
+/* When opened, the editor becomes a full-width row below the calendar and metrics. */
+#sq-bills-page .sq-premium-overview:has(>.sq-bill-create-card:not(.sq-mobile-collapsed)){grid-template-rows:repeat(3,minmax(110px,auto)) auto}
+#sq-bills-page .sq-premium-overview>.sq-bill-create-card:not(.sq-mobile-collapsed){grid-column:1/-1;grid-row:4;height:auto!important;justify-content:flex-start;padding:22px 26px!important}
+#sq-bills-page .sq-premium-overview:has(>.sq-bill-create-card:not(.sq-mobile-collapsed)) .sq-premium-calendar{grid-row:1/4}
+#sq-bills-page .sq-premium-overview:has(>.sq-bill-create-card:not(.sq-mobile-collapsed)) .sq-premium-metrics article:nth-child(2){grid-row:3}
+#sq-bills-page .sq-premium-overview>.sq-bill-create-card:not(.sq-mobile-collapsed) #sq-bills-create{width:100%;max-width:none}
+@media(max-width:760px){
+ #sq-bills-page .sq-premium-overview{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:none!important;gap:12px!important}
+ #sq-bills-page .sq-premium-metrics article:nth-child(n),#sq-bills-page .sq-premium-calendar,#sq-bills-page .sq-premium-overview>.sq-bill-create-card{grid-column:1!important;grid-row:auto!important}
+ #sq-bills-page .sq-premium-metrics article{min-height:105px}
+ #sq-bills-page .sq-premium-metrics article:nth-child(1){order:1}
+ #sq-bills-page .sq-premium-metrics article:nth-child(2){order:2}
+ #sq-bills-page .sq-premium-calendar{order:4}
+ #sq-bills-page .sq-premium-overview>.sq-bill-create-card{order:0;height:auto!important;min-height:105px}
+ #sq-bills-page .sq-premium-overview>.sq-bill-create-card:not(.sq-mobile-collapsed){order:0}
+}
+</style>
 </body>
 </html>
