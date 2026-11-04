@@ -2091,7 +2091,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
     <div id="sq-tracker-profiles" class="sq-member-profiles-grid"><p class="sq-members-empty">Open a tracker to see its members.</p></div>
   </div>
 
-  <details class="card tracker-collapsible" id="recurring-card"><summary><span class="tool-heading-label">↻ &nbsp; Recurring expenses</span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Manage repeating expenses for this tracker.</p><div id="recurring-list"></div></div></details>
+
 
   <div class="card sq-receipt-panel" id="receipt-card" hidden>
     <div class="sq-receipt-heading"><div><span class="sq-receipt-kicker">SMART RECEIPT SPLIT</span><h2>🧾 Review your receipt</h2><p>Check the scanned items, then choose who ordered each one. Nothing is saved until you confirm.</p></div><button type="button" class="sq-panel-x" id="sq-receipt-x" aria-label="Collapse receipt review" title="Collapse receipt review"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
@@ -2119,9 +2119,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
         <select id="expense-currency" class="sq-currency-select" aria-label="Expense currency"></select><input id="amount" type="number" step="0.01" min="0.01" placeholder="Amount ($)" required>
         <input id="note" placeholder="What for? (pizza, Uber...)" autocomplete="off">
       </div>
-      <div class="sq-category-row" id="sq-category-wrap"><label for="sq-category">Expense category</label><select id="sq-category"><option>Food & Dining</option><option>Groceries</option><option>Transportation</option><option>Shopping</option><option>Entertainment</option><option>Travel</option><option>Housing</option><option>Utilities</option><option>School</option><option>Other</option></select></div><label id="recurring-wrap" class="feature-field">Repeat this expense
-        <select id="expense-recurring"><option value="none">One-time expense</option><option value="daily">Every day</option><option value="weekly">Every week</option><option value="biweekly">Every 2 weeks</option><option value="monthly">Every month</option></select>
-        <small>Future expenses are added when someone opens the tracker. Manage schedules below.</small></label>
+      <div class="sq-category-row" id="sq-category-wrap"><label for="sq-category">Expense category</label><select id="sq-category"><option>Food & Dining</option><option>Groceries</option><option>Transportation</option><option>Shopping</option><option>Entertainment</option><option>Travel</option><option>Housing</option><option>Utilities</option><option>School</option><option>Other</option></select></div><select id="expense-recurring" hidden aria-hidden="true"><option value="none" selected>One-time expense</option></select>
       <label id="due-date-wrap" style="display:block;margin:10px 0;color:var(--muted)">Payment due date (optional) <input id="expense-due-date" type="date" style="margin-top:6px;width:100%"></label><div class="preview" id="preview"></div>
       <button class="primary" type="submit">Save entry</button>
     </form>
@@ -4675,7 +4673,7 @@ function applyDetail(detail) {
     if (typeof window.sqRenderBudget === 'function') {
       try { window.sqRenderBudget(); } catch (error) { console.error('Budget dashboard render:', error); }
     }
-    loadTrackerChat();loadRecurring();
+    loadTrackerChat();
     if ($("share-modal").classList.contains("open")) renderShareMembers();
   }
   if(typeof window.sqRefreshRestoredSummary === "function") window.sqRefreshRestoredSummary();
@@ -5375,10 +5373,10 @@ document.getElementById('tracker-chat-messages')?.addEventListener('click',async
 });
 async function loadRecurring(){var el=document.getElementById('recurring-list');if(!el)return;if(!current){el.textContent='Open a shared tracker to manage recurring expenses.';return;}
  try{var id=current.id;var rows=await api('trackers/'+id+'/recurring');if(!current||current.id!==id)return;el.innerHTML=rows.filter(x=>x.active).map(x=>'<div class="recurring-row"><div><b>'+esc(x.from_name)+' → '+esc(x.to_name)+'</b> · '+money(Number(x.amount))+'<small>'+esc(x.note||'Recurring expense')+' · '+esc(x.frequency)+' · Next '+esc(x.next_date)+'</small></div><button class="small-btn danger" data-stop-recurring="'+esc(x.id)+'">Stop</button></div>').join('')||'<p class="dashboard-subheading">No active recurring expenses.</p>';}catch(err){el.textContent='Schedules unavailable: '+err.message;}}
-document.getElementById('recurring-list').addEventListener('click',async function(ev){var id=ev.target.dataset.stopRecurring;if(!id||!current)return;if(!confirm('Stop future repeats? Existing expenses will remain.'))return;try{await api('trackers/'+current.id+'/recurring/'+id,'DELETE');await loadRecurring();}catch(err){alert(err.message);}});
+document.getElementById('recurring-list')?.addEventListener('click',async function(ev){var id=ev.target.dataset.stopRecurring;if(!id||!current)return;if(!confirm('Stop future repeats? Existing expenses will remain.'))return;try{await api('trackers/'+current.id+'/recurring/'+id,'DELETE');await loadRecurring();}catch(err){alert(err.message);}});
 document.getElementById('tracker-chat-form').addEventListener('submit',async function(ev){ev.preventDefault();if(!current)return alert('Open a shared tracker first.');var input=document.getElementById('tracker-chat-input'),message=input.value.trim();if(!message&&!sqPhotoFile)return;var button=this.querySelector('button[type=submit]');button.disabled=true;try{var photoId=sqPhotoFile?await sqUploadPhoto(sqPhotoFile):null;var mentions=[...sqMentionIds].filter(mid=>{var m=current.members.find(x=>x.id===mid);return m&&message.includes('@'+m.name);});await api('trackers/'+current.id+'/chat','POST',{message,photoId,mentions,replyTo:squareUpReplyTo});input.value='';sqPhotoFile=null;sqMentionIds.clear();document.getElementById('sq-chat-photo-input').value='';document.getElementById('sq-photo-preview').hidden=true;squareUpReplyTo=null;document.getElementById('chat-reply-target').hidden=true;await loadTrackerChat();await refreshInbox();}catch(err){alert(err.message);}finally{button.disabled=false;}});
 var extraLastTracker=null;
-setInterval(function(){if(current && document.visibilityState === "visible"){loadTrackerChat();loadRecurring();}},30000);
+setInterval(function(){if(current && document.visibilityState === "visible"){loadTrackerChat();}},30000);
 
 setInterval(function(){if(current && document.visibilityState === "visible")refreshInbox();},45000);
 
