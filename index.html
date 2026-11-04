@@ -2353,7 +2353,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
 <div class="sq-bill-date-field"><label for="sq-bill-date">First due date</label><input id="sq-bill-date" name="due" type="date" required></div>
 <div class="sq-bill-frequency-field"><label for="sq-bill-frequency">Repeats</label><select id="sq-bill-frequency" name="frequency"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option></select></div>
 <div class="sq-bill-section-label sq-bill-section-label-second"><span class="sq-bill-step">2</span><span>Payment &amp; splitting</span></div>
-<div class="sq-bill-assign" id="sq-bill-assign"><label for="sq-bill-paid-by">Paid by</label><select id="sq-bill-paid-by" required><option value="">Choose payer</option></select><label for="sq-bill-split-mode">Split method</label><select id="sq-bill-split-mode"><option value="single">One person owes all</option><option value="equal">Split equally</option><option value="custom">Custom amounts</option></select><div class="sq-bill-people-group"><span class="sq-bill-people-title">Who owes?</span><div id="sq-bill-split-people" class="sq-bill-split-people"></div></div><small>A new expense is recorded on each due date. No automatic payment is charged.</small></div>
+<div class="sq-bill-assign" id="sq-bill-assign"><label for="sq-bill-paid-by">Paid by</label><select id="sq-bill-paid-by" required><option value="">Choose payer</option></select><label for="sq-bill-split-mode">Split method</label><select id="sq-bill-split-mode"><option value="single">One person owes all</option><option value="equal" selected>Split equally</option><option value="custom">Custom amounts</option></select><div class="sq-bill-people-group"><span class="sq-bill-people-title">Who owes?</span><div id="sq-bill-split-people" class="sq-bill-split-people"></div></div><small>A new expense is recorded on each due date. No automatic payment is charged.</small></div>
 <button type="submit">＋ Add recurring bill</button></form></div>
   </div>
   <div class="sq-bills-columns"><div class="sq-bills-card sq-bills-column"><div class="sq-bills-list-head"><h3>Bills</h3><span id="sq-bills-bill-count"></span></div><div id="sq-bills-bill-list" aria-live="polite">Select a tracker to see bills.</div></div><div class="sq-bills-card sq-bills-column"><div class="sq-bills-list-head"><h3>Subscriptions</h3><span id="sq-bills-sub-count"></span></div><div id="sq-bills-sub-list" aria-live="polite">Select a tracker to see subscriptions.</div></div></div><div id="sq-bills-list" hidden></div><span id="sq-bills-total" hidden></span>
@@ -9022,19 +9022,30 @@ const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 let generation=0, billMembers=[];
 const paidBy=document.getElementById('sq-bill-paid-by'),splitMode=document.getElementById('sq-bill-split-mode'),splitPeople=document.getElementById('sq-bill-split-people');
 function renderSplit(){
+ const previous=new Map(Array.from(splitPeople.querySelectorAll('input.sq-bill-share')).map(x=>[x.dataset.member,x.value]));
  splitPeople.replaceChildren();
  const mode=splitMode.value;
  billMembers.forEach(member=>{
-  if(member.id===paidBy.value)return;
+  // The payer always participates in equal and custom splits, but cannot owe themselves.
+  if(mode==='single' && member.id===paidBy.value)return;
   const line=document.createElement('label');line.className='sq-bill-person';
   const check=document.createElement('input');check.type=mode==='single'?'radio':'checkbox';check.name='sq-bill-member';check.value=member.id;
+  const isPayer=member.id===paidBy.value;
+  if(isPayer){check.checked=true;check.disabled=true;}
+  else if(mode!=='single')check.checked=true;
   if(mode==='single')check.required=true;
-  const name=document.createElement('span');name.textContent=member.name;
+  const name=document.createElement('span');name.textContent=member.name+(isPayer?' (payer · own share)':'');
   line.append(check,name);
-  if(mode==='custom'){const amount=document.createElement('input');amount.type='number';amount.min='0.01';amount.step='0.01';amount.placeholder='$ amount';amount.className='sq-bill-share';line.append(amount);}
+  if(mode==='custom'){
+   const amount=document.createElement('input');amount.type='number';amount.min='0';amount.step='0.01';amount.placeholder='$ share';amount.className='sq-bill-share';amount.dataset.member=member.id;
+   if(previous.has(member.id))amount.value=previous.get(member.id);
+   line.append(amount);
+  }
   splitPeople.append(line);
  });
- if(!splitPeople.children.length){const note=document.createElement('small');note.textContent='Add another member to this tracker to assign a bill.';splitPeople.append(note);}
+ if(!splitPeople.querySelector('input[name="sq-bill-member"]:not(:disabled)') && mode==='single'){
+  const note=document.createElement('small');note.textContent='Add another member to this tracker to assign the bill.';splitPeople.append(note);
+ }
 }
 async function loadBillMembers(){
  billMembers=[];paidBy.replaceChildren(new Option('Choose payer',''));splitPeople.replaceChildren();
@@ -9127,17 +9138,17 @@ function showBillSavedPopup({kind,name,amount,due,frequency,payerId,shares}){
   const total=document.createElement('div');total.className='sq-bill-saved-total';total.textContent='$'+Number(amount).toFixed(2);
   const meta=document.createElement('small');meta.textContent=(frequency.charAt(0).toUpperCase()+frequency.slice(1))+' · First due '+due;
   summary.append(billName,total,meta);
-  const heading=document.createElement('h3');heading.textContent='Who owes what';
+  const heading=document.createElement('h3');heading.textContent='Everyone’s share';
   const payer=billMembers.find(x=>x.id===payerId)?.name||'Selected payer';
   const payNote=document.createElement('p');payNote.className='sq-bill-saved-payer';payNote.textContent='Paid by '+payer;
   const people=document.createElement('div');people.className='sq-bill-saved-people';
   shares.forEach(share=>{
     const line=document.createElement('div');line.className='sq-bill-saved-person';
-    const who=document.createElement('span');who.textContent=billMembers.find(x=>x.id===share.user_id)?.name||'Tracker member';
+    const who=document.createElement('span');who.textContent=(billMembers.find(x=>x.id===share.user_id)?.name||'Tracker member')+(share.user_id===payerId?' (payer · own share)':'');
     const sum=document.createElement('strong');sum.textContent='$'+(share.amount_cents/100).toFixed(2);
     line.append(who,sum);people.append(line);
   });
-  const note=document.createElement('p');note.className='sq-bill-saved-note';note.textContent='These amounts will be recorded as expenses on each due date. No payment is charged automatically.';
+  const note=document.createElement('p');note.className='sq-bill-saved-note';note.textContent='The payer covers their own share. Only other members’ shares become debts on each due date. No payment is charged automatically.';
   const close=document.createElement('button');close.type='button';close.className='sq-bill-saved-close';close.textContent='Done';
   const dismiss=()=>{overlay.remove();document.removeEventListener('keydown',onKey)};
   const onKey=e=>{if(e.key==='Escape')dismiss()};
@@ -9206,13 +9217,13 @@ $('sq-bills-create').addEventListener('submit',async e=>{
     const payerId=paidBy.value, mode=splitMode.value;
     if(!billMembers.some(x=>x.id===payerId))throw Error('Choose who paid.');
     const selected=Array.from(splitPeople.querySelectorAll('input[name="sq-bill-member"]:checked'));
-    if(!selected.length)throw Error('Choose at least one person to assign the bill to.');
+    if(!selected.length)throw Error('Choose at least one person to share the bill.');
     const amountCents=Math.round(Number(data.amount)*100);
     if(amountCents<1)throw Error('Enter an amount greater than zero.');
     let shares=[];
     if(mode==='custom'){
       shares=selected.map(x=>({user_id:x.value,amount_cents:Math.round(Number(x.closest('label').querySelector('.sq-bill-share').value)*100)}));
-      if(shares.some(x=>!Number.isFinite(x.amount_cents)||x.amount_cents<1)||shares.reduce((a,x)=>a+x.amount_cents,0)!==amountCents)throw Error('Custom amounts must add up to the bill total.');
+      if(shares.some(x=>!Number.isFinite(x.amount_cents)||x.amount_cents<0)||shares.reduce((a,x)=>a+x.amount_cents,0)!==amountCents)throw Error('Custom amounts, including the payer’s share, must add up to the bill total.');
     }else{
       if(amountCents<selected.length)throw Error('Amount is too small to split among everyone.');
       shares=selected.map((x,i)=>({user_id:x.value,amount_cents:Math.floor(amountCents/selected.length)+(i<amountCents%selected.length?1:0)}));
