@@ -3115,21 +3115,22 @@ if (sub === 'bills') {
     const used = new Set();
     let cents = 0;
 
-    for (const x of shares) {
-      if (
-        !uuid.test(x?.user_id) ||
-        x.user_id === payerId ||
-        used.has(x.user_id) ||
-        !members.some(m => m.user_id === x.user_id) ||
-        !Number.isSafeInteger(x.amount_cents) ||
-        x.amount_cents < 1
-      ) {
-        return fail('Invalid bill split.', 400);
-      }
+   
+for (const x of shares) {
+  if (
+    !uuid.test(x?.user_id) ||
+    used.has(x.user_id) ||
+    !members.some(m => m.user_id === x.user_id) ||
+    !Number.isSafeInteger(x.amount_cents) ||
+    x.amount_cents < 0
+  ) {
+    return fail('Invalid bill split.', 400);
+  }
 
-      used.add(x.user_id);
-      cents += x.amount_cents;
-    }
+  used.add(x.user_id);
+  cents += x.amount_cents;
+}
+
 
     if (cents !== Math.round(value * 100)) {
       return fail('Bill shares must equal the full amount.', 400);
