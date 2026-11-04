@@ -1943,6 +1943,16 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
 #sq-bills-page .sq-icon-trigger:hover {border-color:#25d9bf!important;}
 #sq-bills-page .sq-icon-trigger:focus-visible {outline:2px solid #25d9bf;outline-offset:3px;}
 </style>
+
+<style id="sq-bill-saved-popup-styles">
+.sq-bill-saved-overlay{position:fixed;inset:0;z-index:2147483000;background:rgba(2,12,26,.76);display:flex;align-items:center;justify-content:center;padding:18px;overflow-y:auto;backdrop-filter:blur(7px)}
+.sq-bill-saved-dialog{box-sizing:border-box;width:min(100%,470px);max-height:calc(100dvh - 36px);overflow:auto;background:linear-gradient(145deg,#0b2639,#15384d);border:1px solid #356b79;border-radius:22px;padding:28px;color:#f3fbff;box-shadow:0 24px 80px #0008;font-family:inherit}
+.sq-bill-saved-check{width:48px;height:48px;display:grid;place-items:center;border-radius:50%;background:#20d8b9;color:#052b35;font-size:27px;font-weight:800;margin:0 auto 14px}
+.sq-bill-saved-dialog h2{text-align:center;font-size:25px;margin:0 0 6px;color:#fff}.sq-bill-saved-subtitle{text-align:center;color:#b4cbd7;margin:0 0 20px;font-size:14px}
+.sq-bill-saved-summary{background:#0a2235;border:1px solid #365a70;border-radius:14px;padding:16px;display:grid;gap:5px}.sq-bill-saved-summary>strong{font-size:17px}.sq-bill-saved-total{font-size:29px;font-weight:800;color:#2ce2c2}.sq-bill-saved-summary small{color:#b5cad6}
+.sq-bill-saved-dialog h3{font-size:16px;margin:22px 0 5px}.sq-bill-saved-payer{color:#b5cad6;font-size:13px;margin:0 0 10px}.sq-bill-saved-people{border:1px solid #365a70;border-radius:13px;overflow:hidden}.sq-bill-saved-person{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;background:#102f43}.sq-bill-saved-person+.sq-bill-saved-person{border-top:1px solid #365a70}.sq-bill-saved-person strong{color:#36dfc1}.sq-bill-saved-note{color:#b5cad6;font-size:12px;line-height:1.5;margin:14px 0 18px}.sq-bill-saved-close{display:block;width:100%;padding:14px;border:0;border-radius:12px;background:#20d8b9;color:#062a35;font-size:15px;font-weight:800;cursor:pointer}
+@media(max-width:520px){.sq-bill-saved-dialog{padding:20px;border-radius:18px}}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
@@ -9104,6 +9114,36 @@ iconTrigger.addEventListener('click',()=>{iconPicker.hidden=!iconPicker.hidden;i
 document.addEventListener('click',e=>{if(!e.target.closest('.sq-icon-wrap')){iconPicker.hidden=true;iconTrigger.setAttribute('aria-expanded','false')}});
 setIcon('other');
 
+function showBillSavedPopup({kind,name,amount,due,frequency,payerId,shares}){
+  document.getElementById('sq-bill-saved-overlay')?.remove();
+  const overlay=document.createElement('div');overlay.id='sq-bill-saved-overlay';overlay.className='sq-bill-saved-overlay';
+  overlay.setAttribute('role','presentation');
+  const dialog=document.createElement('section');dialog.className='sq-bill-saved-dialog';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-labelledby','sq-bill-saved-title');
+  const symbol=document.createElement('div');symbol.className='sq-bill-saved-check';symbol.textContent='✓';
+  const title=document.createElement('h2');title.id='sq-bill-saved-title';title.textContent=(kind==='subscription'?'Subscription':'Bill')+' added!';
+  const subtitle=document.createElement('p');subtitle.className='sq-bill-saved-subtitle';subtitle.textContent='Your recurring '+(kind==='subscription'?'subscription':'bill')+' has been saved.';
+  const summary=document.createElement('div');summary.className='sq-bill-saved-summary';
+  const billName=document.createElement('strong');billName.textContent=name;
+  const total=document.createElement('div');total.className='sq-bill-saved-total';total.textContent='$'+Number(amount).toFixed(2);
+  const meta=document.createElement('small');meta.textContent=(frequency.charAt(0).toUpperCase()+frequency.slice(1))+' · First due '+due;
+  summary.append(billName,total,meta);
+  const heading=document.createElement('h3');heading.textContent='Who owes what';
+  const payer=billMembers.find(x=>x.id===payerId)?.name||'Selected payer';
+  const payNote=document.createElement('p');payNote.className='sq-bill-saved-payer';payNote.textContent='Paid by '+payer;
+  const people=document.createElement('div');people.className='sq-bill-saved-people';
+  shares.forEach(share=>{
+    const line=document.createElement('div');line.className='sq-bill-saved-person';
+    const who=document.createElement('span');who.textContent=billMembers.find(x=>x.id===share.user_id)?.name||'Tracker member';
+    const sum=document.createElement('strong');sum.textContent='$'+(share.amount_cents/100).toFixed(2);
+    line.append(who,sum);people.append(line);
+  });
+  const note=document.createElement('p');note.className='sq-bill-saved-note';note.textContent='These amounts will be recorded as expenses on each due date. No payment is charged automatically.';
+  const close=document.createElement('button');close.type='button';close.className='sq-bill-saved-close';close.textContent='Done';
+  const dismiss=()=>{overlay.remove();document.removeEventListener('keydown',onKey)};
+  const onKey=e=>{if(e.key==='Escape')dismiss()};
+  close.addEventListener('click',dismiss);overlay.addEventListener('click',e=>{if(e.target===overlay)dismiss()});document.addEventListener('keydown',onKey);
+  dialog.append(symbol,title,subtitle,summary,heading,payNote,people,note,close);overlay.append(dialog);document.body.append(overlay);close.focus();
+}
 function notice(t){msg.textContent=t;}
 function api(path,method='GET',data){if(typeof window.squareUpApi!=='function')throw Error('Please sign in before using Bills.');return window.squareUpApi(path,method,data);}
 function resetView(){document.body.classList.remove('sq-bills-open');page.hidden=true;generation++;}
@@ -9180,7 +9220,7 @@ $('sq-bills-create').addEventListener('submit',async e=>{
       if(amountCents<selected.length)throw Error('Amount is too small to split among everyone.');
       shares=selected.map((x,i)=>({user_id:x.value,amount_cents:Math.floor(amountCents/selected.length)+(i<amountCents%selected.length?1:0)}));
     }
-    const result=await api('trackers/'+id+'/bills','POST',{name:data.name.trim(),amount:Number(data.amount),due:data.due,frequency:data.frequency,kind:data.kind,icon:chosenIcon,recurring_enabled:true,payer_id:payerId,split_mode:mode,shares});const saved=Array.isArray(result)?result[0]:result;if(saved?.id){try{localStorage.setItem(iconStorageKey(id,saved.id),chosenIcon);localStorage.setItem(kindStorageKey(id,saved.id),data.kind)}catch(_){}}form.reset();form.querySelector('#sq-bills-kind').value=data.kind;setIcon('other');renderSplit();await loadBills();notice((data.kind==='subscription'?'Subscription':'Bill')+' saved to SquareUp.');}
+    const result=await api('trackers/'+id+'/bills','POST',{name:data.name.trim(),amount:Number(data.amount),due:data.due,frequency:data.frequency,kind:data.kind,icon:chosenIcon,recurring_enabled:true,payer_id:payerId,split_mode:mode,shares});const saved=Array.isArray(result)?result[0]:result;if(saved?.id){try{localStorage.setItem(iconStorageKey(id,saved.id),chosenIcon);localStorage.setItem(kindStorageKey(id,saved.id),data.kind)}catch(_){}}form.reset();form.querySelector('#sq-bills-kind').value=data.kind;setIcon('other');renderSplit();await loadBills();notice((data.kind==='subscription'?'Subscription':'Bill')+' saved to SquareUp.');showBillSavedPopup({kind:data.kind,name:data.name.trim(),amount:Number(data.amount),due:data.due,frequency:data.frequency,payerId,shares});}
   catch(err){notice(err.message||'Could not save bill.');}finally{btn.disabled=false;}
 });
 // The existing Bills tab now opens the dedicated page instead of the small embedded form.
