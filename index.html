@@ -9188,11 +9188,8 @@ async function loadBills(){
         remove.disabled=true;
         try{await api('trackers/'+id+'/bills/'+item.id,'DELETE');try{localStorage.removeItem(iconStorageKey(id,item.id));localStorage.removeItem(kindStorageKey(id,item.id))}catch(_){}await loadBills();notice('Bill removed.');}
         catch(e){notice(e.message||'Could not remove bill.');remove.disabled=false;}
-      });if(item.recurring_enabled){
-        const toggle=document.createElement('button');toggle.type='button';toggle.textContent=item.active===false?'Resume':'Pause';
-        toggle.addEventListener('click',async()=>{toggle.disabled=true;try{await api('trackers/'+id+'/bills/'+item.id,'PATCH',{active:item.active===false});await loadBills();}catch(e){notice(e.message);toggle.disabled=false;}});
-        row.append(toggle);
-      }
+      });
+      // Recurring status remains managed by the backend; no Pause/Resume control is shown.
       row.append(infoWrap,remove);(getKind(id,item)==='subscription'?subList:billList).append(row);
     });
   }catch(e){if(token!==generation)return;$('sq-bills-bill-list').textContent='Unable to load bills.';$('sq-bills-sub-list').textContent='Unable to load subscriptions.';notice(e.message||'Please try again.');}
