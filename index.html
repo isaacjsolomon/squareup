@@ -9506,11 +9506,15 @@ form.addEventListener('reset',()=>queueMicrotask(()=>setKind(tabs.find(t=>t.getA
  const toggle=document.getElementById('sq-bill-mobile-toggle');
  const form=document.getElementById('sq-bills-create');
  if(!card||!toggle||!form)return;
+ const anchor=document.createComment('SquareUp bill editor original position');
+ card.parentNode.insertBefore(anchor,card);
  const backdrop=document.createElement('div');backdrop.className='sq-bill-modal-backdrop';backdrop.hidden=true;
- document.body.append(backdrop);
+ const portal=document.createElement('div');portal.className='sq-bill-modal-portal';portal.hidden=true;
+ document.body.append(backdrop,portal);
  let expanded=false,previousFocus=null;
- const close=()=>{if(!expanded)return;expanded=false;sync();};
  function sync(){
+   if(expanded){portal.appendChild(card);portal.hidden=false;}
+   else {anchor.parentNode.insertBefore(card,anchor.nextSibling);portal.hidden=true;}
    card.classList.toggle('sq-mobile-collapsed',!expanded);
    card.classList.toggle('sq-bill-modal-open',expanded);
    toggle.setAttribute('aria-expanded',String(expanded));
@@ -9521,8 +9525,9 @@ form.addEventListener('reset',()=>queueMicrotask(()=>setKind(tabs.find(t=>t.getA
    backdrop.hidden=!expanded;
    document.body.classList.toggle('sq-bill-dialog-active',expanded);
    if(expanded){card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-label','Add a bill or subscription');requestAnimationFrame(()=>form.querySelector('.sq-bill-type-tab')?.focus());}
-   else{card.removeAttribute('role');card.removeAttribute('aria-modal');card.removeAttribute('aria-label');if(previousFocus?.isConnected)previousFocus.focus({preventScroll:true});}
+   else {card.removeAttribute('role');card.removeAttribute('aria-modal');card.removeAttribute('aria-label');if(previousFocus?.isConnected)previousFocus.focus({preventScroll:true});}
  }
+ function close(){if(!expanded)return;expanded=false;sync();}
  toggle.addEventListener('click',()=>{if(expanded)close();else{previousFocus=document.activeElement;expanded=true;sync();}});
  backdrop.addEventListener('click',close);
  document.addEventListener('keydown',e=>{
@@ -9536,12 +9541,8 @@ form.addEventListener('reset',()=>queueMicrotask(()=>setKind(tabs.find(t=>t.getA
      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
    }
  });
- // Close after successful save; validation errors keep the popup open.
- const observer=new MutationObserver(()=>{
-   const msg=document.getElementById('sq-bills-message');
-   if(expanded&&msg&&/saved to SquareUp/i.test(msg.textContent||''))close();
- });
- const msg=document.getElementById('sq-bills-message');if(msg)observer.observe(msg,{childList:true,subtree:true,characterData:true});
+ const msg=document.getElementById('sq-bills-message');
+ if(msg)new MutationObserver(()=>{if(expanded&&/saved to SquareUp/i.test(msg.textContent||''))close();}).observe(msg,{childList:true,subtree:true,characterData:true});
  sync();
 })();
 </script>
@@ -9723,6 +9724,19 @@ body.sq-bill-dialog-active{overflow:hidden!important}
  #sq-bills-page .sq-premium-overview>.sq-bill-create-card.sq-bill-modal-open{width:calc(100vw - 20px)!important;max-height:calc(100dvh - 24px)!important;padding:18px 16px!important;border-radius:18px!important}
  #sq-bills-page .sq-bill-modal-open .sq-bill-create-heading{padding-right:54px}
 }
+</style>
+<style id="sq-bills-modal-portal-fix-v10">
+/* Portal escapes transformed/filtered page containers that trap position:fixed. */
+.sq-bill-modal-portal[hidden]{display:none!important}
+.sq-bill-modal-portal{position:fixed!important;inset:0!important;z-index:2147483001!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:18px!important;pointer-events:none!important}
+.sq-bill-modal-portal>.sq-bill-create-card{pointer-events:auto!important;position:relative!important;inset:auto!important;transform:none!important;display:block!important;box-sizing:border-box!important;width:min(100%,1000px)!important;max-width:1000px!important;height:auto!important;max-height:calc(100dvh - 36px)!important;overflow-y:auto!important;overscroll-behavior:contain!important;margin:0!important;padding:26px 30px!important;border:1px solid #397387!important;border-radius:24px!important;background:#0c2b3d!important;color:#eefbff!important;box-shadow:0 28px 90px #000b!important}
+.sq-bill-modal-portal .sq-bill-create-heading{display:flex!important;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+.sq-bill-modal-portal .sq-bill-create-heading h3{color:#fff;margin:0 0 5px;font-size:25px}
+.sq-bill-modal-portal .sq-bill-create-heading p{color:#b9d0dc;margin:0}
+.sq-bill-modal-portal #sq-bill-mobile-toggle{display:flex!important;align-items:center;justify-content:center;flex:none;width:50px;height:50px;border:1px solid #326078;border-radius:14px;background:#0b172b;color:white;font-size:32px;cursor:pointer}
+.sq-bill-modal-portal #sq-bills-create{display:grid!important;width:100%!important;max-width:none!important;gap:14px!important}
+.sq-bill-modal-portal input,.sq-bill-modal-portal select{min-width:0;max-width:100%;box-sizing:border-box}
+@media(max-width:760px){.sq-bill-modal-portal{padding:10px!important}.sq-bill-modal-portal>.sq-bill-create-card{max-height:calc(100dvh - 20px)!important;padding:18px!important}.sq-bill-modal-portal .sq-bill-create-heading h3{font-size:20px}}
 </style>
 </body>
 </html>
