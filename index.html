@@ -10169,5 +10169,37 @@ html body.sq-bill-dialog-active .sq-bill-modal-backdrop:not([hidden]) {
   cursor:pointer!important;
 }
 </style>
+<!-- SquareUp premium design system: visual-only, preserves existing behavior -->
+<style id="sq-premium-polish-2026">
+:root{--sq-polish-radius:18px;--sq-polish-edge:rgba(138,196,211,.19);--sq-polish-shadow:0 8px 26px rgba(0,15,29,.16);--sq-polish-ease:cubic-bezier(.2,.7,.2,1)}
+@media(min-width:801px){
+ body:not(.side-collapsed){padding-left:260px!important}
+ body:not(.side-collapsed)>.sidebar,.sidebar:not(.sq-mobile-nav){width:244px}
+ body:not(.side-collapsed) .sidebar{padding:18px 12px;gap:11px;box-shadow:2px 0 15px rgba(0,13,24,.13)}
+ .sidebar .side-section{gap:5px}
+ .sidebar .side-section+.side-section{padding-top:12px}
+ .sidebar .small-btn{padding:9px 11px;font-size:13px}
+}
+/* Understated glass and consistent visual rhythm */
+#tracker-dashboard .card,#tracker-dashboard details.card,#friends-page .card,#notifications-page .card,
+.sq-bills-card,.sq-premium-metrics article,.sq-premium-calendar,.tracker-tile,
+.sq-premium-dialog{border-radius:var(--sq-polish-radius)!important;border-color:var(--sq-polish-edge)!important;box-shadow:var(--sq-polish-shadow)!important}
+#tracker-dashboard .card,#friends-page .card,#notifications-page .card{backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
+#tracker-dashboard h1,#tracker-dashboard h2,#trackers-page h2,#friends-page h2,#sq-bills-page h2{letter-spacing:-.025em;line-height:1.2}
+#tracker-dashboard .card h3,#sq-bills-page h3{letter-spacing:-.015em}
+#tracker-dashboard .sq-clean-balance{box-shadow:0 9px 24px rgba(0,14,29,.22)!important}
+#tracker-dashboard .sq-clean-balance strong,#tracker-dashboard .sq-clean-balance .amount{font-variant-numeric:tabular-nums;letter-spacing:-.035em}
+/* Buttons, tabs, and controls: teal reserved for actions */
+#tracker-dashboard button,#sq-bills-page button,#friends-page button,#notifications-page button{transition:background-color .16s var(--sq-polish-ease),border-color .16s var(--sq-polish-ease),box-shadow .16s var(--sq-polish-ease),transform .16s var(--sq-polish-ease)}
+#tracker-dashboard button:active,#sq-bills-page button:active{transform:scale(.985)}
+#tracker-dashboard button:focus-visible,#sq-bills-page button:focus-visible,.sidebar button:focus-visible{outline:2px solid #31e5ca;outline-offset:3px}
+#tracker-dashboard input,#tracker-dashboard select,#sq-bills-page input,#sq-bills-page select{transition:border-color .16s,box-shadow .16s}
+#tracker-dashboard input:focus-visible,#tracker-dashboard select:focus-visible,#sq-bills-page input:focus-visible,#sq-bills-page select:focus-visible{outline:none;border-color:#32cbbd!important;box-shadow:0 0 0 3px rgba(35,218,190,.13)}
+/* Gentle entrance without delaying interaction or hiding content */
+@keyframes sqPolishAppear{from{opacity:.78;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.sq-premium-overview,.sq-premium-metrics article,.sq-premium-calendar{animation:sqPolishAppear .24s ease-out both}
+@media(prefers-reduced-motion:reduce){.sq-premium-overview,.sq-premium-metrics article,.sq-premium-calendar{animation:none!important}#tracker-dashboard button,#sq-bills-page button{transition:none!important}}
+@media(max-width:800px){body{padding-left:16px!important}.sq-premium-metrics article,.sq-premium-calendar{border-radius:16px!important}}
+</style>
 </body>
 </html>
