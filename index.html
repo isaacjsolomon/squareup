@@ -9321,5 +9321,32 @@ body.trackers-view:not(.sq-bills-open) #trackers-page #trackers-gallery .sq-crea
 #sq-bills-page .sq-bills-top-grid .sq-bills-form button[type=submit]{grid-column:1/-1}
 @media(max-width:760px){#sq-bills-page .sq-bills-title{gap:14px}#sq-bills-page .sq-bills-tracker-compact{flex:1 1 100%}#sq-bills-page .sq-bills-top-grid .sq-bills-form{grid-template-columns:minmax(0,1fr) 76px!important}#sq-bills-page .sq-bills-top-grid .sq-bills-form input[name=name]{grid-column:1/-1}#sq-bills-page .sq-bills-top-grid .sq-bills-form input[name=amount],#sq-bills-page .sq-bills-top-grid .sq-bills-form input[name=due],#sq-bills-page .sq-bills-top-grid .sq-bills-form select[name=frequency],#sq-bills-page .sq-bills-top-grid .sq-bills-form .sq-bill-assign,#sq-bills-page .sq-bills-top-grid .sq-bills-form button[type=submit]{grid-column:1/-1}}
 </style>
+<style id="sq-bills-compact-v3">
+/* Tighter bill editor, with all existing fields and behaviors retained. */
+#sq-bills-page .sq-bill-create-card{padding:22px 26px!important}
+#sq-bills-page .sq-bill-create-heading h3{font-size:23px!important;line-height:1.2!important}
+#sq-bills-page .sq-bill-create-heading .sq-bills-help{margin:3px 0 12px!important;font-size:13px!important}
+#sq-bills-page .sq-bills-top-grid .sq-bills-form{gap:8px 12px!important}
+#sq-bills-page .sq-bills-top-grid .sq-bills-form>input,#sq-bills-page .sq-bills-top-grid .sq-bills-form>select{height:47px!important;min-height:47px!important;padding-top:8px!important;padding-bottom:8px!important}
+#sq-bills-page .sq-bills-form .sq-icon-trigger{height:47px!important;min-height:47px!important}
+#sq-bills-page .sq-bill-assign{margin:3px 0!important;padding:12px 15px!important;gap:8px 14px!important;grid-template-columns:minmax(100px,.25fr) minmax(0,1fr) minmax(110px,.25fr) minmax(0,1fr)!important;align-items:center}
+#sq-bills-page .sq-bill-assign>label[for="sq-bill-paid-by"]{grid-column:1;grid-row:1}
+#sq-bills-page .sq-bill-assign>#sq-bill-paid-by{grid-column:2;grid-row:1}
+#sq-bills-page .sq-bill-assign>label[for="sq-bill-split-mode"]{grid-column:3;grid-row:1}
+#sq-bills-page .sq-bill-assign>#sq-bill-split-mode{grid-column:4;grid-row:1}
+#sq-bills-page .sq-bill-assign>select{height:44px!important;min-height:44px!important}
+#sq-bills-page .sq-bill-split-people{grid-column:1/-1!important;gap:7px!important}
+#sq-bills-page .sq-bill-person{padding:8px 12px!important;min-height:43px}
+#sq-bills-page .sq-bill-assign>small{grid-column:1/-1!important;font-size:12px;line-height:1.35}
+#sq-bills-page .sq-bills-form>button[type="submit"]{height:49px!important;min-height:49px!important;margin-top:2px!important}
+@media(max-width:900px){
+#sq-bills-page .sq-bill-assign{grid-template-columns:minmax(100px,.4fr) minmax(0,1fr)!important}
+#sq-bills-page .sq-bill-assign>label[for="sq-bill-paid-by"]{grid-column:1;grid-row:1}
+#sq-bills-page .sq-bill-assign>#sq-bill-paid-by{grid-column:2;grid-row:1}
+#sq-bills-page .sq-bill-assign>label[for="sq-bill-split-mode"]{grid-column:1;grid-row:2}
+#sq-bills-page .sq-bill-assign>#sq-bill-split-mode{grid-column:2;grid-row:2}
+}
+@media(max-width:580px){#sq-bills-page .sq-bill-create-card{padding:17px!important}#sq-bills-page .sq-bill-assign{padding:10px!important;gap:8px!important}}
+</style>
 </body>
 </html>
