@@ -10871,6 +10871,30 @@ body.sq-finance-open #sq-nextgen .sq-ng-note{clear:both!important;}
 @media(max-width:800px){body.sq-finance-open #sq-nextgen .sq-ng-shell>.sq-ng-tabs{display:none!important;}body.sq-finance-open #sq-nextgen .sq-ng-mobile-picker{display:block!important;}}
 @media(max-width:560px){body.sq-finance-open #sq-nextgen #sq-ng-content>.sq-ng-grid{grid-template-columns:1fr!important;}body.sq-finance-open #sq-nextgen .sq-ng-form{grid-template-columns:1fr!important;}body.sq-finance-open #sq-nextgen .sq-ng-form>button{width:100%!important;}}
 </style>
+
+<style id="sq-finance-tracker-backdrop-sync-2026">
+/* Mirror the selected tracker's existing backdrop, including uploaded photos. */
+body.sq-finance-open #sq-nextgen{background-color:#071522!important;background-image:var(--sq-finance-tracker-backdrop,linear-gradient(135deg,#071522,#102b3d))!important;background-position:center center!important;background-repeat:no-repeat!important;background-size:cover!important;background-attachment:fixed!important;}
+body.sq-finance-open #sq-nextgen::before{content:"";position:fixed;inset:0 0 0 var(--sq-finance-sidebar-offset,300px);background:rgba(3,14,26,.62);pointer-events:none;z-index:0;}
+body.sq-finance-open #sq-nextgen .sq-ng-shell{z-index:1!important;isolation:isolate;}
+@media(max-width:800px){body.sq-finance-open #sq-nextgen::before{left:0;}}
+</style>
+<script id="sq-finance-tracker-backdrop-sync-script-2026">
+(()=>{
+ const backdrop=document.getElementById('backdrop');
+ const hub=document.getElementById('sq-nextgen');
+ if(!backdrop||!hub)return;
+ function sync(){
+   const style=getComputedStyle(backdrop);
+   const image=backdrop.style.backgroundImage||style.backgroundImage;
+   hub.style.setProperty('--sq-finance-tracker-backdrop',image&&image!=='none'?image:'linear-gradient(135deg,#071522,#102b3d)');
+ }
+ new MutationObserver(sync).observe(backdrop,{attributes:true,attributeFilter:['style','class']});
+ new MutationObserver(()=>{if(!hub.hidden)sync()}).observe(hub,{attributes:true,attributeFilter:['hidden']});
+ document.getElementById('sq-finance-nav')?.addEventListener('click',sync);
+ sync();
+})();
+</script>
 </body>
 </html>
 
