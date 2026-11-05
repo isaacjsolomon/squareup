@@ -10994,46 +10994,81 @@ body.sq-action-dialog-open{overflow:hidden!important}
 })();
 </script>
 <style id="sq-pay-now-modal-style-20261105">
-#sq-pay-now-modal[hidden]{display:none!important}#sq-pay-now-modal{position:fixed;inset:0;z-index:2147483200;background:rgba(3,12,27,.82);backdrop-filter:blur(9px);display:flex;align-items:center;justify-content:center;padding:18px}
-#sq-pay-now-panel{width:min(520px,100%);max-height:calc(100dvh - 36px);overflow:auto;border:1px solid #42a8a6;border-radius:22px;background:linear-gradient(155deg,#16364b,#101e35);color:#f0faff;box-shadow:0 28px 80px #0009;padding:25px;font-family:system-ui,sans-serif}
-#sq-pay-now-panel h2{font-size:25px;margin:0}#sq-pay-now-panel p{color:#b7cfda;line-height:1.5;font-size:13px}#sq-pay-now-panel label{display:block;font-weight:650;font-size:13px;margin:16px 0 8px}
-#sq-pay-now-panel select,#sq-pay-now-panel input{box-sizing:border-box;width:100%;padding:13px;border:1px solid #426477;border-radius:11px;background:#0b2032;color:#fff;font-size:15px}
-#sq-pay-now-summary{background:#183e50;border:1px solid #396777;border-radius:15px;padding:18px;text-align:center;margin:18px 0}
-#sq-pay-now-summary strong{display:block;font-size:32px;color:#5ef1c6;margin:4px 0}
-#sq-pay-now-actions{display:flex;gap:10px;margin:12px 0}#sq-pay-now-actions button{flex:1;background:#1c3d50;color:#f3ffff;border:1px solid #487084;border-radius:10px;padding:10px;cursor:pointer}
-#sq-pay-now-panel .sq-pay-primary{width:100%;padding:13px;background:#54e9ba;color:#072d35;border:0;border-radius:11px;font-weight:750;cursor:pointer}
+#sq-pay-now-modal[hidden]{display:none!important}
+#sq-pay-now-modal{position:fixed;inset:0;z-index:2147483200;background:rgba(3,12,27,.78);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:16px}
+#sq-pay-now-panel{box-sizing:border-box;width:min(490px,100%);max-height:calc(100dvh - 32px);overflow:auto;border:1px solid rgba(92,234,202,.35);border-radius:24px;background:linear-gradient(155deg,#1b4052 0%,#142b41 50%,#101c33 100%);color:#f0faff;box-shadow:0 28px 90px #0009;padding:clamp(18px,4vw,28px);font-family:system-ui,sans-serif}
+#sq-pay-now-panel h2{font-size:26px;letter-spacing:-.7px;margin:0;font-weight:800}#sq-pay-now-panel p{color:#b7cfda;line-height:1.5;font-size:13px;margin:12px 0}
+#sq-pay-now-panel label{display:block;font-weight:700;font-size:13px;margin:18px 0 8px}
+#sq-pay-now-panel select,#sq-pay-now-panel input{box-sizing:border-box;width:100%;padding:14px;border:1px solid #537889;border-radius:12px;background:#0c2537;color:#fff;font-size:16px;outline:none}
+#sq-pay-now-panel select:focus,#sq-pay-now-panel input:focus{border-color:#5de7c7;box-shadow:0 0 0 3px #5de7c72b}
+#sq-pay-now-summary{background:linear-gradient(125deg,#174858,#12354a);border:1px solid #3e8a88;border-radius:17px;padding:21px;text-align:center;margin:18px 0}
+#sq-pay-now-summary span{color:#c3dbe2;font-size:13px}#sq-pay-now-summary strong{display:block;font-size:clamp(32px,7vw,42px);letter-spacing:-1px;color:#5ef1c6;margin:5px 0}
+#sq-pay-now-actions{display:flex;gap:10px;margin:12px 0}#sq-pay-now-actions button{flex:1;background:#22485a;color:#f3ffff;border:1px solid #487c8b;border-radius:11px;padding:11px;cursor:pointer;font-weight:700}
+#sq-pay-now-actions button:hover{background:#306276}
+#sq-pay-now-panel .sq-pay-primary{width:100%;padding:15px;background:linear-gradient(110deg,#61efd0,#3cd9b5);color:#073238;border:0;border-radius:13px;font-size:15px;font-weight:800;cursor:pointer}
+#sq-pay-now-panel .sq-pay-primary:hover:not(:disabled){filter:brightness(1.08)}
 #sq-pay-now-panel .sq-pay-primary:disabled{opacity:.5;cursor:not-allowed}
-#sq-pay-now-head{display:flex;justify-content:space-between;align-items:center;gap:10px}#sq-pay-now-cancel{background:transparent;border:1px solid #52798b;border-radius:9px;color:#fff;padding:9px 12px;cursor:pointer}
-#sq-pay-now-error{color:#ffc4c4!important;min-height:18px}#sq-pay-now-remaining{display:flex;justify-content:space-between;padding:13px 0;border-top:1px solid #ffffff2b;font-size:13px}
+#sq-pay-now-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+#sq-pay-now-cancel{background:#ffffff12;border:1px solid #52798b;border-radius:11px;color:#fff;padding:9px 13px;cursor:pointer}
+#sq-pay-now-error{color:#ffc4c4!important;min-height:18px}
+#sq-pay-now-remaining{display:flex;justify-content:space-between;gap:12px;padding:15px 0;border-top:1px solid #ffffff2b;font-size:13px}
+#sq-pay-now-remaining strong{color:#70efd2;font-size:17px;white-space:nowrap}
+#sq-pay-now-panel .sq-pay-note{font-size:12px;color:#a7c0ca;line-height:1.5;margin-top:14px}
 </style>
-<div id="sq-pay-now-modal" hidden><div id="sq-pay-now-panel" role="dialog" aria-modal="true" aria-labelledby="sq-pay-now-title">
-<div id="sq-pay-now-head"><h2 id="sq-pay-now-title">Pay Now</h2><button type="button" id="sq-pay-now-cancel">Close</button></div>
-<p>Choose a person and payment method, then enter how much you want to pay.</p>
-<label for="sq-pay-now-person">Pay to</label><select id="sq-pay-now-person"></select>
-<div id="sq-pay-now-summary"><span>You owe</span><strong id="sq-pay-now-owed">$0.00</strong><span id="sq-pay-now-recipient"></span></div>
-<label for="sq-pay-now-amount">Payment amount ($)</label><input id="sq-pay-now-amount" type="number" inputmode="decimal" min="0.01" step="0.01">
-<div id="sq-pay-now-actions"><button type="button" id="sq-pay-now-half">Pay half</button><button type="button" id="sq-pay-now-full">Pay full</button></div>
-<div id="sq-pay-now-remaining"><span>Remaining balance after payment</span><strong id="sq-pay-now-left">$0.00</strong></div>
-<p id="sq-pay-now-error" role="alert"></p><button type="button" id="sq-pay-now-continue" class="sq-pay-primary">Continue to payment app</button>
-<p>Opening Venmo or Cash App does not confirm a payment. SquareUp will ask you to confirm after you pay.</p>
+<div id="sq-pay-now-modal" hidden><div id="sq-pay-now-panel" role="dialog" aria-modal="true" aria-labelledby="sq-pay-now-title" aria-describedby="sq-pay-now-description">
+<div id="sq-pay-now-head"><h2 id="sq-pay-now-title">Pay Now</h2><button type="button" id="sq-pay-now-cancel" aria-label="Close payment window">✕</button></div>
+<p id="sq-pay-now-description">Settle a balance securely using your friend's payment account.</p>
+<label for="sq-pay-now-person">Recipient &amp; payment method</label><select id="sq-pay-now-person"></select>
+<div id="sq-pay-now-summary"><span>Outstanding balance</span><strong id="sq-pay-now-owed">$0.00</strong><span id="sq-pay-now-recipient"></span></div>
+<label for="sq-pay-now-amount">Amount to pay (USD)</label><input id="sq-pay-now-amount" type="number" inputmode="decimal" min="0.01" step="0.01" autocomplete="off">
+<div id="sq-pay-now-actions"><button type="button" id="sq-pay-now-half">Pay half</button><button type="button" id="sq-pay-now-full">Pay full balance</button></div>
+<div id="sq-pay-now-remaining"><span>Balance remaining afterward</span><strong id="sq-pay-now-left">$0.00</strong></div>
+<p id="sq-pay-now-error" role="alert"></p><button type="button" id="sq-pay-now-continue" class="sq-pay-primary">Continue to payment app ↗</button>
+<p class="sq-pay-note">SquareUp does not transfer funds. Your payment is recorded only after you confirm completing it in Venmo or Cash App.</p>
 </div></div>
 <script id="sq-pay-now-modal-script-20261105">
 (function(){
- var modal=document.getElementById('sq-pay-now-modal'),select=document.getElementById('sq-pay-now-person'),amount=document.getElementById('sq-pay-now-amount'),error=document.getElementById('sq-pay-now-error'),go=document.getElementById('sq-pay-now-continue'),active=null;
- function money(c){return '
-</html>
-
-+(c/100).toFixed(2)}
- function update(reset){if(!active)return;var item=active.items[Number(select.value)];if(!item)return;if(reset)amount.value=(item.cents/100).toFixed(2);document.getElementById('sq-pay-now-owed').textContent=money(item.cents);document.getElementById('sq-pay-now-recipient').textContent=item.to+' · '+item.option.provider;var n=Math.round(Number(amount.value)*100);var valid=Number.isSafeInteger(n)&&n>0&&n<=item.cents;document.getElementById('sq-pay-now-left').textContent=valid?money(item.cents-n):'—';go.disabled=!valid;error.textContent=valid?'':'Enter an amount greater than $0 and no more than '+money(item.cents)+'.'}
- function close(value){modal.hidden=true;var done=active;active=null;if(done)done.resolve(value)}
- window.sqChoosePayNow=function(items){return new Promise(function(resolve){if(active)close(null);active={items:items,resolve:resolve};select.replaceChildren();items.forEach(function(item,i){var o=document.createElement('option');o.value=String(i);o.textContent=item.to+' · '+item.option.provider;select.appendChild(o)});select.value='0';modal.hidden=false;update(true);select.focus()})};
- select.addEventListener('change',function(){update(true)});amount.addEventListener('input',function(){update(false)});
- document.getElementById('sq-pay-now-half').addEventListener('click',function(){if(!active)return;var c=active.items[Number(select.value)].cents;amount.value=(Math.round(c/2)/100).toFixed(2);update(false)});
+ 'use strict';
+ var modal=document.getElementById('sq-pay-now-modal'),select=document.getElementById('sq-pay-now-person'),amount=document.getElementById('sq-pay-now-amount'),error=document.getElementById('sq-pay-now-error'),go=document.getElementById('sq-pay-now-continue'),active=null,previousFocus=null;
+ function money(c){return '$'+(c/100).toFixed(2)}
+ function update(reset){
+   if(!active)return;
+   var item=active.items[Number(select.value)];if(!item)return;
+   if(reset)amount.value=(item.cents/100).toFixed(2);
+   document.getElementById('sq-pay-now-owed').textContent=money(item.cents);
+   document.getElementById('sq-pay-now-recipient').textContent=item.to+' · '+item.option.provider;
+   var raw=amount.value.trim(),numeric=Number(raw),n=Math.round(numeric*100);
+   var valid=raw!==''&&Number.isFinite(numeric)&&numeric>0&&Number.isSafeInteger(n)&&Math.abs(numeric*100-n)<0.000001&&n<=item.cents;
+   document.getElementById('sq-pay-now-left').textContent=valid?money(item.cents-n):'—';
+   go.disabled=!valid;
+   error.textContent=valid?'':'Enter an amount between $0.01 and '+money(item.cents)+'.';
+ }
+ function close(value){
+   modal.hidden=true;
+   var done=active;active=null;
+   if(previousFocus&&previousFocus.isConnected)previousFocus.focus();
+   previousFocus=null;
+   if(done)done.resolve(value);
+ }
+ window.sqChoosePayNow=function(items){
+   return new Promise(function(resolve){
+     if(active)close(null);
+     if(!Array.isArray(items)||!items.length){resolve(null);return;}
+     previousFocus=document.activeElement;
+     active={items:items,resolve:resolve};
+     select.replaceChildren();
+     items.forEach(function(item,i){var o=document.createElement('option');o.value=String(i);o.textContent=item.to+' · '+item.option.provider;select.appendChild(o)});
+     select.value='0';modal.hidden=false;update(true);select.focus();
+   });
+ };
+ select.addEventListener('change',function(){update(true)});
+ amount.addEventListener('input',function(){update(false)});
+ document.getElementById('sq-pay-now-half').addEventListener('click',function(){if(!active)return;var c=active.items[Number(select.value)].cents;amount.value=(Math.max(1,Math.round(c/2))/100).toFixed(2);update(false)});
  document.getElementById('sq-pay-now-full').addEventListener('click',function(){update(true)});
  document.getElementById('sq-pay-now-cancel').addEventListener('click',function(){close(null)});
  modal.addEventListener('click',function(e){if(e.target===modal)close(null)});
  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!modal.hidden)close(null)});
- go.addEventListener('click',function(){if(!active)return;var item=active.items[Number(select.value)],c=Math.round(Number(amount.value)*100);if(!Number.isSafeInteger(c)||c<=0||c>item.cents){update(false);return}close(Object.assign({},item,{paidCents:c}))});
+ go.addEventListener('click',function(){if(!active)return;var item=active.items[Number(select.value)],numeric=Number(amount.value),c=Math.round(numeric*100);if(!Number.isSafeInteger(c)||c<=0||c>item.cents||Math.abs(numeric*100-c)>0.000001){update(false);return;}close(Object.assign({},item,{paidCents:c}))});
 })();
 </script></body>
 </html>
