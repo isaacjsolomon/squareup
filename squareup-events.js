@@ -55,6 +55,12 @@ export function initEvents({api,getTrackers,getUser}){
  #sqev-view .sqev-event-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;color:#bbd4dc;margin-top:13px}
  #sqev-view .sqev-event-meta span{padding:8px 12px;border:1px solid rgba(128,179,196,.23);background:#0b2839;border-radius:9px}
  #sqev-view .sqev-rsvp-button.active{background:#28cbb6;color:#05313c;border-color:#28cbb6}
+ #sqev-view .sqev-new-expense{border-color:#23998f;background:linear-gradient(135deg,#0b3343,#102f43)}
+ #sqev-view .sqev-new-expense>summary{background:#19c9b5;color:#052b35;font-size:15px;font-weight:800;min-height:52px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+ #sqev-view .sqev-new-expense>summary:after{content:'+';font-size:23px;color:#052b35;line-height:1}
+ #sqev-view .sqev-new-expense[open]>summary:after{content:'−'}
+ #sqev-view .sqev-new-expense>form{padding:15px}
+ #sqev-view .sqev-new-expense button[type=submit]{width:100%;min-height:48px;margin-top:10px}
 
  body.sqev-page-open{background:linear-gradient(125deg,#081a2b,#0c2b3e 65%,#0a2237)!important}
  #sqev-view .sqev-hero{border-radius:22px;background:linear-gradient(120deg,#123850,#0a2539);background-size:cover;background-position:center;min-height:190px;display:flex;align-items:flex-end;position:relative;overflow:hidden;margin-bottom:20px;border:1px solid rgba(103,189,190,.3)}
@@ -237,7 +243,18 @@ export function initEvents({api,getTrackers,getUser}){
      </section>
      <section class="sqev-box" data-ev-section="expenses"><div class="sqev-section-title"><h3>Event expenses</h3><span class="sqev-muted">${data.expenses.length} linked</span></div>
      <div class="sqev-metric">${safe(tracker.currency||'USD')} ${data.expenses.reduce((a,x)=>a+(x.type==='debt'?Number(x.amount)||0:0),0).toFixed(2)}</div><p class="sqev-muted">Total linked expenses · Debts and payments continue to use tracker balances and approvals.</p>
-     <p class="sqev-muted">Create expenses using your tracker's existing Add Expense action, then link them here. This preserves split rules and approval settings.</p>
+     <details class="sqev-collapsible sqev-new-expense"><summary>＋ Add Expense</summary>
+      <form id="sqev-new-expense">
+       <p class="sqev-muted">Add an expense directly to this event's tracker. Normal approval rules still apply.</p>
+       <div class="sqev-grid">
+        <label>Who owes<select name="from" required><option value="">Choose member</option>${(tracker.members||[]).map(m=>`<option value="${safe(m.name)}">${safe(m.name)}</option>`).join('')}</select></label>
+        <label>Who paid<select name="to" required><option value="">Choose member</option>${(tracker.members||[]).map(m=>`<option value="${safe(m.name)}">${safe(m.name)}</option>`).join('')}</select></label>
+        <label>Amount (${safe(tracker.currency||'USD')})<input type="number" name="amount" min="0.01" max="1000000000" step="0.01" required placeholder="0.00" inputmode="decimal"></label>
+        <label>Description<input name="note" maxlength="200" placeholder="Tickets, snacks..." required></label>
+       </div>
+       <button type="submit" class="sqev-primary">Save expense</button>
+      </form>
+     </details>
      ${data.expenses.length?data.expenses.map(x=>`<div class="sqev-item"><strong>${safe(x.note||'Expense')}</strong><p>${safe(x.from_name||x.from||'')} · ${safe(x.amount)}</p><button data-unlink="${safe(x.id)}">Unlink</button></div>`).join(''):'<p class="sqev-muted">Link an existing tracker expense to keep it organized with this event.</p>'}
      <details class="sqev-collapsible"><summary>Link existing expense</summary><form id="sqev-expense"><label>Existing tracker expense<select name="entry_id" required><option value="">Choose an expense...</option>${(tracker.entries||[]).filter(x=>!linked.has(x.id)).map(x=>`<option value="${safe(x.id)}">${safe(x.note||x.from+' → '+x.to)} · ${safe(x.amount)}</option>`).join('')}</select></label><button type="submit">Link expense</button></form></details>
      </section>
@@ -367,7 +384,7 @@ export function initEvents({api,getTrackers,getUser}){
  });
  $('sqev-details').addEventListener('submit',async ev=>{
   const form=ev.target;
-  if(!['sqev-edit','sqev-expense','sqev-schedule','sqev-schedule-update','sqev-invite','sqev-task'].includes(form.id))return;
+  if(!['sqev-edit','sqev-expense','sqev-new-expense','sqev-schedule','sqev-schedule-update','sqev-invite','sqev-task'].includes(form.id))return;
   ev.preventDefault();if(busy)return;
   const f=form.elements, id=selected, button=form.querySelector('[type=submit]');
   if(form.id==='sqev-edit'||form.id==='sqev-schedule-update'){
@@ -381,6 +398,27 @@ export function initEvents({api,getTrackers,getUser}){
   await saveEventAction(button,async()=>{
    if(form.id==='sqev-edit')await api('events/'+id,'PATCH',{title:f.title.value,location:f.location.value,description:f.description.value,cover_url:f.cover_url.value,starts_at:new Date(f.starts.value).toISOString(),ends_at:new Date(f.ends.value).toISOString()});
    if(form.id==='sqev-expense'){if(!f.entry_id.value)throw Error('Choose an expense first.');await api('events/'+id+'/expenses','POST',{entry_id:f.entry_id.value})}
+   if(form.id==='sqev-new-expense'){
+    const from=f.from.value,to=f.to.value,amount=Number(f.amount.value),note=f.note.value.trim();
+    if(!from||!to||from===to)throw Error('Choose two different tracker members.');
+    if(!Number.isFinite(amount)||amount<=0||amount>1e9)throw Error('Enter a valid amount.');
+    if(!note)throw Error('Add a description.');
+    const eventInfo=await api('events/'+encodeURIComponent(id));
+    const trackerId=eventInfo.event.tracker_id;
+    // Read before creating so we only link the new expense, never somebody else's.
+    const before=await api('trackers/'+encodeURIComponent(trackerId));
+    const known=new Set((before.entries||[]).map(entry=>entry.id));
+    const saved=await api('trackers/'+encodeURIComponent(trackerId)+'/entries','POST',{
+     type:'debt',from,to,amount,note,currency:before.currency||'USD',date:new Date().toLocaleDateString()
+    });
+    const added=(saved.entries||[]).filter(entry=>!known.has(entry.id));
+    const matching=added.filter(entry=>entry.type==='debt'&&entry.from===from&&entry.to===to&&Math.abs(Number(entry.amount)-amount)<0.011&&entry.note===note);
+    // The API returns tracker detail rather than the new entry's id.
+    const created=matching.length===1?matching[0]:added.length===1?added[0]:null;
+    if(!created)throw Error('Expense saved in the tracker, but could not link automatically. Use Link existing expense below.');
+    try{await api('events/'+encodeURIComponent(id)+'/expenses','POST',{entry_id:created.id})}
+    catch(linkErr){throw Error('Expense saved in the tracker. Linking failed: '+linkErr.message+'. Use Link existing expense to attach it.');}
+   }
    if(form.id==='sqev-schedule')await api('events/'+id+'/schedule','POST',{title:f.title.value,starts_at:new Date(f.starts.value).toISOString(),location:f.location.value});
    if(form.id==='sqev-schedule-update')await api('events/'+id+'/schedule/'+encodeURIComponent(f.item_id.value),'PATCH',{title:f.title.value,starts_at:new Date(f.starts.value).toISOString(),location:f.location.value,notes:f.notes.value});
    if(form.id==='sqev-invite')await api('events/'+id+'/invites','POST',{user_id:f.user_id.value});
