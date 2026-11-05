@@ -1953,6 +1953,33 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
 .sq-bill-saved-dialog h3{font-size:16px;margin:22px 0 5px}.sq-bill-saved-payer{color:#b5cad6;font-size:13px;margin:0 0 10px}.sq-bill-saved-people{border:1px solid #365a70;border-radius:13px;overflow:hidden}.sq-bill-saved-person{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;background:#102f43}.sq-bill-saved-person+.sq-bill-saved-person{border-top:1px solid #365a70}.sq-bill-saved-person strong{color:#36dfc1}.sq-bill-saved-note{color:#b5cad6;font-size:12px;line-height:1.5;margin:14px 0 18px}.sq-bill-saved-close{display:block;width:100%;padding:14px;border:0;border-radius:12px;background:#20d8b9;color:#062a35;font-size:15px;font-weight:800;cursor:pointer}
 @media(max-width:520px){.sq-bill-saved-dialog{padding:20px;border-radius:18px}}
 </style>
+
+/* SquareUp premium design system — Nov 2026. Scoped to existing app, no data changes. */
+<style id="sq-premium-2026-foundation">
+:root{--sq-pro-bg:#071522;--sq-pro-panel:#0d2535;--sq-pro-panel-2:#102d40;--sq-pro-border:rgba(129,188,207,.20);--sq-pro-teal:#22d6bd;--sq-pro-ink:#f2f8fb;--sq-pro-muted:#a9c0ce;--sq-pro-radius:18px}
+html{scroll-behavior:smooth}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;letter-spacing:-.012em}
+/* Replace busy decorative surfaces with restrained depth. */
+body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(22,99,113,.23),transparent 80%),linear-gradient(145deg,#091c2b 0%,#102a3b 58%,#071827 100%)!important;background-attachment:fixed!important}
+.sidebar{background:linear-gradient(180deg,rgba(8,29,44,.97),rgba(8,25,40,.98))!important;border-right:1px solid var(--sq-pro-border)!important;box-shadow:8px 0 30px rgba(0,0,0,.11)!important}
+.sidebar .small-btn:not(.accent){border-radius:11px!important;min-height:39px!important;font-weight:560!important;letter-spacing:0!important}
+.sidebar .small-btn.accent{border-radius:11px!important;box-shadow:inset 3px 0 var(--sq-pro-teal)!important}
+/* Consistent visual rhythm across the existing primary workspaces. */
+#tracker-dashboard .card,#trackers-page .card,#friends-page .card,#settings-page .card,#sq-bills-page .sq-bills-card,#sq-bills-page .sq-premium-calendar,#tracker-dashboard .sq-stat,#tracker-dashboard .sq-return-panel{background:linear-gradient(155deg,rgba(15,43,61,.96),rgba(9,32,47,.96))!important;border:1px solid var(--sq-pro-border)!important;border-radius:var(--sq-pro-radius)!important;box-shadow:0 8px 28px rgba(1,12,24,.12)!important}
+#tracker-dashboard .sq-clean-balance{background:radial-gradient(circle at 90% 10%,rgba(27,213,185,.17),transparent 38%),linear-gradient(115deg,#0b3545,#092337 65%,#071d30)!important;border:1px solid rgba(47,214,190,.38)!important;border-radius:24px!important;box-shadow:0 18px 48px rgba(0,11,23,.22)!important}
+#tracker-dashboard #sq-clean-net{font-size:clamp(44px,5.5vw,76px)!important;letter-spacing:-.07em!important;font-weight:780!important}
+#tracker-dashboard h1,#tracker-dashboard h2,#trackers-page h2,#friends-page h2,#sq-bills-page h2{font-weight:740!important;letter-spacing:-.045em!important}
+#tracker-dashboard .dashboard-action,#tracker-dashboard .sq-side-action{border-radius:15px!important;transition:transform .16s ease,border-color .16s ease,background-color .16s ease!important}
+#tracker-dashboard .dashboard-action:hover,#tracker-dashboard .sq-side-action:hover{transform:translateY(-2px)!important;border-color:rgba(35,214,190,.5)!important}
+/* Forms and controls, avoiding modal positioning/visibility rules. */
+#tracker-dashboard input:not([type=checkbox]),#tracker-dashboard select,#sq-bills-page input:not([type=checkbox]),#sq-bills-page select,#settings-page input:not([type=checkbox]){border-radius:12px!important}
+#tracker-dashboard button,#sq-bills-page button,#trackers-page button{font-family:inherit!important}
+#tracker-dashboard :is(button,input,select,textarea):focus-visible,#sq-bills-page :is(button,input,select,textarea):focus-visible{outline:2px solid var(--sq-pro-teal)!important;outline-offset:2px!important}
+/* Deliberate, compact desktop sizing; preserve mobile navigation behavior. */
+@media(min-width:1100px){#tracker-dashboard .sq-overview-stats{gap:14px!important}#tracker-dashboard .sq-overview-stats .sq-stat{padding:24px!important}}
+@media(max-width:900px){#tracker-dashboard .sq-clean-balance{padding:24px!important}#tracker-dashboard #sq-clean-net{font-size:clamp(38px,9vw,58px)!important}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}#tracker-dashboard .dashboard-action,#tracker-dashboard .sq-side-action{transition:none!important}}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
@@ -10171,35 +10198,47 @@ html body.sq-bill-dialog-active .sq-bill-modal-backdrop:not([hidden]) {
 </style>
 <!-- SquareUp premium design system: visual-only, preserves existing behavior -->
 <style id="sq-premium-polish-2026">
-:root{--sq-polish-radius:18px;--sq-polish-edge:rgba(138,196,211,.19);--sq-polish-shadow:0 8px 26px rgba(0,15,29,.16);--sq-polish-ease:cubic-bezier(.2,.7,.2,1)}
-@media(min-width:801px){
- body:not(.side-collapsed){padding-left:260px!important}
- body:not(.side-collapsed)>.sidebar,.sidebar:not(.sq-mobile-nav){width:244px}
- body:not(.side-collapsed) .sidebar{padding:18px 12px;gap:11px;box-shadow:2px 0 15px rgba(0,13,24,.13)}
- .sidebar .side-section{gap:5px}
- .sidebar .side-section+.side-section{padding-top:12px}
- .sidebar .small-btn{padding:9px 11px;font-size:13px}
+/* SquareUp 2026: high-contrast, deliberately visible UI redesign */
+:root{--sq-ui-border:rgba(123,190,211,.22);--sq-ui-shadow:0 10px 30px rgba(0,10,25,.16);--sq-ui-radius:17px}
+@media(min-width:901px){
+ body:not(.side-collapsed){padding-left:236px!important}
+ body:not(.side-collapsed)>.sidebar{width:220px!important;padding:20px 12px!important;gap:9px!important}
+ .sidebar .side-section{gap:4px!important}
+ .sidebar .side-section+.side-section{padding-top:11px!important}
+ .sidebar .small-btn{padding:10px 12px!important;font-size:13px!important;border-radius:10px!important;min-height:39px}
 }
-/* Understated glass and consistent visual rhythm */
-#tracker-dashboard .card,#tracker-dashboard details.card,#friends-page .card,#notifications-page .card,
-.sq-bills-card,.sq-premium-metrics article,.sq-premium-calendar,.tracker-tile,
-.sq-premium-dialog{border-radius:var(--sq-polish-radius)!important;border-color:var(--sq-polish-edge)!important;box-shadow:var(--sq-polish-shadow)!important}
-#tracker-dashboard .card,#friends-page .card,#notifications-page .card{backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
-#tracker-dashboard h1,#tracker-dashboard h2,#trackers-page h2,#friends-page h2,#sq-bills-page h2{letter-spacing:-.025em;line-height:1.2}
-#tracker-dashboard .card h3,#sq-bills-page h3{letter-spacing:-.015em}
-#tracker-dashboard .sq-clean-balance{box-shadow:0 9px 24px rgba(0,14,29,.22)!important}
-#tracker-dashboard .sq-clean-balance strong,#tracker-dashboard .sq-clean-balance .amount{font-variant-numeric:tabular-nums;letter-spacing:-.035em}
-/* Buttons, tabs, and controls: teal reserved for actions */
-#tracker-dashboard button,#sq-bills-page button,#friends-page button,#notifications-page button{transition:background-color .16s var(--sq-polish-ease),border-color .16s var(--sq-polish-ease),box-shadow .16s var(--sq-polish-ease),transform .16s var(--sq-polish-ease)}
-#tracker-dashboard button:active,#sq-bills-page button:active{transform:scale(.985)}
-#tracker-dashboard button:focus-visible,#sq-bills-page button:focus-visible,.sidebar button:focus-visible{outline:2px solid #31e5ca;outline-offset:3px}
-#tracker-dashboard input,#tracker-dashboard select,#sq-bills-page input,#sq-bills-page select{transition:border-color .16s,box-shadow .16s}
-#tracker-dashboard input:focus-visible,#tracker-dashboard select:focus-visible,#sq-bills-page input:focus-visible,#sq-bills-page select:focus-visible{outline:none;border-color:#32cbbd!important;box-shadow:0 0 0 3px rgba(35,218,190,.13)}
-/* Gentle entrance without delaying interaction or hiding content */
-@keyframes sqPolishAppear{from{opacity:.78;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-.sq-premium-overview,.sq-premium-metrics article,.sq-premium-calendar{animation:sqPolishAppear .24s ease-out both}
-@media(prefers-reduced-motion:reduce){.sq-premium-overview,.sq-premium-metrics article,.sq-premium-calendar{animation:none!important}#tracker-dashboard button,#sq-bills-page button{transition:none!important}}
-@media(max-width:800px){body{padding-left:16px!important}.sq-premium-metrics article,.sq-premium-calendar{border-radius:16px!important}}
+.sidebar{box-shadow:2px 0 16px rgba(0,12,26,.16)!important;border-right:1px solid rgba(114,175,194,.20)!important}
+.sidebar .small-btn:not(.accent){background:transparent!important;border-color:transparent!important}
+.sidebar .small-btn:not(.accent):hover{background:rgba(40,198,180,.10)!important;color:#f5ffff!important}
+.sidebar .small-btn.accent{background:rgba(24,203,180,.13)!important;color:#4be9d3!important;border:1px solid rgba(41,220,194,.24)!important;box-shadow:inset 3px 0 #23d9c3!important}
+/* Main balance now reads as a financial hero, not another ordinary card */
+#tracker-dashboard .sq-clean-balance{background:linear-gradient(125deg,#0b3443 0%,#09273c 58%,#071d31 100%)!important;border:1px solid rgba(60,222,202,.38)!important;border-radius:21px!important;padding:36px 38px!important;box-shadow:0 16px 40px rgba(0,15,30,.22)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+#tracker-dashboard .sq-clean-balance-copy{gap:12px!important}
+#tracker-dashboard .sq-clean-eyebrow{font-size:12px!important;letter-spacing:.11em!important;text-transform:uppercase!important;font-weight:750!important;color:#9ac6cf!important}
+#tracker-dashboard #sq-clean-net{font-size:clamp(43px,5vw,72px)!important;font-weight:800!important;letter-spacing:-.065em!important;line-height:1.02!important;font-variant-numeric:tabular-nums}
+#tracker-dashboard #sq-clean-explanation{font-size:13px!important;color:#acc5d1!important}
+#tracker-dashboard .sq-clean-balance-actions button{min-height:44px!important;padding:12px 19px!important;border-radius:11px!important}
+/* Cohesive components across the app, while excluding overlays/portals */
+#tracker-dashboard .card,#tracker-dashboard details.card,#tracker-dashboard .sq-return-panel,#tracker-dashboard .sq-stat,#tracker-dashboard .dashboard-action,#tracker-dashboard .sq-side-action,#trackers-page .tracker-tile,#friends-page .card,#notifications-page .card,#sq-bills-page .sq-bills-card,#sq-bills-page .sq-premium-calendar{border-radius:var(--sq-ui-radius)!important;border:1px solid var(--sq-ui-border)!important;box-shadow:var(--sq-ui-shadow)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important}
+#tracker-dashboard .sq-overview-stats{gap:12px!important}
+#tracker-dashboard .sq-overview-stats .sq-stat{padding:20px 22px!important}
+#tracker-dashboard .sq-overview-stats .sq-stat span{font-size:12px!important;letter-spacing:.02em!important}
+#tracker-dashboard .sq-overview-stats .sq-stat strong{font-size:clamp(23px,2.7vw,34px)!important;letter-spacing:-.04em!important;font-variant-numeric:tabular-nums}
+#tracker-dashboard h1,#tracker-dashboard h2,#trackers-page h2,#friends-page h2,#sq-bills-page h2{letter-spacing:-.035em!important;line-height:1.15!important}
+#tracker-dashboard h3,#sq-bills-page h3{letter-spacing:-.025em!important}
+#tracker-dashboard .dashboard-actions{gap:12px!important}
+#tracker-dashboard .dashboard-action{transition:transform .17s ease,border-color .17s ease,background-color .17s ease!important}
+#tracker-dashboard .dashboard-action:hover{transform:translateY(-2px)!important;border-color:rgba(53,223,201,.50)!important}
+#tracker-dashboard button,#sq-bills-page button,.sidebar button{transition:background-color .17s ease,border-color .17s ease,box-shadow .17s ease!important}
+#tracker-dashboard button:focus-visible,#sq-bills-page button:focus-visible,.sidebar button:focus-visible{outline:2px solid #31e5ca!important;outline-offset:3px!important}
+#tracker-dashboard input:focus-visible,#tracker-dashboard select:focus-visible,#sq-bills-page input:focus-visible,#sq-bills-page select:focus-visible{outline:2px solid rgba(40,220,190,.5)!important;outline-offset:1px!important}
+/* A consistent, clear hierarchy for tab navigation */
+#tracker-dashboard .sq-workspace-tabs{border:1px solid rgba(114,185,202,.22)!important;border-radius:13px!important;padding:5px!important}
+#tracker-dashboard .sq-workspace-tabs button{border-radius:9px!important;font-weight:700!important}
+/* Preserve the floating bill dialog's own layout and stacking */
+.sq-bill-modal-portal{z-index:2147483000!important}
+@media(max-width:900px){#tracker-dashboard .sq-clean-balance{padding:27px 22px!important}#tracker-dashboard #sq-clean-net{font-size:clamp(39px,9vw,58px)!important}#tracker-dashboard .sq-overview-stats{gap:8px!important}}
+@media(prefers-reduced-motion:reduce){#tracker-dashboard .dashboard-action{transition:none!important}}
 </style>
 </body>
 </html>
