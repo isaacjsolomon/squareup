@@ -2087,13 +2087,13 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
     <div id="notifications-panel" class="sidebar-notification-panel"><div class="notification-panel-heading">Your updates</div><div class="sq-notification-tools"><label>Show <select id="sq-notification-filter"><option value="all">All notifications</option><option value="unread">Unread only</option><option value="payments">Payments</option><option value="messages">Messages</option><option value="expenses">Expenses & invites</option></select></label></div><div id="notifications-list"><p>Loading notifications…</p></div></div>
   </section>
   <div id="tracker-dashboard" class="sq-tab-overview">
-<div id="sq-release-proof-20261104" role="status"><span class="sq-release-dot"></span><strong>SquareUp upgraded</strong><span>Smart settlement suggestions are now available in Overview.</span><button type="button" id="sq-release-open">Open Smart Settle Up</button></div>
+
 
   <div id="sq-tracker-loading" class="sq-tracker-loading" role="status" aria-live="polite" hidden>
     <span class="sq-tracker-spinner" aria-hidden="true"></span><span>Loading tracker data…</span>
   </div>
   <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="bills" role="tab" aria-selected="false">Bills</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button></div>
-  <section id="sq-simplify-preview" class="sq-simplify-preview" aria-label="Simplified settlement suggestions" hidden><div class="sq-simplify-head"><div><h3>Smarter settle up</h3><p>Suggested payments that can reduce the number of transfers across this tracker.</p></div><button type="button" id="sq-simplify-toggle" class="small-btn" aria-expanded="false">Show suggestions</button></div><div id="sq-simplify-results" hidden></div></section>
+  
 
   <section id="sq-template-dashboard" class="sq-template-dashboard" hidden aria-label="Tracker template overview"></section>
 
@@ -10961,84 +10961,13 @@ body.sq-finance-open #sq-nextgen .sq-ng-shell{position:relative!important;z-inde
 })();
 </script>
 
-<style id="sq-simplify-preview-style-2026">
-#sq-simplify-preview{margin-top:18px;padding:17px;border:1px solid rgba(130,220,225,.25);background:rgba(9,32,53,.45);border-radius:16px;color:#e9f5fa}
-#sq-simplify-preview[hidden],#sq-simplify-results[hidden]{display:none!important}
-.sq-simplify-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
-.sq-simplify-head h3{margin:0 0 5px;font-size:17px}.sq-simplify-head p{margin:0;color:#afc5d2;font-size:13px;line-height:1.45}
-#sq-simplify-results{margin-top:15px;border-top:1px solid rgba(150,200,220,.2);padding-top:12px}
-.sq-simplify-row{display:flex;gap:12px;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(150,200,220,.12);font-size:14px}
-.sq-simplify-row strong{color:#71e6ce;white-space:nowrap}.sq-simplify-note{font-size:12px;color:#afc5d2;margin:10px 0 0;line-height:1.5}
-</style>
-<script id="sq-simplify-preview-script-2026">
-(()=>{
- const root=document.getElementById('sq-simplify-preview'),button=document.getElementById('sq-simplify-toggle'),out=document.getElementById('sq-simplify-results');
- if(!root||!button||!out)return;
- const escText=v=>String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- function draw(){
-  try{
-   if(typeof current==='undefined'||!current||typeof computeNet!=='function'||typeof nameMap!=='function'){root.hidden=true;return}
-   const result=computeNet(),names=nameMap(),balances=new Map();
-   for(const pair of result.pairs){const cents=Math.round(Number(pair.amount)*100);if(!Number.isSafeInteger(cents)||cents<=0)continue;balances.set(pair.from,(balances.get(pair.from)||0)-cents);balances.set(pair.to,(balances.get(pair.to)||0)+cents)}
-   const debtors=[],creditors=[];for(const [id,cents] of balances){if(cents<0)debtors.push({id,amount:-cents});else if(cents>0)creditors.push({id,amount:cents})}
-   debtors.sort((a,b)=>b.amount-a.amount);creditors.sort((a,b)=>b.amount-a.amount);
-   const transfers=[];let i=0,j=0;while(i<debtors.length&&j<creditors.length){const amount=Math.min(debtors[i].amount,creditors[j].amount);if(amount>0)transfers.push({from:debtors[i].id,to:creditors[j].id,amount});debtors[i].amount-=amount;creditors[j].amount-=amount;if(!debtors[i].amount)i++;if(!creditors[j].amount)j++}
-   root.hidden=false;
-   if(root.hidden)return;
-   const symbol=typeof sqCurrency==='function'?sqCurrency():'';
-   const format=c=>{try{return new Intl.NumberFormat(undefined,{style:'currency',currency:/^[A-Z]{3}$/.test(symbol)?symbol:'USD'}).format(c/100)}catch(_){return (c/100).toFixed(2)}};
-   out.innerHTML=(transfers.length?'':'<p class="sq-simplify-note">No outstanding balances to simplify yet. Add expenses to see suggested settlements.</p>')+transfers.map(t=>'<div class="sq-simplify-row"><span>'+escText(names[t.from]||t.from)+' pays '+escText(names[t.to]||t.to)+'</span><strong>'+escText(format(t.amount))+'</strong></div>').join('')+'<p class="sq-simplify-note">Suggestions only. No payments or balances are changed. Confirm amounts with everyone before settling. These suggestions assume the tracker uses one shared currency.</p>';
-   button.textContent='Show suggestions'+(transfers.length?' ('+transfers.length+')':'');
-   if(!out.hidden)button.textContent='Hide suggestions';
-  }catch(err){console.warn('Settlement preview unavailable',err);root.hidden=true}
- }
- button.addEventListener('click',()=>{out.hidden=!out.hidden;button.setAttribute('aria-expanded',String(!out.hidden));draw()});
- const target=document.getElementById('nets');if(target)new MutationObserver(draw).observe(target,{childList:true,subtree:true});
- document.addEventListener('visibilitychange',()=>{if(!document.hidden)draw()});draw();
-})();
-</script>
-<style id="sq-simplify-visible-overview-2026">#tracker-dashboard.sq-tab-expenses #sq-simplify-preview,#tracker-dashboard.sq-tab-members #sq-simplify-preview,#tracker-dashboard.sq-tab-bills #sq-simplify-preview{display:none!important}#tracker-dashboard.sq-tab-overview #sq-simplify-preview:not([hidden]){display:block!important;margin:14px 0 18px}</style><style id="sq-release-proof-style-20261104">#sq-release-proof-20261104{display:flex!important;align-items:center;flex-wrap:wrap;gap:10px;margin:14px 0 18px;padding:13px 16px;border:1px solid rgba(93,239,205,.65);border-radius:15px;background:linear-gradient(110deg,rgba(12,60,76,.96),rgba(18,38,70,.94));color:#effffc;font:500 13px/1.4 system-ui,sans-serif;box-shadow:0 8px 24px #001b2b40}#sq-release-proof-20261104 strong{font-size:14px}#sq-release-proof-20261104 button{margin-left:auto;background:#65f5ac;color:#071b2b;border:0;border-radius:9px;padding:9px 12px;font-weight:750;cursor:pointer}.sq-release-dot{width:9px;height:9px;border-radius:50%;background:#65f5ac;box-shadow:0 0 0 4px #65f5ac25}#tracker-dashboard #sq-simplify-preview{display:block!important}#tracker-dashboard #sq-simplify-preview[hidden]{display:none!important}@media(max-width:650px){#sq-release-proof-20261104 button{margin-left:0}}</style>
-<style id="sq-settle-modal-style-20261104">
-#sq-settle-modal[hidden]{display:none!important}#sq-settle-modal{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(3,13,27,.82);backdrop-filter:blur(9px)}
-#sq-settle-dialog{width:min(580px,100%);max-height:85vh;overflow:auto;border:1px solid rgba(87,236,207,.55);border-radius:22px;background:linear-gradient(155deg,#12364c,#101d35);color:#f0faff;padding:26px;box-shadow:0 28px 85px #0009;font-family:system-ui,sans-serif}
-#sq-settle-dialog h2{margin:0 0 8px;font-size:25px}#sq-settle-dialog p{color:#b8cfdd;font-size:14px;line-height:1.55}#sq-settle-dialog .sq-settle-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}#sq-settle-close{border:1px solid #5b7d8b;background:#18394b;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}#sq-settle-list{margin-top:16px}#sq-settle-list .sq-settle-item{display:flex;justify-content:space-between;gap:16px;padding:15px 0;border-bottom:1px solid #ffffff24}#sq-settle-list strong{color:#65f5ac;white-space:nowrap}
-</style>
-<div id="sq-settle-modal" hidden><div id="sq-settle-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-settle-title"><div class="sq-settle-top"><div><h2 id="sq-settle-title">Smart Settle Up</h2><p>Suggested payments to simplify outstanding balances in your current tracker.</p></div><button type="button" id="sq-settle-close">Close</button></div><div id="sq-settle-stats" class="sq-settle-stats" aria-live="polite"></div><div class="sq-settle-explain">SquareUp offsets what members owe and suggests a shorter payment route. This is a preview, not a payment request.</div><p id="sq-settle-status-note" class="sq-settle-status-note" aria-live="polite"></p><h3 class="sq-settle-section-title">Suggested payments</h3><div id="sq-settle-list"></div><div class="sq-settle-bottom"><button type="button" id="sq-settle-copy">Copy payment plan</button><span id="sq-settle-copy-status" role="status"></span></div><p>Suggestions only: no payments are created and no balances are changed. Check the currency and confirm amounts with members before paying.</p></div></div>
-<script id="sq-settle-modal-script-20261104">
-(function(){
-var modal=document.getElementById('sq-settle-modal'),list=document.getElementById('sq-settle-list'),stats=document.getElementById('sq-settle-stats'),copy=document.getElementById('sq-settle-copy'),copyStatus=document.getElementById('sq-settle-copy-status'),planText='',trigger=document.getElementById('sq-release-open'),close=document.getElementById('sq-settle-close');if(!modal||!trigger)return;
-function safe(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-function render(){try{
- if(typeof entries==='undefined'||typeof nameMap!=='function'){list.textContent='Tracker balances are still loading. Please try again in a moment.';return}
- var names=nameMap(),statusNote=document.getElementById('sq-settle-status-note');
- var rows=Array.isArray(entries)?entries:[],pending=rows.filter(function(e){return String(e.paymentStatus||'confirmed').toLowerCase()==='pending'});
- statusNote.textContent=pending.length?'Includes '+pending.length+' pending expense(s) automatically. Disputed and rejected expenses are excluded. Pending amounts are provisional until approved.':'Includes confirmed expenses and recorded payments. Disputed and rejected expenses are excluded.';
- var byPair=new Map(),net=new Map();
- rows.forEach(function(e){
-  var status=String(e.paymentStatus||'confirmed').toLowerCase();
-  if(status!=='confirmed'&&status!=='pending')return;
-  var from=String(e.from||'').trim().toLowerCase(),to=String(e.to||'').trim().toLowerCase(),cents=Math.round(Number(e.amount)*100);
-  if(!from||!to||from===to||!Number.isSafeInteger(cents)||cents<=0)return;
-  var delta=e.type==='debt'?cents:e.type==='payment'?-cents:0;if(!delta)return;
-  net.set(from,(net.get(from)||0)-delta);net.set(to,(net.get(to)||0)+delta);
-  var key=from<to?from+'|'+to:to+'|'+from,sign=from<to?1:-1;
-  byPair.set(key,(byPair.get(key)||0)+delta*sign);
- });
- var currentCount=Array.from(byPair.values()).filter(function(v){return v!==0}).length;
- var owing=[],owed=[];net.forEach(function(c,id){if(c<0)owing.push({id:id,c:-c});if(c>0)owed.push({id:id,c:c})});owing.sort(function(a,b){return b.c-a.c});owed.sort(function(a,b){return b.c-a.c});var transfers=[],i=0,j=0;
- while(i<owing.length&&j<owed.length){var n=Math.min(owing[i].c,owed[j].c);if(n>0)transfers.push({a:owing[i].id,b:owed[j].id,c:n});owing[i].c-=n;owed[j].c-=n;if(!owing[i].c)i++;if(!owed[j].c)j++}
- var currency=typeof sqCurrency==='function'?sqCurrency():'USD';if(!/^[A-Z]{3}$/.test(currency))currency='USD';var fmt=function(c){try{return new Intl.NumberFormat(undefined,{style:'currency',currency:currency}).format(c/100)}catch(_){return (c/100).toFixed(2)}};
- var total=transfers.reduce(function(sum,t){return sum+t.c},0),saved=Math.max(0,currentCount-transfers.length);
- stats.innerHTML='<div><small>Current transfers</small><strong>'+currentCount+'</strong></div><div><small>Suggested transfers</small><strong>'+transfers.length+'</strong></div><div><small>Fewer transfers</small><strong>'+saved+'</strong></div><div><small>Total to settle</small><strong>'+safe(fmt(total))+'</strong></div>';
- list.innerHTML=transfers.length?transfers.map(function(t,index){return '<div class="sq-settle-item"><span class="sq-settle-number">'+(index+1)+'</span><span class="sq-settle-names"><b>'+safe(names[t.a]||t.a)+'</b><small>pays</small><b>'+safe(names[t.b]||t.b)+'</b></span><strong>'+safe(fmt(t.c))+'</strong></div>'}).join(''):'<p>Everyone is squared up, or there are no eligible outstanding balances in this tracker.</p>';
- planText='SquareUp — Smart Settle Up\\n'+transfers.map(function(t,i){return (i+1)+'. '+(names[t.a]||t.a)+' pays '+(names[t.b]||t.b)+': '+fmt(t.c)}).join('\\n')+'\\nSuggestions only; confirm before paying.';copy.disabled=!transfers.length;copyStatus.textContent='';
- }catch(e){console.error('Smart settle up error',e);list.textContent='Unable to calculate suggestions. Please refresh your tracker and try again.'}}
- copy.addEventListener('click',function(){if(!planText)return;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(planText).then(function(){copyStatus.textContent='Copied!'},function(){copyStatus.textContent='Copy unavailable in this browser'})}else{copyStatus.textContent='Copy unavailable in this browser'}});
 
- trigger.addEventListener('click',function(){modal.hidden=false;render()});close.addEventListener('click',function(){modal.hidden=true});modal.addEventListener('click',function(e){if(e.target===modal)modal.hidden=true});document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!modal.hidden)modal.hidden=true});
-})();
-</script>
-<style id="sq-settle-expanded-style-20261104">#sq-settle-dialog{width:min(680px,100%);padding:clamp(20px,3vw,32px)}.sq-settle-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:20px 0 14px}.sq-settle-stats>div{background:#ffffff0c;border:1px solid #ffffff20;border-radius:12px;padding:12px 10px;min-width:0}.sq-settle-stats small{display:block;color:#a8c7d3;font-size:11px;margin-bottom:7px}.sq-settle-stats strong{display:block;font-size:20px;color:#71f1d4;overflow-wrap:anywhere}.sq-settle-explain{padding:12px 14px;border-left:3px solid #65f5ac;background:#65f5ac0c;border-radius:7px;color:#c8dce5;font-size:13px;line-height:1.5}.sq-settle-section-title{font-size:16px;margin:22px 0 0}.sq-settle-number{display:inline-grid;place-items:center;flex:0 0 28px;width:28px;height:28px;border-radius:50%;background:#65f5ac20;color:#65f5ac;font-weight:700}.sq-settle-names{flex:1;display:flex;gap:7px;align-items:center;flex-wrap:wrap}.sq-settle-names small{color:#9eb6c6}.sq-settle-bottom{display:flex;gap:12px;align-items:center;margin:20px 0 8px}#sq-settle-copy{background:#65f5ac;color:#072034;border:0;border-radius:10px;padding:12px 16px;font-weight:750;cursor:pointer}#sq-settle-copy:disabled{opacity:.45;cursor:default}#sq-settle-copy-status{font-size:12px;color:#9fead9}@media(max-width:600px){.sq-settle-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.sq-settle-item{flex-wrap:wrap}.sq-settle-item strong{margin-left:auto}}</style>
+
+
+
+
+
+
 <style id="sq-quick-action-dialog-style-20261105">
 .sq-action-modal[hidden]{display:none!important}.sq-action-modal{position:fixed;inset:0;z-index:2147482900;display:flex;align-items:center;justify-content:center;padding:clamp(10px,3vw,24px);background:rgba(2,12,27,.8);backdrop-filter:blur(8px)}
 .sq-action-modal-inner{position:relative;width:min(750px,100%);max-height:calc(100dvh - 32px);overflow:auto;overscroll-behavior:contain;border-radius:20px;box-shadow:0 24px 90px #000a}
@@ -11076,6 +11005,6 @@ body.sq-action-dialog-open{overflow:hidden!important}
  new MutationObserver(function(){if(receipt.hidden&&!receiptModal.hidden)hide(receiptModal)}).observe(receipt,{attributes:true,attributeFilter:['hidden']});
 })();
 </script>
-<style id="sq-settle-pending-style-20261105">.sq-settle-pending-option{display:block;padding:12px 14px;margin:14px 0 4px;border:1px solid #a9c1d04d;border-radius:12px;color:#ecf9ff;font-size:14px;cursor:pointer}.sq-settle-pending-option[hidden]{display:none!important}.sq-settle-pending-option input{accent-color:#65f5ac;margin-right:8px}.sq-settle-pending-option small{display:block;margin:5px 0 0 25px;color:#b2c6d4}.sq-settle-status-note{margin:10px 0;color:#a9c7d6;font-size:12px;line-height:1.5}</style><style id="sq-settle-clarity-20261105">#sq-settle-dialog .sq-settle-pending-option{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:16px 0 8px;padding:15px 18px}#sq-settle-dialog .sq-settle-pending-text{display:flex;flex-direction:column;gap:5px;min-width:0}#sq-settle-dialog .sq-settle-pending-text strong{font-size:14px;color:#f0f9ff}#sq-settle-dialog .sq-settle-pending-text small{font-size:12px;color:#a9c4d1;margin:0}#sq-settle-dialog #sq-settle-include-pending{width:20px;height:20px;flex:none;margin:0;cursor:pointer}#sq-settle-dialog .sq-settle-stats{margin:20px 0 14px}#sq-settle-dialog .sq-settle-status-note{margin:8px 0 14px}#sq-settle-dialog .sq-settle-item{align-items:center}#sq-settle-dialog .sq-settle-bottom{margin-top:16px}</style></body>
+</body>
 </html>
 
