@@ -73,9 +73,25 @@ export function initEvents({api,getTrackers,getUser}){
  const anchor=document.getElementById('sq-finance-nav');
  if(anchor)anchor.after(nav);else document.querySelector('.sidebar')?.append(nav);
  nav.onclick=async()=>{panel.hidden=false;document.body.style.overflow='hidden';message('');try{await load()}catch(e){message(e.message)}};
+ const eventForm=$('sqev-form');
+ const startField=eventForm.elements.starts,endField=eventForm.elements.ends;
+ const minimumEnd=()=>{
+  if(!startField.value)return;
+  const start=new Date(startField.value);
+  if(Number.isNaN(start.getTime()))return;
+  const next=new Date(start.getTime()+3*60*60*1000);
+  const local=new Date(next.getTime()-next.getTimezoneOffset()*60000).toISOString().slice(0,16);
+  endField.min=startField.value;
+  if(!endField.value || new Date(endField.value)<=start){endField.value=local;message('End time adjusted to three hours after the start.');}
+ };
+ startField.addEventListener('change',minimumEnd);
+ startField.addEventListener('input',minimumEnd);
  $('sqev-form').onsubmit=async ev=>{
   ev.preventDefault();const f=ev.currentTarget.elements;
-  try{const e=await api('events','POST',{tracker_id:f.tracker_id.value,title:f.title.value,description:f.description.value,location:f.location.value,starts_at:new Date(f.starts.value).toISOString(),ends_at:new Date(f.ends.value).toISOString()});message('Event created.');f.title.value='';await load();await details(e.id)}
+  const start=new Date(f.starts.value),end=new Date(f.ends.value);
+  if(!f.starts.value || !f.ends.value || !Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime())){message('Choose valid start and end dates.');return;}
+  if(end<=start){message('The event must end after it starts. Change the end date or time.');endField.focus();return;}
+  try{const e=await api('events','POST',{tracker_id:f.tracker_id.value,title:f.title.value,description:f.description.value,location:f.location.value,starts_at:start.toISOString(),ends_at:end.toISOString()});message('Event created.');f.title.value='';await load();await details(e.id)}
   catch(error){message(error.message)}
  };
  $('sqev-list').onclick=async ev=>{const b=ev.target.closest('[data-open]');if(b)try{await details(b.dataset.open)}catch(e){message(e.message)}};
