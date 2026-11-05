@@ -32,6 +32,7 @@ export function initEvents({api,getTrackers,getUser}){
  const $=id=>panel.querySelector('#'+id),message=t=>{$('sqev-message').textContent=t};
  const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const date=v=>new Date(v).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});
+ const localDate=v=>{const d=new Date(v);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)};
  let selected=null;
  async function load(){
   const trackers=getTrackers()||[], select=$('sqev-form').elements.tracker_id;
@@ -63,7 +64,7 @@ export function initEvents({api,getTrackers,getUser}){
    <div id="sqev-edit-holder"></div>`;
   if(own) $('sqev-details').querySelector('[data-edit]').onclick=()=>{
    const holder=$('sqev-edit-holder');
-   holder.innerHTML=`<form id="sqev-edit" class="sqev-item"><h3>Edit event</h3><label>Name<input name="title" required maxlength="120" value="${safe(e.title)}"></label><label>Location<input name="location" maxlength="300" value="${safe(e.location)}"></label><label>Description<textarea name="description" maxlength="2000">${safe(e.description)}</textarea></label><button type="submit">Save changes</button></form>`;
+   holder.innerHTML=`<form id="sqev-edit" class="sqev-item"><h3>Edit event</h3><label>Name<input name="title" required maxlength="120" value="${safe(e.title)}"></label><label>Location<input name="location" maxlength="300" value="${safe(e.location)}"></label><label>Description<textarea name="description" maxlength="2000">${safe(e.description)}</textarea></label><div class="sqev-grid"><label>Starts<input type="datetime-local" name="starts" required value="${localDate(e.starts_at)}"></label><label>Ends<input type="datetime-local" name="ends" required value="${localDate(e.ends_at)}"></label></div><button type="submit">Save changes</button></form>`;
   };
  }
  $('sqev-close').onclick=()=>{panel.hidden=true;document.body.style.overflow='';};
@@ -93,7 +94,7 @@ export function initEvents({api,getTrackers,getUser}){
   if(!['sqev-edit','sqev-expense'].includes(ev.target.id))return;
   ev.preventDefault();const f=ev.target.elements;
   try{
-   if(ev.target.id==='sqev-edit')await api('events/'+selected,'PATCH',{title:f.title.value,location:f.location.value,description:f.description.value});
+   if(ev.target.id==='sqev-edit')await api('events/'+selected,'PATCH',{title:f.title.value,location:f.location.value,description:f.description.value,starts_at:new Date(f.starts.value).toISOString(),ends_at:new Date(f.ends.value).toISOString()});
    if(ev.target.id==='sqev-expense')await api('events/'+selected+'/expenses','POST',{entry_id:f.entry_id.value});
    message('Saved.');await details(selected);await load();
   }catch(error){message(error.message)}
