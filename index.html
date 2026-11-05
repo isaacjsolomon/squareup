@@ -2656,6 +2656,8 @@ function esc(s) {
   });
 }
 const SQ_CURRENCIES = ["USD","EUR","GBP","CAD","AUD","JPY","CHF","CNY","INR","MXN","BRL","KRW","SGD","HKD","NZD","SEK","NOK","DKK","ILS","ZAR","AED","AFN","ALL","AMD","ANG","AOA","ARS","AWG","AZN","BAM","BBD","BDT","BGN","BHD","BIF","BMD","BND","BOB","BSD","BTN","BWP","BYN","BZD","CDF","CLP","COP","CRC","CUP","CVE","CZK","DJF","DOP","DZD","EGP","ETB","FJD","GEL","GHS","GIP","GMD","GNF","GTQ","GYD","HNL","HRK","HTG","HUF","IDR","IQD","ISK","JMD","JOD","KES","KGS","KHR","KMF","KWD","KZT","LAK","LBP","LKR","LRD","LSL","MAD","MDL","MGA","MKD","MMK","MNT","MOP","MUR","MVR","MWK","MYR","MZN","NAD","NGN","NIO","NPR","OMR","PAB","PEN","PGK","PHP","PKR","PLN","PYG","QAR","RON","RSD","RUB","RWF","SAR","SBD","SCR","SDG","SLL","SOS","SRD","SSP","STN","SYP","SZL","THB","TJS","TMT","TND","TOP","TRY","TTD","TWD","TZS","UAH","UGX","UYU","UZS","VES","VND","VUV","WST","XAF","XCD","XOF","XPF","YER","ZMW"];
+// Share the complete supported currency list with the Finance Hub currency manager.
+window.SQ_CURRENCIES = SQ_CURRENCIES;
 function sqCurrency(){return (typeof current !== 'undefined' && current && current.currency) || 'USD';}
 function sqFormat(n,c){return new Intl.NumberFormat('en-US',{style:'currency',currency:c||sqCurrency()}).format(Number(n)||0);}
 function money(n) { return sqFormat(n); }
