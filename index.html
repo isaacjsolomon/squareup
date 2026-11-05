@@ -10903,6 +10903,29 @@ body.sq-finance-open #sq-nextgen::before{display:none!important;content:none!imp
 body.sq-finance-open #sq-nextgen .sq-ng-shell{background:transparent!important;}
 body.sq-finance-open #sq-nextgen .sq-ng-header p{color:#b7ccd7!important;}
 </style>
+
+<style id="sq-finance-overview-backdrop-match-2026">
+/* Use the same selected tracker image and photo tint as the Overview backdrop. */
+body.sq-finance-open #sq-nextgen{
+ background-color:#071522!important;
+ background-image:var(--sq-finance-tracker-backdrop,linear-gradient(135deg,#071522,#102b3d))!important;
+ background-position:center center!important;
+ background-size:cover!important;
+ background-repeat:no-repeat!important;
+ background-attachment:fixed!important;
+}
+body.sq-finance-open #sq-nextgen::before{
+ content:""!important;
+ display:block!important;
+ position:fixed!important;
+ inset:0 0 0 var(--sq-finance-sidebar-offset,300px)!important;
+ background:rgba(15,12,40,.35)!important;
+ pointer-events:none!important;
+ z-index:0!important;
+}
+body.sq-finance-open #sq-nextgen .sq-ng-shell{position:relative!important;z-index:1!important;background:transparent!important;}
+@media(max-width:800px){body.sq-finance-open #sq-nextgen::before{left:0!important;}}
+</style>
 </body>
 </html>
 
