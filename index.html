@@ -5589,7 +5589,7 @@ function sqTemplateIndexForTracker(){
 function sqTemplateAmount(n){try{return new Intl.NumberFormat('en-US',{style:'currency',currency:current.currency||'USD'}).format(n||0);}catch(_){return '$'+(n||0).toFixed(2);}}
 function sqRenderTemplateDashboard(){
  var el=document.getElementById('sq-template-dashboard');if(!el)return;
- var i=sqTemplateIndexForTracker();if(i<0||i===1){el.hidden=true;el.innerHTML='';return;}var p=sqTemplateProfiles[i];el.hidden=false;
+ var i=sqTemplateIndexForTracker();if(i<0){el.hidden=true;el.innerHTML='';return;}var p=sqTemplateProfiles[i];el.hidden=false;
  el.style.setProperty('--sq-tint',p.accent);el.style.setProperty('--sq-soft',p.soft);
  var all=(current.entries||[]).filter(e=>e.type==='debt'&&String(e.paymentStatus||'confirmed').toLowerCase()!=='rejected');
  var total=all.reduce((sum,e)=>sum+(Number(e.amount)||0),0);
