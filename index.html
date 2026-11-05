@@ -10444,5 +10444,30 @@ window.squareUpOpenFinanceHub=open;
 #sq-nextgen .sq-fx-fav.on{color:#5ce0ca;border-color:#3cbda9;background:#104044}
 @media(max-width:700px){#sq-nextgen .sq-ng-trip-hero{padding:22px}#sq-nextgen .sq-ng-trip-metrics{grid-template-columns:1fr 1fr}#sq-nextgen .sq-ng-trip-metrics article{padding:14px}#sq-nextgen .sq-ng-trip-metrics strong{font-size:20px}#sq-nextgen .sq-ng-trip-plane{right:12px;font-size:60px}#sq-nextgen .sq-ng-trip-hero h2{max-width:85%}}
 </style>
+<style id="sq-finance-mobile-dropdown-final-fix">
+/* Last-in-cascade mobile navigation: replaces the tall stack of seven tabs. */
+@media screen and (max-width: 900px) {
+  #sq-nextgen .sq-ng-mobile-picker { display:block!important; visibility:visible!important; width:100%!important; margin:0 0 18px!important; }
+  #sq-nextgen .sq-ng-tabs { display:none!important; visibility:hidden!important; }
+  #sq-nextgen .sq-ng-shell { width:100%!important; max-width:100%!important; padding:calc(env(safe-area-inset-top, 0px) + 18px) 16px calc(env(safe-area-inset-bottom, 0px) + 88px)!important; }
+  #sq-nextgen .sq-ng-header { display:grid!important; grid-template-columns:minmax(0,1fr) auto!important; align-items:start!important; gap:10px!important; margin-bottom:18px!important; }
+  #sq-nextgen .sq-ng-header>div { min-width:0!important; }
+  #sq-nextgen .sq-ng-header h1 { font-size:clamp(25px,7vw,34px)!important; line-height:1.13!important; margin:8px 0!important; text-align:left!important; }
+  #sq-nextgen .sq-ng-header p { font-size:13px!important; line-height:1.4!important; text-align:left!important; margin:0!important; }
+  #sq-nextgen .sq-ng-kicker { font-size:9px!important; letter-spacing:.12em!important; }
+  #sq-nextgen #sq-ng-close { font-size:12px!important; padding:9px 10px!important; min-height:40px!important; }
+  #sq-nextgen .sq-ng-mobile-picker>label { display:block!important; margin:0 0 8px!important; font-size:11px!important; letter-spacing:.07em!important; }
+  #sq-nextgen #sq-ng-mobile-select { display:block!important; width:100%!important; height:52px!important; padding:10px 46px 10px 16px!important; background:#123447!important; border:1px solid #3b6b78!important; color:#f4fcff!important; border-radius:13px!important; font-size:16px!important; -webkit-appearance:none!important; appearance:none!important; }
+  #sq-nextgen .sq-ng-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important; gap:10px!important; }
+  #sq-nextgen .sq-ng-grid>.sq-ng-card:first-child { grid-column:1/-1; }
+  #sq-nextgen .sq-ng-card { padding:17px!important; }
+  #sq-nextgen .sq-ng-form { grid-template-columns:1fr!important; }
+  #sq-nextgen .sq-ng-form>* { grid-column:1/-1!important; }
+}
+@media screen and (max-width:380px) {
+  #sq-nextgen .sq-ng-header h1 { font-size:25px!important; }
+  #sq-nextgen .sq-ng-grid { grid-template-columns:1fr!important; }
+}
+</style>
 </body>
 </html>
