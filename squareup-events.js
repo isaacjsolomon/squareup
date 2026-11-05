@@ -80,7 +80,7 @@ export function initEvents({api,getTrackers,getUser}){
  <button type="button" id="sqev-back-events" class="sqev-back">← All events</button>
  <div id="sqev-details"></div>
  </div><p id="sqev-message" role="status" aria-live="polite"></p>
- </div>`
+ </div>`;
  (document.querySelector('.wrap')||document.body).append(panel);
  const $=id=>panel.querySelector('#'+id),message=t=>{$('sqev-message').textContent=t};
  const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
