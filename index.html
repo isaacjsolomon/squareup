@@ -1980,6 +1980,14 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
 @media(max-width:900px){#tracker-dashboard .sq-clean-balance{padding:24px!important}#tracker-dashboard #sq-clean-net{font-size:clamp(38px,9vw,58px)!important}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}#tracker-dashboard .dashboard-action,#tracker-dashboard .sq-side-action{transition:none!important}}
 </style>
+<style id="sq-trip-toolbar-actions-2026">
+#sq-nextgen .sq-ng-trip-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:2px}
+#sq-nextgen .sq-ng-trip-actions button{min-height:46px;border:1px solid #376176;border-radius:12px;padding:11px 17px;background:#1d4257;color:#e8f5fb;font-weight:700;white-space:nowrap}
+#sq-nextgen .sq-ng-trip-actions button:first-child{background:#60c6ff;color:#092637;border-color:#60c6ff}
+#sq-nextgen .sq-ng-trip-actions button:hover{filter:brightness(1.1)}
+#sq-nextgen #sq-ng-trip-plan-editor[hidden]{display:none!important}
+@media(max-width:700px){#sq-nextgen .sq-ng-tracker-toolbar{display:flex!important;align-items:stretch!important;flex-direction:column!important}#sq-nextgen .sq-ng-tracker-picker{width:100%!important}#sq-nextgen .sq-ng-trip-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}#sq-nextgen .sq-ng-trip-actions button{white-space:normal;padding:12px 9px;font-size:12px}#sq-nextgen .sq-ng-trip-actions button:last-child{grid-column:1/-1}}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
@@ -5570,7 +5578,7 @@ function sqTemplateIndexForTracker(){
 function sqTemplateAmount(n){try{return new Intl.NumberFormat('en-US',{style:'currency',currency:current.currency||'USD'}).format(n||0);}catch(_){return '$'+(n||0).toFixed(2);}}
 function sqRenderTemplateDashboard(){
  var el=document.getElementById('sq-template-dashboard');if(!el)return;
- var i=sqTemplateIndexForTracker();if(i<0){el.hidden=true;return;}var p=sqTemplateProfiles[i];el.hidden=false;
+ var i=sqTemplateIndexForTracker();if(i<0||i===1){el.hidden=true;el.innerHTML='';return;}var p=sqTemplateProfiles[i];el.hidden=false;
  el.style.setProperty('--sq-tint',p.accent);el.style.setProperty('--sq-soft',p.soft);
  var all=(current.entries||[]).filter(e=>e.type==='debt'&&String(e.paymentStatus||'confirmed').toLowerCase()!=='rejected');
  var total=all.reduce((sum,e)=>sum+(Number(e.amount)||0),0);
@@ -10380,9 +10388,30 @@ async function drawWorkspace(){
   const budget=visibleItems.filter(x=>x.item_type==='Trip budget').reduce((a,x)=>a+Number(x.amount||0),0);
   const trackerSelect=`<label class="sq-ng-tracker-picker">Select a tracker<select id="sq-ng-tracker-picker" aria-label="Select a tracker">${trackers.length?trackers.map(t=>`<option value="${esc(t.id)}" ${t.id===activeId?'selected':''}>${esc(t.name)}</option>`).join(''):'<option value="">No trackers available</option>'}</select></label>`;
   const tripTop=isTrip?`<section class="sq-ng-trip-hero"><div class="sq-ng-trip-eyebrow">VACATION · ${esc(activeTracker?.name||'Choose a tracker')}</div><h2>Your travel spending, together</h2><p>Flights, hotels, food and activities · linked to your existing tracker</p><span class="sq-ng-trip-plane" aria-hidden="true">✈</span></section><div class="sq-ng-trip-metrics">${tripCategories.slice(0,3).map(c=>`<article><small>${esc(c)}</small><strong>${esc(money(amounts[c]))}</strong></article>`).join('')}</div><section class="sq-ng-card sq-ng-trip-breakdown"><h2>Planned cost breakdown</h2>${tripCategories.map(c=>`<div class="sq-ng-trip-line"><span>${esc(c)}</span><strong>${esc(money(amounts[c]))}</strong></div>`).join('')}${budget?`<div class="sq-ng-trip-line"><span>Trip budget</span><strong>${esc(money(budget))}</strong></div>`:''}<p class="sq-ng-note">These totals are based on your saved trip-planning items, not actual tracker expenses. Actual spending remains in the tracker ledger.</p></section>`:'';
-  content.innerHTML=`<div class="sq-ng-tracker-toolbar">${trackerSelect}</div>${tripTop}<div class="sq-ng-grid">${card(isTrip?'Trip plans':'Household items',String(visibleItems.length),true)}${card('Connected trackers',String(trackers.length))}${card('Completed items',String(visibleItems.filter(x=>x.completed).length))}</div><section class="sq-ng-card"><h2>${isTrip?'Add travel plans or a budget':'Add a household task, item, or budget'}</h2><p>Save details linked to the selected tracker. Actual money owed between members continues to use the existing tracker expense and payment flows.</p><form id="sq-ng-workform" class="sq-ng-form"><label>Type<select name="item_type">${types.map(t=>`<option>${esc(t)}</option>`).join('')}</select></label><label>Title<input name="title" maxlength="120" required placeholder="${isTrip?'Hotel booking':'Buy groceries'}"></label><input type="hidden" name="tracker_id" value="${esc(activeId)}"><label>Budget / cost (optional)<input name="amount" type="number" min="0" max="99999999" step="0.01" placeholder="0.00"></label><button class="sq-ng-primary">Save</button><label class="sq-ng-notes">Notes / location / date details<input name="notes" maxlength="500" placeholder="Optional details"></label></form></section><section class="sq-ng-card sq-ng-section"><h2>${isTrip?'Trip plans':'Household workspace'}</h2><div class="sq-ng-list">${visibleItems.length?visibleItems.map(x=>`<div class="sq-ng-item"><div><b>${esc(x.title)}</b><small>${esc(x.item_type)} · ${esc(activeTracker?.name||'Tracker')} ${x.amount!=null?' · '+esc(money(x.amount)):''}</small><small>${esc(x.notes||'')}</small></div><div style="display:flex;flex-wrap:wrap;gap:6px"><button type="button" data-edit="${esc(x.id)}">Edit</button><button type="button" data-complete="${esc(x.id)}">${x.completed?'Reopen':'Complete'}</button><button type="button" data-remove="${esc(x.id)}">Delete</button></div></div>`).join(''):'<div class="sq-ng-empty">Nothing saved yet for this tracker. Add your first item above.</div>'}</div></section>`;
+  content.innerHTML=`<div class="sq-ng-tracker-toolbar">${trackerSelect}${isTrip?'<div class="sq-ng-trip-actions"><button type="button" data-ng-trip-action="expense">Add travel expense</button><button type="button" data-ng-trip-action="receipt">Scan receipt</button><button type="button" data-ng-trip-action="budget">Trip budget / plans</button></div>':''}</div>${tripTop}<div class="sq-ng-grid">${card(isTrip?'Trip plans':'Household items',String(visibleItems.length),true)}${card('Connected trackers',String(trackers.length))}${card('Completed items',String(visibleItems.filter(x=>x.completed).length))}</div><section class="sq-ng-card" ${isTrip?'id="sq-ng-trip-plan-editor" hidden':''}><h2>${isTrip?'Add travel plans or a budget':'Add a household task, item, or budget'}</h2><p>Save details linked to the selected tracker. Actual money owed between members continues to use the existing tracker expense and payment flows.</p><form id="sq-ng-workform" class="sq-ng-form"><label>Type<select name="item_type">${types.map(t=>`<option>${esc(t)}</option>`).join('')}</select></label><label>Title<input name="title" maxlength="120" required placeholder="${isTrip?'Hotel booking':'Buy groceries'}"></label><input type="hidden" name="tracker_id" value="${esc(activeId)}"><label>Budget / cost (optional)<input name="amount" type="number" min="0" max="99999999" step="0.01" placeholder="0.00"></label><button class="sq-ng-primary">Save</button><label class="sq-ng-notes">Notes / location / date details<input name="notes" maxlength="500" placeholder="Optional details"></label></form></section><section class="sq-ng-card sq-ng-section"><h2>${isTrip?'Trip plans':'Household workspace'}</h2><div class="sq-ng-list">${visibleItems.length?visibleItems.map(x=>`<div class="sq-ng-item"><div><b>${esc(x.title)}</b><small>${esc(x.item_type)} · ${esc(activeTracker?.name||'Tracker')} ${x.amount!=null?' · '+esc(money(x.amount)):''}</small><small>${esc(x.notes||'')}</small></div><div style="display:flex;flex-wrap:wrap;gap:6px"><button type="button" data-edit="${esc(x.id)}">Edit</button><button type="button" data-complete="${esc(x.id)}">${x.completed?'Reopen':'Complete'}</button><button type="button" data-remove="${esc(x.id)}">Delete</button></div></div>`).join(''):'<div class="sq-ng-empty">Nothing saved yet for this tracker. Add your first item above.</div>'}</div></section>`;
   const form=document.getElementById('sq-ng-workform');form.onsubmit=async e=>{e.preventDefault();const data=Object.fromEntries(new FormData(form));if(!data.amount)data.amount=null;const btn=form.querySelector('button');btn.disabled=true;try{await api('finance/workspace','POST',{...data,workspace_type:type});await render()}catch(err){status.textContent=err.message;btn.disabled=false}};
   for(const x of visibleItems){const id=x.id;content.querySelector(`[data-remove="${id}"]`).onclick=async()=>{if(!confirm('Delete this item?'))return;try{await api('finance/workspace/'+id,'DELETE');await render()}catch(e){status.textContent=e.message}};content.querySelector(`[data-complete="${id}"]`).onclick=async()=>{try{await api('finance/workspace/'+id,'PATCH',{completed:!x.completed});await render()}catch(e){status.textContent=e.message}};content.querySelector(`[data-edit="${id}"]`).onclick=async()=>{const title=prompt('Title',x.title);if(title===null)return;const notes=prompt('Notes',x.notes||'');if(notes===null)return;const amount=prompt('Budget / cost (leave blank for none)',x.amount??'');if(amount===null)return;try{await api('finance/workspace/'+id,'PATCH',{title,notes,amount:amount===''?null:Number(amount)});await render()}catch(e){status.textContent=e.message}};}
+  if(isTrip){
+    const editor=document.getElementById('sq-ng-trip-plan-editor');
+    content.querySelectorAll('[data-ng-trip-action]').forEach(button=>button.addEventListener('click',async()=>{
+      const action=button.dataset.ngTripAction;
+      if(action==='budget'){
+        editor.hidden=!editor.hidden;
+        button.setAttribute('aria-expanded',String(!editor.hidden));
+        if(!editor.hidden){editor.querySelector('select[name="item_type"]').value='Trip budget';editor.scrollIntoView({behavior:'smooth',block:'nearest'});}
+        return;
+      }
+      if(!activeId){status.textContent='Select a tracker first.';return;}
+      button.disabled=true;
+      try{
+        close();
+        document.getElementById('nav-home')?.click();
+        await openTracker(activeId);
+        const target=document.getElementById(action==='receipt'?'quick-receipt':'quick-expense');
+        if(target)target.click();else alert('Open the tracker to add an expense or scan a receipt.');
+      }catch(error){status.textContent=error.message;button.disabled=false;}
+    }));
+  }
   const picker=document.getElementById('sq-ng-tracker-picker');
   picker.addEventListener('change',()=>{try{sessionStorage.setItem('sq-ng-'+type+'-tracker',picker.value)}catch{}render()});
 }
