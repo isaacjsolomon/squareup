@@ -4834,12 +4834,12 @@ async function syncTrackers(user) {
   if (!window.sqRefreshTrackerNow) {
     var sqRefreshBusy = false;
     window.sqRefreshTrackerNow = async function () {
-      if (sqRefreshBusy || !current || !current.id || !navigator.onLine || document.visibilityState !== "visible") return;
+      if (sqRefreshBusy || !current || !current.id || !navigator.onLine || document.visibilityState !== "visible" || document.body.classList.contains('sqev-page-open')) return;
       var requestedId = current.id;
       sqRefreshBusy = true;
       try {
         var detail = await api("trackers/" + encodeURIComponent(requestedId));
-        if (current && current.id === requestedId) applyDetail(detail);
+        if (current && current.id === requestedId && !document.body.classList.contains('sqev-page-open')) applyDetail(detail);
       } catch (err) {
         if (err.status === 404 && current && current.id === requestedId) {
           alert("You no longer have access to this tracker.");
