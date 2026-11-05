@@ -89,35 +89,69 @@ export function initEvents({api,getTrackers,getUser}){
  let selected=null;
  async function load(){
   const trackers=getTrackers()||[], select=$('sqev-form').elements.tracker_id;
+  const previous=select.value;
   select.innerHTML=trackers.map(t=>`<option value="${safe(t.id)}">${safe(t.name)}</option>`).join('');
-  if(!trackers.length){$('sqev-list').textContent='Create or join a tracker first.';return;}
-  const all=await Promise.all(trackers.map(async t=>{
-   try{return (await api('events?tracker_id='+encodeURIComponent(t.id))).map(e=>({...e,tracker_name:t.name}))}
-   catch{return []}
-  }));
-  const events=all.flat().sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at));
-  $('sqev-list').innerHTML=events.length?events.map(e=>`<div class="sqev-item"><strong>${safe(e.title)}</strong> <small class="sqev-muted">· ${safe(e.tracker_name)}</small><p>${safe(date(e.starts_at))} – ${safe(date(e.ends_at))}</p><p>${safe(e.location)}</p><button data-open="${safe(e.id)}">Details / RSVP</button></div>`).join(''):'No events yet. Create your first event above.';
+  if(previous && trackers.some(t=>t.id===previous))select.value=previous;
+  if(!trackers.length){$('sqev-list').innerHTML='<div class="sqev-empty">Create or join a tracker to start planning events.</div>';return;}
+  const results=await Promise.allSettled(trackers.map(t=>api('events?tracker_id='+encodeURIComponent(t.id))));
+  const failures=results.filter(x=>x.status==='rejected').length;
+  const events=results.flatMap((r,i)=>r.status==='fulfilled' && Array.isArray(r.value)?r.value.map(e=>({...e,tracker_name:trackers[i].name})):[])
+     .sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at));
+  const now=Date.now(),upcoming=events.filter(e=>new Date(e.ends_at).getTime()>=now).length;
+  $('sqev-total').textContent=String(events.length);
+  $('sqev-upcoming').textContent=String(upcoming);
+  $('sqev-past').textContent=String(events.length-upcoming);
+  $('sqev-count').textContent=events.length+' total';
+  $('sqev-list').innerHTML=events.length?events.map(e=>`
+   <article class="sqev-item">
+   <span class="sqev-pill">${new Date(e.ends_at).getTime()>=now?'UPCOMING':'PAST EVENT'}</span>
+   <h4>${safe(e.title)}</h4>
+   <div class="sqev-event-date">${safe(date(e.starts_at))}</div>
+   <p>${safe(e.location||'Location not set')}</p>
+   <div class="sqev-item-footer"><span class="sqev-muted">Tracker · ${safe(e.tracker_name)}</span>
+   <button type="button" data-open="${safe(e.id)}">View event →</button></div>
+   </article>`).join(''):'<div class="sqev-empty">No events yet. Select “New event” to plan your first one.</div>';
+  if(failures)message('Some trackers could not be loaded. Try refreshing.');
  }
  async function details(id){
   const data=await api('events/'+encodeURIComponent(id)),e=data.event;selected=id;
   const own=e.created_by===getUser()?.id;
   const tracker=await api('trackers/'+encodeURIComponent(e.tracker_id)).catch(()=>({entries:[]}));
   const linked=new Set(data.expenses.map(x=>x.id));
-  $('sqev-details').hidden=false;
-  $('sqev-details').innerHTML=`<h3>${safe(e.title)}</h3><p>${safe(e.description)}</p>
-   <p>${safe(e.location)} · ${safe(date(e.starts_at))}</p>
-   ${own?`<div class="sqev-actions"><button data-edit="1">Edit event</button><button data-delete="1">Delete event</button></div>`:''}
-   <h3>RSVP</h3><div class="sqev-actions"><button data-rsvp="going">Going</button><button data-rsvp="maybe">Maybe</button><button data-rsvp="declined">Declined</button></div>
-   <p class="sqev-muted">${data.rsvps.length} responses · ${data.rsvps.filter(r=>r.status==='going').length} going · ${data.rsvps.filter(r=>r.status==='maybe').length} maybe</p>
-   <h3>Schedule</h3>${data.schedule.length?data.schedule.sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at)).map(i=>`<div class="sqev-item"><strong>${safe(i.title)}</strong> · ${safe(date(i.starts_at))}<p>${safe(i.location)} ${safe(i.notes)}</p>${own?`<button data-remove-item="${safe(i.id)}">Remove</button>`:''}</div>`).join(''):'<p>No schedule items yet.</p>'}
-   ${own?`<form id="sqev-schedule"><div class="sqev-grid"><label>Activity<input name="title" required></label><label>Time<input name="starts" type="datetime-local" required></label></div><label>Location<input name="location"></label><button type="submit">Add schedule item</button></form>`:''}
-   <h3>Linked expenses</h3>
-   ${data.expenses.length?data.expenses.map(x=>`<div class="sqev-item">${safe(x.note||'Expense')} · ${safe(x.amount)} <button data-unlink="${safe(x.id)}">Unlink</button></div>`).join(''):'<p>No linked expenses.</p>'}
-   <form id="sqev-expense"><label>Choose an existing tracker expense<select name="entry_id" required><option value="">Select expense...</option>${(tracker.entries||[]).filter(x=>!linked.has(x.id)).map(x=>`<option value="${safe(x.id)}">${safe(x.note||x.from+' → '+x.to)} · ${safe(x.amount)}</option>`).join('')}</select></label><button type="submit">Link expense</button></form>
-   <div id="sqev-edit-holder"></div>`;
+  $('sqev-dashboard').hidden=true;
+  $('sqev-details-page').hidden=false;
+  $('sqev-details').innerHTML=`
+   <div class="sqev-detail-heading">
+    <span class="sqev-eyebrow">EVENT DETAILS</span><h2>${safe(e.title)}</h2>
+    <p class="sqev-subtitle">${safe(e.description||'No description added.')}</p>
+    <div class="sqev-event-meta">
+     <span>◷ ${safe(date(e.starts_at))} – ${safe(date(e.ends_at))}</span>
+     <span>⌖ ${safe(e.location||'Location not set')}</span>
+    </div>
+   </div>
+   <div class="sqev-details-grid">
+    <div>
+     <section class="sqev-box"><div class="sqev-section-title"><h3>Schedule</h3><span class="sqev-muted">${data.schedule.length} activities</span></div>
+     ${data.schedule.length?data.schedule.sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at)).map(i=>`<div class="sqev-item"><strong>${safe(i.title)}</strong><p>${safe(date(i.starts_at))}</p><p>${safe(i.location)} ${safe(i.notes)}</p>${own?`<button data-remove-item="${safe(i.id)}">Remove</button>`:''}</div>`).join(''):'<p class="sqev-muted">No scheduled activities yet.</p>'}
+     ${own?`<form id="sqev-schedule"><h3 style="margin-top:20px">Add activity</h3><div class="sqev-grid"><label>Activity name<input name="title" required></label><label>Date and time<input name="starts" type="datetime-local" required></label></div><label>Location<input name="location" placeholder="Optional"></label><button type="submit">Add to schedule</button></form>`:''}
+     </section>
+     <section class="sqev-box"><div class="sqev-section-title"><h3>Event expenses</h3><span class="sqev-muted">${data.expenses.length} linked</span></div>
+     ${data.expenses.length?data.expenses.map(x=>`<div class="sqev-item"><strong>${safe(x.note||'Expense')}</strong><p>${safe(x.from_name||x.from||'')} · ${safe(x.amount)}</p><button data-unlink="${safe(x.id)}">Unlink</button></div>`).join(''):'<p class="sqev-muted">Link an existing tracker expense to keep it organized with this event.</p>'}
+     <form id="sqev-expense"><label>Existing tracker expense<select name="entry_id" required><option value="">Choose an expense...</option>${(tracker.entries||[]).filter(x=>!linked.has(x.id)).map(x=>`<option value="${safe(x.id)}">${safe(x.note||x.from+' → '+x.to)} · ${safe(x.amount)}</option>`).join('')}</select></label><button type="submit">Link expense</button></form>
+     </section>
+    </div>
+    <div>
+     <section class="sqev-box"><div class="sqev-section-title"><h3>RSVP</h3><span class="sqev-pill">${data.rsvps.filter(r=>r.status==='going').length} GOING</span></div>
+      <p class="sqev-muted">Will you be there?</p>
+      <div class="sqev-actions">${['going','maybe','declined'].map(status=>`<button type="button" class="sqev-rsvp-button ${data.rsvps.some(r=>r.user_id===getUser()?.id&&r.status===status)?'active':''}" data-rsvp="${status}">${status==='going'?'Going':status==='maybe'?'Maybe':'Declined'}</button>`).join('')}</div>
+      <p class="sqev-muted">${data.rsvps.length} responses · ${data.rsvps.filter(r=>r.status==='maybe').length} maybe · ${data.rsvps.filter(r=>r.status==='declined').length} declined</p>
+     </section>
+     ${own?`<section class="sqev-box"><div class="sqev-section-title"><h3>Manage event</h3></div><p class="sqev-muted">Only the organizer can change or delete this event.</p><div class="sqev-actions"><button data-edit="1">Edit details</button><button data-delete="1">Delete event</button></div><div id="sqev-edit-holder"></div></section>`:''}
+    </div>
+   </div>`;
   if(own) $('sqev-details').querySelector('[data-edit]').onclick=()=>{
    const holder=$('sqev-edit-holder');
-   holder.innerHTML=`<form id="sqev-edit" class="sqev-item"><h3>Edit event</h3><label>Name<input name="title" required maxlength="120" value="${safe(e.title)}"></label><label>Location<input name="location" maxlength="300" value="${safe(e.location)}"></label><label>Description<textarea name="description" maxlength="2000">${safe(e.description)}</textarea></label><div class="sqev-grid"><label>Starts<input type="datetime-local" name="starts" required value="${localDate(e.starts_at)}"></label><label>Ends<input type="datetime-local" name="ends" required value="${localDate(e.ends_at)}"></label></div><button type="submit">Save changes</button></form>`;
+   holder.innerHTML=`<form id="sqev-edit" class="sqev-item"><h3>Edit event</h3><label>Name<input name="title" required maxlength="120" value="${safe(e.title)}"></label><label>Location<input name="location" maxlength="300" value="${safe(e.location)}"></label><label>Description<textarea name="description" maxlength="2000">${safe(e.description)}</textarea></label><div class="sqev-grid"><label>Starts<input type="datetime-local" name="starts" required value="${localDate(e.starts_at)}"></label><label>Ends<input type="datetime-local" name="ends" required value="${localDate(e.ends_at)}"></label></div><button class="sqev-primary" type="submit">Save changes</button></form>`;
   };
  }
  $('sqev-close').onclick=()=>{panel.hidden=true;document.body.style.overflow='';};
