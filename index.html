@@ -10339,7 +10339,7 @@ header p{color:#b1c7d5!important}
  <div class="sq-ng-shell">
   <header class="sq-ng-header"><div><span class="sq-ng-kicker">SQUAREUP / YOUR MONEY</span><h1 id="sq-ng-title">Finance Hub</h1><p id="sq-ng-subtitle">A clearer picture of your finances.</p></div><div class="sq-ng-header-actions"><button type="button" id="sq-ng-back" aria-label="Go back to previous page" title="Back to previous page"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><span>Back</span></button><button type="button" id="sq-ng-close" aria-label="Close finance workspace">✕ &nbsp; Close</button></div></header>
   <div class="sq-ng-mobile-picker"><label for="sq-ng-mobile-select">Finance Hub section</label><div class="sq-ng-mobile-select-wrap"><select id="sq-ng-mobile-select" aria-label="Choose Finance Hub section"><option value="finance">Personal Finance</option><option value="wallet">Wallet &amp; Settlements</option><option value="trip">Trips</option><option value="home">Household</option><option value="subscriptions">Subscriptions</option><option value="currencies">Currencies</option><option value="insights">Smart Insights</option></select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
-  <div class="sq-ng-tabs"><button type="button" data-ng-tab="finance" class="selected">Personal Finance</button><button type="button" data-ng-tab="wallet">Wallet & Settlements</button><button type="button" data-ng-tab="trip">Trips</button><button type="button" data-ng-tab="home">Household</button><button type="button" data-ng-tab="subscriptions">Subscriptions</button><button type="button" data-ng-tab="currencies">Currencies</button><button type="button" data-ng-tab="insights">Smart Insights</button></div>
+  <div class="sq-ng-tabs"><button type="button" data-ng-tab="finance" class="selected" aria-label="Personal Finance">Personal</button><button type="button" data-ng-tab="wallet" aria-label="Wallet & Settlements">Wallet</button><button type="button" data-ng-tab="trip" aria-label="Trips">Trips</button><button type="button" data-ng-tab="home" aria-label="Household">Household</button><button type="button" data-ng-tab="subscriptions" aria-label="Subscriptions">Bills</button><button type="button" data-ng-tab="currencies" aria-label="Currencies">Currencies</button><button type="button" data-ng-tab="insights" aria-label="Smart Insights">Insights</button></div>
   <p id="sq-ng-status" role="status" aria-live="polite"></p><div id="sq-ng-content"></div>
  </div>
 </section>
@@ -10776,6 +10776,19 @@ body.side-collapsed .sidebar #sq-sidebar-quick{display:none!important}
  #sq-nextgen .sq-wallet-compact-layout>.sq-ng-section:nth-child(4) .sq-ng-item{min-width:0;align-items:center}
 }
 @media(min-width:901px) and (max-width:1150px){#sq-nextgen .sq-wallet-compact-layout>.sq-ng-section:nth-child(4)>.sq-ng-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+
+<style id="sq-finance-connected-nav-2026">
+/* Connected segmented Finance Hub navigation */
+@media(min-width:701px){
+ #sq-nextgen .sq-ng-tabs{display:flex!important;flex-wrap:nowrap!important;align-items:stretch!important;gap:2px!important;padding:5px!important;margin:0 0 22px!important;width:100%!important;max-width:100%!important;overflow-x:auto!important;scrollbar-width:thin;background:#102b3d!important;border:1px solid #2b4c60!important;border-radius:16px!important;box-shadow:0 4px 18px rgba(0,0,0,.1)!important}
+ #sq-nextgen .sq-ng-tabs button{flex:1 0 auto!important;min-width:0!important;min-height:43px!important;margin:0!important;padding:10px clamp(9px,1.35vw,17px)!important;border:1px solid transparent!important;border-radius:11px!important;background:transparent!important;color:#b7cbd7!important;box-shadow:none!important;outline:none!important;font-size:clamp(12px,1vw,14px)!important;font-weight:500!important;line-height:1.2!important;white-space:nowrap!important;transition:background-color .18s ease,color .18s ease!important}
+ #sq-nextgen .sq-ng-tabs button:hover:not(.selected){background:#1b3b4e!important;color:#edf7fa!important}
+ #sq-nextgen .sq-ng-tabs button.selected{background:#39cbbb!important;color:#062735!important;font-weight:750!important;box-shadow:0 2px 8px rgba(0,0,0,.12)!important}
+ #sq-nextgen .sq-ng-tabs button:focus-visible{outline:2px solid #7cefe0!important;outline-offset:-3px!important}
+}
+@media(max-width:700px){#sq-nextgen .sq-ng-tabs{display:none!important}#sq-nextgen .sq-ng-mobile-picker{display:block!important}}
+@media(prefers-reduced-motion:reduce){#sq-nextgen .sq-ng-tabs button{transition:none!important}}
 </style>
 </body>
 </html>
