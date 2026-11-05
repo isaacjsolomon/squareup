@@ -33,7 +33,9 @@ export async function onRequest({request,env,params}){
    }
    if(m==='POST'){
     if(!await access(b.tracker_id))return out({error:'Access denied'},403);
-    if(!String(b.title||'').trim()||!Date.parse(b.starts_at)||!Date.parse(b.ends_at)||Date.parse(b.starts_at)>=Date.parse(b.ends_at))return out({error:'Invalid event'},400);
+    if(!String(b.title||'').trim())return out({error:'Enter an event name.'},400);
+    if(!Date.parse(b.starts_at)||!Date.parse(b.ends_at))return out({error:'Choose valid start and end dates.'},400);
+    if(Date.parse(b.starts_at)>=Date.parse(b.ends_at))return out({error:'The event must end after it starts. Change the end date or time.'},400);
     const e=(await db('squareup_events','POST',{},{
      tracker_id:b.tracker_id,created_by:me.id,title:String(b.title).trim().slice(0,120),
      description:String(b.description||'').slice(0,2000),location:String(b.location||'').slice(0,300),
