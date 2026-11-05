@@ -53,6 +53,21 @@ export async function onRequest({request,env,params}){
    const expenses=links.length?await db('tracker_entries','GET',{tracker_id:'eq.'+e.tracker_id,id:'in.('+links.map(x=>x.entry_id).join(',')+')'}):[];
    return out({event:e,rsvps,schedule,expenses});
   }
+  if(p.length===1&&m==='PATCH'){
+   if(e.created_by!==me.id)return out({error:'Organizer only'},403);
+   const changes={updated_at:new Date().toISOString()};
+   for(const k of ['title','description','location','starts_at','ends_at'])if(b[k]!==undefined)changes[k]=b[k];
+   if(changes.title!==undefined)changes.title=String(changes.title).trim().slice(0,120);
+   if(!String(changes.title??e.title).trim())return out({error:'Title required'},400);
+   const start=Date.parse(changes.starts_at||e.starts_at),end=Date.parse(changes.ends_at||e.ends_at);
+   if(!start||!end||end<=start)return out({error:'Invalid event dates'},400);
+   return out((await db('squareup_events','PATCH',{id:'eq.'+e.id},changes))[0]);
+  }
+  if(p.length===1&&m==='DELETE'){
+   if(e.created_by!==me.id)return out({error:'Organizer only'},403);
+   await db('squareup_events','DELETE',{id:'eq.'+e.id});
+   return out({ok:true});
+  }
   if(p[1]==='rsvp'&&m==='POST'){
    if(!['going','maybe','declined'].includes(b.status))return out({error:'Invalid RSVP'},400);
    const f={event_id:'eq.'+e.id,user_id:'eq.'+me.id};
@@ -68,6 +83,23 @@ export async function onRequest({request,env,params}){
     ends_at:b.ends_at||null,location:String(b.location||'').slice(0,300),notes:String(b.notes||'').slice(0,1000)
    });
    return out(rows[0],201);
+  }
+  if(p[1]==='schedule'&&p[2]&&m==='DELETE'){
+   if(e.created_by!==me.id)return out({error:'Organizer only'},403);
+   await db('squareup_event_schedule','DELETE',{event_id:'eq.'+e.id,id:'eq.'+p[2]});
+   return out({ok:true});
+  }
+  if(p[1]==='expenses'&&m==='POST'){
+   const match=await db('tracker_entries','GET',{id:'eq.'+b.entry_id,tracker_id:'eq.'+e.tracker_id});
+   if(!match.length)return out({error:'Expense not in event tracker'},400);
+   const filters={event_id:'eq.'+e.id,entry_id:'eq.'+b.entry_id};
+   if(!(await db('squareup_event_expenses','GET',filters)).length)
+    await db('squareup_event_expenses','POST',{},{event_id:e.id,entry_id:b.entry_id});
+   return out({ok:true});
+  }
+  if(p[1]==='expenses'&&p[2]&&m==='DELETE'){
+   await db('squareup_event_expenses','DELETE',{event_id:'eq.'+e.id,entry_id:'eq.'+p[2]});
+   return out({ok:true});
   }
   return out({error:'Not found'},404);
  }catch(error){return out({error:'Event request failed'},500)}
