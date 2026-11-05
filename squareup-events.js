@@ -81,7 +81,7 @@ export function initEvents({api,getTrackers,getUser}){
  <div id="sqev-details"></div>
  </div><p id="sqev-message" role="status" aria-live="polite"></p>
  </div>`
- document.querySelector('.wrap')?.append(panel);
+ (document.querySelector('.wrap')||document.body).append(panel);
  const $=id=>panel.querySelector('#'+id),message=t=>{$('sqev-message').textContent=t};
  const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const date=v=>new Date(v).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});
@@ -154,12 +154,47 @@ export function initEvents({api,getTrackers,getUser}){
    holder.innerHTML=`<form id="sqev-edit" class="sqev-item"><h3>Edit event</h3><label>Name<input name="title" required maxlength="120" value="${safe(e.title)}"></label><label>Location<input name="location" maxlength="300" value="${safe(e.location)}"></label><label>Description<textarea name="description" maxlength="2000">${safe(e.description)}</textarea></label><div class="sqev-grid"><label>Starts<input type="datetime-local" name="starts" required value="${localDate(e.starts_at)}"></label><label>Ends<input type="datetime-local" name="ends" required value="${localDate(e.ends_at)}"></label></div><button class="sqev-primary" type="submit">Save changes</button></form>`;
   };
  }
- $('sqev-close').onclick=()=>{panel.hidden=true;document.body.style.overflow='';};
  const nav=document.createElement('button');nav.type='button';nav.id='sqev-nav';nav.className='sq-nav-link';
  nav.innerHTML='<span class="sq-nav-icon">◈</span><span class="sq-nav-label">Events</span>';
  const anchor=document.getElementById('sq-finance-nav');
  if(anchor)anchor.after(nav);else document.querySelector('.sidebar')?.append(nav);
- nav.onclick=async()=>{panel.hidden=false;document.body.style.overflow='hidden';message('');try{await load()}catch(e){message(e.message)}};
+ const mobileNav=document.querySelector('.sq-mobile-nav');
+ let mobileButton=null;
+ if(mobileNav){
+  mobileButton=document.createElement('button');
+  mobileButton.type='button';mobileButton.id='sqev-mobile-nav';
+  mobileButton.innerHTML='<span class="sq-m-icon" aria-hidden="true">◈</span>Events';
+  const mobileAnchor=document.getElementById('sq-mobile-finance');
+  if(mobileAnchor)mobileAnchor.after(mobileButton);else mobileNav.append(mobileButton);
+ }
+ function closeEvents(){
+  if(panel.hidden)return;
+  panel.hidden=true;
+  document.body.classList.remove('sqev-page-open');
+  nav.classList.remove('active');
+  nav.removeAttribute('aria-current');
+  mobileButton?.classList.remove('active');
+ }
+ function backToEvents(){selected=null;$('sqev-dashboard').hidden=false;$('sqev-details-page').hidden=true;message('');window.scrollTo({top:0,behavior:'instant'});}
+ async function openEvents(){
+  // Restore the existing app workspace, then use the same page container as other sections.
+  if(panel.hidden)document.getElementById('nav-home')?.click();
+  panel.hidden=false;document.body.classList.add('sqev-page-open');
+  nav.classList.add('active');nav.setAttribute('aria-current','page');
+  mobileButton?.classList.add('active');backToEvents();
+  try{await load()}catch(e){message(e.message)}
+ }
+ nav.addEventListener('click',openEvents);
+ mobileButton?.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();openEvents()});
+ document.querySelector('.sidebar')?.addEventListener('click',ev=>{
+  if(ev.target.closest('#sqev-nav'))return;
+  if(ev.target.closest('button.sq-nav-link, #side-toggle, #nav-home, #nav-trackers, #nav-profile, #nav-about, #nav-friends, #sq-finance-nav'))closeEvents();
+ },true);
+ mobileNav?.addEventListener('click',ev=>{if(!ev.target.closest('#sqev-mobile-nav'))closeEvents()},true);
+ $('sqev-back-home').onclick=()=>{closeEvents();document.getElementById('nav-home')?.click();};
+ $('sqev-back-events').onclick=backToEvents;
+ $('sqev-create-toggle').onclick=()=>{$('sqev-create-box').hidden=false;$('sqev-create-box').scrollIntoView({behavior:'smooth',block:'start'});};
+ $('sqev-cancel-create').onclick=()=>{$('sqev-create-box').hidden=true;message('');};
  const eventForm=$('sqev-form');
  const startField=eventForm.elements.starts,endField=eventForm.elements.ends;
  const minimumEnd=()=>{
@@ -178,17 +213,17 @@ export function initEvents({api,getTrackers,getUser}){
   const start=new Date(f.starts.value),end=new Date(f.ends.value);
   if(!f.starts.value || !f.ends.value || !Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime())){message('Choose valid start and end dates.');return;}
   if(end<=start){message('The event must end after it starts. Change the end date or time.');endField.focus();return;}
-  try{const e=await api('events','POST',{tracker_id:f.tracker_id.value,title:f.title.value,description:f.description.value,location:f.location.value,starts_at:start.toISOString(),ends_at:end.toISOString()});message('Event created.');f.title.value='';await load();await details(e.id)}
+  try{const e=await api('events','POST',{tracker_id:f.tracker_id.value,title:f.title.value,description:f.description.value,location:f.location.value,starts_at:start.toISOString(),ends_at:end.toISOString()});message('Event created.');f.title.value='';$('sqev-create-box').hidden=true;await load();await details(e.id)}
   catch(error){message(error.message)}
  };
- $('sqev-list').onclick=async ev=>{const b=ev.target.closest('[data-open]');if(b)try{await details(b.dataset.open)}catch(e){message(e.message)}};
+ $('sqev-list').onclick=async ev=>{const b=ev.target.closest('[data-open]');if(b)try{await details(b.dataset.open);window.scrollTo({top:0,behavior:'instant'})}catch(e){message(e.message)}};
  $('sqev-details').onclick=async ev=>{
   const b=ev.target.closest('button');if(!b||!selected)return;
   try{
    if(b.dataset.rsvp)await api('events/'+selected+'/rsvp','POST',{status:b.dataset.rsvp});
    else if(b.dataset.removeItem)await api('events/'+selected+'/schedule/'+b.dataset.removeItem,'DELETE');
    else if(b.dataset.unlink)await api('events/'+selected+'/expenses/'+b.dataset.unlink,'DELETE');
-   else if(b.dataset.delete!==undefined){if(!confirm('Delete this event and its RSVP/schedule? Tracker expenses will remain.'))return;await api('events/'+selected,'DELETE');$('sqev-details').hidden=true;selected=null;await load();message('Event deleted.');return;}
+   else if(b.dataset.delete!==undefined){if(!confirm('Delete this event and its RSVP/schedule? Tracker expenses will remain.'))return;await api('events/'+selected,'DELETE');backToEvents();await load();message('Event deleted.');return;}
    else return;
    message('Saved.');await details(selected);
   }catch(e){message(e.message)}
