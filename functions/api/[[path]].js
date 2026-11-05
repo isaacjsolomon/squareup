@@ -1882,6 +1882,161 @@ if (
     }
 
 
+    // FINANCE HUB: trip and household planning records.
+    if (parts[0] === 'finance' && parts[1] === 'workspace') {
+      const table = 'squareup_finance_workspace_items';
+
+      if (parts.length === 2 && method === 'GET') {
+        const kind = new URL(request.url).searchParams.get('type');
+
+        if (!['trip', 'household'].includes(kind)) {
+          return fail('Invalid workspace type', 400);
+        }
+
+        const rows = await db(table, {
+          filters: {
+            user_id: 'eq.' + me.id,
+            workspace_type: 'eq.' + kind
+          },
+          order: 'created_at.desc',
+          limit: 300
+        });
+
+        const allowed = [];
+
+        for (const row of rows) {
+          if (await member(row.tracker_id)) allowed.push(row);
+        }
+
+        return json(allowed);
+      }
+
+      if (parts.length === 2 && method === 'POST') {
+        const type = String(body.workspace_type || '');
+        const trackerId = String(body.tracker_id || '');
+        const title = clean(body.title, 120);
+        const itemType = clean(body.item_type, 40);
+        const notes = clean(body.notes || '', 500);
+        const amount =
+          body.amount == null || body.amount === ''
+            ? null
+            : Number(body.amount);
+
+        if (
+          !['trip', 'household'].includes(type) ||
+          !uuid.test(trackerId) ||
+          !title ||
+          !itemType ||
+          (amount !== null &&
+            (!Number.isFinite(amount) ||
+              amount < 0 ||
+              amount > 99999999))
+        ) {
+          return fail('Invalid workspace item', 400);
+        }
+
+        if (!await member(trackerId)) {
+          return fail('Tracker access denied', 403);
+        }
+
+        const saved = await db(table, {
+          method: 'POST',
+          body: {
+            user_id: me.id,
+            tracker_id: trackerId,
+            workspace_type: type,
+            title,
+            item_type: itemType,
+            notes,
+            amount
+          }
+        });
+
+        return json(saved[0], 201);
+      }
+
+      if (
+        parts.length === 3 &&
+        uuid.test(parts[2]) &&
+        ['PATCH', 'DELETE'].includes(method)
+      ) {
+        const found = await db(table, {
+          filters: {
+            id: 'eq.' + parts[2],
+            user_id: 'eq.' + me.id
+          },
+          limit: 1
+        });
+
+        if (
+          !found.length ||
+          !await member(found[0].tracker_id)
+        ) {
+          return fail('Item not found', 404);
+        }
+
+        if (method === 'DELETE') {
+          await db(table, {
+            method: 'DELETE',
+            filters: {
+              id: 'eq.' + parts[2],
+              user_id: 'eq.' + me.id
+            }
+          });
+
+          return json({ ok: true });
+        }
+
+        const patch = {};
+
+        if (Object.prototype.hasOwnProperty.call(body, 'title')) {
+          patch.title = clean(body.title, 120);
+          if (!patch.title) return fail('Title required', 400);
+        }
+
+        if (Object.prototype.hasOwnProperty.call(body, 'notes')) {
+          patch.notes = clean(body.notes || '', 500);
+        }
+
+        if (typeof body.completed === 'boolean') {
+          patch.completed = body.completed;
+        }
+
+        if (Object.prototype.hasOwnProperty.call(body, 'amount')) {
+          patch.amount =
+            body.amount == null ? null : Number(body.amount);
+
+          if (
+            patch.amount !== null &&
+            (!Number.isFinite(patch.amount) ||
+              patch.amount < 0 ||
+              patch.amount > 99999999)
+          ) {
+            return fail('Invalid amount', 400);
+          }
+        }
+
+        if (!Object.keys(patch).length) {
+          return fail('Nothing to update', 400);
+        }
+
+        const saved = await db(table, {
+          method: 'PATCH',
+          filters: {
+            id: 'eq.' + parts[2],
+            user_id: 'eq.' + me.id
+          },
+          body: patch
+        });
+
+        return json(saved[0]);
+      }
+
+      return fail('Not found', 404);
+    }
+
+
+    
     if (parts[0] !== 'trackers')
       return fail('Not found', 404);
 
