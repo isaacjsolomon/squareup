@@ -7674,11 +7674,8 @@ body.trackers-view .sq-favorite-toggle[aria-pressed="true"]{background:#123c55!i
  cancel.addEventListener('click',()=>close(true));
  closeButton.addEventListener('click',()=>close(true));
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)close(true);});
- tools.append(panel);
- const returnGrid=summary&&summary.querySelector('.sq-return-grid');
- if(welcome)welcome.appendChild(tools);
- else if(returnGrid)summary.insertBefore(tools,returnGrid);
- else dashboard.prepend(tools);
+ // Customization UI intentionally removed from Overview.
+ // Continue applying previously saved preferences without adding any button or panel.
  apply();
 })();
 </script>
