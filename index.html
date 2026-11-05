@@ -11155,6 +11155,8 @@ body.sq-action-dialog-open{overflow:hidden!important}
 #sq-nextgen #sq-ng-back svg{width:18px;height:18px;flex:none}
 #sq-nextgen #sq-ng-back:focus-visible{outline:2px solid #42e4ca;outline-offset:3px}
 @media(max-width:900px){
+ body.sq-finance-open #sq-nextgen .sq-ng-shell>.sq-ng-mobile-picker{display:none!important;visibility:hidden!important}
+ body.sq-finance-open #sq-nextgen .sq-ng-shell>.sq-ng-tabs{display:flex!important;visibility:visible!important;flex-wrap:nowrap!important;overflow-x:auto!important;width:100%!important;max-width:100%!important}
  #sq-nextgen .sq-ng-mobile-picker{display:none!important}
  #sq-nextgen .sq-ng-tabs{display:flex!important;visibility:visible!important;flex-wrap:nowrap!important;overflow-x:auto!important;overscroll-behavior-x:contain;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;gap:9px!important;width:100%!important;max-width:100%!important;padding:4px 0 12px!important;margin:4px 0 14px!important;scrollbar-width:thin}
  #sq-nextgen .sq-ng-tabs button{display:inline-flex!important;flex:0 0 auto!important;width:auto!important;min-width:90px!important;min-height:44px!important;white-space:nowrap!important;justify-content:center;align-items:center;scroll-snap-align:start;padding:10px 16px!important;border-radius:12px!important}
@@ -11163,6 +11165,13 @@ body.sq-action-dialog-open{overflow:hidden!important}
  #sq-nextgen .sq-ng-heading{gap:10px}
  #sq-nextgen #sq-ng-back{font-size:14px!important;padding:10px 14px!important}
  #sq-nextgen #sq-ng-back span{display:inline!important}
+}
+
+/* More specific than the previous Finance Hub mobile dropdown overrides. */
+@media(max-width:900px){
+ body.sq-finance-open #sq-nextgen .sq-ng-shell>.sq-ng-mobile-picker{display:none!important;visibility:hidden!important}
+ body.sq-finance-open #sq-nextgen .sq-ng-shell>.sq-ng-tabs{display:flex!important;visibility:visible!important;flex-flow:row nowrap!important;overflow-x:auto!important;overflow-y:hidden!important;width:100%!important;max-width:100%!important;gap:9px!important;scrollbar-width:thin}
+ body.sq-finance-open #sq-nextgen .sq-ng-shell>.sq-ng-tabs>button{display:inline-flex!important;flex:0 0 auto!important;width:auto!important;min-width:96px!important;white-space:nowrap!important;padding:10px 15px!important}
 }
 </style>
 </body>
