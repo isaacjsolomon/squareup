@@ -1988,6 +1988,17 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
 #sq-nextgen #sq-ng-trip-plan-editor[hidden]{display:none!important}
 @media(max-width:700px){#sq-nextgen .sq-ng-tracker-toolbar{display:flex!important;align-items:stretch!important;flex-direction:column!important}#sq-nextgen .sq-ng-tracker-picker{width:100%!important}#sq-nextgen .sq-ng-trip-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}#sq-nextgen .sq-ng-trip-actions button{white-space:normal;padding:12px 9px;font-size:12px}#sq-nextgen .sq-ng-trip-actions button:last-child{grid-column:1/-1}}
 </style>
+<style id="sq-fx-parallel-panels-2026">
+/* Currency converter and favorites share equal-width columns on desktop. */
+#sq-nextgen .sq-fx-two-column{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:stretch}
+#sq-nextgen .sq-fx-two-column>.sq-ng-card{min-width:0;width:100%;height:100%;box-sizing:border-box;margin:0}
+#sq-nextgen .sq-fx-two-column .sq-ng-form{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#sq-nextgen .sq-fx-two-column .sq-ng-form>*{min-width:0}
+#sq-nextgen .sq-fx-two-column .sq-ng-form>button{align-self:end}
+#sq-nextgen .sq-fx-two-column .sq-fx-heading{align-items:center}
+@media(max-width:850px){#sq-nextgen .sq-fx-two-column{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:500px){#sq-nextgen .sq-fx-two-column .sq-ng-form{grid-template-columns:minmax(0,1fr)}}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
@@ -6009,17 +6020,20 @@ if(inboxEl){filterInbox();}
  var launch=document.getElementById('sq-replay-tour'), overlay=document.getElementById('sq-tour-overlay');
  if(!launch||!overlay)return;
  var steps=[
-  ['Welcome to Square Up','Square Up helps you keep track of shared expenses with friends. This quick guide covers the main pages and features.'],
-  ['Home and your balance','Home shows the current tracker’s Overview, including your balance, who owes whom, and quick actions. Choose a tracker to see its information.'],
-  ['Create and open trackers','Go to Trackers to create a group or open an existing one. Each tracker keeps its own members, expenses, and balances. Use the share or invite option to bring friends into a tracker.'],
-  ['Customize each tracker','On the Trackers page, choose Change backdrop on a tracker card to select a color theme or upload a background image for that tracker.'],
-  ['Add an expense','Open a tracker and select Add Expense. Enter what was paid, who paid, and how it should be shared. Square Up updates the balances based on the recorded expenses.'],
-  ['Split a bill and scan receipts','Use Split a Bill to divide purchases between friends. If available, upload a receipt and assign individual items to the people who ordered them before saving the split.'],
-  ['Pay Now and settle up','Use Pay Now to open the available payment options, such as Venmo or Cash App. Follow the payment confirmation steps in Square Up so the tracker can reflect a completed payment. Smart Settle-Up can help simplify who needs to pay whom.'],
-  ['Overview, Expenses, Budget and Members','Within a tracker, Overview summarizes activity, Expenses lists transactions, Budget helps monitor spending, and Members shows who belongs to the group. Expand Recent Activity when you want more detail.'],
-  ['Chat and notifications','Use Chat to message people in your tracker. The notification bell helps you find updates such as messages, expenses, and payment activity.'],
-  ['Analytics and your account','Analytics helps you understand spending. In Account, you can update your profile, profile picture, payment usernames, and other available settings.'],
-  ['You’re ready!','You can return to About and select Replay site tutorial any time you want a refresher. Your existing trackers and expenses are not affected by this guide.']
+  ['Welcome to Square Up','Square Up brings shared expense tracking and personal finance tools together. This guide explains the main pages and how to use them.'],
+  ['Home and balances','Open a tracker to view its Overview, net balance, expense activity, and quick actions. Each tracker keeps its own members and balances.'],
+  ['Trackers and invitations','Use Trackers to create, open, and share groups. Tracker settings let you manage available permissions, names, and backdrops.'],
+  ['Expenses and receipt splitting','Add Expense records who paid and how the cost is divided. Split a Bill and Scan Receipt help assign purchases to the right people.'],
+  ['Payments and settlements','Use Pay Now and the tracker payment workflow to record and confirm settlements. The Finance Hub Wallet summarizes balances across trackers without merging currencies or duplicating debts.'],
+  ['Bills and subscriptions','The Bills section manages recurring bills and subscriptions, including available scheduling and payment-sharing controls. Finance Hub → Subscriptions links to this same billing center, not a second set of charges.'],
+  ['Open your Finance Hub','Select Finance in the mobile bottom navigation or the Finance Hub navigation entry on desktop. On mobile, use the Finance Hub section dropdown to switch between its tools.'],
+  ['Personal Finance','Finance Hub → Personal Finance lets you add and manage private income and expense records. These are separate from shared tracker debts. Smart Insights summarizes the personal records you have saved.'],
+  ['Trips and travel spending','Finance Hub → Trips lets you select a tracker, view travel spending and category breakdowns, and manage trip plans or budgets. Shared charges continue to use the tracker expense and payment system.'],
+  ['Household and roommate tools','Finance Hub → Household connects household plans, chores, groceries, and notes to an existing tracker. Use the household workspace to create, edit, complete, or delete available items.'],
+  ['Currency converter and favorites','Finance Hub → Currencies converts amounts using the latest available exchange rates. Codes are shown with currency names; tap a star to favorite a currency and move it to the top of the selectors. Favorites are saved on this device. Conversions are estimates and do not change balances.'],
+  ['Chat, notifications, and friends','Use Chat to communicate, the bell for activity notifications, and available friend and member controls to find people and manage your groups. On mobile, Chat is in the top navigation.'],
+  ['Account, help, and settings','Account lets you update your profile and available payment usernames. The About page includes this tutorial; you can replay it whenever you want.'],
+  ['You’re ready!','You can revisit About → Site tutorial for a refresher. This guide never creates, edits, or deletes your records.']
  ];
  var i=0, previousFocus=null;
  var title=document.getElementById('sq-tour-title'),desc=document.getElementById('sq-tour-description'),label=document.getElementById('sq-tour-step-label'),bar=document.getElementById('sq-tour-progress-fill'),back=document.getElementById('sq-tour-back'),next=document.getElementById('sq-tour-next'),close=document.getElementById('sq-tour-close');
@@ -10355,12 +10369,14 @@ async function drawWorkspace(){
   if(tab==='currencies'){
     const codes=Array.isArray(window.SQ_CURRENCIES)&&window.SQ_CURRENCIES.length?window.SQ_CURRENCIES:['USD','EUR','GBP','CAD','AUD','JPY','CHF','CNY','INR','MXN','BRL','KRW','SGD','HKD','NZD','SEK','NOK','DKK','ILS','ZAR'];
     let favorites=[];try{favorites=JSON.parse(localStorage.getItem('sq-fx-favorites-v1')||'[]').filter(c=>codes.includes(c))}catch{}
-    const opts=selected=>codes.map(c=>`<option value="${esc(c)}" ${c===selected?'selected':''}>${esc(c)}</option>`).join('');
-    const favoritesHTML=()=>codes.map(c=>`<button type="button" class="sq-fx-fav ${favorites.includes(c)?'on':''}" data-fx-fav="${esc(c)}" aria-pressed="${favorites.includes(c)}">${favorites.includes(c)?'★':'☆'} ${esc(c)}</button>`).join('');
-    content.innerHTML=`<section class="sq-ng-card sq-fx-card"><div class="sq-fx-heading"><div><h2>Currency converter</h2><p>Latest available exchange rates, automatically retrieved when you convert. Rates may update daily rather than every second.</p></div><span class="sq-fx-live">● Latest available rates</span></div><form id="sq-ng-fx" class="sq-ng-form"><label>Amount<input name="amount" type="number" min="0.01" step="any" value="1" required></label><label>From currency<select name="from">${opts(favorites[0]||'USD')}</select></label><label>To currency<select name="to">${opts(favorites[1]||'EUR')}</select></label><button class="sq-ng-primary">Convert</button></form><div id="sq-ng-fx-result" class="sq-fx-result" aria-live="polite">Choose currencies and convert to see the latest available rate.</div></section><section class="sq-ng-card sq-ng-section"><h2>Favorite currencies</h2><p>Tap the star to save frequently used currencies. Your favorites stay on this device and appear first in your currency selections.</p><div class="sq-fx-favorites" id="sq-fx-favorites">${favoritesHTML()}</div><div class="sq-fx-shortcuts" id="sq-fx-shortcuts"></div></section><p class="sq-ng-note">Currency conversions are estimates, not a settlement or payment. They do not modify tracker balances. The exchange-rate provider may be temporarily unavailable.</p>`;
+    const currencyNames={USD:'United States Dollar',EUR:'Euro (Eurozone)',GBP:'British Pound Sterling (United Kingdom)',CAD:'Canadian Dollar (Canada)',AUD:'Australian Dollar (Australia)',JPY:'Japanese Yen (Japan)',CHF:'Swiss Franc (Switzerland)',CNY:'Chinese Yuan (China)',INR:'Indian Rupee (India)',MXN:'Mexican Peso (Mexico)',BRL:'Brazilian Real (Brazil)',KRW:'South Korean Won (South Korea)',SGD:'Singapore Dollar (Singapore)',HKD:'Hong Kong Dollar (Hong Kong)',NZD:'New Zealand Dollar (New Zealand)',SEK:'Swedish Krona (Sweden)',NOK:'Norwegian Krone (Norway)',DKK:'Danish Krone (Denmark)',ILS:'Israeli New Shekel (Israel)',ZAR:'South African Rand (South Africa)'};
+    const currencyLabel=c=>c+' — '+(currencyNames[c]||new Intl.DisplayNames(['en'],{type:'currency'}).of(c)||c);
+    const opts=selected=>codes.map(c=>`<option value="${esc(c)}" ${c===selected?'selected':''}>${esc(currencyLabel(c))}</option>`).join('');
+    const favoritesHTML=()=>codes.map(c=>`<button type="button" class="sq-fx-fav ${favorites.includes(c)?'on':''}" data-fx-fav="${esc(c)}" aria-pressed="${favorites.includes(c)}">${favorites.includes(c)?'★':'☆'} ${esc(currencyLabel(c))}</button>`).join('');
+    content.innerHTML=`<div class="sq-fx-two-column"><section class="sq-ng-card sq-fx-card"><div class="sq-fx-heading"><div><h2>Currency converter</h2><p>Latest available exchange rates, automatically retrieved when you convert. Rates may update daily rather than every second.</p></div><span class="sq-fx-live">● Latest available rates</span></div><form id="sq-ng-fx" class="sq-ng-form"><label>Amount<input name="amount" type="number" min="0.01" step="any" value="1" required></label><label>From currency<select name="from">${opts(favorites[0]||'USD')}</select></label><label>To currency<select name="to">${opts(favorites[1]||'EUR')}</select></label><button class="sq-ng-primary">Convert</button></form><div id="sq-ng-fx-result" class="sq-fx-result" aria-live="polite">Choose currencies and convert to see the latest available rate.</div></section><section class="sq-ng-card sq-ng-section"><h2>Favorite currencies</h2><p>Tap the star to save frequently used currencies. Your favorites stay on this device and appear first in your currency selections.</p><div class="sq-fx-favorites" id="sq-fx-favorites">${favoritesHTML()}</div><div class="sq-fx-shortcuts" id="sq-fx-shortcuts"></div></section></div><p class="sq-ng-note">Currency conversions are estimates, not a settlement or payment. They do not modify tracker balances. The exchange-rate provider may be temporarily unavailable.</p>`;
     const form=document.getElementById('sq-ng-fx'),result=document.getElementById('sq-ng-fx-result');
-    function shortcuts(){document.getElementById('sq-fx-shortcuts').innerHTML=favorites.map(c=>`<button type="button" data-fx-quick="${esc(c)}">Use ${esc(c)}</button>`).join('')}
-    function sortOptions(){for(const select of [form.elements.from,form.elements.to]){const current=select.value;select.innerHTML=[...favorites,...codes.filter(c=>!favorites.includes(c))].map(c=>`<option value="${esc(c)}">${favorites.includes(c)?'★ ':''}${esc(c)}</option>`).join('');select.value=current}}
+    function shortcuts(){document.getElementById('sq-fx-shortcuts').innerHTML=favorites.map(c=>`<button type="button" data-fx-quick="${esc(c)}">Use ${esc(currencyLabel(c))}</button>`).join('')}
+    function sortOptions(){for(const select of [form.elements.from,form.elements.to]){const current=select.value;select.innerHTML=[...favorites,...codes.filter(c=>!favorites.includes(c))].map(c=>`<option value="${esc(c)}">${favorites.includes(c)?'★ ':''}${esc(currencyLabel(c))}</option>`).join('');select.value=current}}
     function refreshFav(){document.getElementById('sq-fx-favorites').innerHTML=favoritesHTML();sortOptions();shortcuts()}
     document.getElementById('sq-fx-favorites').onclick=e=>{const b=e.target.closest('[data-fx-fav]');if(!b)return;const c=b.dataset.fxFav;favorites=favorites.includes(c)?favorites.filter(x=>x!==c):[...favorites,c];try{localStorage.setItem('sq-fx-favorites-v1',JSON.stringify(favorites))}catch{}refreshFav()};
     document.getElementById('sq-fx-shortcuts').onclick=e=>{const b=e.target.closest('[data-fx-quick]');if(b)form.elements.to.value=b.dataset.fxQuick};
