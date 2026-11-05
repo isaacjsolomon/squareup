@@ -54,6 +54,28 @@ export function initEvents({api,getTrackers,getUser}){
  #sqev-view .sqev-event-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;color:#bbd4dc;margin-top:13px}
  #sqev-view .sqev-event-meta span{padding:8px 12px;border:1px solid rgba(128,179,196,.23);background:#0b2839;border-radius:9px}
  #sqev-view .sqev-rsvp-button.active{background:#28cbb6;color:#05313c;border-color:#28cbb6}
+
+ body.sqev-page-open{background:linear-gradient(125deg,#081a2b,#0c2b3e 65%,#0a2237)!important}
+ #sqev-view .sqev-hero{border-radius:22px;background:linear-gradient(120deg,#123850,#0a2539);background-size:cover;background-position:center;min-height:190px;display:flex;align-items:flex-end;position:relative;overflow:hidden;margin-bottom:20px;border:1px solid rgba(103,189,190,.3)}
+ #sqev-view .sqev-hero:before{content:'';position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,19,31,.96),rgba(5,19,31,.12))}
+ #sqev-view .sqev-hero-content{position:relative;z-index:1;padding:28px;width:100%}
+ #sqev-view .sqev-hero h2{font-size:clamp(32px,4vw,48px)}
+ #sqev-view .sqev-hero .sqev-subtitle{color:#e2eff4}
+ #sqev-view .sqev-timeline{border-left:2px solid #2da9a5;padding-left:22px;margin-left:8px;display:grid;gap:12px}
+ #sqev-view .sqev-timeline .sqev-item{position:relative}
+ #sqev-view .sqev-timeline .sqev-item:before{content:'';width:11px;height:11px;background:#38dac1;border-radius:50%;position:absolute;left:-29px;top:21px}
+ #sqev-view .sqev-guest-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:9px}
+ #sqev-view .sqev-guest{display:flex;align-items:center;gap:9px;background:#0b293b;border:1px solid #305265;padding:10px;border-radius:12px;font-size:12px}
+ #sqev-view .sqev-avatar{width:31px;height:31px;border-radius:50%;background:#1b6571;display:grid;place-items:center;font-weight:800;flex:none}
+ #sqev-view .sqev-guest small{display:block;color:#8fc2cb}
+ #sqev-view .sqev-task{display:flex;gap:10px;align-items:center;justify-content:space-between;border-bottom:1px solid #315061;padding:11px 0}
+ #sqev-view .sqev-task input[type=checkbox]{width:20px;min-height:20px;flex:none;cursor:pointer}
+ #sqev-view .sqev-task-main{flex:1;min-width:0}
+ #sqev-view .sqev-task.done .sqev-task-main{text-decoration:line-through;opacity:.64}
+ #sqev-view .sqev-small-actions{display:flex;gap:7px;flex-wrap:wrap}
+ #sqev-view .sqev-metric{font-size:24px;font-weight:800;color:#74edda;margin:5px 0}
+ #sqev-view .sqev-box+.sqev-box{margin-top:16px}
+ @media(max-width:680px){#sqev-view .sqev-hero{min-height:165px}#sqev-view .sqev-hero-content{padding:20px}}
  #sqev-view .sqev-form-actions{display:flex;justify-content:flex-end;margin-top:16px}
  @media(max-width:980px){#sqev-view .sqev-details-grid{grid-template-columns:1fr}}
  @media(max-width:680px){#sqev-view{padding:14px 0 95px}#sqev-view .sqev-toolbar{padding:6px 0 18px}#sqev-view .sqev-box{padding:17px;border-radius:15px}#sqev-view .sqev-overview{gap:8px}#sqev-view .sqev-stat{padding:12px}#sqev-view .sqev-stat strong{font-size:22px}#sqev-view .sqev-stat span{font-size:11px}#sqev-view .sqev-events-grid,#sqev-view .sqev-grid{grid-template-columns:1fr}#sqev-view .sqev-item{padding:16px}#sqev-view .sqev-toolbar-actions{width:100%}#sqev-view .sqev-toolbar-actions button{flex:1}}
@@ -121,21 +143,26 @@ export function initEvents({api,getTrackers,getUser}){
   $('sqev-dashboard').hidden=true;
   $('sqev-details-page').hidden=false;
   $('sqev-details').innerHTML=`
-   <div class="sqev-detail-heading">
-    <span class="sqev-eyebrow">EVENT DETAILS</span><h2>${safe(e.title)}</h2>
-    <p class="sqev-subtitle">${safe(e.description||'No description added.')}</p>
-    <div class="sqev-event-meta">
-     <span>◷ ${safe(date(e.starts_at))} – ${safe(date(e.ends_at))}</span>
-     <span>⌖ ${safe(e.location||'Location not set')}</span>
+   <div class="sqev-hero" ${e.cover_url?'style="background-image:url(&quot;'+safe(e.cover_url)+'&quot;)"':''}>
+    <div class="sqev-hero-content">
+     <span class="sqev-eyebrow">SQUAREUP / EVENT DETAILS</span><h2>${safe(e.title)}</h2>
+     <p class="sqev-subtitle">${safe(e.description||'Plan together, enjoy the event.')}</p>
+     <div class="sqev-event-meta">
+      <span>◷ ${safe(date(e.starts_at))} – ${safe(date(e.ends_at))}</span>
+      <span>⌖ ${safe(e.location||'Location not set')}</span>
+     </div>
+     <div class="sqev-small-actions" style="margin-top:14px"><button type="button" data-calendar="ics">Download calendar event</button><button type="button" data-calendar="google">Google Calendar</button></div>
     </div>
    </div>
    <div class="sqev-details-grid">
     <div>
      <section class="sqev-box"><div class="sqev-section-title"><h3>Schedule</h3><span class="sqev-muted">${data.schedule.length} activities</span></div>
-     ${data.schedule.length?data.schedule.sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at)).map(i=>`<div class="sqev-item"><strong>${safe(i.title)}</strong><p>${safe(date(i.starts_at))}</p><p>${safe(i.location)} ${safe(i.notes)}</p>${own?`<button data-remove-item="${safe(i.id)}">Remove</button>`:''}</div>`).join(''):'<p class="sqev-muted">No scheduled activities yet.</p>'}
+     <div class="sqev-timeline">${data.schedule.length?data.schedule.sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at)).map(i=>`<div class="sqev-item"><strong>${safe(i.title)}</strong><p>${safe(date(i.starts_at))}</p><p>${safe(i.location)} ${safe(i.notes)}</p>${own?`<div class="sqev-small-actions"><button type="button" data-edit-item="${safe(i.id)}">Edit</button><button type="button" data-remove-item="${safe(i.id)}">Remove</button></div>`:''}</div>`).join(''):'<p class="sqev-muted">No scheduled activities yet.</p>'}</div><div id="sqev-schedule-edit"></div>
      ${own?`<form id="sqev-schedule"><h3 style="margin-top:20px">Add activity</h3><div class="sqev-grid"><label>Activity name<input name="title" required></label><label>Date and time<input name="starts" type="datetime-local" required></label></div><label>Location<input name="location" placeholder="Optional"></label><button type="submit">Add to schedule</button></form>`:''}
      </section>
      <section class="sqev-box"><div class="sqev-section-title"><h3>Event expenses</h3><span class="sqev-muted">${data.expenses.length} linked</span></div>
+     <div class="sqev-metric">${safe(tracker.currency||'USD')} ${data.expenses.reduce((a,x)=>a+(x.type==='debt'?Number(x.amount)||0:0),0).toFixed(2)}</div><p class="sqev-muted">Total linked expenses · Debts and payments continue to use tracker balances and approvals.</p>
+     <form id="sqev-direct-expense"><h3>Add an event expense</h3><div class="sqev-grid"><label>Who owes<select name="from" required>${(tracker.members||[]).map(m=>`<option value="${safe(m.name)}">${safe(m.name)}</option>`).join('')}</select></label><label>Who paid<select name="to" required>${(tracker.members||[]).map(m=>`<option value="${safe(m.name)}">${safe(m.name)}</option>`).join('')}</select></label><label>Amount<input name="amount" type="number" min=".01" step=".01" required></label><label>Note<input name="note" placeholder="Dinner, tickets..." maxlength="200"></label></div><button type="submit" class="sqev-primary">Add expense to event</button></form>
      ${data.expenses.length?data.expenses.map(x=>`<div class="sqev-item"><strong>${safe(x.note||'Expense')}</strong><p>${safe(x.from_name||x.from||'')} · ${safe(x.amount)}</p><button data-unlink="${safe(x.id)}">Unlink</button></div>`).join(''):'<p class="sqev-muted">Link an existing tracker expense to keep it organized with this event.</p>'}
      <form id="sqev-expense"><label>Existing tracker expense<select name="entry_id" required><option value="">Choose an expense...</option>${(tracker.entries||[]).filter(x=>!linked.has(x.id)).map(x=>`<option value="${safe(x.id)}">${safe(x.note||x.from+' → '+x.to)} · ${safe(x.amount)}</option>`).join('')}</select></label><button type="submit">Link expense</button></form>
      </section>
@@ -146,12 +173,21 @@ export function initEvents({api,getTrackers,getUser}){
       <div class="sqev-actions">${['going','maybe','declined'].map(status=>`<button type="button" class="sqev-rsvp-button ${data.rsvps.some(r=>r.user_id===getUser()?.id&&r.status===status)?'active':''}" data-rsvp="${status}">${status==='going'?'Going':status==='maybe'?'Maybe':'Declined'}</button>`).join('')}</div>
       <p class="sqev-muted">${data.rsvps.length} responses · ${data.rsvps.filter(r=>r.status==='maybe').length} maybe · ${data.rsvps.filter(r=>r.status==='declined').length} declined</p>
      </section>
+     <section class="sqev-box"><div class="sqev-section-title"><h3>Guest list & invitations</h3><span class="sqev-muted">${(data.people||[]).length} tracker members</span></div>
+      <div class="sqev-guest-grid">${(data.people||[]).map(p=>`<div class="sqev-guest"><span class="sqev-avatar">${safe((p.name||'?').slice(0,1).toUpperCase())}</span><div><strong>${safe(p.name)}</strong><small>${safe(p.status==='not_responded'?(p.invited?'Invited · Awaiting RSVP':'Not invited'):p.status)}</small></div></div>`).join('')}</div>
+      ${own?`<form id="sqev-invite"><label>Invite an existing tracker member<select name="user_id" required><option value="">Choose a person...</option>${(data.people||[]).filter(p=>p.id!==getUser()?.id).map(p=>`<option value="${safe(p.id)}">${safe(p.name)}</option>`).join('')}</select></label><button type="submit">Send invitation</button></form>`:''}
+      <p class="sqev-muted">To invite someone outside this tracker, add them as a tracker member first.</p>
+     </section>
+     <section class="sqev-box"><div class="sqev-section-title"><h3>Shared checklist</h3><span class="sqev-muted">${(data.tasks||[]).filter(t=>t.completed).length}/${(data.tasks||[]).length} complete</span></div>
+      ${(data.tasks||[]).map(t=>`<div class="sqev-task ${t.completed?'done':''}"><input type="checkbox" data-task-toggle="${safe(t.id)}" ${t.completed?'checked':''} ${own||t.assigned_to===getUser()?.id?'':'disabled'} aria-label="Complete task"><div class="sqev-task-main"><strong>${safe(t.title)}</strong><small class="sqev-muted" style="display:block">Assigned: ${safe((data.people||[]).find(p=>p.id===t.assigned_to)?.name||'Unassigned')}</small></div>${own?`<button type="button" data-task-delete="${safe(t.id)}">Remove</button>`:''}</div>`).join('')||'<p class="sqev-muted">No checklist tasks yet.</p>'}
+      ${own?`<form id="sqev-task"><label>Task<input name="title" maxlength="200" required placeholder="Bring supplies, book tickets..."></label><label>Assign to<select name="assigned_to"><option value="">Unassigned</option>${(data.people||[]).map(p=>`<option value="${safe(p.id)}">${safe(p.name)}</option>`).join('')}</select></label><button type="submit">Add task</button></form>`:''}
+     </section>
      ${own?`<section class="sqev-box"><div class="sqev-section-title"><h3>Manage event</h3></div><p class="sqev-muted">Only the organizer can change or delete this event.</p><div class="sqev-actions"><button data-edit="1">Edit details</button><button data-delete="1">Delete event</button></div><div id="sqev-edit-holder"></div></section>`:''}
     </div>
    </div>`;
   if(own) $('sqev-details').querySelector('[data-edit]').onclick=()=>{
    const holder=$('sqev-edit-holder');
-   holder.innerHTML=`<form id="sqev-edit" class="sqev-item"><h3>Edit event</h3><label>Name<input name="title" required maxlength="120" value="${safe(e.title)}"></label><label>Location<input name="location" maxlength="300" value="${safe(e.location)}"></label><label>Description<textarea name="description" maxlength="2000">${safe(e.description)}</textarea></label><div class="sqev-grid"><label>Starts<input type="datetime-local" name="starts" required value="${localDate(e.starts_at)}"></label><label>Ends<input type="datetime-local" name="ends" required value="${localDate(e.ends_at)}"></label></div><button class="sqev-primary" type="submit">Save changes</button></form>`;
+   holder.innerHTML=`<form id="sqev-edit" class="sqev-item"><h3>Edit event</h3><label>Name<input name="title" required maxlength="120" value="${safe(e.title)}"></label><label>Location<input name="location" maxlength="300" value="${safe(e.location)}"></label><label>Description<textarea name="description" maxlength="2000">${safe(e.description)}</textarea></label><label>Cover image HTTPS URL<input name="cover_url" type="url" placeholder="https://example.com/photo.jpg" value="${safe(e.cover_url||'')}"></label><div class="sqev-grid"><label>Starts<input type="datetime-local" name="starts" required value="${localDate(e.starts_at)}"></label><label>Ends<input type="datetime-local" name="ends" required value="${localDate(e.ends_at)}"></label></div><button class="sqev-primary" type="submit">Save changes</button></form>`;
   };
  }
  // Navigation buttons are present in index.html, so they remain visible during loading.
