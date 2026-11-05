@@ -11255,6 +11255,25 @@ body > #sq-layout-panel {
   display:none!important;
 }
 </style>
+<style id="sq-ios-input-focus-zoom-fix">
+/* iOS Safari automatically magnifies focused form fields with text below 16px.
+   Apply the minimum readable size without disabling user pinch-to-zoom. */
+@media (max-width: 900px) and (pointer: coarse) {
+  html { -webkit-text-size-adjust: 100%; }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="hidden"]),
+  select,
+  textarea,
+  #sq-nextgen input,
+  #sq-nextgen select,
+  #sq-nextgen textarea,
+  #sqev-view input,
+  #sqev-view select,
+  #sqev-view textarea,
+  #sq-fx-search {
+    font-size: 16px !important;
+  }
+}
+</style>
 </body>
 </html>
 
