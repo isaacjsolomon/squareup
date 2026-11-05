@@ -154,13 +154,18 @@ export function initEvents({api,getTrackers,getUser}){
    holder.innerHTML=`<form id="sqev-edit" class="sqev-item"><h3>Edit event</h3><label>Name<input name="title" required maxlength="120" value="${safe(e.title)}"></label><label>Location<input name="location" maxlength="300" value="${safe(e.location)}"></label><label>Description<textarea name="description" maxlength="2000">${safe(e.description)}</textarea></label><div class="sqev-grid"><label>Starts<input type="datetime-local" name="starts" required value="${localDate(e.starts_at)}"></label><label>Ends<input type="datetime-local" name="ends" required value="${localDate(e.ends_at)}"></label></div><button class="sqev-primary" type="submit">Save changes</button></form>`;
   };
  }
- const nav=document.createElement('button');nav.type='button';nav.id='sqev-nav';nav.className='sq-nav-link';
- nav.innerHTML='<span class="sq-nav-icon">◈</span><span class="sq-nav-label">Events</span>';
- const anchor=document.getElementById('sq-finance-nav');
- if(anchor)anchor.after(nav);else document.querySelector('.sidebar')?.append(nav);
+ // Navigation buttons are present in index.html, so they remain visible during loading.
+ // Reuse them rather than creating a duplicate menu item after asynchronous initialization.
+ let nav=document.getElementById('sqev-nav');
+ if(!nav){
+  nav=document.createElement('button');nav.type='button';nav.id='sqev-nav';nav.className='sq-nav-link';
+  nav.innerHTML='<span class="sq-nav-icon">◈</span><span class="sq-nav-label">Events</span>';
+  const anchor=document.getElementById('sq-finance-nav');
+  if(anchor)anchor.after(nav);else document.querySelector('.sidebar')?.append(nav);
+ }
  const mobileNav=document.querySelector('.sq-mobile-nav');
- let mobileButton=null;
- if(mobileNav){
+ let mobileButton=document.getElementById('sqev-mobile-nav');
+ if(mobileNav&&!mobileButton){
   mobileButton=document.createElement('button');
   mobileButton.type='button';mobileButton.id='sqev-mobile-nav';
   mobileButton.innerHTML='<span class="sq-m-icon" aria-hidden="true">◈</span>Events';
