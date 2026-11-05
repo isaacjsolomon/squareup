@@ -1,5 +1,5 @@
 // SquareUp Events client. Uses the existing signed-in API client.
-export function initEvents({api,getTrackers}){
+export function initEvents({api,getTrackers,getUser}){
  const css=document.createElement('style');
  css.textContent=`
  #sqev-view{position:fixed;z-index:10010;inset:0;background:#071827f5;overflow:auto;padding:28px 18px;color:#e7f8fb;font:15px system-ui}
@@ -46,14 +46,25 @@ export function initEvents({api,getTrackers}){
  }
  async function details(id){
   const data=await api('events/'+encodeURIComponent(id)),e=data.event;selected=id;
-  const myId=(window.squareUpCurrentUserId||'');
+  const own=e.created_by===getUser()?.id;
+  const tracker=await api('trackers/'+encodeURIComponent(e.tracker_id)).catch(()=>({entries:[]}));
+  const linked=new Set(data.expenses.map(x=>x.id));
   $('sqev-details').hidden=false;
-  $('sqev-details').innerHTML=`<h3>${safe(e.title)}</h3><p>${safe(e.description)}</p><p>${safe(e.location)} · ${safe(date(e.starts_at))}</p>
+  $('sqev-details').innerHTML=`<h3>${safe(e.title)}</h3><p>${safe(e.description)}</p>
+   <p>${safe(e.location)} · ${safe(date(e.starts_at))}</p>
+   ${own?`<div class="sqev-actions"><button data-edit="1">Edit event</button><button data-delete="1">Delete event</button></div>`:''}
    <h3>RSVP</h3><div class="sqev-actions"><button data-rsvp="going">Going</button><button data-rsvp="maybe">Maybe</button><button data-rsvp="declined">Declined</button></div>
-   <p class="sqev-muted">${data.rsvps.length} responses · ${data.rsvps.filter(r=>r.status==='going').length} going</p>
-   <h3>Schedule</h3>${data.schedule.length?data.schedule.sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at)).map(i=>`<div class="sqev-item"><strong>${safe(i.title)}</strong> · ${safe(date(i.starts_at))}<p>${safe(i.location)} ${safe(i.notes)}</p></div>`).join(''):'<p>No schedule items yet.</p>'}
-   <form id="sqev-schedule"><div class="sqev-grid"><label>Activity<input name="title" required></label><label>Time<input name="starts" type="datetime-local" required></label></div><label>Location<input name="location"></label><button type="submit">Add schedule item (organizer)</button></form>
-   <h3>Linked expenses</h3><p>${data.expenses.length} expenses linked to this event.</p>`;
+   <p class="sqev-muted">${data.rsvps.length} responses · ${data.rsvps.filter(r=>r.status==='going').length} going · ${data.rsvps.filter(r=>r.status==='maybe').length} maybe</p>
+   <h3>Schedule</h3>${data.schedule.length?data.schedule.sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at)).map(i=>`<div class="sqev-item"><strong>${safe(i.title)}</strong> · ${safe(date(i.starts_at))}<p>${safe(i.location)} ${safe(i.notes)}</p>${own?`<button data-remove-item="${safe(i.id)}">Remove</button>`:''}</div>`).join(''):'<p>No schedule items yet.</p>'}
+   ${own?`<form id="sqev-schedule"><div class="sqev-grid"><label>Activity<input name="title" required></label><label>Time<input name="starts" type="datetime-local" required></label></div><label>Location<input name="location"></label><button type="submit">Add schedule item</button></form>`:''}
+   <h3>Linked expenses</h3>
+   ${data.expenses.length?data.expenses.map(x=>`<div class="sqev-item">${safe(x.note||'Expense')} · ${safe(x.amount)} <button data-unlink="${safe(x.id)}">Unlink</button></div>`).join(''):'<p>No linked expenses.</p>'}
+   <form id="sqev-expense"><label>Choose an existing tracker expense<select name="entry_id" required><option value="">Select expense...</option>${(tracker.entries||[]).filter(x=>!linked.has(x.id)).map(x=>`<option value="${safe(x.id)}">${safe(x.note||x.from+' → '+x.to)} · ${safe(x.amount)}</option>`).join('')}</select></label><button type="submit">Link expense</button></form>
+   <div id="sqev-edit-holder"></div>`;
+  if(own) $('sqev-details').querySelector('[data-edit]').onclick=()=>{
+   const holder=$('sqev-edit-holder');
+   holder.innerHTML=`<form id="sqev-edit" class="sqev-item"><h3>Edit event</h3><label>Name<input name="title" required maxlength="120" value="${safe(e.title)}"></label><label>Location<input name="location" maxlength="300" value="${safe(e.location)}"></label><label>Description<textarea name="description" maxlength="2000">${safe(e.description)}</textarea></label><button type="submit">Save changes</button></form>`;
+  };
  }
  $('sqev-close').onclick=()=>{panel.hidden=true;document.body.style.overflow='';};
  const nav=document.createElement('button');nav.type='button';nav.id='sqev-nav';nav.className='sq-nav-link';
@@ -67,6 +78,25 @@ export function initEvents({api,getTrackers}){
   catch(error){message(error.message)}
  };
  $('sqev-list').onclick=async ev=>{const b=ev.target.closest('[data-open]');if(b)try{await details(b.dataset.open)}catch(e){message(e.message)}};
- $('sqev-details').onclick=async ev=>{const b=ev.target.closest('[data-rsvp]');if(b&&selected)try{await api('events/'+selected+'/rsvp','POST',{status:b.dataset.rsvp});message('RSVP saved.');await details(selected)}catch(e){message(e.message)}};
+ $('sqev-details').onclick=async ev=>{
+  const b=ev.target.closest('button');if(!b||!selected)return;
+  try{
+   if(b.dataset.rsvp)await api('events/'+selected+'/rsvp','POST',{status:b.dataset.rsvp});
+   else if(b.dataset.removeItem)await api('events/'+selected+'/schedule/'+b.dataset.removeItem,'DELETE');
+   else if(b.dataset.unlink)await api('events/'+selected+'/expenses/'+b.dataset.unlink,'DELETE');
+   else if(b.dataset.delete!==undefined){if(!confirm('Delete this event and its RSVP/schedule? Tracker expenses will remain.'))return;await api('events/'+selected,'DELETE');$('sqev-details').hidden=true;selected=null;await load();message('Event deleted.');return;}
+   else return;
+   message('Saved.');await details(selected);
+  }catch(e){message(e.message)}
+ };
+ $('sqev-details').addEventListener('submit',async ev=>{
+  if(!['sqev-edit','sqev-expense'].includes(ev.target.id))return;
+  ev.preventDefault();const f=ev.target.elements;
+  try{
+   if(ev.target.id==='sqev-edit')await api('events/'+selected,'PATCH',{title:f.title.value,location:f.location.value,description:f.description.value});
+   if(ev.target.id==='sqev-expense')await api('events/'+selected+'/expenses','POST',{entry_id:f.entry_id.value});
+   message('Saved.');await details(selected);await load();
+  }catch(error){message(error.message)}
+ });
  $('sqev-details').onsubmit=async ev=>{if(ev.target.id!=='sqev-schedule')return;ev.preventDefault();const f=ev.target.elements;try{await api('events/'+selected+'/schedule','POST',{title:f.title.value,starts_at:new Date(f.starts.value).toISOString(),location:f.location.value});message('Schedule updated.');await details(selected)}catch(e){message(e.message)}};
 }
