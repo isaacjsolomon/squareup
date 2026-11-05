@@ -3686,42 +3686,30 @@ window.squareUpPayNow = async function () {
     if (m.payments.venmo) options.push({member:m, provider:'Venmo', url:'https://venmo.com/u/'+encodeURIComponent(m.payments.venmo)});
     if (m.payments.cashapp) options.push({member:m, provider:'Cash App', url:'https://cash.app/$'+encodeURIComponent(m.payments.cashapp)});
   });
-  var selection = prompt('Choose who to pay:\n'+options.map(function (o,i) {
-    return (i+1)+'. '+(o.member.name||'Friend')+' via '+o.provider;
-  }).join('\n'));
-  if (selection === null) return;
-  var index = Number(selection)-1;
-  if (!Number.isInteger(index) || index < 0 || index >= options.length) { alert('Choose a valid number.'); return; }
-  var chosen = options[index];
   var from = me.name || me.email;
-  var to = chosen.member.name || chosen.member.email;
-  if (!from || !to || from.trim().toLowerCase() === to.trim().toLowerCase()) {
-    alert('Could not determine the correct payer and recipient.'); return;
-  }
-  // Calculate the pairwise balance using the same debt/payment convention as the tracker.
-  var cents = 0;
-  (current.entries || []).forEach(function (e) {
-    var ef = String(e.from||'').trim().toLowerCase(), et = String(e.to||'').trim().toLowerCase();
-    var f = from.trim().toLowerCase(), t = to.trim().toLowerCase();
-    var sign = e.type === 'debt' ? 1 : -1;
-    var value = Math.round(Number(e.amount)*100);
-    if (!Number.isFinite(value)) return;
-    if (ef === f && et === t) cents += sign*value;
-    if (ef === t && et === f) cents -= sign*value;
-  });
-  if (cents <= 0) { alert('You do not currently owe '+to+' in this tracker.'); return; }
-  var owed = cents/100;
-  var entered = prompt('You owe '+to+' $'+owed.toFixed(2)+'.\nHow much will you pay? Enter the full amount or a smaller partial payment:',owed.toFixed(2));
-  if (entered === null) return;
-  if (!/^\d+(?:\.\d{1,2})?$/.test(entered.trim())) { alert('Enter a valid dollar amount with up to two decimal places.'); return; }
-  var paidCents = Math.round(Number(entered)*100);
-  if (!Number.isSafeInteger(paidCents) || paidCents <= 0 || paidCents > cents) {
-    alert('Enter an amount greater than $0 and no more than $'+owed.toFixed(2)+'.'); return;
-  }
-  if (!confirm('Open '+chosen.provider+' to pay '+to+' $'+(paidCents/100).toFixed(2)+'?\nVerify the recipient before sending money. SquareUp cannot verify the payment.')) return;
-  var paymentTab = window.open(chosen.url,'_blank','noopener,noreferrer');
-  if (!paymentTab) { alert('Your browser may have blocked the payment page. Enable pop-ups and try again.'); return; }
-  if (!confirm('Only click OK if you have COMPLETED the $'+(paidCents/100).toFixed(2)+' payment to '+to+' in '+chosen.provider+'.\nClick Cancel if you did not pay.')) return;
+  var normalize = function(v){return String(v||'').trim().toLowerCase()};
+  var eligible = options.map(function(o){
+    var to = o.member.name || o.member.email;
+    var cents = 0;
+    (current.entries || []).forEach(function(e){
+      var status=String(e.paymentStatus||'confirmed').toLowerCase();
+      if(status==='disputed'||status==='rejected')return;
+      var sign=e.type==='debt'?1:e.type==='payment'?-1:0;
+      var value=Math.round(Number(e.amount)*100);
+      if(!sign||!Number.isSafeInteger(value)||value<0)return;
+      if(normalize(e.from)===normalize(from)&&normalize(e.to)===normalize(to))cents+=sign*value;
+      if(normalize(e.from)===normalize(to)&&normalize(e.to)===normalize(from))cents-=sign*value;
+    });
+    return {option:o,to:to,cents:cents};
+  }).filter(function(x){return x.cents>0});
+  if(!eligible.length){alert('No outstanding balances were found for members with linked payment accounts.');return;}
+  var selection = await window.sqChoosePayNow(eligible);
+  if(!selection)return;
+  var chosen=selection.option,to=selection.to,cents=selection.cents,paidCents=selection.paidCents;
+  if(!from||!to||normalize(from)===normalize(to))return;
+  var paymentTab=window.open(chosen.url,'_blank','noopener,noreferrer');
+  if(!paymentTab){alert('Your browser may have blocked the payment page. Enable pop-ups and try again.');return;}
+  if(!confirm('Only click OK if you have COMPLETED the $'+(paidCents/100).toFixed(2)+' payment to '+to+' in '+chosen.provider+'.\\nClick Cancel if you did not pay.'))return;
   try {
     var trackerId = current.id;
     var detail = await api('trackers/'+trackerId+'/entries','POST',{
@@ -11005,6 +10993,48 @@ body.sq-action-dialog-open{overflow:hidden!important}
  new MutationObserver(function(){if(receipt.hidden&&!receiptModal.hidden)hide(receiptModal)}).observe(receipt,{attributes:true,attributeFilter:['hidden']});
 })();
 </script>
-</body>
+<style id="sq-pay-now-modal-style-20261105">
+#sq-pay-now-modal[hidden]{display:none!important}#sq-pay-now-modal{position:fixed;inset:0;z-index:2147483200;background:rgba(3,12,27,.82);backdrop-filter:blur(9px);display:flex;align-items:center;justify-content:center;padding:18px}
+#sq-pay-now-panel{width:min(520px,100%);max-height:calc(100dvh - 36px);overflow:auto;border:1px solid #42a8a6;border-radius:22px;background:linear-gradient(155deg,#16364b,#101e35);color:#f0faff;box-shadow:0 28px 80px #0009;padding:25px;font-family:system-ui,sans-serif}
+#sq-pay-now-panel h2{font-size:25px;margin:0}#sq-pay-now-panel p{color:#b7cfda;line-height:1.5;font-size:13px}#sq-pay-now-panel label{display:block;font-weight:650;font-size:13px;margin:16px 0 8px}
+#sq-pay-now-panel select,#sq-pay-now-panel input{box-sizing:border-box;width:100%;padding:13px;border:1px solid #426477;border-radius:11px;background:#0b2032;color:#fff;font-size:15px}
+#sq-pay-now-summary{background:#183e50;border:1px solid #396777;border-radius:15px;padding:18px;text-align:center;margin:18px 0}
+#sq-pay-now-summary strong{display:block;font-size:32px;color:#5ef1c6;margin:4px 0}
+#sq-pay-now-actions{display:flex;gap:10px;margin:12px 0}#sq-pay-now-actions button{flex:1;background:#1c3d50;color:#f3ffff;border:1px solid #487084;border-radius:10px;padding:10px;cursor:pointer}
+#sq-pay-now-panel .sq-pay-primary{width:100%;padding:13px;background:#54e9ba;color:#072d35;border:0;border-radius:11px;font-weight:750;cursor:pointer}
+#sq-pay-now-panel .sq-pay-primary:disabled{opacity:.5;cursor:not-allowed}
+#sq-pay-now-head{display:flex;justify-content:space-between;align-items:center;gap:10px}#sq-pay-now-cancel{background:transparent;border:1px solid #52798b;border-radius:9px;color:#fff;padding:9px 12px;cursor:pointer}
+#sq-pay-now-error{color:#ffc4c4!important;min-height:18px}#sq-pay-now-remaining{display:flex;justify-content:space-between;padding:13px 0;border-top:1px solid #ffffff2b;font-size:13px}
+</style>
+<div id="sq-pay-now-modal" hidden><div id="sq-pay-now-panel" role="dialog" aria-modal="true" aria-labelledby="sq-pay-now-title">
+<div id="sq-pay-now-head"><h2 id="sq-pay-now-title">Pay Now</h2><button type="button" id="sq-pay-now-cancel">Close</button></div>
+<p>Choose a person and payment method, then enter how much you want to pay.</p>
+<label for="sq-pay-now-person">Pay to</label><select id="sq-pay-now-person"></select>
+<div id="sq-pay-now-summary"><span>You owe</span><strong id="sq-pay-now-owed">$0.00</strong><span id="sq-pay-now-recipient"></span></div>
+<label for="sq-pay-now-amount">Payment amount ($)</label><input id="sq-pay-now-amount" type="number" inputmode="decimal" min="0.01" step="0.01">
+<div id="sq-pay-now-actions"><button type="button" id="sq-pay-now-half">Pay half</button><button type="button" id="sq-pay-now-full">Pay full</button></div>
+<div id="sq-pay-now-remaining"><span>Remaining balance after payment</span><strong id="sq-pay-now-left">$0.00</strong></div>
+<p id="sq-pay-now-error" role="alert"></p><button type="button" id="sq-pay-now-continue" class="sq-pay-primary">Continue to payment app</button>
+<p>Opening Venmo or Cash App does not confirm a payment. SquareUp will ask you to confirm after you pay.</p>
+</div></div>
+<script id="sq-pay-now-modal-script-20261105">
+(function(){
+ var modal=document.getElementById('sq-pay-now-modal'),select=document.getElementById('sq-pay-now-person'),amount=document.getElementById('sq-pay-now-amount'),error=document.getElementById('sq-pay-now-error'),go=document.getElementById('sq-pay-now-continue'),active=null;
+ function money(c){return '
+</html>
+
++(c/100).toFixed(2)}
+ function update(reset){if(!active)return;var item=active.items[Number(select.value)];if(!item)return;if(reset)amount.value=(item.cents/100).toFixed(2);document.getElementById('sq-pay-now-owed').textContent=money(item.cents);document.getElementById('sq-pay-now-recipient').textContent=item.to+' · '+item.option.provider;var n=Math.round(Number(amount.value)*100);var valid=Number.isSafeInteger(n)&&n>0&&n<=item.cents;document.getElementById('sq-pay-now-left').textContent=valid?money(item.cents-n):'—';go.disabled=!valid;error.textContent=valid?'':'Enter an amount greater than $0 and no more than '+money(item.cents)+'.'}
+ function close(value){modal.hidden=true;var done=active;active=null;if(done)done.resolve(value)}
+ window.sqChoosePayNow=function(items){return new Promise(function(resolve){if(active)close(null);active={items:items,resolve:resolve};select.replaceChildren();items.forEach(function(item,i){var o=document.createElement('option');o.value=String(i);o.textContent=item.to+' · '+item.option.provider;select.appendChild(o)});select.value='0';modal.hidden=false;update(true);select.focus()})};
+ select.addEventListener('change',function(){update(true)});amount.addEventListener('input',function(){update(false)});
+ document.getElementById('sq-pay-now-half').addEventListener('click',function(){if(!active)return;var c=active.items[Number(select.value)].cents;amount.value=(Math.round(c/2)/100).toFixed(2);update(false)});
+ document.getElementById('sq-pay-now-full').addEventListener('click',function(){update(true)});
+ document.getElementById('sq-pay-now-cancel').addEventListener('click',function(){close(null)});
+ modal.addEventListener('click',function(e){if(e.target===modal)close(null)});
+ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!modal.hidden)close(null)});
+ go.addEventListener('click',function(){if(!active)return;var item=active.items[Number(select.value)],c=Math.round(Number(amount.value)*100);if(!Number.isSafeInteger(c)||c<=0||c>item.cents){update(false);return}close(Object.assign({},item,{paidCents:c}))});
+})();
+</script></body>
 </html>
 
