@@ -10766,6 +10766,16 @@ body.side-collapsed .sidebar #sq-sidebar-quick{display:none!important}
 #sq-nextgen .sq-wallet-compact-layout>.sq-ng-section:nth-child(4) .sq-ng-item strong{font-size:17px!important}
 @media(max-width:900px){#sq-nextgen .sq-wallet-compact-layout{grid-template-columns:minmax(0,1fr);grid-template-areas:"stats" "settlement" "balances" "activity";gap:11px}#sq-nextgen .sq-wallet-compact-layout>.sq-ng-section{padding:16px!important}}
 @media(max-width:520px){#sq-nextgen .sq-wallet-compact-layout>.sq-ng-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}#sq-nextgen .sq-wallet-compact-layout>.sq-ng-grid .sq-ng-card{padding:10px!important}#sq-nextgen .sq-wallet-compact-layout>.sq-ng-grid .sq-ng-card small{font-size:10px!important;line-height:1.25}#sq-nextgen .sq-wallet-compact-layout>.sq-ng-grid .sq-ng-card strong{font-size:23px!important}#sq-nextgen .sq-wallet-compact-layout .sq-wallet-controls{grid-template-columns:repeat(2,minmax(0,1fr))!important}#sq-nextgen .sq-wallet-compact-layout .sq-wallet-controls label:first-child{grid-column:1/-1}#sq-nextgen .sq-wallet-compact-layout .sq-wallet-row{flex-direction:column!important;align-items:stretch!important}#sq-nextgen .sq-wallet-compact-layout .sq-wallet-row-actions{width:100%;justify-content:space-between}}
+
+/* Equal-height top row; activity becomes a full-width second row. */
+@media(min-width:901px){
+ #sq-nextgen .sq-wallet-compact-layout{grid-template-columns:minmax(0,1.45fr) minmax(290px,.9fr)!important;grid-template-areas:"stats stats" "balances settlement" "activity activity"!important;align-items:stretch!important}
+ #sq-nextgen .sq-wallet-compact-layout>.sq-ng-section:nth-child(2),#sq-nextgen .sq-wallet-compact-layout>.sq-ng-section:nth-child(3){height:100%!important;align-self:stretch!important;box-sizing:border-box!important}
+ #sq-nextgen .sq-wallet-compact-layout>.sq-ng-section:nth-child(4){grid-column:1/-1!important;width:100%!important;box-sizing:border-box!important}
+ #sq-nextgen .sq-wallet-compact-layout>.sq-ng-section:nth-child(4)>.sq-ng-list{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px!important;align-items:stretch}
+ #sq-nextgen .sq-wallet-compact-layout>.sq-ng-section:nth-child(4) .sq-ng-item{min-width:0;align-items:center}
+}
+@media(min-width:901px) and (max-width:1150px){#sq-nextgen .sq-wallet-compact-layout>.sq-ng-section:nth-child(4)>.sq-ng-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </body>
 </html>
