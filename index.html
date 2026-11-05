@@ -7192,20 +7192,22 @@ document.addEventListener('click',function(event){var trigger=event.target.close
   }
   document.addEventListener('touchstart',e=>{
     start=null;
-    if(!mobile()||e.touches.length!==1||blocked(e.target))return;
+    if(!mobile()||e.touches.length!==1||blocked(e.target)||document.body.classList.contains('sqev-page-open')||document.body.classList.contains('sq-finance-open'))return;
     const t=e.touches[0];start={x:t.clientX,y:t.clientY,time:Date.now(),target:e.target};
   },{passive:true});
   document.addEventListener('touchmove',e=>{
     if(!start||e.touches.length!==1)return;
     const t=e.touches[0];
-    if(Math.abs(t.clientY-start.y)>Math.abs(t.clientX-start.x)*1.15&&Math.abs(t.clientY-start.y)>22)start=null;
+    if(Math.abs(t.clientY-start.y)>Math.abs(t.clientX-start.x)*0.85&&Math.abs(t.clientY-start.y)>18)start=null;
   },{passive:true});
   document.addEventListener('touchend',e=>{
     if(!start||!mobile()||e.changedTouches.length!==1)return;
     const gesture=start;start=null;
     if(blocked(gesture.target))return;
     const t=e.changedTouches[0],dx=t.clientX-gesture.x,dy=t.clientY-gesture.y;
-    if(Math.abs(dx)<75||Math.abs(dx)<Math.abs(dy)*1.4||Date.now()-gesture.time>1100)return;
+    if(document.body.classList.contains('sqev-page-open')||document.body.classList.contains('sq-finance-open'))return;
+    // Require a deliberate horizontal gesture to prevent accidental page switching while scrolling.
+    if(Math.abs(dx)<135||Math.abs(dx)<Math.abs(dy)*2.2||Math.abs(dy)>70||Date.now()-gesture.time>950)return;
     const next=currentIndex()+(dx<0?1:-1);
     if(next<0||next>=pages.length)return;
     const button=document.querySelector('.sq-mobile-nav button[data-target="'+pages[next]+'"]');
