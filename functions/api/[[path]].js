@@ -919,7 +919,9 @@ const resolvedRole = memberRow => {
 
   try {
    
-const body = ['POST', 'PATCH', 'DELETE'].includes(method) &&
+
+const body = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) &&
+
 
   (request.headers.get('Content-Type') || '')
     .includes('application/json')
