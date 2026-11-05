@@ -59,18 +59,34 @@ export async function onRequest({request,env,params}){
   const e=(await db('squareup_events','GET',{id:'eq.'+p[0]}))[0];
   if(!e||!await access(e.tracker_id))return out({error:'Event not found'},404);
   if(p.length===1&&m==='GET'){
-   const [rsvps,schedule,links]=await Promise.all([
+   const [rsvps,schedule,links,tasks,invites,members]=await Promise.all([
     db('squareup_event_rsvps','GET',{event_id:'eq.'+e.id}),
     db('squareup_event_schedule','GET',{event_id:'eq.'+e.id}),
-    db('squareup_event_expenses','GET',{event_id:'eq.'+e.id})
+    db('squareup_event_expenses','GET',{event_id:'eq.'+e.id}),
+    db('squareup_event_tasks','GET',{event_id:'eq.'+e.id}),
+    db('squareup_event_invites','GET',{event_id:'eq.'+e.id}),
+    db('tracker_members','GET',{tracker_id:'eq.'+e.tracker_id})
    ]);
    const expenses=links.length?await db('tracker_entries','GET',{tracker_id:'eq.'+e.tracker_id,id:'in.('+links.map(x=>x.entry_id).join(',')+')'}):[];
-   return out({event:e,rsvps,schedule,expenses});
+   const ids=[...new Set([...members.map(x=>x.user_id),...rsvps.map(x=>x.user_id)].filter(Boolean))];
+   const profiles=ids.length?await db('profiles','GET',{user_id:'in.('+ids.join(',')+')'}).catch(()=>[]):[];
+   const people=members.map(m=>{
+    const p=profiles.find(x=>x.user_id===m.user_id);
+    return {id:m.user_id,name:p?.display_name||m.name||'Member',username:p?.username||'',
+      photo:p?.photo_key||null,status:rsvps.find(x=>x.user_id===m.user_id)?.status||'not_responded',
+      invited:invites.some(x=>x.user_id===m.user_id)};
+   });
+   return out({event:e,rsvps,schedule,expenses,tasks,people,invites});
   }
   if(p.length===1&&m==='PATCH'){
    if(e.created_by!==me.id)return out({error:'Organizer only'},403);
    const changes={updated_at:new Date().toISOString()};
    for(const k of ['title','description','location','starts_at','ends_at'])if(b[k]!==undefined)changes[k]=b[k];
+   if(b.cover_url!==undefined){
+    const cover=String(b.cover_url||'').trim();
+    if(cover && (!/^https:\/\//i.test(cover)||cover.length>1000))return out({error:'Use a valid HTTPS cover image URL'},400);
+    changes.cover_url=cover||null;
+   }
    if(changes.title!==undefined)changes.title=String(changes.title).trim().slice(0,120);
    if(!String(changes.title??e.title).trim())return out({error:'Title required'},400);
    const start=Date.parse(changes.starts_at||e.starts_at),end=Date.parse(changes.ends_at||e.ends_at);
@@ -113,6 +129,53 @@ export async function onRequest({request,env,params}){
   }
   if(p[1]==='expenses'&&p[2]&&m==='DELETE'){
    await db('squareup_event_expenses','DELETE',{event_id:'eq.'+e.id,entry_id:'eq.'+p[2]});
+   return out({ok:true});
+  }
+  if(p[1]==='schedule'&&p[2]&&m==='PATCH'){
+   if(e.created_by!==me.id)return out({error:'Organizer only'},403);
+   const existing=(await db('squareup_event_schedule','GET',{event_id:'eq.'+e.id,id:'eq.'+p[2]}))[0];
+   if(!existing)return out({error:'Schedule item not found'},404);
+   const title=String(b.title??existing.title).trim().slice(0,120);
+   const start=b.starts_at??existing.starts_at;
+   const end=b.ends_at??existing.ends_at;
+   if(!title||!Date.parse(start)||(end&&(!Date.parse(end)||Date.parse(end)<Date.parse(start))))return out({error:'Invalid schedule item'},400);
+   const updated=await db('squareup_event_schedule','PATCH',{event_id:'eq.'+e.id,id:'eq.'+p[2]},
+    {title,starts_at:start,ends_at:end||null,location:String(b.location??existing.location??'').slice(0,300),notes:String(b.notes??existing.notes??'').slice(0,1000)});
+   return out(updated[0]);
+  }
+  if(p[1]==='invites'&&m==='POST'){
+   if(e.created_by!==me.id)return out({error:'Organizer only'},403);
+   const id=String(b.user_id||'');
+   const members=await db('tracker_members','GET',{tracker_id:'eq.'+e.tracker_id,user_id:'eq.'+id});
+   if(!members.length)return out({error:'Invite this person to the tracker first'},400);
+   const f={event_id:'eq.'+e.id,user_id:'eq.'+id};
+   if(!(await db('squareup_event_invites','GET',f)).length)
+    await db('squareup_event_invites','POST',{},{event_id:e.id,user_id:id,invited_by:me.id});
+   await db('squareup_notifications','POST',{},{
+    recipient_id:id,tracker_id:e.tracker_id,kind:'event',title:'Event invitation',
+    message:'You were invited to '+e.title
+   }).catch(()=>{});
+   return out({ok:true});
+  }
+  if(p[1]==='tasks'&&p.length===2&&m==='POST'){
+   if(e.created_by!==me.id)return out({error:'Organizer only'},403);
+   const title=String(b.title||'').trim().slice(0,200);
+   if(!title)return out({error:'Task name required'},400);
+   const assigned=String(b.assigned_to||'');
+   if(assigned && !(await db('tracker_members','GET',{tracker_id:'eq.'+e.tracker_id,user_id:'eq.'+assigned})).length)
+    return out({error:'Assign only tracker members'},400);
+   const rows=await db('squareup_event_tasks','POST',{},{event_id:e.id,title,assigned_to:assigned||null});
+   return out(rows[0],201);
+  }
+  if(p[1]==='tasks'&&p[2]&&m==='PATCH'){
+   const rows=await db('squareup_event_tasks','GET',{event_id:'eq.'+e.id,id:'eq.'+p[2]});
+   if(!rows.length)return out({error:'Task not found'},404);
+   if(e.created_by!==me.id&&rows[0].assigned_to!==me.id)return out({error:'Not your task'},403);
+   return out((await db('squareup_event_tasks','PATCH',{event_id:'eq.'+e.id,id:'eq.'+p[2]},{completed:b.completed===true}))[0]);
+  }
+  if(p[1]==='tasks'&&p[2]&&m==='DELETE'){
+   if(e.created_by!==me.id)return out({error:'Organizer only'},403);
+   await db('squareup_event_tasks','DELETE',{event_id:'eq.'+e.id,id:'eq.'+p[2]});
    return out({ok:true});
   }
   return out({error:'Not found'},404);
