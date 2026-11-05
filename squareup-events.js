@@ -44,6 +44,7 @@ export function initEvents({api,getTrackers,getUser}){
  #sqev-view .sqev-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 22px}
  #sqev-view .sqev-details-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.8fr);gap:18px;align-items:start}
  #sqev-view .sqev-details-grid>.sqev-box{min-width:0}
+ #sqev-view .sqev-manage-wide{width:100%;margin-top:18px;min-width:0;min-height:190px}
  #sqev-view .sqev-section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(143,195,207,.15)}
  #sqev-view .sqev-section-title h3{margin:0}
  #sqev-view .sqev-empty{border:1px dashed #416273;border-radius:15px;text-align:center;padding:46px 20px;color:#a4bfca}
@@ -151,7 +152,7 @@ export function initEvents({api,getTrackers,getUser}){
       <span>◷ ${safe(date(e.starts_at))} – ${safe(date(e.ends_at))}</span>
       <span>⌖ ${safe(e.location||'Location not set')}</span>
      </div>
-     <div class="sqev-small-actions" style="margin-top:14px"><button type="button" data-calendar="ics">Download calendar event</button><button type="button" data-calendar="google">Google Calendar</button></div>
+     
     </div>
    </div>
    <div class="sqev-details-grid">
@@ -182,9 +183,9 @@ export function initEvents({api,getTrackers,getUser}){
       ${(data.tasks||[]).map(t=>`<div class="sqev-task ${t.completed?'done':''}"><input type="checkbox" data-task-toggle="${safe(t.id)}" ${t.completed?'checked':''} ${own||t.assigned_to===getUser()?.id?'':'disabled'} aria-label="Complete task"><div class="sqev-task-main"><strong>${safe(t.title)}</strong><small class="sqev-muted" style="display:block">Assigned: ${safe((data.people||[]).find(p=>p.id===t.assigned_to)?.name||'Unassigned')}</small></div>${own?`<button type="button" data-task-delete="${safe(t.id)}">Remove</button>`:''}</div>`).join('')||'<p class="sqev-muted">No checklist tasks yet.</p>'}
       ${own?`<form id="sqev-task"><label>Task<input name="title" maxlength="200" required placeholder="Bring supplies, book tickets..."></label><label>Assign to<select name="assigned_to"><option value="">Unassigned</option>${(data.people||[]).map(p=>`<option value="${safe(p.id)}">${safe(p.name)}</option>`).join('')}</select></label><button type="submit">Add task</button></form>`:''}
      </section>
-     ${own?`<section class="sqev-box"><div class="sqev-section-title"><h3>Manage event</h3></div><p class="sqev-muted">Only the organizer can change or delete this event.</p><div class="sqev-actions"><button data-edit="1">Edit details</button><button data-delete="1">Delete event</button></div><div id="sqev-edit-holder"></div></section>`:''}
     </div>
-   </div>`;
+   </div>
+   ${own?`<section class="sqev-box sqev-manage-wide"><div class="sqev-section-title"><h3>Manage event</h3></div><p class="sqev-muted">Only the organizer can change or delete this event.</p><div class="sqev-actions"><button data-edit="1">Edit details</button><button data-delete="1">Delete event</button></div><div id="sqev-edit-holder"></div></section>`:''}`;
   if(own) $('sqev-details').querySelector('[data-edit]').onclick=()=>{
    const holder=$('sqev-edit-holder');
    holder.innerHTML=`<form id="sqev-edit" class="sqev-item"><h3>Edit event</h3><label>Name<input name="title" required maxlength="120" value="${safe(e.title)}"></label><label>Location<input name="location" maxlength="300" value="${safe(e.location)}"></label><label>Description<textarea name="description" maxlength="2000">${safe(e.description)}</textarea></label><label>Cover image HTTPS URL<input name="cover_url" type="url" placeholder="https://example.com/photo.jpg" value="${safe(e.cover_url||'')}"></label><div class="sqev-grid"><label>Starts<input type="datetime-local" name="starts" required value="${localDate(e.starts_at)}"></label><label>Ends<input type="datetime-local" name="ends" required value="${localDate(e.ends_at)}"></label></div><button class="sqev-primary" type="submit">Save changes</button></form>`;
