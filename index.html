@@ -2091,6 +2091,7 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
     <span class="sq-tracker-spinner" aria-hidden="true"></span><span>Loading tracker data…</span>
   </div>
   <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="bills" role="tab" aria-selected="false">Bills</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button></div>
+  <section id="sq-simplify-preview" class="sq-simplify-preview" aria-label="Simplified settlement suggestions" hidden><div class="sq-simplify-head"><div><h3>Smarter settle up</h3><p>Suggested payments that can reduce the number of transfers across this tracker.</p></div><button type="button" id="sq-simplify-toggle" class="small-btn" aria-expanded="false">Show suggestions</button></div><div id="sq-simplify-results" hidden></div></section>
 
   <section id="sq-template-dashboard" class="sq-template-dashboard" hidden aria-label="Tracker template overview"></section>
 
@@ -2139,7 +2140,7 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
   <div class="card" id="balances-card">
     <h2>Current balances</h2>
     <p class="sq-expense-subtitle">Who owes whom in this tracker</p>
-    <div id="nets"></div><section id="sq-simplify-preview" class="sq-simplify-preview" aria-label="Simplified settlement suggestions" hidden><div class="sq-simplify-head"><div><h3>Smarter settle up</h3><p>Suggested payments that can reduce the number of transfers across this tracker.</p></div><button type="button" id="sq-simplify-toggle" class="small-btn" aria-expanded="false">Show suggestions</button></div><div id="sq-simplify-results" hidden></div></section>
+    <div id="nets"></div>
   </div>
 
   <!-- TRACKER MEMBER PROFILES: MEMBERS TAB -->
@@ -10980,12 +10981,12 @@ body.sq-finance-open #sq-nextgen .sq-ng-shell{position:relative!important;z-inde
    const debtors=[],creditors=[];for(const [id,cents] of balances){if(cents<0)debtors.push({id,amount:-cents});else if(cents>0)creditors.push({id,amount:cents})}
    debtors.sort((a,b)=>b.amount-a.amount);creditors.sort((a,b)=>b.amount-a.amount);
    const transfers=[];let i=0,j=0;while(i<debtors.length&&j<creditors.length){const amount=Math.min(debtors[i].amount,creditors[j].amount);if(amount>0)transfers.push({from:debtors[i].id,to:creditors[j].id,amount});debtors[i].amount-=amount;creditors[j].amount-=amount;if(!debtors[i].amount)i++;if(!creditors[j].amount)j++}
-   root.hidden=!result.pairs.length;
+   root.hidden=false;
    if(root.hidden)return;
    const symbol=typeof sqCurrency==='function'?sqCurrency():'';
    const format=c=>{try{return new Intl.NumberFormat(undefined,{style:'currency',currency:/^[A-Z]{3}$/.test(symbol)?symbol:'USD'}).format(c/100)}catch(_){return (c/100).toFixed(2)}};
-   out.innerHTML=transfers.map(t=>'<div class="sq-simplify-row"><span>'+escText(names[t.from]||t.from)+' pays '+escText(names[t.to]||t.to)+'</span><strong>'+escText(format(t.amount))+'</strong></div>').join('')+'<p class="sq-simplify-note">Suggestions only. No payments or balances are changed. Confirm amounts with everyone before settling. These suggestions assume the tracker uses one shared currency.</p>';
-   button.textContent='Show suggestions ('+transfers.length+')';
+   out.innerHTML=(transfers.length?'':'<p class="sq-simplify-note">No outstanding balances to simplify yet. Add expenses to see suggested settlements.</p>')+transfers.map(t=>'<div class="sq-simplify-row"><span>'+escText(names[t.from]||t.from)+' pays '+escText(names[t.to]||t.to)+'</span><strong>'+escText(format(t.amount))+'</strong></div>').join('')+'<p class="sq-simplify-note">Suggestions only. No payments or balances are changed. Confirm amounts with everyone before settling. These suggestions assume the tracker uses one shared currency.</p>';
+   button.textContent='Show suggestions'+(transfers.length?' ('+transfers.length+')':'');
    if(!out.hidden)button.textContent='Hide suggestions';
   }catch(err){console.warn('Settlement preview unavailable',err);root.hidden=true}
  }
@@ -10994,6 +10995,6 @@ body.sq-finance-open #sq-nextgen .sq-ng-shell{position:relative!important;z-inde
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)draw()});draw();
 })();
 </script>
-</body>
+<style id="sq-simplify-visible-overview-2026">#tracker-dashboard.sq-tab-expenses #sq-simplify-preview,#tracker-dashboard.sq-tab-members #sq-simplify-preview,#tracker-dashboard.sq-tab-bills #sq-simplify-preview{display:none!important}#tracker-dashboard.sq-tab-overview #sq-simplify-preview:not([hidden]){display:block!important;margin:14px 0 18px}</style></body>
 </html>
 
