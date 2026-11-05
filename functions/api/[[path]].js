@@ -1882,6 +1882,80 @@ if (
     }
 
 
+    // ACCOUNT-SYNCED CURRENCY FAVORITES
+    // Requires authenticated user "me" and existing db/json/fail helpers.
+
+    if (
+      parts[0] === 'finance' &&
+      parts[1] === 'currency-favorites' &&
+      parts.length === 2
+    ) {
+      const table = 'squareup_currency_favorites';
+
+      // Load the signed-in user's favorite currencies.
+      if (method === 'GET') {
+        const rows = await db(table, {
+          filters: { user_id: 'eq.' + me.id },
+          limit: 1
+        });
+
+        return json({
+          favorites: Array.isArray(rows[0]?.favorites)
+            ? rows[0].favorites
+            : []
+        });
+      }
+
+      // Save the signed-in user's favorite currencies.
+      if (method === 'PUT') {
+        const values = body?.favorites;
+
+        if (
+          !Array.isArray(values) ||
+          values.length > CURRENCIES.length ||
+          values.some(
+            c => typeof c !== 'string' || !validCurrency(c)
+          ) ||
+          new Set(values).size !== values.length
+        ) {
+          return fail('Invalid favorite currencies', 400);
+        }
+
+        const rows = await db(table, {
+          filters: { user_id: 'eq.' + me.id },
+          limit: 1
+        });
+
+        const saved = await db(
+          table,
+          rows.length
+            ? {
+                method: 'PATCH',
+                filters: { user_id: 'eq.' + me.id },
+                body: {
+                  favorites: values,
+                  updated_at: new Date().toISOString()
+                }
+              }
+            : {
+                method: 'POST',
+                body: {
+                  user_id: me.id,
+                  favorites: values
+                }
+              }
+        );
+
+        return json({
+          favorites: saved[0]?.favorites || values
+        });
+      }
+
+      return fail('Method not allowed', 405);
+    }
+
+
+    
     // FINANCE HUB: trip and household planning records.
     if (parts[0] === 'finance' && parts[1] === 'workspace') {
       const table = 'squareup_finance_workspace_items';
