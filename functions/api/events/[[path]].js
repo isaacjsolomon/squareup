@@ -39,6 +39,9 @@ export async function onRequest({request,env,params}){
      description:String(b.description||'').slice(0,2000),location:String(b.location||'').slice(0,300),
      starts_at:b.starts_at,ends_at:b.ends_at
     }))[0];
+    await db('squareup_event_rsvps','POST',{},{
+     event_id:e.id,user_id:me.id,status:'going'
+    });
     // Notify existing tracker members; RSVP requires their signed-in account.
     const members=await db('tracker_members','GET',{tracker_id:'eq.'+b.tracker_id});
     const recipients=[...new Set(members.map(x=>x.user_id))].filter(x=>x&&x!==me.id);
