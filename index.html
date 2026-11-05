@@ -11091,6 +11091,7 @@ body.sq-action-dialog-open{overflow:hidden!important}
  .sq-balanced-actions{display:grid;gap:10px}
  .sq-balanced-actions button{background:#12364b;border:1px solid #355b70;border-radius:14px;color:#eefaff;display:flex;align-items:center;text-align:left;gap:13px;padding:15px;min-height:65px;font:inherit}
  .sq-balanced-actions button:active{background:#1d4c60}
+  .sq-balanced-icon svg{width:23px;height:23px;display:block;flex:none;stroke:currentColor}
  .sq-balanced-actions .sq-balanced-icon{width:40px;height:40px;display:grid;place-items:center;background:#1a5967;border-radius:12px;font-size:23px;flex:none;color:#5bf2d5}
  .sq-balanced-actions strong{display:block;font-size:15px}.sq-balanced-actions small{display:block;color:#b3cad6;font-size:12px;margin-top:3px}
  .sq-balanced-more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -11115,14 +11116,14 @@ body.sq-action-dialog-open{overflow:hidden!important}
   <div class="sq-balanced-sheet-head"><h2 id="sq-balanced-more-title">More</h2><button type="button" class="sq-balanced-close" data-sq-close aria-label="Close">×</button></div>
   <p>All your SquareUp tools in one place.</p>
   <div class="sq-balanced-actions sq-balanced-more-grid">
-   <button type="button" data-sq-destination="sqev-nav"><span class="sq-balanced-icon">▦</span><strong>Events</strong></button>
-   <button type="button" data-sq-destination="nav-analytics"><span class="sq-balanced-icon">▥</span><strong>Analytics</strong></button>
-   <button type="button" data-sq-destination="nav-chat"><span class="sq-balanced-icon">◯</span><strong>Chat</strong></button>
-   <button type="button" data-sq-destination="sq-mobile-notifications"><span class="sq-balanced-icon">♧</span><strong>Notifications</strong></button>
-   <button type="button" data-sq-destination="nav-profile"><span class="sq-balanced-icon">♙</span><strong>Account</strong></button>
-   <button type="button" data-sq-destination="nav-about"><span class="sq-balanced-icon">ⓘ</span><strong>About</strong></button>
-   <button type="button" data-sq-destination="nav-friends"><span class="sq-balanced-icon">♧</span><strong>Friends</strong></button>
-   <button type="button" data-sq-destination="sq-finance-nav"><span class="sq-balanced-icon">▥</span><strong>Finance Hub</strong></button>
+   <button type="button" data-sq-destination="sqev-nav"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 15h3m3 0h2"/></svg></span><strong>Events</strong></button>
+   <button type="button" data-sq-destination="nav-analytics"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 16v-5m5 5V7m5 9V5"/></svg></span><strong>Analytics</strong></button>
+   <button type="button" data-sq-destination="nav-chat"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8A8.5 8.5 0 0 1 12.5 20a8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 12.5 3H13a8.5 8.5 0 0 1 8 8v.5Z"/></svg></span><strong>Chat</strong></button>
+   <button type="button" data-sq-destination="sq-mobile-notifications"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></span><strong>Notifications</strong></button>
+   <button type="button" data-sq-destination="nav-profile"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><strong>Account</strong></button>
+   <button type="button" data-sq-destination="nav-about"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".7" fill="currentColor" stroke="none"/></svg></span><strong>About</strong></button>
+   <button type="button" data-sq-destination="nav-friends"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2"/><path d="M18 8v8M14 12h8"/></svg></span><strong>Friends</strong></button>
+   <button type="button" data-sq-destination="sq-finance-nav"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7 16v-4m5 4V8m5 8v-6"/><path d="M6.5 6.5h2"/></svg></span><strong>Finance Hub</strong></button>
   </div>
  </section>
 </div>
