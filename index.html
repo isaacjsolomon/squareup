@@ -4837,13 +4837,30 @@ async function syncTrackers(user) {
   }
   var joined = await joinPending();
   await loadTrackers(joined);
-  // Pick up changes made by friends
-  pollTimer = setInterval(function () {
-    if (!current || document.visibilityState !== "visible") return;
-    api("trackers/" + current.id).then(applyDetail).catch(function (err) {
-      if (err.status === 404) { alert("You no longer have access to this tracker."); loadTrackers(); }
+  // Pick up changes made by friends; also refresh promptly on return to the app.
+  // Keep the server authoritative and avoid overlapping refresh requests.
+  if (!window.sqRefreshTrackerNow) {
+    var sqRefreshBusy = false;
+    window.sqRefreshTrackerNow = async function () {
+      if (sqRefreshBusy || !current || !current.id || !navigator.onLine || document.visibilityState !== "visible") return;
+      var requestedId = current.id;
+      sqRefreshBusy = true;
+      try {
+        var detail = await api("trackers/" + encodeURIComponent(requestedId));
+        if (current && current.id === requestedId) applyDetail(detail);
+      } catch (err) {
+        if (err.status === 404 && current && current.id === requestedId) {
+          alert("You no longer have access to this tracker.");
+          loadTrackers();
+        }
+      } finally { sqRefreshBusy = false; }
+    };
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "visible") window.sqRefreshTrackerNow();
     });
-  }, 20000);
+    window.addEventListener("online", function () { window.sqRefreshTrackerNow(); });
+  }
+  pollTimer = setInterval(function () { window.sqRefreshTrackerNow(); }, 20000);
 }
 
 $("tb-login").onclick = function () { openAuth("login"); };
@@ -10926,6 +10943,20 @@ body.sq-finance-open #sq-nextgen::before{
 body.sq-finance-open #sq-nextgen .sq-ng-shell{position:relative!important;z-index:1!important;background:transparent!important;}
 @media(max-width:800px){body.sq-finance-open #sq-nextgen::before{left:0!important;}}
 </style>
+
+<style id="sq-connection-status-style-2026">
+#sq-connection-status{position:fixed;bottom:18px;left:calc(var(--sq-finance-sidebar-offset,300px) + 18px);z-index:2147482050;max-width:min(390px,calc(100vw - 36px));border-radius:14px;padding:11px 15px;background:#10283e;color:#e9f8fc;border:1px solid #467185;box-shadow:0 12px 32px #00101e66;font:600 13px/1.4 Inter,system-ui,sans-serif}
+#sq-connection-status[hidden]{display:none!important}
+@media(max-width:800px){#sq-connection-status{left:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px))}}
+</style>
+<div id="sq-connection-status" role="status" aria-live="polite" hidden></div>
+<script id="sq-connection-status-script-2026">
+(()=>{
+ const el=document.getElementById('sq-connection-status');
+ function update(){if(navigator.onLine){el.hidden=true;el.textContent='';window.sqRefreshTrackerNow?.()}else{el.textContent='You are offline. Saved information may be outdated; changes need a connection.';el.hidden=false}}
+ window.addEventListener('online',update);window.addEventListener('offline',update);update();
+})();
+</script>
 </body>
 </html>
 
