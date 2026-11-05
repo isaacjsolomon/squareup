@@ -11249,6 +11249,15 @@ body.sq-action-dialog-open{overflow:hidden!important}
  tabs.forEach(button=>observer.observe(button,{attributes:true,attributeFilter:['class']}));
  show();
 })();
-</script></body>
+</script><style id="sq-remove-customize-overview-2026">
+/* Remove the Overview customization control without changing existing saved display preferences. */
+#tracker-dashboard #sq-layout-tools,
+#tracker-dashboard #sq-layout-tools > button,
+#tracker-dashboard #sq-layout-panel,
+body > #sq-layout-panel {
+  display:none!important;
+}
+</style>
+</body>
 </html>
 
