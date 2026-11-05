@@ -10346,14 +10346,15 @@ header p{color:#b1c7d5!important}
  <div class="sq-ng-shell">
   <header class="sq-ng-header"><div class="sq-ng-heading"><button type="button" id="sq-ng-back" aria-label="Back to Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Home</span></button><span class="sq-ng-kicker">SQUAREUP / YOUR MONEY</span><h1 id="sq-ng-title">Finance Hub</h1><p id="sq-ng-subtitle">A clearer picture of your finances.</p></div>
   <div class="sq-ng-mobile-picker" style="display:none!important" aria-hidden="true"><label for="sq-ng-mobile-select">Finance Hub section</label><div class="sq-ng-mobile-select-wrap"><select id="sq-ng-mobile-select" aria-label="Choose Finance Hub section"><option value="finance">Personal Finance</option><option value="wallet">Wallet &amp; Settlements</option><option value="trip">Trips</option><option value="home">Household</option><option value="subscriptions">Subscriptions</option><option value="currencies">Currencies</option><option value="insights">Smart Insights</option></select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
-  <nav id="sq-finance-mobile-tiles" aria-label="Finance Hub sections" style="display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px;margin:14px 0 22px;width:100%">
-<button type="button" data-ng-tab="finance" class="selected">Personal</button>
-<button type="button" data-ng-tab="wallet">Wallet</button>
-<button type="button" data-ng-tab="trip">Trips</button>
+  <nav id="sq-finance-mobile-tiles" aria-label="Finance Hub sections">
+<button type="button" data-ng-tab="finance" data-sq-visible="true" class="selected">Personal</button>
+<button type="button" data-ng-tab="wallet" data-sq-visible="true">Wallet</button>
+<button type="button" data-ng-tab="trip" data-sq-visible="true">Trips</button>
 <button type="button" data-ng-tab="home">Household</button>
 <button type="button" data-ng-tab="subscriptions">Bills</button>
 <button type="button" data-ng-tab="currencies">Currencies</button>
 <button type="button" data-ng-tab="insights">Insights</button>
+<button id="sq-ng-next-tabs" type="button" aria-label="Show next Finance Hub sections" title="Show more sections"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
 </nav>
   <div class="sq-ng-tabs"><button type="button" data-ng-tab="finance" class="selected" aria-label="Personal Finance">Personal</button><button type="button" data-ng-tab="wallet" aria-label="Wallet & Settlements">Wallet</button><button type="button" data-ng-tab="trip" aria-label="Trips">Trips</button><button type="button" data-ng-tab="home" aria-label="Household">Household</button><button type="button" data-ng-tab="subscriptions" aria-label="Subscriptions">Bills</button><button type="button" data-ng-tab="currencies" aria-label="Currencies">Currencies</button><button type="button" data-ng-tab="insights" aria-label="Smart Insights">Insights</button></div>
   <p id="sq-ng-status" role="status" aria-live="polite"></p><div id="sq-ng-content"></div>
@@ -11184,14 +11185,68 @@ body.sq-action-dialog-open{overflow:hidden!important}
 }
 </style>
 <style id="sq-finance-mobile-tile-navigation">
+/* Three visible sections and an explicit carousel arrow: avoids the old native select. */
 #sq-finance-mobile-tiles{display:none!important}
 @media(max-width:900px){
- body.sq-finance-open #sq-nextgen .sq-ng-shell>.sq-ng-mobile-picker{display:none!important}
- body.sq-finance-open #sq-nextgen .sq-ng-shell>.sq-ng-tabs{display:none!important}
- body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
- #sq-finance-mobile-tiles button{display:block!important;min-width:0!important;width:100%!important;min-height:50px!important;border:1px solid #416779!important;background:#123348!important;color:#eaf8ff!important;border-radius:13px!important;padding:12px 9px!important;font:inherit!important;font-size:14px!important;font-weight:700!important;white-space:normal!important;text-align:center!important}
- #sq-finance-mobile-tiles button.selected{background:#176276!important;border-color:#4de5cd!important;box-shadow:inset 0 0 0 1px #4de5cd!important;color:#fff!important}
+ body.sq-finance-open #sq-nextgen .sq-ng-shell>.sq-ng-mobile-picker,
+ body.sq-finance-open #sq-nextgen .sq-ng-shell>.sq-ng-tabs{display:none!important;visibility:hidden!important}
+ body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles{
+   display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr)) 48px!important;
+   gap:7px!important;align-items:stretch!important;margin:14px 0 22px!important;width:100%!important
+ }
+ body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles>button{
+   display:none!important;min-width:0!important;width:100%!important;min-height:48px!important;
+   border:1px solid #416779!important;background:#123348!important;color:#eaf8ff!important;
+   border-radius:12px!important;padding:10px 5px!important;font:inherit!important;
+   font-size:clamp(11px,3.2vw,14px)!important;font-weight:700!important;white-space:normal!important;
+   text-align:center!important;align-items:center!important;justify-content:center!important
+ }
+ body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles>button[data-sq-visible="true"],
+ body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles>#sq-ng-next-tabs{display:flex!important}
+ body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles>button.selected{
+   background:#176276!important;border-color:#4de5cd!important;
+   box-shadow:inset 0 0 0 1px #4de5cd!important;color:#fff!important
+ }
+ body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles>#sq-ng-next-tabs{
+   padding:8px!important;background:#1a4657!important;flex:none!important
+ }
+ #sq-ng-next-tabs svg{width:21px;height:21px;display:block;margin:auto}
 }
-</style></body>
+</style><script id="sq-finance-mobile-shuffle-script">
+(function(){
+ const nav=document.getElementById('sq-finance-mobile-tiles');
+ if(!nav)return;
+ const tabs=Array.from(nav.querySelectorAll('button[data-ng-tab]'));
+ const next=document.getElementById('sq-ng-next-tabs');
+ if(!next||tabs.length!==7)return;
+ let first=0;
+ function show(){
+  tabs.forEach((button,i)=>{
+   const visible=[0,1,2].some(offset=>(first+offset)%tabs.length===i);
+   if(visible)button.setAttribute('data-sq-visible','true');
+   else button.removeAttribute('data-sq-visible');
+  });
+  next.setAttribute('aria-label','Show next Finance Hub sections');
+ }
+ next.addEventListener('click',()=>{
+  first=(first+1)%tabs.length;
+  show();
+ });
+ // Selecting a tab loads its existing Finance Hub content.
+ // Keep the chosen section visible, including after other navigation paths update it.
+ const observer=new MutationObserver(records=>{
+  for(const record of records){
+   if(record.attributeName!=='class')continue;
+   const el=record.target;
+   if(!el.classList.contains('selected')||el.hasAttribute('data-sq-visible'))continue;
+   const i=tabs.indexOf(el);
+   if(i<0)continue;
+   first=i;show();break;
+  }
+ });
+ tabs.forEach(button=>observer.observe(button,{attributes:true,attributeFilter:['class']}));
+ show();
+})();
+</script></body>
 </html>
 
