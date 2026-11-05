@@ -5653,7 +5653,7 @@ sqDrawTemplates();
 import('./squareup-events.js').then(module => module.initEvents({api, getTrackers: () => trackers, getUser: () => currentUser})).catch(error => console.error('Events unavailable',error));
 
 </script>
-<nav aria-label="Mobile navigation" class="sq-mobile-nav"><button class="active" data-target="nav-home" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path><path d="M7 10v-1m10 1V9"></path></svg></span>Home</button><button data-target="nav-trackers" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="m4 7 2 2 3-4"></path><path d="M12 7h9"></path><circle cx="6" cy="17" r="2"></circle><path d="M12 17h9"></path></svg></span>Trackers</button><button class="sq-add" data-target="quick-expense" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2" viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></span>Add</button><button id="sq-mobile-finance" data-target="sq-finance-nav" type="button" aria-label="Open Finance Hub"><span class="sq-m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7 16v-4m5 4V8m5 8v-6"/></svg></span>Finance Hub</button><button id="sqev-mobile-nav" type="button" aria-label="Open Events"><span class="sq-m-icon" aria-hidden="true">◈</span>Events</button><button data-target="nav-profile" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>Account</button></nav>
+<nav aria-label="Mobile navigation" class="sq-mobile-nav"><button class="active" data-target="nav-home" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path><path d="M7 10v-1m10 1V9"></path></svg></span>Home</button><button data-target="nav-trackers" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="m4 7 2 2 3-4"></path><path d="M12 7h9"></path><circle cx="6" cy="17" r="2"></circle><path d="M12 17h9"></path></svg></span>Trackers</button><button class="sq-add" data-target="quick-expense" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2" viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></span>Add</button><button id="sq-mobile-finance" data-target="sq-finance-nav" type="button" aria-label="Open Finance Hub"><span class="sq-m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7 16v-4m5 4V8m5 8v-6"/></svg></span>Finance Hub</button><button id="sqev-mobile-nav" type="button" aria-label="Open Events"><span class="sq-m-icon" aria-hidden="true">◈</span>Events</button><button id="sq-mobile-more" type="button" aria-haspopup="dialog" aria-controls="sq-mobile-more-sheet"><span class="sq-m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>More</button><button data-target="nav-profile" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>Account</button></nav>
 <script>
 (function(){
  const tabs=document.querySelectorAll('[data-sq-tab]');
@@ -11073,6 +11073,80 @@ body.sq-action-dialog-open{overflow:hidden!important}
  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!modal.hidden)close(null)});
  go.addEventListener('click',function(){if(!active)return;var item=active.items[Number(select.value)],numeric=Number(amount.value),c=Math.round(numeric*100);if(!Number.isSafeInteger(c)||c<=0||c>item.cents||Math.abs(numeric*100-c)>0.000001){update(false);return;}close(Object.assign({},item,{paidCents:c}))});
 })();
-</script></body>
+</script><!-- SquareUp balanced mobile navigation: existing actions remain unchanged on desktop. -->
+<style id="sq-balanced-mobile-style">
+@media(max-width:900px){
+ .sq-mobile-nav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;align-items:center;gap:0!important}
+ .sq-mobile-nav>button{min-width:0!important;width:100%!important;padding-left:2px!important;padding-right:2px!important;font-size:clamp(9px,2.8vw,13px)!important}
+ .sq-mobile-nav #sqev-mobile-nav,.sq-mobile-nav button[data-target="nav-profile"]{display:none!important}
+ .dashboard-actions #quick-receipt,.dashboard-actions #quick-split,.dashboard-actions #quick-payment{display:none!important}
+ .dashboard-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .dashboard-actions #quick-pay-now,.dashboard-actions #quick-expense{min-width:0}
+ #sq-balanced-add-sheet[hidden],#sq-mobile-more-sheet[hidden]{display:none!important}
+ .sq-balanced-overlay{position:fixed;inset:0;z-index:2147483000;background:#020d18b8;display:flex;align-items:flex-end;justify-content:center;padding:12px 12px calc(env(safe-area-inset-bottom) + 14px)}
+ .sq-balanced-sheet{background:linear-gradient(160deg,#102f43,#071b2b);border:1px solid #3c6779;border-radius:24px;width:min(100%,520px);max-height:82dvh;overflow-y:auto;padding:22px;color:#e9f8ff;box-shadow:0 18px 50px #0008}
+ .sq-balanced-sheet h2{margin:0;font-size:23px}.sq-balanced-sheet p{color:#a9c4d2;margin:7px 0 18px;font-size:13px}
+ .sq-balanced-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:8px}
+ .sq-balanced-close{background:#1b3c51;color:#fff;border:1px solid #436879;border-radius:50%;width:38px;height:38px;font-size:23px}
+ .sq-balanced-actions{display:grid;gap:10px}
+ .sq-balanced-actions button{background:#12364b;border:1px solid #355b70;border-radius:14px;color:#eefaff;display:flex;align-items:center;text-align:left;gap:13px;padding:15px;min-height:65px;font:inherit}
+ .sq-balanced-actions button:active{background:#1d4c60}
+ .sq-balanced-actions .sq-balanced-icon{width:40px;height:40px;display:grid;place-items:center;background:#1a5967;border-radius:12px;font-size:23px;flex:none;color:#5bf2d5}
+ .sq-balanced-actions strong{display:block;font-size:15px}.sq-balanced-actions small{display:block;color:#b3cad6;font-size:12px;margin-top:3px}
+ .sq-balanced-more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .sq-balanced-more-grid button{min-width:0;min-height:95px;flex-direction:column;align-items:flex-start;justify-content:center}
+}
+@media(min-width:901px){#sq-balanced-add-sheet,#sq-mobile-more-sheet{display:none!important}}
+</style>
+<div class="sq-balanced-overlay" id="sq-balanced-add-sheet" hidden role="presentation">
+ <section class="sq-balanced-sheet" role="dialog" aria-modal="true" aria-labelledby="sq-balanced-add-title">
+  <div class="sq-balanced-sheet-head"><h2 id="sq-balanced-add-title">What would you like to add?</h2><button type="button" class="sq-balanced-close" data-sq-close aria-label="Close">×</button></div>
+  <p>Choose a quick action to get started.</p>
+  <div class="sq-balanced-actions">
+   <button type="button" data-sq-action="quick-expense"><span class="sq-balanced-icon">＋</span><span><strong>Add Expense</strong><small>Record money owed between people</small></span></button>
+   <button type="button" data-sq-action="quick-receipt"><span class="sq-balanced-icon">▧</span><span><strong>Scan Receipt</strong><small>Take a photo or upload a receipt</small></span></button>
+   <button type="button" data-sq-action="quick-split"><span class="sq-balanced-icon">♧</span><span><strong>Split a Bill</strong><small>Split a payment among friends</small></span></button>
+   <button type="button" data-sq-action="quick-pay-now"><span class="sq-balanced-icon">↗</span><span><strong>Pay Now</strong><small>Record a full or partial payment</small></span></button>
+  </div>
+ </section>
+</div>
+<div class="sq-balanced-overlay" id="sq-mobile-more-sheet" hidden role="presentation">
+ <section class="sq-balanced-sheet" role="dialog" aria-modal="true" aria-labelledby="sq-balanced-more-title">
+  <div class="sq-balanced-sheet-head"><h2 id="sq-balanced-more-title">More</h2><button type="button" class="sq-balanced-close" data-sq-close aria-label="Close">×</button></div>
+  <p>All your SquareUp tools in one place.</p>
+  <div class="sq-balanced-actions sq-balanced-more-grid">
+   <button type="button" data-sq-destination="sqev-nav"><span class="sq-balanced-icon">▦</span><strong>Events</strong></button>
+   <button type="button" data-sq-destination="nav-analytics"><span class="sq-balanced-icon">▥</span><strong>Analytics</strong></button>
+   <button type="button" data-sq-destination="nav-chat"><span class="sq-balanced-icon">◯</span><strong>Chat</strong></button>
+   <button type="button" data-sq-destination="sq-mobile-notifications"><span class="sq-balanced-icon">♧</span><strong>Notifications</strong></button>
+   <button type="button" data-sq-destination="nav-profile"><span class="sq-balanced-icon">♙</span><strong>Account</strong></button>
+   <button type="button" data-sq-destination="nav-about"><span class="sq-balanced-icon">ⓘ</span><strong>About</strong></button>
+   <button type="button" data-sq-destination="nav-friends"><span class="sq-balanced-icon">♧</span><strong>Friends</strong></button>
+   <button type="button" data-sq-destination="sq-finance-nav"><span class="sq-balanced-icon">▥</span><strong>Finance Hub</strong></button>
+  </div>
+ </section>
+</div>
+<script id="sq-balanced-mobile-script">
+(function(){
+ const nav=document.querySelector('.sq-mobile-nav');
+ const add=document.getElementById('sq-balanced-add-sheet'),more=document.getElementById('sq-mobile-more-sheet');
+ const mobile=()=>window.matchMedia('(max-width:900px)').matches;
+ const close=()=>{add.hidden=true;more.hidden=true;document.body.classList.remove('sq-balanced-sheet-open')};
+ const open=el=>{close();el.hidden=false;el.querySelector('[data-sq-close]')?.focus()};
+ nav?.querySelector('.sq-add')?.addEventListener('click',e=>{if(!mobile())return;e.preventDefault();e.stopImmediatePropagation();open(add)},true);
+ document.getElementById('sq-mobile-more')?.addEventListener('click',e=>{if(!mobile())return;e.preventDefault();e.stopImmediatePropagation();open(more)},true);
+ [add,more].forEach(el=>{
+  el.addEventListener('click',e=>{
+   if(e.target===el||e.target.closest('[data-sq-close]')){close();return}
+   const action=e.target.closest('[data-sq-action]');
+   if(action){const id=action.dataset.sqAction;close();const target=document.getElementById(id);if(target){target.click()}return}
+   const link=e.target.closest('[data-sq-destination]');
+   if(link){const id=link.dataset.sqDestination;close();const target=document.getElementById(id);if(target&&!target.hidden)target.click();else if(id==='nav-friends'){document.querySelector('[data-sq-tab="members"]')?.click();}return}
+  });
+ });
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&(!add.hidden||!more.hidden))close()});
+})();
+</script>
+</body>
 </html>
 
