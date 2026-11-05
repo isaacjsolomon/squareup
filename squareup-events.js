@@ -127,6 +127,19 @@ export function initEvents({api,getTrackers,getUser}){
  #sqev-view .sqev-form-actions{display:flex;justify-content:flex-end;margin-top:16px}
  @media(max-width:980px){#sqev-view .sqev-details-grid{grid-template-columns:1fr}}
  @media(max-width:680px){#sqev-view{padding:14px 0 95px}#sqev-view .sqev-toolbar{padding:6px 0 18px}#sqev-view .sqev-box{padding:17px;border-radius:15px}#sqev-view .sqev-overview{gap:8px}#sqev-view .sqev-stat{padding:12px}#sqev-view .sqev-stat strong{font-size:22px}#sqev-view .sqev-stat span{font-size:11px}#sqev-view .sqev-events-grid,#sqev-view .sqev-grid{grid-template-columns:1fr}#sqev-view .sqev-item{padding:16px}#sqev-view .sqev-toolbar-actions{width:100%}#sqev-view .sqev-toolbar-actions button{flex:1}}
+
+ @media(max-width:900px){
+  #sqev-view .sqev-mobile-sections{position:sticky;top:0;z-index:20;background:#071d2d;padding:10px 4px;border-radius:12px;margin:0 0 14px;box-shadow:0 8px 20px #0004}
+  #sqev-view .sqev-mobile-sections button{font-size:13px}
+  #sqev-view .sqev-details-grid{display:block}
+  #sqev-view .sqev-details-grid .sqev-box[data-ev-section]:not(.sqev-show),#sqev-view .sqev-manage-wide[data-ev-section]:not(.sqev-show){display:none!important}
+  #sqev-view .sqev-details-grid .sqev-box[data-ev-section].sqev-show,#sqev-view .sqev-manage-wide[data-ev-section].sqev-show{display:block!important;margin-bottom:12px}
+  #sqev-view .sqev-guest-grid{grid-template-columns:minmax(0,1fr)}
+  #sqev-view .sqev-task button{flex:none}
+  #sqev-view .sqev-toolbar-actions{display:flex;flex-wrap:wrap}
+  #sqev-view .sqev-toolbar-actions button{flex:1}
+  #sqev-view .sqev-status{position:sticky;bottom:calc(75px + env(safe-area-inset-bottom));z-index:25}
+ }
  `
  document.head.append(css);
  const panel=document.createElement('section');
@@ -152,11 +165,25 @@ export function initEvents({api,getTrackers,getUser}){
  </div><p id="sqev-message" role="status" aria-live="polite"></p>
  </div>`;
  (document.querySelector('.wrap')||document.body).append(panel);
- const $=id=>panel.querySelector('#'+id),message=t=>{$('sqev-message').textContent=t};
+ const $=id=>panel.querySelector('#'+id),message=t=>{$('sqev-message').textContent=t;const el=$('sqev-message');el.classList.toggle('sqev-status',!!t);if(t)el.scrollIntoView({block:'nearest'});};
  const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const date=v=>new Date(v).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});
  const localDate=v=>{const d=new Date(v);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)};
- let selected=null;
+ let selected=null,activeSection='schedule',busy=false;
+ function setEventSection(section){
+  activeSection=section;
+  $('sqev-mobile-sections').querySelectorAll('[data-section]').forEach(b=>{const on=b.dataset.section===section;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on))});
+  $('sqev-details').querySelectorAll('[data-ev-section]').forEach(el=>el.classList.toggle('sqev-show',el.dataset.evSection===section));
+ }
+ $('sqev-mobile-sections').addEventListener('click',ev=>{const b=ev.target.closest('[data-section]');if(b)setEventSection(b.dataset.section)});
+ async function saveEventAction(button,work,success='Saved.'){
+  if(busy)return;busy=true;
+  if(button)button.disabled=true;
+  try{await work();message(success);await details(selected)}
+  catch(error){message(error.message||'Could not save. Please try again.')}
+  finally{busy=false;if(button?.isConnected)button.disabled=false}
+ }
+
  async function load(){
   const trackers=getTrackers()||[], select=$('sqev-form').elements.tracker_id;
   const previous=select.value;
@@ -210,7 +237,7 @@ export function initEvents({api,getTrackers,getUser}){
      </section>
      <section class="sqev-box" data-ev-section="expenses"><div class="sqev-section-title"><h3>Event expenses</h3><span class="sqev-muted">${data.expenses.length} linked</span></div>
      <div class="sqev-metric">${safe(tracker.currency||'USD')} ${data.expenses.reduce((a,x)=>a+(x.type==='debt'?Number(x.amount)||0:0),0).toFixed(2)}</div><p class="sqev-muted">Total linked expenses · Debts and payments continue to use tracker balances and approvals.</p>
-     <details class="sqev-collapsible"><summary>Add event expense</summary><form id="sqev-direct-expense"><h3>Add an event expense</h3><div class="sqev-grid"><label>Who owes<select name="from" required>${(tracker.members||[]).map(m=>`<option value="${safe(m.name)}">${safe(m.name)}</option>`).join('')}</select></label><label>Who paid<select name="to" required>${(tracker.members||[]).map(m=>`<option value="${safe(m.name)}">${safe(m.name)}</option>`).join('')}</select></label><label>Amount<input name="amount" type="number" min=".01" step=".01" required></label><label>Note<input name="note" placeholder="Dinner, tickets..." maxlength="200"></label></div><button type="submit" class="sqev-primary">Add expense to event</button></form></details>
+     <p class="sqev-muted">Create expenses using your tracker's existing Add Expense action, then link them here. This preserves split rules and approval settings.</p>
      ${data.expenses.length?data.expenses.map(x=>`<div class="sqev-item"><strong>${safe(x.note||'Expense')}</strong><p>${safe(x.from_name||x.from||'')} · ${safe(x.amount)}</p><button data-unlink="${safe(x.id)}">Unlink</button></div>`).join(''):'<p class="sqev-muted">Link an existing tracker expense to keep it organized with this event.</p>'}
      <details class="sqev-collapsible"><summary>Link existing expense</summary><form id="sqev-expense"><label>Existing tracker expense<select name="entry_id" required><option value="">Choose an expense...</option>${(tracker.entries||[]).filter(x=>!linked.has(x.id)).map(x=>`<option value="${safe(x.id)}">${safe(x.note||x.from+' → '+x.to)} · ${safe(x.amount)}</option>`).join('')}</select></label><button type="submit">Link expense</button></form></details>
      </section>
@@ -233,6 +260,12 @@ export function initEvents({api,getTrackers,getUser}){
     </div>
    </div>
    ${own?`<section class="sqev-box sqev-manage-wide" data-ev-section="manage"><div class="sqev-section-title"><h3>Manage event</h3></div><p class="sqev-muted">Only the organizer can change or delete this event.</p><div class="sqev-actions"><button data-edit="1">Edit details</button><button data-delete="1">Delete event</button></div><div id="sqev-edit-holder"></div></section>`:''}`;
+  // Mobile sections are explicit, accessible buttons rather than a long, difficult-to-use page.
+  const sections=[['schedule','Schedule'],['rsvp','RSVP'],['guests','Guests'],['expenses','Expenses'],['tasks','Checklist'],['manage','Manage']];
+  const available=sections.filter(([key])=>!!$('sqev-details').querySelector('[data-ev-section="'+key+'"]'));
+  const mobileTabs=$('sqev-mobile-sections');
+  mobileTabs.innerHTML=available.map(([key,label])=>'<button type="button" data-section="'+key+'">'+label+'</button>').join('');
+  setEventSection(available.some(([key])=>key===activeSection)?activeSection:'schedule');
   if(own) $('sqev-details').querySelector('[data-edit]').onclick=()=>{
    const holder=$('sqev-edit-holder');
    holder.innerHTML=`<form id="sqev-edit" class="sqev-item"><h3>Edit event</h3><label>Name<input name="title" required maxlength="120" value="${safe(e.title)}"></label><label>Location<input name="location" maxlength="300" value="${safe(e.location)}"></label><label>Description<textarea name="description" maxlength="2000">${safe(e.description)}</textarea></label><label>Cover image HTTPS URL<input name="cover_url" type="url" placeholder="https://example.com/photo.jpg" value="${safe(e.cover_url||'')}"></label><div class="sqev-grid"><label>Starts<input type="datetime-local" name="starts" required value="${localDate(e.starts_at)}"></label><label>Ends<input type="datetime-local" name="ends" required value="${localDate(e.ends_at)}"></label></div><button class="sqev-primary" type="submit">Save changes</button></form>`;
@@ -312,19 +345,48 @@ export function initEvents({api,getTrackers,getUser}){
    if(b.dataset.rsvp)await api('events/'+selected+'/rsvp','POST',{status:b.dataset.rsvp});
    else if(b.dataset.removeItem)await api('events/'+selected+'/schedule/'+b.dataset.removeItem,'DELETE');
    else if(b.dataset.unlink)await api('events/'+selected+'/expenses/'+b.dataset.unlink,'DELETE');
+   else if(b.dataset.taskDelete){if(!confirm('Remove this checklist task?'))return;await api('events/'+selected+'/tasks/'+encodeURIComponent(b.dataset.taskDelete),'DELETE');}
+   else if(b.dataset.editItem){
+    const item=(await api('events/'+selected)).schedule.find(i=>i.id===b.dataset.editItem);
+    if(!item)return message('Activity not found.');
+    activeSection='schedule';
+    $('sqev-schedule-edit').innerHTML='<form id="sqev-schedule-update" class="sqev-item"><h3>Edit activity</h3><input type="hidden" name="item_id" value="'+safe(item.id)+'"><label>Activity<input name="title" required maxlength="120" value="'+safe(item.title)+'"></label><label>Starts<input name="starts" type="datetime-local" required value="'+localDate(item.starts_at)+'"></label><label>Location<input name="location" value="'+safe(item.location||'')+'"></label><label>Notes<textarea name="notes">'+safe(item.notes||'')+'</textarea></label><button type="submit" class="sqev-primary">Save activity</button><button type="button" data-cancel-edit="1">Cancel</button></form>';
+    $('sqev-schedule-edit').scrollIntoView({block:'nearest'});return;
+   }
+   else if(b.dataset.cancelEdit){$('sqev-schedule-edit').innerHTML='';return;}
    else if(b.dataset.delete!==undefined){if(!confirm('Delete this event and its RSVP/schedule? Tracker expenses will remain.'))return;await api('events/'+selected,'DELETE');backToEvents();await load();message('Event deleted.');return;}
    else return;
    message('Saved.');await details(selected);
   }catch(e){message(e.message)}
  };
- $('sqev-details').addEventListener('submit',async ev=>{
-  if(!['sqev-edit','sqev-expense'].includes(ev.target.id))return;
-  ev.preventDefault();const f=ev.target.elements;
-  try{
-   if(ev.target.id==='sqev-edit')await api('events/'+selected,'PATCH',{title:f.title.value,location:f.location.value,description:f.description.value,starts_at:new Date(f.starts.value).toISOString(),ends_at:new Date(f.ends.value).toISOString()});
-   if(ev.target.id==='sqev-expense')await api('events/'+selected+'/expenses','POST',{entry_id:f.entry_id.value});
-   message('Saved.');await details(selected);await load();
-  }catch(error){message(error.message)}
+ $('sqev-details').addEventListener('change',async ev=>{
+  const cb=ev.target.closest('[data-task-toggle]');
+  if(!cb||!selected||busy)return;
+  const intended=cb.checked;cb.disabled=true;
+  await saveEventAction(cb,()=>api('events/'+selected+'/tasks/'+encodeURIComponent(cb.dataset.taskToggle),'PATCH',{completed:intended}),'Checklist updated.');
  });
- $('sqev-details').onsubmit=async ev=>{if(ev.target.id!=='sqev-schedule')return;ev.preventDefault();const f=ev.target.elements;try{await api('events/'+selected+'/schedule','POST',{title:f.title.value,starts_at:new Date(f.starts.value).toISOString(),location:f.location.value});message('Schedule updated.');await details(selected)}catch(e){message(e.message)}};
+ $('sqev-details').addEventListener('submit',async ev=>{
+  const form=ev.target;
+  if(!['sqev-edit','sqev-expense','sqev-schedule','sqev-schedule-update','sqev-invite','sqev-task'].includes(form.id))return;
+  ev.preventDefault();if(busy)return;
+  const f=form.elements, id=selected, button=form.querySelector('[type=submit]');
+  if(form.id==='sqev-edit'||form.id==='sqev-schedule-update'){
+   const starts=new Date(f.starts.value);
+   if(!Number.isFinite(starts.getTime()))return message('Enter a valid date.');
+   if(form.id==='sqev-edit'){
+    const ends=new Date(f.ends.value);
+    if(!Number.isFinite(ends.getTime())||ends<=starts)return message('End must be after start.');
+   }
+  }
+  await saveEventAction(button,async()=>{
+   if(form.id==='sqev-edit')await api('events/'+id,'PATCH',{title:f.title.value,location:f.location.value,description:f.description.value,cover_url:f.cover_url.value,starts_at:new Date(f.starts.value).toISOString(),ends_at:new Date(f.ends.value).toISOString()});
+   if(form.id==='sqev-expense'){if(!f.entry_id.value)throw Error('Choose an expense first.');await api('events/'+id+'/expenses','POST',{entry_id:f.entry_id.value})}
+   if(form.id==='sqev-schedule')await api('events/'+id+'/schedule','POST',{title:f.title.value,starts_at:new Date(f.starts.value).toISOString(),location:f.location.value});
+   if(form.id==='sqev-schedule-update')await api('events/'+id+'/schedule/'+encodeURIComponent(f.item_id.value),'PATCH',{title:f.title.value,starts_at:new Date(f.starts.value).toISOString(),location:f.location.value,notes:f.notes.value});
+   if(form.id==='sqev-invite')await api('events/'+id+'/invites','POST',{user_id:f.user_id.value});
+   if(form.id==='sqev-task')await api('events/'+id+'/tasks','POST',{title:f.title.value,assigned_to:f.assigned_to.value||null});
+  },form.id==='sqev-invite'?'Invitation sent.':'Saved.');
+  if(form.id==='sqev-edit')await load();
+ });
+
 }
