@@ -10453,14 +10453,16 @@ async function drawWorkspace(){
     const currencyNames={USD:'United States Dollar',EUR:'Euro (Eurozone)',GBP:'British Pound Sterling (United Kingdom)',CAD:'Canadian Dollar (Canada)',AUD:'Australian Dollar (Australia)',JPY:'Japanese Yen (Japan)',CHF:'Swiss Franc (Switzerland)',CNY:'Chinese Yuan (China)',INR:'Indian Rupee (India)',MXN:'Mexican Peso (Mexico)',BRL:'Brazilian Real (Brazil)',KRW:'South Korean Won (South Korea)',SGD:'Singapore Dollar (Singapore)',HKD:'Hong Kong Dollar (Hong Kong)',NZD:'New Zealand Dollar (New Zealand)',SEK:'Swedish Krona (Sweden)',NOK:'Norwegian Krone (Norway)',DKK:'Danish Krone (Denmark)',ILS:'Israeli New Shekel (Israel)',ZAR:'South African Rand (South Africa)'};
     const currencyLabel=c=>c+' — '+(currencyNames[c]||new Intl.DisplayNames(['en'],{type:'currency'}).of(c)||c);
     const opts=selected=>codes.map(c=>`<option value="${esc(c)}" ${c===selected?'selected':''}>${esc(currencyLabel(c))}</option>`).join('');
-    const favoritesHTML=()=>codes.map(c=>`<button type="button" class="sq-fx-fav ${favorites.includes(c)?'on':''}" data-fx-fav="${esc(c)}" aria-pressed="${favorites.includes(c)}">${favorites.includes(c)?'★':'☆'} ${esc(currencyLabel(c))}</button>`).join('');
-    content.innerHTML=`<div class="sq-fx-two-column"><section class="sq-ng-card sq-fx-card"><div class="sq-fx-heading"><div><h2>Currency converter</h2><p>Latest available exchange rates, automatically retrieved when you convert. Rates may update daily rather than every second.</p></div><span class="sq-fx-live">● Latest available rates</span></div><form id="sq-ng-fx" class="sq-ng-form"><label>Amount<input name="amount" type="number" min="0.01" step="any" value="1" required></label><label>From currency<select name="from">${opts(favorites[0]||'USD')}</select></label><label>To currency<select name="to">${opts(favorites[1]||'EUR')}</select></label><button class="sq-ng-primary">Convert</button></form><div id="sq-ng-fx-result" class="sq-fx-result" aria-live="polite">Choose currencies and convert to see the latest available rate.</div></section><section class="sq-ng-card sq-ng-section"><h2>Favorite currencies</h2><p>Tap the star to save frequently used currencies. Your favorites sync to your SquareUp account and appear first in your currency selections.</p><div class="sq-fx-favorites" id="sq-fx-favorites">${favoritesHTML()}</div><div class="sq-fx-shortcuts" id="sq-fx-shortcuts"></div></section></div><p class="sq-ng-note">Currency conversions are estimates, not a settlement or payment. They do not modify tracker balances. The exchange-rate provider may be temporarily unavailable.</p>`;
+    const shortNames={USD:'US Dollar',EUR:'Euro',GBP:'British Pound',CAD:'Canadian Dollar',AUD:'Australian Dollar',JPY:'Japanese Yen',CHF:'Swiss Franc',CNY:'Chinese Yuan',INR:'Indian Rupee',MXN:'Mexican Peso',BRL:'Brazilian Real',KRW:'Korean Won',SGD:'Singapore Dollar',HKD:'Hong Kong Dollar',NZD:'NZ Dollar',SEK:'Swedish Krona',NOK:'Norwegian Krone',DKK:'Danish Krone',ILS:'Israeli Shekel',ZAR:'South African Rand'};
+    const favoriteChip=c=>`<button type="button" class="sq-fx-fav on sq-fx-compact-chip" data-fx-fav="${esc(c)}" title="Remove ${esc(currencyLabel(c))} from favorites" aria-label="Remove ${esc(currencyLabel(c))} from favorites"><span class="sq-fx-chip-star" aria-hidden="true">★</span><span class="sq-fx-chip-text"><strong>${esc(c)}</strong><small>${esc(shortNames[c]||c)}</small></span></button>`;
+    const favoritesHTML=()=>favorites.length?favorites.map(favoriteChip).join(''):'<p class="sq-fx-empty">No favorites yet. Choose Manage currencies to add some.</p>';
+    const managerHTML=()=>codes.map(c=>`<button type="button" class="sq-fx-manager-item ${favorites.includes(c)?'on':''}" data-fx-fav="${esc(c)}" aria-pressed="${favorites.includes(c)}"><span aria-hidden="true">${favorites.includes(c)?'★':'☆'}</span><span><strong>${esc(c)}</strong><small>${esc(currencyNames[c]||shortNames[c]||c)}</small></span></button>`).join('');
+    content.innerHTML=`<div class="sq-fx-two-column"><section class="sq-ng-card sq-fx-card"><div class="sq-fx-heading"><div><h2>Currency converter</h2><p>Latest available exchange rates, automatically retrieved when you convert. Rates may update daily rather than every second.</p></div><span class="sq-fx-live">● Latest available rates</span></div><form id="sq-ng-fx" class="sq-ng-form"><label>Amount<input name="amount" type="number" min="0.01" step="any" value="1" required></label><label>From currency<select name="from">${opts(favorites[0]||'USD')}</select></label><label>To currency<select name="to">${opts(favorites[1]||'EUR')}</select></label><button class="sq-ng-primary">Convert</button></form><div id="sq-ng-fx-result" class="sq-fx-result" aria-live="polite">Choose currencies and convert to see the latest available rate.</div></section><section class="sq-ng-card sq-ng-section"><h2>Favorite currencies</h2><p>Tap the star to save frequently used currencies. Your favorites sync to your SquareUp account and appear first in your currency selections.</p><div class="sq-fx-favorites" id="sq-fx-favorites">${favoritesHTML()}</div><button type="button" class="sq-fx-manage-toggle" id="sq-fx-manage-toggle" aria-expanded="false" aria-controls="sq-fx-manager">Manage currencies <span aria-hidden="true">⌄</span></button><div class="sq-fx-manager" id="sq-fx-manager" hidden><label class="sq-fx-search-label">Search currencies<input id="sq-fx-search" type="search" placeholder="Search by code, name or country" autocomplete="off"></label><div class="sq-fx-manager-grid" id="sq-fx-manager-grid">${managerHTML()}</div></div></section></div><p class="sq-ng-note">Currency conversions are estimates, not a settlement or payment. They do not modify tracker balances. The exchange-rate provider may be temporarily unavailable.</p>`;
     const form=document.getElementById('sq-ng-fx'),result=document.getElementById('sq-ng-fx-result');
-    function shortcuts(){document.getElementById('sq-fx-shortcuts').innerHTML=favorites.map(c=>`<button type="button" data-fx-quick="${esc(c)}">Use ${esc(currencyLabel(c))}</button>`).join('')}
     function sortOptions(){for(const select of [form.elements.from,form.elements.to]){const current=select.value;select.innerHTML=[...favorites,...codes.filter(c=>!favorites.includes(c))].map(c=>`<option value="${esc(c)}">${favorites.includes(c)?'★ ':''}${esc(currencyLabel(c))}</option>`).join('');select.value=current}}
-    function refreshFav(){document.getElementById('sq-fx-favorites').innerHTML=favoritesHTML();sortOptions();shortcuts()}
+    function refreshFav(){document.getElementById('sq-fx-favorites').innerHTML=favoritesHTML();document.getElementById('sq-fx-manager-grid').innerHTML=managerHTML();filterCurrencyManager();sortOptions()}
     let savingFavorites=false;
-    document.getElementById('sq-fx-favorites').onclick=async e=>{
+    async function toggleFavorite(e){
       const b=e.target.closest('[data-fx-fav]');if(!b||savingFavorites)return;
       if(!accountFavoritesLoaded){status.textContent='Currency favorites are not connected to your account. Please reopen this page when the connection is restored.';return;}
       const c=b.dataset.fxFav;
@@ -10475,7 +10477,12 @@ async function drawWorkspace(){
       }catch(err){status.textContent='Could not save favorites: '+err.message}
       finally{savingFavorites=false}
     };
-    document.getElementById('sq-fx-shortcuts').onclick=e=>{const b=e.target.closest('[data-fx-quick]');if(b)form.elements.to.value=b.dataset.fxQuick};
+    document.getElementById('sq-fx-favorites').addEventListener('click',toggleFavorite);
+    document.getElementById('sq-fx-manager-grid').addEventListener('click',toggleFavorite);
+    const manager=document.getElementById('sq-fx-manager'),manageButton=document.getElementById('sq-fx-manage-toggle');
+    manageButton.addEventListener('click',()=>{manager.hidden=!manager.hidden;manageButton.setAttribute('aria-expanded',String(!manager.hidden));manageButton.querySelector('span').textContent=manager.hidden?'⌄':'⌃';if(!manager.hidden)document.getElementById('sq-fx-search').focus()});
+    function filterCurrencyManager(){const q=(document.getElementById('sq-fx-search')?.value||'').trim().toLowerCase();document.querySelectorAll('#sq-fx-manager-grid [data-fx-fav]').forEach(b=>{const c=b.dataset.fxFav;b.hidden=!!q&&!((c+' '+(currencyNames[c]||'')+' '+(shortNames[c]||'')).toLowerCase().includes(q))})}
+    document.getElementById('sq-fx-search').addEventListener('input',filterCurrencyManager);
     refreshFav();
     form.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(form));const amount=Number(d.amount),from=d.from,to=d.to,btn=form.querySelector('button');if(!Number.isFinite(amount)||amount<=0)return;btn.disabled=true;result.textContent='Fetching the latest available rate…';try{
       if(from===to){result.textContent=`${money(amount,from)} = ${money(amount,to)} · Same currency`;return}
@@ -10702,6 +10709,30 @@ body.side-collapsed .sidebar #sq-sidebar-quick{display:none!important}
  render();balance();const stats=document.getElementById('sq-overview-stats');if(stats&&typeof MutationObserver!=='undefined')new MutationObserver(balance).observe(stats,{subtree:true,childList:true,characterData:true});
 })();
 </script>
+<style id="sq-fx-compact-favorites-2026">
+#sq-nextgen .sq-fx-two-column{align-items:start!important}
+#sq-nextgen .sq-fx-two-column>.sq-ng-card{height:auto!important;align-self:start!important}
+#sq-nextgen .sq-fx-favorites{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;margin:15px 0!important}
+#sq-nextgen .sq-fx-compact-chip{display:flex!important;align-items:center!important;gap:10px!important;text-align:left!important;padding:11px 12px!important;min-height:65px!important;white-space:normal!important;overflow-wrap:normal!important;background:#103b41!important;border-color:#2a9b92!important;color:#eafffa!important}
+#sq-nextgen .sq-fx-chip-star{font-size:18px;color:#44d8c3;flex:none}
+#sq-nextgen .sq-fx-chip-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+#sq-nextgen .sq-fx-chip-text strong{font-size:15px;line-height:1.2}
+#sq-nextgen .sq-fx-chip-text small{font-size:12px;line-height:1.25;color:#a8cbd1;font-weight:400}
+#sq-nextgen .sq-fx-empty{grid-column:1/-1;color:#abc3cf;font-size:13px;margin:3px 0}
+#sq-nextgen .sq-fx-manage-toggle{width:100%;display:flex;justify-content:center;align-items:center;gap:9px;border:1px solid #36586c;border-radius:11px;background:#102b3e;color:#d7eef5;padding:12px 16px;font-weight:650;cursor:pointer}
+#sq-nextgen .sq-fx-manage-toggle:hover{border-color:#42cbb9}
+#sq-nextgen .sq-fx-manager[hidden],#sq-nextgen .sq-fx-manager-grid [hidden]{display:none!important}
+#sq-nextgen .sq-fx-manager{margin-top:14px;padding-top:13px;border-top:1px solid #34546a}
+#sq-nextgen .sq-fx-search-label{display:block;font-size:12px;color:#b9d0d9;margin-bottom:12px}
+#sq-nextgen .sq-fx-search-label input{display:block;width:100%;margin-top:6px;padding:11px 12px;border:1px solid #3b6074;border-radius:9px;background:#0b2638;color:#f0fbff;box-sizing:border-box}
+#sq-nextgen .sq-fx-manager-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:300px;overflow:auto;align-content:start}
+#sq-nextgen .sq-fx-manager-item{display:flex;align-items:center;gap:8px;text-align:left;background:#0b2638;color:#d3e5ed;border:1px solid #34546a;border-radius:9px;padding:9px;min-width:0;cursor:pointer}
+#sq-nextgen .sq-fx-manager-item.on{border-color:#3dd3bc;color:#4ce0c9}
+#sq-nextgen .sq-fx-manager-item>span:last-child{display:flex;flex-direction:column;min-width:0;gap:3px}
+#sq-nextgen .sq-fx-manager-item strong{font-size:12px}
+#sq-nextgen .sq-fx-manager-item small{font-size:11px;line-height:1.3;color:#a9c4d0}
+@media(max-width:440px){#sq-nextgen .sq-fx-favorites{gap:7px!important}#sq-nextgen .sq-fx-compact-chip{padding:9px!important;gap:7px!important}#sq-nextgen .sq-fx-chip-text small{font-size:11px}#sq-nextgen .sq-fx-manager-grid{grid-template-columns:1fr 1fr}}
+</style>
 </body>
 </html>
 
