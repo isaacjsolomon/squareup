@@ -2020,11 +2020,11 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
         <span id="notifications-count" class="notification-count" hidden></span>
       </button>
     </div>
-    <button type="button" id="side-toggle" class="sidebar-collapse-toggle" aria-expanded="true" aria-label="Collapse side panel" title="Collapse side panel">
+    <div class="sq-sidebar-control-row"><button type="button" id="side-toggle" class="sidebar-collapse-toggle" aria-expanded="true" aria-label="Collapse side panel" title="Collapse side panel">
       <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
 
-    <button type="button" id="sq-sidebar-back" aria-label="Go back to previous SquareUp page" title="Back to previous page"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+    <button type="button" id="sq-sidebar-back" aria-label="Go back to previous SquareUp page" title="Back to previous page"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Back</span></button></div>
 
     <div class="me" id="me" hidden>
       <button type="button" class="avatar me-avatar" id="me-avatar" aria-label="Change profile photo"></button>
@@ -2042,6 +2042,13 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
   <button type="button" id="nav-about" class="sq-nav-link"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".7" fill="currentColor" stroke="none"/></svg></span><span class="sq-nav-label">About</span></button>
   <button type="button" id="btn-settings" class="sq-nav-link" style="display:none!important" aria-hidden="true" tabindex="-1"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2 2-.07-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.56V21h-2.83v-.9a1.7 1.7 0 0 0-1-1.56 1.7 1.7 0 0 0-1.87.34l-.07.06-2-2 .06-.06A1.7 1.7 0 0 0 7.5 15a1.7 1.7 0 0 0-1.56-1H5v-2.83h.94a1.7 1.7 0 0 0 1.56-1 1.7 1.7 0 0 0-.34-1.87L7.1 8.24l2-2 .07.06a1.7 1.7 0 0 0 1.87.34 1.7 1.7 0 0 0 1-1.56V4h2.83v1.08a1.7 1.7 0 0 0 1 1.56 1.7 1.7 0 0 0 1.87-.34l.07-.06 2 2-.06.06a1.7 1.7 0 0 0-.34 1.87 1.7 1.7 0 0 0 1.56 1H22V14h-1.04a1.7 1.7 0 0 0-1.56 1Z" transform="translate(-.5 -.5)"/></svg></span><span class="sq-nav-label">Settings</span></button>
 </nav>
+    <section id="sq-sidebar-quick" class="sq-sidebar-quick" aria-label="Quick access">
+      <div class="sq-quick-heading"><strong>Quick access</strong><button type="button" id="sq-quick-pin" title="Pin current page or tracker" aria-label="Pin current page or tracker">☆ Pin</button></div>
+      <div class="sq-quick-group"><span class="sq-quick-label">Pinned</span><div id="sq-quick-pins" class="sq-quick-links"><span class="sq-quick-muted">Pin a page or tracker for easy access.</span></div></div>
+      <div class="sq-quick-group"><span class="sq-quick-label">Recently visited</span><div id="sq-quick-recent" class="sq-quick-links"><span class="sq-quick-muted">Your recent pages appear here.</span></div></div>
+      <div class="sq-quick-balance"><span>Current tracker</span><div><span>You owe <b id="sq-quick-owe">—</b></span><span>Owed to you <b id="sq-quick-owed">—</b></span></div></div>
+      <button type="button" class="sq-quick-bills" id="sq-quick-bills">Upcoming bills <span aria-hidden="true">→</span></button>
+    </section>
     <div class="settings">
       <div class="settings-menu" id="settings-menu" role="menu" hidden style="display:none!important">
         <button type="button" role="menuitem" id="btn-login">Log in</button>
@@ -10558,12 +10565,24 @@ window.squareUpOpenFinanceHub=open;
 </style>
 
 <style id="sq-sidebar-back-style-2026">
-.sidebar .side-account{position:relative}
-.sidebar #sq-sidebar-back{position:absolute;right:8px;top:90px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid #36566c;border-radius:12px;background:#112b42;color:#e4f4fa;cursor:pointer;z-index:3;transition:background .15s,border-color .15s}
-.sidebar #sq-sidebar-back:hover{background:#20435a;border-color:#49d4c0}
+.sidebar .sq-sidebar-control-row{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;margin:10px 0 16px!important}
+.sidebar .sq-sidebar-control-row #side-toggle{position:static!important;flex:0 0 44px!important;width:44px!important;height:44px!important;margin:0!important;border-radius:12px!important}
+.sidebar #sq-sidebar-back{position:static!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;flex:0 0 auto!important;width:auto!important;height:44px!important;min-height:44px!important;margin:0!important;padding:0 10px!important;border:1px solid #36566c!important;border-radius:12px!important;background:#112b42!important;color:#e4f4fa!important;font-size:13px!important;font-weight:650!important;cursor:pointer!important;transition:background .15s,border-color .15s}
+.sidebar #sq-sidebar-back svg{width:19px!important;height:19px!important;flex-shrink:0}
+.sidebar #sq-sidebar-back:hover{background:#20435a!important;border-color:#49d4c0!important}
 .sidebar #sq-sidebar-back:focus-visible{outline:2px solid #49d4c0;outline-offset:3px}
-body.side-collapsed .sidebar #sq-sidebar-back{display:none!important}
-@media(max-width:900px){.sidebar #sq-sidebar-back{right:8px;top:90px}}
+body.side-collapsed .sidebar .sq-sidebar-control-row{justify-content:center!important}
+body.side-collapsed .sidebar .sq-sidebar-control-row #sq-sidebar-back{display:none!important}
+body.side-collapsed .sidebar .side-account>.sq-sidebar-control-row{display:flex!important}
+body.side-collapsed .sidebar .side-account>.sq-sidebar-control-row #side-toggle{display:flex!important}
+.sidebar .sq-sidebar-quick{display:grid;gap:11px;margin:14px 0 8px;padding:12px 9px;border:1px solid #29465a;border-radius:15px;background:linear-gradient(145deg,#112b3e,#0a2032);color:#e9f5fb}
+.sidebar .sq-quick-heading,.sidebar .sq-quick-balance>div{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.sidebar .sq-quick-heading strong{font-size:12px}.sidebar .sq-quick-heading button{font-size:11px!important;padding:5px 6px!important;border-radius:8px!important;color:#52e1ce!important;border:1px solid #346677!important;background:#102c40!important;cursor:pointer}
+.sidebar .sq-quick-group{display:grid;gap:5px}.sidebar .sq-quick-label{color:#a6c2d1;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.sidebar .sq-quick-links{display:grid;gap:4px}.sidebar .sq-quick-links button{display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;text-align:left;min-width:0;background:#0b2235;border:1px solid #29475c;color:#dbeef6;border-radius:8px;padding:6px!important;font-size:11px!important;cursor:pointer}.sidebar .sq-quick-links button span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sidebar .sq-quick-links .sq-unpin{flex:0 0 auto;width:20px!important;padding:2px!important;justify-content:center;color:#65e3cf}.sidebar .sq-quick-muted{font-size:10px;line-height:1.45;color:#91adbe}
+.sidebar .sq-quick-balance{padding:8px 0;border-top:1px solid #29475c;font-size:10px;color:#b6cddb}.sidebar .sq-quick-balance>div{align-items:flex-start;flex-direction:column;margin-top:6px;gap:4px}.sidebar .sq-quick-balance b{color:#eaf8fb}
+.sidebar .sq-quick-bills{display:flex;align-items:center;justify-content:space-between;width:100%;border:1px solid #2c6673!important;background:#0c3340!important;border-radius:9px!important;padding:9px!important;font-size:11px!important;color:#60e1cc!important;cursor:pointer}
+body.side-collapsed .sidebar #sq-sidebar-quick{display:none!important}
+@media(max-width:900px){.sidebar #sq-sidebar-quick{display:none}}
 </style>
 <script id="sq-sidebar-back-script-2026">
 (()=>{
@@ -10581,6 +10600,29 @@ body.side-collapsed .sidebar #sq-sidebar-back{display:none!important}
     const target=document.getElementById(previous);if(!target)return;
     goingBack=true;try{target.click();current=previous;}finally{goingBack=false;}
   });
+})();
+</script>
+<script id="sq-sidebar-quick-script-2026">
+(()=>{
+ const navNames={'nav-home':'Home','nav-trackers':'Trackers','nav-chat':'Chat','sq-finance-nav':'Finance Hub','nav-analytics':'Analytics','nav-profile':'Account','nav-about':'About','nav-help-center':'Help Center'};
+ const storage='sq_quick_access_v1';let data={pins:[],recent:[]};
+ try{const saved=JSON.parse(localStorage.getItem(storage)||'{}');if(Array.isArray(saved.pins))data.pins=saved.pins;if(Array.isArray(saved.recent))data.recent=saved.recent}catch(_){}
+ const clean=x=>x&&typeof x==='object'&&((x.type==='page'&&navNames[x.id])||(x.type==='tracker'&&typeof x.id==='string'&&x.id.length<200))&&typeof x.name==='string'&&x.name.length<200;
+ data.pins=data.pins.filter(clean).slice(0,8);data.recent=data.recent.filter(clean).slice(0,5);
+ const save=()=>{try{localStorage.setItem(storage,JSON.stringify(data))}catch(_){}};
+ const select=document.getElementById('tracker-select');let current={type:'page',id:'nav-home',name:'Home'};
+ function trackerEntry(){const option=select?.selectedOptions?.[0];if(!option||!option.value)return null;return {type:'tracker',id:option.value,name:option.textContent.trim().slice(0,90)||'Tracker'}}
+ const key=x=>x.type+':'+x.id;
+ function navigate(x){if(x.type==='page'){document.getElementById(x.id)?.click();return}const nav=document.getElementById('nav-trackers');nav?.click();const choice=[...(select?.options||[])].find(o=>o.value===x.id);if(choice){select.value=x.id;select.dispatchEvent(new Event('change',{bubbles:true}))}else if(typeof window.openTracker==='function'){window.openTracker(x.id)}}
+ function renderList(id,items,pinned){const host=document.getElementById(id);if(!host)return;host.replaceChildren();if(!items.length){const empty=document.createElement('span');empty.className='sq-quick-muted';empty.textContent=pinned?'Pin a page or tracker for easy access.':'Your recent pages appear here.';host.append(empty);return}items.forEach(x=>{const row=document.createElement('div');row.style.cssText='display:flex;gap:3px;min-width:0';const open=document.createElement('button');open.type='button';open.style.flex='1';const label=document.createElement('span');label.textContent=x.name;open.append(label);open.addEventListener('click',()=>navigate(x));row.append(open);if(pinned){const remove=document.createElement('button');remove.type='button';remove.className='sq-unpin';remove.title='Unpin '+x.name;remove.setAttribute('aria-label','Unpin '+x.name);remove.textContent='×';remove.addEventListener('click',()=>{data.pins=data.pins.filter(y=>key(y)!==key(x));save();render()});row.append(remove)}host.append(row)})}
+ function render(){renderList('sq-quick-pins',data.pins,true);renderList('sq-quick-recent',data.recent,false);const pin=document.getElementById('sq-quick-pin');if(pin){const pinned=data.pins.some(x=>key(x)===key(current));pin.textContent=pinned?'★ Pinned':'☆ Pin';pin.setAttribute('aria-label',(pinned?'Unpin ':'Pin ')+current.name)}}
+ function visit(x){if(!clean(x))return;current=x;data.recent=[x,...data.recent.filter(y=>key(y)!==key(x))].slice(0,5);save();render()}
+ document.addEventListener('click',e=>{const button=e.target.closest('button[id]');if(button&&navNames[button.id])visit({type:'page',id:button.id,name:navNames[button.id]})},true);
+ select?.addEventListener('change',()=>{const x=trackerEntry();if(x)visit(x)});
+ document.getElementById('sq-quick-pin')?.addEventListener('click',()=>{const k=key(current);if(data.pins.some(x=>key(x)===k))data.pins=data.pins.filter(x=>key(x)!==k);else data.pins=[current,...data.pins].slice(0,8);save();render()});
+ document.getElementById('sq-quick-bills')?.addEventListener('click',()=>{document.getElementById('sq-finance-nav')?.click();const open=()=>document.querySelector('#sq-nextgen [data-ng-tab="subscriptions"]')?.click();open();setTimeout(open,100)});
+ function balance(){for(const [dest,source] of [['sq-quick-owe','sq-stat-owe'],['sq-quick-owed','sq-stat-owed']]){const el=document.getElementById(dest),value=document.getElementById(source)?.textContent?.trim();if(el)el.textContent=value&&value!=='—'?value:'—'}}
+ render();balance();const stats=document.getElementById('sq-overview-stats');if(stats&&typeof MutationObserver!=='undefined')new MutationObserver(balance).observe(stats,{subtree:true,childList:true,characterData:true});
 })();
 </script>
 </body>
