@@ -382,19 +382,19 @@ export async function onRequest({ request, env, params, waitUntil }) {
 
     const r = await fetch(u, {
       method,
-      headers: {
-        ...baseHeaders,
+     
+headers: {
+  ...baseHeaders,
+  Prefer:
+    method === 'POST' &&
+    table === 'squareup_notification_preferences'
+      ? 'resolution=merge-duplicates,return=representation'
+      : 'return=representation',
+  ...(method !== 'GET'
+    ? { 'Content-Type': 'application/json' }
+    : {})
+},
 
-Prefer:
-  method === 'POST' &&
-  table === 'squareup_notification_preferences'
-    ? 'resolution=merge-duplicates,return=representation'
-    : 'return=representation',
-
-        ...(method !== 'GET'
-          ? { 'Content-Type': 'application/json' }
-          : {})
-      },
       body: body === undefined ? undefined : JSON.stringify(body)
     });
 
@@ -1810,6 +1810,72 @@ if (
           ok: true,
           trackerId: invitation.tracker_id
         });
+      }
+
+      return fail('Not found', 404);
+    }
+
+
+  
+    // PERSONAL FINANCE HUB
+    if (parts[0] === 'finance' && parts[1] === 'transactions') {
+      if (parts.length === 2 && method === 'GET') {
+        return json(await db('squareup_personal_transactions', {
+          filters: { user_id: 'eq.' + me.id },
+          order: 'occurred_on.desc,created_at.desc',
+          limit: 300
+        }));
+      }
+
+      if (parts.length === 2 && method === 'POST') {
+        const kind = String(body.kind || '');
+        const description = clean(body.description, 120);
+        const category = clean(body.category, 50);
+        const amount = Number(body.amount);
+
+        if (
+          !['income', 'expense'].includes(kind) ||
+          !description ||
+          !category ||
+          !Number.isFinite(amount) ||
+          amount < 0.01 ||
+          amount > 99999999
+        ) {
+          return fail('Enter a valid personal transaction.', 400);
+        }
+
+        const saved = await db('squareup_personal_transactions', {
+          method: 'POST',
+          body: {
+            user_id: me.id,
+            kind,
+            description,
+            category,
+            amount: Math.round(amount * 100) / 100,
+            currency: 'USD',
+            occurred_on: new Date().toISOString().slice(0, 10)
+          }
+        });
+
+        return json(saved[0], 201);
+      }
+
+      if (
+        parts.length === 3 &&
+        method === 'DELETE' &&
+        uuid.test(parts[2])
+      ) {
+        const deleted = await db('squareup_personal_transactions', {
+          method: 'DELETE',
+          filters: {
+            id: 'eq.' + parts[2],
+            user_id: 'eq.' + me.id
+          }
+        });
+
+        return deleted.length
+          ? json({ ok: true })
+          : fail('Transaction not found.', 404);
       }
 
       return fail('Not found', 404);
