@@ -2,33 +2,86 @@
 export function initEvents({api,getTrackers,getUser}){
  const css=document.createElement('style');
  css.textContent=`
- #sqev-view{position:fixed;z-index:10010;inset:0;background:#071827f5;overflow:auto;padding:28px 18px;color:#e7f8fb;font:15px system-ui}
- #sqev-view[hidden]{display:none!important}#sqev-view .sqev-shell{max-width:1060px;margin:auto}
- #sqev-view h2{font-size:30px;color:#f3ffff;margin:0}#sqev-view h3{margin:0 0 10px;color:#fff}
- #sqev-view .sqev-toolbar{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:20px}
- #sqev-view .sqev-box{border:1px solid #31576a;border-radius:18px;padding:20px;margin:14px 0;background:#102e42}
- #sqev-view input,#sqev-view select,#sqev-view textarea{width:100%;background:#092235;color:#fff;border:1px solid #497083;border-radius:10px;padding:11px;font:inherit;min-width:0}
- #sqev-view label{display:block;margin:8px 0;font-weight:600}#sqev-view .sqev-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
- #sqev-view button{border:1px solid #3b7582;border-radius:10px;padding:11px 16px;background:#164357;color:#fff;cursor:pointer;font-weight:650}
- #sqev-view button.sqev-primary{background:#25c9af;color:#062b31;border-color:#25c9af}
- #sqev-view .sqev-muted{color:#bdd2dd}#sqev-view .sqev-item{border:1px solid #35596b;padding:16px;border-radius:13px;margin:12px 0;background:#0b283d}
- #sqev-view .sqev-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
- #sqev-view #sqev-message{min-height:24px;color:#70e6d5}
- @media(max-width:650px){#sqev-view{padding:18px 12px}#sqev-view .sqev-grid{grid-template-columns:1fr}#sqev-view h2{font-size:24px}}
- `;
+ body.sqev-page-open .wrap > :not(#sqev-view){display:none!important}
+ body.sqev-page-open .wrap{max-width:1500px!important;width:100%!important}
+ #sqev-view{display:block;width:100%;position:relative;z-index:1;background:transparent;overflow:visible;padding:20px 8px 70px;color:#e8f5f9;font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+ #sqev-view[hidden],#sqev-view [hidden]{display:none!important}
+ #sqev-view .sqev-shell{max-width:1320px;margin:0 auto}
+ #sqev-view *{box-sizing:border-box}
+ #sqev-view .sqev-eyebrow{font-size:11px;font-weight:800;letter-spacing:.17em;text-transform:uppercase;color:#54d9c8}
+ #sqev-view h2{font-size:clamp(28px,3.2vw,39px);color:#f4fcff;margin:4px 0 5px;letter-spacing:-.045em;line-height:1.14}
+ #sqev-view h3{font-size:18px;margin:0 0 15px;color:#f5fbff;letter-spacing:-.015em}
+ #sqev-view .sqev-toolbar{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;padding:12px 0 25px}
+ #sqev-view .sqev-subtitle{color:#9ebbc9;font-size:14px;margin:0}
+ #sqev-view .sqev-toolbar-actions{display:flex;gap:9px;align-items:center}
+ #sqev-view .sqev-box{border:1px solid rgba(116,178,197,.24);border-radius:19px;padding:24px;margin:0;background:linear-gradient(140deg,#122f42,#0c2538);box-shadow:0 12px 30px rgba(0,7,20,.12)}
+ #sqev-view .sqev-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:24px}
+ #sqev-view .sqev-stat{border:1px solid rgba(114,173,192,.19);background:#0d293b;border-radius:16px;padding:20px}
+ #sqev-view .sqev-stat strong{display:block;color:#fff;font-size:29px;font-weight:780;letter-spacing:-.045em;margin-top:5px}
+ #sqev-view .sqev-stat span{font-size:12px;color:#a6c6d2;font-weight:600}
+ #sqev-view .sqev-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:20px}
+ #sqev-view .sqev-headrow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+ #sqev-view .sqev-headrow h3{margin:0}
+ #sqev-view .sqev-box p{line-height:1.5}
+ #sqev-view label{display:grid;gap:7px;margin:10px 0;font-weight:650;font-size:12px;color:#bfd5df}
+ #sqev-view .sqev-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px}
+ #sqev-view input,#sqev-view select,#sqev-view textarea{width:100%;min-width:0;background:#0a2235;color:#f0fbff;border:1px solid #36586a;border-radius:11px;padding:12px 13px;font:inherit;min-height:44px;color-scheme:dark;outline:none}
+ #sqev-view input:focus,#sqev-view select:focus,#sqev-view textarea:focus{border-color:#42dac6;box-shadow:0 0 0 3px rgba(66,218,198,.12)}
+ #sqev-view textarea{resize:vertical}
+ #sqev-view button{border:1px solid #426a7c;border-radius:11px;padding:10px 16px;background:#173a4c;color:#e8f8fb;cursor:pointer;font-size:13px;font-weight:700;min-height:42px;transition:background .16s,border-color .16s}
+ #sqev-view button:hover{background:#205064;border-color:#61b8b8}
+ #sqev-view button.sqev-primary{background:#2cd0bb;color:#062833;border-color:#2cd0bb}
+ #sqev-view button.sqev-primary:hover{background:#59e4d0}
+ #sqev-view .sqev-muted{color:#a4becb}
+ #sqev-view .sqev-item{border:1px solid rgba(124,180,194,.22);padding:18px 20px;border-radius:15px;background:#0d293c}
+ #sqev-view .sqev-item:hover{border-color:rgba(75,217,192,.46)}
+ #sqev-view .sqev-events-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+ #sqev-view .sqev-item h4{font-size:19px;line-height:1.3;letter-spacing:-.025em;margin:10px 0 5px;color:#fff}
+ #sqev-view .sqev-item p{margin:7px 0;color:#adcbd5;font-size:13px}
+ #sqev-view .sqev-pill{display:inline-flex;border:1px solid rgba(56,221,185,.25);color:#8eebda;background:rgba(40,205,177,.09);border-radius:100px;padding:4px 9px;font-size:11px;font-weight:700}
+ #sqev-view .sqev-event-date{color:#6ce1d1;font-weight:700;font-size:13px}
+ #sqev-view .sqev-item-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px}
+ #sqev-view .sqev-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 22px}
+ #sqev-view .sqev-details-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.8fr);gap:18px;align-items:start}
+ #sqev-view .sqev-details-grid>.sqev-box{min-width:0}
+ #sqev-view .sqev-section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(143,195,207,.15)}
+ #sqev-view .sqev-section-title h3{margin:0}
+ #sqev-view .sqev-empty{border:1px dashed #416273;border-radius:15px;text-align:center;padding:46px 20px;color:#a4bfca}
+ #sqev-view #sqev-message{min-height:20px;color:#78e4d3;font-size:13px;margin:12px 0 0}
+ #sqev-view .sqev-back{margin-bottom:14px}
+ #sqev-view .sqev-detail-heading{padding:5px 0 22px}
+ #sqev-view .sqev-details-grid .sqev-box{margin-bottom:18px}
+ #sqev-view .sqev-event-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;color:#bbd4dc;margin-top:13px}
+ #sqev-view .sqev-event-meta span{padding:8px 12px;border:1px solid rgba(128,179,196,.23);background:#0b2839;border-radius:9px}
+ #sqev-view .sqev-rsvp-button.active{background:#28cbb6;color:#05313c;border-color:#28cbb6}
+ #sqev-view .sqev-form-actions{display:flex;justify-content:flex-end;margin-top:16px}
+ @media(max-width:980px){#sqev-view .sqev-details-grid{grid-template-columns:1fr}}
+ @media(max-width:680px){#sqev-view{padding:14px 0 95px}#sqev-view .sqev-toolbar{padding:6px 0 18px}#sqev-view .sqev-box{padding:17px;border-radius:15px}#sqev-view .sqev-overview{gap:8px}#sqev-view .sqev-stat{padding:12px}#sqev-view .sqev-stat strong{font-size:22px}#sqev-view .sqev-stat span{font-size:11px}#sqev-view .sqev-events-grid,#sqev-view .sqev-grid{grid-template-columns:1fr}#sqev-view .sqev-item{padding:16px}#sqev-view .sqev-toolbar-actions{width:100%}#sqev-view .sqev-toolbar-actions button{flex:1}}
+ `
  document.head.append(css);
  const panel=document.createElement('section');
  panel.id='sqev-view';panel.hidden=true;
- panel.innerHTML=`<div class="sqev-shell"><div class="sqev-toolbar"><div><small class="sqev-muted">SQUAREUP · SHARED EVENTS</small><h2>Events</h2></div><button id="sqev-close" type="button">Close</button></div>
- <div class="sqev-box"><h3>Plan an event</h3><form id="sqev-form">
- <div class="sqev-grid"><label>Tracker<select name="tracker_id" required></select></label><label>Event name<input name="title" maxlength="120" required placeholder="Movie night, team dinner..."></label>
- <label>Starts<input type="datetime-local" name="starts" required></label><label>Ends<input type="datetime-local" name="ends" required></label></div>
- <label>Location<input name="location" maxlength="300" placeholder="Optional"></label>
- <label>Description<textarea name="description" rows="2" maxlength="2000"></textarea></label>
- <button class="sqev-primary" type="submit">Create event</button></form><p id="sqev-message" role="status"></p></div>
- <div class="sqev-box"><h3>Upcoming and past events</h3><div id="sqev-list"></div></div>
- <div class="sqev-box" id="sqev-details" hidden></div></div>`;
- document.body.append(panel);
+ panel.innerHTML=`<div class="sqev-shell">
+ <div class="sqev-toolbar"><div><span class="sqev-eyebrow">SQUAREUP / EVENT PLANNING</span><h2>Events</h2><p class="sqev-subtitle">Plan together, organize the details, and stay on top of shared expenses.</p></div>
+ <div class="sqev-toolbar-actions"><button type="button" id="sqev-back-home">← Home</button><button type="button" class="sqev-primary" id="sqev-create-toggle">+ New event</button></div></div>
+ <div id="sqev-dashboard">
+ <div class="sqev-overview"><div class="sqev-stat"><span>Total events</span><strong id="sqev-total">0</strong></div><div class="sqev-stat"><span>Upcoming</span><strong id="sqev-upcoming">0</strong></div><div class="sqev-stat"><span>Past events</span><strong id="sqev-past">0</strong></div></div>
+ <div class="sqev-layout">
+ <div class="sqev-box" id="sqev-create-box" hidden><div class="sqev-headrow"><h3>Create an event</h3><button type="button" id="sqev-cancel-create">Cancel</button></div>
+ <form id="sqev-form"><div class="sqev-grid">
+ <label>Tracker<select name="tracker_id" required></select></label><label>Event name<input name="title" maxlength="120" required placeholder="Movie night, team dinner..."></label>
+ <label>Starts<input type="datetime-local" name="starts" required></label><label>Ends<input type="datetime-local" name="ends" required></label>
+ </div><label>Location<input name="location" maxlength="300" placeholder="Where will it happen?"></label>
+ <label>Description<textarea name="description" rows="2" maxlength="2000" placeholder="Add any information guests should know..."></textarea></label>
+ <div class="sqev-form-actions"><button class="sqev-primary" type="submit">Create event</button></div></form></div>
+ <div class="sqev-box"><div class="sqev-headrow"><h3>Your events</h3><span class="sqev-muted" id="sqev-count"></span></div><div id="sqev-list" class="sqev-events-grid"></div></div>
+ </div></div>
+ <div id="sqev-details-page" hidden>
+ <button type="button" id="sqev-back-events" class="sqev-back">← All events</button>
+ <div id="sqev-details"></div>
+ </div><p id="sqev-message" role="status" aria-live="polite"></p>
+ </div>`
+ document.querySelector('.wrap')?.append(panel);
  const $=id=>panel.querySelector('#'+id),message=t=>{$('sqev-message').textContent=t};
  const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const date=v=>new Date(v).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});
