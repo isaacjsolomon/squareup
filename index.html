@@ -2024,6 +2024,8 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
       <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
 
+    <button type="button" id="sq-sidebar-back" aria-label="Go back to previous SquareUp page" title="Back to previous page"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+
     <div class="me" id="me" hidden>
       <button type="button" class="avatar me-avatar" id="me-avatar" aria-label="Change profile photo"></button>
       <span class="who" id="who"></span>
@@ -10554,6 +10556,33 @@ window.squareUpOpenFinanceHub=open;
   #sq-nextgen .sq-fx-favorites .sq-fx-fav{font-size:12px!important;padding:9px 8px!important}
 }
 </style>
+
+<style id="sq-sidebar-back-style-2026">
+.sidebar .side-account{position:relative}
+.sidebar #sq-sidebar-back{position:absolute;right:8px;top:90px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid #36566c;border-radius:12px;background:#112b42;color:#e4f4fa;cursor:pointer;z-index:3;transition:background .15s,border-color .15s}
+.sidebar #sq-sidebar-back:hover{background:#20435a;border-color:#49d4c0}
+.sidebar #sq-sidebar-back:focus-visible{outline:2px solid #49d4c0;outline-offset:3px}
+body.side-collapsed .sidebar #sq-sidebar-back{display:none!important}
+@media(max-width:900px){.sidebar #sq-sidebar-back{right:8px;top:90px}}
+</style>
+<script id="sq-sidebar-back-script-2026">
+(()=>{
+  const back=document.getElementById('sq-sidebar-back');if(!back)return;
+  const ids=new Set(['nav-home','nav-trackers','nav-chat','sq-finance-nav','nav-analytics','nav-profile','nav-about','nav-help-center']);
+  const history=[];let current='nav-home',goingBack=false;
+  document.addEventListener('click',e=>{
+    const nav=e.target.closest('button[id]');if(!nav||!ids.has(nav.id)||goingBack)return;
+    if(nav.id!==current){history.push(current);if(history.length>30)history.shift();current=nav.id;}
+  },true);
+  back.addEventListener('click',()=>{
+    const finance=document.getElementById('sq-nextgen');
+    if(finance&&!finance.hidden){const financeBack=document.getElementById('sq-ng-back');if(financeBack){financeBack.click();return;}}
+    const previous=history.pop();if(!previous){if(current!=='nav-home'){document.getElementById('nav-home')?.click();current='nav-home';}return;}
+    const target=document.getElementById(previous);if(!target)return;
+    goingBack=true;try{target.click();current=previous;}finally{goingBack=false;}
+  });
+})();
+</script>
 </body>
 </html>
 
