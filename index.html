@@ -11960,6 +11960,34 @@ body.trackers-view #trackers-page .trackers-header p{color:#bdd5e0!important;max
  #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>.dashboard-action:not([hidden]){min-height:84px!important}
 }
 </style>
+<style id="sq-action-grid-alignment-20261106">
+/* Uniform desktop quick actions: consistent two-column rows and tile heights. */
+@media(min-width:901px){
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-auto-flow:row!important;grid-auto-rows:minmax(105px,auto)!important;
+  gap:12px!important;align-items:stretch!important;justify-items:stretch!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>.dashboard-action:not([hidden]){
+  grid-column:auto!important;grid-row:auto!important;
+  width:100%!important;height:100%!important;min-height:105px!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;
+  justify-content:center!important;gap:6px!important;text-align:center!important;
+  padding:14px 12px!important;margin:0!important;box-sizing:border-box!important;
+  border-radius:16px!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>.sq-calculator-action:not([hidden]),
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>#quick-split:not([hidden]){
+  grid-column:auto!important;grid-row:auto!important;min-height:105px!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>.dashboard-action:not([hidden]) .action-icon{
+  flex:0 0 37px!important;width:37px!important;height:37px!important;margin:0 0 2px!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>.dashboard-action:not([hidden]) .action-sub{
+  display:block!important;margin:0!important;font-size:11px!important;text-align:center!important;
+ }
+}
+</style>
 </body>
 </html>
 
