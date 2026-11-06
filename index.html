@@ -3678,18 +3678,23 @@ window.squareUpPayNow = async function () {
   if (!current || !current.id) { alert('Open a shared tracker first.'); return; }
   var me = (current.members || []).find(function (m) { return m.isYou; });
   if (!me) { alert('Could not identify your tracker membership.'); return; }
+  // Apple Cash is a mobile-only option. Desktop payment choices are Venmo and Cash App.
+  var mobileAppleCash = window.matchMedia('(max-width: 900px)').matches &&
+    (/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
   var recipients = (current.members || []).filter(function (m) {
-    return !m.isYou && m.payments && (m.payments.venmo || m.payments.cashapp || m.payments.appleCash);
+    return !m.isYou && m.payments && (m.payments.venmo || m.payments.cashapp || (mobileAppleCash && m.payments.appleCash));
   });
   if (!recipients.length) {
-    alert('No friends in this tracker have saved payment usernames yet. Ask them to add one in Settings.');
+    alert(mobileAppleCash
+      ? 'No friends in this tracker have saved payment accounts yet. Ask them to add one in Settings.'
+      : 'No supported desktop payment methods available. Ask your friends to add Venmo or Cash App in Settings.');
     return;
   }
   var options = [];
   recipients.forEach(function (m) {
     if (m.payments.venmo) options.push({member:m, provider:'Venmo', url:'https://venmo.com/u/'+encodeURIComponent(m.payments.venmo)});
     if (m.payments.cashapp) options.push({member:m, provider:'Cash App', url:'https://cash.app/$'+encodeURIComponent(m.payments.cashapp)});
-    if (m.payments.appleCash) options.push({member:m, provider:'Apple Cash', contact:m.payments.appleCash});
+    if (mobileAppleCash && m.payments.appleCash) options.push({member:m, provider:'Apple Cash', contact:m.payments.appleCash});
   });
   var from = me.name || me.email;
   var normalize = function(v){return String(v||'').trim().toLowerCase()};
@@ -11051,17 +11056,25 @@ body.sq-action-dialog-open{overflow:hidden!important}
 #sq-pay-method-options .sq-method-check{position:absolute;right:8px;top:5px;font-size:16px;color:#60efd4;opacity:0}
 #sq-pay-method-options .sq-method-card[aria-pressed="true"] .sq-method-check{opacity:1}
 @media(max-width:370px){#sq-pay-method-options{grid-template-columns:1fr}}
+/* Desktop Pay Now uses the same tappable provider cards as mobile, never a select. */
+@media(min-width:901px){
+ #sq-pay-now-panel{width:min(610px,100%);padding:30px 32px}
+ #sq-pay-method-options{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ #sq-pay-method-options.single{grid-template-columns:minmax(0,1fr)}
+ #sq-pay-method-options .sq-method-card{min-height:82px;padding:14px 16px;border-radius:16px}
+ #sq-pay-method-options .sq-method-logo{width:44px;height:44px}
+}
 </style>
 <div id="sq-pay-now-modal" hidden><div id="sq-pay-now-panel" role="dialog" aria-modal="true" aria-labelledby="sq-pay-now-title" aria-describedby="sq-pay-now-description">
 <div id="sq-pay-now-head"><h2 id="sq-pay-now-title">Pay Now</h2><button type="button" id="sq-pay-now-cancel" aria-label="Close payment window">✕</button></div>
 <p id="sq-pay-now-description">Settle a balance securely using your friend's payment account.</p>
-<div id="sq-pay-method-heading" class="sq-pay-method-label">Recipient &amp; payment method</div><div id="sq-pay-method-options" role="group" aria-labelledby="sq-pay-method-heading"></div>
+<div id="sq-pay-method-heading" class="sq-pay-method-label">Choose recipient &amp; payment method</div><div id="sq-pay-method-options" role="group" aria-labelledby="sq-pay-method-heading"></div>
 <div id="sq-pay-now-summary"><span>Outstanding balance</span><strong id="sq-pay-now-owed">$0.00</strong><span id="sq-pay-now-recipient"></span></div>
 <label for="sq-pay-now-amount">Amount to pay (USD)</label><input id="sq-pay-now-amount" type="number" inputmode="decimal" min="0.01" step="0.01" autocomplete="off">
 <div id="sq-pay-now-actions"><button type="button" id="sq-pay-now-half">Pay half</button><button type="button" id="sq-pay-now-full">Pay full balance</button></div>
 <div id="sq-pay-now-remaining"><span>Balance remaining afterward</span><strong id="sq-pay-now-left">$0.00</strong></div>
 <p id="sq-pay-now-error" role="alert"></p><button type="button" id="sq-pay-now-continue" class="sq-pay-primary">Continue to payment app ↗</button>
-<p class="sq-pay-note">SquareUp does not transfer funds. Your payment is recorded only after you confirm completing it in Venmo or Cash App.</p>
+<p class="sq-pay-note" id="sq-pay-now-note">SquareUp does not transfer funds. Record a payment only after it is completed in your payment app.</p>
 </div></div>
 <script id="sq-pay-now-modal-script-20261105">(function(){
  'use strict';
@@ -11086,6 +11099,9 @@ body.sq-action-dialog-open{overflow:hidden!important}
    go.disabled=!valid;
    error.textContent=valid?'':'Enter an amount between '+money(1)+' and '+money(item.cents)+'.';
    go.textContent=item.option.provider==='Apple Cash'?'Continue with Apple Cash →':'Continue to '+item.option.provider+' ↗';
+   document.getElementById('sq-pay-now-note').textContent=item.option.provider==='Apple Cash'
+     ? 'Apple Cash is available in SquareUp on iPhone only. SquareUp does not send or verify money; log only completed payments.'
+     : 'SquareUp opens '+item.option.provider+' to pay your friend. It cannot verify a transfer; confirm only after payment is complete.';
  }
  function choose(index){
    if(!active||index<0||index>=active.items.length)return;
@@ -11130,8 +11146,13 @@ body.sq-action-dialog-open{overflow:hidden!important}
    return new Promise(function(resolve){
      if(active)close(null);
      if(!Array.isArray(items)||!items.length){resolve(null);return}
+     // Safety filter: even if another caller supplies Apple Cash, keep it off desktop.
+     var onMobileIOS=window.matchMedia('(max-width: 900px)').matches &&
+       (/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1));
+     var supported=items.filter(function(item){return item&&item.option&&(item.option.provider!=='Apple Cash'||onMobileIOS)});
+     if(!supported.length){alert('No supported payment methods are available on this device.');resolve(null);return}
      previousFocus=document.activeElement;
-     active={items:items,index:0,resolve:resolve};
+     active={items:supported,index:0,resolve:resolve};
      renderCards();
      modal.hidden=false;update(true);
      var first=cards.querySelector('button');
