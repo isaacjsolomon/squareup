@@ -2142,7 +2142,7 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
   <div class="dashboard-actions" aria-label="Tracker actions">
     <button type="button" class="dashboard-action" id="quick-pay-now"><span class="action-icon">↗</span>Pay Now<span class="action-sub">Send via Venmo or Cash App</span></button>
     <button type="button" class="dashboard-action expense" id="quick-expense" aria-expanded="false" aria-controls="entry-card"><span class="action-icon">＋</span>Add Expense<span class="action-sub">Manually add an expense</span></button>
-    <button type="button" class="dashboard-action" id="quick-payment" hidden aria-expanded="false" aria-controls="entry-card"><span class="action-icon">▤</span>Log Payment<span class="action-sub">Record a payment you made</span></button>
+    <button type="button" class="dashboard-action" id="quick-payment" hidden aria-expanded="false" aria-controls="entry-card"><span class="action-icon" aria-hidden="true">▤</span><span class="sq-action-title">Log Payment</span><span class="action-sub">Record a payment you made</span></button>
     <button type="button" class="dashboard-action" id="quick-receipt"><span class="action-icon">▧</span>Scan Receipt<span class="action-sub">Assign items to friends</span></button>
     <button type="button" class="dashboard-action" id="quick-split"><span class="action-icon" aria-hidden="true"><svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Split a Bill<span class="action-sub">Divide an expense with friends</span></button>
   </div>
@@ -11985,6 +11985,63 @@ body.trackers-view #trackers-page .trackers-header p{color:#bdd5e0!important;max
  }
  #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>.dashboard-action:not([hidden]) .action-sub{
   display:block!important;margin:0!important;font-size:11px!important;text-align:center!important;
+ }
+}
+</style>
+<style id="sq-log-payment-card-alignment-20261106">
+/* Match Log Payment to the other desktop action tiles without changing click logic. */
+@media(min-width:901px){
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>button#quick-payment:not([hidden]){
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+  width:100%!important;
+  min-width:0!important;
+  height:100%!important;
+  min-height:105px!important;
+  gap:6px!important;
+  padding:14px 12px!important;
+  margin:0!important;
+  text-align:center!important;
+  border-radius:16px!important;
+  box-sizing:border-box!important;
+  background:linear-gradient(135deg,#3c566e,#20394f)!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>button#quick-payment:not([hidden])>.action-icon{
+  display:grid!important;
+  place-items:center!important;
+  flex:0 0 37px!important;
+  width:37px!important;
+  height:37px!important;
+  min-height:37px!important;
+  margin:0 0 2px!important;
+  padding:5px!important;
+  border-radius:50%!important;
+  background:rgba(255,255,255,.13)!important;
+  font-size:21px!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>button#quick-payment:not([hidden])>.sq-action-title{
+  display:block!important;
+  width:100%!important;
+  font-size:14px!important;
+  line-height:1.25!important;
+  font-weight:760!important;
+  white-space:normal!important;
+  text-align:center!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>button#quick-payment:not([hidden])>.action-sub{
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  font-size:11px!important;
+  line-height:1.35!important;
+  font-weight:450!important;
+  color:#d2e6ef!important;
+  text-align:center!important;
+  white-space:normal!important;
  }
 }
 </style>
