@@ -6374,7 +6374,27 @@ input.addEventListener('input',draw);
   const display=n=>{const found=members.find(m=>[m.name,m.email,m.username,m.displayName].some(v=>str(v).toLowerCase()===str(n).toLowerCase()));return found?.name||found?.displayName||str(n);};
   const date=e=>{const d=new Date(e.date||e.dateLabel||e.created_at||e.createdAt||0);return Number.isFinite(d.getTime())?d.getTime():0;};
   fill('sq-return-activity',all.slice().sort((a,b)=>date(b)-date(a)).slice(0,4).map(e=>makeRow(e.type==='payment'?'↗':'▤',str(e.note||(e.type==='payment'?'Payment':'Expense')),display(e.from)+' → '+display(e.to),e.amount)),'No recent activity in this tracker');
-  fill('sq-return-members',members.slice(0,5).map(m=>makeRow('♙',str(m.name||m.displayName||m.email||'Member'),m.isYou?'You':'Tracker member',null)),'No members loaded');
+  fill('sq-return-members',members.slice(0,5).map(m=>{
+   const row=makeRow('♙',str(m.name||m.displayName||m.email||'Member'),m.isYou?'You':'Tracker member',null);
+   const glyph=row.querySelector('.sq-return-icon');
+   const userId=m.id||m.user_id||m.userId||(m.isYou?user?.id:null);
+   const photo=m.photo||(m.isYou&&typeof myPhoto!=='undefined'?myPhoto:null);
+   if(glyph&&userId&&photo&&typeof avatarUrl==='function'){
+     glyph.classList.add('sq-member-avatar');
+     glyph.textContent='';
+     const fallback=str(m.name||m.displayName||m.email||'M').charAt(0).toUpperCase();
+     glyph.textContent=fallback;
+     const version=str(photo),memberId=str(userId);
+     avatarUrl(memberId,version).then(url=>{
+       if(!url||!row.isConnected||glyph.dataset.photoKey!==memberId+'/'+version)return;
+       glyph.style.backgroundImage='url("'+url+'")';
+       glyph.classList.add('sq-member-avatar-loaded');
+       glyph.textContent='';
+     }).catch(()=>{});
+     glyph.dataset.photoKey=memberId+'/'+version;
+   }else if(glyph){glyph.textContent=str(m.name||m.displayName||m.email||'M').charAt(0).toUpperCase();}
+   return row;
+  }),'No members loaded');
   const pairs=tracker&&typeof computeNet==='function'&&typeof current!=='undefined'&&current&&current.id===tracker.id?computeNet().pairs:calculateTrackerPairs(all);
   fill('sq-return-balances',pairs.slice(0,5).map(p=>makeRow('↔',display(p.from)+' → '+display(p.to),'Outstanding balance',p.amount)),'Everyone is squared up');
  }catch(err){console.warn('Could not refresh tracker summary',err);}}
@@ -12042,6 +12062,36 @@ body.trackers-view #trackers-page .trackers-header p{color:#bdd5e0!important;max
   color:#d2e6ef!important;
   text-align:center!important;
   white-space:normal!important;
+ }
+}
+</style>
+<style id="sq-member-photos-and-log-card-20261106">
+#tracker-dashboard #sq-return-members .sq-return-icon.sq-member-avatar{
+ background-position:center!important;background-size:cover!important;background-repeat:no-repeat!important;
+ overflow:hidden!important;border-radius:16px!important;color:#d6fff6!important;
+}
+#tracker-dashboard #sq-return-members .sq-return-icon.sq-member-avatar-loaded{color:transparent!important}
+@media(min-width:901px){
+ /* The old overview selector uses !important row layout. Override it directly. */
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions #quick-payment.dashboard-action:not([hidden]){
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+  gap:6px!important;min-height:105px!important;height:100%!important;width:100%!important;
+  padding:14px 12px!important;text-align:center!important;white-space:normal!important;
+  font-size:14px!important;font-weight:750!important;line-height:1.3!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions #quick-payment.dashboard-action:not([hidden])>.action-icon{
+  display:grid!important;place-items:center!important;flex:0 0 37px!important;
+  width:37px!important;height:37px!important;min-height:37px!important;
+  margin:0 0 2px!important;padding:4px!important;border-radius:50%!important;
+  background:rgba(255,255,255,.13)!important;font-size:20px!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions #quick-payment.dashboard-action:not([hidden])>.sq-action-title{
+  display:block!important;font-size:14px!important;font-weight:750!important;line-height:1.3!important;
+  text-align:center!important;width:100%!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions #quick-payment.dashboard-action:not([hidden])>.action-sub{
+  display:block!important;margin:0!important;font-size:11px!important;line-height:1.3!important;
+  font-weight:450!important;text-align:center!important;width:100%!important;color:#dfedf5!important;
  }
 }
 </style>
