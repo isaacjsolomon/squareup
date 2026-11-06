@@ -3713,8 +3713,8 @@ window.squareUpPayNow = async function () {
   var chosen=selection.option,to=selection.to,cents=selection.cents,paidCents=selection.paidCents;
   if(!from||!to||normalize(from)===normalize(to))return;
   if(chosen.provider==='Apple Cash'){
-    var instructions='Send '+String.fromCharCode(36)+(paidCents/100).toFixed(2)+' to '+to+' in Apple Wallet or Messages. Contact: '+chosen.contact+'. SquareUp cannot initiate or verify this payment. Return and use Log Payment only after sending; ask the recipient to confirm receipt.';
-    alert(instructions);
+    if(window.sqAppleCashHandoff){window.sqAppleCashHandoff({recipient:to,contact:chosen.contact,amountCents:paidCents});}
+    else alert('Open Messages or Wallet to send Apple Cash. SquareUp cannot send funds.');
     return;
   }
   var paymentTab=window.open(chosen.url,'_blank','noopener,noreferrer');
@@ -11324,6 +11324,65 @@ body > #sq-layout-panel {
   #tracker-dashboard .sq-return-summary{border-radius:22px!important}
 }
 </style>
+<style id="sq-apple-cash-v2-css">
+#sq-apple-cash-v2[hidden]{display:none!important}
+#sq-apple-cash-v2{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;padding:16px;background:#020f1dcc}
+#sq-apple-cash-v2 .ac-panel{width:min(100%,460px);max-height:90dvh;overflow:auto;background:linear-gradient(140deg,#12364b,#061d2e);color:#f2fbff;border:1px solid #3a7582;border-radius:24px;padding:22px;box-shadow:0 16px 65px #0009}
+#sq-apple-cash-v2 h2{margin:0 0 8px;font-size:25px}
+#sq-apple-cash-v2 p,#sq-apple-cash-v2 li{color:#bad2df;line-height:1.5}
+#sq-apple-cash-v2 .ac-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#sq-apple-cash-v2 .ac-summary{background:#0a283c;border:1px solid #345c70;border-radius:15px;padding:15px;margin:14px 0}
+#sq-apple-cash-v2 #ac-amount{display:block;color:#4debd0;font-size:32px;font-weight:800}
+#sq-apple-cash-v2 #ac-contact{overflow-wrap:anywhere}
+#sq-apple-cash-v2 button,#sq-apple-cash-v2 a{font:inherit;cursor:pointer}
+#sq-apple-cash-v2 .ac-action{display:block;text-align:center;text-decoration:none;background:#30dabf;color:#072733;border:0;border-radius:12px;padding:14px;font-weight:800;width:100%;box-sizing:border-box;margin-top:12px}
+#sq-apple-cash-v2 .ac-secondary{background:#164458;color:#fff;border:1px solid #426c7c}
+#sq-apple-cash-v2 .ac-copy{background:#23475a;color:#fff;border:1px solid #466c7d;border-radius:8px;padding:8px 12px;min-height:40px}
+#sq-apple-cash-v2 .ac-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px}
+#sq-apple-cash-v2 .ac-caption{font-size:12px!important}
+@media(max-width:900px){#sq-apple-cash-v2{align-items:flex-end;padding:10px 10px calc(10px + env(safe-area-inset-bottom))}}
+</style>
+<div id="sq-apple-cash-v2" hidden>
+<section class="ac-panel" role="dialog" aria-modal="true" aria-labelledby="ac-heading">
+<div class="ac-head"><h2 id="ac-heading">Pay with Apple Cash</h2><button type="button" id="ac-close" class="ac-copy" aria-label="Close">✕</button></div>
+<p>SquareUp will open Messages so you can make a real payment with Apple's own interface.</p>
+<div class="ac-summary"><span>Amount to send</span><div class="ac-row"><strong id="ac-amount">$0.00</strong><button type="button" id="ac-copy-amount" class="ac-copy">Copy</button></div>
+<p id="ac-recipient"></p><div class="ac-row"><span id="ac-contact"></span><button type="button" id="ac-copy-contact" class="ac-copy">Copy</button></div></div>
+<ol><li>Open Messages and verify the contact.</li><li>Tap +, select Apple Cash, and enter the amount above.</li><li>Complete payment with Apple, then return to SquareUp.</li></ol>
+<a id="ac-messages" class="ac-action" href="#">Open Messages ↗</a>
+<button type="button" id="ac-log" class="ac-action ac-secondary">I sent it · Open Log Payment</button>
+<p id="ac-status" role="status" aria-live="polite"></p>
+<p class="ac-caption">Opening Messages does not send money. SquareUp cannot confirm Apple Cash transfers; only log payments you actually completed.</p>
+</section></div>
+<script id="sq-apple-cash-v2-script">(function(){
+ 'use strict';
+ var modal=document.getElementById('sq-apple-cash-v2'),state=null;
+ function close(){modal.hidden=true;state=null;}
+ window.sqAppleCashHandoff=function(details){
+  if(!details||!details.contact||!Number.isSafeInteger(details.amountCents)||details.amountCents<=0)return;
+  state=details;
+  document.getElementById('ac-amount').textContent='
+</html>
+
++(details.amountCents/100).toFixed(2);
+  document.getElementById('ac-recipient').textContent='Recipient: '+details.recipient;
+  document.getElementById('ac-contact').textContent=details.contact;
+  document.getElementById('ac-messages').href='sms:'+encodeURIComponent(String(details.contact).trim());
+  document.getElementById('ac-status').textContent='';
+  modal.hidden=false;document.getElementById('ac-close').focus();
+ };
+ document.getElementById('ac-close').addEventListener('click',close);
+ modal.addEventListener('click',function(e){if(e.target===modal)close();});
+ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!modal.hidden)close();});
+ async function copy(value){try{await navigator.clipboard.writeText(value);document.getElementById('ac-status').textContent='Copied.';}catch(e){document.getElementById('ac-status').textContent='Copy is unavailable; select the text above.';}}
+ document.getElementById('ac-copy-amount').addEventListener('click',function(){if(state)copy((state.amountCents/100).toFixed(2));});
+ document.getElementById('ac-copy-contact').addEventListener('click',function(){if(state)copy(String(state.contact));});
+ document.getElementById('ac-log').addEventListener('click',function(){
+  if(!state||!confirm('Did you complete the Apple Cash transfer? SquareUp cannot verify it. Only log the payment after sending.'))return;
+  close();var button=document.getElementById('quick-payment');
+  if(button)button.click();else alert('Open your tracker and choose Log Payment.');
+ });
+})();</script>
 </body>
 </html>
 
