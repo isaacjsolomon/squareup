@@ -11446,7 +11446,7 @@ body > #sq-layout-panel {
   <li><span class="ac-step-num">2</span><span>Tap <strong>+</strong> → Apple Cash, enter the amount, and send.</span></li>
  </ol>
  <a id="ac-messages" class="ac-action ac-secondary" href="#">Open Messages <span aria-hidden="true">↗</span></a>
- <button type="button" id="ac-log" class="ac-action ac-secondary">Already sent? Log payment</button>
+ <button type="button" id="ac-log" class="ac-action ac-secondary">Payment completed? Log it in SquareUp</button>
  <p id="ac-status" role="status" aria-live="polite"></p>
  <p class="ac-caption">SquareUp cannot send or verify Apple Cash payments. Only log a transfer you've completed and confirm it with the recipient.</p>
 </section></div>
@@ -11522,6 +11522,7 @@ window.sqPrefillAppleCashPayment=function(details){
  var installLink='https://www.icloud.com/shortcuts/e3109fbe8e6348cbb86d33b9ab90639e';
  var setupKey='squareup:apple-cash-shortcut-setup-v1';
  var launchLink='';
+ var handoffOpened=false,wasBackgrounded=false;
  var isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
  // Websites cannot inspect the iPhone's installed Shortcuts. Remember the user's setup confirmation, not an installation check.
  function setupStatus(){try{return localStorage.getItem(setupKey)||'new';}catch(e){return window.sqAppleCashSetupState||'new';}}
@@ -11556,7 +11557,7 @@ window.sqPrefillAppleCashPayment=function(details){
     setupHelp.href='#';
   }
  }
- function close(){modal.hidden=true;state=null;launchLink='';}
+ function close(){modal.hidden=true;state=null;launchLink='';handoffOpened=false;wasBackgrounded=false;}
  window.sqAppleCashHandoff=function(details){
   if(!details||!details.contact||!Number.isSafeInteger(details.amountCents)||details.amountCents<=0)return;
   state=details;
@@ -11567,6 +11568,7 @@ window.sqPrefillAppleCashPayment=function(details){
   // Apple's URL scheme accepts JSON text as the shortcut input.
   var data=JSON.stringify({amount:Number((details.amountCents/100).toFixed(2)),recipient:String(details.contact).trim()});
   launchLink='shortcuts://run-shortcut?name='+encodeURIComponent('SquareUp Apple Cash')+'&input=text&text='+encodeURIComponent(data);
+  handoffOpened=false;wasBackgrounded=false;
   renderShortcut();
   document.getElementById('ac-status').textContent='';
   modal.hidden=false;document.getElementById('ac-close').focus();
@@ -11579,7 +11581,8 @@ window.sqPrefillAppleCashPayment=function(details){
     document.getElementById('ac-status').textContent='Install via Apple’s Get Shortcut button, then return to SquareUp.';
   }else{
     if(phase==='started')setSetupStatus('ready'); // Explicit user confirmation, not an automatic detection.
-    document.getElementById('ac-status').textContent='Review the amount and recipient in Shortcuts. No payment was logged.';
+    handoffOpened=true;wasBackgrounded=false;
+    document.getElementById('ac-status').textContent='Review the recipient and amount in Apple’s payment screen. SquareUp will not record a transfer automatically.';
   }
  });
  setupHelp.addEventListener('click',function(event){
@@ -11594,8 +11597,19 @@ window.sqPrefillAppleCashPayment=function(details){
     document.getElementById('ac-status').textContent='Install or reinstall via Apple. Return here when finished.';
   }
  });
- window.addEventListener('focus',function(){if(state&&!modal.hidden)renderShortcut();});
- document.addEventListener('visibilitychange',function(){if(!document.hidden&&state&&!modal.hidden)renderShortcut();});
+ function returnToSquareUp(){
+  if(!state||modal.hidden)return;
+  renderShortcut();
+  if(handoffOpened&&wasBackgrounded){
+   document.getElementById('ac-status').textContent='Back from Shortcuts? Only if the payment actually completed in Apple Cash, tap “Payment completed? Log it in SquareUp.” Otherwise no payment is recorded.';
+   handoffOpened=false;wasBackgrounded=false;
+  }
+ }
+ window.addEventListener('focus',returnToSquareUp);
+ document.addEventListener('visibilitychange',function(){
+  if(document.hidden){if(handoffOpened)wasBackgrounded=true;}
+  else returnToSquareUp();
+ });
  document.getElementById('ac-close').addEventListener('click',close);
  modal.addEventListener('click',function(e){if(e.target===modal)close();});
  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!modal.hidden)close();});
