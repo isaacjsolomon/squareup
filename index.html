@@ -2138,14 +2138,14 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
     <div class="sq-clean-balance-actions"><button type="button" class="sq-clean-settle" id="sq-clean-settle">Settle up</button><button type="button" class="sq-clean-remind" id="sq-clean-remind">Send reminder</button></div>
   </section>
   <div class="sq-overview-stats" id="sq-overview-stats" aria-label="Tracker balance breakdown"><div class="sq-stat negative"><span>You owe</span><strong id="sq-stat-owe">—</strong></div><div class="sq-stat"><span>Owed to you</span><strong id="sq-stat-owed">—</strong></div><div class="sq-stat neutral"><span>Net balance</span><strong id="sq-stat-net">—</strong></div></div>
-  </div>
-  <!-- QUICK ACTIONS -->
+  <!-- Existing Quick Actions retain all IDs, handlers, and visual button variants. -->
   <div class="dashboard-actions" aria-label="Tracker actions">
     <button type="button" class="dashboard-action" id="quick-pay-now"><span class="action-icon">↗</span>Pay Now<span class="action-sub">Send via Venmo or Cash App</span></button>
     <button type="button" class="dashboard-action expense" id="quick-expense" aria-expanded="false" aria-controls="entry-card"><span class="action-icon">＋</span>Add Expense<span class="action-sub">Manually add an expense</span></button>
     <button type="button" class="dashboard-action" id="quick-payment" hidden aria-expanded="false" aria-controls="entry-card"><span class="action-icon">▤</span>Log Payment<span class="action-sub">Record a payment you made</span></button>
     <button type="button" class="dashboard-action" id="quick-receipt"><span class="action-icon">▧</span>Scan Receipt<span class="action-sub">Assign items to friends</span></button>
     <button type="button" class="dashboard-action" id="quick-split"><span class="action-icon" aria-hidden="true"><svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Split a Bill<span class="action-sub">Divide an expense with friends</span></button>
+  </div>
   </div>
 
 
@@ -11893,6 +11893,71 @@ body.trackers-view #trackers-page .trackers-header p{color:#bdd5e0!important;max
 }
 @media(prefers-reduced-motion:reduce){
  #tracker-dashboard.sq-tab-overview .dashboard-actions>.dashboard-action{transition:none!important}
+}
+</style>
+
+<style id="sq-balance-actions-final-20261106">
+/* Single reliable left column: full-width net balance, then original action tiles. */
+#tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout{
+ display:flex!important;flex-direction:column!important;align-items:stretch!important;
+ justify-content:flex-start!important;grid-template-columns:none!important;grid-template-rows:none!important;
+ grid-auto-columns:auto!important;grid-auto-rows:auto!important;
+ width:100%!important;max-width:100%!important;min-width:0!important;
+ height:auto!important;min-height:0!important;gap:14px!important;margin:0!important;
+ box-sizing:border-box!important
+}
+#tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.sq-clean-balance{
+ position:relative!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;
+ justify-content:space-between!important;grid-column:auto!important;grid-row:auto!important;
+ width:100%!important;max-width:100%!important;min-width:0!important;
+ height:auto!important;min-height:260px!important;flex:0 0 auto!important;
+ padding:24px 26px!important;margin:0!important;box-sizing:border-box!important
+}
+#tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout .sq-clean-balance-copy{
+ width:100%!important;max-width:100%!important;min-width:0!important
+}
+#tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout .sq-clean-balance-actions{
+ width:100%!important;max-width:100%!important;min-width:0!important;gap:10px!important;
+ margin-top:24px!important
+}
+#tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.sq-overview-stats{
+ display:none!important
+}
+#tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions{
+ position:static!important;grid-column:auto!important;grid-row:auto!important;order:2!important;
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-auto-flow:row!important;width:100%!important;max-width:100%!important;min-width:0!important;
+ margin:0!important;padding:0!important;gap:11px!important;background:none!important;border:0!important;
+ box-shadow:none!important;box-sizing:border-box!important
+}
+#tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>.dashboard-action:not([hidden]){
+ display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+ grid-column:auto;min-height:108px!important;width:100%!important;max-width:none!important;min-width:0!important;
+ flex:none!important;padding:14px 10px!important;gap:6px!important;border-radius:16px!important;
+ font-size:14px!important;font-weight:750!important;line-height:1.3!important;text-align:center!important;
+ box-sizing:border-box!important
+}
+#tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>.dashboard-action .action-icon{
+ display:grid!important;place-items:center!important;width:36px!important;height:36px!important;
+ min-height:36px!important;margin:0 0 3px!important;padding:4px!important;border-radius:50%!important;
+ background:#ffffff20!important;font-size:20px!important
+}
+#tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>.dashboard-action .action-sub{
+ display:block!important;font-size:11px!important;font-weight:450!important;line-height:1.3!important;
+ color:#dfedf5!important
+}
+#tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>#quick-pay-now{background:linear-gradient(130deg,#086e56,#064439)!important}
+#tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>#quick-expense{background:linear-gradient(130deg,#2975cb,#173f7c)!important}
+#tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>#quick-receipt{background:linear-gradient(130deg,#45596d,#293a50)!important}
+#tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>#quick-split{background:linear-gradient(130deg,#6953d3,#403095)!important}
+#tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>#quick-split:not([hidden]),
+#tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>.sq-calculator-action:not([hidden]){
+ grid-column:1/-1!important
+}
+@media(max-width:900px){
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout{gap:10px!important}
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.sq-clean-balance{padding:19px!important;min-height:0!important}
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>.dashboard-action:not([hidden]){min-height:84px!important}
 }
 </style>
 </body>
