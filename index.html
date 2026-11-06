@@ -11430,22 +11430,20 @@ body > #sq-layout-panel {
   <div class="ac-heading-wrap"><span class="ac-brand" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="3"/><path d="M3 11h18M7 7V5a2 2 0 0 1 2-2h8"/><path d="M14 15h4"/></svg></span><div><span class="ac-eyebrow">SQUAREUP PAYMENT</span><h2 id="ac-heading">Apple Cash</h2></div></div>
   <button type="button" id="ac-close" class="ac-close" aria-label="Close Apple Cash payment">×</button>
  </div>
- <p class="ac-intro" id="ac-intro">Take the amount and recipient into your iPhone shortcut, or use Messages to send manually.</p>
+ <p class="ac-intro" id="ac-intro">Pay securely in Messages. SquareUp opens the recipient conversation and keeps the exact amount ready for you to enter and confirm with Apple Cash.</p>
  <div class="ac-summary">
   <span class="ac-summary-label">AMOUNT TO SEND</span>
   <div class="ac-row ac-amount-row"><strong id="ac-amount">&#36;0.00</strong><button type="button" id="ac-copy-amount" class="ac-copy">Copy amount</button></div>
   <div class="ac-detail"><span class="ac-detail-label">Paying</span><p id="ac-recipient"></p></div>
   <div class="ac-detail"><span class="ac-detail-label">Apple Cash contact</span><div class="ac-row"><span id="ac-contact"></span><button type="button" id="ac-copy-contact" class="ac-copy">Copy</button></div></div>
  </div>
- <a id="ac-shortcut" class="ac-action" href="#" hidden>Continue with Apple Cash ↗</a>
- <p id="ac-shortcut-note" class="ac-shortcut-note" hidden></p>
- <a id="ac-setup-help" href="https://www.icloud.com/shortcuts/ebca7f5d267040a99f07ad866f69fe06" target="_blank" rel="noopener noreferrer" hidden>Shortcut missing? Reinstall it</a>
- <div class="ac-steps-heading">Or send manually in Messages</div>
+ <a id="ac-messages" class="ac-action" href="#">Open Messages to Pay <span aria-hidden="true">↗</span></a>
+ <div class="ac-steps-heading" style="margin-top:16px">Complete your Apple Cash payment</div>
  <ol class="ac-steps">
-  <li><span class="ac-step-num">1</span><span>Open Messages and confirm the recipient.</span></li>
-  <li><span class="ac-step-num">2</span><span>Tap <strong>+</strong> → Apple Cash, enter the amount, and send.</span></li>
+  <li><span class="ac-step-num">1</span><span>Check the recipient in Messages.</span></li>
+  <li><span class="ac-step-num">2</span><span>Tap <strong>+</strong> → <strong>Apple Cash</strong> and enter the amount shown above. You can use <strong>Copy amount</strong> first.</span></li>
+  <li><span class="ac-step-num">3</span><span>Review and authorize the payment in Apple Cash, then return here to log it.</span></li>
  </ol>
- <a id="ac-messages" class="ac-action ac-secondary" href="#">Open Messages <span aria-hidden="true">↗</span></a>
  <button type="button" id="ac-log" class="ac-action ac-secondary">Payment completed? Log it in SquareUp</button>
  <p id="ac-status" role="status" aria-live="polite"></p>
  <p class="ac-caption">SquareUp cannot send or verify Apple Cash payments. Only log a transfer you've completed and confirm it with the recipient.</p>
@@ -11516,104 +11514,45 @@ window.sqPrefillAppleCashPayment=function(details){
 <script id="sq-apple-cash-v2-script">(function(){
  'use strict';
  var modal=document.getElementById('sq-apple-cash-v2'),state=null;
- var shortcut=document.getElementById('ac-shortcut');
- var shortcutNote=document.getElementById('ac-shortcut-note');
- var setupHelp=document.getElementById('ac-setup-help');
- var installLink='https://www.icloud.com/shortcuts/ebca7f5d267040a99f07ad866f69fe06';
- var setupKey='squareup:apple-cash-shortcut-setup-v1';
- var launchLink='';
  var handoffOpened=false,wasBackgrounded=false;
- var isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
- // Websites cannot inspect the iPhone's installed Shortcuts. Remember the user's setup confirmation, not an installation check.
- function setupStatus(){try{return localStorage.getItem(setupKey)||'new';}catch(e){return window.sqAppleCashSetupState||'new';}}
- function setSetupStatus(value){try{localStorage.setItem(setupKey,value);}catch(e){window.sqAppleCashSetupState=value;}}
- function renderShortcut(){
-  shortcut.hidden=!isIOS;shortcutNote.hidden=!isIOS;setupHelp.hidden=!isIOS;
-  if(!isIOS){shortcut.removeAttribute('href');return;}
-  var phase=setupStatus();
-  if(phase==='ready'){
-    shortcut.textContent='Continue with Apple Cash ↗';
-    shortcut.href=launchLink;
-    shortcut.removeAttribute('target');
-    shortcut.removeAttribute('rel');
-    shortcutNote.textContent='Opens your installed shortcut with the amount and recipient ready for review. SquareUp does not send or verify a payment.';
-    setupHelp.textContent='Shortcut missing or deleted? Reinstall';
-    setupHelp.href=installLink;
-  }else if(phase==='started'){
-    shortcut.textContent='I Installed It — Continue ↗';
-    shortcut.href=launchLink;
-    shortcut.removeAttribute('target');
-    shortcut.removeAttribute('rel');
-    shortcutNote.textContent='After tapping Get Shortcut in Apple’s app, return here and continue. Keep the safety stop above Send Payment during testing.';
-    setupHelp.textContent='Need to install it? Open installation again';
-    setupHelp.href=installLink;
-  }else{
-    shortcut.textContent='Set Up Apple Cash ↗';
-    shortcut.href=installLink;
-    shortcut.target='_blank';
-    shortcut.rel='noopener noreferrer';
-    shortcutNote.textContent='One-time setup: review the shortcut and tap Get Shortcut in Apple’s app. Return here to continue. No payment will be sent by SquareUp.';
-    setupHelp.textContent='Already installed? Skip setup';
-    setupHelp.href='#';
-  }
+ function close(){
+  modal.hidden=true;state=null;handoffOpened=false;wasBackgrounded=false;
  }
- function close(){modal.hidden=true;state=null;launchLink='';handoffOpened=false;wasBackgrounded=false;}
  window.sqAppleCashHandoff=function(details){
   if(!details||!details.contact||!Number.isSafeInteger(details.amountCents)||details.amountCents<=0)return;
-  state=details;
-  document.getElementById('ac-amount').textContent=String.fromCharCode(36)+(details.amountCents/100).toFixed(2);
-  document.getElementById('ac-recipient').textContent='Recipient: '+details.recipient;
-  document.getElementById('ac-contact').textContent=details.contact;
-  document.getElementById('ac-messages').href='sms:'+encodeURIComponent(String(details.contact).trim());
-  // Apple's URL scheme accepts JSON text as the shortcut input.
-  var data=JSON.stringify({amount:Number((details.amountCents/100).toFixed(2)),recipient:String(details.contact).trim()});
-  launchLink='shortcuts://run-shortcut?name='+encodeURIComponent('SquareUp Apple Cash')+'&input=text&text='+encodeURIComponent(data);
-  handoffOpened=false;wasBackgrounded=false;
-  renderShortcut();
+  state=details;handoffOpened=false;wasBackgrounded=false;
+  document.getElementById('ac-amount').textContent='$'+(details.amountCents/100).toFixed(2);
+  document.getElementById('ac-recipient').textContent='Recipient: '+String(details.recipient||'');
+  document.getElementById('ac-contact').textContent=String(details.contact);
+  // Supported Messages handoff, not an unsupported attempt to initiate or verify Apple Cash from a website.
+  // Do not add a message body: Apple's documented iOS sms: scheme only accepts a recipient.
+  var contact=String(details.contact).trim();
+  var smsContact=/^[+\d().\s-]+$/.test(contact)?contact.replace(/[().\s-]/g,''):encodeURIComponent(contact);
+  document.getElementById('ac-messages').href='sms:'+smsContact;
   document.getElementById('ac-status').textContent='';
   modal.hidden=false;document.getElementById('ac-close').focus();
  };
- shortcut.addEventListener('click',function(event){
-  if(!state||!this.getAttribute('href')){event.preventDefault();return;}
-  var phase=setupStatus();
-  if(phase==='new'){
-    setSetupStatus('started');
-    document.getElementById('ac-status').textContent='Install via Apple’s Get Shortcut button, then return to SquareUp.';
-  }else{
-    if(phase==='started')setSetupStatus('ready'); // Explicit user confirmation, not an automatic detection.
-    handoffOpened=true;wasBackgrounded=false;
-    document.getElementById('ac-status').textContent='Review the recipient and amount in Apple’s payment screen. SquareUp will not record a transfer automatically.';
-  }
+ document.getElementById('ac-messages').addEventListener('click',function(e){
+  if(!state){e.preventDefault();return;}
+  handoffOpened=true;wasBackgrounded=false;
+  document.getElementById('ac-status').textContent='Enter and review the payment inside Messages. SquareUp has not sent or recorded any money.';
  });
- setupHelp.addEventListener('click',function(event){
-  if(!state){event.preventDefault();return;}
-  if(setupStatus()==='new'){
-    event.preventDefault();
-    setSetupStatus('ready');
-    renderShortcut();
-    document.getElementById('ac-status').textContent='Setup marked as complete on this device. Tap Continue to open your installed shortcut.';
-  }else{
-    setSetupStatus('started');
-    document.getElementById('ac-status').textContent='Install or reinstall via Apple. Return here when finished.';
-  }
- });
- function returnToSquareUp(){
+ function onReturn(){
   if(!state||modal.hidden)return;
-  renderShortcut();
   if(handoffOpened&&wasBackgrounded){
-   document.getElementById('ac-status').textContent='Back from Shortcuts? Only if the payment actually completed in Apple Cash, tap “Payment completed? Log it in SquareUp.” Otherwise no payment is recorded.';
+   document.getElementById('ac-status').textContent='Back from Messages? Only after you have actually completed the Apple Cash payment, tap “Payment completed? Log it in SquareUp.”';
    handoffOpened=false;wasBackgrounded=false;
   }
  }
- window.addEventListener('focus',returnToSquareUp);
- document.addEventListener('visibilitychange',function(){
-  if(document.hidden){if(handoffOpened)wasBackgrounded=true;}
-  else returnToSquareUp();
- });
+ document.addEventListener('visibilitychange',function(){if(document.hidden){if(handoffOpened)wasBackgrounded=true;}else onReturn();});
+ window.addEventListener('focus',onReturn);
  document.getElementById('ac-close').addEventListener('click',close);
  modal.addEventListener('click',function(e){if(e.target===modal)close();});
  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!modal.hidden)close();});
- async function copy(value){try{await navigator.clipboard.writeText(value);document.getElementById('ac-status').textContent='Copied.';}catch(e){document.getElementById('ac-status').textContent='Copy is unavailable; select the text above.';}}
+ async function copy(value){
+  try{await navigator.clipboard.writeText(value);document.getElementById('ac-status').textContent='Copied.';}
+  catch(e){document.getElementById('ac-status').textContent='Could not copy automatically. Please select the displayed text.';}
+ }
  document.getElementById('ac-copy-amount').addEventListener('click',function(){if(state)copy((state.amountCents/100).toFixed(2));});
  document.getElementById('ac-copy-contact').addEventListener('click',function(){if(state)copy(String(state.contact));});
  document.getElementById('ac-log').addEventListener('click',function(){
