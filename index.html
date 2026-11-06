@@ -12126,6 +12126,49 @@ body.trackers-view #trackers-page .trackers-header p{color:#bdd5e0!important;max
  }
 }
 </style>
+<style id="sq-uniform-action-tiles-20261106">
+/* Final consistent two-column action tiles; override legacy row and width rules. */
+@media(min-width:901px){
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-auto-flow:row!important;grid-auto-rows:minmax(115px,auto)!important;
+  align-items:stretch!important;justify-items:stretch!important;gap:12px!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>button.dashboard-action:not([hidden]){
+  display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;
+  align-items:center!important;justify-content:center!important;align-content:center!important;
+  grid-column:auto!important;grid-row:auto!important;
+  flex:none!important;float:none!important;position:relative!important;
+  width:100%!important;min-width:0!important;max-width:none!important;
+  height:100%!important;min-height:115px!important;
+  margin:0!important;padding:16px 12px!important;gap:7px!important;
+  text-align:center!important;white-space:normal!important;
+  font-size:16px!important;line-height:1.25!important;font-weight:750!important;
+  box-sizing:border-box!important;border-radius:17px!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>button.dashboard-action:not([hidden])>.action-icon{
+  display:grid!important;place-items:center!important;align-self:center!important;
+  flex:0 0 42px!important;width:42px!important;height:42px!important;
+  min-width:42px!important;min-height:42px!important;max-width:42px!important;
+  margin:0 0 2px!important;padding:6px!important;
+  border-radius:50%!important;background:rgba(255,255,255,.14)!important;
+  font-size:22px!important;line-height:1!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>button.dashboard-action:not([hidden])>.sq-action-title,
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>button.dashboard-action:not([hidden])>.action-sub{
+  display:block!important;position:static!important;float:none!important;
+  flex:none!important;width:100%!important;max-width:100%!important;
+  margin:0!important;padding:0!important;text-align:center!important;
+  white-space:normal!important;overflow-wrap:normal!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>button.dashboard-action:not([hidden])>.sq-action-title{
+  font-size:16px!important;font-weight:750!important;line-height:1.25!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>button.dashboard-action:not([hidden])>.action-sub{
+  font-size:12px!important;font-weight:450!important;line-height:1.35!important;color:#d8e8f1!important;
+ }
+}
+</style>
 </body>
 </html>
 
