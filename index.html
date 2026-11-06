@@ -3713,7 +3713,7 @@ window.squareUpPayNow = async function () {
   var chosen=selection.option,to=selection.to,cents=selection.cents,paidCents=selection.paidCents;
   if(!from||!to||normalize(from)===normalize(to))return;
   if(chosen.provider==='Apple Cash'){
-    if(window.sqAppleCashHandoff){window.sqAppleCashHandoff({recipient:to,contact:chosen.contact,amountCents:paidCents});}
+    if(window.sqAppleCashHandoff){window.sqAppleCashHandoff({recipient:to,payer:from,contact:chosen.contact,amountCents:paidCents,trackerId:current.id});}
     else alert('Open Messages or Wallet to send Apple Cash. SquareUp cannot send funds.');
     return;
   }
@@ -11444,6 +11444,40 @@ body > #sq-layout-panel {
  <p id="ac-status" role="status" aria-live="polite"></p>
  <p class="ac-caption">SquareUp cannot send or verify Apple Cash payments. Only log a transfer you've completed and confirm it with the recipient.</p>
 </section></div>
+<script id="sq-apple-cash-prefill-script">
+// Fill the existing tracker payment form, without saving or claiming verification.
+// Keep the user in control of reviewing and submitting the entry.
+window.sqPrefillAppleCashPayment=function(details){
+ if(!details||!details.payer||!details.recipient||!Number.isSafeInteger(details.amountCents)||details.amountCents<=0)return false;
+ var payer=document.getElementById('person1'),recipient=document.getElementById('person2');
+ var amount=document.getElementById('amount'),note=document.getElementById('note');
+ var card=document.getElementById('entry-card');
+ if(!payer||!recipient||!amount||!note||!card)return false;
+ var match=function(select,name){
+  var target=String(name).trim().toLowerCase();
+  var option=Array.from(select.options).find(function(o){return String(o.value).trim().toLowerCase()===target||String(o.textContent).trim().toLowerCase()===target;});
+  return option?option.value:null;
+ };
+ var from=match(payer,details.payer),to=match(recipient,details.recipient);
+ if(!from||!to||from===to)return false;
+ var paymentButton=document.getElementById('mode-payment');
+ if(paymentButton)paymentButton.click();
+ card.classList.add('entry-open');
+ var title=document.getElementById('entry-title');if(title)title.textContent='Log Payment';
+ var quick=document.getElementById('quick-payment');if(quick)quick.setAttribute('aria-expanded','true');
+ payer.value=from;recipient.value=to;
+ payer.dispatchEvent(new Event('change',{bubbles:true}));
+ recipient.dispatchEvent(new Event('change',{bubbles:true}));
+ amount.value=(details.amountCents/100).toFixed(2);
+ note.value='Apple Cash payment to '+details.recipient+' (self-reported)';
+ var currency=document.getElementById('expense-currency');
+ if(currency&&Array.from(currency.options).some(function(o){return o.value==='USD'})){currency.value='USD';currency.dispatchEvent(new Event('change',{bubbles:true}));}
+ amount.dispatchEvent(new Event('input',{bubbles:true}));
+ note.dispatchEvent(new Event('input',{bubbles:true}));
+ card.scrollIntoView({behavior:'smooth',block:'start'});
+ return true;
+};
+</script>
 <script id="sq-apple-cash-v2-script">(function(){
  'use strict';
  var modal=document.getElementById('sq-apple-cash-v2'),state=null;
@@ -11466,8 +11500,12 @@ body > #sq-layout-panel {
  document.getElementById('ac-copy-contact').addEventListener('click',function(){if(state)copy(String(state.contact));});
  document.getElementById('ac-log').addEventListener('click',function(){
   if(!state||!confirm('Did you complete the Apple Cash transfer? SquareUp cannot verify it. Only log the payment after sending.'))return;
-  close();var button=document.getElementById('quick-payment');
-  if(button)button.click();else alert('Open your tracker and choose Log Payment.');
+  var details=state;
+  close();
+  if(typeof window.sqPrefillAppleCashPayment==='function'){
+   var ok=window.sqPrefillAppleCashPayment(details);
+   if(!ok)alert('Could not fill the payment form. Please open your tracker and log the payment manually.');
+  }else alert('Open your tracker and choose Log Payment.');
  });
 })();</script>
 </body>
