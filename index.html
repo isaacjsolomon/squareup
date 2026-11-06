@@ -11417,6 +11417,8 @@ body > #sq-layout-panel {
 #sq-apple-cash-v2 .ac-secondary{margin-top:9px;background:#1b3d51;color:#e8faff;border:1px solid #416d80;box-shadow:none;font-weight:700!important;font-size:13px}
 #sq-apple-cash-v2 .ac-action:focus-visible,#sq-apple-cash-v2 button:focus-visible{outline:3px solid #7affdd;outline-offset:2px}
 #sq-apple-cash-v2 #ac-status{color:#72ebd4;font-size:12px;margin:8px 0 0;min-height:0}
+#sq-apple-cash-v2 #ac-shortcut[hidden],#sq-apple-cash-v2 #ac-shortcut-note[hidden]{display:none!important}
+#sq-apple-cash-v2 .ac-shortcut-note{font-size:11px!important;color:#b3cfd9!important;line-height:1.5!important;margin:8px 2px 17px!important}
 #sq-apple-cash-v2 .ac-caption{font-size:11px!important;color:#98b7c6!important;line-height:1.45!important;margin:12px 0 0!important}
 @media(max-width:900px){#sq-apple-cash-v2{align-items:flex-end;padding:8px 8px calc(8px + env(safe-area-inset-bottom))}#sq-apple-cash-v2 .ac-panel{padding:19px;border-radius:23px;max-height:calc(94dvh - env(safe-area-inset-bottom))}}
 @media(max-width:370px){#sq-apple-cash-v2 .ac-panel{padding:15px}#sq-apple-cash-v2 h2{font-size:20px}}
@@ -11427,19 +11429,21 @@ body > #sq-layout-panel {
   <div class="ac-heading-wrap"><span class="ac-brand" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="3"/><path d="M3 11h18M7 7V5a2 2 0 0 1 2-2h8"/><path d="M14 15h4"/></svg></span><div><span class="ac-eyebrow">SQUAREUP PAYMENT</span><h2 id="ac-heading">Apple Cash</h2></div></div>
   <button type="button" id="ac-close" class="ac-close" aria-label="Close Apple Cash payment">×</button>
  </div>
- <p class="ac-intro" id="ac-intro">Send securely through Messages. SquareUp will keep your payment details ready.</p>
+ <p class="ac-intro" id="ac-intro">Take the amount and recipient into your iPhone shortcut, or use Messages to send manually.</p>
  <div class="ac-summary">
   <span class="ac-summary-label">AMOUNT TO SEND</span>
   <div class="ac-row ac-amount-row"><strong id="ac-amount">&#36;0.00</strong><button type="button" id="ac-copy-amount" class="ac-copy">Copy amount</button></div>
   <div class="ac-detail"><span class="ac-detail-label">Paying</span><p id="ac-recipient"></p></div>
   <div class="ac-detail"><span class="ac-detail-label">Apple Cash contact</span><div class="ac-row"><span id="ac-contact"></span><button type="button" id="ac-copy-contact" class="ac-copy">Copy</button></div></div>
  </div>
- <div class="ac-steps-heading">How to finish your payment</div>
+ <a id="ac-shortcut" class="ac-action" href="#" hidden>Open SquareUp Apple Cash Shortcut <span aria-hidden="true">↗</span></a>
+ <p id="ac-shortcut-note" class="ac-shortcut-note" hidden>Requires the “SquareUp Apple Cash” shortcut on this iPhone. Review the amount and recipient in Shortcuts; SquareUp never sends or verifies a transfer.</p>
+ <div class="ac-steps-heading">Or send manually in Messages</div>
  <ol class="ac-steps">
   <li><span class="ac-step-num">1</span><span>Open Messages and confirm the recipient.</span></li>
   <li><span class="ac-step-num">2</span><span>Tap <strong>+</strong> → Apple Cash, enter the amount, and send.</span></li>
  </ol>
- <a id="ac-messages" class="ac-action" href="#">Open Messages <span aria-hidden="true">↗</span></a>
+ <a id="ac-messages" class="ac-action ac-secondary" href="#">Open Messages <span aria-hidden="true">↗</span></a>
  <button type="button" id="ac-log" class="ac-action ac-secondary">Already sent? Log payment</button>
  <p id="ac-status" role="status" aria-live="polite"></p>
  <p class="ac-caption">SquareUp cannot send or verify Apple Cash payments. Only log a transfer you've completed and confirm it with the recipient.</p>
@@ -11518,9 +11522,23 @@ window.sqPrefillAppleCashPayment=function(details){
   document.getElementById('ac-recipient').textContent='Recipient: '+details.recipient;
   document.getElementById('ac-contact').textContent=details.contact;
   document.getElementById('ac-messages').href='sms:'+encodeURIComponent(String(details.contact).trim());
+  // Apple-supported deep link: pass only the shown amount and recipient as JSON text.
+  // Shortcuts must already contain the named shortcut; opening this link never records a SquareUp payment.
+  var isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var shortcut=document.getElementById('ac-shortcut');
+  var note=document.getElementById('ac-shortcut-note');
+  shortcut.hidden=!isIOS;note.hidden=!isIOS;
+  if(isIOS){
+    var data=JSON.stringify({amount:Number((details.amountCents/100).toFixed(2)),recipient:String(details.contact).trim()});
+    shortcut.href='shortcuts://run-shortcut?name='+encodeURIComponent('SquareUp Apple Cash')+'&input=text&text='+encodeURIComponent(data);
+  }else shortcut.removeAttribute('href');
   document.getElementById('ac-status').textContent='';
   modal.hidden=false;document.getElementById('ac-close').focus();
  };
+ document.getElementById('ac-shortcut').addEventListener('click',function(event){
+  if(!state||!this.getAttribute('href')){event.preventDefault();return;}
+  document.getElementById('ac-status').textContent='Review the amount and recipient in Shortcuts before any payment.';
+ });
  document.getElementById('ac-close').addEventListener('click',close);
  modal.addEventListener('click',function(e){if(e.target===modal)close();});
  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!modal.hidden)close();});
