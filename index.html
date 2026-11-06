@@ -11361,10 +11361,7 @@ body > #sq-layout-panel {
  window.sqAppleCashHandoff=function(details){
   if(!details||!details.contact||!Number.isSafeInteger(details.amountCents)||details.amountCents<=0)return;
   state=details;
-  document.getElementById('ac-amount').textContent='
-</html>
-
-+(details.amountCents/100).toFixed(2);
+  document.getElementById('ac-amount').textContent=String.fromCharCode(36)+(details.amountCents/100).toFixed(2);
   document.getElementById('ac-recipient').textContent='Recipient: '+details.recipient;
   document.getElementById('ac-contact').textContent=details.contact;
   document.getElementById('ac-messages').href='sms:'+encodeURIComponent(String(details.contact).trim());
