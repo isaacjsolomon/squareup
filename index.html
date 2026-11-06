@@ -12016,156 +12016,67 @@ body.trackers-view #trackers-page .trackers-header p{color:#bdd5e0!important;max
 }
 #tracker-dashboard #sq-return-members .sq-return-icon.sq-member-avatar-loaded{color:transparent!important}
 </style>
-<style id="sq-quick-actions-uniform-20261106">
-/* Six actions, one shared DOM structure + one shared layout.
-   The grid tracks force icon, title, and caption onto separate centered rows
-   even if legacy flex rules or inherited text styles exist elsewhere. */
-@media (min-width: 901px) {
- #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions {
-  display:grid!important;
-  grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  grid-auto-flow:row!important;
-  grid-auto-rows:minmax(110px,auto)!important;
-  gap:12px!important;
-  align-items:stretch!important;
-  justify-items:stretch!important;
-  width:100%!important;
-  padding:0!important;
-  margin:0!important;
- }
- #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>
- :is(#quick-pay-now,#quick-expense,#quick-payment,#quick-receipt,#quick-split,.sq-calculator-action).dashboard-action:not([hidden]) {
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr)!important;
-  grid-template-rows:38px auto auto!important;
-  grid-auto-flow:row!important;
-  align-content:center!important;
-  align-items:center!important;
-  justify-items:center!important;
-  justify-content:stretch!important;
-  flex-direction:column!important;
-  column-gap:0!important;
-  row-gap:7px!important;
-  gap:7px!important;
-  grid-column:auto!important;
-  grid-row:auto!important;
-  width:100%!important;
-  height:100%!important;
-  min-width:0!important;
-  min-height:110px!important;
-  padding:14px 12px!important;
-  margin:0!important;
-  box-sizing:border-box!important;
-  border-radius:16px!important;
-  text-align:center!important;
-  white-space:normal!important;
- }
- #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>
- :is(#quick-pay-now,#quick-expense,#quick-payment,#quick-receipt,#quick-split,.sq-calculator-action).dashboard-action:not([hidden])>.action-icon {
-  display:grid!important;
-  place-items:center!important;
-  grid-column:1!important;
-  width:38px!important;
-  height:38px!important;
-  min-width:38px!important;
-  min-height:38px!important;
-  flex:none!important;
-  margin:0!important;
-  padding:5px!important;
-  border-radius:50%!important;
-  color:inherit!important;
-  background:rgba(255,255,255,.14)!important;
-  font-size:21px!important;
-  line-height:1!important;
-  box-sizing:border-box!important;
- }
- #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>
- :is(#quick-pay-now,#quick-expense,#quick-payment,#quick-receipt,#quick-split,.sq-calculator-action).dashboard-action:not([hidden])>.sq-action-title {
-  display:block!important;
-  grid-column:1!important;
-  width:100%!important;
-  min-width:0!important;
-  margin:0!important;
-  padding:0!important;
-  color:#f4fbff!important;
-  font-size:15px!important;
-  line-height:1.3!important;
-  font-weight:760!important;
-  text-align:center!important;
-  white-space:normal!important;
-  overflow-wrap:break-word!important;
- }
- #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>
- :is(#quick-pay-now,#quick-expense,#quick-payment,#quick-receipt,#quick-split,.sq-calculator-action).dashboard-action:not([hidden])>.action-sub {
-  display:block!important;
-  grid-column:1!important;
-  width:100%!important;
-  margin:0!important;
-  padding:0!important;
-  font-size:12px!important;
-  line-height:1.35!important;
-  font-weight:450!important;
-  text-align:center!important;
-  color:#d2e5ed!important;
-  opacity:.96!important;
-  white-space:normal!important;
- }
- #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>
- #quick-payment.dashboard-action:not([hidden]) {
-  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
-  grid-template-rows:38px auto auto!important;
-  align-items:center!important;justify-items:center!important;
-  grid-auto-flow:row!important;gap:7px!important;
- }
-}
-@media (max-width:900px) {
- /* Keep mobile's intentional action availability and existing button sizing;
-    standardize internal text alignment only. */
- #tracker-dashboard.sq-tab-overview .dashboard-actions .dashboard-action>.sq-action-title {
-  display:block;text-align:center;font-weight:750;line-height:1.25;
- }
-}
-</style>
-<style id="sq-uniform-action-tiles-20261106">
-/* Final consistent two-column action tiles; override legacy row and width rules. */
+
+
+<style id="sq-canonical-action-tiles-20261106">
+/* The six overview buttons share one icon/title/subtitle structure.
+   One desktop rule wins over previous provider-specific button layouts.
+   Do not affect mobile's intentional reduced action list or hidden actions. */
 @media(min-width:901px){
- #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions{
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions{
   display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  grid-auto-flow:row!important;grid-auto-rows:minmax(115px,auto)!important;
-  align-items:stretch!important;justify-items:stretch!important;gap:12px!important;
+  grid-auto-flow:row!important;grid-auto-rows:minmax(116px,auto)!important;
+  gap:12px!important;align-items:stretch!important;justify-items:stretch!important;
+  width:100%!important;max-width:none!important;min-width:0!important;
+  margin:0!important;padding:0!important;background:transparent!important;
  }
- #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>button.dashboard-action:not([hidden]){
-  display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;
-  align-items:center!important;justify-content:center!important;align-content:center!important;
-  grid-column:auto!important;grid-row:auto!important;
-  flex:none!important;float:none!important;position:relative!important;
-  width:100%!important;min-width:0!important;max-width:none!important;
-  height:100%!important;min-height:115px!important;
-  margin:0!important;padding:16px 12px!important;gap:7px!important;
-  text-align:center!important;white-space:normal!important;
-  font-size:16px!important;line-height:1.25!important;font-weight:750!important;
-  box-sizing:border-box!important;border-radius:17px!important;
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>:is(#quick-pay-now,#quick-expense,#quick-payment,#quick-receipt,#quick-split,#sq-quick-calc-launch).dashboard-action:not([hidden]){
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:42px auto auto!important;grid-auto-flow:row!important;
+  justify-items:center!important;align-items:center!important;align-content:center!important;
+  grid-column:auto!important;grid-row:auto!important;float:none!important;
+  width:100%!important;max-width:none!important;min-width:0!important;
+  height:100%!important;min-height:116px!important;margin:0!important;
+  padding:16px 14px!important;gap:7px!important;border-radius:17px!important;
+  box-sizing:border-box!important;text-align:center!important;
+  white-space:normal!important;transform:none!important;
  }
- #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>button.dashboard-action:not([hidden])>.action-icon{
-  display:grid!important;place-items:center!important;align-self:center!important;
-  flex:0 0 42px!important;width:42px!important;height:42px!important;
-  min-width:42px!important;min-height:42px!important;max-width:42px!important;
-  margin:0 0 2px!important;padding:6px!important;
-  border-radius:50%!important;background:rgba(255,255,255,.14)!important;
-  font-size:22px!important;line-height:1!important;
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>.sq-calculator-action.dashboard-action:not([hidden]){
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:42px auto auto!important;grid-auto-flow:row!important;
+  justify-items:center!important;align-items:center!important;align-content:center!important;
+  grid-column:auto!important;grid-row:auto!important;float:none!important;
+  width:100%!important;min-width:0!important;height:100%!important;min-height:116px!important;
+  margin:0!important;padding:16px 14px!important;gap:7px!important;
+  border-radius:17px!important;box-sizing:border-box!important;text-align:center!important;
  }
- #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>button.dashboard-action:not([hidden])>.sq-action-title,
- #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>button.dashboard-action:not([hidden])>.action-sub{
-  display:block!important;position:static!important;float:none!important;
-  flex:none!important;width:100%!important;max-width:100%!important;
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>:is(#quick-pay-now,#quick-expense,#quick-payment,#quick-receipt,#quick-split,#sq-quick-calc-launch).dashboard-action:not([hidden])>.action-icon,
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>.sq-calculator-action.dashboard-action:not([hidden])>.action-icon{
+  display:grid!important;place-items:center!important;grid-column:1!important;grid-row:1!important;
+  align-self:center!important;justify-self:center!important;flex:none!important;
+  width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;
+  max-width:42px!important;max-height:42px!important;margin:0!important;
+  padding:6px!important;border-radius:50%!important;
+  background:rgba(255,255,255,.14)!important;font-size:22px!important;line-height:1!important;
+  box-sizing:border-box!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>:is(#quick-pay-now,#quick-expense,#quick-payment,#quick-receipt,#quick-split,#sq-quick-calc-launch).dashboard-action:not([hidden])>.sq-action-title,
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>.sq-calculator-action.dashboard-action:not([hidden])>.sq-action-title{
+  display:block!important;grid-column:1!important;grid-row:2!important;
+  position:static!important;float:none!important;flex:none!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;
   margin:0!important;padding:0!important;text-align:center!important;
-  white-space:normal!important;overflow-wrap:normal!important;
+  font-size:16px!important;line-height:1.25!important;font-weight:750!important;
+  white-space:normal!important;overflow-wrap:normal!important;color:#f4fbff!important;
  }
- #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>button.dashboard-action:not([hidden])>.sq-action-title{
-  font-size:16px!important;font-weight:750!important;line-height:1.25!important;
- }
- #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>button.dashboard-action:not([hidden])>.action-sub{
-  font-size:12px!important;font-weight:450!important;line-height:1.35!important;color:#d8e8f1!important;
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>:is(#quick-pay-now,#quick-expense,#quick-payment,#quick-receipt,#quick-split,#sq-quick-calc-launch).dashboard-action:not([hidden])>.action-sub,
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions>.sq-calculator-action.dashboard-action:not([hidden])>.action-sub{
+  display:block!important;grid-column:1!important;grid-row:3!important;
+  position:static!important;float:none!important;flex:none!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;
+  margin:0!important;padding:0!important;text-align:center!important;
+  font-size:12px!important;line-height:1.35!important;font-weight:450!important;
+  white-space:normal!important;color:#d8e8f1!important;
  }
 }
 </style>
