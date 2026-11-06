@@ -2323,6 +2323,7 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
 <form id="settings-pay-form">
 <label class="settings-field">Venmo username<input autocapitalize="off" autocomplete="off" id="settings-venmo" maxlength="30" placeholder="e.g. myvenmo"/></label>
 <label class="settings-field">Cash App $Cashtag<input autocapitalize="off" autocomplete="off" id="settings-cashapp" maxlength="21" placeholder="e.g. $mycashtag"/></label>
+<label class="settings-field">Apple Cash contact (optional)<input id="settings-applecash" maxlength="120" placeholder="Phone or Apple Account email" autocomplete="off"/></label><p class="settings-muted">Only shared tracker members can view this contact. Apple Cash transfers happen outside SquareUp.</p>
 <p class="settings-muted">Only enter accounts you own. Friends should confirm the recipient in the payment app before sending money. SquareUp never transfers funds.</p>
 <button class="settings-action primary" id="settings-pay-save" type="submit">Save payment accounts</button>
 <div aria-live="polite" class="settings-notice" id="settings-pay-msg" role="status"></div>
@@ -3579,6 +3580,7 @@ async function loadProfileSettings() {
     $("settings-username").value=data.username||'';
     $("settings-bio").value=data.bio||'';
     $("settings-venmo").value=data.venmo||'';
+    $("settings-applecash").value=data.appleCash||"";
     $("settings-cashapp").value=data.cashapp?'$'+data.cashapp:'';
     var av=$("settings-avatar"); av.textContent=(data.displayName||currentUser.name||'?').charAt(0).toUpperCase();
     av.style.backgroundImage='';
@@ -3595,7 +3597,8 @@ function showFriendPayments() {
     var name=document.createElement('strong');name.textContent=m.name||m.email||'Friend';row.append(name);
     var p=m.payments||{};
     [['Venmo',p.venmo,p.venmo?'https://venmo.com/u/'+encodeURIComponent(p.venmo):null],['Cash App',p.cashapp,p.cashapp?'https://cash.app/$'+encodeURIComponent(p.cashapp):null]].forEach(function(a){if(!a[1])return;var link=document.createElement('a');link.href=a[2];link.target='_blank';link.rel='noopener noreferrer';link.textContent=a[0]+' ↗';row.append(link);});
-    if(!p.venmo&&!p.cashapp){var none=document.createElement('span');none.textContent='Not added yet';row.append(none);}
+    if(p.appleCash){var contact=document.createElement('span');contact.textContent='Apple Cash: '+p.appleCash;row.append(contact);}
+    if(!p.venmo&&!p.cashapp&&!p.appleCash){var none=document.createElement('span');none.textContent='Not added yet';row.append(none);}
     el.append(row);
   });
 }
@@ -3663,7 +3666,7 @@ $("settings-pay-form").addEventListener('submit',async function(e){
   e.preventDefault();if(!currentUser)return;
   var btn=$("settings-pay-save");btn.disabled=true;settingsMessage('settings-pay-msg','Saving…',true);
   try{
-    var data=await api('profile','PATCH',{venmo:$("settings-venmo").value.trim(),cashapp:$("settings-cashapp").value.trim()});
+    var data=await api('profile','PATCH',{venmo:$("settings-venmo").value.trim(),cashapp:$("settings-cashapp").value.trim(),appleCash:$("settings-applecash").value.trim()});
     myProfileSettings=data;
     if(current&&current.id) {try{applyDetail(await api('trackers/'+current.id));}catch(_) {}}
     settingsMessage('settings-pay-msg','Payment usernames saved!',true);
@@ -3676,7 +3679,7 @@ window.squareUpPayNow = async function () {
   var me = (current.members || []).find(function (m) { return m.isYou; });
   if (!me) { alert('Could not identify your tracker membership.'); return; }
   var recipients = (current.members || []).filter(function (m) {
-    return !m.isYou && m.payments && (m.payments.venmo || m.payments.cashapp);
+    return !m.isYou && m.payments && (m.payments.venmo || m.payments.cashapp || m.payments.appleCash);
   });
   if (!recipients.length) {
     alert('No friends in this tracker have saved payment usernames yet. Ask them to add one in Settings.');
@@ -3686,6 +3689,7 @@ window.squareUpPayNow = async function () {
   recipients.forEach(function (m) {
     if (m.payments.venmo) options.push({member:m, provider:'Venmo', url:'https://venmo.com/u/'+encodeURIComponent(m.payments.venmo)});
     if (m.payments.cashapp) options.push({member:m, provider:'Cash App', url:'https://cash.app/$'+encodeURIComponent(m.payments.cashapp)});
+    if (m.payments.appleCash) options.push({member:m, provider:'Apple Cash', contact:m.payments.appleCash});
   });
   var from = me.name || me.email;
   var normalize = function(v){return String(v||'').trim().toLowerCase()};
@@ -3708,6 +3712,11 @@ window.squareUpPayNow = async function () {
   if(!selection)return;
   var chosen=selection.option,to=selection.to,cents=selection.cents,paidCents=selection.paidCents;
   if(!from||!to||normalize(from)===normalize(to))return;
+  if(chosen.provider==='Apple Cash'){
+    var instructions='Send '+String.fromCharCode(36)+(paidCents/100).toFixed(2)+' to '+to+' in Apple Wallet or Messages. Contact: '+chosen.contact+'. SquareUp cannot initiate or verify this payment. Return and use Log Payment only after sending; ask the recipient to confirm receipt.';
+    alert(instructions);
+    return;
+  }
   var paymentTab=window.open(chosen.url,'_blank','noopener,noreferrer');
   if(!paymentTab){alert('Your browser may have blocked the payment page. Enable pop-ups and try again.');return;}
   if(!confirm('Only click OK if you have COMPLETED the $'+(paidCents/100).toFixed(2)+' payment to '+to+' in '+chosen.provider+'.\\nClick Cancel if you did not pay.'))return;
