@@ -11492,7 +11492,7 @@ body > #sq-layout-panel {
 #sq-apple-cash-v2 .ac-intro{margin:12px 0 16px;font-size:13px}
 #sq-apple-cash-v2 button,#sq-apple-cash-v2 a{font:inherit;cursor:pointer}
 #sq-apple-cash-v2 .ac-close{width:39px;height:39px;flex:none;border:1px solid #486e80;border-radius:12px;background:#1a4054;color:#e8faff;font-size:23px;line-height:1;display:grid;place-items:center}
-#sq-apple-cash-v2 .ac-summary{margin-top:16px;background:linear-gradient(135deg,rgba(21,81,92,.58),rgba(11,40,60,.85));border:1px solid rgba(74,216,196,.38);border-radius:18px;padding:18px;margin:0 0 16px}
+#sq-apple-cash-v2 .ac-summary{margin-top:16px;background:linear-gradient(135deg,rgba(21,81,92,.58),rgba(11,40,60,.85));border:1px solid rgba(74,216,196,.38);border-radius:18px;padding:18px;margin:16px 0}
 #sq-apple-cash-v2 .ac-summary-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;color:#add0d8}
 #sq-apple-cash-v2 .ac-row{display:flex;justify-content:space-between;align-items:center;gap:10px;min-width:0}
 #sq-apple-cash-v2 .ac-amount-row{margin:4px 0 15px}
@@ -11629,7 +11629,7 @@ window.sqPrefillAppleCashPayment=function(details){
   document.getElementById('ac-recipient').textContent='Recipient: '+String(details.recipient||'');
   document.getElementById('ac-contact').textContent=String(details.contact);
   var contact=String(details.contact).trim();
-  var smsContact=/^[+\\d().\\s-]+$/.test(contact)?contact.replace(/[().\\s-]/g,''):encodeURIComponent(contact);
+  var smsContact=/^[+\d().\s-]+$/.test(contact)?contact.replace(/[().\s-]/g,''):encodeURIComponent(contact);
   messages.href='sms:'+smsContact;
   shortcut.hidden=!isIOS;
   install.hidden=true;
