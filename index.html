@@ -11451,30 +11451,59 @@ window.sqPrefillAppleCashPayment=function(details){
  if(!details||!details.payer||!details.recipient||!Number.isSafeInteger(details.amountCents)||details.amountCents<=0)return false;
  var payer=document.getElementById('person1'),recipient=document.getElementById('person2');
  var amount=document.getElementById('amount'),note=document.getElementById('note');
- var card=document.getElementById('entry-card');
- if(!payer||!recipient||!amount||!note||!card)return false;
+ var card=document.getElementById('entry-card'),modal=document.getElementById('sq-expense-dialog');
+ var openButton=document.getElementById('quick-payment');
+ if(!payer||!recipient||!amount||!note||!card||!modal||!openButton)return false;
+ // The actual expense form lives in a separate hidden modal. Opening only the card does not make it visible.
+ // Use the existing Log Payment button to invoke the same modal setup as a regular payment.
+ openButton.click();
+ if(typeof window.populateExpenseMembers==='function')window.populateExpenseMembers();
+ // Recreate options from current tracker membership if the original list has not yet loaded.
+ if((payer.options.length<2||recipient.options.length<2)&&typeof window.squareUpExpenseMembers==='function'){
+  var members=window.squareUpExpenseMembers();
+  [payer,recipient].forEach(function(sel){
+   if(sel.options.length>1)return;
+   members.forEach(function(m){
+    var name=String(m.name||m.email||'').trim();
+    if(!name)return;
+    var option=document.createElement('option');option.value=name;option.textContent=name;sel.appendChild(option);
+   });
+  });
+ }
  var match=function(select,name){
   var target=String(name).trim().toLowerCase();
-  var option=Array.from(select.options).find(function(o){return String(o.value).trim().toLowerCase()===target||String(o.textContent).trim().toLowerCase()===target;});
+  var option=Array.from(select.options).find(function(o){
+   return String(o.value).trim().toLowerCase()===target||String(o.textContent).trim().toLowerCase()===target;
+  });
   return option?option.value:null;
  };
  var from=match(payer,details.payer),to=match(recipient,details.recipient);
- if(!from||!to||from===to)return false;
+ // Keep modal open for manual review even if a member cannot be matched; never silently misattribute a payment.
  var paymentButton=document.getElementById('mode-payment');
- if(paymentButton)paymentButton.click();
+ if(paymentButton&&!paymentButton.classList.contains('active'))paymentButton.click();
  card.classList.add('entry-open');
- var title=document.getElementById('entry-title');if(title)title.textContent='Log Payment';
- var quick=document.getElementById('quick-payment');if(quick)quick.setAttribute('aria-expanded','true');
- payer.value=from;recipient.value=to;
+ modal.hidden=false;
+ document.body.classList.add('sq-action-dialog-open');
+ var title=document.getElementById('entry-title');if(title)title.textContent='Log Apple Cash Payment';
+ var currency=document.getElementById('expense-currency');
+ if(currency&&Array.from(currency.options).some(function(o){return o.value==='USD'})){
+  currency.value='USD';currency.dispatchEvent(new Event('change',{bubbles:true}));
+ }
+ payer.value=from||'';
+ recipient.value=to||'';
  payer.dispatchEvent(new Event('change',{bubbles:true}));
  recipient.dispatchEvent(new Event('change',{bubbles:true}));
  amount.value=(details.amountCents/100).toFixed(2);
- note.value='Apple Cash payment to '+details.recipient+' (self-reported)';
- var currency=document.getElementById('expense-currency');
- if(currency&&Array.from(currency.options).some(function(o){return o.value==='USD'})){currency.value='USD';currency.dispatchEvent(new Event('change',{bubbles:true}));}
+ note.value='Paid via Apple Cash to '+details.recipient+' (self-reported)';
  amount.dispatchEvent(new Event('input',{bubbles:true}));
  note.dispatchEvent(new Event('input',{bubbles:true}));
- card.scrollIntoView({behavior:'smooth',block:'start'});
+ // Ensure the form is visible and scrolled into view inside the real payment dialog.
+ var inner=modal.querySelector('.sq-action-modal-inner');
+ if(inner)inner.scrollTop=0;
+ card.scrollIntoView({block:'nearest',behavior:'instant'});
+ if(!from||!to||from===to){
+  alert('Amount and description filled. Please select the payer and recipient before saving.');
+ }
  return true;
 };
 </script>
