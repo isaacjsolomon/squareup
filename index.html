@@ -1234,6 +1234,23 @@ body.notifications-view #tracker-dashboard,body.notifications-view #split-page,b
 .sq-tracker-approval-choice input{width:21px;height:21px;flex:none;accent-color:#37d5b7}
 .sq-tracker-approval-status{font-size:13px;color:#b7d1e1;line-height:1.5}
 
+
+/* SquareUp tracker settings refresh */
+.tracker-tile-menu:has(.tracker-settings-view:not([hidden])) .tracker-tile-menu-panel{width:min(430px,calc(100vw - 28px));max-width:calc(100vw - 28px);min-width:0;padding:16px;border-radius:22px;border:1px solid #55dfd2a6;background:radial-gradient(ellipse at 100% 0%,#22e0c62b,transparent 50%),linear-gradient(145deg,#102f43,#071e31);box-shadow:0 24px 60px #000a;max-height:min(78dvh,680px);overflow-y:auto;overscroll-behavior:contain}
+.tracker-settings-view{gap:12px}
+.tracker-tile-menu-panel .tracker-settings-back{padding:8px 10px 14px;margin:0;color:#f1fbff;font-size:19px;font-weight:800;background:transparent;border:0;border-radius:10px;cursor:pointer}
+.tracker-tile-menu-panel .tracker-settings-back:hover{color:#70f4df;background:#ffffff0a}
+.sq-tracker-settings-group{display:flex;flex-direction:column;padding:12px 12px 8px;border:1px solid #327080a8;border-radius:17px;background:linear-gradient(135deg,#123d50c9,#09273dbf);box-shadow:inset 0 1px #ffffff0d}
+.sq-tracker-settings-group-title{margin:0 0 9px;padding:2px 8px 10px;border-bottom:1px solid #4a819078;color:#b7e6e9;font-size:10px;font-weight:800;letter-spacing:.21em;text-transform:uppercase}
+.tracker-tile-menu-panel .sq-tracker-settings-action{min-height:61px!important;display:flex;gap:13px!important;padding:10px 8px!important;border-radius:12px!important;color:#f0fbff!important;background:transparent!important;transition:background .15s,transform .15s}
+.tracker-tile-menu-panel .sq-tracker-settings-action+.sq-tracker-settings-action{border-top:1px solid #ffffff18!important;border-radius:0}
+.tracker-tile-menu-panel .sq-tracker-settings-action:hover{background:#2ddbc313!important;transform:translateX(2px)}
+.tracker-tile-menu-panel .sq-tracker-settings-action:focus-visible{outline:2px solid #6af4db;outline-offset:-2px}
+.tracker-tile-menu-panel .sq-tracker-settings-action .tracker-menu-glyph{width:38px;height:38px;flex:none;display:grid;place-items:center;font-size:21px;color:#a3fff0;border:1px solid #37d7ca9c;border-radius:11px;background:linear-gradient(145deg,#0d6473,#092e41);box-shadow:inset 0 1px #ffffff30,0 3px 12px #00c9b91a}
+.tracker-tile-menu-panel .sq-tracker-settings-action .tracker-menu-words{font-size:14px;font-weight:650;line-height:1.35}
+.tracker-tile-menu-panel .sq-tracker-settings-action .tracker-menu-chevron{font-size:27px;color:#b5dfe8;margin-left:auto}
+@media(max-width:600px){.tracker-tile-menu:has(.tracker-settings-view:not([hidden])) .tracker-tile-menu-panel{width:min(380px,calc(100vw - 24px));padding:12px}.sq-tracker-settings-group{padding:10px 9px 6px}.tracker-tile-menu-panel .sq-tracker-settings-action{min-height:55px!important}}
+
 /* Tracker settings nested menu */
 .tracker-tile-menu-panel{min-width:265px;max-width:min(310px,calc(100vw - 32px));padding:10px;display:block}
 .tracker-menu-main,.tracker-settings-view{display:grid;gap:4px}
@@ -4241,7 +4258,7 @@ async function renderTrackerGallery(){
       var menu=document.createElement('details');menu.className='tracker-tile-menu';
       var menuToggle=document.createElement('summary');menuToggle.textContent='⋯';menuToggle.setAttribute('aria-label','Actions for '+t.name);
       var menuPanel=document.createElement('div');menuPanel.className='tracker-tile-menu-panel';
-      var settingsView=document.createElement('div');settingsView.className='tracker-settings-view';settingsView.hidden=true;
+      var settingsView=document.createElement('div');settingsView.className='tracker-settings-view';settingsView.hidden=true;var appearanceGroup=document.createElement('section');appearanceGroup.className='sq-tracker-settings-group';var managementGroup=document.createElement('section');managementGroup.className='sq-tracker-settings-group';function groupTitle(group,label){var h=document.createElement('h3');h.className='sq-tracker-settings-group-title';h.textContent=label;group.append(h)}groupTitle(appearanceGroup,'Appearance');groupTitle(managementGroup,'Tracker management');
       var mainView=document.createElement('div');mainView.className='tracker-menu-main';
       function makeMenuButton(icon,label,cls,fn,subtitle){
         var btn=document.createElement('button');btn.type='button';btn.className='tracker-menu-action '+(cls||'');
@@ -4252,10 +4269,11 @@ async function renderTrackerGallery(){
         btn.append(glyph,words);btn.onclick=fn;return btn;
       }
       var settingsHeader=document.createElement('button');settingsHeader.type='button';settingsHeader.className='tracker-settings-back';settingsHeader.textContent='‹  Tracker settings';
-      settingsHeader.onclick=function(){settingsView.hidden=true;mainView.hidden=false;};settingsView.append(settingsHeader);
+      settingsHeader.onclick=function(){settingsView.hidden=true;mainView.hidden=false;};settingsView.append(settingsHeader,appearanceGroup,managementGroup);
       function settingsAction(icon,label,fn){
-        var btn=makeMenuButton(icon,label,'',async function(){menu.open=false;settingsView.hidden=true;mainView.hidden=false;await fn();});
-        var arrow=document.createElement('span');arrow.className='tracker-menu-chevron';arrow.textContent='›';btn.append(arrow);settingsView.append(btn);
+        var btn=makeMenuButton(icon,label,'sq-tracker-settings-action',async function(){menu.open=false;settingsView.hidden=true;mainView.hidden=false;await fn();});
+        var arrow=document.createElement('span');arrow.className='tracker-menu-chevron';arrow.textContent='›';btn.append(arrow);
+        (label==='Change banner'||label==='Change tracker backdrop'?appearanceGroup:managementGroup).append(btn);
       }
       settingsAction('▧','Change banner',async function(){await sqBannerEdit(t.id,t.name,banner);});
       settingsAction('▧','Change tracker backdrop',async function(){
