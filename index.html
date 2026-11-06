@@ -11274,6 +11274,47 @@ body > #sq-layout-panel {
   }
 }
 </style>
+<style id="sq-desktop-visual-refresh-2026">
+/* Desktop-only polish: no changes to data, navigation handlers or mobile layout. */
+@media (min-width: 901px) {
+  .sidebar{background:linear-gradient(180deg,rgba(5,27,43,.98),rgba(4,23,38,.99))!important;border:1px solid rgba(90,169,187,.22)!important;box-shadow:0 18px 45px rgba(0,12,28,.2)!important}
+  .sidebar .side-account{padding-top:16px!important}
+  .sidebar .sidebar-top-row{margin-bottom:12px!important}
+  .sidebar .sq-sidebar-control-row{margin-bottom:12px!important}
+  .sidebar .me{margin-top:12px!important;margin-bottom:18px!important}
+  .sidebar .squareup-nav{display:flex!important;flex-direction:column!important;gap:5px!important}
+  .sidebar .squareup-nav .sq-nav-link{min-height:43px!important;border:1px solid transparent!important;border-radius:12px!important;background:transparent!important;box-shadow:none!important;transition:background .15s ease,border-color .15s ease,transform .15s ease!important}
+  .sidebar .squareup-nav .sq-nav-link:hover{background:rgba(70,141,166,.15)!important;border-color:rgba(106,195,212,.22)!important;transform:translateX(2px)}
+  .sidebar .squareup-nav .sq-nav-link.active,.sidebar .squareup-nav .sq-nav-link[aria-current="page"]{background:linear-gradient(90deg,rgba(24,105,114,.46),rgba(17,54,77,.5))!important;border-color:rgba(58,225,199,.34)!important;box-shadow:inset 3px 0 #36e6cb!important}
+  .sidebar .squareup-nav #nav-home{order:1}
+  .sidebar .squareup-nav #nav-trackers{order:2}
+  .sidebar .squareup-nav #sq-finance-nav{order:3}
+  .sidebar .squareup-nav #sqev-nav{order:4}
+  .sidebar .squareup-nav #nav-chat{order:6}
+  .sidebar .squareup-nav #nav-analytics{order:7}
+  .sidebar .squareup-nav #nav-profile{order:8}
+  .sidebar .squareup-nav #nav-help-center{order:9}
+  .sidebar .squareup-nav #nav-about{order:10}
+  .sidebar .squareup-nav #nav-friends{order:11}
+  .sidebar .squareup-nav #btn-settings{order:12}
+  .sidebar .squareup-nav:before{content:"WORKSPACE";order:0;display:block;color:#87aab9;font-size:10px;font-weight:800;letter-spacing:.16em;padding:4px 12px 7px}
+  .sidebar .squareup-nav:after{content:"";display:none}
+  .sidebar .squareup-nav #nav-chat{margin-top:26px!important;position:relative}
+  .sidebar .squareup-nav #nav-chat:before{content:"TOOLS & ACCOUNT";position:absolute;left:12px;bottom:calc(100% + 8px);font-size:10px;font-weight:800;letter-spacing:.13em;color:#87aab9;white-space:nowrap;pointer-events:none}
+  #tracker-dashboard .sq-return-welcome{margin-bottom:14px!important}
+  #tracker-dashboard .sq-return-welcome h2{letter-spacing:-.045em!important}
+  #tracker-dashboard .sq-desktop-balance-layout{align-items:start!important}
+  #tracker-dashboard .sq-clean-balance{min-height:250px!important;height:auto!important;padding:27px!important;display:flex!important;flex-direction:column!important;justify-content:space-between!important;gap:22px!important}
+  #tracker-dashboard .sq-clean-balance-actions{margin-top:12px!important}
+  #tracker-dashboard .dashboard-actions{gap:12px!important;align-content:start!important}
+  #tracker-dashboard .dashboard-action{min-height:126px!important;height:auto!important;border-radius:17px!important;border:1px solid rgba(123,198,221,.22)!important;box-shadow:inset 0 1px rgba(255,255,255,.08),0 10px 24px rgba(0,17,35,.15)!important}
+  #tracker-dashboard .dashboard-action:hover{transform:translateY(-2px)!important;filter:brightness(1.08)}
+  #tracker-dashboard .dashboard-action .action-icon{margin-bottom:8px!important}
+  #tracker-dashboard .dashboard-action .action-sub{font-size:11px!important}
+  #tracker-dashboard .sq-return-panel{backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important}
+  #tracker-dashboard .sq-return-summary{border-radius:22px!important}
+}
+</style>
 </body>
 </html>
 
