@@ -11417,7 +11417,10 @@ body > #sq-layout-panel {
 #sq-apple-cash-v2 .ac-secondary{margin-top:9px;background:#1b3d51;color:#e8faff;border:1px solid #416d80;box-shadow:none;font-weight:700!important;font-size:13px}
 #sq-apple-cash-v2 .ac-action:focus-visible,#sq-apple-cash-v2 button:focus-visible{outline:3px solid #7affdd;outline-offset:2px}
 #sq-apple-cash-v2 #ac-status{color:#72ebd4;font-size:12px;margin:8px 0 0;min-height:0}
-#sq-apple-cash-v2 #ac-shortcut[hidden],#sq-apple-cash-v2 #ac-shortcut-note[hidden]{display:none!important}
+#sq-apple-cash-v2 #ac-shortcut[hidden],#sq-apple-cash-v2 #ac-shortcut-note[hidden],#sq-apple-cash-v2 #ac-setup[hidden]{display:none!important}
+#sq-apple-cash-v2 .ac-setup{margin:9px 0 8px;padding:12px 14px;border:1px solid rgba(87,181,193,.3);border-radius:12px;background:rgba(14,49,66,.65);display:grid;gap:5px}
+#sq-apple-cash-v2 #ac-install{color:#77eed9;font-size:13px;font-weight:750;text-decoration:underline;text-underline-offset:3px}
+#sq-apple-cash-v2 .ac-setup span{color:#bed4df;font-size:11px;line-height:1.45}
 #sq-apple-cash-v2 .ac-shortcut-note{font-size:11px!important;color:#b3cfd9!important;line-height:1.5!important;margin:8px 2px 17px!important}
 #sq-apple-cash-v2 .ac-caption{font-size:11px!important;color:#98b7c6!important;line-height:1.45!important;margin:12px 0 0!important}
 @media(max-width:900px){#sq-apple-cash-v2{align-items:flex-end;padding:8px 8px calc(8px + env(safe-area-inset-bottom))}#sq-apple-cash-v2 .ac-panel{padding:19px;border-radius:23px;max-height:calc(94dvh - env(safe-area-inset-bottom))}}
@@ -11437,6 +11440,7 @@ body > #sq-layout-panel {
   <div class="ac-detail"><span class="ac-detail-label">Apple Cash contact</span><div class="ac-row"><span id="ac-contact"></span><button type="button" id="ac-copy-contact" class="ac-copy">Copy</button></div></div>
  </div>
  <a id="ac-shortcut" class="ac-action" href="#" hidden>Open SquareUp Apple Cash Shortcut <span aria-hidden="true">↗</span></a>
+ <div id="ac-setup" class="ac-setup" hidden><a id="ac-install" href="https://www.icloud.com/shortcuts/93418e24d3aa46e9841ac383f8c49630" target="_blank" rel="noopener noreferrer">First time? Install SquareUp Shortcut ↗</a><span>Apple will ask you to review and add the shortcut. This is a preview-only test; it does not send money.</span></div>
  <p id="ac-shortcut-note" class="ac-shortcut-note" hidden>Requires the “SquareUp Apple Cash” shortcut on this iPhone. Review the amount and recipient in Shortcuts; SquareUp never sends or verifies a transfer.</p>
  <div class="ac-steps-heading">Or send manually in Messages</div>
  <ol class="ac-steps">
@@ -11528,6 +11532,7 @@ window.sqPrefillAppleCashPayment=function(details){
   var shortcut=document.getElementById('ac-shortcut');
   var note=document.getElementById('ac-shortcut-note');
   shortcut.hidden=!isIOS;note.hidden=!isIOS;
+  document.getElementById("ac-setup").hidden=!isIOS;
   if(isIOS){
     var data=JSON.stringify({amount:Number((details.amountCents/100).toFixed(2)),recipient:String(details.contact).trim()});
     shortcut.href='shortcuts://run-shortcut?name='+encodeURIComponent('SquareUp Apple Cash')+'&input=text&text='+encodeURIComponent(data);
