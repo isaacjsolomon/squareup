@@ -11817,6 +11817,84 @@ body.trackers-view #trackers-page .trackers-header p{color:#bdd5e0!important;max
  #tracker-dashboard.sq-tab-overview .sq-return-summary *{transition:none!important;animation:none!important}
 }
 </style>
+<style id="sq-balance-quick-actions-layout-fix-20261106">
+/* Fix old two-column balance grid persisting after the stats were hidden.
+   Actions retain their existing event handlers and are already moved directly
+   after the balance card by sq-calm-desktop-overview-placement. */
+@media(min-width:901px){
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  justify-content:flex-start!important;grid-template-columns:none!important;grid-template-rows:none!important;
+  gap:16px!important;width:100%!important;min-width:0!important;height:auto!important;
+  align-self:start!important;box-sizing:border-box!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.sq-clean-balance{
+  display:flex!important;flex-direction:column!important;justify-content:space-between!important;
+  flex:0 0 auto!important;align-self:stretch!important;box-sizing:border-box!important;
+  width:100%!important;max-width:none!important;min-width:0!important;
+  min-height:250px!important;height:auto!important;margin:0!important;
+  padding:24px 26px!important;border-radius:19px!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout .sq-clean-balance-copy{
+  width:100%!important;max-width:none!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout .sq-clean-balance-actions{
+  width:100%!important;max-width:none!important;align-items:center!important;gap:12px!important;
+  margin-top:24px!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary>.sq-desktop-balance-layout>.dashboard-actions{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-template-rows:none!important;align-items:stretch!important;justify-content:stretch!important;
+  flex:none!important;gap:12px!important;box-sizing:border-box!important;
+  width:100%!important;max-width:none!important;min-width:0!important;
+  margin:0!important;padding:0!important;background:transparent!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>.dashboard-action:not([hidden]){
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+  flex:none!important;width:100%!important;min-width:0!important;min-height:100px!important;
+  gap:6px!important;padding:15px 12px!important;border-radius:16px!important;
+  font-size:14px!important;font-weight:760!important;line-height:1.25!important;
+  text-align:center!important;box-sizing:border-box!important;
+  border:1px solid rgba(154,216,230,.24)!important;color:#f3fcff!important;
+  transition:filter .15s ease,border-color .15s ease!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>.dashboard-action:not([hidden]) .action-icon{
+  display:grid!important;place-items:center!important;width:37px!important;height:37px!important;
+  min-height:37px!important;margin:0 0 2px!important;padding:5px!important;
+  border-radius:50%!important;background:rgba(255,255,255,.13)!important;
+  color:inherit!important;font-size:21px!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>.dashboard-action:not([hidden]) .action-sub{
+  display:block!important;font-size:11px!important;font-weight:450!important;
+  line-height:1.35!important;color:#d2e6ef!important;opacity:.89!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>#quick-pay-now:not([hidden]){
+  background:linear-gradient(135deg,#076957,#06483f)!important;border-color:#2cb49680!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>#quick-expense:not([hidden]){
+  background:linear-gradient(135deg,#246ec4,#16417b)!important;border-color:#67a0e86b!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>#quick-payment:not([hidden]){
+  background:linear-gradient(135deg,#3c566e,#20394f)!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>#quick-receipt:not([hidden]){
+  background:linear-gradient(135deg,#43586d,#27374b)!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>#quick-split:not([hidden]){
+  grid-column:1/-1!important;background:linear-gradient(120deg,#6251d2,#3c2c96)!important;
+  border-color:#8374eb78!important;min-height:80px!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>.sq-calculator-action:not([hidden]){
+  grid-column:1/-1!important;min-height:70px!important;background:linear-gradient(110deg,#117b8b,#104659)!important;
+ }
+ #tracker-dashboard.sq-tab-overview .sq-return-summary .dashboard-actions>.dashboard-action:hover{
+  filter:brightness(1.09)!important;transform:none!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ #tracker-dashboard.sq-tab-overview .dashboard-actions>.dashboard-action{transition:none!important}
+}
+</style>
 </body>
 </html>
 
