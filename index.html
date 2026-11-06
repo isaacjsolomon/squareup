@@ -11510,8 +11510,8 @@ body > #sq-layout-panel {
 #sq-apple-cash-v2 .ac-secondary{margin-top:9px;background:#1b3d51;color:#e8faff;border:1px solid #416d80;box-shadow:none;font-weight:700!important;font-size:13px}
 #sq-apple-cash-v2 .ac-action:focus-visible,#sq-apple-cash-v2 button:focus-visible{outline:3px solid #7affdd;outline-offset:2px}
 #sq-apple-cash-v2 #ac-status{color:#72ebd4;font-size:12px;margin:8px 0 0;min-height:0}
-#sq-apple-cash-v2 #ac-shortcut[hidden],#sq-apple-cash-v2 #ac-install[hidden]{display:none!important}
-#sq-apple-cash-v2 #ac-install{display:block;margin:9px 0 13px;text-align:center;font-size:12px;color:#7beedb;font-weight:700;text-underline-offset:3px}
+#sq-apple-cash-v2 #ac-shortcut[hidden]{display:none!important}
+
 #sq-apple-cash-v2 #ac-shortcut[hidden],#sq-apple-cash-v2 #ac-shortcut-note[hidden],#sq-apple-cash-v2 #ac-setup-help[hidden]{display:none!important}
 #sq-apple-cash-v2 #ac-setup-help{display:block;text-align:center;color:#7beedb;font-size:12px;font-weight:700;text-decoration:underline;text-underline-offset:3px;margin:0 0 14px}
 #sq-apple-cash-v2 .ac-shortcut-note{font-size:11px!important;color:#b3cfd9!important;line-height:1.5!important;margin:8px 2px 17px!important}
@@ -11533,7 +11533,6 @@ body > #sq-layout-panel {
   <div class="ac-detail"><span class="ac-detail-label">Apple Cash contact</span><div class="ac-row"><span id="ac-contact"></span><button type="button" id="ac-copy-contact" class="ac-copy">Copy</button></div></div>
  </div>
  <a id="ac-shortcut" class="ac-action" href="#" hidden>Open SquareUp Apple Cash Shortcut <span aria-hidden="true">↗</span></a>
- <a id="ac-install" href="https://www.icloud.com/shortcuts/ebca7f5d267040a99f07ad866f69fe06" target="_blank" rel="noopener noreferrer" hidden>Don't have the shortcut? Install or reinstall it</a>
  <a id="ac-messages" class="ac-action ac-secondary" href="#">Use Messages instead <span aria-hidden="true">↗</span></a>
  <div class="ac-steps-heading" style="margin-top:16px">Pay through Apple Cash</div>
  <ol class="ac-steps">
@@ -11613,7 +11612,6 @@ window.sqPrefillAppleCashPayment=function(details){
  var modal=document.getElementById('sq-apple-cash-v2'),state=null;
  var handoffOpened=false,wasBackgrounded=false,handoffKind='';
  var shortcut=document.getElementById('ac-shortcut');
- var install=document.getElementById('ac-install');
  var messages=document.getElementById('ac-messages');
  var isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
  function close(){
@@ -11630,7 +11628,7 @@ window.sqPrefillAppleCashPayment=function(details){
   messages.href='sms:'+smsContact;
   // Pass the exact same JSON fields that were confirmed in the user's earlier preview test.
   // Opening Shortcuts does not itself verify or log a completed Apple Cash payment.
-  shortcut.hidden=!isIOS;install.hidden=!isIOS;
+  shortcut.hidden=!isIOS;
   if(isIOS){
    var data=JSON.stringify({amount:Number((details.amountCents/100).toFixed(2)),recipient:contact});
    shortcut.href='shortcuts://run-shortcut?name='+encodeURIComponent('SquareUp Apple Cash')+'&input=text&text='+encodeURIComponent(data);
