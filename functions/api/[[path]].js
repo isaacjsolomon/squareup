@@ -886,7 +886,8 @@ const resolvedRole = memberRow => {
         photo: p?.photo_key?.split('/').pop() || null,
         payments: {
           venmo: p?.venmo_username || '',
-          cashapp: p?.cashapp_username || ''
+          cashapp: p?.cashapp_username || '',
+          appleCash: p?.apple_cash_contact || ''
         }
       };
     }),
@@ -1063,7 +1064,8 @@ await db('squareup_push_subscriptions', {
           username: p?.username || '',
           bio: p?.bio || '',
           venmo: p?.venmo_username || '',
-          cashapp: p?.cashapp_username || ''
+          cashapp: p?.cashapp_username || '',
+          appleCash: p?.apple_cash_contact || ''
         });
       }
 
@@ -1136,6 +1138,13 @@ await db('squareup_push_subscriptions', {
 
           update.cashapp_username = v;
         }
+        if (body.appleCash !== undefined) {
+          const v = clean(body.appleCash, 120).trim();
+          // Apple Cash contacts are phone numbers or Apple Account email addresses.
+          if (v && !(/^[+0-9() .-]{7,24}$/.test(v) || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)))
+            return fail('Enter a valid Apple Cash phone number or email.', 400);
+          update.apple_cash_contact = v;
+        }
 
         try {
           if (p) {
@@ -1189,7 +1198,8 @@ await db('squareup_push_subscriptions', {
           username: saved.username || '',
           bio: saved.bio || '',
           venmo: saved.venmo_username || '',
-          cashapp: saved.cashapp_username || ''
+          cashapp: saved.cashapp_username || '',
+          appleCash: saved.apple_cash_contact || ''
         });
       }
 
