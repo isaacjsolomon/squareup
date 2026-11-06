@@ -7632,15 +7632,55 @@ body.trackers-view .sq-favorite-toggle[aria-pressed="true"]{background:#123c55!i
 <script id="sq-calm-desktop-overview-placement">
 (function(){
  'use strict';
- // Keep the existing actions and event handlers; place them below the financial
- // summary on all screen sizes instead of creating a competing desktop card.
  const summary=document.getElementById('sq-return-summary');
- const balance=document.getElementById('sq-desktop-balance-layout');
+ const left=document.getElementById('sq-desktop-balance-layout');
  const actions=summary&&summary.querySelector('.dashboard-actions');
- if(!summary||!balance||!actions)return;
- balance.appendChild(actions);
+ const right=summary&&summary.querySelector('.sq-return-grid');
+ const activity=document.getElementById('sq-return-activity')?.closest('.sq-return-panel');
+ if(!summary||!left||!actions||!right||!activity)return;
+ // Move existing elements, retaining all handlers, data sources, and active panels.
+ left.appendChild(actions);
  const stale=summary.querySelector('.sq-desktop-quick-panel');
  if(stale)stale.remove();
+ activity.classList.add('sq-overview-activity-panel');
+ const people=document.getElementById('sq-return-members')?.closest('.sq-return-panel');
+ const balances=document.getElementById('sq-return-balances')?.closest('.sq-return-panel');
+ const settle=document.getElementById('sq-return-smart-host')?.closest('.sq-return-panel');
+ if(people)people.classList.add('sq-overview-people-panel');
+ if(balances)balances.classList.add('sq-overview-balances-panel');
+ if(settle)settle.classList.add('sq-overview-settle-panel');
+ // One inner vertical stack for every quick-action tile. A conflicting button
+ // display mode cannot arrange the title and description side-by-side.
+ function stack(button){
+   if(button.querySelector(':scope > .sq-action-stack'))return;
+   const icon=button.querySelector(':scope > .action-icon');
+   const title=button.querySelector(':scope > .sq-action-title');
+   const caption=button.querySelector(':scope > .action-sub');
+   if(!icon||!title||!caption)return;
+   const inner=document.createElement('span');
+   inner.className='sq-action-stack';
+   inner.append(icon,title,caption);
+   button.append(inner);
+ }
+ function unstack(button){
+   const inner=button.querySelector(':scope > .sq-action-stack');
+   if(!inner)return;
+   while(inner.firstChild)button.insertBefore(inner.firstChild,inner);
+   inner.remove();
+ }
+ const desktop=window.matchMedia('(min-width:901px)');
+ function updatePlacement(){
+   if(desktop.matches){
+     if(activity.parentElement!==left)left.append(activity);
+     actions.querySelectorAll('button.dashboard-action').forEach(stack);
+   }else{
+     if(activity.parentElement!==right)right.insertBefore(activity,right.firstChild);
+     actions.querySelectorAll('button.dashboard-action').forEach(unstack);
+   }
+ }
+ updatePlacement();
+ if(desktop.addEventListener)desktop.addEventListener('change',updatePlacement);
+ else if(desktop.addListener)desktop.addListener(updatePlacement);
 })();
 </script>
 <style id="sq-new-tools-styles">
@@ -12077,6 +12117,73 @@ body.trackers-view #trackers-page .trackers-header p{color:#bdd5e0!important;max
   margin:0!important;padding:0!important;text-align:center!important;
   font-size:12px!important;line-height:1.35!important;font-weight:450!important;
   white-space:normal!important;color:#d8e8f1!important;
+ }
+}
+</style>
+<style id="sq-activity-left-shared-action-stack-20261106">
+/* Desktop column assignment: actual recent activity DOM moves under the six actions,
+   leaving member balances and settle suggestions in the right column. */
+@media (min-width:901px){
+ #tracker-dashboard.sq-tab-overview #sq-return-summary>.sq-desktop-balance-layout{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  height:auto!important;align-self:start!important;min-width:0!important;gap:14px!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary>.sq-desktop-balance-layout>.sq-overview-activity-panel{
+  display:block!important;flex:none!important;order:4!important;
+  width:100%!important;max-width:none!important;min-width:0!important;
+  min-height:260px!important;height:auto!important;margin:0!important;padding:18px!important;
+  border:1px solid rgba(158,204,218,.23)!important;border-radius:18px!important;
+  background:#112e40!important;box-shadow:none!important;box-sizing:border-box!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary>.sq-desktop-balance-layout>.sq-overview-activity-panel .sq-return-head{
+  display:flex!important;align-items:center!important;gap:10px!important;margin:0 0 12px!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary>.sq-desktop-balance-layout>.sq-overview-activity-panel .sq-return-head h3{
+  color:#eff8fc!important;font-size:15px!important;font-weight:730!important;margin-right:auto!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary>.sq-desktop-balance-layout>.sq-overview-activity-panel .sq-return-rows{display:grid!important;gap:8px!important}
+ #tracker-dashboard.sq-tab-overview #sq-return-summary>.sq-return-grid{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  gap:14px!important;width:100%!important;min-width:0!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary>.sq-return-grid>.sq-overview-people-panel{order:1!important}
+ #tracker-dashboard.sq-tab-overview #sq-return-summary>.sq-return-grid>.sq-overview-balances-panel{order:2!important}
+ #tracker-dashboard.sq-tab-overview #sq-return-summary>.sq-return-grid>.sq-overview-settle-panel{order:3!important}
+ /* All six action cards have one direct child, making their contents immune
+    to legacy button flex/grid declarations. */
+ #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>
+ :is(#quick-pay-now,#quick-expense,#quick-payment,#quick-receipt,#quick-split,#sq-quick-calc-launch).dashboard-action:not([hidden]),
+ #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>.sq-calculator-action.dashboard-action:not([hidden]){
+  display:flex!important;flex-direction:column!important;align-items:center!important;
+  justify-content:center!important;grid-column:auto!important;grid-row:auto!important;
+  min-width:0!important;min-height:116px!important;height:100%!important;width:100%!important;
+  padding:16px 12px!important;gap:0!important;text-align:center!important;box-sizing:border-box!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>.dashboard-action>.sq-action-stack{
+  display:flex!important;flex-direction:column!important;justify-content:center!important;
+  align-items:center!important;gap:7px!important;
+  width:100%!important;max-width:100%!important;min-width:0!important;
+  margin:0!important;padding:0!important;text-align:center!important;
+  white-space:normal!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>.dashboard-action>.sq-action-stack>.action-icon{
+  display:grid!important;place-items:center!important;flex:none!important;align-self:center!important;
+  width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;
+  max-width:42px!important;max-height:42px!important;padding:6px!important;margin:0 0 2px!important;
+  background:rgba(255,255,255,.14)!important;border-radius:50%!important;
+  font-size:22px!important;line-height:1!important;box-sizing:border-box!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>.dashboard-action>.sq-action-stack>.sq-action-title{
+  display:block!important;flex:none!important;position:static!important;
+  width:100%!important;max-width:none!important;margin:0!important;padding:0!important;
+  color:#f4fbff!important;font-size:16px!important;font-weight:750!important;
+  line-height:1.25!important;text-align:center!important;white-space:normal!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>.dashboard-action>.sq-action-stack>.action-sub{
+  display:block!important;flex:none!important;position:static!important;
+  width:100%!important;max-width:none!important;margin:0!important;padding:0!important;
+  color:#d8e8f1!important;font-size:12px!important;font-weight:450!important;
+  line-height:1.35!important;text-align:center!important;white-space:normal!important;
  }
 }
 </style>
