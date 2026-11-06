@@ -7675,7 +7675,8 @@ body.trackers-view .sq-favorite-toggle[aria-pressed="true"]{background:#123c55!i
      actions.querySelectorAll('button.dashboard-action').forEach(stack);
    }else{
      if(activity.parentElement!==right)right.insertBefore(activity,right.firstChild);
-     actions.querySelectorAll('button.dashboard-action').forEach(unstack);
+     // Mobile uses the same vertical icon/title/description structure as desktop.
+   actions.querySelectorAll('button.dashboard-action').forEach(stack);
    }
  }
  updatePlacement();
@@ -12184,6 +12185,43 @@ body.trackers-view #trackers-page .trackers-header p{color:#bdd5e0!important;max
   width:100%!important;max-width:none!important;margin:0!important;padding:0!important;
   color:#d8e8f1!important;font-size:12px!important;font-weight:450!important;
   line-height:1.35!important;text-align:center!important;white-space:normal!important;
+ }
+}
+</style>
+<style id="sq-mobile-action-card-unification-20261106">
+/* Match the working desktop card format on mobile, including Log Payment. */
+@media (max-width:900px){
+ #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>.dashboard-action:not([hidden]){
+  display:flex!important;flex-direction:column!important;justify-content:center!important;
+  align-items:center!important;min-width:0!important;box-sizing:border-box!important;
+  text-align:center!important;padding:14px 10px!important;gap:0!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>.dashboard-action:not([hidden])>.sq-action-stack{
+  display:flex!important;flex-direction:column!important;justify-content:center!important;
+  align-items:center!important;gap:8px!important;width:100%!important;min-width:0!important;
+  max-width:100%!important;text-align:center!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>.dashboard-action:not([hidden])>.sq-action-stack>.action-icon{
+  display:grid!important;place-items:center!important;flex:none!important;
+  width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;
+  max-width:42px!important;max-height:42px!important;margin:0 0 2px!important;
+  padding:6px!important;border-radius:50%!important;
+  background:rgba(255,255,255,.14)!important;box-sizing:border-box!important;
+  font-size:22px!important;line-height:1!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>.dashboard-action:not([hidden])>.sq-action-stack>.sq-action-title{
+  display:block!important;position:static!important;flex:none!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;
+  margin:0!important;padding:0!important;text-align:center!important;
+  white-space:normal!important;overflow-wrap:normal!important;
+  font-size:16px!important;line-height:1.25!important;font-weight:750!important;color:#f4fbff!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>.dashboard-action:not([hidden])>.sq-action-stack>.action-sub{
+  display:block!important;position:static!important;flex:none!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;
+  margin:0!important;padding:0!important;text-align:center!important;
+  white-space:normal!important;overflow-wrap:normal!important;
+  font-size:12px!important;line-height:1.35!important;color:#d8e8f1!important;
  }
 }
 </style>
