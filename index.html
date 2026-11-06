@@ -2023,6 +2023,34 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
 #sq-nextgen .sq-fx-manage-toggle[aria-expanded="true"] .sq-fx-chevron{transform:translateY(3px) rotate(225deg)}
 @media (prefers-reduced-motion:reduce){#sq-nextgen .sq-fx-manage-toggle .sq-fx-chevron{transition:none}}
 </style>
+
+<style id="sq-cohesive-home-overview-20261106">
+/* Shared visual language for home gallery and tracker overview. Existing tracker-specific
+   backdrops remain untouched; this styles only surfaces within the page. */
+body.trackers-view #trackers-page .trackers-header{padding:18px 22px 20px!important;border:1px solid #68d6cb45!important;border-radius:22px!important;background:linear-gradient(125deg,#102e42eb,#0b2236e8)!important;box-shadow:0 12px 32px #00132128!important;margin-bottom:18px!important}
+body.trackers-view #trackers-page .trackers-header .eyebrow{color:#79e6d7!important;letter-spacing:.16em!important;font-size:11px!important}
+body.trackers-view #trackers-page .trackers-header h2{letter-spacing:-.035em!important;line-height:1.16!important}
+body.trackers-view #trackers-page .trackers-header p{color:#bdd5e0!important;max-width:620px!important;line-height:1.55!important}
+body.trackers-view #trackers-gallery .tracker-tile{border-radius:20px!important;transition:box-shadow .18s ease,border-color .18s ease!important}
+body.trackers-view #trackers-gallery .tracker-tile:hover{box-shadow:0 16px 34px #00142150!important;border-color:#53d7c47d!important;transform:none!important}
+#tracker-dashboard.sq-tab-overview .sq-overview-kicker,.sq-overview-actions-label>span,.sq-overview-details-label>span{font-size:11px;font-weight:800;letter-spacing:.16em;color:#7be8d5}
+#tracker-dashboard.sq-tab-overview .sq-overview-heading{display:flex;flex-direction:column;gap:5px;max-width:780px}
+#tracker-dashboard.sq-tab-overview .sq-overview-heading h2{margin:0!important}
+#tracker-dashboard.sq-tab-overview .sq-overview-intro{font-size:14px;line-height:1.5;color:#c0d8e4;margin:2px 0 0}
+#tracker-dashboard.sq-tab-overview .sq-overview-actions-label,#tracker-dashboard.sq-tab-overview .sq-overview-details-label{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:24px 0 12px;flex-wrap:wrap}
+#tracker-dashboard.sq-tab-overview .sq-overview-actions-label small,#tracker-dashboard.sq-tab-overview .sq-overview-details-label small{color:#b4cdd9;font-size:12px}
+#tracker-dashboard.sq-tab-overview .sq-clean-balance{border:1px solid #55d8c76b!important;border-radius:22px!important;background:linear-gradient(135deg,#133d4fe8,#0b293de9)!important;box-shadow:0 12px 30px #00172430!important}
+#tracker-dashboard.sq-tab-overview .sq-overview-stats .sq-stat{border:1px solid #5a8b9866!important;border-radius:16px!important;background:linear-gradient(150deg,#163a4ee8,#102b40e8)!important}
+#tracker-dashboard.sq-tab-overview .dashboard-actions .dashboard-action{border-radius:16px!important;transition:background .16s ease,border-color .16s ease!important;transform:none!important}
+#tracker-dashboard.sq-tab-overview .dashboard-actions .dashboard-action:hover{transform:none!important;filter:brightness(1.08)}
+#tracker-dashboard.sq-tab-overview .sq-return-grid>.sq-return-panel{border-radius:20px!important;background:linear-gradient(145deg,#14384be8,#0d293eea)!important;border:1px solid #5c89976b!important;box-shadow:0 10px 28px #00182730!important;backdrop-filter:blur(12px)}
+#tracker-dashboard.sq-tab-overview .sq-return-head h3{letter-spacing:-.025em!important;font-weight:750!important}
+#tracker-dashboard.sq-tab-overview .sq-return-grid .sq-return-panel.sq-panel-collapsed{opacity:.93}
+#tracker-dashboard.sq-tab-overview .sq-return-grid .sq-return-panel button:focus-visible{outline:2px solid #71f4dd!important;outline-offset:3px!important}
+@media(min-width:901px){#tracker-dashboard.sq-tab-overview .sq-overview-actions-label,#tracker-dashboard.sq-tab-overview .sq-overview-details-label{grid-column:1/-1!important}#tracker-dashboard.sq-tab-overview .sq-return-summary{row-gap:12px!important}#tracker-dashboard.sq-tab-overview .sq-return-grid{gap:16px!important}}
+@media(max-width:900px){body.trackers-view #trackers-page .trackers-header{padding:15px 16px!important}#tracker-dashboard.sq-tab-overview .sq-overview-intro{font-size:12px}#tracker-dashboard.sq-tab-overview .sq-overview-actions-label,#tracker-dashboard.sq-tab-overview .sq-overview-details-label{margin:18px 0 9px}#tracker-dashboard.sq-tab-overview .sq-overview-actions-label small,#tracker-dashboard.sq-tab-overview .sq-overview-details-label small{display:none}}
+@media(prefers-reduced-motion:reduce){body.trackers-view #trackers-gallery .tracker-tile,#tracker-dashboard.sq-tab-overview .dashboard-actions .dashboard-action{transition:none!important}}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
@@ -2128,17 +2156,17 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
 </section>
 
   <section class="sq-return-summary" id="sq-return-summary" aria-label="Tracker summary">
-    <header class="sq-return-welcome"><h2 id="sq-return-greeting">Welcome back</h2></header>
+    <header class="sq-return-welcome"><div class="sq-overview-heading"><span class="sq-overview-kicker">TRACKER OVERVIEW</span><h2 id="sq-return-greeting">Welcome back</h2><p class="sq-overview-intro">Your shared balances, recent activity, and next steps in one place.</p></div></header>
 
   <div class="sq-desktop-balance-layout" id="sq-desktop-balance-layout">
   <section class="sq-clean-balance" id="sq-clean-balance" aria-label="Your balance">
-    <div class="sq-clean-balance-copy"><span class="sq-clean-eyebrow">Your net balance</span><strong id="sq-clean-net">—</strong><span id="sq-clean-explanation">Your tracker balance</span></div>
+    <div class="sq-clean-balance-copy"><span class="sq-clean-eyebrow">Your balance in this tracker</span><strong id="sq-clean-net">—</strong><span id="sq-clean-explanation">Your tracker balance</span></div>
     <div class="sq-clean-balance-actions"><button type="button" class="sq-clean-settle" id="sq-clean-settle">Settle up</button><button type="button" class="sq-clean-remind" id="sq-clean-remind">Send reminder</button></div>
   </section>
-  <div class="sq-overview-stats" id="sq-overview-stats"><div class="sq-stat negative"><span>You owe</span><strong id="sq-stat-owe">—</strong></div><div class="sq-stat"><span>Owed to you</span><strong id="sq-stat-owed">—</strong></div><div class="sq-stat neutral"><span>Net balance</span><strong id="sq-stat-net">—</strong></div></div>
+  <div class="sq-overview-stats" id="sq-overview-stats" aria-label="Tracker balance breakdown"><div class="sq-stat negative"><span>You owe</span><strong id="sq-stat-owe">—</strong></div><div class="sq-stat"><span>Owed to you</span><strong id="sq-stat-owed">—</strong></div><div class="sq-stat neutral"><span>Net balance</span><strong id="sq-stat-net">—</strong></div></div>
   </div>
   <!-- QUICK ACTIONS -->
-  <div class="dashboard-actions" aria-label="Tracker actions">
+  <div class="sq-overview-actions-label"><span>QUICK ACTIONS</span><small>Manage shared expenses and settle balances</small></div><div class="dashboard-actions" aria-label="Tracker actions">
     <button type="button" class="dashboard-action" id="quick-pay-now"><span class="action-icon">↗</span>Pay Now<span class="action-sub">Send via Venmo or Cash App</span></button>
     <button type="button" class="dashboard-action expense" id="quick-expense" aria-expanded="false" aria-controls="entry-card"><span class="action-icon">＋</span>Add Expense<span class="action-sub">Manually add an expense</span></button>
     <button type="button" class="dashboard-action" id="quick-payment" hidden aria-expanded="false" aria-controls="entry-card"><span class="action-icon">▤</span>Log Payment<span class="action-sub">Record a payment you made</span></button>
@@ -2148,10 +2176,10 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
 
 
 
-    <div class="sq-return-grid">
-      <article class="sq-return-panel sq-panel-collapsed"><div class="sq-return-head"><h3>Recent activity</h3><button type="button" data-return-tab="expenses">View all ↗</button><button type="button" class="sq-panel-collapse-toggle" aria-expanded="false" aria-label="Expand Recent activity" title="Expand or collapse Recent activity"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><div id="sq-return-activity" class="sq-return-rows"><p class="sq-return-empty">Loading recent activity…</p></div></article>
+    <div class="sq-overview-details-label"><span>YOUR TRACKER AT A GLANCE</span><small>Live records from this tracker</small></div><div class="sq-return-grid">
+      <article class="sq-return-panel"><div class="sq-return-head"><h3>Recent activity</h3><button type="button" data-return-tab="expenses">View all ↗</button><button type="button" class="sq-panel-collapse-toggle" aria-expanded="true" aria-label="Collapse Recent activity" title="Expand or collapse Recent activity"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><div id="sq-return-activity" class="sq-return-rows"><p class="sq-return-empty">Loading recent activity…</p></div></article>
       <article class="sq-return-panel sq-return-smart-panel sq-panel-collapsed"><div class="sq-return-head"><h3>Smart settle-up</h3><button type="button" class="sq-panel-collapse-toggle" aria-expanded="false" aria-label="Expand Smart settle-up" title="Expand or collapse Smart settle-up"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><div id="sq-return-smart-host"></div></article>
-      <article class="sq-return-panel sq-panel-collapsed"><div class="sq-return-head"><h3>Balances by person</h3><button type="button" data-return-tab="expenses">Who owes whom</button><button type="button" class="sq-panel-collapse-toggle" aria-expanded="false" aria-label="Expand Balances by person" title="Expand or collapse Balances by person"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><div id="sq-return-balances" class="sq-return-rows"><p class="sq-return-empty">Loading balances…</p></div></article>
+      <article class="sq-return-panel"><div class="sq-return-head"><h3>Balances by person</h3><button type="button" data-return-tab="expenses">Who owes whom</button><button type="button" class="sq-panel-collapse-toggle" aria-expanded="true" aria-label="Collapse Balances by person" title="Expand or collapse Balances by person"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><div id="sq-return-balances" class="sq-return-rows"><p class="sq-return-empty">Loading balances…</p></div></article>
       <article class="sq-return-panel sq-panel-collapsed"><div class="sq-return-head"><h3>Tracker members</h3><button type="button" data-return-tab="members">View all ↗</button><button type="button" class="sq-panel-collapse-toggle" aria-expanded="false" aria-label="Expand Tracker members" title="Expand or collapse Tracker members"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><div id="sq-return-members" class="sq-return-rows"><p class="sq-return-empty">Loading tracker members…</p></div></article>
     </div>
   </section>
@@ -2410,7 +2438,7 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
 </section>
 
 <section id="trackers-page" aria-label="Your trackers">
-  <div class="trackers-header"><div><div class="eyebrow">YOUR SHARED SPACES</div><h2>My <span style="color:#60edaf">Trackers</span></h2><p>Keep every group organized. Open, share, or manage a tracker below.</p></div></div>
+  <div class="trackers-header"><div><div class="eyebrow">YOUR SQUAREUP HOME</div><h2>My <span style="color:#60edaf">Trackers</span></h2><p>Your shared financial spaces. Choose a tracker to review balances, take action, or see recent activity.</p></div></div>
   <button type="button" class="sq-feature-btn" id="sq-friends-mobile-link" style="margin:0 0 15px">♧ Friends & Requests</button><h2 class="sq-mobile-trackers-title">Trackers</h2><section id="sq-bills-directory" class="sq-bills-directory" hidden aria-hidden="true" style="display:none!important">
   <button type="button" id="sq-bills-open" hidden tabindex="-1" aria-hidden="true">Open bills</button>
 </section>
