@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "SquareUp with Friends",
-  "short_name": "SquareUp",
+  "name": "DoWeo with Friends",
+  "short_name": "DoWeo",
   "description": "Track shared expenses and settle up with friends.",
   "start_url": "/",
   "scope": "/",
