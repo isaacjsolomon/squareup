@@ -2201,6 +2201,42 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 }
 @media(prefers-reduced-motion:reduce){#auth-modal .sq-auth-field{transition:none}}
 </style>
+
+<style id="sq-full-width-recent-activity-20261106">
+/* Full-width Recent Activity: one grid row beneath both overview columns.
+   The existing activity element is moved in the calm-desktop placement script. */
+@media (min-width:901px){
+ #tracker-dashboard.sq-tab-overview #sq-return-summary>.sq-overview-activity-panel{
+  display:block!important;
+  grid-column:1/-1!important;
+  grid-row:3!important;
+  justify-self:stretch!important;
+  align-self:start!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  min-height:260px!important;
+  height:auto!important;
+  margin:0!important;
+  padding:20px 24px!important;
+  box-sizing:border-box!important;
+  border:1px solid rgba(158,204,218,.23)!important;
+  border-radius:18px!important;
+  background:#112e40!important;
+  box-shadow:none!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary>.sq-overview-activity-panel .sq-return-head{
+  display:flex!important;align-items:center!important;gap:10px!important;
+  margin:0 0 12px!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary>.sq-overview-activity-panel .sq-return-head h3{
+  color:#eff8fc!important;font-size:16px!important;font-weight:730!important;margin-right:auto!important;
+ }
+ #tracker-dashboard.sq-tab-overview #sq-return-summary>.sq-overview-activity-panel .sq-return-rows{
+  display:grid!important;gap:9px!important;width:100%!important;min-width:0!important;
+ }
+}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
@@ -7927,7 +7963,9 @@ body.trackers-view .sq-favorite-toggle[aria-pressed="true"]{background:#123c55!i
  const desktop=window.matchMedia('(min-width:901px)');
  function updatePlacement(){
    if(desktop.matches){
-     if(activity.parentElement!==left)left.append(activity);
+     // Keep the existing activity panel and its listeners, but let it span
+     // both columns beneath quick actions and the right-side overview.
+     if(activity.parentElement!==summary)summary.append(activity);
      actions.querySelectorAll('button.dashboard-action').forEach(stack);
    }else{
      if(activity.parentElement!==right)right.insertBefore(activity,right.firstChild);
