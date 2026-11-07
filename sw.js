@@ -1,6 +1,6 @@
 
 // DoWeo PWA: cache public app assets only. Never cache API/auth/user data.
-const CACHE = 'squareup-public-assets-v1';
+const CACHE = 'doweo-public-assets-v2';
 const ASSETS = [
   '/manifest.webmanifest',
   '/icons/icon-192.png',
@@ -23,7 +23,7 @@ self.addEventListener('activate', event => {
       .then(keys => Promise.all(
         keys
           .filter(key =>
-            key.startsWith('squareup-public-assets-') &&
+            (key.startsWith('squareup-public-assets-') || key.startsWith('doweo-public-assets-')) &&
             key !== CACHE
           )
           .map(key => caches.delete(key))
