@@ -2121,7 +2121,7 @@ html.sq-auth-loading #auth-modal,body.sq-auth-guest #auth-modal,#auth-modal.open
 #auth-modal .sq-auth-field:focus-within{border-color:#10a99a;box-shadow:0 0 0 3px #00c9af21}
 #auth-modal .sq-auth-field>span{flex:none;width:22px;height:22px;color:#1b2b43;display:grid;place-items:center}
 #auth-modal .sq-auth-field svg{width:22px;height:22px}
-#auth-modal .sq-auth-field input{flex:1!important;min-width:0!important;width:100%!important;height:100%!important;display:block;background:transparent!important;border:0!important;box-shadow:none!important;outline:0!important;color:#0b1c34!important;padding:0!important;margin:0!important;font-size:15px!important;border-radius:0!important}
+#auth-modal .sq-auth-field input{flex:1!important;min-width:0!important;width:100%!important;height:100%!important;display:block;background:transparent!important;border:0!important;box-shadow:none!important;outline:0!important;color:#0b1c34!important;padding:0!important;margin:0!important;font-size:16px!important;border-radius:0!important}
 #auth-modal .sq-auth-field input::placeholder{color:#748296!important;opacity:1}
 #auth-modal .sq-auth-field input[hidden]{display:none!important}
 #auth-modal #sq-auth-name-wrap:has(input[hidden]),#auth-modal #sq-auth-email-wrap:has(input[hidden]),#auth-modal #sq-auth-password-wrap:has(input[hidden]){display:none!important}
@@ -2150,7 +2150,7 @@ html.sq-auth-loading #auth-modal,body.sq-auth-guest #auth-modal,#auth-modal.open
 #auth-modal #sq-auth-invite-form{margin:15px 0 0;padding:12px;border:1px solid #dbe8ea;border-radius:12px;background:#f7fbfa}
 #auth-modal #sq-auth-invite-form label{display:block;font-size:13px;font-weight:700;color:#213748;margin-bottom:9px}
 #auth-modal .sq-auth-invite-fields{display:flex;gap:8px}
-#auth-modal #sq-auth-invite-input{width:100%;min-width:0;border:1px solid #c9d9e4;background:white!important;color:#09263c!important;border-radius:8px;padding:11px!important;font-size:13px!important}
+#auth-modal #sq-auth-invite-input{width:100%;min-width:0;border:1px solid #c9d9e4;background:white!important;color:#09263c!important;border-radius:8px;padding:11px!important;font-size:16px!important}
 #auth-modal .sq-auth-invite-fields button{background:#006d65;color:#fff;border:0;border-radius:8px;padding:0 14px;font-weight:750;cursor:pointer}
 #auth-modal #sq-auth-invite-error{font-size:12px;color:#a31e38;margin:9px 0 0}
 #auth-modal .sq-auth-legal-footer{font-size:12px;line-height:1.5;color:#93a0b2;text-align:center;max-width:540px;margin:0 auto}
@@ -2733,7 +2733,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
      <button type="button" id="tab-signup">Create account</button>
     </div>
     <form id="auth-form">
-     <div class="sq-auth-field" id="sq-auth-name-wrap"><span aria-hidden="true">♙</span><input id="auth-name" aria-label="Your name" placeholder="Your name" autocomplete="name" hidden></div>
+     <div class="sq-auth-field" id="sq-auth-name-wrap" hidden><span aria-hidden="true">♙</span><input id="auth-name" aria-label="Your name" placeholder="Your name" autocomplete="name" hidden></div>
      <div class="sq-auth-field" id="sq-auth-email-wrap"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></span><input id="auth-email" type="email" aria-label="Email address" placeholder="Email address" autocomplete="email" required></div>
      <div class="sq-auth-field" id="sq-auth-password-wrap"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><input id="auth-password" type="password" aria-label="Password" placeholder="Password" autocomplete="current-password" required minlength="6"><button type="button" id="sq-auth-eye" aria-label="Show password" aria-pressed="false">Show</button></div>
      <div class="sq-auth-forgot-row"><button type="button" class="link-btn" id="auth-forgot">Forgot password?</button></div>
