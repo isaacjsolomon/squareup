@@ -1,5 +1,5 @@
 
-// SquareUp PWA: cache public app assets only. Never cache API/auth/user data.
+// DoWeo PWA: cache public app assets only. Never cache API/auth/user data.
 const CACHE = 'squareup-public-assets-v1';
 const ASSETS = [
   '/manifest.webmanifest',
@@ -57,7 +57,7 @@ self.addEventListener('push', event => {
 
   event.waitUntil(
     self.registration.showNotification(
-      payload.title || 'SquareUp',
+      payload.title || 'DoWeo',
       {
         body: payload.body || 'You have new activity.',
         icon: '/icons/icon-192.png',
@@ -70,7 +70,7 @@ self.addEventListener('push', event => {
   );
 });
 
-// Open SquareUp when a notification is tapped.
+// Open DoWeo when a notification is tapped.
 self.addEventListener('notificationclick', event => {
   event.notification.close();
 
