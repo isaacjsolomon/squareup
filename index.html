@@ -10970,13 +10970,19 @@ async function drawWorkspace(){
   if(!activeId){
     openedWorkspaces[type]=null;
     const priority=t=>{
-      let n=-1;
-      try{const raw=localStorage.getItem('sq_tracker_template_'+t.id);if(raw!==null)n=Number(raw)}catch(_){}
-      const name=String(t.name||'').toLowerCase();
+      // Show only trackers explicitly created with a matching template or
+      // trackers that already contain saved plans of this workspace type.
+      // A general tracker (including one with "trip" in its name) is not included.
+      let template=-1;
+      try{
+        const raw=localStorage.getItem('sq_tracker_template_'+t.id);
+        if(raw!==null && raw!=='')template=Number(raw);
+      }catch(_){}
       const hasPlans=items.some(x=>x.tracker_id===t.id);
-      return hasPlans?3:isTrip?([1,2,3,5].includes(n)||/trip|vacation|travel|holiday|getaway|camping|flight|beach/i.test(name)?2:0):([0,4].includes(n)||/home|household|roommate|apartment|family|rent|house/i.test(name)?2:0);
+      const templateMatches=isTrip?[1,2,3,5].includes(template):[0,4].includes(template);
+      return hasPlans?3:templateMatches?2:0;
     };
-    const ordered=trackers.slice().sort((a,b)=>priority(b)-priority(a));
+    const ordered=trackers.filter(t=>priority(t)>0).sort((a,b)=>priority(b)-priority(a));
     const itemCount=id=>items.filter(x=>x.tracker_id===id).length;
     const heading=isTrip?'Your trips':'Your households';
     content.innerHTML=`<section class="sq-ng-workspace-directory" aria-label="${heading}">
@@ -10989,7 +10995,7 @@ async function drawWorkspace(){
         <div><input id="sq-ng-workspace-name" name="name" maxlength="90" required placeholder="${isTrip?'e.g. Summer vacation':'e.g. Our apartment'}" autocomplete="off"><button type="submit">Create ${workspaceName}</button><button type="button" id="sq-ng-workspace-cancel">Cancel</button></div>
         <p>A separate shared tracker will be created for this ${workspaceName}. You can add people from Trackers.</p>
       </form>
-      ${ordered.length?`<div class="sq-ng-workspace-directory-grid">${ordered.map(t=>`<article class="sq-ng-workspace-directory-card"><div class="sq-ng-workspace-cover"><span aria-hidden="true">${isTrip?'✈':'⌂'}</span><small>${priority(t)>0?'LINKED '+workspaceName.toUpperCase():'AVAILABLE TRACKER'}</small></div><div class="sq-ng-workspace-card-body"><h3>${esc(t.name||'Untitled tracker')}</h3><div class="sq-ng-workspace-card-meta"><span>${Number(t.memberCount)||1} ${Number(t.memberCount)===1?'member':'members'}</span><span>${itemCount(t.id)} saved ${itemCount(t.id)===1?'item':'items'}</span></div><button type="button" class="sq-ng-workspace-open" data-ng-workspace-open="${esc(t.id)}">Open ${workspaceName} <span aria-hidden="true">→</span></button></div></article>`).join('')}</div>`:`<div class="sq-ng-workspace-empty"><h3>No trackers yet</h3><p>Create your first ${workspaceName}, then invite people and start adding plans.</p></div>`}
+      ${ordered.length?`<div class="sq-ng-workspace-directory-grid">${ordered.map(t=>`<article class="sq-ng-workspace-directory-card"><div class="sq-ng-workspace-cover"><span aria-hidden="true">${isTrip?'✈':'⌂'}</span><small>${priority(t)>0?'LINKED '+workspaceName.toUpperCase():'AVAILABLE TRACKER'}</small></div><div class="sq-ng-workspace-card-body"><h3>${esc(t.name||'Untitled tracker')}</h3><div class="sq-ng-workspace-card-meta"><span>${Number(t.memberCount)||1} ${Number(t.memberCount)===1?'member':'members'}</span><span>${itemCount(t.id)} saved ${itemCount(t.id)===1?'item':'items'}</span></div><button type="button" class="sq-ng-workspace-open" data-ng-workspace-open="${esc(t.id)}">Open ${workspaceName} <span aria-hidden="true">→</span></button></div></article>`).join('')}</div>`:`<div class="sq-ng-workspace-empty"><h3>No ${workspacePlural} saved yet</h3><p>Create your first ${workspaceName} here, or create a matching ${isTrip?'Vacation, School Trip, Weekend Getaway, or Camping Trip':'Roommates or Shared Household'} tracker from Trackers.</p></div>`}
       <p class="sq-ng-workspace-note">Each space uses an existing SquareUp tracker. Opening a tracker here does not change the balances or expenses in other trackers.</p>
      </section>`;
     content.querySelectorAll('[data-ng-workspace-open]').forEach(button=>button.addEventListener('click',()=>{
