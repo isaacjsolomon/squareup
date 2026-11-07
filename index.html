@@ -11525,6 +11525,10 @@ body.sq-action-dialog-open{overflow:hidden!important}
  .sq-balanced-actions strong{display:block;font-size:15px}.sq-balanced-actions small{display:block;color:#b3cad6;font-size:12px;margin-top:3px}
  .sq-balanced-more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
  .sq-balanced-more-grid button{min-width:0;min-height:95px;flex-direction:column;align-items:flex-start;justify-content:center}
+ #sq-mobile-more-sheet .sq-balanced-logout{width:100%;min-height:60px;display:flex;align-items:center;justify-content:center;gap:12px;margin-top:20px;padding:14px 20px;border:1px solid #f87171;border-radius:15px;background:linear-gradient(120deg,#be123c,#e11d48);color:#fff;font:inherit;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 24px #7f1d1d30}
+ #sq-mobile-more-sheet .sq-balanced-logout svg{width:22px;height:22px;flex:none;stroke:currentColor}
+ #sq-mobile-more-sheet .sq-balanced-logout:active{background:#9f1239;transform:translateY(1px)}
+ #sq-mobile-more-sheet .sq-balanced-logout:focus-visible{outline:3px solid #fff;outline-offset:3px}
 }
 @media(min-width:901px){#sq-balanced-add-sheet,#sq-mobile-more-sheet{display:none!important}}
 </style>
@@ -11554,6 +11558,7 @@ body.sq-action-dialog-open{overflow:hidden!important}
    <button type="button" data-sq-destination="nav-friends"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2"/><path d="M18 8v8M14 12h8"/></svg></span><strong>Friends</strong></button>
    <button type="button" data-sq-destination="sq-finance-nav"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7 16v-4m5 4V8m5 8v-6"/><path d="M6.5 6.5h2"/></svg></span><strong>Finance Hub</strong></button>
   </div>
+  <button type="button" id="sq-mobile-more-logout" class="sq-balanced-logout"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3"/><path d="M12 3h6a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3h-6"/></svg><span>Log out</span></button>
  </section>
 </div>
 <script id="sq-balanced-mobile-script">
@@ -11573,6 +11578,12 @@ body.sq-action-dialog-open{overflow:hidden!important}
    const link=e.target.closest('[data-sq-destination]');
    if(link){const id=link.dataset.sqDestination;close();const target=document.getElementById(id);if(target&&!target.hidden)target.click();else if(id==='nav-friends'){document.querySelector('[data-sq-tab="members"]')?.click();}return}
   });
+ });
+ document.getElementById('sq-mobile-more-logout')?.addEventListener('click',function(){
+  const signOut=document.getElementById('btn-logout');
+  if(!signOut){return;}
+  close();
+  signOut.click(); // Reuse existing Supabase sign-out and guest-screen flow.
  });
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&(!add.hidden||!more.hidden))close()});
 })();
