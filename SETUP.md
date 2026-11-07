@@ -1,6 +1,6 @@
-# SquareUp Cloudflare + Supabase migration (test version)
+# DoWeo Cloudflare + Supabase migration (test version)
 
-This is a **test build** of the existing SquareUp interface. Netlify Identity has been replaced with Supabase Auth. A Cloudflare Pages Function provides compatible `/api/*` routes using Supabase database and private Storage buckets.
+This is a **test build** of the existing DoWeo interface. Netlify Identity has been replaced with Supabase Auth. A Cloudflare Pages Function provides compatible `/api/*` routes using Supabase database and private Storage buckets.
 
 **Not a one-click drag-and-drop upload.** Cloudflare Pages drag-and-drop does not compile/deploy the `functions/` folder. Deploy through **Cloudflare Pages Git integration** (recommended), or use Wrangler Pages Functions build/deploy. Do not drag this ZIP onto the Pages upload screen and expect the API to work.
 
