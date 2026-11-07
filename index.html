@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="sq-auth-loading">
 <head>
   
 <link rel="icon" type="image/png" href="/icons/icon-192.png">
@@ -2025,6 +2025,182 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
 </style>
 
 
+
+<style id="sq-dedicated-auth-design-20261106">
+/* A full-screen auth destination, independent of the underlying tracker dashboard. */
+html.sq-auth-loading,body.sq-auth-guest{overflow:hidden!important}
+body.sq-auth-guest #guest-auth-button{display:none!important}
+#auth-modal{
+ position:fixed!important;inset:0!important;z-index:2147482800!important;
+ display:none;align-items:stretch!important;justify-content:stretch!important;
+ margin:0!important;padding:0!important;overflow:auto!important;overscroll-behavior:contain;
+ background:#fff!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+html.sq-auth-loading #auth-modal,body.sq-auth-guest #auth-modal,#auth-modal.open{display:block!important}
+#auth-modal [hidden]{display:none!important}
+#auth-modal .sq-auth-layout{display:grid!important;grid-template-columns:minmax(0,1.05fr) minmax(470px,.95fr);
+ width:100%!important;max-width:none!important;min-height:100vh;min-height:100dvh;
+ position:relative!important;margin:0!important;padding:0!important;background:#fff!important;
+ box-shadow:none!important;border:0!important;border-radius:0!important;color:#0d1930!important}
+#auth-modal .sq-auth-hero{position:relative;isolation:isolate;overflow:hidden;min-height:720px;
+ background:radial-gradient(circle at 50% 25%,#0d5472 0%,#083b58 30%,#062743 57%,#00152b 92%);color:#fff}
+#auth-modal .sq-auth-aura{position:absolute;pointer-events:none;z-index:-1;border-radius:50%}
+#auth-modal .sq-auth-aura-top{width:700px;height:340px;top:-250px;left:-120px;transform:rotate(-12deg);background:linear-gradient(125deg,#0bbba8,#59f4dd);box-shadow:0 0 55px #1ce1c447}
+#auth-modal .sq-auth-aura-bottom{width:450px;height:450px;right:-240px;bottom:50px;background:radial-gradient(circle at 25% 20%,#42e6d5,transparent 70%);opacity:.45}
+#auth-modal .sq-auth-visual{height:min(65vh,610px);min-height:410px;position:absolute;left:0;right:0;top:0;pointer-events:none;
+ background:radial-gradient(circle at 35% 56%,#2674a047,transparent 55%);}
+#auth-modal .sq-auth-phone{position:absolute;left:34%;top:7%;height:86%;width:35%;border:4px solid #4ff3ef;
+ border-right-color:#00536e;border-bottom-color:#0b5069;border-radius:37px;transform:rotate(7deg);
+ box-shadow:0 0 0 7px #072d48,0 25px 66px #000b,0 0 24px #5cf8f54d;
+ background:#021d32;padding:12px;overflow:hidden}
+#auth-modal .sq-auth-phone-camera{position:absolute;top:8px;left:calc(50% - 5px);width:10px;height:10px;background:#02111f;border-radius:50%;z-index:2}
+#auth-modal .sq-auth-phone-screen{height:100%;width:100%;border-radius:25px;background:linear-gradient(#073553,#032540);padding:19px 11px;color:#edf9ff;overflow:hidden}
+#auth-modal .sq-auth-phone-top{display:flex;align-items:center;gap:8px;margin:11px 0 15px;font-size:10px}
+#auth-modal .sq-auth-phone-sun{width:32px;height:35px;display:grid;place-items:center;background:#218bbb;border-radius:8px}
+#auth-modal .sq-auth-phone-top div{display:flex;flex-direction:column;gap:2px}
+#auth-modal .sq-auth-phone-top small{color:#b7cfdc;font-size:8px}
+#auth-modal .sq-auth-phone-dot{margin-left:auto;border-radius:30px;background:#234b65;padding:5px;font-size:10px}
+#auth-modal .sq-auth-phone-balance{position:relative;padding:13px 12px;border-radius:14px;background:linear-gradient(135deg,#1a797c,#10a89b);border:1px solid #50f5cc;box-shadow:0 14px 26px #0004}
+#auth-modal .sq-auth-phone-balance small{display:block;font-size:8px}
+#auth-modal .sq-auth-phone-balance strong{display:block;font-size:21px;margin:5px 0}
+#auth-modal .sq-auth-phone-balance span{display:block;font-size:8px}
+#auth-modal .sq-auth-phone-balance i{position:absolute;right:10px;top:38%;background:#28d8b1;color:#fff;border-radius:50%;width:29px;height:29px;display:grid;place-items:center;font-style:normal;font-size:18px}
+#auth-modal .sq-auth-phone-activity{margin:19px 0 10px;font-size:10px;font-weight:700}
+#auth-modal .sq-auth-phone-entry{display:flex;align-items:center;gap:7px;background:#12405c;margin:5px 0;border-radius:9px;padding:7px 6px}
+#auth-modal .sq-auth-phone-entry>span{width:26px;height:26px;border-radius:7px;background:#1d4e6d;display:grid;place-items:center}
+#auth-modal .sq-auth-phone-entry div{display:flex;flex-direction:column;gap:3px;min-width:0}
+#auth-modal .sq-auth-phone-entry b{font-size:9px}
+#auth-modal .sq-auth-phone-entry small{font-size:7px;color:#b3cddd}
+#auth-modal .sq-auth-phone-entry strong{font-size:9px;margin-left:auto}
+#auth-modal .sq-auth-glass{position:absolute;display:flex;flex-direction:column;gap:6px;
+ background:linear-gradient(140deg,#71c8e357,#0b577c9a 70%,#09304ba3);
+ border:1px solid #8ddef0a8;box-shadow:0 25px 44px #0005,inset 0 1px 0 #ffffff59;
+ backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#f2fcff;border-radius:21px;transform:rotate(-7deg)}
+#auth-modal .sq-auth-card-split{top:31%;left:6%;width:27%;padding:19px;transform:rotate(-7deg)}
+#auth-modal .sq-auth-card-split small{font-size:12px;font-weight:600}
+#auth-modal .sq-auth-card-split strong{font-size:25px}
+#auth-modal .sq-auth-card-split>span:not(.sq-auth-mini-icon){font-size:10px;color:#c4e1ed}
+#auth-modal .sq-auth-mini-icon{color:#a7fff6;font-size:24px}
+#auth-modal .sq-auth-avatars{display:flex;margin-top:11px}
+#auth-modal .sq-auth-avatars i{font-style:normal;display:grid;place-items:center;width:27px;height:27px;border:2px solid #b8d9e4;border-radius:50%;background:#327c98;margin-right:-6px;font-size:11px;font-weight:700}
+#auth-modal .sq-auth-avatars i:nth-child(2){background:#95766c}#auth-modal .sq-auth-avatars i:nth-child(3){background:#266c8b}#auth-modal .sq-auth-avatars i:nth-child(4){background:#8a7796}
+#auth-modal .sq-auth-card-reminder{top:20%;right:6%;width:29%;padding:15px 17px;transform:rotate(8deg)}
+#auth-modal .sq-auth-card-reminder small{font-size:11px;font-weight:700}
+#auth-modal .sq-auth-card-reminder span{font-size:10px;color:#c7ebed}
+#auth-modal .sq-auth-card-reminder strong{font-size:24px;color:#53efc8}
+#auth-modal .sq-auth-card-reminder b{position:absolute;right:14px;bottom:18px;font-size:22px}
+#auth-modal .sq-auth-card-overview{top:47%;right:5%;width:29%;padding:17px;transform:rotate(-5deg)}
+#auth-modal .sq-auth-card-overview small{font-size:12px;font-weight:750}
+#auth-modal .sq-auth-card-overview>span{font-size:10px;color:#b1d4e1}
+#auth-modal .sq-auth-bars{height:63px;display:flex;align-items:end;gap:7px;margin:5px 0 9px}
+#auth-modal .sq-auth-bars i{display:block;width:15%;height:18%;background:linear-gradient(#59f7e4,#29b7ed);border-radius:4px}
+#auth-modal .sq-auth-bars i:nth-child(2){height:32%}#auth-modal .sq-auth-bars i:nth-child(3){height:54%}#auth-modal .sq-auth-bars i:nth-child(4){height:71%}#auth-modal .sq-auth-bars i:nth-child(5){height:96%;background:linear-gradient(#54f9c7,#1dd0a4)}
+#auth-modal .sq-auth-overview-row{display:flex;justify-content:space-between;font-size:10px;color:#d4e8f2;margin:3px 0}
+#auth-modal .sq-auth-overview-row b{font-size:10px;color:#6bffda}
+#auth-modal .sq-auth-hero-bottom{position:absolute;bottom:0;left:0;right:0;z-index:2;padding:20px clamp(25px,5%,58px) 22px;background:linear-gradient(0deg,#00172d 0%,#00243ab8 70%,transparent)}
+#auth-modal .sq-auth-tag{display:inline-flex;align-items:center;padding:7px 12px;border:1px solid #2cd5ba85;border-radius:50px;background:#0a767575;color:#c9fff5;font-size:12px;font-weight:700}
+#auth-modal .sq-auth-hero-bottom h2{font-size:clamp(32px,3.1vw,56px);font-weight:850;line-height:1.09;letter-spacing:-.035em;margin:19px 0 15px;color:#fff!important}
+#auth-modal .sq-auth-hero-bottom h2 span{color:#46e7d4}
+#auth-modal .sq-auth-hero-bottom>p{font-size:clamp(13px,1.25vw,18px);line-height:1.55;max-width:600px;margin:0 0 28px;color:#e1f2fa!important}
+#auth-modal .sq-auth-feature-strip{border-top:1px solid #ffffff48;padding-top:22px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;color:#ddf8fb;font-size:11px;font-weight:700}
+#auth-modal .sq-auth-feature-strip span{text-align:center;border-right:1px solid #ffffff38;padding:3px}
+#auth-modal .sq-auth-feature-strip span:last-child{border:0}
+#auth-modal .sq-auth-right{min-height:100dvh;position:relative;display:flex;flex-direction:column;background:#fff;padding:34px clamp(35px,5.5vw,100px) 34px;color:#07172c}
+#auth-modal .sq-auth-brand{display:flex;align-items:center;gap:10px;font-size:26px;letter-spacing:-.035em;color:#07172c;font-weight:850;align-self:flex-start}
+#auth-modal .sq-auth-brand img{width:38px;height:38px;border-radius:10px;object-fit:contain}
+#auth-modal .sq-auth-form-panel{width:100%;max-width:510px;margin:auto;flex:none;padding:45px 0}
+#auth-modal .sq-auth-form-panel h1{margin:0 0 11px;font-size:clamp(29px,2.6vw,43px);font-weight:850;letter-spacing:-.04em;line-height:1.13;color:#07172c!important;text-align:center}
+#auth-modal #sq-auth-subtitle{margin:0 0 35px;color:#617089!important;text-align:center;font-size:16px;line-height:1.5}
+#auth-modal #auth-join{background:#e4f9f4;color:#0b5952;border:1px solid #8bdccf;border-radius:12px;padding:12px 14px;font-weight:650;font-size:13px;margin:0 0 18px}
+#auth-modal #auth-tabs{display:flex!important;gap:4px;border:1px solid #dce5ec;background:#f7f9fb;border-radius:14px;padding:4px;margin-bottom:25px;box-shadow:0 1px 3px #08203410}
+#auth-modal #auth-tabs[hidden]{display:none!important}
+#auth-modal #auth-tabs button{appearance:none;flex:1;min-width:0;background:transparent!important;border:0!important;box-shadow:none!important;padding:12px 8px;color:#11223a!important;border-radius:10px;font-size:15px;font-weight:740;cursor:pointer}
+#auth-modal #auth-tabs button.active{background:linear-gradient(100deg,#05526c,#073348)!important;color:#fff!important;box-shadow:0 3px 8px #0b2b3d30!important}
+#auth-modal #auth-form{display:flex;flex-direction:column;gap:14px;margin:0}
+#auth-modal .sq-auth-field{display:flex;align-items:center;gap:12px;border:1px solid #ced7e2;background:#fbfcfe;border-radius:13px;height:55px;padding:0 15px;transition:border-color .15s,box-shadow .15s}
+#auth-modal .sq-auth-field:focus-within{border-color:#10a99a;box-shadow:0 0 0 3px #00c9af21}
+#auth-modal .sq-auth-field>span{flex:none;width:22px;height:22px;color:#1b2b43;display:grid;place-items:center}
+#auth-modal .sq-auth-field svg{width:22px;height:22px}
+#auth-modal .sq-auth-field input{flex:1!important;min-width:0!important;width:100%!important;height:100%!important;display:block;background:transparent!important;border:0!important;box-shadow:none!important;outline:0!important;color:#0b1c34!important;padding:0!important;margin:0!important;font-size:15px!important;border-radius:0!important}
+#auth-modal .sq-auth-field input::placeholder{color:#748296!important;opacity:1}
+#auth-modal .sq-auth-field input[hidden]{display:none!important}
+#auth-modal #sq-auth-name-wrap:has(input[hidden]),#auth-modal #sq-auth-email-wrap:has(input[hidden]),#auth-modal #sq-auth-password-wrap:has(input[hidden]){display:none!important}
+#auth-modal .sq-auth-forgot-row{text-align:right;margin:-4px 0 1px}
+#auth-modal #auth-forgot{background:transparent!important;border:0!important;box-shadow:none!important;color:#098e82!important;font-size:13px!important;padding:4px 0!important;text-decoration:none!important;cursor:pointer}
+#auth-modal #sq-auth-eye{background:none!important;border:0!important;color:#5f7384!important;font-size:12px!important;font-weight:700!important;padding:8px 0 8px 8px;cursor:pointer}
+#auth-modal #auth-msg{margin:0!important;line-height:1.4;font-size:13px!important;min-height:0!important;color:#2d6081!important}
+#auth-modal #auth-msg:empty{display:none}
+#auth-modal #auth-msg.error{color:#b62045!important;background:#fff0f3;border-radius:8px;padding:9px}
+#auth-modal #auth-msg.ok{color:#00785b!important;background:#e8faf2;border-radius:8px;padding:9px}
+#auth-modal #auth-submit{display:flex!important;justify-content:center;align-items:center;gap:12px;
+ width:100%!important;min-height:55px!important;background:linear-gradient(100deg,#0eb6a2,#00796c)!important;color:white!important;
+ border:0!important;border-radius:13px!important;box-shadow:0 8px 22px #05978920!important;font-size:16px!important;font-weight:750!important;cursor:pointer}
+#auth-modal #auth-submit[hidden]{display:none!important}
+#auth-modal #auth-submit:disabled{opacity:.6;cursor:wait}
+#auth-modal #sq-auth-alternative{height:50px;border-radius:13px;background:linear-gradient(100deg,#edfaf9,#e2f5f3);border:1px solid #bcece6;color:#14263b;font-size:15px;font-weight:700;cursor:pointer}
+#auth-modal #sq-auth-alternative[hidden]{display:none!important}
+#auth-modal #sq-auth-swap-copy{text-align:center;font-size:13px;color:#728095!important;margin:0}
+#auth-modal #sq-auth-swap{background:none;border:0;color:#0a9286;font:inherit;font-weight:750;text-decoration:underline;cursor:pointer;padding:2px}
+#auth-modal #sq-auth-legal-note{font-size:12px!important;line-height:1.5;color:#65778b!important;margin:1px 0!important}
+#auth-modal .sq-legal-inline{color:#088e81!important;text-decoration:underline;background:none!important;border:0!important;padding:0!important;font:inherit!important;cursor:pointer}
+#auth-modal .sq-auth-divider{display:flex;align-items:center;gap:16px;margin:21px 0 23px;color:#55657a;font-size:15px}
+#auth-modal .sq-auth-divider:before,#auth-modal .sq-auth-divider:after{content:"";flex:1;height:1px;background:#d7e1e8}
+#auth-modal #sq-auth-invite{width:100%;min-height:52px;padding:12px;border-radius:13px;border:1px solid #bce8e5;background:#e0f5f4;color:#10263a;font:inherit;font-size:15px;font-weight:750;cursor:pointer}
+#auth-modal #sq-auth-invite>span{font-size:20px;margin-right:12px}
+#auth-modal #sq-auth-invite-form{margin:15px 0 0;padding:12px;border:1px solid #dbe8ea;border-radius:12px;background:#f7fbfa}
+#auth-modal #sq-auth-invite-form label{display:block;font-size:13px;font-weight:700;color:#213748;margin-bottom:9px}
+#auth-modal .sq-auth-invite-fields{display:flex;gap:8px}
+#auth-modal #sq-auth-invite-input{width:100%;min-width:0;border:1px solid #c9d9e4;background:white!important;color:#09263c!important;border-radius:8px;padding:11px!important;font-size:13px!important}
+#auth-modal .sq-auth-invite-fields button{background:#006d65;color:#fff;border:0;border-radius:8px;padding:0 14px;font-weight:750;cursor:pointer}
+#auth-modal #sq-auth-invite-error{font-size:12px;color:#a31e38;margin:9px 0 0}
+#auth-modal .sq-auth-legal-footer{font-size:12px;line-height:1.5;color:#93a0b2;text-align:center;max-width:540px;margin:0 auto}
+#auth-modal .sq-auth-legal-footer button{border:0;padding:0;background:none;color:#0a9a8b;font:inherit;text-decoration:underline;cursor:pointer}
+#auth-modal #auth-close{position:absolute;z-index:4;top:18px;right:22px;background:#e9f4f6!important;color:#284457!important;border:0!important;border-radius:50%;width:34px;height:34px;font-size:22px;cursor:pointer}
+body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!important}
+#auth-modal :is(button,input):focus-visible{outline:3px solid #21ccb4!important;outline-offset:3px}
+@media(max-width:1180px){
+ #auth-modal .sq-auth-layout{grid-template-columns:minmax(0,1fr) minmax(390px,1fr)}
+ #auth-modal .sq-auth-right{padding:24px 40px}
+ #auth-modal .sq-auth-hero-bottom h2{font-size:clamp(30px,3vw,43px)}
+ #auth-modal .sq-auth-hero-bottom>p{font-size:14px}
+}
+@media(max-width:850px){
+ #auth-modal .sq-auth-layout{grid-template-columns:minmax(0,1fr);min-height:100dvh}
+ #auth-modal .sq-auth-hero{min-height:235px;height:235px;overflow:hidden}
+ #auth-modal .sq-auth-visual{height:240px;min-height:0;left:42%;top:-60px;opacity:.68}
+ #auth-modal .sq-auth-phone{left:21%;top:0;width:40%;height:116%;transform:rotate(9deg)}
+ #auth-modal .sq-auth-glass{transform:scale(.75)!important}
+ #auth-modal .sq-auth-card-split{top:30%;left:0}
+ #auth-modal .sq-auth-card-reminder{top:8%;right:1%}
+ #auth-modal .sq-auth-card-overview{top:55%;right:0}
+ #auth-modal .sq-auth-hero-bottom{inset:0 auto 0 0;display:flex;flex-direction:column;justify-content:center;padding:20px 25px;background:linear-gradient(90deg,#001d33 0%,#002a41ec 52%,transparent 100%);max-width:76%}
+ #auth-modal .sq-auth-hero-bottom h2{font-size:clamp(24px,5.5vw,34px);margin:10px 0}
+ #auth-modal .sq-auth-hero-bottom>p{max-width:320px;margin:0;font-size:12px}
+ #auth-modal .sq-auth-feature-strip{display:none}
+ #auth-modal .sq-auth-tag{font-size:10px;padding:5px 9px}
+ #auth-modal .sq-auth-right{min-height:calc(100dvh - 235px);padding:20px max(22px,5vw) 32px}
+ #auth-modal .sq-auth-brand{font-size:23px}
+ #auth-modal .sq-auth-brand img{width:33px;height:33px}
+ #auth-modal .sq-auth-form-panel{padding:35px 0;max-width:510px}
+ #auth-modal .sq-auth-form-panel h1{font-size:clamp(27px,6vw,38px)}
+}
+@media(max-width:520px){
+ #auth-modal .sq-auth-hero{height:200px;min-height:200px}
+ #auth-modal .sq-auth-hero-bottom{max-width:100%;padding:15px 20px;background:linear-gradient(90deg,#001e36f2 0%,#002b45d5 57%,#002b4522 100%)}
+ #auth-modal .sq-auth-hero-bottom h2{font-size:28px}
+ #auth-modal .sq-auth-hero-bottom>p{max-width:285px;font-size:11px}
+ #auth-modal .sq-auth-tag{font-size:10px}
+ #auth-modal .sq-auth-right{min-height:calc(100dvh - 200px);padding:18px 19px 26px}
+ #auth-modal .sq-auth-form-panel{padding:28px 0}
+ #auth-modal .sq-auth-form-panel h1{font-size:29px}
+ #auth-modal #sq-auth-subtitle{font-size:13px;margin-bottom:22px}
+ #auth-modal #auth-tabs{margin-bottom:18px}
+ #auth-modal #auth-form{gap:11px}
+ #auth-modal .sq-auth-field{height:50px}
+ #auth-modal .sq-auth-legal-footer{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){#auth-modal .sq-auth-field{transition:none}}
+</style>
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading Square Up">
@@ -2516,25 +2692,68 @@ body:not(.auth-mode){background:radial-gradient(ellipse 65% 40% at 78% 0%,rgba(2
 <h3>No financial advice or debt collection</h3><p>SquareUp does not provide financial, tax, or legal advice, and it does not collect debts or resolve disputes between users.</p>
 </div></template>
 
-<!-- AUTH MODAL -->
+<!-- DEDICATED SQUAREUP AUTHENTICATION EXPERIENCE -->
 <div class="modal-bg" id="auth-modal">
-  <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
-    <button type="button" class="close" id="auth-close" aria-label="Close">×</button>
-    <h2 id="auth-title">Log in</h2>
-    <div class="join-banner" id="auth-join" hidden>You've been invited to a shared tracker. Log in or create an account to join.</div>
-    <div class="toggle" id="auth-tabs">
-      <button type="button" id="tab-login" class="active">Log in</button>
-      <button type="button" id="tab-signup">Create account</button>
+ <div class="sq-auth-layout" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+  <section class="sq-auth-hero" aria-label="Discover SquareUp">
+   <div class="sq-auth-aura sq-auth-aura-top" aria-hidden="true"></div>
+   <div class="sq-auth-aura sq-auth-aura-bottom" aria-hidden="true"></div>
+   <div class="sq-auth-visual" aria-hidden="true">
+    <div class="sq-auth-phone">
+     <div class="sq-auth-phone-camera"></div>
+     <div class="sq-auth-phone-screen">
+      <div class="sq-auth-phone-top"><span class="sq-auth-phone-sun">🌴</span><div><strong>Weekend Trip</strong><small>♧ 4 members</small></div><span class="sq-auth-phone-dot">•••</span></div>
+      <div class="sq-auth-phone-balance"><small>Group balance</small><strong>+$76.50</strong><span>You're all settled up!</span><i>✓</i></div>
+      <div class="sq-auth-phone-activity">Recent activity</div>
+      <div class="sq-auth-phone-entry"><span>♜</span><div><b>Dinner</b><small>Paid by Alex</small></div><strong>$58.00</strong></div>
+      <div class="sq-auth-phone-entry"><span>▤</span><div><b>Hotel</b><small>Paid by Taylor</small></div><strong>$240.00</strong></div>
+      <div class="sq-auth-phone-entry"><span>▰</span><div><b>Rideshare</b><small>Paid by Jordan</small></div><strong>$26.40</strong></div>
+     </div>
+    </div>
+    <div class="sq-auth-glass sq-auth-card-split"><span class="sq-auth-mini-icon">▤</span><small>Split bill</small><strong>$124.00</strong><span>Split 4 ways</span><div class="sq-auth-avatars"><i>A</i><i>J</i><i>T</i><i>M</i></div></div>
+    <div class="sq-auth-glass sq-auth-card-reminder"><small>◉ &nbsp;Payment reminder</small><span>Jordan owes you</span><strong>$32.00</strong><b aria-hidden="true">›</b></div>
+    <div class="sq-auth-glass sq-auth-card-overview"><small>Your overview</small><span>This month</span><div class="sq-auth-bars"><i></i><i></i><i></i><i></i><i></i></div><div class="sq-auth-overview-row">↗ &nbsp; You paid <b>$318.40</b></div><div class="sq-auth-overview-row">↘ &nbsp; You're owed <b>$150.00</b></div></div>
+   </div>
+   <div class="sq-auth-hero-bottom">
+    <div class="sq-auth-tag">◇ &nbsp; Smarter shared money</div>
+    <h2>Split expenses. Settle up.<br><span>Stay friends.</span></h2>
+    <p>Track shared balances, pay people back, split bills, and keep every group organized in one place.</p>
+    <div class="sq-auth-feature-strip"><span>▥ &nbsp; Trackers</span><span>ϟ &nbsp; Pay Now</span><span>♧ &nbsp; Split a Bill</span><span>◈ &nbsp; Finance Hub</span></div>
+   </div>
+  </section>
+  <section class="sq-auth-right" aria-label="Sign in or create your SquareUp account">
+   <button type="button" class="close" id="auth-close" aria-label="Close account screen">×</button>
+   <div class="sq-auth-brand"><img src="/icons/icon-192.png" width="46" height="46" alt="SquareUp logo"><strong>SquareUp</strong></div>
+   <div class="sq-auth-form-panel">
+    <h1 id="auth-title">Welcome to SquareUp</h1>
+    <p id="sq-auth-subtitle">Sign in to your account or create a new one to get started.</p>
+    <div class="join-banner" id="auth-join" hidden>You've been invited to a shared tracker. Sign in or create an account to join.</div>
+    <div class="toggle" id="auth-tabs" role="group" aria-label="Account access">
+     <button type="button" id="tab-login" class="active">Sign in</button>
+     <button type="button" id="tab-signup">Create account</button>
     </div>
     <form id="auth-form">
-      <input id="auth-name" placeholder="Your name" autocomplete="name" hidden>
-      <input id="auth-email" type="email" placeholder="Email" autocomplete="email" required>
-      <input id="auth-password" type="password" placeholder="Password" autocomplete="current-password" required minlength="6">
-      <p id="sq-auth-legal-note" style="font-size:12px;line-height:1.5;color:#bdd3e4" hidden>Before creating an account, review the <button type="button" class="sq-legal-inline" data-open-legal="terms">Terms of Service</button> and <button type="button" class="sq-legal-inline" data-open-legal="privacy">Privacy Policy</button>. These are drafts pending review.</p><div class="msg" id="auth-msg"></div>
-      <button class="primary" type="submit" id="auth-submit">Log in</button>
-      <div style="text-align:center"><button type="button" class="link-btn" id="auth-forgot">Forgot password?</button></div>
+     <div class="sq-auth-field" id="sq-auth-name-wrap"><span aria-hidden="true">♙</span><input id="auth-name" aria-label="Your name" placeholder="Your name" autocomplete="name" hidden></div>
+     <div class="sq-auth-field" id="sq-auth-email-wrap"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></span><input id="auth-email" type="email" aria-label="Email address" placeholder="Email address" autocomplete="email" required></div>
+     <div class="sq-auth-field" id="sq-auth-password-wrap"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><input id="auth-password" type="password" aria-label="Password" placeholder="Password" autocomplete="current-password" required minlength="6"><button type="button" id="sq-auth-eye" aria-label="Show password" aria-pressed="false">Show</button></div>
+     <div class="sq-auth-forgot-row"><button type="button" class="link-btn" id="auth-forgot">Forgot password?</button></div>
+     <div class="msg" id="auth-msg" role="status" aria-live="polite"></div>
+     <button class="primary sq-auth-submit" type="submit" id="auth-submit">Continue with email <span aria-hidden="true">→</span></button>
+     <button type="button" id="sq-auth-alternative">Create account</button>
+     <p id="sq-auth-swap-copy">Don't have an account? <button type="button" id="sq-auth-swap">Create one</button></p>
+     <p id="sq-auth-legal-note" hidden>Before registering, review the <button type="button" class="sq-legal-inline" data-open-legal="terms">Terms of Service</button> and <button type="button" class="sq-legal-inline" data-open-legal="privacy">Privacy Policy</button>. These documents are drafts pending review.</p>
     </form>
-  </div>
+    <div class="sq-auth-divider"><span>or</span></div>
+    <button type="button" id="sq-auth-invite"><span aria-hidden="true">↗</span> Join with invite link</button>
+    <form id="sq-auth-invite-form" hidden>
+     <label for="sq-auth-invite-input">Paste a SquareUp invite link</label>
+     <div class="sq-auth-invite-fields"><input id="sq-auth-invite-input" inputmode="url" type="text" placeholder="https://squareupwithfriends.pages.dev/?join=…"><button type="submit">Join</button></div>
+     <p id="sq-auth-invite-error" role="alert" hidden></p>
+    </form>
+   </div>
+   <footer class="sq-auth-legal-footer">By continuing, review our <button type="button" data-open-legal="terms">Terms of Service</button> and <button type="button" data-open-legal="privacy">Privacy Policy</button>.</footer>
+  </section>
+ </div>
 </div>
 
 <!-- PROFILE PHOTO MODAL -->
@@ -3257,17 +3476,28 @@ function setAuthMode(m) {
   authMode = m;
   var titles = { login: "Log in", signup: "Create account", forgot: "Reset password", reset: "Set a new password" };
   var submits = { login: "Log in", signup: "Create account", forgot: "Send reset link", reset: "Save password" };
-  $("auth-title").textContent = titles[m];
-  $("auth-submit").textContent = submits[m];
+  $("auth-title").textContent = (m === "login" || m === "signup") ? "Welcome to SquareUp" : titles[m];
+  $("sq-auth-subtitle").textContent = m === "login" ? "Sign in to your account or create a new one to get started." : m === "signup" ? "Create your account and start sharing expenses with friends." : m === "forgot" ? "Enter your email address and we'll send you a reset link." : "Choose a new password for your SquareUp account.";
+  $("sq-auth-alternative").hidden = m !== "login";
+  $("sq-auth-swap-copy").hidden = m === "forgot" || m === "reset";
+  $("sq-auth-swap-copy").firstChild.textContent = m === "signup" ? "Already have an account? " : "Don't have an account? ";
+  $("sq-auth-swap").textContent = m === "signup" ? "Sign in" : "Create one";
+  $("auth-submit").textContent = (m === "login" || m === "signup") ? "Continue with email →" : submits[m];
   $("auth-tabs").hidden = m === "forgot" || m === "reset";
   $("auth-submit").hidden = false;
   $("tab-login").classList.toggle("active", m === "login");
   $("tab-signup").classList.toggle("active", m === "signup");
   $("sq-auth-legal-note").hidden = m !== "signup";
   $("auth-name").hidden = m !== "signup";
+  $("sq-auth-name-wrap").hidden = m !== "signup";
   $("auth-email").hidden = m === "reset";
+  $("sq-auth-email-wrap").hidden = m === "reset";
   $("auth-email").required = m !== "reset";
   $("auth-password").hidden = m === "forgot";
+  $("sq-auth-password-wrap").hidden = m === "forgot";
+  $("auth-password").type = "password";
+  $("sq-auth-eye").textContent = "Show";
+  $("sq-auth-eye").setAttribute("aria-pressed","false");
   $("auth-password").required = m !== "forgot";
   $("auth-password").placeholder = m === "reset" ? "New password" : "Password";
   $("auth-password").autocomplete = m === "login" ? "current-password" : "new-password";
@@ -3289,6 +3519,8 @@ function showUser(user) {
   if(!user && document.body.classList.contains("settings-view")) settingsRoute("dashboard");
   var loggedIn = !!user;
   currentUser = user || null;
+  document.body.classList.toggle("sq-auth-guest",!loggedIn);
+  document.documentElement.classList.remove("sq-auth-loading");
   $("guest-auth-button").hidden = loggedIn;
   $("btn-change-pw").hidden = !loggedIn;
   $("btn-login").hidden = loggedIn;
@@ -3338,6 +3570,30 @@ $("btn-change-pw").onclick = function () {
   if (currentUser && currentUser.email) $("auth-email").value = currentUser.email;
   $("auth-submit").focus();
 };
+$("sq-auth-alternative").onclick = function(){setAuthMode("signup");$("auth-name").focus();};
+$("sq-auth-swap").onclick = function(){setAuthMode(authMode==="signup"?"login":"signup");(authMode==="signup"?$("auth-name"):$("auth-email")).focus();};
+$("sq-auth-eye").onclick = function(){
+ var pass=$("auth-password"),show=pass.type==="password";
+ pass.type=show?"text":"password";this.textContent=show?"Hide":"Show";this.setAttribute("aria-pressed",String(show));
+};
+$("sq-auth-invite").onclick = function(){var form=$("sq-auth-invite-form");form.hidden=!form.hidden;if(!form.hidden)$("sq-auth-invite-input").focus();};
+$("sq-auth-invite-form").addEventListener("submit",function(e){
+ e.preventDefault();
+ var raw=$("sq-auth-invite-input").value.trim(),err=$("sq-auth-invite-error");
+ err.hidden=true;
+ try {
+  var token="";
+  if(/^https?:\/\//i.test(raw)){
+   var link=new URL(raw);
+   if(link.origin!==location.origin)throw Error("Enter a SquareUp invite link for this website.");
+   token=link.searchParams.get("join")||"";
+  }else if(raw.startsWith("?join="))token=new URLSearchParams(raw.slice(1)).get("join")||"";
+  else token=raw;
+  token=token.trim();
+  if(!token||token.length>512||/\s/.test(token))throw Error("Paste a valid SquareUp invitation link.");
+  location.assign(location.pathname+"?join="+encodeURIComponent(token));
+ }catch(ex){err.textContent=ex.message||"Invalid invitation link.";err.hidden=false;}
+});
 $("auth-close").onclick = closeAuth;
 $("auth-modal").addEventListener("click", function (e) { if (e.target === e.currentTarget) closeAuth(); });
 document.addEventListener("keydown", function (e) {
