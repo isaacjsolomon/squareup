@@ -10785,17 +10785,74 @@ document.addEventListener('click',event=>{
 #sq-nextgen .sq-wallet-row-actions{display:flex;align-items:center;justify-content:flex-end;gap:16px;flex-wrap:wrap}
 @media(max-width:700px){#sq-nextgen .sq-wallet-controls{grid-template-columns:1fr 1fr}#sq-nextgen .sq-wallet-controls label:first-child{grid-column:1/-1}#sq-nextgen .sq-wallet-row{align-items:flex-start;gap:12px;flex-direction:column}#sq-nextgen .sq-wallet-row-actions{width:100%;justify-content:space-between}#sq-nextgen .sq-wallet-currencies{grid-template-columns:1fr}}
 </style>
+
+<style id="sq-workspace-directories-20261106">
+/* Tracker-style directories for distinct Trip and Household workspaces. */
+#sq-nextgen .sq-ng-workspace-directory{padding:5px 0 38px}
+#sq-nextgen .sq-ng-workspace-directory-head{display:flex;align-items:center;justify-content:space-between;gap:22px;margin:0 0 22px}
+#sq-nextgen .sq-ng-workspace-kicker{font-size:11px;letter-spacing:.17em;font-weight:850;color:#56e4cc}
+#sq-nextgen .sq-ng-workspace-directory-head h2{font-size:clamp(27px,3vw,38px);margin:8px 0;color:#f2faff}
+#sq-nextgen .sq-ng-workspace-directory-head p{color:#b0c9d7;line-height:1.55;margin:0;max-width:580px;font-size:14px}
+#sq-nextgen .sq-ng-workspace-create{background:linear-gradient(110deg,#28ddc5,#20cfa8);border:1px solid #60ffdc;color:#06323a;border-radius:14px;min-height:51px;padding:12px 18px;flex:none;font-weight:850;font-size:14px;cursor:pointer}
+#sq-nextgen .sq-ng-workspace-directory-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:19px}
+#sq-nextgen .sq-ng-workspace-directory-card{min-width:0;overflow:hidden;border-radius:20px;background:linear-gradient(160deg,#09253a,#082234);border:1px solid #36657d;box-shadow:0 14px 38px #0004}
+#sq-nextgen .sq-ng-workspace-cover{height:112px;display:flex;align-items:flex-start;justify-content:space-between;padding:20px;background:linear-gradient(125deg,#0e5375,#14596f 55%,#083350);border-bottom:1px solid #32657f}
+#sq-nextgen .sq-ng-workspace-cover>span{font-size:54px;opacity:.75;transform:rotate(-14deg);line-height:1}
+#sq-nextgen .sq-ng-workspace-cover small{color:#b6f9f1;font-size:10px;font-weight:800;letter-spacing:.09em}
+#sq-nextgen .sq-ng-workspace-card-body{padding:22px}
+#sq-nextgen .sq-ng-workspace-card-body h3{font-size:clamp(22px,2.4vw,29px);font-weight:850;margin:0 0 14px;color:#f2faff;overflow-wrap:anywhere}
+#sq-nextgen .sq-ng-workspace-card-meta{display:flex;gap:14px;flex-wrap:wrap;color:#aac8d8;font-size:13px;margin-bottom:22px}
+#sq-nextgen .sq-ng-workspace-card-meta span{background:#11374c;border-radius:20px;padding:5px 9px}
+#sq-nextgen .sq-ng-workspace-open{min-height:49px;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#24526b;border:1px solid #5c889d;border-radius:12px;color:#f1fbff;font:inherit;font-size:15px;font-weight:800;cursor:pointer}
+#sq-nextgen .sq-ng-workspace-open span{font-size:22px;line-height:1}
+#sq-nextgen .sq-ng-workspace-open:hover{background:#2b667c;border-color:#53e3d4}
+#sq-nextgen .sq-ng-workspace-create-form{margin:0 0 22px;background:#0f2c41;border:1px solid #376b7c;border-radius:17px;padding:17px}
+#sq-nextgen .sq-ng-workspace-create-form label{font-size:14px;font-weight:750;color:#f3faff;display:block;margin-bottom:11px}
+#sq-nextgen .sq-ng-workspace-create-form>div{display:flex;gap:9px;flex-wrap:wrap}
+#sq-nextgen .sq-ng-workspace-create-form input{flex:1;min-width:190px;min-height:46px;border-radius:11px;border:1px solid #54788a;background:#091e31;color:#fff;padding:11px;font:inherit;font-size:16px}
+#sq-nextgen .sq-ng-workspace-create-form button{padding:10px 15px;background:#2ecbb3;color:#062a35;border:0;border-radius:11px;font:inherit;font-weight:800;cursor:pointer}
+#sq-nextgen #sq-ng-workspace-cancel{background:#213f52;color:#e1f4fa;border:1px solid #517287}
+#sq-nextgen .sq-ng-workspace-create-form p{color:#a9c3d1;font-size:12px;margin:10px 0 0}
+#sq-nextgen .sq-ng-workspace-empty{padding:28px;border:1px dashed #3f7285;border-radius:17px;background:#103047}
+#sq-nextgen .sq-ng-workspace-empty h3{margin:0 0 10px;color:#fff}
+#sq-nextgen .sq-ng-workspace-empty p{color:#b1cddd}
+#sq-nextgen .sq-ng-workspace-note{color:#91b3c5;margin:22px 0 0;font-size:12px;line-height:1.5}
+#sq-nextgen .sq-ng-workspace-detail-head{width:100%;display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+#sq-nextgen .sq-ng-workspace-detail-head>div{flex:1;min-width:180px}
+#sq-nextgen .sq-ng-workspace-detail-head>div span{display:block;color:#6aedd6;font-size:10px;letter-spacing:.15em;font-weight:850;margin-bottom:5px}
+#sq-nextgen .sq-ng-workspace-detail-head h2{font-size:clamp(19px,2.5vw,28px);color:#fff;margin:0;overflow-wrap:anywhere}
+#sq-nextgen .sq-ng-workspace-detail-head button{min-height:44px;border:1px solid #497388;background:#194054;color:#f0fcff;border-radius:11px;padding:10px 13px;font:inherit;font-size:13px;font-weight:800;cursor:pointer}
+#sq-nextgen #sq-ng-workspace-back{border-color:#478b8d;color:#6cebdc}
+#sq-nextgen .sq-ng-workspace-detail-head button:hover{border-color:#39d7c8;background:#25556b}
+#sq-nextgen .sq-ng-workspace-create-form[hidden]{display:none!important}
+@media(max-width:750px){
+ #sq-nextgen .sq-ng-workspace-directory-head{flex-direction:column;align-items:stretch;gap:16px}
+ #sq-nextgen .sq-ng-workspace-create{width:100%}
+ #sq-nextgen .sq-ng-workspace-directory-grid{grid-template-columns:1fr;gap:14px}
+ #sq-nextgen .sq-ng-workspace-cover{height:100px}
+ #sq-nextgen .sq-ng-workspace-card-body{padding:18px}
+ #sq-nextgen .sq-ng-workspace-card-body h3{font-size:24px}
+ #sq-nextgen .sq-ng-workspace-create-form>div{display:grid;grid-template-columns:minmax(0,1fr) auto}
+ #sq-nextgen .sq-ng-workspace-create-form input{grid-column:1/-1;min-width:0}
+ #sq-nextgen .sq-ng-workspace-detail-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px}
+ #sq-nextgen #sq-ng-workspace-back{grid-column:1/-1;justify-self:start}
+ #sq-nextgen .sq-ng-workspace-detail-head>div{min-width:0}
+ #sq-nextgen .sq-ng-workspace-detail-head>button:last-child{font-size:12px;padding:10px 9px}
+ #sq-nextgen .sq-ng-tracker-toolbar{align-items:stretch;flex-direction:column!important}
+ #sq-nextgen .sq-ng-trip-actions{width:100%}
+}
+</style>
 <script id="sq-nextgen-script">
 (()=>{
 const root=document.getElementById('sq-nextgen'), content=document.getElementById('sq-ng-content'), status=document.getElementById('sq-ng-status');let tab='finance', finance=[];const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=(v,c='USD')=>{try{return new Intl.NumberFormat(undefined,{style:'currency',currency:c}).format(v)}catch{return String(v)}};const api=(path,method='GET',body)=>window.squareUpApi(path,method,body);
 const card=(name,val,feature=false)=>`<article class="sq-ng-card ${feature?'feature':''}"><small>${esc(name)}</small><strong>${esc(val)}</strong></article>`;
-let previousFinanceTabs=[];function syncFinanceSidebar(){const sidebar=document.querySelector('.sidebar');const rect=sidebar?.getBoundingClientRect();const offset=rect&&rect.width&&rect.right>0?Math.ceil(rect.right):0;document.body.style.setProperty('--sq-finance-sidebar-offset',offset+'px');}
-function open(which){previousFinanceTabs=[];root.hidden=false;document.body.classList.add('sq-finance-open');syncFinanceSidebar();document.body.style.overflow='hidden';tab=which;render();}
+let previousFinanceTabs=[];const openedWorkspaces={trip:null,household:null};function syncFinanceSidebar(){const sidebar=document.querySelector('.sidebar');const rect=sidebar?.getBoundingClientRect();const offset=rect&&rect.width&&rect.right>0?Math.ceil(rect.right):0;document.body.style.setProperty('--sq-finance-sidebar-offset',offset+'px');}
+function open(which){previousFinanceTabs=[];openedWorkspaces.trip=null;openedWorkspaces.household=null;root.hidden=false;document.body.classList.add('sq-finance-open');syncFinanceSidebar();document.body.style.overflow='hidden';tab=which;render();}
 function close(){root.hidden=true;document.body.classList.remove('sq-finance-open');document.body.style.removeProperty('--sq-finance-sidebar-offset');document.body.style.overflow='';previousFinanceTabs=[];}
 document.getElementById('sq-ng-back')?.addEventListener('click',()=>{close();document.getElementById('nav-home')?.click();});
 window.addEventListener('resize',()=>{if(!root.hidden)syncFinanceSidebar()});
 document.getElementById('side-toggle')?.addEventListener('click',()=>{if(!root.hidden)requestAnimationFrame(syncFinanceSidebar)});
-function switchFinanceTab(next){if(next===tab)return;previousFinanceTabs.push(tab);tab=next;render();}
+function switchFinanceTab(next){if(next===tab)return;previousFinanceTabs.push(tab);tab=next;openedWorkspaces.trip=null;openedWorkspaces.household=null;render();}
 document.getElementById('sq-finance-nav').addEventListener('click',()=>open('finance'));document.getElementById('sq-ng-mobile-select').addEventListener('change',e=>switchFinanceTab(e.target.value));root.querySelectorAll('[data-ng-tab]').forEach(b=>b.addEventListener('click',()=>switchFinanceTab(b.dataset.ngTab)));
 async function render(){document.getElementById('sq-ng-mobile-select').value=tab;root.querySelectorAll('[data-ng-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.ngTab===tab));const labels={finance:['Personal Finance Hub','Private spending and income, separate from your shared trackers.'],wallet:['Wallet & Settlements','Your balances across existing trackers, without changing any debts.'],trip:['Trip Mode','Your existing trips stay linked to their trackers.'],home:['Household Mode','Build shared routines around your existing trackers.'],subscriptions:['Subscription Manager','Manage recurring bills in your existing billing center.'],currencies:['Multi-Currency','Understand how currency conversion works in SquareUp.'],insights:['Smart Insights','Useful answers calculated from your saved financial records.']};document.getElementById('sq-ng-title').textContent=labels[tab][0];document.getElementById('sq-ng-subtitle').textContent=labels[tab][1];status.textContent='';content.innerHTML='<p>Loading your workspace…</p>';try{if(tab==='finance'||tab==='insights'){finance=await api('finance/transactions');drawFinance()}else if(tab==='wallet')await drawWallet();else await drawWorkspace()}catch(e){content.innerHTML='<div class="sq-ng-empty">'+esc(e.message||'Could not load this section')+'</div>';}}
 function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce((a,x)=>a+Number(x.amount),0),spent=finance.filter(x=>x.kind==='expense').reduce((a,x)=>a+Number(x.amount),0);const byCategory={};finance.filter(x=>x.kind==='expense').forEach(x=>byCategory[x.category]=(byCategory[x.category]||0)+Number(x.amount));if(tab==='insights'){const largest=Object.entries(byCategory).sort((a,b)=>b[1]-a[1])[0];content.innerHTML=`<div class="sq-ng-grid">${card('Recorded income',money(income),true)}${card('Recorded spending',money(spent))}${card('Net personal cash flow',money(income-spent))}</div><div class="sq-ng-card"><h2>Your spending insights</h2><p>${largest?'Your largest recorded spending category is '+esc(largest[0])+' at '+esc(money(largest[1]))+'.':'Add personal expenses to see category insights.'}</p><p class="sq-ng-note">These are calculations based on your private personal records, not a generative AI response. They do not include shared tracker debts.</p></div>`;return;}
@@ -10905,15 +10962,68 @@ async function drawWorkspace(){
   if(!Array.isArray(items)||!Array.isArray(trackers))throw Error('Could not load workspace');
   const isTrip=type==='trip';
   const types=isTrip?['Itinerary','Reservation','Trip note','Trip budget']:['Chore','Grocery','Household note','Household budget'];
-  const selectedId=(sessionStorage.getItem('sq-ng-'+type+'-tracker')||'');
-  const activeId=trackers.some(t=>t.id===selectedId)?selectedId:(trackers[0]?.id||'');
+  // A tracker can power a separate trip or household workspace. The directory lists
+  // every accessible tracker so a user's trips are not lost if templates were selected on another device.
+  const workspaceName=isTrip?'trip':'household',workspacePlural=isTrip?'trips':'households';
+  const chosenId=openedWorkspaces[type];
+  const activeId=trackers.some(t=>t.id===chosenId)?chosenId:null;
+  if(!activeId){
+    openedWorkspaces[type]=null;
+    const priority=t=>{
+      let n=-1;
+      try{const raw=localStorage.getItem('sq_tracker_template_'+t.id);if(raw!==null)n=Number(raw)}catch(_){}
+      const name=String(t.name||'').toLowerCase();
+      const hasPlans=items.some(x=>x.tracker_id===t.id);
+      return hasPlans?3:isTrip?([1,2,3,5].includes(n)||/trip|vacation|travel|holiday|getaway|camping|flight|beach/i.test(name)?2:0):([0,4].includes(n)||/home|household|roommate|apartment|family|rent|house/i.test(name)?2:0);
+    };
+    const ordered=trackers.slice().sort((a,b)=>priority(b)-priority(a));
+    const itemCount=id=>items.filter(x=>x.tracker_id===id).length;
+    const heading=isTrip?'Your trips':'Your households';
+    content.innerHTML=`<section class="sq-ng-workspace-directory" aria-label="${heading}">
+      <div class="sq-ng-workspace-directory-head">
+       <div><span class="sq-ng-workspace-kicker">YOUR SQUAREUP SPACES</span><h2>${heading}</h2><p>Open a ${workspaceName} to see its plans, spending categories, and linked tracker. You can manage more than one.</p></div>
+       <button type="button" class="sq-ng-workspace-create" id="sq-ng-workspace-new">＋ Create new ${workspaceName}</button>
+      </div>
+      <form id="sq-ng-workspace-create-form" class="sq-ng-workspace-create-form" hidden>
+        <label for="sq-ng-workspace-name">Name your new ${workspaceName}</label>
+        <div><input id="sq-ng-workspace-name" name="name" maxlength="90" required placeholder="${isTrip?'e.g. Summer vacation':'e.g. Our apartment'}" autocomplete="off"><button type="submit">Create ${workspaceName}</button><button type="button" id="sq-ng-workspace-cancel">Cancel</button></div>
+        <p>A separate shared tracker will be created for this ${workspaceName}. You can add people from Trackers.</p>
+      </form>
+      ${ordered.length?`<div class="sq-ng-workspace-directory-grid">${ordered.map(t=>`<article class="sq-ng-workspace-directory-card"><div class="sq-ng-workspace-cover"><span aria-hidden="true">${isTrip?'✈':'⌂'}</span><small>${priority(t)>0?'LINKED '+workspaceName.toUpperCase():'AVAILABLE TRACKER'}</small></div><div class="sq-ng-workspace-card-body"><h3>${esc(t.name||'Untitled tracker')}</h3><div class="sq-ng-workspace-card-meta"><span>${Number(t.memberCount)||1} ${Number(t.memberCount)===1?'member':'members'}</span><span>${itemCount(t.id)} saved ${itemCount(t.id)===1?'item':'items'}</span></div><button type="button" class="sq-ng-workspace-open" data-ng-workspace-open="${esc(t.id)}">Open ${workspaceName} <span aria-hidden="true">→</span></button></div></article>`).join('')}</div>`:`<div class="sq-ng-workspace-empty"><h3>No trackers yet</h3><p>Create your first ${workspaceName}, then invite people and start adding plans.</p></div>`}
+      <p class="sq-ng-workspace-note">Each space uses an existing SquareUp tracker. Opening a tracker here does not change the balances or expenses in other trackers.</p>
+     </section>`;
+    content.querySelectorAll('[data-ng-workspace-open]').forEach(button=>button.addEventListener('click',()=>{
+      openedWorkspaces[type]=button.dataset.ngWorkspaceOpen;
+      try{sessionStorage.setItem('sq-ng-'+type+'-tracker',button.dataset.ngWorkspaceOpen)}catch(_){}
+      render();content.scrollIntoView({block:'start'});
+    }));
+    const createButton=document.getElementById('sq-ng-workspace-new');
+    const createForm=document.getElementById('sq-ng-workspace-create-form');
+    createButton.addEventListener('click',()=>{createForm.hidden=!createForm.hidden;if(!createForm.hidden)createForm.elements.name.focus()});
+    document.getElementById('sq-ng-workspace-cancel').addEventListener('click',()=>{createForm.hidden=true});
+    createForm.addEventListener('submit',async e=>{
+      e.preventDefault();
+      const name=createForm.elements.name.value.trim();
+      if(!name){status.textContent='Enter a name first.';return}
+      const btn=createForm.querySelector('[type="submit"]');btn.disabled=true;status.textContent='Creating your '+workspaceName+'…';
+      try{
+        const detail=await api('trackers','POST',{name:name.slice(0,90),currency:document.getElementById('new-currency')?.value||'USD',entries:[]});
+        if(!detail?.id)throw Error('Tracker creation did not return an ID. Check Trackers before trying again.');
+        try{localStorage.setItem('sq_tracker_template_'+detail.id,String(isTrip?1:4));sessionStorage.setItem('sq-ng-'+type+'-tracker',detail.id)}catch(_){}
+        openedWorkspaces[type]=detail.id;
+        await render();
+        status.textContent='Your new '+workspaceName+' is ready. Use Trackers to invite members.';
+      }catch(err){status.textContent='Could not create '+workspaceName+': '+(err.message||err);btn.disabled=false}
+    });
+    return;
+  }
   const activeTracker=trackers.find(t=>t.id===activeId);
   const visibleItems=items.filter(x=>x.tracker_id===activeId);
   const tripCategories=['Flights','Hotels','Food & Dining','Activities'];
   const categoryOf=x=>/flight|airline|airport/i.test(x.title+' '+x.notes)?'Flights':/hotel|stay|lodging|room|reservation/i.test(x.title+' '+x.notes)?'Hotels':/food|restaurant|dinner|lunch|breakfast|meal/i.test(x.title+' '+x.notes)?'Food & Dining':'Activities';
   const amounts=Object.fromEntries(tripCategories.map(c=>[c,visibleItems.filter(x=>x.amount!=null&&x.item_type!=='Trip budget'&&categoryOf(x)===c).reduce((a,x)=>a+Number(x.amount),0)]));
   const budget=visibleItems.filter(x=>x.item_type==='Trip budget').reduce((a,x)=>a+Number(x.amount||0),0);
-  const trackerSelect=`<label class="sq-ng-tracker-picker">Select a tracker<select id="sq-ng-tracker-picker" aria-label="Select a tracker">${trackers.length?trackers.map(t=>`<option value="${esc(t.id)}" ${t.id===activeId?'selected':''}>${esc(t.name)}</option>`).join(''):'<option value="">No trackers available</option>'}</select></label>`;
+  const trackerSelect=`<div class="sq-ng-workspace-detail-head"><button type="button" class="sq-ng-workspace-back" id="sq-ng-workspace-back">← All ${workspacePlural}</button><div><span>${isTrip?'TRIP WORKSPACE':'HOUSEHOLD WORKSPACE'}</span><h2>${esc(activeTracker?.name||'Tracker')}</h2></div><button type="button" id="sq-ng-workspace-tracker">Open linked tracker ↗</button></div>`;
   const tripTop=isTrip?`<section class="sq-ng-trip-hero"><div class="sq-ng-trip-eyebrow">VACATION · ${esc(activeTracker?.name||'Choose a tracker')}</div><h2>Your travel spending, together</h2><p>Flights, hotels, food and activities · linked to your existing tracker</p><span class="sq-ng-trip-plane" aria-hidden="true">✈</span></section><div class="sq-ng-trip-metrics">${tripCategories.slice(0,3).map(c=>`<article><small>${esc(c)}</small><strong>${esc(money(amounts[c]))}</strong></article>`).join('')}</div><section class="sq-ng-card sq-ng-trip-breakdown"><h2>Planned cost breakdown</h2>${tripCategories.map(c=>`<div class="sq-ng-trip-line"><span>${esc(c)}</span><strong>${esc(money(amounts[c]))}</strong></div>`).join('')}${budget?`<div class="sq-ng-trip-line"><span>Trip budget</span><strong>${esc(money(budget))}</strong></div>`:''}<p class="sq-ng-note">These totals are based on your saved trip-planning items, not actual tracker expenses. Actual spending remains in the tracker ledger.</p></section>`:'';
   const householdCategories=['Rent','Electricity','Water','Gas','Internet','Groceries','Amenities','Other bills'];
   const householdCategoryOf=x=>{const value=String(x.title||'')+' '+String(x.notes||'');return /rent|lease|landlord|housing/i.test(value)?'Rent':/electric|power|light bill/i.test(value)?'Electricity':/water|sewer/i.test(value)?'Water':/gas bill|natural gas|heating|heat bill/i.test(value)?'Gas':/internet|wifi|wi-fi|broadband|cable/i.test(value)?'Internet':/grocery|groceries|supermarket|food/i.test(value)?'Groceries':/amenit|clean|soap|detergent|sanitiz|paper|towel|tissue|kitchen|dish|utensil|cook|supply|supplies/i.test(value)?'Amenities':'Other bills'};
@@ -10944,8 +11054,12 @@ async function drawWorkspace(){
       }catch(error){status.textContent=error.message;button.disabled=false;}
     }));
   }
-  const picker=document.getElementById('sq-ng-tracker-picker');
-  picker.addEventListener('change',()=>{try{sessionStorage.setItem('sq-ng-'+type+'-tracker',picker.value)}catch{}render()});
+  document.getElementById('sq-ng-workspace-back').addEventListener('click',()=>{openedWorkspaces[type]=null;render();content.scrollIntoView({block:'start'})});
+  document.getElementById('sq-ng-workspace-tracker').addEventListener('click',async()=>{
+    try{
+      close();document.getElementById('nav-home')?.click();await openTracker(activeId);
+    }catch(err){status.textContent=err.message||'Could not open the linked tracker'}
+  });
 }
 function trackerLinks(trackers){return trackers.length?trackers.map(t=>`<div class="sq-ng-item"><div><b>${esc(t.name)}</b></div><button type="button" data-open-tracker="${esc(t.id)}">Open tracker</button></div>`).join(''):'<div class="sq-ng-empty">Create a tracker first to link your records.</div>'}
 function bindTrackerLinks(){content.querySelectorAll('[data-open-tracker]').forEach(b=>b.onclick=()=>{const id=b.dataset.openTracker;close();document.getElementById('nav-trackers')?.click();if(typeof window.openTracker==='function'){window.openTracker(id)}else{const el=[...document.querySelectorAll('[data-tracker-id]')].find(e=>e.dataset.trackerId===id);el?.click()}})}
