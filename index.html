@@ -7311,9 +7311,31 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  [/export|csv/i,'Open the relevant tracker and use Export CSV to download a copy of its expense information.'],
  [/chat|message/i,'Use Chat from the sidebar to open your tracker’s group conversation. If a tracker is required, open the tracker first.']
  ];
- function setOpen(open){panel.hidden=!open;launch.setAttribute('aria-expanded',String(open));if(open)input.focus();}
+ let savedScroll=0,locked=false;
+ const mobile=()=>window.matchMedia('(max-width:700px)').matches;
+ function fitChat(){
+  if(panel.hidden||!mobile())return;
+  const v=window.visualViewport;
+  panel.style.setProperty('--sq-chat-height',(v?v.height:window.innerHeight)+'px');
+  panel.style.setProperty('--sq-chat-top',(v?v.offsetTop:0)+'px');
+ }
+ function setOpen(open){
+  panel.hidden=!open;launch.setAttribute('aria-expanded',String(open));
+  if(open){
+   if(mobile()&&!locked){savedScroll=window.scrollY;document.body.style.position='fixed';document.body.style.top=-savedScroll+'px';document.body.style.width='100%';locked=true}
+   fitChat();
+   if(!mobile())input.focus({preventScroll:true});
+  }else{
+   input.blur();
+   if(locked){document.body.style.removeProperty('position');document.body.style.removeProperty('top');document.body.style.removeProperty('width');locked=false;window.scrollTo({top:savedScroll,behavior:'instant'})}
+   launch.focus({preventScroll:true});
+  }
+ }
+ window.visualViewport?.addEventListener('resize',fitChat);
+ window.visualViewport?.addEventListener('scroll',fitChat);
+ window.addEventListener('resize',fitChat);
  launch.addEventListener('click',()=>setOpen(panel.hidden));close.addEventListener('click',()=>setOpen(false));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)setOpen(false)});
- function bubble(message,user){const el=document.createElement('div');el.className='sq-ai-message'+(user?' user':'');el.textContent=message;stream.append(el);stream.scrollTop=stream.scrollHeight;}
+ function bubble(message,user){const el=document.createElement('div');el.className='sq-ai-message'+(user?' user':'');el.textContent=message;stream.append(el);}
 
  let conversation=[],busy=false;
  const notice=document.createElement('small');notice.className='sq-ai-privacy';notice.textContent='AI can make mistakes. Messages are processed by Cloudflare AI. No tracker data is shared.';form.after(notice);
@@ -7323,7 +7345,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  q=String(q||'').trim().slice(0,2000);if(!q||busy)return;
  document.getElementById('sq-ai-quick')?.remove();bubble(q,true);
  busy=true;form.querySelector('button').disabled=true;reset.disabled=true;
- const pending=document.createElement('div');pending.className='sq-ai-message';pending.textContent='Thinking…';stream.append(pending);stream.scrollTop=stream.scrollHeight;
+ const pending=document.createElement('div');pending.className='sq-ai-message';pending.textContent='Thinking…';stream.append(pending);
  const messages=[...conversation,{role:'user',content:q}].slice(-15);
  try{
  if(typeof window.squareUpApi!=='function')throw Error('Please sign in to chat.');
@@ -7334,7 +7356,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  finally{pending.remove();busy=false;form.querySelector('button').disabled=false;reset.disabled=false}
  }
 
- form.addEventListener('submit',e=>{e.preventDefault();ask(input.value);input.value='';input.focus();});stream.addEventListener('click',e=>{const btn=e.target.closest('.sq-ai-quick button');if(btn)ask(btn.textContent)});
+ form.addEventListener('submit',e=>{e.preventDefault();ask(input.value);input.value='';if(!mobile())input.focus({preventScroll:true});});stream.addEventListener('click',e=>{const btn=e.target.closest('.sq-ai-quick button');if(btn)ask(btn.textContent)});
  function openHelp(){document.body.classList.remove('split-view','settings-view','about-view','trackers-view','analytics-view','friends-view','notifications-view');document.body.classList.add('sq-help-view');document.querySelectorAll('.sq-nav-link').forEach(b=>{b.classList.toggle('active',b.id==='nav-help-center');b.removeAttribute('aria-current')});document.getElementById('nav-help-center').setAttribute('aria-current','page');history.replaceState(null,'',location.pathname+location.search+'#help');window.scrollTo(0,0);}
  // Move Help Center from the sidebar into the header, immediately after Search.
  const helpNav=document.getElementById('nav-help-center');
@@ -12778,6 +12800,21 @@ html body #sq-instagram-invite:has(.sq-ig-x) h2 { padding-right:48px; }
 #sq-ai-window .sq-ai-privacy{display:block;flex-shrink:0;padding:0 15px 5px;color:#a9bfd7;font-size:10px;line-height:1.4}
 #sq-ai-window button:disabled{opacity:.55;cursor:wait}
 #sq-ai-window .sq-ai-head small{font-size:11px}
+</style><style id="doweo-mobile-chat-scroll">
+@media(max-width:700px){
+ html body #sq-ai-window{
+  top:var(--sq-chat-top,0px)!important;bottom:auto!important;
+  height:var(--sq-chat-height,100dvh)!important;max-height:var(--sq-chat-height,100dvh)!important;
+  overscroll-behavior:none!important;
+ }
+ html body #sq-ai-window .sq-ai-stream{
+  flex:1 1 0!important;min-height:0!important;overflow-y:auto!important;
+  overscroll-behavior-y:contain;overflow-anchor:none;scroll-behavior:auto;
+  -webkit-overflow-scrolling:touch;
+ }
+ html body #sq-ai-window .sq-ai-input input{font-size:16px!important}
+ html body #sq-ai-window .sq-ai-input{margin:0!important}
+}
 </style></body>
 </html>
 
