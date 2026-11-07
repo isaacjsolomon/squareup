@@ -1,8 +1,10 @@
 name: Deploy DoWeo to Cloudflare Pages
 
-# First deployment is manual while the Cloudflare project and secrets are configured.
-# Once the first deployment succeeds, this can be enabled on pushes to main.
+# Deploy merged changes to production; retain manual deployments.
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
