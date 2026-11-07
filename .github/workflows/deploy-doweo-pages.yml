@@ -1,0 +1,32 @@
+name: Deploy DoWeo to Cloudflare Pages
+
+# First deployment is manual while the Cloudflare project and secrets are configured.
+# Once the first deployment succeeds, this can be enabled on pushes to main.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy DoWeo Pages and API functions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out DoWeo
+        uses: actions/checkout@v4
+
+      - name: Prepare Pages static assets
+        run: |
+          mkdir -p .pages-output
+          cp index.html manifest.webmanifest sw.js squareup-events.js .pages-output/
+          cp -R icons images .pages-output/
+
+      # Run Wrangler from the repository root so it discovers ./functions.
+      # Uploading through the dashboard would not compile Pages Functions.
+      - name: Deploy to doweo.pages.dev
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy .pages-output --project-name=doweo --branch=main
