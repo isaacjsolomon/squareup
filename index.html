@@ -12711,6 +12711,29 @@ html body button.doweo-close-control:is(.close,.sq-tour-close,.sq-details-x,.sq-
 html body .modal:has(>button.close) > h2 { padding-right:56px!important; min-height:48px; }
 html body #sq-instagram-invite:has(.sq-ig-x) h2 { padding-right:48px; }
 </style>
+
+<style id="doweo-finance-mobile-safe-navigation">
+/* Keep the full-screen Finance Hub navigation below the iPhone status bar.
+   A later 24px shell override previously discarded the safe-area spacing. */
+@media (max-width:900px) {
+ html body.sq-finance-open #sq-nextgen .sq-ng-shell {
+  padding-top:max(64px, calc(env(safe-area-inset-top, 0px) + 16px))!important;
+  padding-left:max(16px, env(safe-area-inset-left, 0px))!important;
+  padding-right:max(16px, env(safe-area-inset-right, 0px))!important;
+ }
+ html body.sq-finance-open #sq-nextgen #sq-ng-back {
+  position:static!important;transform:none!important;float:none!important;
+  display:inline-flex!important;align-self:flex-start!important;
+  min-height:48px!important;min-width:100px!important;
+  margin:0 0 6px!important;padding:12px 16px!important;
+  background:#214b63!important;border:2px solid #86b5cc!important;
+  color:#fff!important;border-radius:12px!important;
+  opacity:1!important;visibility:visible!important;
+  font-size:15px!important;font-weight:750!important;
+ }
+ html body.sq-finance-open #sq-nextgen #sq-ng-back span {display:inline!important}
+}
+</style>
 </body>
 </html>
 
