@@ -2393,7 +2393,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
     <div class="sq-receipt-section"><div class="sq-receipt-title-row"><div><div class="sq-receipt-section-title">3 · Items and who ordered them</div><p class="sq-receipt-hint">Select one or more people per item. Tap a price or name to correct OCR mistakes.</p></div><span id="sq-receipt-count" class="sq-receipt-count">0 items</span></div><div id="receipt-items"></div><button type="button" class="small-btn receipt-add-item-btn" id="receipt-add-item">＋ Add missing item</button></div>
     <div class="sq-receipt-section"><div class="sq-receipt-section-title">4 · Tax, tip and total</div><div class="sq-receipt-money-grid"><label>Tax ($)<input type="number" inputmode="decimal" id="receipt-tax" min="0" step=".01" value="0"></label><label>Tip ($)<input type="number" inputmode="decimal" id="receipt-tip" min="0" step=".01" value="0"></label></div><label>Printed receipt total ($)<input type="number" inputmode="decimal" id="receipt-total" min="0" step=".01" placeholder="Enter the final total"></label><div class="sq-receipt-tip-settings"><label for="receipt-tip-mode">How should the tip be paid?</label><select id="receipt-tip-mode"><option value="equal">Split equally among everyone</option><option value="one">One person pays the entire tip</option></select><label for="receipt-tip-person" id="receipt-tip-person-label" hidden>Person paying the tip<select id="receipt-tip-person"></select></label></div><p class="sq-receipt-hint">If the numbers don't match, check for missing items, discounts, or OCR errors. Tip may not be printed on the receipt.</p></div>
     <div class="sq-receipt-section"><div class="sq-receipt-section-title">5 · Review everyone's share</div><div id="receipt-preview" class="sq-receipt-preview" aria-live="polite"></div></div>
-    <div class="sq-receipt-section sq-receipt-last"><div class="sq-receipt-money-grid"><label>Currency <select id="receipt-currency" class="sq-currency-select"></select></label><label>Due date (optional)<input type="date" id="receipt-due"></label></div><div class="receipt-footer-actions"><button type="button" class="primary" id="receipt-save">Save assigned expenses</button><div class="receipt-secondary-actions"><button type="button" class="small-btn receipt-clear-btn" id="receipt-clear">Clear receipt</button><button type="button" class="small-btn receipt-close-btn" id="receipt-close">Close receipt</button></div></div></div>
+    <div class="sq-receipt-section sq-receipt-last"><div class="sq-receipt-money-grid"><label>Currency <select id="receipt-currency" class="sq-currency-select"></select></label><label>Due date (optional)<input type="date" id="receipt-due"></label></div><div class="receipt-footer-actions"><button type="button" class="primary" id="receipt-save">Save assigned expenses</button><div class="receipt-secondary-actions"><button type="button" class="small-btn receipt-clear-btn" id="receipt-clear">Clear receipt</button><button type="button" class="doweo-close-control small-btn receipt-close-btn" id="receipt-close">Close receipt</button></div></div></div>
   </div>
   <!-- ENTRY FORM: shown by quick actions -->
   <div class="card" id="entry-card">
@@ -2683,7 +2683,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 
 <div id="sq-tour-overlay" hidden aria-hidden="true">
  <div class="sq-tour-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-tour-title" aria-describedby="sq-tour-description">
-  <button type="button" id="sq-tour-close" class="sq-tour-close" aria-label="Close tutorial">×</button>
+  <button type="button" id="sq-tour-close" class="doweo-close-control sq-tour-close" aria-label="Close tutorial">×</button>
   <div class="sq-tour-kicker" id="sq-tour-step-label">DOWEO GUIDE</div>
   <div class="sq-tour-progress"><div id="sq-tour-progress-fill"></div></div>
   <h2 id="sq-tour-title"></h2><p id="sq-tour-description"></p>
@@ -2693,7 +2693,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 
 <div id="sq-legal-overlay" hidden>
  <section class="sq-legal-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-legal-title">
-  <div class="sq-legal-top"><span style="font-size:12px;letter-spacing:.13em;color:#88d6d4">DOWEO · LEGAL CENTER</span><button type="button" id="sq-legal-close" class="sq-legal-close" aria-label="Close legal information">Close ×</button></div>
+  <div class="sq-legal-top"><span style="font-size:12px;letter-spacing:.13em;color:#88d6d4">DOWEO · LEGAL CENTER</span><button type="button" id="sq-legal-close" class="doweo-close-control sq-legal-close" aria-label="Close legal information">Close ×</button></div>
   <h2 id="sq-legal-title">Privacy Policy</h2>
   <p style="margin-top:0;font-size:12px;color:#a8bfd0">Effective October 30, 2026 · Draft for review before publication</p>
   <div class="sq-legal-tabs" role="tablist" aria-label="Legal documents"><button type="button" data-legal="privacy" aria-selected="true">Privacy Policy</button><button type="button" data-legal="terms" aria-selected="false">Terms of Service</button><button type="button" data-legal="finance" aria-selected="false">Financial Disclaimer</button></div>
@@ -2759,7 +2759,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
    </div>
   </section>
   <section class="sq-auth-right" aria-label="Sign in or create your DoWeo account">
-   <button type="button" class="close" id="auth-close" aria-label="Close account screen">×</button>
+   <button type="button" class="doweo-close-control close" id="auth-close" aria-label="Close account screen">×</button>
    <div class="sq-auth-brand"><img src="/icons/icon-192.png?v=doweo-mobile-brand-v3" width="46" height="46" alt="DoWeo logo"><strong>DoWeo</strong></div>
    <div class="sq-auth-form-panel">
     <h1 id="auth-title">Welcome to DoWeo</h1>
@@ -2796,7 +2796,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 <!-- PROFILE PHOTO MODAL -->
 <div class="modal-bg" id="photo-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="photo-title">
-    <button type="button" class="close" id="photo-close" aria-label="Close">×</button>
+    <button type="button" class="doweo-close-control close" id="photo-close" aria-label="Close">×</button>
     <h2 id="photo-title">Profile photo</h2>
     <p class="hint">Friends in your shared trackers see this next to your name.</p>
     <div class="avatar photo-preview" id="photo-preview"></div>
@@ -2812,7 +2812,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 <!-- SETTLE UP MODAL -->
 <div class="modal-bg" id="settle-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="settle-title">
-    <button type="button" class="close" id="settle-close" aria-label="Close">×</button>
+    <button type="button" class="doweo-close-control close" id="settle-close" aria-label="Close">×</button>
     <h2 id="settle-title">Settle up</h2>
     <form id="settle-form">
       <p class="hint" id="settle-text"></p>
@@ -2828,7 +2828,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 <!-- NEW TRACKER MODAL -->
 <div class="modal-bg" id="new-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="new-title">
-    <button type="button" class="close" data-close aria-label="Close">×</button>
+    <button type="button" class="doweo-close-control close" data-close aria-label="Close">×</button>
     <h2 id="new-title">New tracker</h2>
     <form id="new-form"><div class="sq-template-tabs"><button type="button" id="sq-template-tab" aria-selected="true">Start from a template</button> <button type="button" id="sq-blank-tab" aria-selected="false">Blank tracker</button></div><div id="sq-template-grid" class="sq-template-grid"></div><div id="sq-template-detail" class="sq-template-tags"></div>
       <label class="feature-field">Main currency <select id="new-currency" class="sq-currency-select"></select></label><input id="new-name" placeholder="Name (e.g. Roommates, Ski trip)" maxlength="80" required autocomplete="off">
@@ -2843,7 +2843,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 <!-- MY TRACKERS MODAL -->
 <div class="modal-bg" id="manage-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="manage-title">
-    <button type="button" class="close" data-close aria-label="Close">×</button>
+    <button type="button" class="doweo-close-control close" data-close aria-label="Close">×</button>
     <h2 id="manage-title">My trackers</h2>
     <p class="hint">Deleting a tracker you own removes it for everyone. For trackers shared with you, you can leave instead.</p>
     <div id="manage-list" style="margin-top:8px"></div>
@@ -2854,7 +2854,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 <!-- BACKDROP MODAL -->
 <div class="modal-bg" id="backdrop-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="backdrop-title">
-    <button type="button" class="close" data-close aria-label="Close">×</button>
+    <button type="button" class="doweo-close-control close" data-close aria-label="Close">×</button>
     <h2 id="backdrop-title">Backdrop</h2>
     <p class="hint" id="backdrop-scope"></p>
     <div class="swatches" id="backdrop-swatches" style="margin-top:10px"></div>
@@ -2869,7 +2869,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 <!-- SHARE MODAL -->
 <div class="modal-bg" id="share-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="share-title">
-    <button type="button" class="close" data-close aria-label="Close">×</button>
+    <button type="button" class="doweo-close-control close" data-close aria-label="Close">×</button>
     <h2 id="share-title">Share tracker</h2>
     <form id="rename-form" class="tb-row">
       <input id="share-name" maxlength="80" required aria-label="Tracker name">
@@ -4284,7 +4284,7 @@ async function sqBannerEdit(trackerId,trackerName,banner){
  var file=document.createElement('input');file.type='file';file.accept='image/jpeg,image/png,image/webp';
  file.onchange=async function(){var f=file.files&&file.files[0];if(!f)return;if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>3*1024*1024){alert('Choose a JPG, PNG, or WebP image under 3 MB.');file.value='';return;}
  try{var data=await new Promise(function(resolve,reject){var r=new FileReader();r.onload=function(){resolve(r.result)};r.onerror=function(){reject(Error('Could not read image'))};r.readAsDataURL(f);});var v={image:data};await sqBannerSet(trackerId,v);sqBannerApply(banner,v);overlay.remove();}catch(e){alert('Could not save image. Try a smaller photo. '+e.message);}};
- var actions=document.createElement('div');actions.className='banner-editor-actions';var close=document.createElement('button');close.textContent='Close';close.onclick=function(){overlay.remove()};actions.append(close);
+ var actions=document.createElement('div');actions.className='banner-editor-actions';var close=document.createElement('button');close.classList.add('doweo-close-control');close.textContent='Close';close.onclick=function(){overlay.remove()};actions.append(close);
  dialog.append(title,hint,presets,uploadLabel,file,actions);overlay.append(dialog);overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove()});document.body.append(overlay);close.focus();
 }
 
@@ -5879,7 +5879,7 @@ document.getElementById('split-use-itemized').addEventListener('click',()=>{
 });
 // Group chat: threaded replies and reactions persisted by the Cloudflare API.
 var squareUpReplyTo=null,squareUpChatRows=[];
-function squareUpChatReply(id){var row=squareUpChatRows.find(r=>String(r.id)===String(id));if(!row)return;squareUpReplyTo=row.id;var el=document.getElementById('chat-reply-target');el.hidden=false;el.innerHTML='<span>Replying to <b>'+esc(row.senderName)+'</b>: '+esc(row.message.slice(0,100))+'</span><button type="button" id="chat-cancel-reply" class="small-btn">×</button>';document.getElementById('chat-cancel-reply').onclick=()=>{squareUpReplyTo=null;el.hidden=true;};document.getElementById('tracker-chat-input').focus();}
+function squareUpChatReply(id){var row=squareUpChatRows.find(r=>String(r.id)===String(id));if(!row)return;squareUpReplyTo=row.id;var el=document.getElementById('chat-reply-target');el.hidden=false;el.innerHTML='<span>Replying to <b>'+esc(row.senderName)+'</b>: '+esc(row.message.slice(0,100))+'</span><button type="button" id="chat-cancel-reply" class="doweo-close-control small-btn" aria-label="Close">×</button>';document.getElementById('chat-cancel-reply').onclick=()=>{squareUpReplyTo=null;el.hidden=true;};document.getElementById('tracker-chat-input').focus();}
 async function squareUpReact(id,emoji){if(!current)return;try{await api('trackers/'+current.id+'/chat/'+encodeURIComponent(id)+'/reactions','POST',{emoji});await loadTrackerChat();}catch(err){alert('Reaction could not be saved: '+err.message);}}
 document.getElementById('tracker-chat-messages').addEventListener('click',e=>{var b=e.target.closest('button');if(!b)return;if(b.dataset.pin)squareUpPinMessage(b.dataset.pin);if(b.dataset.reply)squareUpChatReply(b.dataset.reply);if(b.dataset.react)squareUpReact(b.dataset.react,b.dataset.emoji);});
 // FRIENDS: uses authenticated, permission-checked Supabase RPCs from the accompanying SQL migration.
@@ -6300,7 +6300,7 @@ if ('serviceWorker' in navigator) {
   selectTab('profile');
 })();
 </script>
-<div id="sq-details-overlay" class="sq-details-overlay" role="dialog" aria-modal="true" aria-labelledby="sq-details-title" aria-hidden="true"><div class="sq-details-card"><div class="sq-details-top"><h2 id="sq-details-title">Expense details</h2><button type="button" class="sq-details-x" id="sq-details-x" aria-label="Close expense details">×</button></div><div class="sq-details-hero"><span class="sq-details-symbol" aria-hidden="true">▤</span><div class="sq-details-description" id="sq-details-description">Expense</div><div class="sq-details-amount" id="sq-details-amount"></div><span class="sq-details-category" id="sq-details-category">Expense</span></div><dl class="sq-details-grid" id="sq-details-grid"></dl><section id="sq-details-social" class="sq-details-social" aria-label="Expense comments and reactions"><h3>Comments &amp; reactions</h3><div id="sq-details-social-status" role="status"></div><div id="sq-details-reactions"></div><div id="sq-details-comments"></div><label for="sq-details-comment-input">Add a comment</label><textarea id="sq-details-comment-input" maxlength="1500" rows="3" placeholder="Write a comment..."></textarea><button id="sq-details-comment-send" type="button">Post comment</button></section><button class="settings-action primary" type="button" id="sq-details-close">Close</button></div></div>
+<div id="sq-details-overlay" class="sq-details-overlay" role="dialog" aria-modal="true" aria-labelledby="sq-details-title" aria-hidden="true"><div class="sq-details-card"><div class="sq-details-top"><h2 id="sq-details-title">Expense details</h2><button type="button" class="doweo-close-control sq-details-x" id="sq-details-x" aria-label="Close expense details">×</button></div><div class="sq-details-hero"><span class="sq-details-symbol" aria-hidden="true">▤</span><div class="sq-details-description" id="sq-details-description">Expense</div><div class="sq-details-amount" id="sq-details-amount"></div><span class="sq-details-category" id="sq-details-category">Expense</span></div><dl class="sq-details-grid" id="sq-details-grid"></dl><section id="sq-details-social" class="sq-details-social" aria-label="Expense comments and reactions"><h3>Comments &amp; reactions</h3><div id="sq-details-social-status" role="status"></div><div id="sq-details-reactions"></div><div id="sq-details-comments"></div><label for="sq-details-comment-input">Add a comment</label><textarea id="sq-details-comment-input" maxlength="1500" rows="3" placeholder="Write a comment..."></textarea><button id="sq-details-comment-send" type="button">Post comment</button></section><button class="doweo-close-control settings-action primary" type="button" id="sq-details-close">Close</button></div></div>
 <script id="sq-four-features-script">
 (function(){
 'use strict';
@@ -6504,7 +6504,7 @@ const tour=document.getElementById('sq-replay-tour');if(tour){const original=tou
 })();
 </script>
 
-<div id="sq-global-search" class="sq-global-search" role="dialog" aria-modal="true" aria-label="Search DoWeo" aria-hidden="true"><div class="sq-search-panel"><div class="sq-search-head"><input id="sq-global-query" type="search" placeholder="Search trackers, members, expenses…" autocomplete="off" aria-label="Search DoWeo"><button type="button" id="sq-search-close" aria-label="Close search">✕</button></div><div class="sq-search-results" id="sq-search-results" aria-live="polite"><p class="sq-search-empty">Search your loaded trackers and expenses.</p></div></div></div>
+<div id="sq-global-search" class="sq-global-search" role="dialog" aria-modal="true" aria-label="Search DoWeo" aria-hidden="true"><div class="sq-search-panel"><div class="sq-search-head"><input id="sq-global-query" type="search" placeholder="Search trackers, members, expenses…" autocomplete="off" aria-label="Search DoWeo"><button class="doweo-close-control" type="button" id="sq-search-close" aria-label="Close search">✕</button></div><div class="sq-search-results" id="sq-search-results" aria-live="polite"><p class="sq-search-empty">Search your loaded trackers and expenses.</p></div></div></div>
 <div class="sq-dispute-overlay" id="sq-payment-dispute-overlay" hidden><div class="sq-dispute-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-dispute-heading"><div class="sq-dispute-mark" aria-hidden="true">!</div><h2 id="sq-dispute-heading">Dispute this payment?</h2><p id="sq-dispute-summary">This will notify the person who reported the payment. The balance will remain unchanged until the payment is resolved.</p><textarea id="sq-dispute-reason" maxlength="200" placeholder="Why are you disputing this payment? (required)" aria-label="Reason for dispute (required)"></textarea><p class="sq-dispute-error" id="sq-dispute-error" role="alert"></p><div class="sq-dispute-actions"><button type="button" id="sq-dispute-cancel">Cancel</button><button type="button" class="sq-dispute-confirm" id="sq-dispute-submit">Dispute payment</button></div></div></div>
 <script id="sq-payment-dispute-script">(function(){
 'use strict';
@@ -7008,7 +7008,7 @@ body.trackers-view > .wrap > :not(.tracker-heading):not(.sq-mobile-top):not(#tra
 </style>
 <button id="sq-features-launch" type="button" hidden>Goals &amp; expenses</button>
 <div id="sq-features-overlay" hidden role="dialog" aria-modal="true" aria-label="DoWeo collaborative features"><section id="sq-features-panel">
- <div class="sq-feature-row"><h2 style="margin:0">Tracker extras</h2><button id="sq-features-close" type="button">Close ✕</button></div>
+ <div class="sq-feature-row"><h2 style="margin:0">Tracker extras</h2><button class="doweo-close-control" id="sq-features-close" type="button">Close ✕</button></div>
  <p class="sq-feature-muted">Savings goals, expense comments, attachments, and disputes. All data belongs to the open tracker.</p>
  <div class="sq-feature-tabs" role="tablist"><button data-sq-feature-tab="goals" aria-selected="true">Savings goals</button><button data-sq-feature-tab="comments">Comments &amp; reactions</button><button data-sq-feature-tab="attachments">Attachments</button><button data-sq-feature-tab="disputes">Dispute center</button><button data-sq-feature-tab="offline">Offline view</button></div>
  <div id="sq-features-content" aria-live="polite"></div>
@@ -7289,7 +7289,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
 </style>
 <button id="sq-ai-launch" type="button" aria-label="Ask DoWeo AI" aria-controls="sq-ai-window" aria-expanded="false"><span class="sq-ai-mark">✦</span> Ask DoWeo AI</button>
 <section id="sq-ai-window" hidden role="dialog" aria-label="DoWeo AI Help" aria-modal="false">
- <div class="sq-ai-head"><span class="sq-ai-avatar">✦</span><div><strong>DoWeo AI</strong><small>● Help assistant</small></div><button type="button" id="sq-ai-close" aria-label="Close help chat">×</button></div>
+ <div class="sq-ai-head"><span class="sq-ai-avatar">✦</span><div><strong>DoWeo AI</strong><small>● Help assistant</small></div><button class="doweo-close-control" type="button" id="sq-ai-close" aria-label="Close help chat">×</button></div>
  <div class="sq-ai-stream" id="sq-ai-stream" aria-live="polite"><div class="sq-ai-message">Hi! I'm DoWeo's help assistant. I can guide you through creating trackers, splitting bills, account access and more. What would you like to know?</div><div class="sq-ai-quick" id="sq-ai-quick"><button type="button">How do I create a tracker?</button><button type="button">How do I add an expense?</button><button type="button">How do I invite friends?</button><button type="button">I'm having a problem logging in</button></div></div>
  <form id="sq-ai-form" class="sq-ai-input"><input id="sq-ai-question" aria-label="Ask a question" placeholder="Type a message…" maxlength="500" required><button type="submit" aria-label="Send question">➤</button></form>
  <a class="sq-ai-support" id="sq-ai-contact" href="mailto:help.doweo@gmail.com?subject=DoWeo%20Support%20Request">✉ Contact Support ↗</a>
@@ -7459,7 +7459,7 @@ function modal(title,subtitle,fields,receipt){
  fields.forEach(function(pair){var line=document.createElement('div');line.className='sq-ui-line';var k=document.createElement('span');k.textContent=pair[0];var v=document.createElement('strong');v.textContent=String(pair[1]??'—');line.append(k,v);dialog.append(line);});
  var actions=document.createElement('div');actions.className='sq-ui-actions';
  if(receipt){var copy=document.createElement('button');copy.type='button';copy.className='sq-ui-secondary';copy.textContent='Copy receipt';copy.onclick=function(){var txt=[title,subtitle].concat(fields.map(function(x){return x[0]+': '+x[1]})).join('\n');if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(function(){copy.textContent='Copied!';}).catch(function(){window.prompt('Copy receipt:',txt)});else window.prompt('Copy receipt:',txt)};actions.append(copy);}
- var close=document.createElement('button');close.type='button';close.textContent='Close';close.onclick=function(){overlay.remove();document.removeEventListener('keydown',esc)};actions.append(close);dialog.append(actions);overlay.append(dialog);
+ var close=document.createElement('button');close.type='button';close.classList.add('doweo-close-control');close.textContent='Close';close.onclick=function(){overlay.remove();document.removeEventListener('keydown',esc)};actions.append(close);dialog.append(actions);overlay.append(dialog);
  overlay.addEventListener('click',function(e){if(e.target===overlay)close.click()});function esc(e){if(e.key==='Escape')close.click()};document.addEventListener('keydown',esc);document.body.append(overlay);close.focus();
 }
 window.sqShowPaymentReceipt=function(d){modal('Payment recorded','DoWeo has recorded your self-reported payment. This is not proof that funds were transferred.',[['Amount','$'+Number(d.amount).toFixed(2)],['From',d.from],['To',d.to],['Payment method',d.provider],['Recorded',d.date],['Remaining balance','$'+Number(d.remaining).toFixed(2)]],true)};
@@ -7603,7 +7603,7 @@ document.addEventListener('click',function(event){var trigger=event.target.close
 </style>
 <div id="sq-instagram-invite" hidden>
  <div class="sq-ig-card" role="dialog" aria-modal="true" aria-labelledby="sq-ig-title" aria-describedby="sq-ig-description">
-  <button type="button" class="sq-ig-x" aria-label="Close Instagram invitation">&times;</button>
+  <button type="button" class="doweo-close-control sq-ig-x" aria-label="Close Instagram invitation">&times;</button>
   <div class="sq-ig-mark" aria-hidden="true">◎</div>
   <h2 id="sq-ig-title">Follow DoWeo on Instagram!</h2>
   <p id="sq-ig-description">Get updates, new features, and tips for splitting expenses. Find us at <strong>@doweo.app</strong>.</p>
@@ -7684,7 +7684,7 @@ document.addEventListener('click',function(event){var trigger=event.target.close
 .sq-favorite-toggle{align-self:flex-start;margin:8px 0;border:1px solid #527b98;border-radius:999px;padding:7px 13px;background:#102e49;color:#d8eafa;font-size:13px;cursor:pointer}.sq-favorite-toggle[aria-pressed=true]{background:#234b66;color:#ffe58a;border-color:#c7a650}
 .sq-practical-btn{border:1px solid #4787a1;background:#123954;color:#fff;border-radius:12px;padding:11px 15px;cursor:pointer;font-weight:700}.sq-practical-btn:hover{background:#1b5776}.sq-practical-actions{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}.sq-practical-overlay{position:fixed;inset:0;z-index:2147483000;background:#001322d9;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}.sq-practical-overlay[hidden]{display:none!important}.sq-practical-modal{background:#0a263e;border:1px solid #416a86;border-radius:22px;max-width:460px;width:100%;max-height:calc(100dvh - 40px);overflow:auto;padding:24px;box-sizing:border-box;color:white;box-shadow:0 25px 75px #0009}.sq-practical-modal h2{margin:0 0 14px}.sq-practical-modal label{display:block;margin:12px 0;color:#c6d7e5}.sq-practical-modal input{display:block;width:100%;box-sizing:border-box;margin-top:6px;border:1px solid #6487a0;background:#102f49;color:white;padding:12px;border-radius:12px;font:inherit}.sq-practical-modal .sq-practical-btn{margin-top:8px}.sq-practical-modal .sq-practical-primary{background:#18cdb4;color:#062c36;border-color:#18cdb4}.sq-practical-modal .sq-practical-result{padding:15px;background:#143a51;border-radius:12px;margin:14px 0;font-size:22px;font-weight:750}
 </style>
-<div id="sq-quick-calculator" class="sq-practical-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="sq-calculator-title"><section class="sq-practical-modal"><h2 id="sq-calculator-title">Quick split calculator</h2><p>Calculate a share without saving an expense.</p><label>Bill total <input id="sq-calc-total" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label><label>Tip percentage <input id="sq-calc-tip" type="number" min="0" max="100" step="0.5" inputmode="decimal" value="0"></label><label>Number of people <input id="sq-calc-people" type="number" min="1" max="1000" step="1" inputmode="numeric" value="2"></label><div id="sq-calc-result" class="sq-practical-result" aria-live="polite">$0.00 per person</div><p id="sq-calc-explanation"></p><button type="button" id="sq-calc-close" class="sq-practical-btn">Close</button></section></div>
+<div id="sq-quick-calculator" class="sq-practical-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="sq-calculator-title"><section class="sq-practical-modal"><h2 id="sq-calculator-title">Quick split calculator</h2><p>Calculate a share without saving an expense.</p><label>Bill total <input id="sq-calc-total" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label><label>Tip percentage <input id="sq-calc-tip" type="number" min="0" max="100" step="0.5" inputmode="decimal" value="0"></label><label>Number of people <input id="sq-calc-people" type="number" min="1" max="1000" step="1" inputmode="numeric" value="2"></label><div id="sq-calc-result" class="sq-practical-result" aria-live="polite">$0.00 per person</div><p id="sq-calc-explanation"></p><button type="button" id="sq-calc-close" class="doweo-close-control sq-practical-btn">Close</button></section></div>
 <script id="sq-four-practical-features-js">
 (function(){
 'use strict';
@@ -8026,7 +8026,7 @@ body.trackers-view .sq-favorite-toggle[aria-pressed="true"]{background:#123c55!i
  const save=document.createElement('button');save.type='button';save.className='sq-layout-save';save.textContent='Save changes';
  const reset=document.createElement('button');reset.type='button';reset.className='sq-layout-reset';reset.textContent='Show all';
  const cancel=document.createElement('button');cancel.type='button';cancel.className='sq-layout-cancel';cancel.textContent='Cancel';
- const closeButton=document.createElement('button');closeButton.type='button';closeButton.className='sq-layout-close';closeButton.textContent='×';closeButton.setAttribute('aria-label','Close customization window');
+ const closeButton=document.createElement('button');closeButton.type='button';closeButton.className='sq-layout-close doweo-close-control';closeButton.textContent='×';closeButton.setAttribute('aria-label','Close customization window');
  panel.appendChild(closeButton);
  const status=document.createElement('span');status.className='sq-layout-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
  buttons.append(reset,cancel,save);panel.append(heading,description,grid,buttons,status);
@@ -8355,7 +8355,7 @@ body.trackers-view .sq-favorite-toggle[aria-pressed="true"]{background:#123c55!i
 #sq-social-launch{position:fixed;right:22px;bottom:24px;z-index:900;border:1px solid #4fd8c1;border-radius:15px;background:linear-gradient(125deg,#0b665f,#173d6c);color:white;padding:13px 17px;font-weight:750;box-shadow:0 12px 35px #0006;cursor:pointer}#sq-social-modal[hidden]{display:none!important}#sq-social-modal{position:fixed;inset:0;z-index:99999;background:#03111cdb;display:grid;place-items:center;padding:16px;overflow:auto}#sq-social-panel{background:linear-gradient(145deg,#0d2c45,#091b31);border:1px solid #4b8098;border-radius:22px;width:min(650px,100%);max-height:90vh;overflow:auto;color:#f4fbff;padding:22px;box-shadow:0 24px 75px #0008}#sq-social-panel h2{margin:0 0 10px}#sq-social-panel .sq-social-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:15px 0}#sq-social-panel button{background:#19445a;border:1px solid #4c8192;border-radius:11px;color:white;padding:10px 12px;cursor:pointer}#sq-social-panel button[aria-selected="true"]{background:#087c71}#sq-social-panel .sq-social-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#sq-social-panel .sq-social-stat{padding:15px;border:1px solid #426780;background:#12354a;border-radius:13px}#sq-social-panel .sq-social-stat strong{display:block;font-size:22px;color:#6cf3d3}#sq-social-panel input,#sq-social-panel textarea,#sq-social-panel select{width:100%;box-sizing:border-box;background:#0a2235;color:white;border:1px solid #60839a;border-radius:10px;padding:11px;margin:7px 0 14px}#sq-social-panel label{display:block;font-weight:650}#sq-social-panel .sq-social-head{display:flex;align-items:center;justify-content:space-between;gap:10px}#sq-social-panel .sq-social-muted{color:#b6d1df;font-size:13px}#sq-social-panel .sq-social-member{display:inline-block;border:1px solid #4b788c;border-radius:20px;padding:7px 10px;margin:4px}#sq-social-panel #sq-social-preview{display:block;width:min(100%,340px);height:auto;margin:12px auto;border-radius:15px}@media(max-width:900px){#sq-social-launch{bottom:calc(92px + env(safe-area-inset-bottom));right:13px;padding:10px 12px}#sq-social-panel{padding:16px}}
 </style>
 <button id="sq-social-launch" type="button">Wrapped &amp; Social</button>
-<div id="sq-social-modal" hidden role="dialog" aria-modal="true" aria-labelledby="sq-social-title"><div id="sq-social-panel"><div class="sq-social-head"><h2 id="sq-social-title">DoWeo Social</h2><button id="sq-social-close" type="button" aria-label="Close">✕</button></div><div class="sq-social-tabs" role="tablist"><button type="button" data-social-tab="wrapped" aria-selected="true">Wrapped</button><button type="button" data-social-tab="group">Group profile</button><button type="button" data-social-tab="share">Share card</button><button type="button" data-social-tab="reactions">Reactions</button></div><div id="sq-social-body"></div><p class="sq-social-muted" id="sq-social-message" role="status"></p></div></div>
+<div id="sq-social-modal" hidden role="dialog" aria-modal="true" aria-labelledby="sq-social-title"><div id="sq-social-panel"><div class="sq-social-head"><h2 id="sq-social-title">DoWeo Social</h2><button class="doweo-close-control" id="sq-social-close" type="button" aria-label="Close">✕</button></div><div class="sq-social-tabs" role="tablist"><button type="button" data-social-tab="wrapped" aria-selected="true">Wrapped</button><button type="button" data-social-tab="group">Group profile</button><button type="button" data-social-tab="share">Share card</button><button type="button" data-social-tab="reactions">Reactions</button></div><div id="sq-social-body"></div><p class="sq-social-muted" id="sq-social-message" role="status"></p></div></div>
 <script id="sq-social-premium-js">
 (function(){'use strict';
 const modal=document.getElementById('sq-social-modal'),content=document.getElementById('sq-social-body'),message=document.getElementById('sq-social-message');let tab='wrapped',period='previous',profile=null;
@@ -8778,15 +8778,15 @@ const toggle=wrap.querySelector('#sq-chat-plus-button'),menu=wrap.querySelector(
 const close=()=>{menu.hidden=true;panel.hidden=true;toggle.setAttribute('aria-expanded','false')};
 toggle.addEventListener('click',()=>{const wasOpen=!menu.hidden;close();if(!wasOpen){menu.hidden=false;toggle.setAttribute('aria-expanded','true')}});
 const escapeText=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function showPanel(title,items,type){menu.hidden=true;toggle.setAttribute('aria-expanded','true');panel.hidden=false;panel.innerHTML='<div class="sq-connect-head"><strong>'+escapeText(title)+'</strong><button type="button" data-connect-close aria-label="Close">✕</button></div>'+(items.length?items.map((it,i)=>'<button type="button" class="sq-connect-choice" data-connect-index="'+i+'"><strong>'+escapeText(it.label)+'</strong>'+(it.detail?'<small>'+escapeText(it.detail)+'</small>':'')+'</button>').join(''):'<p>No '+(type==='poll'?'polls':'expenses')+' in this tracker yet.</p>');
+function showPanel(title,items,type){menu.hidden=true;toggle.setAttribute('aria-expanded','true');panel.hidden=false;panel.innerHTML='<div class="sq-connect-head"><strong>'+escapeText(title)+'</strong><button class="doweo-close-control" type="button" data-connect-close aria-label="Close">✕</button></div>'+(items.length?items.map((it,i)=>'<button type="button" class="sq-connect-choice" data-connect-index="'+i+'"><strong>'+escapeText(it.label)+'</strong>'+(it.detail?'<small>'+escapeText(it.detail)+'</small>':'')+'</button>').join(''):'<p>No '+(type==='poll'?'polls':'expenses')+' in this tracker yet.</p>');
  panel.onclick=e=>{if(e.target.closest('[data-connect-close]')){close();return}const btn=e.target.closest('[data-connect-index]');if(!btn)return;const item=items[Number(btn.dataset.connectIndex)];if(!item)return;const input=document.getElementById('tracker-chat-input');const prefix=input.value.trim();const reference=type==='poll'?'[Group poll] '+item.label+' (Poll ID: '+item.id+')':'[Expense] '+item.label+' (Expense ID: '+item.id+')';input.value=(prefix?prefix+'\n':'')+reference;input.focus();close();};
 }
 menu.addEventListener('click',async e=>{const btn=e.target.closest('[data-connect]');if(!btn)return;const kind=btn.dataset.connect;
  if(kind==='attachment'){close();photo.click();return}
  const tracker=window.sqLastOpenedTrackerDetail;if(!tracker?.id){close();alert('Open a tracker first.');return}
  if(kind==='expense'){const entries=(tracker.entries||[]).filter(x=>x.type==='debt'&&x.id);showPanel('Connect an expense',entries.map(x=>({id:x.id,label:x.description||x.note||x.title||'Expense',detail:(x.amount!=null?'$'+Number(x.amount).toFixed(2):'')})),'expense');return}
- showPanel('Connect a group poll',[],'poll');panel.innerHTML='<div class="sq-connect-head"><strong>Connect a group poll</strong><button type="button" data-connect-close>✕</button></div><p>Loading polls…</p>';
- try{const rows=await window.squareUpApi('trackers/'+encodeURIComponent(tracker.id)+'/polls');if(window.sqLastOpenedTrackerDetail?.id!==tracker.id)return;showPanel('Connect a group poll',(Array.isArray(rows)?rows:[]).map(x=>({id:x.id,label:x.question,detail:(x.totalVotes||0)+' votes · '+(x.closed?'Closed':'Open')})),'poll')}catch(err){panel.innerHTML='<div class="sq-connect-head"><strong>Group polls</strong><button type="button" data-connect-close>✕</button></div><p>Could not load polls: '+escapeText(err.message)+'</p>'}
+ showPanel('Connect a group poll',[],'poll');panel.innerHTML='<div class="sq-connect-head"><strong>Connect a group poll</strong><button class="doweo-close-control" type="button" data-connect-close aria-label="Close">✕</button></div><p>Loading polls…</p>';
+ try{const rows=await window.squareUpApi('trackers/'+encodeURIComponent(tracker.id)+'/polls');if(window.sqLastOpenedTrackerDetail?.id!==tracker.id)return;showPanel('Connect a group poll',(Array.isArray(rows)?rows:[]).map(x=>({id:x.id,label:x.question,detail:(x.totalVotes||0)+' votes · '+(x.closed?'Closed':'Open')})),'poll')}catch(err){panel.innerHTML='<div class="sq-connect-head"><strong>Group polls</strong><button class="doweo-close-control" type="button" data-connect-close aria-label="Close">✕</button></div><p>Could not load polls: '+escapeText(err.message)+'</p>'}
 });
 document.addEventListener('pointerdown',e=>{if(!wrap.contains(e.target))close()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
@@ -10088,7 +10088,7 @@ const money=n=>'$'+Number(n||0).toFixed(2);
 function schedule(item,year,mon){if(item.active===false||item.recurring_enabled===false)return [];const raw=String(item.due||'').slice(0,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(raw))return [];const [y,m,d]=raw.split('-').map(Number);let first=new Date(y,m-1,d),end=new Date(year,mon+1,0);if(first>end)return [];let dates=[];let cursor=new Date(first);for(let i=0;i<1500&&cursor<=end;i++){if(cursor.getFullYear()===year&&cursor.getMonth()===mon)dates.push(cursor.getDate());const before=cursor.getTime();if(item.frequency==='weekly')cursor.setDate(cursor.getDate()+7);else if(item.frequency==='yearly'){const target=cursor.getFullYear()+1;cursor=new Date(target,m-1,Math.min(d,new Date(target,m,0).getDate()))}else{const nextMonth=cursor.getMonth()+1;cursor=new Date(cursor.getFullYear(),nextMonth,Math.min(d,new Date(cursor.getFullYear(),nextMonth+1,0).getDate()))}if(cursor.getTime()<=before)break;}return dates;}
 function render(){const days=el('sq-premium-days');if(!days)return;const items=window.sqPremiumBills||[];el('sq-premium-monthly').textContent=money(items.filter(x=>x.active!==false).reduce((s,x)=>s+Number(x.amount||0)*(x.frequency==='weekly'?52/12:x.frequency==='yearly'?1/12:1),0));el('sq-premium-active').textContent=items.filter(x=>x.active!==false&&(/subscription/i.test(x.kind||'')||/netflix|spotify|disney|hulu|youtube|claude|chatgpt|prime|apple tv/i.test(x.name||''))).length;const now=new Date(),future=new Date(now);future.setDate(now.getDate()+30);let upcoming=0;for(let t=new Date(now.getFullYear(),now.getMonth(),1);t<=future;t.setMonth(t.getMonth()+1)){for(const x of items)for(const day of schedule(x,t.getFullYear(),t.getMonth())){const date=new Date(t.getFullYear(),t.getMonth(),day);if(date>=new Date(now.getFullYear(),now.getMonth(),now.getDate())&&date<=future)upcoming++;}}el('sq-premium-upcoming').textContent=upcoming;el('sq-premium-month').textContent=month.toLocaleDateString(undefined,{month:'long',year:'numeric'});days.replaceChildren();['M','T','W','T','F','S','S'].forEach(x=>{const a=document.createElement('span');a.textContent=x;days.append(a)});const first=(new Date(month.getFullYear(),month.getMonth(),1).getDay()+6)%7;for(let i=0;i<first;i++){const a=document.createElement('span');days.append(a)}const count=new Date(month.getFullYear(),month.getMonth()+1,0).getDate();for(let d=1;d<=count;d++){const hits=items.filter(x=>schedule(x,month.getFullYear(),month.getMonth()).includes(d));const b=document.createElement('button');b.type='button';b.textContent=d;if(hits.length){b.classList.add('has-bill');const dot=document.createElement('i');b.append(dot)}if(chosen===d)b.classList.add('chosen');b.addEventListener('click',()=>{chosen=d;render()});days.append(b)}const out=el('sq-premium-selected');out.replaceChildren();if(!chosen){out.textContent='Select a day to see scheduled bills and subscriptions.';return}const hits=items.filter(x=>schedule(x,month.getFullYear(),month.getMonth()).includes(chosen));const title=document.createElement('strong');title.textContent=new Date(month.getFullYear(),month.getMonth(),chosen).toLocaleDateString(undefined,{month:'long',day:'numeric'})+' · '+hits.length+' scheduled';out.append(title);if(!hits.length){const p=document.createElement('p');p.textContent='No scheduled charges for this day.';out.append(p)}hits.forEach(x=>{const line=document.createElement('div'),name=document.createElement('span'),amount=document.createElement('strong');name.textContent=x.name||'Bill';amount.textContent=money(x.amount);line.append(name,amount);out.append(line)})}
 window.sqPremiumRender=render;el('sq-premium-prev')?.addEventListener('click',()=>{month.setMonth(month.getMonth()-1);chosen=null;render()});el('sq-premium-next')?.addEventListener('click',()=>{month.setMonth(month.getMonth()+1);chosen=null;render()});
-window.sqPremiumDetails=function(item){document.querySelector('.sq-premium-modal')?.remove();const overlay=document.createElement('div');overlay.className='sq-premium-modal';const card=document.createElement('section');card.className='sq-premium-dialog';card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');const h=document.createElement('h2');h.textContent=item.name||'Recurring bill';const price=document.createElement('div');price.className='sq-premium-price';price.textContent=money(item.amount);const dl=document.createElement('dl');[['Frequency',item.frequency||'Monthly'],['Next due',item.due||'Not scheduled'],['Status',item.active===false?'Inactive':'Scheduled'],['Payment','Not charged automatically']].forEach(([a,b])=>{const wrap=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=a;dd.textContent=b;wrap.append(dt,dd);dl.append(wrap)});const note=document.createElement('p');note.textContent='DoWeo records scheduled shared expenses. This is not a payment or bank transaction.';const close=document.createElement('button');close.textContent='Close';const dismiss=()=>{overlay.remove();document.removeEventListener('keydown',esc)};const esc=e=>{if(e.key==='Escape')dismiss()};close.addEventListener('click',dismiss);overlay.addEventListener('click',e=>{if(e.target===overlay)dismiss()});document.addEventListener('keydown',esc);card.append(h,price,dl,note,close);overlay.append(card);document.body.append(overlay);close.focus()};
+window.sqPremiumDetails=function(item){document.querySelector('.sq-premium-modal')?.remove();const overlay=document.createElement('div');overlay.className='sq-premium-modal';const card=document.createElement('section');card.className='sq-premium-dialog';card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');const h=document.createElement('h2');h.textContent=item.name||'Recurring bill';const price=document.createElement('div');price.className='sq-premium-price';price.textContent=money(item.amount);const dl=document.createElement('dl');[['Frequency',item.frequency||'Monthly'],['Next due',item.due||'Not scheduled'],['Status',item.active===false?'Inactive':'Scheduled'],['Payment','Not charged automatically']].forEach(([a,b])=>{const wrap=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=a;dd.textContent=b;wrap.append(dt,dd);dl.append(wrap)});const note=document.createElement('p');note.textContent='DoWeo records scheduled shared expenses. This is not a payment or bank transaction.';const close=document.createElement('button');close.classList.add('doweo-close-control');close.textContent='Close';const dismiss=()=>{overlay.remove();document.removeEventListener('keydown',esc)};const esc=e=>{if(e.key==='Escape')dismiss()};close.addEventListener('click',dismiss);overlay.addEventListener('click',e=>{if(e.target===overlay)dismiss()});document.addEventListener('keydown',esc);card.append(h,price,dl,note,close);overlay.append(card);document.body.append(overlay);close.focus()};
 render();
 })();
 </script>
@@ -11553,7 +11553,7 @@ body.sq-action-dialog-open{overflow:hidden!important}
 }
 </style>
 <div id="sq-pay-now-modal" hidden><div id="sq-pay-now-panel" role="dialog" aria-modal="true" aria-labelledby="sq-pay-now-title" aria-describedby="sq-pay-now-description">
-<div id="sq-pay-now-head"><h2 id="sq-pay-now-title">Pay Now</h2><button type="button" id="sq-pay-now-cancel" aria-label="Close payment window">✕</button></div>
+<div id="sq-pay-now-head"><h2 id="sq-pay-now-title">Pay Now</h2><button class="doweo-close-control" type="button" id="sq-pay-now-cancel" aria-label="Close payment window">✕</button></div>
 <p id="sq-pay-now-description">Settle a balance securely using your friend's payment account.</p>
 <div id="sq-pay-method-heading" class="sq-pay-method-label">Choose recipient &amp; payment method</div><div id="sq-pay-method-options" role="group" aria-labelledby="sq-pay-method-heading"></div>
 <div id="sq-pay-now-summary"><span>Outstanding balance</span><strong id="sq-pay-now-owed">$0.00</strong><span id="sq-pay-now-recipient"></span></div>
@@ -11693,7 +11693,7 @@ body.sq-action-dialog-open{overflow:hidden!important}
 </style>
 <div class="sq-balanced-overlay" id="sq-balanced-add-sheet" hidden role="presentation">
  <section class="sq-balanced-sheet" role="dialog" aria-modal="true" aria-labelledby="sq-balanced-add-title">
-  <div class="sq-balanced-sheet-head"><h2 id="sq-balanced-add-title">What would you like to add?</h2><button type="button" class="sq-balanced-close" data-sq-close aria-label="Close">×</button></div>
+  <div class="sq-balanced-sheet-head"><h2 id="sq-balanced-add-title">What would you like to add?</h2><button type="button" class="doweo-close-control sq-balanced-close" data-sq-close aria-label="Close">×</button></div>
   <p>Choose a quick action to get started.</p>
   <div class="sq-balanced-actions">
    <button type="button" data-sq-action="quick-expense"><span class="sq-balanced-icon">＋</span><span><strong>Add Expense</strong><small>Record money owed between people</small></span></button>
@@ -11705,7 +11705,7 @@ body.sq-action-dialog-open{overflow:hidden!important}
 </div>
 <div class="sq-balanced-overlay" id="sq-mobile-more-sheet" hidden role="presentation">
  <section class="sq-balanced-sheet" role="dialog" aria-modal="true" aria-labelledby="sq-balanced-more-title">
-  <div class="sq-balanced-sheet-head"><h2 id="sq-balanced-more-title">More</h2><button type="button" class="sq-balanced-close" data-sq-close aria-label="Close">×</button></div>
+  <div class="sq-balanced-sheet-head"><h2 id="sq-balanced-more-title">More</h2><button type="button" class="doweo-close-control sq-balanced-close" data-sq-close aria-label="Close">×</button></div>
   <p>All your DoWeo tools in one place.</p>
   <div class="sq-balanced-actions sq-balanced-more-grid">
    <button type="button" data-sq-destination="sqev-nav"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 15h3m3 0h2"/></svg></span><strong>Events</strong></button>
@@ -11951,7 +11951,7 @@ body > #sq-layout-panel {
 <section class="ac-panel" role="dialog" aria-modal="true" aria-labelledby="ac-heading" aria-describedby="ac-status">
  <div class="ac-head">
   <div class="ac-heading-wrap"><span class="ac-brand" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="3"/><path d="M3 11h18M7 7V5a2 2 0 0 1 2-2h8"/><path d="M14 15h4"/></svg></span><div><span class="ac-eyebrow">DOWEO PAYMENT</span><h2 id="ac-heading">Apple Cash via Messages</h2></div></div>
-  <button type="button" id="ac-close" class="ac-close" aria-label="Close Apple Cash payment">×</button>
+  <button type="button" id="ac-close" class="doweo-close-control ac-close" aria-label="Close Apple Cash payment">×</button>
  </div>
  <div class="ac-summary">
   <span class="ac-summary-label">AMOUNT TO SEND</span>
@@ -12677,6 +12677,39 @@ body.trackers-view #trackers-page .trackers-header p{color:#bdd5e0!important;max
   margin:0 auto 2px!important;left:auto!important;right:auto!important;transform:none!important;
  }
 }
+</style>
+
+<style id="doweo-visible-close-controls">
+/* Shared visual treatment for existing dismiss controls, including dynamic dialogs. */
+html body button.doweo-close-control,
+html body #share-modal .card.modal > button.close,
+html body #new-modal button.close,
+html body #sq-apple-cash-v2 button.ac-close,
+html body #sq-instagram-invite button.sq-ig-x,
+html body #sq-layout-panel button.sq-layout-close {
+  min-width:48px!important; min-height:48px!important;
+  width:auto!important; height:auto!important; flex-shrink:0!important;
+  padding:10px 14px!important; box-sizing:border-box!important;
+  border:2px solid #86b5cc!important; border-radius:12px!important;
+  background:#214b63!important; color:#ffffff!important;
+  opacity:1!important; font-weight:750!important; line-height:1.2!important;
+  box-shadow:0 3px 10px rgba(0,0,0,.28)!important;
+  cursor:pointer!important; touch-action:manipulation;
+}
+html body button.doweo-close-control:hover {
+  background:#306781!important; border-color:#b8e6f5!important;
+}
+html body button.doweo-close-control:focus-visible {
+  outline:3px solid #83ffba!important; outline-offset:3px!important;
+}
+html body button.doweo-close-control:active { background:#173b50!important; }
+html body button.doweo-close-control:is(.close,.sq-tour-close,.sq-details-x,.sq-ig-x,.sq-layout-close,.sq-balanced-close,.ac-close,#sq-search-close,#sq-ai-close,#sq-social-close,#sq-pay-now-cancel,[data-connect-close],#chat-cancel-reply) {
+  width:48px!important; height:48px!important; padding:0!important;
+  font-size:26px!important; text-align:center!important;
+}
+/* Reserve room beside absolute corner controls so headings stay readable. */
+html body .modal:has(>button.close) > h2 { padding-right:56px!important; min-height:48px; }
+html body #sq-instagram-invite:has(.sq-ig-x) h2 { padding-right:48px; }
 </style>
 </body>
 </html>
