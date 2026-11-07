@@ -1,4 +1,4 @@
-# SquareUp Events
+# DoWeo Events
 
 Implementation scope: linked tracker, authenticated RSVPs, itinerary, and connected expenses.
 
