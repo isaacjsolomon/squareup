@@ -1,4 +1,4 @@
-// SquareUp Events client. Uses the existing signed-in API client.
+// DoWeo Events client. Uses the existing signed-in API client.
 export function initEvents({api,getTrackers,getUser}){
  const css=document.createElement('style');
  css.textContent=`
@@ -151,7 +151,7 @@ export function initEvents({api,getTrackers,getUser}){
  const panel=document.createElement('section');
  panel.id='sqev-view';panel.hidden=true;
  panel.innerHTML=`<div class="sqev-shell">
- <div class="sqev-toolbar"><div><span class="sqev-eyebrow">SQUAREUP / EVENT PLANNING</span><h2>Events</h2><p class="sqev-subtitle">Plan together, organize the details, and stay on top of shared expenses.</p></div>
+ <div class="sqev-toolbar"><div><span class="sqev-eyebrow">DOWEO / EVENT PLANNING</span><h2>Events</h2><p class="sqev-subtitle">Plan together, organize the details, and stay on top of shared expenses.</p></div>
  <div class="sqev-toolbar-actions"><button type="button" id="sqev-back-home">← Home</button><button type="button" class="sqev-primary" id="sqev-create-toggle">+ New event</button></div></div>
  <div id="sqev-dashboard">
  <div class="sqev-overview"><div class="sqev-stat"><span>Total events</span><strong id="sqev-total">0</strong></div><div class="sqev-stat"><span>Upcoming</span><strong id="sqev-upcoming">0</strong></div><div class="sqev-stat"><span>Past events</span><strong id="sqev-past">0</strong></div></div>
@@ -226,7 +226,7 @@ export function initEvents({api,getTrackers,getUser}){
   $('sqev-details').innerHTML=`
    <div class="sqev-hero" ${e.cover_url?'style="background-image:url(&quot;'+safe(e.cover_url)+'&quot;)"':''}>
     <div class="sqev-hero-content">
-     <span class="sqev-eyebrow">SQUAREUP / EVENT DETAILS</span><h2>${safe(e.title)}</h2>
+     <span class="sqev-eyebrow">DOWEO / EVENT DETAILS</span><h2>${safe(e.title)}</h2>
      <p class="sqev-subtitle">${safe(e.description||'Plan together, enjoy the event.')}</p>
      <div class="sqev-event-meta">
       <span>◷ ${safe(date(e.starts_at))} – ${safe(date(e.ends_at))}</span>
