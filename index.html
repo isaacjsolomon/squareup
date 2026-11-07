@@ -7288,10 +7288,10 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
 @media(max-width:700px){#sq-ai-launch{bottom:85px;right:14px;padding:9px 12px}#sq-ai-window{inset:0;width:100vw;height:100dvh;border:0;border-radius:0;z-index:99999}#sq-ai-window .sq-ai-stream{padding-top:22px}.sq-help-grid{grid-template-columns:1fr}.sq-help-topics{grid-template-columns:1fr}#sq-help-page{padding:12px}}
 </style>
 <button id="sq-ai-launch" type="button" aria-label="Ask DoWeo AI" aria-controls="sq-ai-window" aria-expanded="false"><span class="sq-ai-mark">✦</span> Ask DoWeo AI</button>
-<section id="sq-ai-window" hidden role="dialog" aria-label="DoWeo AI Help" aria-modal="false">
- <div class="sq-ai-head"><span class="sq-ai-avatar">✦</span><div><strong>DoWeo AI</strong><small>● Help assistant</small></div><button class="doweo-close-control" type="button" id="sq-ai-close" aria-label="Close help chat">×</button></div>
- <div class="sq-ai-stream" id="sq-ai-stream" aria-live="polite"><div class="sq-ai-message">Hi! I'm DoWeo's help assistant. I can guide you through creating trackers, splitting bills, account access and more. What would you like to know?</div><div class="sq-ai-quick" id="sq-ai-quick"><button type="button">How do I create a tracker?</button><button type="button">How do I add an expense?</button><button type="button">How do I invite friends?</button><button type="button">I'm having a problem logging in</button></div></div>
- <form id="sq-ai-form" class="sq-ai-input"><input id="sq-ai-question" aria-label="Ask a question" placeholder="Type a message…" maxlength="500" required><button type="submit" aria-label="Send question">➤</button></form>
+<section id="sq-ai-window" hidden role="dialog" aria-label="DoWeo AI conversation" aria-modal="false">
+ <div class="sq-ai-head"><span class="sq-ai-avatar">✦</span><div><strong>DoWeo AI</strong><small>● Conversation & app help</small></div><button class="doweo-close-control" type="button" id="sq-ai-close" aria-label="Close help chat">×</button></div>
+ <div class="sq-ai-stream" id="sq-ai-stream" aria-live="polite"><div class="sq-ai-message">Hi! I'm DoWeo AI. Want to talk through an idea, plan something, or just chat? I can help with the app too. What's on your mind?</div><div class="sq-ai-quick" id="sq-ai-quick"><button type="button">Start a conversation with me</button><button type="button">Help me brainstorm something fun to do</button><button type="button">Help me plan a trip with friends</button><button type="button">How do I create a tracker?</button></div></div>
+ <form id="sq-ai-form" class="sq-ai-input"><input id="sq-ai-question" aria-label="Ask a question" placeholder="Type a message…" maxlength="2000" required><button type="submit" aria-label="Send question">➤</button></form>
  <a class="sq-ai-support" id="sq-ai-contact" href="mailto:help.doweo@gmail.com?subject=DoWeo%20Support%20Request">✉ Contact Support ↗</a>
 </section>
 <script id="sq-ai-script">
@@ -7314,7 +7314,26 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  function setOpen(open){panel.hidden=!open;launch.setAttribute('aria-expanded',String(open));if(open)input.focus();}
  launch.addEventListener('click',()=>setOpen(panel.hidden));close.addEventListener('click',()=>setOpen(false));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)setOpen(false)});
  function bubble(message,user){const el=document.createElement('div');el.className='sq-ai-message'+(user?' user':'');el.textContent=message;stream.append(el);stream.scrollTop=stream.scrollHeight;}
- function ask(q){q=String(q||'').trim().slice(0,500);if(!q)return;const quick=document.getElementById('sq-ai-quick');if(quick)quick.remove();bubble(q,true);const found=faq.find(([re])=>re.test(q));bubble(found?found[1]:'I don’t have a verified answer to that question yet. Please use Contact Support below to email the DoWeo team. You can also ask about trackers, expenses, bill splitting, balances, account access, and settings.',false);}
+
+ let conversation=[],busy=false;
+ const notice=document.createElement('small');notice.className='sq-ai-privacy';notice.textContent='AI can make mistakes. Messages are processed by Cloudflare AI. No tracker data is shared.';form.after(notice);
+ const reset=document.createElement('button');reset.type='button';reset.className='sq-ai-reset';reset.textContent='New chat';close.before(reset);
+ reset.onclick=()=>{if(busy)return;conversation=[];stream.replaceChildren();bubble("Hi! Want to talk through an idea, plan something, or chat about your day?",false)};
+ async function ask(q){
+ q=String(q||'').trim().slice(0,2000);if(!q||busy)return;
+ document.getElementById('sq-ai-quick')?.remove();bubble(q,true);
+ busy=true;form.querySelector('button').disabled=true;reset.disabled=true;
+ const pending=document.createElement('div');pending.className='sq-ai-message';pending.textContent='Thinking…';stream.append(pending);stream.scrollTop=stream.scrollHeight;
+ const messages=[...conversation,{role:'user',content:q}].slice(-15);
+ try{
+ if(typeof window.squareUpApi!=='function')throw Error('Please sign in to chat.');
+ const result=await window.squareUpApi('ai-chat','POST',{messages});
+ if(!result.reply)throw Error('No reply received. Please try again.');
+ bubble(result.reply,false);conversation=[...messages,{role:'assistant',content:result.reply.slice(0,2000)}].slice(-14);
+ }catch(err){bubble(err.message||'Could not send your message. Please try again.',false)}
+ finally{pending.remove();busy=false;form.querySelector('button').disabled=false;reset.disabled=false}
+ }
+
  form.addEventListener('submit',e=>{e.preventDefault();ask(input.value);input.value='';input.focus();});stream.addEventListener('click',e=>{const btn=e.target.closest('.sq-ai-quick button');if(btn)ask(btn.textContent)});
  function openHelp(){document.body.classList.remove('split-view','settings-view','about-view','trackers-view','analytics-view','friends-view','notifications-view');document.body.classList.add('sq-help-view');document.querySelectorAll('.sq-nav-link').forEach(b=>{b.classList.toggle('active',b.id==='nav-help-center');b.removeAttribute('aria-current')});document.getElementById('nav-help-center').setAttribute('aria-current','page');history.replaceState(null,'',location.pathname+location.search+'#help');window.scrollTo(0,0);}
  // Move Help Center from the sidebar into the header, immediately after Search.
@@ -7330,7 +7349,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  // Existing site navigation remains authoritative; clear the help-only page state on any other nav selection.
  document.querySelectorAll('.sq-nav-link:not(#nav-help-center)').forEach(b=>b.addEventListener('click',()=>document.body.classList.remove('sq-help-view')));
  if(location.hash==='#help')openHelp();
- // This first release uses reviewed help answers, not a live AI API. No secrets are exposed in browser code.
+ // Conversation history stays in memory for this page session; the server authenticates each request.
 })();
 </script>
 
@@ -12751,6 +12770,14 @@ html body #sq-instagram-invite:has(.sq-ig-x) h2 { padding-right:48px; }
  html body #sq-ai-window .sq-ai-input,html body #sq-ai-window .sq-ai-support {flex-shrink:0}
 }
 </style>
-</body>
+<style id="doweo-conversational-ai">
+#sq-ai-window .sq-ai-head{flex-shrink:0}
+#sq-ai-window .sq-ai-head>div{min-width:0;flex:1}
+#sq-ai-window .sq-ai-head #sq-ai-close{margin-left:0}
+#sq-ai-window .sq-ai-reset{font-size:12px;white-space:nowrap;min-height:40px;padding:8px;border:1px solid #6485a7;border-radius:10px;background:#17344d;color:white}
+#sq-ai-window .sq-ai-privacy{display:block;flex-shrink:0;padding:0 15px 5px;color:#a9bfd7;font-size:10px;line-height:1.4}
+#sq-ai-window button:disabled{opacity:.55;cursor:wait}
+#sq-ai-window .sq-ai-head small{font-size:11px}
+</style></body>
 </html>
 
