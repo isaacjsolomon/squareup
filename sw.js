@@ -1,8 +1,9 @@
 
 // DoWeo PWA: cache public app assets only. Never cache API/auth/user data.
-const CACHE = 'doweo-public-assets-v2';
+const CACHE = 'doweo-public-assets-v3';
 const ASSETS = [
   '/manifest.webmanifest',
+  '/images/logo.png',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/icon-maskable-192.png',
@@ -42,8 +43,15 @@ self.addEventListener('fetch', event => {
   ) return;
 
   event.respondWith(
-    caches.match(event.request)
-      .then(cached => cached || fetch(event.request))
+    fetch(event.request)
+      .then(response => {
+        if (response.ok) {
+          const copy = response.clone();
+          event.waitUntil(caches.open(CACHE).then(cache => cache.put(event.request, copy)));
+        }
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
 
