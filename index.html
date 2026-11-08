@@ -13883,6 +13883,55 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
   });
 })();
 </script>
+<style id="dw-wallet-activity-amount-typography-fix">
+/* Keep whole currency amounts readable without splitting cents across lines. */
+#sq-nextgen #sq-wallet-activity .sq-ng-item {
+  min-width: 0!important;
+  gap: 12px!important;
+}
+#sq-nextgen #sq-wallet-activity .sq-ng-item > div {
+  flex: 1 1 auto!important;
+  min-width: 0!important;
+}
+#sq-nextgen #sq-wallet-activity .sq-ng-item > div b {
+  font-size: clamp(14px, 1.2vw, 17px)!important;
+  line-height: 1.35!important;
+  overflow-wrap: anywhere;
+}
+#sq-nextgen #sq-wallet-activity .sq-ng-item > div small {
+  font-size: 12px!important;
+  line-height: 1.4!important;
+}
+#sq-nextgen .sq-wallet-compact-layout #sq-wallet-activity .sq-ng-item > strong {
+  display: block!important;
+  flex: 0 0 auto!important;
+  max-width: none!important;
+  font-size: clamp(17px, 1.7vw, 23px)!important;
+  font-weight: 800!important;
+  line-height: 1.15!important;
+  letter-spacing: -.025em!important;
+  font-variant-numeric: tabular-nums!important;
+  white-space: nowrap!important;
+  word-break: normal!important;
+  overflow-wrap: normal!important;
+  text-align: right!important;
+}
+@media (max-width: 520px) {
+  #sq-nextgen .sq-wallet-compact-layout #sq-wallet-activity .sq-ng-item {
+    padding: 12px!important;
+    gap: 8px!important;
+  }
+  #sq-nextgen .sq-wallet-compact-layout #sq-wallet-activity .sq-ng-item > strong {
+    font-size: clamp(16px, 4.4vw, 21px)!important;
+  }
+  #sq-nextgen #sq-wallet-activity .sq-ng-item > div b {
+    font-size: 13px!important;
+  }
+  #sq-nextgen #sq-wallet-activity .sq-ng-item > div small {
+    font-size: 11px!important;
+  }
+}
+</style>
 <script id="dw-mobile-reference-header-controls">
 (function(){
  'use strict';
