@@ -12909,6 +12909,138 @@ html body #sq-startup-overlay .sq-startup-content{
 @media(prefers-reduced-motion:reduce){
  #sq-startup-overlay .doweo-logo-trace{animation:none!important;stroke-dashoffset:0!important;opacity:1!important}
 }
-</style></body>
+</style><style id="doweo-unified-workspace">
+/* Deliberately scoped to content surfaces. Existing sidebar styles are untouched. */
+html body > .wrap {max-width:1240px!important}
+html body .wrap .tracker-heading{border-bottom:1px solid #2a4254!important;padding-bottom:20px!important;margin-bottom:24px!important;background:transparent!important;box-shadow:none!important}
+html body .wrap .tracker-heading h1{font-size:26px!important;letter-spacing:-.04em!important}
+html body .wrap :is(.card,.tracker-tile,.sq-return-panel,.sq-stat),
+html body #sq-nextgen :is(.sq-ng-card,.sq-ng-section){
+ background:#102638!important;border:1px solid #2c4659!important;border-radius:14px!important;box-shadow:0 4px 16px #03101b18!important;
+ backdrop-filter:none!important;-webkit-backdrop-filter:none!important;color:#edf5fa!important;
+}
+html body .wrap :is(input,select,textarea),html body #sq-nextgen :is(input,select,textarea){border-radius:10px!important;background:#0b2031!important;border-color:#3a566b!important;color:#edf5fa!important;font-size:16px}
+html body .wrap :is(h2,h3),html body #sq-nextgen :is(h2,h3){letter-spacing:-.025em!important}
+html body .wrap :is(.small-btn,.settings-action),html body #sq-nextgen .sq-ng-btn{border-radius:10px!important;min-height:44px}
+html body .wrap :is(.hint,.settings-muted,.tracker-sub){color:#a5bbcc!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary){
+ display:grid!important;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr)!important;
+ grid-template-areas:"welcome welcome" "controls controls" "trackers people" "activity activity"!important;
+ gap:20px!important;padding:0!important;margin:12px 0 28px!important;border:0!important;background:none!important;box-shadow:none!important;
+}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>.sq-return-welcome{grid-area:welcome!important;margin:0!important;padding:0!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-kicker{display:none!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-return-greeting{font-size:clamp(25px,3vw,34px)!important;line-height:1.2!important;margin:0 0 8px!important;letter-spacing:-.04em!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-intro{font-size:14px!important;color:#a6bccb!important;margin:0!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>#sq-desktop-balance-layout{
+ grid-area:controls!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:16px!important;
+ width:100%!important;max-width:none!important;margin:0!important;padding:0!important;background:none!important;border:0!important;
+}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-overview-stats{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;order:0!important;gap:14px!important;width:100%!important;margin:0!important;
+}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-stat{padding:20px!important;min-height:104px!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-stat span{font-size:13px!important;color:#aac0d0!important;display:block;margin-bottom:8px}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-stat strong{font-size:clamp(24px,3vw,34px)!important;line-height:1.1;font-weight:750!important;letter-spacing:-.035em}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-stat-net{color:#72e3c1!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-balance{
+ display:flex!important;order:2!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;
+ width:100%!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;background:none!important;box-shadow:none!important;
+}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-clean-balance-copy{display:none!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-clean-balance-actions{width:auto!important;display:flex!important;margin:0!important;gap:10px!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-clean-balance-actions button{min-height:44px!important;padding:10px 16px!important;border:1px solid #405f73!important;background:#142f42!important;color:#e7f3f9!important;border-radius:10px!important;font-size:13px!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions{
+ order:1!important;display:flex!important;flex-wrap:wrap!important;align-items:stretch!important;gap:10px!important;
+ width:100%!important;max-width:none!important;padding:0!important;margin:0!important;border:0!important;background:none!important;box-shadow:none!important;
+}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>button.dashboard-action:not([hidden]),
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>button.sq-calculator-action:not([hidden]){
+ display:flex!important;flex:1 1 145px!important;flex-direction:row!important;justify-content:center!important;align-items:center!important;
+ width:auto!important;max-width:none!important;height:auto!important;min-height:52px!important;margin:0!important;padding:12px 15px!important;
+ border:1px solid #405c70!important;border-radius:11px!important;background:#142e41!important;box-shadow:none!important;color:#e8f4fa!important;gap:8px!important;
+}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>#quick-expense{background:#6be0bd!important;border-color:#6be0bd!important;color:#072b27!important;order:-1!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>button.dashboard-action>.sq-action-stack{
+ display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:8px!important;width:auto!important;
+}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>button.dashboard-action .action-icon{
+ display:grid!important;place-items:center!important;flex:none!important;width:22px!important;height:22px!important;min-width:22px!important;min-height:22px!important;max-width:22px!important;max-height:22px!important;margin:0!important;padding:0!important;background:none!important;border-radius:0!important;font-size:20px!important;
+}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>button.dashboard-action .action-icon svg{width:21px!important;height:21px!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>button.dashboard-action .sq-action-title{
+ display:block!important;width:auto!important;margin:0!important;font-size:13px!important;font-weight:650!important;line-height:1.3!important;color:inherit!important;white-space:normal!important;
+}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>button.dashboard-action .action-sub{display:none!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>.sq-return-grid{
+ grid-area:people!important;display:flex!important;flex-direction:column!important;gap:16px!important;width:100%!important;margin:0!important;
+}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-panel{padding:20px!important;margin:0!important;min-height:0!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-head{margin-bottom:14px!important;gap:8px!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-head h3{font-size:16px!important;color:#eef6fb!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-row{background:transparent!important;border:0!important;border-bottom:1px solid #294354!important;border-radius:0!important;padding:13px 0!important;box-shadow:none!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-row:last-child{border-bottom:0!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>.sq-overview-activity-panel{grid-area:activity!important;width:100%!important;max-width:none!important;min-height:0!important;margin:0!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-rows{gap:0!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #doweo-overview-trackers{grid-area:trackers!important}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .doweo-tracker-row{display:flex;align-items:center;gap:12px;width:100%;padding:15px 0;min-height:70px;background:none;border:0;border-bottom:1px solid #294354;color:#edf5fa;text-align:left;cursor:pointer}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .doweo-tracker-row:last-child{border-bottom:0}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .doweo-tracker-symbol{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:11px;background:#1c3e4b;color:#75dfc4}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .doweo-tracker-copy{flex:1;min-width:0}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .doweo-tracker-copy strong{display:block;font-size:14px}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .doweo-tracker-copy small{display:block;font-size:12px;color:#a3bacb;margin-top:5px}
+html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .doweo-tracker-row:hover{background:#183448}
+html body #tracker-dashboard .sq-workspace-tabs{background:#102638!important;border:1px solid #2c4659!important;border-radius:12px!important;box-shadow:none!important}
+html body #tracker-dashboard .sq-workspace-tabs button{min-height:44px!important;border-radius:8px!important;font-size:13px!important}
+html body #tracker-dashboard .sq-workspace-tabs button[aria-selected="true"]{background:#204a51!important;color:#9df1d6!important}
+html body #trackers-page .trackers-header,html body #notifications-page .sq-notifications-header{background:#102638!important;border:1px solid #2c4659!important;border-radius:14px!important;box-shadow:none!important;padding:24px!important}
+html body #sq-nextgen .sq-ng-tabs{background:#102638!important;border-color:#2c4659!important;box-shadow:none!important}
+@media(max-width:900px){
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary){
+ grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"welcome" "controls" "trackers" "people" "activity"!important;gap:16px!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-overview-stats{gap:8px!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-stat{padding:14px 10px!important;min-height:88px!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-stat span{font-size:11px!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-stat strong{font-size:clamp(19px,5.4vw,27px)!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-panel{padding:17px!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>button.dashboard-action:not([hidden]){flex-basis:calc(50% - 10px)!important;min-height:48px!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>#quick-expense{flex-basis:100%!important}
+}
+@media(prefers-reduced-motion:no-preference){html body .wrap button{transition:background-color .15s ease,border-color .15s ease}}
+</style><script id="doweo-unified-workspace-layout">
+(function(){
+ const summary=document.getElementById('sq-return-summary'),gallery=document.getElementById('trackers-gallery');
+ if(!summary)return;
+ const panel=document.createElement('article');panel.id='doweo-overview-trackers';panel.className='sq-return-panel';
+ const head=document.createElement('div');head.className='sq-return-head';
+ const title=document.createElement('h3');title.textContent='Your trackers';
+ const all=document.createElement('button');all.type='button';all.textContent='View all ↗';all.className='small-btn';all.onclick=()=>document.getElementById('nav-trackers')?.click();
+ const list=document.createElement('div');head.append(title,all);panel.append(head,list);summary.append(panel);
+ const stats=document.getElementById('sq-overview-stats'),layout=document.getElementById('sq-desktop-balance-layout');
+ if(stats&&layout)layout.prepend(stats);
+ const intro=summary.querySelector('.sq-overview-intro');if(intro)intro.textContent='Your balances, shared expenses, and recent activity.';
+ function renderTrackers(){
+  list.replaceChildren();
+  const tiles=gallery?[...gallery.querySelectorAll('.tracker-tile')].filter(t=>!t.hidden):[];
+  tiles.slice(0,4).forEach(tile=>{
+   const open=tile.querySelector('.tile-open');if(!open)return;
+   const row=document.createElement('button');row.type='button';row.className='doweo-tracker-row';
+   const icon=document.createElement('span');icon.className='doweo-tracker-symbol';icon.setAttribute('aria-hidden','true');icon.textContent='▱';
+   const copy=document.createElement('span');copy.className='doweo-tracker-copy';
+   const name=document.createElement('strong');name.textContent=tile.querySelector('h3')?.textContent||'Tracker';
+   const detail=document.createElement('small');detail.textContent=tile.querySelector('.tracker-sub')?.textContent?.trim()||'Open shared tracker';
+   const arrow=document.createElement('span');arrow.textContent='›';arrow.setAttribute('aria-hidden','true');
+   copy.append(name,detail);row.append(icon,copy,arrow);row.onclick=()=>open.click();list.append(row);
+  });
+  if(!list.children.length){const p=document.createElement('p');p.className='sq-return-empty';p.textContent='Find or create a shared tracker from Trackers.';list.append(p)}
+ }
+ renderTrackers();if(gallery)new MutationObserver(renderTrackers).observe(gallery,{childList:true,subtree:true,characterData:true});
+ // Keep live activity full-width on both screen sizes, without replacing its handlers.
+ const activity=document.getElementById('sq-return-activity')?.closest('.sq-return-panel');
+ function place(){if(activity&&activity.parentElement!==summary)summary.append(activity)}
+ place();window.matchMedia('(min-width:901px)').addEventListener('change',place);
+})();
+</script></body>
 </html>
 
