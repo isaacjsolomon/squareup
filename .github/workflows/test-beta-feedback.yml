@@ -25,3 +25,5 @@ jobs:
           node --check functions/api/beta-feedback.js
       - name: Run feedback API unit tests (mocked requests, no real emails)
         run: node --test test/beta-feedback.test.mjs
+      - name: Check Personal Finance summary and transaction dialog
+        run: node --test test/personal-finance-transaction-ui.test.mjs
