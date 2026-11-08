@@ -107,8 +107,23 @@ export function initBetaFeedback({api,getUser}) {
     }catch(error){message.textContent=error?.message||'Unable to send feedback right now.';}
     finally{submit.disabled=false;}
   });
-  const updateVisibility=()=>{launcher.style.display=getUser?.()?'inline-flex':'none';if(!getUser?.()&&!modal.hidden)close();};
+  let emailReady=false;
+  const updateVisibility=()=>{
+    const canSubmit=Boolean(getUser?.() && emailReady);
+    launcher.style.display=canSubmit?'inline-flex':'none';
+    if(!canSubmit&&!modal.hidden)close();
+  };
+  async function checkEmailReady(){
+    try{
+      const response=await fetch('/api/beta-feedback',{method:'GET',credentials:'same-origin',cache:'no-store'});
+      const data=response.ok?await response.json():{};
+      emailReady=data.ready===true;
+    }catch(_){emailReady=false;}
+    updateVisibility();
+  }
   updateVisibility();
+  checkEmailReady();
   const interval=setInterval(updateVisibility,1800);
-  window.addEventListener('pagehide',()=>clearInterval(interval),{once:true});
+  const statusInterval=setInterval(checkEmailReady,120000);
+  window.addEventListener('pagehide',()=>{clearInterval(interval);clearInterval(statusInterval);},{once:true});
 }
