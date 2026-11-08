@@ -88,6 +88,12 @@ test('valid feedback is saved, emailed, and recorded as delivered',async()=>{
     assert.deepEqual(sent.to,['help.doweo@gmail.com']);
     assert.match(sent.text,/A button did not open/);
     assert.match(sent.text,/tester@example.com/);
+    assert.match(sent.subject,/DoWeo feedback \| Bug report: Test feedback/);
+    assert.match(sent.html,/<html lang='en'>/);
+    assert.match(sent.html,/DoWeo/);
+    assert.match(sent.html,/A button did not open/);
+    assert.doesNotMatch(sent.text,/User ID:|Device:|Feedback ID:/);
+    assert.doesNotMatch(sent.html,/11111111-1111-4111-8111-111111111111|Test browser/);
     assert.equal(sent.from,emailEnv.BETA_FEEDBACK_FROM_EMAIL);
     const patch=mock.calls.find(x=>x.method==='PATCH');
     assert.ok(patch);
@@ -137,4 +143,45 @@ test('blocks mismatched origin before hitting authentication',async()=>{
   });
   const response=await onRequest({request,env:emailEnv});
   assert.equal(response.status,403);
+});
+
+
+test('feature feedback safely escapes HTML, while retaining readable plain text',async()=>{
+  const mock=mockBackend();
+  try {
+    const response=await onRequest({
+      request:makeRequest({
+        ...submit,
+        category:'idea',
+        title:'Better <nav> & "buttons"',
+        details:'Please add <script>alert(1)</script> & easier transitions.'
+      }),
+      env:emailEnv
+    });
+    assert.equal(response.status,201);
+    const send=mock.calls.find(x=>x.address.includes('api.resend.com/emails'));
+    const sent=JSON.parse(send.body);
+    assert.match(sent.subject,/Feature suggestion/);
+    assert.match(sent.html,/Better &lt;nav&gt; &amp; &quot;buttons&quot;/);
+    assert.match(sent.html,/&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+    assert.doesNotMatch(sent.html,/<script>/);
+    assert.match(sent.text,/Please add <script>alert\(1\)<\/script>/);
+    assert.doesNotMatch(sent.text,/Rating:/);
+  } finally { mock.restore(); }
+});
+
+test('rating feedback includes a rating in the email without raw tracking metadata',async()=>{
+  const mock=mockBackend();
+  try {
+    const response=await onRequest({
+      request:makeRequest({...submit,category:'rating',rating:4}),
+      env:emailEnv
+    });
+    assert.equal(response.status,201);
+    const sent=JSON.parse(mock.calls.find(x=>x.address.includes('api.resend.com/emails')).body);
+    assert.match(sent.subject,/App rating/);
+    assert.match(sent.text,/Rating: 4 out of 5 stars/);
+    assert.match(sent.html,/4\/5/);
+    assert.doesNotMatch(sent.html,/Feedback ID|User ID|Device:/);
+  } finally { mock.restore(); }
 });
