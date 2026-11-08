@@ -50,7 +50,7 @@
 
   const fileInput=document.createElement('input');
   fileInput.type='file';
-  fileInput.accept='image/jpeg,image/png,image/webp';
+  fileInput.accept='image/jpeg,image/png,image/webp,image/heic,image/heif';
   fileInput.hidden=true;
   fileInput.setAttribute('aria-label','Choose an image for Weo');
   area.append(fileInput);
@@ -91,6 +91,7 @@
   };
   const clearImage=()=>{
     pendingImage=null;
+    prompt.placeholder='Ask Weo anything…';
     image.removeAttribute('src');
     preview.hidden=true;
     fileInput.value='';
@@ -99,7 +100,7 @@
   remove.addEventListener('click',()=>{clearImage();prompt.focus();});
 
   async function compress(file){
-    if(!file||!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('Choose a JPEG, PNG, or WebP image.');
+    if(!file||!['image/jpeg','image/png','image/webp','image/heic','image/heif'].includes(file.type))throw Error('Choose a JPEG, PNG, WebP, or HEIC image.');
     if(file.size>8*1024*1024)throw Error('Choose an image smaller than 8 MB.');
     const src=URL.createObjectURL(file);
     let original;
