@@ -4125,6 +4125,8 @@ function avatarUrl(userId, v) {
   }
   return avatarCache[key];
 }
+window.squareUpAvatarUrl = avatarUrl;
+
 function setAvatarPhoto(el, url) {
   el.classList.toggle("has-photo", !!url);
   el.style.backgroundImage = url ? 'url("' + url + '")' : "";
@@ -6683,7 +6685,7 @@ input.addEventListener('input',draw);
    const glyph=row.querySelector('.sq-return-icon');
    const userId=m.user_id||m.userId||m.id||(m.isYou?user?.id:null);
    const photo=(m.isYou&&typeof myPhoto!=='undefined'&&myPhoto)?myPhoto:m.photo;
-   if(glyph&&userId&&typeof avatarUrl==='function'){
+   if(glyph&&userId&&typeof window.squareUpAvatarUrl==='function'){
      const fallback=str(m.name||m.displayName||m.email||'M').charAt(0).toUpperCase();
      glyph.textContent=fallback;
      const version=str(photo||'current'),memberId=str(userId);
@@ -6706,7 +6708,7 @@ input.addEventListener('input',draw);
      const existing=mineAvatar?getComputedStyle(mineAvatar).backgroundImage:'none';
      const match=existing&&existing.match(/^url\(["']?(.*?)["']?\)$/);
      if(match&&match[1])showPhoto(match[1]);
-     else avatarUrl(memberId,version).then(showPhoto).catch(()=>{});
+     else window.squareUpAvatarUrl(memberId,version).then(showPhoto).catch(()=>{});
    }else if(glyph){glyph.textContent=str(m.name||m.displayName||m.email||'M').charAt(0).toUpperCase();}
 
    return row;
