@@ -13433,6 +13433,59 @@ body.sq-finance-open #sq-nextgen .sq-ng-add-action-hint{font-size:12px;color:#bd
  #sq-nextgen .sq-wallet-compact-layout #sq-wallet-activity .sq-ng-item>strong{font-size:14px!important;flex:none;text-align:right}
 }
 </style>
-</body>
+
+<style id="sq-finance-bills-household-links-20261107">
+/* Bills: surface the existing billing-center action before the informational summary cards. */
+#sq-nextgen .sq-ng-bills-entry{
+  display:flex;flex-direction:column;gap:11px;padding:21px 22px;margin:4px 0 18px;
+  background:linear-gradient(140deg,#113749,#0c293d);border:1px solid #3c6e7b;
+  border-radius:18px;box-shadow:0 12px 27px rgba(0,0,0,.19)
+}
+#sq-nextgen .sq-ng-bills-entry h2{font-size:21px!important;line-height:1.2;margin:0!important;color:#f4fcff}
+#sq-nextgen .sq-ng-bills-entry p{font-size:13px;line-height:1.5;color:#b6ced9;margin:0}
+#sq-nextgen .sq-ng-bills-entry #sq-ng-bills{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;min-height:52px;font-size:15px;font-weight:800;
+  background:linear-gradient(120deg,#3ed8c2,#2ac6b8);border:1px solid #5de8d5;
+  border-radius:12px;color:#06303a
+}
+#sq-nextgen .sq-ng-bills-entry #sq-ng-bills span{font-size:20px}
+#sq-nextgen .sq-ng-bills-entry #sq-ng-bills:focus-visible{outline:3px solid #f6ffff;outline-offset:3px}
+/* Existing trackers can be linked without creating a duplicate or editing their shared records. */
+#sq-nextgen .sq-ng-workspace-directory-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#sq-nextgen .sq-ng-workspace-directory-actions>button{min-height:48px}
+#sq-nextgen .sq-ng-workspace-link{
+  background:#193e55;border:1px solid #5c8c9c;border-radius:14px;
+  padding:12px 18px;color:#e8fbff;font:inherit;font-weight:800;cursor:pointer
+}
+#sq-nextgen .sq-ng-workspace-link:hover{background:#20536a;border-color:#6bd6cf}
+#sq-nextgen .sq-ng-workspace-link:focus-visible{outline:3px solid #5be5d4;outline-offset:3px}
+#sq-nextgen .sq-ng-workspace-link-form{
+  display:grid;gap:12px;padding:17px;margin:0 0 22px;
+  background:#0f2b40;border:1px solid #46778b;border-radius:16px
+}
+#sq-nextgen .sq-ng-workspace-link-form[hidden]{display:none!important}
+#sq-nextgen .sq-ng-workspace-link-form label{font-size:14px;font-weight:750;color:#f2fcff}
+#sq-nextgen .sq-ng-workspace-link-form>div{display:flex;gap:9px;flex-wrap:wrap}
+#sq-nextgen .sq-ng-workspace-link-form select{
+  flex:1;min-width:190px;min-height:46px;border:1px solid #66889b;border-radius:11px;
+  background:#092239;color:#f5fcff;padding:10px 13px;font-size:16px
+}
+#sq-nextgen .sq-ng-workspace-link-form button{
+  min-height:45px;border:1px solid #63e4d0;border-radius:11px;
+  background:#34d4bf;color:#062a36;padding:10px 15px;font-weight:850
+}
+#sq-nextgen .sq-ng-workspace-link-form #sq-ng-workspace-link-cancel{background:#1d4155;color:#e3f5fd;border-color:#527c90}
+#sq-nextgen .sq-ng-workspace-link-form p{font-size:12px;color:#aecad8;margin:0;line-height:1.55}
+@media(max-width:750px){
+  #sq-nextgen .sq-ng-bills-entry{padding:18px 17px;margin:3px 0 15px}
+  #sq-nextgen .sq-ng-bills-entry h2{font-size:20px!important}
+  #sq-nextgen .sq-ng-workspace-directory-actions{width:100%;display:grid;grid-template-columns:1fr;gap:9px}
+  #sq-nextgen .sq-ng-workspace-directory-actions>button{width:100%;min-width:0}
+  #sq-nextgen .sq-ng-workspace-link-form>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  #sq-nextgen .sq-ng-workspace-link-form select{grid-column:1/-1;min-width:0;width:100%}
+  #sq-nextgen .sq-ng-workspace-link-form button{min-width:0}
+}
+</style></body>
 </html>
 
