@@ -33,6 +33,9 @@
    try{
      const result=await api('ai-history?id='+encodeURIComponent(id),'DELETE');
      if(!result.success)throw Error('Could not delete that conversation.');
+     if(window.WeoChat?.getConversationId?.()===id){
+       panel.querySelector('.sq-ai-reset')?.click();
+     }
      await refresh();
    }catch(e){status.textContent=e.message||'Could not delete the conversation.'}
  }
