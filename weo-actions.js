@@ -374,7 +374,7 @@
   // its closing or follow-link behavior.
   const centerInstagramPopup=()=>{
     for(const el of document.querySelectorAll('h1,h2,h3,p')){
-      const copy=(el.textContent||'').replace(/\\s+/g,' ').trim();
+      const copy=(el.textContent||'').replace(/\s+/g,' ').trim();
       if(copy.includes('Follow DoWeo on Instagram') ||
          (copy.includes('Get updates, new features') && copy.includes('@doweo.app'))){
         el.style.setProperty('text-align','center','important');
