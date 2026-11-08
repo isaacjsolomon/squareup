@@ -48,6 +48,49 @@
   area.append(heading,grid,status);
   support.insertAdjacentElement('afterend',area);
 
+  // On phones, keep the composer visible and tuck secondary actions behind one + button.
+  // The same action buttons and handlers are reused; nothing is duplicated.
+  const moreButton=document.createElement('button');
+  moreButton.type='button';
+  moreButton.className='weo-more-toggle';
+  moreButton.setAttribute('aria-label','More Weo actions');
+  moreButton.setAttribute('aria-controls','weo-quick-actions');
+  moreButton.setAttribute('aria-expanded','false');
+  moreButton.title='More actions';
+  moreButton.textContent='+';
+  form.insertBefore(moreButton,form.firstChild);
+  const phoneLayout=window.matchMedia('(max-width:700px)');
+  const closeActions=()=>{
+    area.classList.remove('weo-menu-open');
+    moreButton.setAttribute('aria-expanded','false');
+    moreButton.setAttribute('aria-label','More Weo actions');
+  };
+  const syncActionPlacement=()=>{
+    if(phoneLayout.matches){
+      if(area.parentElement!==form)form.appendChild(area);
+      closeActions();
+    }else{
+      if(area.previousElementSibling!==support)support.insertAdjacentElement('afterend',area);
+      closeActions();
+    }
+  };
+  moreButton.addEventListener('click',()=>{
+    const opening=!area.classList.contains('weo-menu-open');
+    area.classList.toggle('weo-menu-open',opening);
+    moreButton.setAttribute('aria-expanded',String(opening));
+    moreButton.setAttribute('aria-label',opening?'Close Weo actions':'More Weo actions');
+  });
+  document.addEventListener('pointerdown',event=>{
+    if(phoneLayout.matches && !form.contains(event.target))closeActions();
+  });
+  document.addEventListener('keydown',event=>{
+    if(event.key==='Escape' && area.classList.contains('weo-menu-open')){
+      closeActions();moreButton.focus();
+    }
+  });
+  phoneLayout.addEventListener?.('change',syncActionPlacement);
+  syncActionPlacement();
+
   const fileInput=document.createElement('input');
   fileInput.type='file';
   fileInput.accept='image/jpeg,image/png,image/webp,image/heic,image/heif';
@@ -279,6 +322,7 @@
     if(!button||button.disabled)return;
     showStatus('');
     const kind=button.dataset.weoAction;
+    closeActions();
     if(kind==='image'){fileInput.click();return;}
     startPicker(kind,button);
   });
@@ -287,6 +331,7 @@
   const hideWhenTyping=()=>{
     const keyboard=Boolean(isMobile()&&document.activeElement===prompt);
     panel.classList.toggle('weo-typing',keyboard);
+    if(keyboard)closeActions();
   };
   prompt.addEventListener('focus',hideWhenTyping);
   prompt.addEventListener('blur',()=>setTimeout(hideWhenTyping,100));
