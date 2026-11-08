@@ -1,0 +1,27 @@
+name: Test Beta Feedback Center
+
+on:
+  pull_request:
+  push:
+    branches:
+      - feature/beta-feedback-center
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: |
+          node --check beta-feedback.js
+          node --check squareup-events.js
+          node --check functions/api/beta-feedback.js
+      - name: Run feedback API unit tests (mocked requests, no real emails)
+        run: node --test test/beta-feedback.test.mjs
