@@ -29,3 +29,5 @@ jobs:
         run: node --test test/personal-finance-transaction-ui.test.mjs
       - name: Check mobile wallet redesign, currency grouping and retained actions
         run: node --test test/mobile-wallet-ui.test.mjs
+      - name: Check Bills, Households and mobile Finance Hub tab navigation
+        run: node --test test/finance-household-tabs.test.mjs
