@@ -2376,7 +2376,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 
     <div class="sq-return-grid">
       <article class="sq-return-panel"><div class="sq-return-head"><h3>Recent activity</h3><button type="button" data-return-tab="expenses">View all ↗</button><button type="button" class="sq-panel-collapse-toggle" aria-expanded="true" aria-label="Collapse Recent activity" title="Expand or collapse Recent activity"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><div id="sq-return-activity" class="sq-return-rows"><p class="sq-return-empty">Loading recent activity…</p></div></article>
-      <article class="sq-return-panel sq-return-smart-panel sq-panel-collapsed"><div class="sq-return-head"><h3>Smart settle-up</h3><button type="button" class="sq-panel-collapse-toggle" aria-expanded="false" aria-label="Expand Smart settle-up" title="Expand or collapse Smart settle-up"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><div id="sq-return-smart-host"></div></article>
+      <article class="sq-return-panel sq-return-smart-panel"><div class="sq-return-head"><h3>Smart settle-up</h3></div><div id="sq-return-smart-host"></div></article>
       <article class="sq-return-panel"><div class="sq-return-head"><h3>Balances by person</h3><button type="button" data-return-tab="expenses">Who owes whom</button><button type="button" class="sq-panel-collapse-toggle" aria-expanded="true" aria-label="Collapse Balances by person" title="Expand or collapse Balances by person"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><div id="sq-return-balances" class="sq-return-rows"><p class="sq-return-empty">Loading balances…</p></div></article>
       <article class="sq-return-panel"><div class="sq-return-head"><h3>People in this tracker</h3><button type="button" data-return-tab="members">View all ↗</button><button type="button" class="sq-panel-collapse-toggle" aria-expanded="true" aria-label="Collapse Tracker members" title="Expand or collapse Tracker members"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><div id="sq-return-members" class="sq-return-rows"><p class="sq-return-empty">Loading tracker members…</p></div></article>
     </div>
@@ -2431,7 +2431,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 
   <div class="tracker-tools-grid">
     <div class="tracker-tools-left">
-  <details class="card tracker-collapsible" id="smart-settle-card"><summary><span class="tool-heading-label"><svg class="tool-heading-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M30 9 33.9 20.1 45 24l-11.1 3.9L30 39l-3.9-11.1L15 24l11.1-3.9L30 9Z"/><path d="m11 5 2.1 5.9L19 13l-5.9 2.1L11 21l-2.1-5.9L3 13l5.9-2.1L11 5Z"/></svg><span>Smart settle-up</span></span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Simplify group debts into fewer payments. Suggestions do not move money.</p><div id="smart-settle-list"></div></div></details>
+  <details class="card tracker-collapsible" id="smart-settle-card" open><summary><span class="tool-heading-label"><svg class="tool-heading-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M30 9 33.9 20.1 45 24l-11.1 3.9L30 39l-3.9-11.1L15 24l11.1-3.9L30 9Z"/><path d="m11 5 2.1 5.9L19 13l-5.9 2.1L11 21l-2.1-5.9L3 13l5.9-2.1L11 5Z"/></svg><span>Smart settle-up</span></span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Simplify group debts into fewer payments. Suggestions do not move money.</p><div id="smart-settle-list"></div></div></details>
   <section class="card tracker-collapsible" id="budget-card" aria-label="Budget and spending dashboard">
     <div class="sb-head"><div><h2>▣ Budget &amp; Spending</h2><p>Set a budget, track spending, and see where your group's money is going.</p></div><div class="sb-tabs" role="tablist"><button type="button" data-sb-view="overview" class="active">Overview</button><button type="button" data-sb-view="categories">Categories</button></div></div>
     <div class="sb-grid-top"><div class="sb-panel sb-hero"><div class="sb-title">◎ Group budget</div><div id="sb-period-title" class="sb-muted"></div><div id="sq-budget-display"></div></div><form id="sq-budget-form" class="sb-panel sb-settings"><div class="sb-title">⚙ Budget settings</div><label>Budget type</label><div class="sb-toggle"><button type="button" data-sb-type="recurring" class="active">Recurring</button><button type="button" data-sb-type="one-time">One-time</button><button type="button" data-sb-type="none">No budget</button></div><div class="sb-form-row"><label>Time period<select id="sb-period"><option value="monthly">Monthly</option><option value="all">All time</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option><option value="custom">Custom dates</option></select></label><label>Budget amount<input type="number" id="sq-budget-amount" min="0.01" step="0.01" placeholder="Amount"></label></div><div class="sb-dates" id="sb-dates" hidden><label>From<input type="date" id="sb-start"></label><label>Through<input type="date" id="sb-end"></label></div><button type="submit" class="primary sb-save">Update budget</button><button type="button" id="sq-budget-clear" class="sb-clear">Remove budget goal</button><small class="sb-note">Amount is shared with your tracker. Period settings are saved in this browser.</small><div class="sb-custom-categories"><div class="sb-category-manage-title">Custom expense categories</div><p class="sb-note">Create categories for this tracker. They appear when adding an expense.</p><div class="sb-category-add"><input id="sb-new-category" type="text" maxlength="45" placeholder="e.g. Concert tickets" aria-label="New category name"><button type="button" id="sb-add-category">+ Add</button></div><div id="sb-custom-category-list" class="sb-custom-category-list" aria-live="polite"></div><small class="sb-note">Custom category names are saved on this device. Categories already assigned to expenses remain on those expenses if removed here.</small></div></form></div>
@@ -6691,9 +6691,14 @@ input.addEventListener('input',draw);
      const version=str(photo),memberId=str(userId);
      avatarUrl(memberId,version).then(url=>{
        if(!url||!row.isConnected||glyph.dataset.photoKey!==memberId+'/'+version)return;
-       glyph.style.backgroundImage='url("'+url+'")';
-       glyph.classList.add('sq-member-avatar-loaded');
-       glyph.textContent='';
+       const image=new Image();
+       image.onload=()=>{
+         if(!row.isConnected||glyph.dataset.photoKey!==memberId+'/'+version)return;
+         glyph.style.setProperty('background-image','url("'+url+'")','important');
+         glyph.classList.add('sq-member-avatar-loaded');
+         glyph.textContent='';
+       };
+       image.src=url;
      }).catch(()=>{});
      glyph.dataset.photoKey=memberId+'/'+version;
    }else if(glyph){glyph.textContent=str(m.name||m.displayName||m.email||'M').charAt(0).toUpperCase();}
@@ -13039,6 +13044,16 @@ html body #sq-startup-overlay .sq-startup-content{
  function place(){if(desktop.matches){if(search.parentNode!==header)header.insertBefore(search,friends)}else if(search.parentNode!==parent){parent.insertBefore(search,next&&next.parentNode===parent?next:null)}}
  place();desktop.addEventListener('change',place);
 })();
-</script><style id="doweo-overview-wider-desktop">@media(min-width:901px){html body #tracker-dashboard.sq-tab-overview #sq-return-summary{width:calc(100% + 96px)!important;max-width:none!important;margin-left:-48px!important;margin-right:-48px!important;box-sizing:border-box!important}}</style></body>
+</script><style id="doweo-overview-wider-desktop">@media(min-width:901px){html body #tracker-dashboard.sq-tab-overview #sq-return-summary{width:calc(100% + 96px)!important;max-width:none!important;margin-left:-48px!important;margin-right:-48px!important;box-sizing:border-box!important}}</style><style id="doweo-always-open-settlement">
+#tracker-dashboard .sq-return-smart-panel>.sq-return-head>.sq-panel-collapse-toggle{display:none!important}
+#tracker-dashboard .sq-return-smart-panel>#sq-return-smart-host{display:block!important}
+#tracker-dashboard #smart-settle-card>summary{display:none!important}
+#tracker-dashboard #smart-settle-card>.tracker-collapsible-body{display:block!important}
+#tracker-dashboard #sq-return-members .sq-return-icon.sq-member-avatar-loaded{
+ background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;color:transparent!important;
+}
+</style><script id="doweo-settlement-open-state">
+(function(){const card=document.getElementById('smart-settle-card');if(!card)return;card.open=true;card.addEventListener('toggle',()=>{if(!card.open)card.open=true})})();
+</script></body>
 </html>
 
