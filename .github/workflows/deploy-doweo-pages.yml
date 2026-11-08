@@ -21,7 +21,7 @@ jobs:
       - name: Prepare Pages static assets
         run: |
           mkdir -p .pages-output
-          cp index.html manifest.webmanifest sw.js squareup-events.js beta-feedback.js .pages-output/
+          cp index.html manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css .pages-output/
           cp -R icons images .pages-output/
 
       # Run Wrangler from the repository root so it discovers ./functions.
