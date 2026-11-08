@@ -18,6 +18,9 @@ jobs:
       - name: Check out DoWeo
         uses: actions/checkout@v4
 
+      - name: Validate Weo navigation and close controls
+        run: node --test test/weo-close-button.test.mjs test/weo-page-state.test.mjs
+
       - name: Prepare Pages static assets
         run: |
           mkdir -p .pages-output
