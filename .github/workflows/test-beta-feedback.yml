@@ -25,6 +25,7 @@ jobs:
           node --check functions/api/beta-feedback.js
           node --check weo-mascot.js
           node --check functions/api/ai-chat.js
+          node --check weo-actions.js
       - name: Run feedback API unit tests (mocked requests, no real emails)
         run: node --test test/beta-feedback.test.mjs
       - name: Check Personal Finance summary and transaction dialog
@@ -35,3 +36,5 @@ jobs:
         run: node --test test/finance-household-tabs.test.mjs
       - name: Check Weo mascot interactions and accessibility
         run: node --test test/weo-mascot.test.mjs
+      - name: Check Weo quick actions and image understanding API
+        run: node --test test/weo-quick-actions.test.mjs
