@@ -2323,7 +2323,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
   </div>
 
 </aside>
-<div class="wrap"><div class="sq-mobile-top"><span class="sq-brand"><img src="/images/logo.png?v=doweo-mobile-brand-v3" alt="">DoWeo</span><span class="sq-mobile-header-actions"><button type="button" id="sq-mobile-search" aria-label="Search DoWeo" title="Search DoWeo"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg></button><button type="button" id="sq-mobile-about" aria-label="Open About" title="About DoWeo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none"/></svg></button><button type="button" id="sq-mobile-notifications" class="sq-mobile-notification-button" aria-label="Open Notification Center" title="Notifications" aria-controls="notifications-page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span id="sq-mobile-notifications-count" class="sq-mobile-notifications-count" hidden></span></button><button type="button" id="sq-mobile-chat-top" aria-label="Open Chat" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5Z"/></svg></button></span></div>
+<div class="wrap"><div class="sq-mobile-top"><button type="button" id="sq-mobile-header-menu" aria-label="Open DoWeo menu" aria-controls="sq-mobile-more-sheet" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><span class="sq-brand"><img src="/images/logo.png?v=doweo-mobile-brand-v3" alt="">DoWeo</span><span class="sq-mobile-header-actions"><button type="button" id="sq-mobile-search" aria-label="Search DoWeo" title="Search DoWeo"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg></button><button type="button" id="sq-mobile-about" aria-label="Open About" title="About DoWeo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none"/></svg></button><button type="button" id="sq-mobile-notifications" class="sq-mobile-notification-button" aria-label="Open Notification Center" title="Notifications" aria-controls="notifications-page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span id="sq-mobile-notifications-count" class="sq-mobile-notifications-count" hidden></span></button><button type="button" id="sq-mobile-chat-top" aria-label="Open Chat" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5Z"/></svg></button></span></div>
   <header class="tracker-heading">
     <div class="sq-title-and-tour"><h1>DoWeo</h1></div><button type="button" id="sq-desktop-friends-top" aria-label="Open Friends" title="Friends"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2"/><path d="M18 8v8M14 12h8"/></svg><span>Friends</span></button>
   </header>
@@ -13604,138 +13604,183 @@ body.sq-finance-open #sq-nextgen .sq-ng-add-action-hint{font-size:12px;color:#bd
 </style><script src="/weo-mascot.js" defer></script>
 <script src="/weo-actions.js" defer></script>
 
-<style id="dw-compact-solid-mobile-header-v1">
-/* Compact mobile top bar: intentionally opaque and unobstructed. */
+<style id="dw-mobile-reference-header-v2">
+/* Reference-inspired mobile header: flat, sharp, opaque and touch-safe. */
 @media(max-width:900px){
  html body .wrap > .sq-mobile-top{
-   display:flex!important;
-   position:relative!important;
-   inset:auto!important;
-   top:auto!important;
-   left:auto!important;
-   transform:none!important;
-   isolation:isolate!important;
-   z-index:85!important;
-   width:100%!important;
-   min-height:58px!important;
-   height:auto!important;
-   box-sizing:border-box!important;
-   margin:0 0 12px!important;
-   padding:8px 12px!important;
-   flex-direction:row!important;
-   justify-content:space-between!important;
-   align-items:center!important;
-   gap:12px!important;
-   border:1px solid #24485b!important;
-   border-radius:13px!important;
-   background:#081d2f!important;
-   background-image:none!important;
-   color:#f0f9ff!important;
-   -webkit-backdrop-filter:none!important;
-   backdrop-filter:none!important;
-   filter:none!important;
-   box-shadow:none!important;
-   opacity:1!important;
-   overflow:visible!important;
+  display:flex!important;
+  position:relative!important;
+  top:auto!important;inset:auto!important;
+  z-index:85!important;
+  isolation:isolate!important;
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-height:60px!important;
+  height:auto!important;
+  padding:7px 10px!important;
+  margin:0 0 12px!important;
+  gap:8px!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  flex-wrap:nowrap!important;
+  border:1px solid #263341!important;
+  border-radius:14px!important;
+  background:#0b121c!important;
+  background-image:none!important;
+  color:#f8fbff!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  filter:none!important;
+  opacity:1!important;
+  box-shadow:none!important;
+  text-shadow:none!important;
+  transform:none!important;
+  overflow:visible!important;
  }
  html body .wrap > .sq-mobile-top::before,
- html body .wrap > .sq-mobile-top::after{
-   content:none!important;
-   display:none!important;
-   pointer-events:none!important;
+ html body .wrap > .sq-mobile-top::after{display:none!important;content:none!important}
+ html body .wrap > .sq-mobile-top > #sq-mobile-header-menu{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 42px!important;
+  width:42px!important;
+  height:44px!important;
+  min-width:42px!important;min-height:44px!important;
+  margin:0!important;
+  padding:9px!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:transparent!important;
+  color:#f5faff!important;
+  opacity:1!important;
+  filter:none!important;
+  text-shadow:none!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  cursor:pointer!important;
+  z-index:5!important;
  }
- html body .wrap > .sq-mobile-top .sq-brand{
-   display:flex!important;
-   align-items:center!important;
-   gap:8px!important;
-   flex:0 1 auto!important;
-   min-width:0!important;
-   font-size:18px!important;
-   font-weight:800!important;
-   white-space:nowrap!important;
-   line-height:1.1!important;
-   letter-spacing:-.025em!important;
+ html body .wrap > .sq-mobile-top > #sq-mobile-header-menu svg{
+  display:block!important;width:24px!important;height:24px!important;
+  filter:none!important;pointer-events:none!important;
  }
- html body .wrap > .sq-mobile-top .sq-brand img{
-   display:block!important;
-   width:29px!important;
-   height:29px!important;
-   flex:0 0 29px!important;
-   object-fit:contain!important;
+ html body .wrap > .sq-mobile-top > .sq-brand{
+  display:flex!important;align-items:center!important;
+  flex:0 1 auto!important;min-width:0!important;
+  gap:7px!important;
+  margin:0 auto 0 0!important;
+  padding:0!important;
+  color:#fff!important;
+  font-size:clamp(15px,4.5vw,19px)!important;
+  font-weight:800!important;
+  letter-spacing:-.03em!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  text-shadow:none!important;
+  filter:none!important;
+  opacity:1!important;
  }
- html body .wrap > .sq-mobile-top .sq-mobile-header-actions{
-   display:flex!important;
-   align-items:center!important;
-   justify-content:flex-end!important;
-   flex:0 0 auto!important;
-   gap:9px!important;
-   min-width:0!important;
-   position:relative!important;
-   z-index:2!important;
-   pointer-events:auto!important;
+ html body .wrap > .sq-mobile-top > .sq-brand img{
+  display:block!important;
+  flex:0 0 30px!important;
+  width:30px!important;height:30px!important;
+  object-fit:contain!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:6px!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  filter:none!important;
+  opacity:1!important;
+ }
+ html body .wrap > .sq-mobile-top > .sq-mobile-header-actions{
+  position:relative!important;
+  z-index:4!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  flex:0 0 auto!important;
+  gap:7px!important;
+  width:auto!important;
+  min-width:0!important;
+  margin:0!important;
+  pointer-events:auto!important;
+  filter:none!important;opacity:1!important;
  }
  html body .wrap > .sq-mobile-top #sq-mobile-about,
- html body .wrap > .sq-mobile-top #sq-mobile-chat-top{
-   display:none!important;
- }
+ html body .wrap > .sq-mobile-top #sq-mobile-chat-top{display:none!important}
  html body .wrap > .sq-mobile-top .sq-mobile-header-actions > #sq-mobile-search,
  html body .wrap > .sq-mobile-top .sq-mobile-header-actions > #sq-mobile-notifications{
-   display:inline-flex!important;
-   align-items:center!important;
-   justify-content:center!important;
-   position:relative!important;
-   z-index:3!important;
-   width:44px!important;
-   height:44px!important;
-   min-width:44px!important;
-   min-height:44px!important;
-   flex:0 0 44px!important;
-   padding:10px!important;
-   margin:0!important;
-   border:1px solid #31586b!important;
-   border-radius:12px!important;
-   background:#123145!important;
-   background-image:none!important;
-   box-shadow:none!important;
-   color:#d7f7f5!important;
-   opacity:1!important;
-   filter:none!important;
-   cursor:pointer!important;
-   touch-action:manipulation!important;
-   pointer-events:auto!important;
-   -webkit-tap-highlight-color:transparent;
+  display:inline-flex!important;
+  align-items:center!important;justify-content:center!important;
+  position:relative!important;z-index:5!important;
+  box-sizing:border-box!important;
+  flex:0 0 42px!important;
+  width:42px!important;height:44px!important;
+  min-width:42px!important;min-height:44px!important;
+  padding:9px!important;margin:0!important;
+  border:1px solid #283c4d!important;
+  border-radius:11px!important;
+  background:#1b2836!important;
+  background-image:none!important;
+  color:#f4f8fb!important;
+  box-shadow:none!important;
+  text-shadow:none!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  filter:none!important;
+  opacity:1!important;
+  cursor:pointer!important;
+  touch-action:manipulation!important;
+  pointer-events:auto!important;
  }
  html body .wrap > .sq-mobile-top .sq-mobile-header-actions > button svg{
-   display:block!important;
-   width:22px!important;
-   height:22px!important;
-   flex-shrink:0!important;
-   pointer-events:none!important;
+  display:block!important;
+  flex:none!important;
+  width:22px!important;height:22px!important;
+  stroke:currentColor!important;
+  filter:none!important;
+  pointer-events:none!important;
  }
- html body .wrap > .sq-mobile-top .sq-mobile-header-actions > #sq-mobile-search:active,
- html body .wrap > .sq-mobile-top .sq-mobile-header-actions > #sq-mobile-notifications:active{
-   background:#20536a!important;
+ html body .wrap > .sq-mobile-top #sq-mobile-header-menu:active,
+ html body .wrap > .sq-mobile-top #sq-mobile-search:active,
+ html body .wrap > .sq-mobile-top #sq-mobile-notifications:active{background:#2c4153!important}
+ html body .wrap > .sq-mobile-top button:focus-visible{
+  outline:3px solid #68e1d4!important;
+  outline-offset:2px!important;
  }
- html body .wrap > .sq-mobile-top .sq-mobile-header-actions > button:focus-visible{
-   outline:3px solid #67e5d1!important;
-   outline-offset:2px!important;
- }
- /* Keep overlays above the header so search results remain interactive. */
- html body #sq-global-search.open{
-   z-index:10000!important;
-   pointer-events:auto!important;
- }
- html body .wrap > .sq-mobile-top + .tracker-heading{
-   margin-top:0!important;
- }
+ html body #sq-global-search.open,
+ html body #sq-mobile-more-sheet:not([hidden]){z-index:2147483000!important;pointer-events:auto!important}
 }
 @media(max-width:360px){
- html body .wrap > .sq-mobile-top{padding:7px 9px!important;gap:6px!important}
- html body .wrap > .sq-mobile-top .sq-mobile-header-actions{gap:6px!important}
- html body .wrap > .sq-mobile-top .sq-brand{font-size:16px!important}
+ html body .wrap > .sq-mobile-top{gap:4px!important;padding:6px!important}
+ html body .wrap > .sq-mobile-top > #sq-mobile-header-menu{flex-basis:38px!important;width:38px!important;min-width:38px!important}
+ html body .wrap > .sq-mobile-top > .sq-brand{font-size:15px!important;gap:5px!important}
+ html body .wrap > .sq-mobile-top > .sq-brand img{width:25px!important;height:25px!important;flex-basis:25px!important}
+ html body .wrap > .sq-mobile-top > .sq-mobile-header-actions{gap:4px!important}
+ html body .wrap > .sq-mobile-top .sq-mobile-header-actions > #sq-mobile-search,
+ html body .wrap > .sq-mobile-top .sq-mobile-header-actions > #sq-mobile-notifications{width:40px!important;flex-basis:40px!important;min-width:40px!important}
 }
+@media(min-width:901px){#sq-mobile-header-menu{display:none!important}}
 </style>
 
+<script id="dw-mobile-reference-header-controls">
+(function(){
+ 'use strict';
+ const menu=document.getElementById('sq-mobile-header-menu');
+ const existingMore=document.getElementById('sq-mobile-more');
+ if(!menu)return;
+ menu.addEventListener('click',function(event){
+  event.preventDefault();
+  if(existingMore){existingMore.click();return;}
+  const sheet=document.getElementById('sq-mobile-more-sheet');
+  if(sheet){sheet.hidden=false;sheet.querySelector('[data-sq-close]')?.focus();}
+ });
+})();
+</script>
 </body>
 </html>
 
