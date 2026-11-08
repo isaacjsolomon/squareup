@@ -6681,27 +6681,34 @@ input.addEventListener('input',draw);
   fill('sq-return-members',members.slice(0,5).map(m=>{
    const row=makeRow('♙',str(m.name||m.displayName||m.email||'Member'),m.isYou?'You':'Tracker member',null);
    const glyph=row.querySelector('.sq-return-icon');
-   const userId=m.id||m.user_id||m.userId||(m.isYou?user?.id:null);
-   const photo=m.photo||(m.isYou&&typeof myPhoto!=='undefined'?myPhoto:null);
-   if(glyph&&userId&&photo&&typeof avatarUrl==='function'){
-     glyph.classList.add('sq-member-avatar');
-     glyph.textContent='';
+   const userId=m.user_id||m.userId||m.id||(m.isYou?user?.id:null);
+   const photo=(m.isYou&&typeof myPhoto!=='undefined'&&myPhoto)?myPhoto:m.photo;
+   if(glyph&&userId&&typeof avatarUrl==='function'){
      const fallback=str(m.name||m.displayName||m.email||'M').charAt(0).toUpperCase();
      glyph.textContent=fallback;
-     const version=str(photo),memberId=str(userId);
-     avatarUrl(memberId,version).then(url=>{
-       if(!url||!row.isConnected||glyph.dataset.photoKey!==memberId+'/'+version)return;
-       const image=new Image();
+     const version=str(photo||'current'),memberId=str(userId);
+     glyph.dataset.photoKey=memberId+'/'+version;
+     function showPhoto(url){
+       if(!url)return;
+       const image=document.createElement('img');
+       image.alt='';image.decoding='async';
+       image.style.cssText='display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:inherit!important;';
        image.onload=()=>{
          if(!row.isConnected||glyph.dataset.photoKey!==memberId+'/'+version)return;
-         glyph.style.setProperty('background-image','url("'+url+'")','important');
-         glyph.classList.add('sq-member-avatar-loaded');
-         glyph.textContent='';
+         glyph.replaceChildren(image);
+         glyph.classList.add('sq-member-avatar','sq-member-avatar-loaded');
        };
+       image.onerror=()=>{};
        image.src=url;
-     }).catch(()=>{});
-     glyph.dataset.photoKey=memberId+'/'+version;
+     }
+     // Reuse the authenticated image already loaded for the signed-in member.
+     const mineAvatar=m.isYou?document.getElementById('me-avatar'):null;
+     const existing=mineAvatar?getComputedStyle(mineAvatar).backgroundImage:'none';
+     const match=existing&&existing.match(/^url\(["']?(.*?)["']?\)$/);
+     if(match&&match[1])showPhoto(match[1]);
+     else avatarUrl(memberId,version).then(showPhoto).catch(()=>{});
    }else if(glyph){glyph.textContent=str(m.name||m.displayName||m.email||'M').charAt(0).toUpperCase();}
+
    return row;
   }),'No members loaded');
   const pairs=tracker&&typeof computeNet==='function'&&typeof current!=='undefined'&&current&&current.id===tracker.id?computeNet().pairs:calculateTrackerPairs(all);
@@ -13054,6 +13061,11 @@ html body #sq-startup-overlay .sq-startup-content{
 }
 </style><script id="doweo-settlement-open-state">
 (function(){const card=document.getElementById('smart-settle-card');if(!card)return;card.open=true;card.addEventListener('toggle',()=>{if(!card.open)card.open=true})})();
+</script><style id="doweo-member-photo-images">
+#tracker-dashboard #sq-return-members .sq-return-icon.sq-member-avatar-loaded{overflow:hidden!important;padding:0!important;display:block!important}
+#tracker-dashboard #sq-return-members .sq-return-icon>img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:inherit!important}
+</style><script id="doweo-member-photo-sync">
+(function(){const avatar=document.getElementById('me-avatar');if(!avatar)return;let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;window.sqRefreshRestoredSummary?.()})}).observe(avatar,{attributes:true,attributeFilter:['style','class'],childList:true})})();
 </script></body>
 </html>
 
