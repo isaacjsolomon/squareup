@@ -12,7 +12,7 @@ test('Weo X closes native chat and navigates Home, controlled by one page state'
  assert.ok(inline);
  assert.doesNotThrow(()=>new Script(inline));
  assert.doesNotThrow(()=>new Script(actions));
- assert.match(inline,/close\.addEventListener\('click',\(\)=>\{setOpen\(false\);document\.getElementById\('nav-home'\)\?\.click\(\);\}\)/);
+ assert.match(inline,/close\.addEventListener\('click',\(\)=>\{setOpen\(false\);window\.location\.replace\('\/'\);\}\)/);
  assert.match(inline,/window\.WeoPage\?\.sync\(open\)/);
  assert.match(actions,/window\.WeoPage=Object\.freeze/);
  assert.doesNotMatch(actions,/stopImmediatePropagation/);
