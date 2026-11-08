@@ -7453,6 +7453,9 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  // Existing site navigation remains authoritative; clear the help-only page state on any other nav selection.
  document.querySelectorAll('.sq-nav-link:not(#nav-help-center)').forEach(b=>b.addEventListener('click',()=>document.body.classList.remove('sq-help-view')));
  if(location.hash==='#help')openHelp();
+ // Native-link fallback: directly opening /?view=weo must display the chat
+ // even before the optional full-page controller script finishes loading.
+ if(new URLSearchParams(location.search).get('view')==='weo')setOpen(true);
  // Conversation history stays in memory for this page session; the server authenticates each request.
 })();
 </script>
