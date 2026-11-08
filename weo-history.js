@@ -20,6 +20,15 @@
  drawer.setAttribute('aria-modal','true');
  drawer.setAttribute('aria-label','Your Weo conversations');
  drawer.innerHTML='<div class="weo-history-card"><header><div><h2>Your chats</h2><p>Private conversations saved to your account</p></div><button type="button" class="weo-history-close" aria-label="Close history">×</button></header><div class="weo-history-list" role="list"></div><p class="weo-history-status" role="status" aria-live="polite"></p></div>';
+ // This is deliberately a normal link, not another Weo modal close handler.
+ // It loads the actual DoWeo Home URL even if chat navigation is stuck.
+ const backHome=document.createElement('a');
+ backHome.id='weo-back-home';
+ backHome.className='weo-back-home';
+ backHome.href='/';
+ backHome.setAttribute('aria-label','Back to DoWeo Home');
+ backHome.textContent='← Back to Home';
+ drawer.querySelector('.weo-history-card').prepend(backHome);
  panel.appendChild(drawer);
  const list=drawer.querySelector('.weo-history-list');
  const status=drawer.querySelector('.weo-history-status');

@@ -1007,3 +1007,34 @@ html body #sq-ai-window.weo-full-page #sq-ai-close{
   flex-shrink:0!important;
   touch-action:manipulation;
 }
+
+
+/* Failsafe navigation: a real Home link, independent of Weo's X handlers. */
+#sq-ai-window .weo-back-home{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  min-height:43px;
+  box-sizing:border-box;
+  padding:11px 14px;
+  width:100%;
+  border:1px solid #3c7282;
+  border-radius:12px;
+  background:#183d4e;
+  color:#d3fff8;
+  font:700 13px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  text-decoration:none;
+  cursor:pointer;
+  flex:0 0 auto;
+}
+#sq-ai-window .weo-back-home:hover{background:#225466;border-color:#6fe9d4;color:#fff}
+#sq-ai-window .weo-back-home:focus-visible{outline:3px solid #72eedc;outline-offset:3px}
+@media(min-width:1000px){
+  html body #sq-ai-window.weo-full-page.weo-sidebar-open .weo-history-card{
+    padding:94px 12px 20px!important;
+  }
+  html body #sq-ai-window.weo-full-page.weo-sidebar-open #weo-history-drawer{
+    z-index:20!important;
+  }
+}
