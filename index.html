@@ -3788,6 +3788,7 @@ $('onboard-form').addEventListener('submit',async function(e) {
     onboardingUserId=null; onboardPhotoBlob=null;
     $('onboarding-page').hidden=true;
     settingsRoute('dashboard');
+    window.dispatchEvent(new CustomEvent('doweo:profile-onboarding-complete',{detail:{userId:currentUser.id}}));
     if(current&&current.id) { try { applyDetail(await api('trackers/'+current.id)); } catch(_) {} }
   } catch(err) {
     $('onboard-message').textContent=err.message||'Could not save. Please try again.';
@@ -13881,6 +13882,69 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
     if(original)original.click();
     window.scrollTo({top:0,behavior:'instant'});
   });
+})();
+</script>
+<style id="doweo-guided-first-run-style">
+#doweo-first-run[hidden],#doweo-connection-status[hidden]{display:none!important}
+#doweo-first-run{position:fixed;inset:0;z-index:2147482000;background:rgba(3,14,26,.84);display:grid;place-items:center;padding:18px;box-sizing:border-box}
+#doweo-first-run .doweo-first-run-card{width:min(100%,480px);max-height:calc(100dvh - 36px);overflow:auto;background:#0d293d;color:#f4fcff;border:1px solid #407887;border-radius:22px;padding:27px;box-shadow:0 24px 75px #0009}
+#doweo-first-run h2{margin:12px 0;font-size:clamp(24px,5vw,31px)}
+#doweo-first-run p{color:#bfd5df;line-height:1.55}
+#doweo-first-run .doweo-first-run-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+#doweo-first-run button{cursor:pointer;padding:12px 16px;border-radius:12px;font:inherit;font-weight:700;border:1px solid #3e7082;background:#153e54;color:#fff}
+#doweo-first-run button[data-doweo-next]{background:#23d5bb;color:#062e38;border-color:#23d5bb}
+#doweo-first-run button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+#doweo-connection-status{position:fixed;bottom:calc(86px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);z-index:2147481000;max-width:calc(100vw - 24px);padding:10px 15px;border:1px solid #e0b468;border-radius:12px;background:#392b17;color:#fff;font-size:13px;font-weight:650;text-align:center;box-shadow:0 8px 25px #0006;pointer-events:none}
+@media(min-width:901px){#doweo-connection-status{bottom:22px}}
+</style>
+<div id="doweo-first-run" hidden role="dialog" aria-modal="true" aria-labelledby="doweo-first-run-title">
+ <div class="doweo-first-run-card">
+  <small id="doweo-first-run-progress" aria-live="polite"></small>
+  <h2 id="doweo-first-run-title"></h2>
+  <p id="doweo-first-run-description"></p>
+  <div class="doweo-first-run-actions">
+   <button type="button" data-doweo-skip>Skip tour</button>
+   <button type="button" data-doweo-next>Next</button>
+  </div>
+ </div>
+</div>
+<div id="doweo-connection-status" hidden role="status" aria-live="polite">You're offline. Changes and payments require a connection.</div>
+<script id="doweo-guided-first-run-js">
+(function(){
+ 'use strict';
+ var overlay=document.getElementById('doweo-first-run');
+ var title=document.getElementById('doweo-first-run-title');
+ var description=document.getElementById('doweo-first-run-description');
+ var progress=document.getElementById('doweo-first-run-progress');
+ var next=overlay.querySelector('[data-doweo-next]');
+ var skip=overlay.querySelector('[data-doweo-skip]');
+ var steps=[
+  {title:'Welcome to DoWeo',text:'Your profile is ready. Take a quick tour of shared trackers, expenses, and settling up.'},
+  {title:'Create or open a tracker',text:'Trackers keep expenses and members organized for a group. Open Trackers to create one or choose an existing space.',action:'nav-trackers'},
+  {title:'Add a shared expense',text:'Record who paid and who owes. Check the split before saving, so everyone sees the correct balance.',action:'quick-expense'},
+  {title:'Settle up together',text:'Open a tracker and use Smart settle-up to review suggested payments. Money is not sent automatically.',action:'nav-home'}
+ ];
+ var index=0,storageKey='';
+ function close(){overlay.hidden=true;document.body.style.removeProperty('overflow');if(storageKey){try{localStorage.setItem(storageKey,'complete')}catch(_){}}}
+ function render(){var item=steps[index];progress.textContent='Step '+(index+1)+' of '+steps.length;title.textContent=item.title;description.textContent=item.text;next.textContent=index===steps.length-1?'Finish tour':item.action?'Show me':'Next';}
+ function advance(){
+  var item=steps[index];
+  if(item.action){close();document.getElementById(item.action)?.click();return;}
+  index++;if(index>=steps.length){close();return;}render();
+ }
+ next.addEventListener('click',advance);
+ skip.addEventListener('click',close);
+ window.addEventListener('doweo:profile-onboarding-complete',function(event){
+  var userId=event.detail&&event.detail.userId;if(!userId)return;
+  storageKey='doweo-first-run-v1:'+userId;
+  try{if(localStorage.getItem(storageKey)==='complete')return}catch(_){}
+  index=0;render();overlay.hidden=false;next.focus();
+ });
+ var status=document.getElementById('doweo-connection-status');
+ function sync(){status.hidden=navigator.onLine!==false;}
+ window.addEventListener('online',sync);
+ window.addEventListener('offline',sync);
+ sync();
 })();
 </script>
 <script id="dw-mobile-reference-header-controls">
