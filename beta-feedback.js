@@ -3,7 +3,7 @@ export function initBetaFeedback({api,getUser}) {
   if (document.getElementById('dw-beta-launch')) return;
   const style=document.createElement('style');
   style.textContent=`
-  #dw-beta-launch{position:fixed;right:18px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:8000;display:none;align-items:center;gap:8px;border:1px solid #6a8fb0;border-radius:999px;background:#0b2a52;color:white;padding:11px 17px;box-shadow:0 8px 26px #0005;font:700 13px system-ui;cursor:pointer}
+  #dw-beta-launch{position:fixed;right:18px;bottom:100px;z-index:8000;display:none;align-items:center;gap:8px;border:1px solid #6a8fb0;border-radius:999px;background:#0b2a52;color:white;padding:11px 17px;box-shadow:0 8px 26px #0005;font:700 13px system-ui;cursor:pointer}
   #dw-beta-launch:focus-visible,#dw-beta-modal button:focus-visible,#dw-beta-modal input:focus-visible,#dw-beta-modal textarea:focus-visible{outline:3px solid #ffffff;outline-offset:2px}
   #dw-beta-modal[hidden]{display:none!important}
   #dw-beta-modal{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;background:#020d23bd;padding:16px;color:#eef5ff;font:14px system-ui}
@@ -25,7 +25,7 @@ export function initBetaFeedback({api,getUser}) {
   #dw-beta-modal .dw-submit{width:100%;padding:13px;border:0;border-radius:11px;background:#ffffff;color:#10213b;font-weight:800;cursor:pointer;margin-top:18px}
   #dw-beta-modal .dw-submit:disabled{opacity:.55;cursor:wait}
   #dw-beta-modal .dw-message{min-height:20px;font-size:13px;margin:10px 0 0}
-  @media(max-width:650px){#dw-beta-launch{right:12px;bottom:calc(84px + env(safe-area-inset-bottom));padding:10px 13px}#dw-beta-modal .dw-panel{padding:19px}}
+  @media(max-width:650px){#dw-beta-launch{right:12px;bottom:160px;padding:10px 13px}#dw-beta-modal .dw-panel{padding:19px}}
   `;
   document.head.appendChild(style);
   const launcher=document.createElement('button');
@@ -108,10 +108,25 @@ export function initBetaFeedback({api,getUser}) {
     finally{submit.disabled=false;}
   });
   let emailReady=false;
+  // Keep this launcher above (not on top of) the Ask DoWeo AI pill.
+  // We measure the actual AI button, since its position/height changes on mobile.
+  const positionLauncher=()=>{
+    const ai=document.getElementById('sq-ai-launch');
+    if(!ai||!ai.getClientRects().length){
+      launcher.style.bottom='';
+      return;
+    }
+    const rect=ai.getBoundingClientRect();
+    const clearance=window.innerHeight-rect.top+12;
+    launcher.style.bottom=Math.ceil(Math.max(12,Math.min(clearance,window.innerHeight-70)))+'px';
+  };
   const updateVisibility=()=>{
+    const ai=document.getElementById('sq-ai-launch');
+    const aiChatOpen=ai?.getAttribute('aria-expanded')==='true';
     const canSubmit=Boolean(getUser?.() && emailReady);
-    launcher.style.display=canSubmit?'inline-flex':'none';
+    launcher.style.display=canSubmit&&!aiChatOpen?'inline-flex':'none';
     if(!canSubmit&&!modal.hidden)close();
+    positionLauncher();
   };
   async function checkEmailReady(){
     try{
@@ -125,5 +140,12 @@ export function initBetaFeedback({api,getUser}) {
   checkEmailReady();
   const interval=setInterval(updateVisibility,1800);
   const statusInterval=setInterval(checkEmailReady,120000);
-  window.addEventListener('pagehide',()=>{clearInterval(interval);clearInterval(statusInterval);},{once:true});
+  window.addEventListener('resize',positionLauncher);
+  window.addEventListener('orientationchange',positionLauncher);
+  window.addEventListener('pagehide',()=>{
+    clearInterval(interval);
+    clearInterval(statusInterval);
+    window.removeEventListener('resize',positionLauncher);
+    window.removeEventListener('orientationchange',positionLauncher);
+  },{once:true});
 }
