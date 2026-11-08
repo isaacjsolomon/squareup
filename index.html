@@ -2643,6 +2643,12 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
   <button type="button" id="sq-bills-open" hidden tabindex="-1" aria-hidden="true">Open bills</button>
 </section>
 <section id="sq-bills-page" class="sq-bills-page" hidden aria-label="Subscriptions and bill manager">
+  <nav class="sq-bills-workspace-tabs" role="tablist" aria-label="Tracker sections">
+  <button type="button" data-sq-bills-tab="overview" role="tab" aria-selected="false">Overview</button>
+  <button type="button" data-sq-bills-tab="expenses" role="tab" aria-selected="false">Expenses</button>
+  <button type="button" data-sq-bills-tab="bills" role="tab" aria-selected="true">Bills</button>
+  <button type="button" data-sq-bills-tab="members" role="tab" aria-selected="false">Members</button>
+</nav>
   <button type="button" id="sq-bills-back" class="sq-bills-back">← Back to Home</button>
   <div class="sq-bills-title"><div><span class="sq-bills-kicker">DOWEO · BILL MANAGER</span><h2>Subscriptions & Bills</h2><p>Organize recurring payments by tracker, see upcoming due dates, and remove bills you no longer need.</p></div><div class="sq-bills-tracker-compact"><label for="sq-bills-tracker">Select a tracker</label><select id="sq-bills-tracker"><option value="">Loading trackers…</option></select></div></div>
   <section class="sq-premium-overview" aria-label="Bills overview"><div class="sq-premium-metrics"><article><span>Estimated monthly recurring</span><strong id="sq-premium-monthly">$0.00</strong><small>Based on saved schedules</small></article><article><span>Active subscriptions</span><strong id="sq-premium-active">0</strong><small>In selected tracker</small></article><span id="sq-premium-upcoming" hidden aria-hidden="true">0</span></div><div class="sq-premium-calendar"><div class="sq-premium-calhead"><h3>Billing calendar</h3><div><button type="button" id="sq-premium-prev" aria-label="Previous month">‹</button><strong id="sq-premium-month"></strong><button type="button" id="sq-premium-next" aria-label="Next month">›</button></div></div><div class="sq-premium-days" id="sq-premium-days"></div><div id="sq-premium-selected" class="sq-premium-selected" aria-live="polite">Select a date to view scheduled bills.</div></div>  <div class="sq-bills-card sq-bill-create-card"><div class="sq-bill-create-heading"><div><h3>Add a bill or subscription</h3><p class="sq-bills-help">Set up a recurring expense for your tracker.</p></div><button type="button" id="sq-bill-mobile-toggle" class="sq-bill-mobile-toggle" aria-controls="sq-bills-create" aria-expanded="false" aria-label="Expand add a bill or subscription"><span aria-hidden="true">+</span></button></div>
@@ -13797,6 +13803,86 @@ body.sq-finance-open #sq-nextgen .sq-ng-add-action-hint{font-size:12px;color:#bd
 }
 </style>
 
+<style id="dw-bills-persistent-tabs-style">
+/* Keep tracker section navigation present while the separate Bills manager is open. */
+body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
+  position:sticky!important;
+  top:12px!important;
+  z-index:850!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  gap:7px!important;
+  margin:0 0 22px!important;
+  padding:8px!important;
+  border:1px solid #3d5c72!important;
+  border-radius:17px!important;
+  background:#1d3046!important;
+  box-shadow:0 5px 15px rgba(0,0,0,.13)!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+#sq-bills-page > .sq-bills-workspace-tabs > button {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:54px!important;
+  padding:12px 6px!important;
+  color:#edf7fc!important;
+  font:750 clamp(14px,1.7vw,19px)/1.2 inherit!important;
+  font-family:inherit!important;
+  font-weight:750!important;
+  border:1px solid transparent!important;
+  border-radius:12px!important;
+  background:transparent!important;
+  cursor:pointer!important;
+}
+#sq-bills-page > .sq-bills-workspace-tabs > button[aria-selected="true"] {
+  background:#0e8588!important;
+  border-color:#23c1bd!important;
+  color:#fff!important;
+}
+#sq-bills-page > .sq-bills-workspace-tabs > button:focus-visible {
+  outline:3px solid #67eadb!important;
+  outline-offset:2px!important;
+}
+@media(max-width:900px){
+  body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
+    top:calc(80px + env(safe-area-inset-top, 0px))!important;
+    gap:3px!important;
+    padding:5px!important;
+    margin-bottom:16px!important;
+  }
+  #sq-bills-page > .sq-bills-workspace-tabs > button {
+    min-height:42px!important;
+    padding:9px 2px!important;
+    font-size:clamp(11px,2.9vw,15px)!important;
+  }
+}
+</style>
+<script id="dw-bills-persistent-tabs-navigation">
+(function(){
+  'use strict';
+  var bar=document.querySelector('#sq-bills-page > .sq-bills-workspace-tabs');
+  if(!bar)return;
+  bar.addEventListener('click',function(event){
+    var button=event.target.closest('[data-sq-bills-tab]');
+    if(!button)return;
+    var section=button.getAttribute('data-sq-bills-tab');
+    if(section==='bills')return;
+    var back=document.getElementById('sq-bills-back');
+    if(back)back.click();
+    else document.getElementById('nav-home')?.click();
+    var original=document.querySelector('#tracker-dashboard .sq-workspace-tabs [data-sq-tab="'+section+'"]');
+    if(original)original.click();
+    window.scrollTo({top:0,behavior:'instant'});
+  });
+})();
+</script>
 <script id="dw-mobile-reference-header-controls">
 (function(){
  'use strict';
