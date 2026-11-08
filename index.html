@@ -7703,6 +7703,33 @@ document.addEventListener('click',function(event){var trigger=event.target.close
 #sq-instagram-invite .sq-ig-follow:focus-visible,#sq-instagram-invite button:focus-visible{outline:3px solid white;outline-offset:3px}
 #sq-instagram-invite .sq-ig-later{margin-top:13px;padding:10px 15px;border:0;background:transparent;color:#bdd2e2;font:inherit;cursor:pointer}
 #sq-instagram-invite .sq-ig-x{position:absolute;right:12px;top:10px;border:0;background:rgba(255,255,255,.08);color:white;border-radius:50%;height:36px;width:36px;font-size:24px;cursor:pointer}
+/* Center Instagram invitation copy at every viewport width. */
+#sq-instagram-invite .sq-ig-card{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  text-align:center!important;
+}
+#sq-instagram-invite .sq-ig-card #sq-ig-title,
+#sq-instagram-invite .sq-ig-card #sq-ig-description{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  padding-left:0!important;
+  padding-right:0!important;
+  text-align:center!important;
+  text-align-last:center!important;
+  box-sizing:border-box!important;
+}
+#sq-instagram-invite .sq-ig-card .sq-ig-follow{
+  text-align:center!important;
+}
+#sq-instagram-invite .sq-ig-card .sq-ig-later{
+  text-align:center!important;
+  align-self:center!important;
+}
 </style>
 <div id="sq-instagram-invite" hidden>
  <div class="sq-ig-card" role="dialog" aria-modal="true" aria-labelledby="sq-ig-title" aria-describedby="sq-ig-description">
