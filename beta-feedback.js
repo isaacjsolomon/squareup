@@ -26,7 +26,8 @@ export function initBetaFeedback({api,getUser}) {
   #dw-beta-modal .dw-submit:disabled{opacity:.55;cursor:wait}
   #dw-beta-modal .dw-message{min-height:20px;font-size:13px;margin:10px 0 0}
   #sq-mobile-more-sheet #dw-beta-more-action{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:60px;margin-top:12px;padding:14px 20px;border:1px solid #bfeaff;border-radius:15px;background:linear-gradient(120deg,#b8e7ff,#88cdf4);color:#092743;font:inherit;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(42,147,210,.16)}
-  #sq-mobile-more-sheet #dw-beta-more-action span[aria-hidden="true"]{font-size:29px;line-height:1;display:inline-flex;align-items:center;justify-content:center;flex:0 0 30px}
+  #sq-mobile-more-sheet #dw-beta-more-action span[aria-hidden="true"]{font-size:40px;line-height:1;display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;transform:translateY(-1px)}
+  #sq-mobile-more-sheet #dw-beta-more-action span:not([aria-hidden]){display:inline-flex;align-items:center;line-height:1.2}
   #sq-mobile-more-sheet #dw-beta-more-action:active{transform:translateY(1px);background:#83c5ec}
   #sq-mobile-more-sheet #dw-beta-more-action:focus-visible{outline:3px solid #fff;outline-offset:3px}
   @media(max-width:900px){#dw-beta-launch{display:none!important}#dw-beta-modal .dw-panel{padding:19px}}
