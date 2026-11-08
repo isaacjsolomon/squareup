@@ -13559,7 +13559,29 @@ body.sq-finance-open #sq-nextgen .sq-ng-add-action-hint{font-size:12px;color:#bd
   #sq-nextgen .sq-ng-workspace-link-form select{grid-column:1/-1;min-width:0;width:100%}
   #sq-nextgen .sq-ng-workspace-link-form button{min-width:0}
 }
-</style><script src="/weo-mascot.js" defer></script>
+</style><style id="doweo-sticky-desktop-topbar">
+/* Freeze the existing DoWeo desktop toolbar while the page scrolls. */
+@media (min-width:901px){
+  html body .wrap > header.tracker-heading{
+    position:sticky!important;
+    top:12px!important;
+    z-index:180!important;
+    isolation:isolate;
+    flex-shrink:0!important;
+    background:linear-gradient(110deg,rgba(139,165,201,.94),rgba(111,136,179,.94))!important;
+    backdrop-filter:blur(30px) saturate(155%)!important;
+    -webkit-backdrop-filter:blur(30px) saturate(155%)!important;
+    box-shadow:inset 0 1px rgba(255,255,255,.2),0 12px 34px rgba(0,12,26,.22)!important;
+  }
+  /* Keep the regular page content below the sticky header. */
+  html body .wrap > header.tracker-heading .sq-search-launch,
+  html body .wrap > header.tracker-heading #sq-desktop-friends-top,
+  html body .wrap > header.tracker-heading #sq-ai-launch{
+    pointer-events:auto!important;
+  }
+}
+</style>
+<script src="/weo-mascot.js" defer></script>
 <script src="/weo-actions.js" defer></script>
 </body>
 </html>
