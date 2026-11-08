@@ -333,3 +333,85 @@
     overflow-y:auto!important;
   }
 }
+
+
+/* Dedicated Weo page. Overrides old modal positioning without rebuilding chat. */
+html.weo-page-active,body.weo-page-active{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+}
+html body #sq-ai-window.weo-full-page{
+  position:fixed!important;
+  inset:0!important;
+  top:0!important;right:0!important;bottom:0!important;left:0!important;
+  width:100vw!important;width:100dvw!important;
+  height:100vh!important;height:100dvh!important;
+  min-width:0!important;min-height:0!important;
+  max-width:none!important;max-height:none!important;
+  margin:0!important;
+  border:0!important;border-radius:0!important;
+  transform:none!important;
+  z-index:2147483000!important;
+  box-sizing:border-box!important;
+  display:flex!important;flex-direction:column!important;
+  overflow:hidden!important;
+  background:#091725!important;
+  box-shadow:none!important;
+  padding-top:env(safe-area-inset-top,0px)!important;
+  padding-bottom:env(safe-area-inset-bottom,0px)!important;
+}
+html body #sq-ai-window.weo-full-page .sq-ai-head{
+  flex:0 0 auto!important;
+  position:relative!important;
+  z-index:2;
+}
+html body #sq-ai-window.weo-full-page .sq-ai-messages,
+html body #sq-ai-window.weo-full-page .sq-ai-body,
+html body #sq-ai-window.weo-full-page .sq-ai-chat-body{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+}
+html body #sq-ai-window.weo-full-page #sq-ai-form{
+  flex:0 0 auto!important;
+  margin-top:auto!important;
+  z-index:5;
+}
+html body #sq-ai-window.weo-full-page .weo-quick-actions:not(.weo-menu-open){
+  flex-shrink:0;
+}
+@media(min-width:701px){
+  html body #sq-ai-window.weo-full-page .sq-ai-head,
+  html body #sq-ai-window.weo-full-page #sq-ai-form,
+  html body #sq-ai-window.weo-full-page #sq-ai-contact,
+  html body #sq-ai-window.weo-full-page .weo-quick-actions{
+    padding-left:max(20px,calc((100vw - 940px)/2))!important;
+    padding-right:max(20px,calc((100vw - 940px)/2))!important;
+    box-sizing:border-box;
+  }
+}
+@media(max-width:700px){
+  html body #sq-ai-window.weo-full-page{
+    height:100dvh!important;
+    max-height:100dvh!important;
+    padding-top:env(safe-area-inset-top,0px)!important;
+  }
+  html body #sq-ai-window.weo-full-page.weo-keyboard-open{
+    height:var(--weo-visible-height,100dvh)!important;
+    max-height:var(--weo-visible-height,100dvh)!important;
+    padding-bottom:0!important;
+  }
+  html body #sq-ai-window.weo-full-page .sq-ai-welcome{
+    max-width:460px!important;
+    padding-top:24px!important;
+    padding-bottom:18px!important;
+  }
+  html body #sq-ai-window.weo-full-page.weo-typing .sq-ai-welcome,
+  html body #sq-ai-window.weo-full-page.weo-typing .weo-prompt-grid{
+    display:none!important;
+  }
+  html body #sq-ai-window.weo-full-page #sq-ai-contact{
+    padding-bottom:4px!important;
+  }
+}

@@ -395,6 +395,88 @@
     });
   }).observe(document.body,{childList:true,subtree:true});
 
+
+  // Weo is an app-level page, rather than a modal layered over Home.
+  // The original chat instance and all of its message/action handlers stay intact.
+  const pageLaunch=document.getElementById('sq-ai-launch');
+  const routeKey='weo';
+  const isWeoRoute=()=>new URL(location.href).searchParams.get('view')===routeKey;
+  const routeUrl=(active)=>{
+    const url=new URL(location.href);
+    if(active)url.searchParams.set('view',routeKey);
+    else if(url.searchParams.get('view')===routeKey)url.searchParams.delete('view');
+    return url.pathname+url.search+url.hash;
+  };
+  let routeSyncing=false;
+  const isPanelVisible=()=>{
+    if(panel.hidden || panel.getAttribute('aria-hidden')==='true')return false;
+    const style=getComputedStyle(panel);
+    return style.display!=='none'&&style.visibility!=='hidden'&&panel.getClientRects().length>0;
+  };
+  const activatePage=(push)=>{
+    document.documentElement.classList.add('weo-page-active');
+    document.body.classList.add('weo-page-active');
+    panel.classList.add('weo-full-page');
+    if(push&&!isWeoRoute()){
+      history.pushState({...history.state,weoPage:true},'',routeUrl(true));
+    }
+  };
+  const deactivatePage=(goHome)=>{
+    document.documentElement.classList.remove('weo-page-active');
+    document.body.classList.remove('weo-page-active');
+    panel.classList.remove('weo-full-page','weo-keyboard-open','weo-typing');
+    panel.style.removeProperty('--weo-visible-height');
+    if(isWeoRoute())history.replaceState({...history.state,weoPage:false},'',routeUrl(false));
+    if(goHome)document.getElementById('nav-home')?.click();
+  };
+  const updatePageState=()=>{
+    if(routeSyncing)return;
+    if(isPanelVisible()){
+      activatePage(!isWeoRoute());
+    }else if(document.body.classList.contains('weo-page-active')){
+      deactivatePage(false);
+    }
+  };
+  // Existing launcher and close controls continue to operate normally.
+  pageLaunch?.addEventListener('click',()=>{
+    requestAnimationFrame(updatePageState);
+  });
+  const pageObserver=new MutationObserver(()=>{
+    requestAnimationFrame(updatePageState);
+  });
+  pageObserver.observe(panel,{attributes:true,attributeFilter:['class','style','hidden','aria-hidden']});
+  const closeControls=[...panel.querySelectorAll('.sq-ai-head button, .sq-ai-head [role="button"]')];
+  const lastHeaderButton=closeControls.at(-1);
+  for(const control of closeControls){
+    const hint=((control.getAttribute('aria-label')||'')+' '+(control.title||'')+' '+(control.textContent||'')).toLowerCase();
+    if(control===lastHeaderButton||control.id==='sq-ai-close'||hint.includes('close')||hint.includes('×')||hint.includes('✕')||hint.includes('✖')){
+      control.addEventListener('click',()=>{
+        requestAnimationFrame(()=>{
+          deactivatePage(true);
+        });
+      });
+    }
+  }
+  window.addEventListener('popstate',()=>{
+    routeSyncing=true;
+    if(isWeoRoute()){
+      if(!isPanelVisible())pageLaunch?.click();
+      activatePage(false);
+    }else{
+      if(isPanelVisible())window.WeoChat?.close?.();
+      deactivatePage(false);
+    }
+    routeSyncing=false;
+  });
+  if(isWeoRoute()){
+    requestAnimationFrame(()=>{
+      if(!isPanelVisible())pageLaunch?.click();
+      activatePage(false);
+    });
+  }else{
+    requestAnimationFrame(updatePageState);
+  }
+
   window.WeoActions=Object.freeze({
     hasImage:()=>Boolean(pendingImage),
     takeImage:()=>{
