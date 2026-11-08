@@ -82,7 +82,7 @@ export async function onRequest({request,env}){
    where.searchParams.set('user_id','eq.'+user.id);
    saved=await fetch(where,{method:'PATCH',headers,body:JSON.stringify({messages:archive,updated_at:new Date().toISOString()}),signal:AbortSignal.timeout(9000)});
   }else{
-   const title=lastMessage.slice(0,60).replace(/\\s+/g,' ').trim()||'New conversation';
+   const title=lastMessage.slice(0,60).replace(/\s+/g,' ').trim()||'New conversation';
    saved=await fetch(base,{method:'POST',headers,body:JSON.stringify({user_id:user.id,title,messages:archive}),signal:AbortSignal.timeout(9000)});
   }
   if(saved.ok){
