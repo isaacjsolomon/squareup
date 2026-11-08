@@ -29,6 +29,14 @@
  backHome.setAttribute('aria-label','Back to DoWeo Home');
  backHome.textContent='← Back to Home';
  drawer.querySelector('.weo-history-card').prepend(backHome);
+ // Mobile has no permanent sidebar or X, so keep Home accessible directly.
+ const mobileBack=document.createElement('a');
+ mobileBack.id='weo-mobile-back-home';
+ mobileBack.href='/';
+ mobileBack.className='weo-mobile-back-home';
+ mobileBack.setAttribute('aria-label','Back to DoWeo Home');
+ mobileBack.textContent='←';
+ head.insertBefore(mobileBack,head.firstChild);
  panel.appendChild(drawer);
  const list=drawer.querySelector('.weo-history-list');
  const status=drawer.querySelector('.weo-history-status');
