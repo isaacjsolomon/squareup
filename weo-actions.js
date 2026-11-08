@@ -381,18 +381,15 @@
     else if(url.searchParams.get('view')===routeKey)url.searchParams.delete('view');
     return url.pathname+url.search+url.hash;
   };
-  let routeSyncing=false;
-
-  // Move the full-page view directly under <body>. A transformed/scrolling
-  // dashboard ancestor otherwise makes position:fixed behave like absolute,
-  // exposing Home underneath the iOS keyboard during touch scrolling.
+  // A single controller owns page positioning and URL state.
+  // Open/close itself is controlled ONLY by the original chat setOpen().
   const originalParent=panel.parentNode;
   const originalNext=panel.nextSibling;
   let pageScrollY=0;
   let pageLocked=false;
+  let pageActive=false;
   const lockBackground=()=>{
-    // The original Weo open handler already locks scrolling on mobile.
-    // Avoid a second conflicting lock and the extra layout recalculation.
+    // The native mobile chat already freezes background scrolling.
     if(pageLocked||document.body.style.position==='fixed')return;
     pageScrollY=window.scrollY||0;
     document.body.style.position='fixed';
@@ -410,93 +407,62 @@
     pageLocked=false;
     window.scrollTo(0,pageScrollY);
   };
-  const movePanelToBody=()=>{
-    if(panel.parentNode!==document.body)document.body.appendChild(panel);
-  };
   const restorePanel=()=>{
     if(originalParent?.isConnected && panel.parentNode!==originalParent){
       originalParent.insertBefore(panel,originalNext?.parentNode===originalParent?originalNext:null);
     }
   };
-  const isPanelVisible=()=>{
-    if(panel.hidden || panel.getAttribute('aria-hidden')==='true')return false;
-    const style=getComputedStyle(panel);
-    return style.display!=='none'&&style.visibility!=='hidden'&&panel.getClientRects().length>0;
-  };
-  const activatePage=(push)=>{
-    movePanelToBody();
-    lockBackground();
-    document.documentElement.classList.add('weo-page-active');
-    document.body.classList.add('weo-page-active');
-    panel.classList.add('weo-full-page');
-    if(push&&!isWeoRoute()){
+  const openPage=()=>{
+    if(panel.hidden)return;
+    if(!pageActive){
+      if(panel.parentNode!==document.body)document.body.appendChild(panel);
+      lockBackground();
+      document.documentElement.classList.add('weo-page-active');
+      document.body.classList.add('weo-page-active');
+      panel.classList.add('weo-full-page');
+      pageActive=true;
+    }
+    if(!isWeoRoute()){
       history.pushState({...history.state,weoPage:true},'',routeUrl(true));
     }
   };
-  const deactivatePage=(goHome)=>{
-    document.documentElement.classList.remove('weo-page-active');
-    document.body.classList.remove('weo-page-active');
-    panel.classList.remove('weo-full-page','weo-keyboard-open','weo-typing');
+  const closePage=()=>{
+    // Clearing all three display states is intentional. The CSS hidden guard
+    // prevents old !important full-screen styles from showing a closed page.
+    panel.hidden=true;
+    panel.setAttribute('aria-modal','false');
+    pageLaunch?.setAttribute('aria-expanded','false');
+    panel.classList.remove('weo-full-page','weo-keyboard-open','weo-typing','weo-sidebar-open');
     panel.style.removeProperty('--weo-visible-height');
     panel.style.removeProperty('--weo-viewport-offset');
+    document.documentElement.classList.remove('weo-page-active');
+    document.body.classList.remove('weo-page-active');
     unlockBackground();
     restorePanel();
-    if(isWeoRoute())history.replaceState({...history.state,weoPage:false},'',routeUrl(false));
-    if(goHome)document.getElementById('nav-home')?.click();
-  };
-  const updatePageState=()=>{
-    if(routeSyncing)return;
-    if(isPanelVisible()){
-      activatePage(!isWeoRoute());
-    }else if(document.body.classList.contains('weo-page-active')){
-      deactivatePage(false);
-    }
-  };
-  // Existing launcher and close controls continue to operate normally.
-  pageLaunch?.addEventListener('click',()=>{
-    requestAnimationFrame(updatePageState);
-  });
-  // Observe visibility only. Class changes from sidebar, keyboard and typing
-  // should never repeatedly recompute the entire page layout.
-  const pageObserver=new MutationObserver(()=>{
-    requestAnimationFrame(updatePageState);
-  });
-  pageObserver.observe(panel,{attributes:true,attributeFilter:['hidden','aria-hidden']});
-  // The existing chat script also has a close handler. On desktop the
-  // two handlers could race with the route observer and immediately reopen
-  // Weo. Handle the X once, synchronously, before the legacy bubble listener.
-  const closeButton=panel.querySelector('#sq-ai-close');
-  closeButton?.addEventListener('click',event=>{
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    routeSyncing=true;
-    try{
-      window.WeoChat?.close?.();
-      // Explicitly hide the panel even if a legacy callback is unavailable.
-      panel.hidden=true;
-      deactivatePage(true);
-    }finally{
-      routeSyncing=false;
-    }
-  },true);
-  window.addEventListener('popstate',()=>{
-    routeSyncing=true;
+    pageActive=false;
     if(isWeoRoute()){
-      if(!isPanelVisible())pageLaunch?.click();
-      activatePage(false);
-    }else{
-      if(isPanelVisible())window.WeoChat?.close?.();
-      deactivatePage(false);
+      history.replaceState({...history.state,weoPage:false},'',routeUrl(false));
     }
-    routeSyncing=false;
+  };
+  // Called synchronously by the native setOpen() function from index.html.
+  window.WeoPage=Object.freeze({
+    sync(open){if(open)openPage();else closePage();},
+    close(){window.WeoChat?.close?.();}
   });
+  window.addEventListener('popstate',()=>{
+    const shouldOpen=isWeoRoute();
+    if(shouldOpen){
+      if(panel.hidden)window.WeoChat?.open?.();
+      else openPage();
+    }else if(!panel.hidden || pageActive){
+      window.WeoChat?.close?.();
+    }
+  });
+  // Support directly opening a bookmarked Weo URL.
   if(isWeoRoute()){
-    requestAnimationFrame(()=>{
-      if(!isPanelVisible())pageLaunch?.click();
-      activatePage(false);
-    });
-  }else{
-    requestAnimationFrame(updatePageState);
+    window.WeoChat?.open?.();
+  }else if(!panel.hidden){
+    openPage();
   }
 
   // Load account-specific chat history without rebuilding existing Weo behavior.
