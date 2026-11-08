@@ -3,6 +3,11 @@ const PROJECT_URL = 'https://pajrdqarszbnrlstoyly.supabase.co';
 const reply = (body, status = 200) => Response.json(body, {status, headers:{'Cache-Control':'no-store'}});
 const trim = (value, max) => typeof value === 'string' ? value.trim().slice(0,max) : '';
 export async function onRequest({request, env}) {
+  // Safe status check lets the UI hide its submit button until outbound email
+  // credentials are configured. No provider keys or sender details are exposed.
+  if (request.method === 'GET') return reply({
+    ready:Boolean(env.SUPABASE_SERVICE_ROLE_KEY && env.RESEND_API_KEY && env.BETA_FEEDBACK_FROM_EMAIL)
+  });
   if (request.method !== 'POST') return reply({error:'Method not allowed'},405);
   const origin = request.headers.get('Origin');
   if (origin && origin !== new URL(request.url).origin) return reply({error:'Origin not allowed'},403);
