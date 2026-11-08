@@ -7350,11 +7350,13 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
    if(locked){document.body.style.removeProperty('position');document.body.style.removeProperty('top');document.body.style.removeProperty('width');locked=false;window.scrollTo({top:savedScroll,behavior:'instant'})}
    launch.focus({preventScroll:true});
   }
+  // Single authoritative page state: no delayed close listeners or observers.
+  window.WeoPage?.sync(open);
  }
  window.visualViewport?.addEventListener('resize',fitChat);
  window.visualViewport?.addEventListener('scroll',fitChat);
  window.addEventListener('resize',fitChat);
- launch.addEventListener('click',()=>setOpen(panel.hidden));close.addEventListener('click',()=>setOpen(false));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)setOpen(false)});
+ launch.addEventListener('click',()=>setOpen(panel.hidden));close.addEventListener('click',()=>{setOpen(false);document.getElementById('nav-home')?.click();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)setOpen(false)});
  function bubble(message,user,imageData=null){const el=document.createElement('div');el.className='sq-ai-message'+(user?' user':'');el.textContent=message;if(user&&imageData){const picture=document.createElement('img');picture.className='weo-attached-image';picture.alt='Image attached to this message';picture.src=imageData;el.append(picture);}stream.append(el);if(!user)window.WeoMascot?.decorateBubble(el);return el;}
 
 
@@ -7407,6 +7409,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  }
  form.addEventListener('submit',e=>{e.preventDefault();if(busy||(!input.value.trim()&&!window.WeoActions?.hasImage?.()))return;const text=input.value;const imageData=window.WeoActions?.takeImage?.()||null;input.value='';input.placeholder='Ask Weo anything…';resizeInput();ask(text,false,imageData);});
  window.WeoChat=Object.freeze({
+  open:()=>setOpen(true),
   close:()=>setOpen(false),
   refreshSend:resizeInput,
   getConversationId:()=>activeConversationId,
