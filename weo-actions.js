@@ -462,23 +462,17 @@
     requestAnimationFrame(updatePageState);
   });
   pageObserver.observe(panel,{attributes:true,attributeFilter:['hidden','aria-hidden']});
-  // The existing chat script also has a close handler. On desktop the
-  // two handlers could race with the route observer and immediately reopen
-  // Weo. Handle the X once, synchronously, before the legacy bubble listener.
-  const closeButton=panel.querySelector('#sq-ai-close');
-  closeButton?.addEventListener('click',event=>{
-    event.preventDefault();
-    event.stopImmediatePropagation();
+  // The inline chat owns visibility. WeoActions only handles route cleanup.
+  // No capture-phase interception, duplicate setOpen(), or delayed re-opening.
+  panel.addEventListener('weo:closed',()=>{
     routeSyncing=true;
     try{
-      window.WeoChat?.close?.();
-      // Explicitly hide the panel even if a legacy callback is unavailable.
-      panel.hidden=true;
-      deactivatePage(true);
+      deactivatePage(false);
+      document.getElementById('nav-home')?.click();
     }finally{
       routeSyncing=false;
     }
-  },true);
+  });
   window.addEventListener('popstate',()=>{
     routeSyncing=true;
     if(isWeoRoute()){
