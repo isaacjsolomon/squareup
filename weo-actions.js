@@ -71,7 +71,8 @@
     if(area.parentElement!==form)form.appendChild(area);
     closeActions();
   };
-  moreButton.addEventListener('click',()=>{
+  moreButton.addEventListener('click',(event)=>{
+    event.stopPropagation();
     const opening=!area.classList.contains('weo-menu-open');
     area.classList.toggle('weo-menu-open',opening);
     moreButton.setAttribute('aria-expanded',String(opening));
@@ -264,8 +265,8 @@
           catch(error){
             const message=error?.message||'Could not open that tracker.';
             if(panel.hidden){
-              showStatus(message);
-              window.document.getElementById('sq-ai-launch')?.click();
+              // Never silently navigate back into the assistant after a failed action.
+              console.warn('Weo tracker action failed:',message);
             }else{
               picker.hidden=false;
               choice=kind;
@@ -276,18 +277,22 @@
         });
         pickerList.append(button);
       }
-    }catch(error){pickerStatus.textContent=error?.message||'Could not load your trackers.';}
+    }catch(error){
+      pickerStatus.textContent=error?.message||'Could not load your trackers.';
+      pickerList.querySelectorAll('button').forEach(button=>button.disabled=false);
+    }
   }
 
   async function navigate(kind,id){
-    // No expense or poll is posted automatically. The member reviews the existing form.
-    if(typeof window.openTracker!=='function')throw Error('Tracker navigation is unavailable. Open it from Trackers.');
-    // Clear the selector before closing Weo, so it doesn't reappear next time.
+    // Use the same validated tracker-open flow as the main app.
+    // Keep the chooser visible until a successful navigation.
+    if(typeof window.sqOpenTrackerForWeo!=='function')
+      throw Error('Tracker navigation is unavailable. Refresh DoWeo and try again.');
+    document.getElementById('nav-trackers')?.click();
+    await window.sqOpenTrackerForWeo(id);
     picker.hidden=true;
     choice=null;
     window.WeoChat?.close?.();
-    document.getElementById('nav-trackers')?.click();
-    await window.openTracker(id);
     if(kind==='expense'){
       document.getElementById('nav-home')?.click();
       const card=document.getElementById('entry-card');
@@ -351,50 +356,19 @@
   // Give the welcome prompts a reliable, responsive layout regardless of
   // the older inline app stylesheet's card sizing and positioning rules.
   const arrangePrompts=()=>{
-    const welcome=panel.querySelector('.sq-ai-welcome');
-    if(!welcome)return;
-    const titles=['Let’s talk',"Let's talk",'Make a plan','Brainstorm an idea','Get app help'];
-    const buttons=[...panel.querySelectorAll('button')].filter(button=>
-      titles.includes((button.textContent||'').trim())
-    );
-    if(buttons.length<4)return;
-    let common=buttons[0].parentElement;
-    while(common && !buttons.every(button=>common.contains(button)))common=common.parentElement;
-    if(common && common!==panel && common!==form && !common.contains(form)){
-      common.classList.add('weo-prompt-grid');
-      buttons.forEach(button=>button.classList.add('weo-prompt-card'));
-    }
+    // The native welcome() creates the four controls in one dedicated grid.
+    // Avoid scanning the whole assistant DOM on every chat message.
+    const quick=panel.querySelector('#sq-ai-quick');
+    if(!quick||quick.classList.contains('weo-prompt-grid'))return;
+    quick.classList.add('weo-prompt-grid');
+    for(const button of quick.querySelectorAll('button'))button.classList.add('weo-prompt-card');
   };
   arrangePrompts();
-  const promptObserver=new MutationObserver(arrangePrompts);
-  promptObserver.observe(panel,{childList:true,subtree:true});
+  const stream=panel.querySelector('#sq-ai-stream');
+  if(stream)new MutationObserver(arrangePrompts).observe(stream,{childList:true});
 
 
-  // Style the existing Instagram prompt's content, without changing
-  // its closing or follow-link behavior.
-  const centerInstagramPopup=()=>{
-    for(const el of document.querySelectorAll('h1,h2,h3,p')){
-      const copy=(el.textContent||'').replace(/\s+/g,' ').trim();
-      if(copy.includes('Follow DoWeo on Instagram') ||
-         (copy.includes('Get updates, new features') && copy.includes('@doweo.app'))){
-        el.style.setProperty('text-align','center','important');
-        el.style.setProperty('margin-left','auto','important');
-        el.style.setProperty('margin-right','auto','important');
-        el.style.setProperty('max-width','100%');
-      }
-    }
-  };
-  centerInstagramPopup();
-  let instagramScanPending=false;
-  new MutationObserver(()=>{
-    if(instagramScanPending)return;
-    instagramScanPending=true;
-    requestAnimationFrame(()=>{
-      instagramScanPending=false;
-      centerInstagramPopup();
-    });
-  }).observe(document.body,{childList:true,subtree:true});
-
+  // Instagram popup has its own scoped CSS; never scan the whole DOM on every mutation.
 
   // Weo is an app-level page, rather than a modal layered over Home.
   // The original chat instance and all of its message/action handlers stay intact.
@@ -417,7 +391,9 @@
   let pageScrollY=0;
   let pageLocked=false;
   const lockBackground=()=>{
-    if(pageLocked)return;
+    // The original Weo open handler already locks scrolling on mobile.
+    // Avoid a second conflicting lock and the extra layout recalculation.
+    if(pageLocked||document.body.style.position==='fixed')return;
     pageScrollY=window.scrollY||0;
     document.body.style.position='fixed';
     document.body.style.top=(-pageScrollY)+'px';
@@ -480,10 +456,12 @@
   pageLaunch?.addEventListener('click',()=>{
     requestAnimationFrame(updatePageState);
   });
+  // Observe visibility only. Class changes from sidebar, keyboard and typing
+  // should never repeatedly recompute the entire page layout.
   const pageObserver=new MutationObserver(()=>{
     requestAnimationFrame(updatePageState);
   });
-  pageObserver.observe(panel,{attributes:true,attributeFilter:['class','style','hidden','aria-hidden']});
+  pageObserver.observe(panel,{attributes:true,attributeFilter:['hidden','aria-hidden']});
   const closeControls=[...panel.querySelectorAll('.sq-ai-head button, .sq-ai-head [role="button"]')];
   const lastHeaderButton=closeControls.at(-1);
   for(const control of closeControls){

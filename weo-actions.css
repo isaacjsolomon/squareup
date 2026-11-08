@@ -962,3 +962,32 @@ html body #sq-ai-window.weo-full-page #sq-ai-contact{
    margin:8px 0 0 calc(255px + (100% - 255px - min(760px,100% - 319px))/2)!important;
  }
 }
+
+
+/* Reliable, clickable Weo controls on full-size desktop and mobile views. */
+html body #sq-ai-window.weo-full-page #sq-ai-form{
+  overflow:visible!important;
+}
+html body #sq-ai-window.weo-full-page #sq-ai-form .weo-more-toggle{
+  position:relative!important;
+  z-index:2!important;
+  pointer-events:auto!important;
+}
+html body #sq-ai-window.weo-full-page #sq-ai-form .weo-quick-actions{
+  pointer-events:none!important;
+  visibility:hidden!important;
+}
+html body #sq-ai-window.weo-full-page #sq-ai-form .weo-quick-actions.weo-menu-open{
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+html body #sq-ai-window.weo-full-page #sq-ai-form .weo-quick-actions.weo-menu-open button{
+  pointer-events:auto!important;
+}
+html body #sq-ai-window.weo-full-page #sq-ai-stream .sq-ai-quick button{
+  pointer-events:auto!important;
+  cursor:pointer!important;
+}
+html body #sq-ai-window.weo-full-page .weo-tracker-picker{
+  z-index:120!important;
+}
