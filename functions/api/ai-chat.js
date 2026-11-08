@@ -54,6 +54,42 @@ export async function onRequest({request,env}){
   }
   const result=await env.AI.run(model,{messages:modelMessages,max_tokens:450,temperature:0.6});
   if(typeof result?.response!=='string'||!result.response.trim())throw Error('empty');
- return reply({reply:result.response.trim().slice(0,4000)});
+ const answer=result.response.trim().slice(0,4000);
+ // Persist only text. Images are never written to chat history.
+ let conversationId=null;
+ try{
+  const supplied=typeof raw.conversationId==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(raw.conversationId)?raw.conversationId:null;
+  const headers={apikey:env.SUPABASE_SERVICE_ROLE_KEY,Authorization:'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY,'Content-Type':'application/json',Prefer:'return=representation'};
+  const base='https://pajrdqarszbnrlstoyly.supabase.co/rest/v1/doweo_ai_conversations';
+  let existing=null;
+  if(supplied){
+   const lookup=new URL(base);
+   lookup.searchParams.set('select','id,messages');
+   lookup.searchParams.set('user_id','eq.'+user.id);
+   lookup.searchParams.set('id','eq.'+supplied);
+   const found=await fetch(lookup,{headers,signal:AbortSignal.timeout(8000)});
+   if(found.ok)existing=(await found.json())[0]||null;
+  }
+  const lastMessage=messages[messages.length-1].content;
+  const entry=[{role:'user',content:lastMessage},{role:'assistant',content:answer}];
+  const past=Array.isArray(existing?.messages)?existing.messages:[];
+  // Stored text may exceed the 16-message model context. Keep a bounded archive.
+  const archive=past.concat(entry).slice(-300);
+  let saved;
+  if(existing){
+   const where=new URL(base);
+   where.searchParams.set('id','eq.'+existing.id);
+   where.searchParams.set('user_id','eq.'+user.id);
+   saved=await fetch(where,{method:'PATCH',headers,body:JSON.stringify({messages:archive,updated_at:new Date().toISOString()}),signal:AbortSignal.timeout(9000)});
+  }else{
+   const title=lastMessage.slice(0,60).replace(/\s+/g,' ').trim()||'New conversation';
+   saved=await fetch(base,{method:'POST',headers,body:JSON.stringify({user_id:user.id,title,messages:archive}),signal:AbortSignal.timeout(9000)});
+  }
+  if(saved.ok){
+   const rows=await saved.json();
+   conversationId=rows?.[0]?.id||existing?.id||null;
+  }else console.error('Weo history save failed',saved.status);
+ }catch(e){console.error('Weo history unavailable',String(e?.message||'unknown').slice(0,100));}
+ return reply({reply:answer,conversationId,historySaved:Boolean(conversationId)});
  }catch(err){console.error('Weo AI generation failed',image?'vision':'text',String(err?.message||'unknown').slice(0,140));return reply({error:image?'Weo could not analyze that image right now. Try again later or ask a text question.':'AI is temporarily unavailable or its usage limit has been reached. Please try again later.'},503)}
 }

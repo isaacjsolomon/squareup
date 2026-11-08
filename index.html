@@ -7353,9 +7353,9 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  function bubble(message,user,imageData=null){const el=document.createElement('div');el.className='sq-ai-message'+(user?' user':'');el.textContent=message;if(user&&imageData){const picture=document.createElement('img');picture.className='weo-attached-image';picture.alt='Image attached to this message';picture.src=imageData;el.append(picture);}stream.append(el);if(!user)window.WeoMascot?.decorateBubble(el);return el;}
 
 
- let conversation=[],busy=false;
+ let conversation=[],activeConversationId=null,busy=false;
  const send=form.querySelector('button'),latest=document.getElementById('sq-ai-latest');
- const notice=document.createElement('small');notice.className='sq-ai-privacy';notice.textContent='AI can make mistakes · Powered by Cloudflare';notice.title='Messages and any images you choose to attach are processed by Cloudflare AI. Tracker records are not automatically shared.';form.after(notice);
+ const notice=document.createElement('small');notice.className='sq-ai-privacy';notice.textContent='AI can make mistakes · Powered by Cloudflare';notice.title='Messages and any images you choose to attach are processed by Cloudflare AI. Tracker records are not automatically shared. Text conversations are saved privately to your account; attached images are not stored in chat history.';form.after(notice);
  const reset=document.createElement('button');reset.type='button';reset.className='sq-ai-reset';reset.textContent='New chat';reset.setAttribute('aria-label','Start a new conversation');close.before(reset);
  function welcome(){
   stream.replaceChildren();stream.classList.add('sq-ai-empty');latest.hidden=true;
@@ -7372,7 +7372,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  function resizeInput(){input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px';send.disabled=busy||(!input.value.trim()&&!window.WeoActions?.hasImage?.())}
  input.addEventListener('input',resizeInput);
  input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!mobile()&&!e.isComposing){e.preventDefault();if(!send.disabled)form.requestSubmit()}});
- reset.onclick=()=>{if(busy)return;conversation=[];window.WeoActions?.clearImage?.();input.placeholder='Ask Weo anything…';welcome();window.WeoMascot?.setMood('idle')};
+ reset.onclick=()=>{if(busy)return;conversation=[];activeConversationId=null;window.WeoActions?.clearImage?.();input.placeholder='Ask Weo anything…';welcome();window.WeoMascot?.setMood('idle')};
  function updateLatest(){latest.hidden=stream.scrollHeight-stream.scrollTop-stream.clientHeight<60||stream.classList.contains('sq-ai-empty')}
  stream.addEventListener('scroll',updateLatest,{passive:true});
  latest.onclick=()=>{stream.scrollTo({top:stream.scrollHeight,behavior:window.matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});latest.hidden=true};
@@ -7387,11 +7387,11 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
   const messages=[...conversation,{role:'user',content:q}].slice(-15);
   try{
    if(typeof window.squareUpApi!=='function')throw Error('Please sign in to chat.');
-   const result=await window.squareUpApi('ai-chat','POST',imageData?{messages,image:imageData}:{messages});
+   const payload=imageData?{messages,image:imageData}:{messages};if(activeConversationId)payload.conversationId=activeConversationId;const result=await window.squareUpApi('ai-chat','POST',payload);if(result.conversationId)activeConversationId=result.conversationId;
    if(!result.reply)throw Error('No reply received. Please try again.');
    pending.remove();bubble(result.reply,false);
    window.WeoMascot?.setMood('success');
-   conversation=[...messages,{role:'assistant',content:result.reply.slice(0,2000)}].slice(-14);
+   conversation=[...messages,{role:'assistant',content:result.reply.slice(0,2000)}].slice(-14);window.dispatchEvent(new CustomEvent('weo:chat-saved',{detail:{conversationId:activeConversationId,historySaved:result.historySaved}}));
   }catch(err){
    window.WeoMascot?.setMood('helping');
    pending.remove();const error=bubble(err.message||'Could not send your message.',false);error.classList.add('sq-ai-error');
@@ -7401,7 +7401,22 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
   }
  }
  form.addEventListener('submit',e=>{e.preventDefault();if(busy||(!input.value.trim()&&!window.WeoActions?.hasImage?.()))return;const text=input.value;const imageData=window.WeoActions?.takeImage?.()||null;input.value='';input.placeholder='Ask Weo anything…';resizeInput();ask(text,false,imageData);});
- window.WeoChat=Object.freeze({close:()=>setOpen(false),refreshSend:resizeInput});
+ window.WeoChat=Object.freeze({
+  close:()=>setOpen(false),
+  refreshSend:resizeInput,
+  getConversationId:()=>activeConversationId,
+  restore:(items,id)=>{
+   if(busy||!Array.isArray(items)||typeof id!=='string')return false;
+   const safe=items.filter(m=>m&&['user','assistant'].includes(m.role)&&typeof m.content==='string').map(m=>({role:m.role,content:m.content.slice(0,2000)}));
+   conversation=safe.slice(-14);
+   activeConversationId=id;
+   stream.replaceChildren();stream.classList.remove('sq-ai-empty');
+   for(const message of safe)bubble(message.content,message.role==='user');
+   input.value='';resizeInput();updateLatest();
+   stream.scrollTop=stream.scrollHeight;
+   return true;
+  }
+ });
  stream.addEventListener('click',e=>{const btn=e.target.closest('.sq-ai-quick button');if(btn)ask(btn.dataset.prompt)});
  welcome();
  function openHelp(){document.body.classList.remove('split-view','settings-view','about-view','trackers-view','analytics-view','friends-view','notifications-view');document.body.classList.add('sq-help-view');document.querySelectorAll('.sq-nav-link').forEach(b=>{b.classList.toggle('active',b.id==='nav-help-center');b.removeAttribute('aria-current')});document.getElementById('nav-help-center').setAttribute('aria-current','page');history.replaceState(null,'',location.pathname+location.search+'#help');window.scrollTo(0,0);}

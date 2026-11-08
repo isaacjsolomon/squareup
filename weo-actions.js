@@ -519,6 +519,12 @@
     requestAnimationFrame(updatePageState);
   }
 
+  // Load account-specific chat history without rebuilding existing Weo behavior.
+  const historyScript=document.createElement('script');
+  historyScript.src='/weo-history.js';
+  historyScript.defer=true;
+  document.head.appendChild(historyScript);
+
   window.WeoActions=Object.freeze({
     hasImage:()=>Boolean(pendingImage),
     takeImage:()=>{
