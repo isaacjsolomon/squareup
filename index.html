@@ -7355,7 +7355,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
 
  let conversation=[],busy=false;
  const send=form.querySelector('button'),latest=document.getElementById('sq-ai-latest');
- const notice=document.createElement('small');notice.className='sq-ai-privacy';notice.textContent='AI can make mistakes · Powered by Cloudflare';notice.title='Messages are processed by Cloudflare AI. No tracker data is shared.';form.after(notice);
+ const notice=document.createElement('small');notice.className='sq-ai-privacy';notice.textContent='AI can make mistakes · Powered by Cloudflare';notice.title='Messages and any images you choose to attach are processed by Cloudflare AI. Tracker records are not automatically shared.';form.after(notice);
  const reset=document.createElement('button');reset.type='button';reset.className='sq-ai-reset';reset.textContent='New chat';reset.setAttribute('aria-label','Start a new conversation');close.before(reset);
  function welcome(){
   stream.replaceChildren();stream.classList.add('sq-ai-empty');latest.hidden=true;
