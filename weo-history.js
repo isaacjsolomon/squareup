@@ -24,7 +24,7 @@
  const list=drawer.querySelector('.weo-history-list');
  const status=drawer.querySelector('.weo-history-status');
  let busy=false;
- const close=()=>{drawer.hidden=true;button.focus({preventScroll:true})};
+ const close=()=>{drawer.hidden=true;panel.classList.remove('weo-sidebar-open');button.focus({preventScroll:true})};
  drawer.querySelector('.weo-history-close').addEventListener('click',close);
  drawer.addEventListener('click',e=>{if(e.target===drawer)close()});
  drawer.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();close()}});
@@ -76,6 +76,46 @@
    }catch(e){status.textContent=e.message||'History is temporarily unavailable.'}
    finally{busy=false}
  }
- button.addEventListener('click',()=>{drawer.hidden=false;refresh()});
+
+ const desktop=window.matchMedia('(min-width:1000px)');
+ let sidebarLoaded=false;
+ let autoOpened=false;
+ function syncSidebar(){
+   const show=desktop.matches&&panel.classList.contains('weo-full-page')&&!panel.hidden;
+   if(show){
+     if(!autoOpened){
+       drawer.hidden=false;
+       sidebarLoaded=true;
+       autoOpened=true;
+       refresh();
+     }
+     panel.classList.toggle('weo-sidebar-open',sidebarLoaded);
+   }else{
+     panel.classList.remove('weo-sidebar-open');
+     if(sidebarLoaded){drawer.hidden=true;sidebarLoaded=false}
+     autoOpened=false;
+   }
+ }
+ button.addEventListener('click',()=>{
+   if(desktop.matches&&panel.classList.contains('weo-full-page')){
+     const visible=panel.classList.contains('weo-sidebar-open');
+     if(visible){
+       panel.classList.remove('weo-sidebar-open');
+       drawer.hidden=true;
+       sidebarLoaded=false;
+     }else{
+       panel.classList.add('weo-sidebar-open');
+       drawer.hidden=false;
+       sidebarLoaded=true;
+       refresh();
+     }
+   }else{
+     drawer.hidden=false;
+     refresh();
+   }
+ });
+ desktop.addEventListener?.('change',syncSidebar);
+ new MutationObserver(syncSidebar).observe(panel,{attributes:true,attributeFilter:['class','hidden']});
+ requestAnimationFrame(syncSidebar);
  window.addEventListener('weo:chat-saved',()=>{if(!drawer.hidden)refresh()});
 })();
