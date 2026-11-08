@@ -7355,7 +7355,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
 
  let conversation=[],activeConversationId=null,busy=false;
  const send=form.querySelector('button'),latest=document.getElementById('sq-ai-latest');
- const notice=document.createElement('small');notice.className='sq-ai-privacy';notice.textContent='AI can make mistakes · Powered by Cloudflare';notice.title='Messages and any images you choose to attach are processed by Cloudflare AI. Tracker records are not automatically shared.';form.after(notice);
+ const notice=document.createElement('small');notice.className='sq-ai-privacy';notice.textContent='AI can make mistakes · Powered by Cloudflare';notice.title='Messages and any images you choose to attach are processed by Cloudflare AI. Tracker records are not automatically shared. Text conversations are saved privately to your account; attached images are not stored in chat history.';form.after(notice);
  const reset=document.createElement('button');reset.type='button';reset.className='sq-ai-reset';reset.textContent='New chat';reset.setAttribute('aria-label','Start a new conversation');close.before(reset);
  function welcome(){
   stream.replaceChildren();stream.classList.add('sq-ai-empty');latest.hidden=true;
@@ -7404,6 +7404,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  window.WeoChat=Object.freeze({
   close:()=>setOpen(false),
   refreshSend:resizeInput,
+  getConversationId:()=>activeConversationId,
   restore:(items,id)=>{
    if(busy||!Array.isArray(items)||typeof id!=='string')return false;
    const safe=items.filter(m=>m&&['user','assistant'].includes(m.role)&&typeof m.content==='string').map(m=>({role:m.role,content:m.content.slice(0,2000)}));
