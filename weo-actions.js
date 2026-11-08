@@ -337,8 +337,10 @@
     panel.classList.toggle('weo-keyboard-open',keyboardVisible);
     if(keyboardVisible){
       panel.style.setProperty('--weo-visible-height',Math.round(visibleHeight)+'px');
+      panel.style.setProperty('--weo-viewport-offset',Math.round(vv?.offsetTop||0)+'px');
     }else{
       panel.style.removeProperty('--weo-visible-height');
+      panel.style.removeProperty('--weo-viewport-offset');
     }
     if(editing)closeActions();
     // Keep the welcome and suggestion buttons in the page's scrollable area.
@@ -409,12 +411,48 @@
     return url.pathname+url.search+url.hash;
   };
   let routeSyncing=false;
+
+  // Move the full-page view directly under <body>. A transformed/scrolling
+  // dashboard ancestor otherwise makes position:fixed behave like absolute,
+  // exposing Home underneath the iOS keyboard during touch scrolling.
+  const originalParent=panel.parentNode;
+  const originalNext=panel.nextSibling;
+  let pageScrollY=0;
+  let pageLocked=false;
+  const lockBackground=()=>{
+    if(pageLocked)return;
+    pageScrollY=window.scrollY||0;
+    document.body.style.position='fixed';
+    document.body.style.top=(-pageScrollY)+'px';
+    document.body.style.width='100%';
+    document.body.style.overflow='hidden';
+    pageLocked=true;
+  };
+  const unlockBackground=()=>{
+    if(!pageLocked)return;
+    document.body.style.removeProperty('position');
+    document.body.style.removeProperty('top');
+    document.body.style.removeProperty('width');
+    document.body.style.removeProperty('overflow');
+    pageLocked=false;
+    window.scrollTo(0,pageScrollY);
+  };
+  const movePanelToBody=()=>{
+    if(panel.parentNode!==document.body)document.body.appendChild(panel);
+  };
+  const restorePanel=()=>{
+    if(originalParent?.isConnected && panel.parentNode!==originalParent){
+      originalParent.insertBefore(panel,originalNext?.parentNode===originalParent?originalNext:null);
+    }
+  };
   const isPanelVisible=()=>{
     if(panel.hidden || panel.getAttribute('aria-hidden')==='true')return false;
     const style=getComputedStyle(panel);
     return style.display!=='none'&&style.visibility!=='hidden'&&panel.getClientRects().length>0;
   };
   const activatePage=(push)=>{
+    movePanelToBody();
+    lockBackground();
     document.documentElement.classList.add('weo-page-active');
     document.body.classList.add('weo-page-active');
     panel.classList.add('weo-full-page');
@@ -427,6 +465,9 @@
     document.body.classList.remove('weo-page-active');
     panel.classList.remove('weo-full-page','weo-keyboard-open','weo-typing');
     panel.style.removeProperty('--weo-visible-height');
+    panel.style.removeProperty('--weo-viewport-offset');
+    unlockBackground();
+    restorePanel();
     if(isWeoRoute())history.replaceState({...history.state,weoPage:false},'',routeUrl(false));
     if(goHome)document.getElementById('nav-home')?.click();
   };
