@@ -13609,9 +13609,10 @@ body.sq-finance-open #sq-nextgen .sq-ng-add-action-hint{font-size:12px;color:#bd
 @media(max-width:900px){
  html body .wrap > .sq-mobile-top{
   display:flex!important;
-  position:relative!important;
-  top:auto!important;inset:auto!important;
-  z-index:85!important;
+  position:sticky!important;
+  top:max(8px, env(safe-area-inset-top, 0px))!important;
+  inset-inline:auto!important;
+  z-index:900!important;
   isolation:isolate!important;
   box-sizing:border-box!important;
   width:100%!important;
