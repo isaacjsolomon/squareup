@@ -3049,6 +3049,10 @@ function renderSmartSettle(){
  var creditors=Object.keys(net).filter(k=>net[k]>0).map(k=>({name:k,amount:net[k]})).sort((a,b)=>b.amount-a.amount);
  var suggestions=[],i=0,j=0;while(i<debtors.length&&j<creditors.length){var n=Math.min(debtors[i].amount,creditors[j].amount);if(n>0)suggestions.push({from:debtors[i].name,to:creditors[j].name,amount:n/100});debtors[i].amount-=n;creditors[j].amount-=n;if(!debtors[i].amount)i++;if(!creditors[j].amount)j++;}
  var names=nameMap();if(typeof window.squareUpExpenseMembers==='function')window.squareUpExpenseMembers().forEach(m=>{names[norm(m.name)]=m.name;});
+ var originalPairs=computeNet().pairs.length;
+ var summary=document.getElementById('sq-smart-settle-summary');
+ if(!summary){summary=document.createElement('p');summary.id='sq-smart-settle-summary';summary.className='dashboard-subheading';el.parentNode.insertBefore(summary,el);}
+ summary.textContent=suggestions.length?suggestions.length+' suggested payment'+(suggestions.length===1?'':'s')+(originalPairs>suggestions.length?' · '+(originalPairs-suggestions.length)+' fewer than existing pairwise balances':'')+'. Suggestions do not transfer money.':'No settlement payments suggested.';
  el.innerHTML=suggestions.map(s=>'<div class="smart-row"><span><b>'+esc(names[s.from]||s.from)+'</b> → <b>'+esc(names[s.to]||s.to)+'</b></span><strong>'+money(s.amount)+'</strong></div>').join('')||'<p class="dashboard-subheading">Everyone is squared up 🎉</p>';
 }
 function render() {
@@ -4417,7 +4421,9 @@ async function sqManagePermissions(tracker) {
       select.append(option);
     }
     select.value = member.role === 'viewer' ? 'viewer' : 'editor';
-    panel.append(select, make('p', 'Choose a role, then customize the permissions below.'));
+    const roleHint=make('p', '', 'sq-perm-note');
+    const updateRoleHint=()=>{roleHint.textContent=select.value==='viewer'?'Viewer: read-only by default. Enable only the actions this person needs.':'Editor: can add expenses and log payments by default. Member and tracker management remain restricted.';};
+    updateRoleHint();panel.append(select,roleHint);
     const checks = {};
     const rows = make('div');
     Object.keys(SQ_PERM_LABELS).forEach(key => {
@@ -4433,9 +4439,9 @@ async function sqManagePermissions(tracker) {
       rows.append(row);
     });
     panel.append(rows);
-    select.onchange = () => Object.keys(checks).forEach(key => {
+    select.onchange = () => {updateRoleHint();Object.keys(checks).forEach(key => {
       checks[key].checked = !!SQ_PERM_ROLES[select.value][key];
-    });
+    });};
     const status = make('div', '', 'sq-perm-note');
     status.style.display = 'none';
     panel.append(status);
@@ -5086,7 +5092,8 @@ function sqSetTrackerLoading(loading) {
   if (!indicator) return;
   indicator.hidden=!loading;
   var startup=document.getElementById('sq-startup-overlay');
-  if(startup) startup.hidden=!loading;
+  var cachedPreview=currentUser&&current&&current.id&&sqReadStartupDetail(currentUser);
+  if(startup) startup.hidden=!loading || !!(cachedPreview&&cachedPreview.id===current.id);
   indicator.setAttribute('aria-busy', loading?'true':'false');
 }
 
@@ -7113,7 +7120,7 @@ body.trackers-view > .wrap > :not(.tracker-heading):not(.sq-mobile-top):not(#tra
     const goals=await get('goals');const blocks=await Promise.all(goals.map(async g=>{const c=await get('contributions',g.id);const total=c.reduce((s,x)=>s+Number(x.amount),0);return '<div class="sq-feature-card"><strong>'+escapeHTML(g.title)+'</strong><p>$'+total.toFixed(2)+' of $'+Number(g.target_amount).toFixed(2)+'</p><progress style="width:100%" max="100" value="'+Math.min(100,total/Number(g.target_amount)*100)+'"></progress><div class="sq-feature-actions"><input style="max-width:160px" type="number" min="0.01" step="0.01" placeholder="Contribution $" data-contribution="'+g.id+'"><button data-contribute="'+g.id+'">Record contribution</button></div><p class="sq-feature-muted">'+c.length+' recorded contributions. These do not affect expense balances.</p></div>'}));
     content.innerHTML='<h3>Shared savings goals</h3>'+blocks.join('')+'<div class="sq-feature-card"><strong>Create a goal</strong><label>Goal name<input id="sq-goal-title" maxlength="100" placeholder="Summer trip"></label><label>Target amount<input id="sq-goal-target" type="number" min="0.01" step="0.01"></label><button class="sq-feature-positive" id="sq-create-goal">Create goal</button></div>';
    }else if(mode==='offline'){
-    const saved=JSON.parse((offlineKey()?sessionStorage.getItem(offlineKey()):null)||'null');content.innerHTML='<h3>Read-only offline preview</h3><p>Previously viewed entries are saved only for this browser tab/session. This is not a full offline sync.</p>'+(saved?'<p>Saved: '+new Date(saved.saved).toLocaleString()+' · '+escapeHTML(saved.name)+'</p><div class="sq-feature-card">'+saved.entries.slice(-30).reverse().map(e=>'<p>'+escapeHTML(e.note||e.type)+' — $'+Number(e.amount).toFixed(2)+'</p>').join('')+'</div>':'<p>No offline snapshot yet.</p>')+'<button id="sq-clear-offline">Clear offline snapshot</button>';
+    const saved=JSON.parse((offlineKey()?sessionStorage.getItem(offlineKey()):null)||'null');content.innerHTML='<h3>Read-only offline preview</h3><p>Previously viewed entries are saved only for this browser tab/session. This is not a full offline sync. Confirm balances online before paying.</p>'+(saved&&saved.id===t.id?'<p>Saved: '+new Date(saved.saved).toLocaleString()+' · '+escapeHTML(saved.name)+'</p><div class="sq-feature-card">'+saved.entries.slice(-30).reverse().map(e=>'<p>'+escapeHTML(e.note||e.type)+' — $'+Number(e.amount).toFixed(2)+'</p>').join('')+'</div>':'<p>No offline snapshot yet.</p>')+'<button id="sq-clear-offline">Clear offline snapshot</button>';
    }else{
     const pay=mode==='disputes';content.innerHTML='<h3>'+({comments:'Expense comments & reactions',attachments:'Expense attachments',disputes:'Dispute resolution center'}[mode])+'</h3>'+expensePicker(pay)+'<div id="sq-feat-detail">Select an entry.</div>';
     document.getElementById('sq-feat-expense')?.addEventListener('change',detail);await detail();
@@ -7137,7 +7144,7 @@ body.trackers-view > .wrap > :not(.tracker-heading):not(.sq-mobile-top):not(#tra
   else if(btn.id==='sq-upload-attachment'){const file=document.getElementById('sq-attachment-file').files[0];if(!file||file.size>1024*1024)throw Error('Choose a file under 1 MB.');const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file)});await send('attachments',id,{filename:file.name,mime:file.type,base64});await detail()}
  }catch(err){msg(err.message||'Request failed')}}
  launch.addEventListener('click',()=>{overlay.hidden=false;draw()});document.getElementById('sq-features-close').addEventListener('click',()=>overlay.hidden=true);overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.hidden=true});content.addEventListener('click',action);document.querySelectorAll('[data-sq-feature-tab]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.sqFeatureTab;document.querySelectorAll('[data-sq-feature-tab]').forEach(x=>x.setAttribute('aria-selected',String(x===b)));draw()}));
- let lastSnapshot='';const update=()=>{launch.hidden=!tracker();const key=offlineKey();const snapshot=key&&tracker()?key+':'+tracker().id+':'+(tracker().entries||[]).length:'';if(snapshot&&snapshot!==lastSnapshot){saveOffline();lastSnapshot=snapshot}};setInterval(update,5000);update();
+ let lastSnapshot='';const update=()=>{launch.hidden=!tracker();const key=offlineKey();const snapshot=key&&tracker()?key+':'+tracker().id+':'+(tracker().entries||[]).length:'';if(snapshot&&snapshot!==lastSnapshot){saveOffline();lastSnapshot=snapshot}};setInterval(update,5000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)update()});window.addEventListener('beforeunload',saveOffline);update();
  window.addEventListener('offline',()=>{if(!overlay.hidden&&mode==='offline')draw()});
 })();
 </script>
@@ -11095,7 +11102,7 @@ document.getElementById('side-toggle')?.addEventListener('click',()=>{if(!root.h
 function switchFinanceTab(next){if(next===tab)return;previousFinanceTabs.push(tab);tab=next;openedWorkspaces.trip=null;openedWorkspaces.household=null;render();}
 document.getElementById('sq-finance-nav').addEventListener('click',()=>open('finance'));document.getElementById('sq-ng-mobile-select').addEventListener('change',e=>switchFinanceTab(e.target.value));root.querySelectorAll('[data-ng-tab]').forEach(b=>b.addEventListener('click',()=>switchFinanceTab(b.dataset.ngTab)));
 async function render(){document.getElementById('sq-ng-mobile-select').value=tab;root.querySelectorAll('[data-ng-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.ngTab===tab));const labels={finance:['Personal Finance Hub','Private spending and income, separate from your shared trackers.'],wallet:['Wallet & Settlements','Your balances across existing trackers, without changing any debts.'],trip:['Trip Mode','Your existing trips stay linked to their trackers.'],home:['Household Mode','Build shared routines around your existing trackers.'],subscriptions:['Subscription Manager','Manage recurring bills in your existing billing center.'],currencies:['Multi-Currency','Understand how currency conversion works in DoWeo.'],insights:['Smart Insights','Useful answers calculated from your saved financial records.']};document.getElementById('sq-ng-title').textContent=labels[tab][0];document.getElementById('sq-ng-subtitle').textContent=labels[tab][1];status.textContent='';content.innerHTML='<p>Loading your workspace…</p>';try{if(tab==='finance'||tab==='insights'){finance=await api('finance/transactions');drawFinance()}else if(tab==='wallet')await drawWallet();else await drawWorkspace()}catch(e){content.innerHTML='<div class="sq-ng-empty">'+esc(e.message||'Could not load this section')+'</div>';}}
-function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce((a,x)=>a+Number(x.amount),0),spent=finance.filter(x=>x.kind==='expense').reduce((a,x)=>a+Number(x.amount),0);const byCategory={};finance.filter(x=>x.kind==='expense').forEach(x=>byCategory[x.category]=(byCategory[x.category]||0)+Number(x.amount));if(tab==='insights'){const largest=Object.entries(byCategory).sort((a,b)=>b[1]-a[1])[0];content.innerHTML=`<div class="sq-ng-grid">${card('Recorded income',money(income),true)}${card('Recorded spending',money(spent))}${card('Net personal cash flow',money(income-spent))}</div><div class="sq-ng-card"><h2>Your spending insights</h2><p>${largest?'Your largest recorded spending category is '+esc(largest[0])+' at '+esc(money(largest[1]))+'.':'Add personal expenses to see category insights.'}</p><p class="sq-ng-note">These are calculations based on your private personal records, not a generative AI response. They do not include shared tracker debts.</p></div>`;return;}
+function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce((a,x)=>a+Number(x.amount),0),spent=finance.filter(x=>x.kind==='expense').reduce((a,x)=>a+Number(x.amount),0);const byCategory={};finance.filter(x=>x.kind==='expense').forEach(x=>byCategory[x.category]=(byCategory[x.category]||0)+Number(x.amount));if(tab==='insights'){const largest=Object.entries(byCategory).sort((a,b)=>b[1]-a[1])[0];const monthly=new Map();finance.forEach(x=>{const dt=String(x.occurred_on||'').slice(0,7);if(!/^\d{4}-\d{2}$/.test(dt))return;const m=monthly.get(dt)||{income:0,expense:0};const amount=Number(x.amount)||0;if(x.kind==='income'||x.kind==='expense')m[x.kind]+=amount;monthly.set(dt,m)});const recentMonths=[...monthly.entries()].sort((a,b)=>b[0].localeCompare(a[0])).slice(0,6);const maxExpense=Math.max(1,...recentMonths.map(x=>x[1].expense));const monthChart='<section class="sq-ng-card"><h2>Monthly spending · latest 6 recorded months</h2>'+(recentMonths.length?recentMonths.map(([month,totals])=>'<div class="sq-enhanced-month-row"><span>'+esc(month)+'</span><div class="sq-enhanced-month-track"><i style="width:'+Math.max(0,Math.min(100,totals.expense/maxExpense*100)).toFixed(1)+'%"></i></div><strong>'+esc(money(totals.expense))+'</strong></div>').join(''):'<p>No dated transactions recorded yet.</p>')+'<p class="sq-ng-note">Personal transactions only · no tracker debts included</p></section>';content.innerHTML=`<div class="sq-ng-grid">${card('Recorded income',money(income),true)}${card('Recorded spending',money(spent))}${card('Net personal cash flow',money(income-spent))}</div><div class="sq-ng-card"><h2>Your spending insights</h2><p>${largest?'Your largest recorded spending category is '+esc(largest[0])+' at '+esc(money(largest[1]))+'.':'Add personal expenses to see category insights.'}</p><p class="sq-ng-note">These are calculations based on your private personal records, not a generative AI response. They do not include shared tracker debts.</p></div>${monthChart}`;return;}
 content.innerHTML=`<div class="sq-ng-finance-overview"><div class="sq-ng-grid sq-ng-summary-stack">${card('Personal cash flow',money(income-spent),true)}${card('Total income',money(income))}${card('Total spending',money(spent))}</div><button type="button" class="sq-ng-add-action" id="sq-ng-open-transaction" aria-haspopup="dialog" aria-controls="sq-ng-txn-overlay"><span class="sq-ng-add-action-icon" aria-hidden="true">+</span><strong>Add Expense</strong><span class="sq-ng-add-action-hint">Or record income</span></button></div><section class="sq-ng-card sq-ng-section"><h2>Recent personal activity</h2><div class="sq-ng-list">${finance.length?finance.map(x=>`<div class="sq-ng-item"><div><b>${esc(x.description)}</b><small>${esc(x.category)} · ${esc(x.kind)} · ${esc(x.occurred_on)}</small></div><div><b>${x.kind==='expense'?'-':'+'}${esc(money(x.amount))}</b> <button type="button" data-delete="${esc(x.id)}">Delete</button></div></div>`).join(''):'<div class="sq-ng-empty">No personal transactions yet. Add your first one above.</div>'}</div></section><p class="sq-ng-note">Personal records are private and never change shared tracker balances.</p>`;
 const modalHtml = `<div id="sq-ng-txn-overlay" class="sq-ng-txn-overlay" hidden>
  <section class="sq-ng-txn-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-ng-txn-title">
@@ -13883,6 +13890,8 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
   });
 })();
 </script>
+<link rel="stylesheet" href="/beta-readiness.css?v=1">
+<script src="/beta-readiness.js?v=1" defer></script>
 <script id="dw-mobile-reference-header-controls">
 (function(){
  'use strict';
