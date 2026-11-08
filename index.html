@@ -10806,6 +10806,7 @@ header p{color:#b1c7d5!important}
   <header class="sq-ng-header"><div class="sq-ng-heading"><button type="button" id="sq-ng-back" aria-label="Back to Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Home</span></button><span class="sq-ng-kicker">DOWEO / YOUR MONEY</span><h1 id="sq-ng-title">Finance Hub</h1><p id="sq-ng-subtitle">A clearer picture of your finances.</p></div>
   <div class="sq-ng-mobile-picker" style="display:none!important" aria-hidden="true"><label for="sq-ng-mobile-select">Finance Hub section</label><div class="sq-ng-mobile-select-wrap"><select id="sq-ng-mobile-select" aria-label="Choose Finance Hub section"><option value="finance">Personal Finance</option><option value="wallet">Wallet &amp; Settlements</option><option value="trip">Trips</option><option value="home">Household</option><option value="subscriptions">Subscriptions</option><option value="currencies">Currencies</option><option value="insights">Smart Insights</option></select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
   <nav id="sq-finance-mobile-tiles" aria-label="Finance Hub sections">
+<button id="sq-ng-prev-tabs" type="button" aria-label="Show previous Finance Hub sections" title="Show previous sections"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
 <button type="button" data-ng-tab="finance" data-sq-visible="true" class="selected">Personal</button>
 <button type="button" data-ng-tab="wallet" data-sq-visible="true">Wallet</button>
 <button type="button" data-ng-tab="trip" data-sq-visible="true">Trips</button>
@@ -11088,7 +11089,7 @@ async function drawWallet(){
 }
 async function drawWorkspace(){
   if(tab==='subscriptions'){
-    content.innerHTML=`<div class="sq-ng-grid">${card('Billing records','Existing subscriptions',true)}${card('Renewals','Manage in billing center')}${card('Tracker expenses','Linked to original records')}</div><section class="sq-ng-card"><h2>Manage your bills and subscriptions</h2><p>Open the existing billing center to create, edit, pause, or manage recurring charges. Changes use the same records and billing rules as the rest of DoWeo.</p><button type="button" class="sq-ng-primary" id="sq-ng-bills">Open Bills & Subscriptions</button></section>`;
+    content.innerHTML=`<section class="sq-ng-bills-entry"><h2>Manage your bills and subscriptions</h2><p>Open the existing billing center to create, edit, pause, or manage recurring charges.</p><button type="button" class="sq-ng-primary" id="sq-ng-bills">Open Bills &amp; Subscriptions <span aria-hidden="true">↗</span></button></section><div class="sq-ng-grid">${card('Billing records','Existing subscriptions',true)}${card('Renewals','Manage in billing center')}${card('Tracker expenses','Linked to original records')}</div><p class="sq-ng-note">Changes use the same records and billing rules as the rest of DoWeo.</p>`;
     document.getElementById('sq-ng-bills').onclick=()=>{close();document.getElementById('sq-bills-open')?.click()};return;
   }
   if(tab==='currencies'){
@@ -11946,7 +11947,7 @@ body.sq-action-dialog-open{overflow:hidden!important}
  body.sq-finance-open #sq-nextgen .sq-ng-shell>.sq-ng-mobile-picker,
  body.sq-finance-open #sq-nextgen .sq-ng-shell>.sq-ng-tabs{display:none!important;visibility:hidden!important}
  body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles{
-   display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr)) 48px!important;
+   display:grid!important;grid-template-columns:42px repeat(3,minmax(0,1fr)) 42px!important;
    gap:7px!important;align-items:stretch!important;margin:14px 0 22px!important;width:100%!important
  }
  body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles>button{
@@ -11957,15 +11958,17 @@ body.sq-action-dialog-open{overflow:hidden!important}
    text-align:center!important;align-items:center!important;justify-content:center!important
  }
  body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles>button[data-sq-visible="true"],
- body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles>#sq-ng-next-tabs{display:flex!important}
+ body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles>#sq-ng-next-tabs,
+ body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles>#sq-ng-prev-tabs{display:flex!important}
  body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles>button.selected{
    background:#176276!important;border-color:#4de5cd!important;
    box-shadow:inset 0 0 0 1px #4de5cd!important;color:#fff!important
  }
- body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles>#sq-ng-next-tabs{
+ body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles>#sq-ng-next-tabs,
+ body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles>#sq-ng-prev-tabs{
    padding:8px!important;background:#1a4657!important;flex:none!important
  }
- #sq-ng-next-tabs svg{width:21px;height:21px;display:block;margin:auto}
+ #sq-ng-next-tabs svg,#sq-ng-prev-tabs svg{width:21px;height:21px;display:block;margin:auto}
 }
 </style><script id="sq-finance-mobile-shuffle-script">
 (function(){
@@ -11973,7 +11976,8 @@ body.sq-action-dialog-open{overflow:hidden!important}
  if(!nav)return;
  const tabs=Array.from(nav.querySelectorAll('button[data-ng-tab]'));
  const next=document.getElementById('sq-ng-next-tabs');
- if(!next||tabs.length!==7)return;
+ const prev=document.getElementById('sq-ng-prev-tabs');
+ if(!next||!prev||tabs.length!==7)return;
  let first=0;
  function show(){
   tabs.forEach((button,i)=>{
@@ -11982,9 +11986,14 @@ body.sq-action-dialog-open{overflow:hidden!important}
    else button.removeAttribute('data-sq-visible');
   });
   next.setAttribute('aria-label','Show next Finance Hub sections');
+  prev.setAttribute('aria-label','Show previous Finance Hub sections');
  }
  next.addEventListener('click',()=>{
   first=(first+1)%tabs.length;
+  show();
+ });
+ prev.addEventListener('click',()=>{
+  first=(first-1+tabs.length)%tabs.length;
   show();
  });
  // Selecting a tab loads its existing Finance Hub content.
