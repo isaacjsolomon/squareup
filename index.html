@@ -12909,137 +12909,159 @@ html body #sq-startup-overlay .sq-startup-content{
 @media(prefers-reduced-motion:reduce){
  #sq-startup-overlay .doweo-logo-trace{animation:none!important;stroke-dashoffset:0!important;opacity:1!important}
 }
-</style><style id="doweo-unified-workspace">
-/* Deliberately scoped to content surfaces. Existing sidebar styles are untouched. */
-html body > .wrap {max-width:1240px!important}
-html body .wrap .tracker-heading{border-bottom:1px solid #2a4254!important;padding-bottom:20px!important;margin-bottom:24px!important;background:transparent!important;box-shadow:none!important}
-html body .wrap .tracker-heading h1{font-size:26px!important;letter-spacing:-.04em!important}
-html body .wrap :is(.card,.tracker-tile,.sq-return-panel,.sq-stat),
-html body #sq-nextgen :is(.sq-ng-card,.sq-ng-section){
- background:#102638!important;border:1px solid #2c4659!important;border-radius:14px!important;box-shadow:0 4px 16px #03101b18!important;
- backdrop-filter:none!important;-webkit-backdrop-filter:none!important;color:#edf5fa!important;
+</style><style id="doweo-approved-overview">
+/* Dedicated overview hierarchy replaces legacy summary layout instead of fighting it. Sidebar untouched. */
+html body.dw-approved-home{background:#081b28!important}
+html body.dw-approved-home #backdrop{background:#081b28!important}
+html body.dw-approved-home>.wrap{max-width:1240px!important}
+html body.dw-approved-home .tracker-heading{
+ background:#0b2231!important;border:0!important;border-bottom:1px solid #2b4354!important;border-radius:0!important;
+ box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+ padding:14px 0 20px!important;margin:0 0 22px!important;min-height:0!important;
 }
-html body .wrap :is(input,select,textarea),html body #sq-nextgen :is(input,select,textarea){border-radius:10px!important;background:#0b2031!important;border-color:#3a566b!important;color:#edf5fa!important;font-size:16px}
-html body .wrap :is(h2,h3),html body #sq-nextgen :is(h2,h3){letter-spacing:-.025em!important}
-html body .wrap :is(.small-btn,.settings-action),html body #sq-nextgen .sq-ng-btn{border-radius:10px!important;min-height:44px}
-html body .wrap :is(.hint,.settings-muted,.tracker-sub){color:#a5bbcc!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary){
- display:grid!important;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr)!important;
- grid-template-areas:"welcome welcome" "controls controls" "trackers people" "activity activity"!important;
- gap:20px!important;padding:0!important;margin:12px 0 28px!important;border:0!important;background:none!important;box-shadow:none!important;
+html body.dw-approved-home .tracker-heading h1{font-size:23px!important}
+html body #tracker-dashboard #sq-return-summary{display:none!important}
+html body #tracker-dashboard:not(.sq-tab-overview) #doweo-approved-overview{display:none!important}
+html body #doweo-approved-overview{
+ display:flex!important;flex-direction:column!important;gap:18px!important;
+ margin:20px 0 35px!important;padding:0!important;width:100%!important;min-width:0!important;
+ color:#eff6fa;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>.sq-return-welcome{grid-area:welcome!important;margin:0!important;padding:0!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-kicker{display:none!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-return-greeting{font-size:clamp(25px,3vw,34px)!important;line-height:1.2!important;margin:0 0 8px!important;letter-spacing:-.04em!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-intro{font-size:14px!important;color:#a6bccb!important;margin:0!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>#sq-desktop-balance-layout{
- grid-area:controls!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:16px!important;
- width:100%!important;max-width:none!important;margin:0!important;padding:0!important;background:none!important;border:0!important;
+html body #doweo-approved-overview *{box-sizing:border-box}
+html body #doweo-approved-overview .dw-overview-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:0}
+html body #doweo-approved-overview .sq-return-welcome{display:block!important;min-height:0!important;margin:0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+html body #doweo-approved-overview .sq-overview-heading{padding:0!important;margin:0!important}
+html body #doweo-approved-overview #sq-return-greeting{font-size:clamp(24px,2.6vw,32px)!important;letter-spacing:-.04em!important;font-weight:750!important;line-height:1.2!important;margin:0 0 7px!important;color:#f1f8fb!important}
+html body #doweo-approved-overview .sq-overview-intro{font-size:14px!important;line-height:1.5!important;color:#a8bdca!important;margin:0!important}
+html body #doweo-approved-overview .sq-overview-kicker{display:none!important}
+html body #doweo-approved-overview .dw-primary-actions{display:flex;gap:10px;flex:none}
+html body #doweo-approved-overview #sq-overview-stats{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px!important;margin:0!important;padding:0!important;width:100%!important;height:auto!important}
+html body #doweo-approved-overview #sq-overview-stats .sq-stat{display:flex!important;flex-direction:column!important;justify-content:center!important;gap:8px!important;min-height:104px!important;height:auto!important;padding:19px 21px!important;background:#102b3b!important;border:1px solid #304c5e!important;border-radius:12px!important;box-shadow:none!important;backdrop-filter:none!important}
+html body #doweo-approved-overview #sq-overview-stats .sq-stat span{font-size:13px!important;color:#b1c5d0!important;margin:0!important}
+html body #doweo-approved-overview #sq-overview-stats .sq-stat strong{font-size:30px!important;letter-spacing:-.035em!important;line-height:1.1!important;font-weight:750!important;color:#f1f7fb!important}
+html body #doweo-approved-overview #sq-overview-stats #sq-stat-net{color:#6de1bd!important}
+html body #doweo-approved-overview .dw-overview-columns{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:18px;align-items:stretch}
+html body #doweo-approved-overview .dw-overview-panel{background:#102a3a!important;border:1px solid #304b5d!important;border-radius:13px!important;padding:20px!important;margin:0!important;min-height:0!important;width:100%!important;max-width:none!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+html body #doweo-approved-overview .dw-panel-heading,html body #doweo-approved-overview .sq-return-head{display:flex!important;align-items:center!important;gap:10px!important;padding:0 0 12px!important;margin:0 0 5px!important;border-bottom:1px solid #2c4557!important}
+html body #doweo-approved-overview h3{font-size:17px!important;font-weight:700!important;letter-spacing:-.02em!important;color:#f0f7fa!important;margin:0!important}
+html body #doweo-approved-overview .dw-panel-heading h3,html body #doweo-approved-overview .sq-return-head h3{margin-right:auto!important}
+html body #doweo-approved-overview .dw-panel-heading button,html body #doweo-approved-overview .sq-return-head button{background:none!important;border:0!important;color:#a9ccdc!important;font-size:12px!important;min-height:36px!important;padding:7px!important;cursor:pointer}
+html body #doweo-approved-overview .dw-tracker-row{width:100%;min-height:73px;padding:13px 0;display:flex;align-items:center;gap:13px;background:transparent;border:0;border-bottom:1px solid #2c4557;color:#eef6fa;text-align:left;cursor:pointer}
+html body #doweo-approved-overview .dw-tracker-row:last-child{border-bottom:0}
+html body #doweo-approved-overview .dw-tracker-icon{display:grid;place-items:center;width:40px;height:40px;flex:none;border-radius:10px;background:#20434c;color:#77dfc7;font-size:23px}
+html body #doweo-approved-overview .dw-tracker-copy{flex:1;min-width:0}
+html body #doweo-approved-overview .dw-tracker-copy strong{display:block;font-size:14px;font-weight:650}
+html body #doweo-approved-overview .dw-tracker-copy small{display:block;font-size:12px;color:#a7bfcc;margin-top:5px}
+html body #doweo-approved-overview .dw-settle>h3{padding-bottom:16px;border-bottom:1px solid #2c4557;margin-bottom:5px!important}
+html body #doweo-approved-overview .sq-return-rows{display:grid!important;gap:0!important}
+html body #doweo-approved-overview .sq-return-row{padding:14px 0!important;background:none!important;border:0!important;border-bottom:1px solid #2c4557!important;border-radius:0!important;box-shadow:none!important}
+html body #doweo-approved-overview .sq-return-row:last-child{border-bottom:0!important}
+html body #doweo-approved-overview .sq-return-icon{width:38px!important;height:38px!important;border-radius:50%!important;background:#234654!important;font-size:16px!important}
+html body #doweo-approved-overview .sq-return-row strong{font-size:14px!important}
+html body #doweo-approved-overview .sq-return-row small{font-size:12px!important;color:#a7bdcb!important}
+html body #doweo-approved-overview .sq-clean-balance-actions{display:flex!important;gap:9px!important;width:auto!important;margin:14px 0 0!important}
+html body #doweo-approved-overview .sq-clean-balance-actions button{flex:1;min-height:40px;padding:9px 12px!important;border:1px solid #517084!important;border-radius:9px!important;background:transparent!important;color:#e7f3fa!important;font-size:12px!important;cursor:pointer}
+html body #doweo-approved-overview .dw-overview-tools{display:flex;flex-wrap:wrap;gap:9px}
+html body #doweo-approved-overview :is(.dw-primary-actions,.dw-overview-tools)>button.dashboard-action:not([hidden]){
+ display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:row!important;
+ width:auto!important;max-width:none!important;min-width:0!important;min-height:44px!important;height:auto!important;
+ padding:11px 15px!important;margin:0!important;gap:8px!important;background:#112e40!important;border:1px solid #3b596d!important;
+ border-radius:10px!important;box-shadow:none!important;color:#edf6fa!important;font-size:13px!important;flex:0 1 auto!important;
 }
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-overview-stats{
- display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;order:0!important;gap:14px!important;width:100%!important;margin:0!important;
-}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-stat{padding:20px!important;min-height:104px!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-stat span{font-size:13px!important;color:#aac0d0!important;display:block;margin-bottom:8px}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-stat strong{font-size:clamp(24px,3vw,34px)!important;line-height:1.1;font-weight:750!important;letter-spacing:-.035em}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-stat-net{color:#72e3c1!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-balance{
- display:flex!important;order:2!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;
- width:100%!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;background:none!important;box-shadow:none!important;
-}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-clean-balance-copy{display:none!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-clean-balance-actions{width:auto!important;display:flex!important;margin:0!important;gap:10px!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-clean-balance-actions button{min-height:44px!important;padding:10px 16px!important;border:1px solid #405f73!important;background:#142f42!important;color:#e7f3f9!important;border-radius:10px!important;font-size:13px!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions{
- order:1!important;display:flex!important;flex-wrap:wrap!important;align-items:stretch!important;gap:10px!important;
- width:100%!important;max-width:none!important;padding:0!important;margin:0!important;border:0!important;background:none!important;box-shadow:none!important;
-}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>button.dashboard-action:not([hidden]),
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>button.sq-calculator-action:not([hidden]){
- display:flex!important;flex:1 1 145px!important;flex-direction:row!important;justify-content:center!important;align-items:center!important;
- width:auto!important;max-width:none!important;height:auto!important;min-height:52px!important;margin:0!important;padding:12px 15px!important;
- border:1px solid #405c70!important;border-radius:11px!important;background:#142e41!important;box-shadow:none!important;color:#e8f4fa!important;gap:8px!important;
-}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>#quick-expense{background:#6be0bd!important;border-color:#6be0bd!important;color:#072b27!important;order:-1!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>button.dashboard-action>.sq-action-stack{
- display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:8px!important;width:auto!important;
-}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>button.dashboard-action .action-icon{
- display:grid!important;place-items:center!important;flex:none!important;width:22px!important;height:22px!important;min-width:22px!important;min-height:22px!important;max-width:22px!important;max-height:22px!important;margin:0!important;padding:0!important;background:none!important;border-radius:0!important;font-size:20px!important;
-}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>button.dashboard-action .action-icon svg{width:21px!important;height:21px!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>button.dashboard-action .sq-action-title{
- display:block!important;width:auto!important;margin:0!important;font-size:13px!important;font-weight:650!important;line-height:1.3!important;color:inherit!important;white-space:normal!important;
-}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>button.dashboard-action .action-sub{display:none!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>.sq-return-grid{
- grid-area:people!important;display:flex!important;flex-direction:column!important;gap:16px!important;width:100%!important;margin:0!important;
-}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-panel{padding:20px!important;margin:0!important;min-height:0!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-head{margin-bottom:14px!important;gap:8px!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-head h3{font-size:16px!important;color:#eef6fb!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-row{background:transparent!important;border:0!important;border-bottom:1px solid #294354!important;border-radius:0!important;padding:13px 0!important;box-shadow:none!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-row:last-child{border-bottom:0!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>.sq-overview-activity-panel{grid-area:activity!important;width:100%!important;max-width:none!important;min-height:0!important;margin:0!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-rows{gap:0!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #doweo-overview-trackers{grid-area:trackers!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .doweo-tracker-row{display:flex;align-items:center;gap:12px;width:100%;padding:15px 0;min-height:70px;background:none;border:0;border-bottom:1px solid #294354;color:#edf5fa;text-align:left;cursor:pointer}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .doweo-tracker-row:last-child{border-bottom:0}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .doweo-tracker-symbol{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:11px;background:#1c3e4b;color:#75dfc4}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .doweo-tracker-copy{flex:1;min-width:0}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .doweo-tracker-copy strong{display:block;font-size:14px}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .doweo-tracker-copy small{display:block;font-size:12px;color:#a3bacb;margin-top:5px}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .doweo-tracker-row:hover{background:#183448}
-html body #tracker-dashboard .sq-workspace-tabs{background:#102638!important;border:1px solid #2c4659!important;border-radius:12px!important;box-shadow:none!important}
-html body #tracker-dashboard .sq-workspace-tabs button{min-height:44px!important;border-radius:8px!important;font-size:13px!important}
-html body #tracker-dashboard .sq-workspace-tabs button[aria-selected="true"]{background:#204a51!important;color:#9df1d6!important}
-html body #trackers-page .trackers-header,html body #notifications-page .sq-notifications-header{background:#102638!important;border:1px solid #2c4659!important;border-radius:14px!important;box-shadow:none!important;padding:24px!important}
-html body #sq-nextgen .sq-ng-tabs{background:#102638!important;border-color:#2c4659!important;box-shadow:none!important}
+html body #doweo-approved-overview .dw-primary-actions>#quick-expense{background:#6de3bf!important;border-color:#6de3bf!important;color:#062e29!important}
+html body #doweo-approved-overview button.dashboard-action .sq-action-stack{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:8px!important;width:auto!important}
+html body #doweo-approved-overview button.dashboard-action .action-icon{display:grid!important;place-items:center!important;flex:none!important;width:20px!important;height:20px!important;min-width:20px!important;min-height:20px!important;max-width:20px!important;max-height:20px!important;margin:0!important;padding:0!important;background:none!important;border-radius:0!important;font-size:20px!important}
+html body #doweo-approved-overview button.dashboard-action .action-icon svg{width:20px!important;height:20px!important}
+html body #doweo-approved-overview button.dashboard-action .sq-action-title{display:block!important;position:static!important;flex:none!important;width:auto!important;font-size:13px!important;line-height:1.3!important;font-weight:650!important;white-space:normal!important;color:inherit!important;margin:0!important;padding:0!important}
+html body #doweo-approved-overview button.dashboard-action .action-sub{display:none!important}
+html body #doweo-approved-overview .dw-finance-shortcuts{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:16px!important}
+html body #doweo-approved-overview .dw-finance-shortcuts>div{margin-right:auto}
+html body #doweo-approved-overview .dw-finance-shortcuts strong{display:block;font-size:15px}
+html body #doweo-approved-overview .dw-finance-shortcuts small{display:block;font-size:11px;color:#a7bfcc;margin-top:5px}
+html body #doweo-approved-overview .dw-finance-shortcuts button{min-height:40px;padding:9px 12px;background:transparent;border:1px solid #3b596d;border-radius:9px;color:#e2f0f7;font-size:12px;cursor:pointer}
+html body #doweo-approved-overview .dw-overview-extras{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+html body #doweo-approved-overview .dw-empty,html body #doweo-approved-overview .sq-return-empty{font-size:13px;color:#acc0cc;padding:14px 0}
+html body #doweo-approved-overview button:focus-visible{outline:2px solid #73e2c2!important;outline-offset:3px}
+html body.dw-approved-home #tracker-dashboard .sq-workspace-tabs{margin:0 0 20px!important;background:#102838!important;border:1px solid #304b5d!important;border-radius:11px!important;box-shadow:none!important}
+html body.dw-approved-home #tracker-dashboard .sq-workspace-tabs button{min-height:42px!important;font-size:13px!important;padding:10px 15px!important}
 @media(max-width:900px){
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary){
- grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"welcome" "controls" "trackers" "people" "activity"!important;gap:16px!important;
- }
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-overview-stats{gap:8px!important}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-stat{padding:14px 10px!important;min-height:88px!important}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-stat span{font-size:11px!important}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-stat strong{font-size:clamp(19px,5.4vw,27px)!important}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-panel{padding:17px!important}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>button.dashboard-action:not([hidden]){flex-basis:calc(50% - 10px)!important;min-height:48px!important}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .dashboard-actions>#quick-expense{flex-basis:100%!important}
+ html body #doweo-approved-overview .dw-overview-heading{flex-direction:column;align-items:stretch;gap:16px}
+ html body #doweo-approved-overview .dw-primary-actions{display:grid;grid-template-columns:1fr 1fr}
+ html body #doweo-approved-overview .dw-overview-columns{grid-template-columns:1fr}
+ html body #doweo-approved-overview .dw-overview-extras{grid-template-columns:1fr}
+ html body #doweo-approved-overview #sq-overview-stats{gap:8px!important}
+ html body #doweo-approved-overview #sq-overview-stats .sq-stat{padding:14px 11px!important;min-height:90px!important}
+ html body #doweo-approved-overview #sq-overview-stats .sq-stat strong{font-size:clamp(20px,5.4vw,28px)!important}
+ html body #doweo-approved-overview #sq-overview-stats .sq-stat span{font-size:11px!important}
+ html body #doweo-approved-overview .dw-overview-panel{padding:16px!important}
+ html body #doweo-approved-overview .dw-finance-shortcuts>div{width:100%;margin-bottom:5px}
+ html body #doweo-approved-overview .dw-finance-shortcuts button{flex:1}
 }
-@media(prefers-reduced-motion:no-preference){html body .wrap button{transition:background-color .15s ease,border-color .15s ease}}
-</style><script id="doweo-unified-workspace-layout">
+</style><script id="doweo-approved-overview-layout">
 (function(){
- const summary=document.getElementById('sq-return-summary'),gallery=document.getElementById('trackers-gallery');
- if(!summary)return;
- const panel=document.createElement('article');panel.id='doweo-overview-trackers';panel.className='sq-return-panel';
- const head=document.createElement('div');head.className='sq-return-head';
- const title=document.createElement('h3');title.textContent='Your trackers';
- const all=document.createElement('button');all.type='button';all.textContent='View all ↗';all.className='small-btn';all.onclick=()=>document.getElementById('nav-trackers')?.click();
- const list=document.createElement('div');head.append(title,all);panel.append(head,list);summary.append(panel);
- const stats=document.getElementById('sq-overview-stats'),layout=document.getElementById('sq-desktop-balance-layout');
- if(stats&&layout)layout.prepend(stats);
- const intro=summary.querySelector('.sq-overview-intro');if(intro)intro.textContent='Your balances, shared expenses, and recent activity.';
- function renderTrackers(){
-  list.replaceChildren();
-  const tiles=gallery?[...gallery.querySelectorAll('.tracker-tile')].filter(t=>!t.hidden):[];
-  tiles.slice(0,4).forEach(tile=>{
-   const open=tile.querySelector('.tile-open');if(!open)return;
-   const row=document.createElement('button');row.type='button';row.className='doweo-tracker-row';
-   const icon=document.createElement('span');icon.className='doweo-tracker-symbol';icon.setAttribute('aria-hidden','true');icon.textContent='▱';
-   const copy=document.createElement('span');copy.className='doweo-tracker-copy';
-   const name=document.createElement('strong');name.textContent=tile.querySelector('h3')?.textContent||'Tracker';
-   const detail=document.createElement('small');detail.textContent=tile.querySelector('.tracker-sub')?.textContent?.trim()||'Open shared tracker';
-   const arrow=document.createElement('span');arrow.textContent='›';arrow.setAttribute('aria-hidden','true');
-   copy.append(name,detail);row.append(icon,copy,arrow);row.onclick=()=>open.click();list.append(row);
+ const dash=document.getElementById('tracker-dashboard'),summary=document.getElementById('sq-return-summary');
+ if(!dash||!summary)return;
+ const root=document.createElement('section');root.id='doweo-approved-overview';root.setAttribute('aria-label','Your shared finances');
+ const header=document.createElement('div');header.className='dw-overview-heading';
+ const welcome=summary.querySelector('.sq-return-welcome');if(welcome)header.append(welcome);
+ const primary=document.createElement('div');primary.className='dw-primary-actions';header.append(primary);
+ for(const id of ['quick-expense','quick-payment']){const b=document.getElementById(id);if(b)primary.append(b)}
+ const record=document.getElementById('quick-payment');if(record){record.hidden=false;const label=record.querySelector('.sq-action-title');if(label)label.textContent='Record payment'}
+ root.append(header);
+ const stats=document.getElementById('sq-overview-stats');if(stats){const owed=document.getElementById('sq-stat-owed')?.closest('.sq-stat');if(owed)stats.prepend(owed);root.append(stats)}
+ const columns=document.createElement('div');columns.className='dw-overview-columns';
+ const trackersPanel=document.createElement('article');trackersPanel.className='dw-overview-panel dw-trackers';
+ const trackerHead=document.createElement('div');trackerHead.className='dw-panel-heading';
+ const h=document.createElement('h3');h.textContent='Your trackers';const all=document.createElement('button');all.type='button';all.textContent='View all ↗';all.onclick=()=>document.getElementById('nav-trackers')?.click();
+ trackerHead.append(h,all);const list=document.createElement('div');list.id='dw-overview-tracker-list';trackersPanel.append(trackerHead,list);columns.append(trackersPanel);
+ const settle=document.createElement('article');settle.className='dw-overview-panel dw-settle';
+ const settleHeading=document.createElement('h3');settleHeading.textContent='Settle up';settle.append(settleHeading);
+ const balances=document.getElementById('sq-return-balances');if(balances)settle.append(balances);
+ const settleActions=document.querySelector('.sq-clean-balance-actions');if(settleActions)settle.append(settleActions);
+ columns.append(settle);root.append(columns);
+ const activity=document.getElementById('sq-return-activity')?.closest('.sq-return-panel');if(activity){activity.classList.add('dw-overview-panel','dw-activity');root.append(activity)}
+ const tools=document.createElement('div');tools.className='dw-overview-tools';
+ for(const id of ['quick-pay-now','quick-receipt','quick-split','sq-quick-calc-launch']){const b=document.getElementById(id);if(b)tools.append(b)}
+ root.append(tools);
+ const footer=document.createElement('div');footer.className='dw-finance-shortcuts dw-overview-panel';
+ const label=document.createElement('div');const ft=document.createElement('strong');ft.textContent='Finance Hub';const sub=document.createElement('small');sub.textContent='Quick access to your finances';label.append(ft,sub);footer.append(label);
+ for(const [text,tab]of [['Personal','finance'],['Wallet','wallet'],['Trips','trip'],['Households','home']]){const b=document.createElement('button');b.type='button';b.textContent=text;b.onclick=()=>{document.getElementById('sq-finance-nav')?.click();document.querySelector('#sq-nextgen [data-ng-tab="'+tab+'"]')?.click()};footer.append(b)}
+ const ai=document.createElement('button');ai.type='button';ai.textContent='✦ Ask DoWeo AI';ai.onclick=()=>document.getElementById('sq-ai-launch')?.click();footer.append(ai);root.append(footer);
+ const extra=document.createElement('div');extra.className='dw-overview-extras';
+ for(const id of ['sq-return-members','sq-return-smart-host']){const panel=document.getElementById(id)?.closest('.sq-return-panel');if(panel){panel.classList.add('dw-overview-panel');extra.append(panel)}}
+ root.append(extra);summary.after(root);
+ const intro=root.querySelector('.sq-overview-intro');if(intro)intro.textContent='Here’s where things stand.';
+ const kicker=root.querySelector('.sq-overview-kicker');if(kicker)kicker.hidden=true;
+ let previous='';
+ async function paintTrackers(){
+  const rows=typeof trackers!=='undefined'&&Array.isArray(trackers)?trackers:[];
+  const key=JSON.stringify(rows.map(t=>[t.id,t.name,t.memberCount]));
+  if(key===previous&&list.children.length)return;previous=key;list.replaceChildren();
+  rows.slice(0,4).forEach(t=>{
+   const b=document.createElement('button');b.type='button';b.className='dw-tracker-row';
+   const icon=document.createElement('span');icon.className='dw-tracker-icon';icon.textContent='▱';icon.setAttribute('aria-hidden','true');
+   const copy=document.createElement('span');copy.className='dw-tracker-copy';const name=document.createElement('strong');name.textContent=t.name||'Shared tracker';
+   const detail=document.createElement('small');detail.textContent=Number(t.memberCount)>0?Number(t.memberCount)+' members':'Shared tracker';copy.append(name,detail);
+   const arrow=document.createElement('span');arrow.textContent='›';b.append(icon,copy,arrow);
+   b.onclick=async()=>{b.disabled=true;try{await openTracker(t.id);if(current&&current.id===t.id)settingsRoute('dashboard')}catch(e){b.disabled=false;detail.textContent=e.message||'Could not open tracker'}finally{b.disabled=false}};
+   list.append(b);
   });
-  if(!list.children.length){const p=document.createElement('p');p.className='sq-return-empty';p.textContent='Find or create a shared tracker from Trackers.';list.append(p)}
+  if(!rows.length){const p=document.createElement('p');p.className='dw-empty';p.textContent='Your shared trackers will appear here.';list.append(p)}
  }
- renderTrackers();if(gallery)new MutationObserver(renderTrackers).observe(gallery,{childList:true,subtree:true,characterData:true});
- // Keep live activity full-width on both screen sizes, without replacing its handlers.
- const activity=document.getElementById('sq-return-activity')?.closest('.sq-return-panel');
- function place(){if(activity&&activity.parentElement!==summary)summary.append(activity)}
- place();window.matchMedia('(min-width:901px)').addEventListener('change',place);
+ function restore(){
+  // Legacy responsive placements retain references; keep the approved hierarchy authoritative.
+  if(activity&&activity.parentElement!==root)root.insertBefore(activity,tools);
+  const calc=document.getElementById('sq-quick-calc-launch');if(calc&&calc.parentElement!==tools)tools.append(calc);
+ }
+ const gallery=document.getElementById('trackers-gallery');
+ if(gallery)new MutationObserver(paintTrackers).observe(gallery,{childList:true,subtree:true,characterData:true});
+ const statsObserver=document.getElementById('sq-overview-stats');if(statsObserver)new MutationObserver(paintTrackers).observe(statsObserver,{subtree:true,childList:true,characterData:true});
+ new MutationObserver(restore).observe(summary,{childList:true,subtree:true});
+ window.addEventListener('resize',restore,{passive:true});
+ function surface(){const active=dash.classList.contains('sq-tab-overview')&&getComputedStyle(dash).display!=='none'&&!/\b(?:settings|about|trackers|analytics|friends|notifications|split|sq-help)-view\b/.test(document.body.className)&&!document.body.classList.contains('sq-finance-open');if(document.body.classList.contains('dw-approved-home')!==active)document.body.classList.toggle('dw-approved-home',active)}
+ new MutationObserver(surface).observe(document.body,{attributes:true,attributeFilter:['class']});
+ new MutationObserver(surface).observe(dash,{attributes:true,attributeFilter:['class','style','hidden']});
+ paintTrackers();restore();surface();
 })();
 </script></body>
 </html>
