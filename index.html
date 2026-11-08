@@ -10974,8 +10974,89 @@ function switchFinanceTab(next){if(next===tab)return;previousFinanceTabs.push(ta
 document.getElementById('sq-finance-nav').addEventListener('click',()=>open('finance'));document.getElementById('sq-ng-mobile-select').addEventListener('change',e=>switchFinanceTab(e.target.value));root.querySelectorAll('[data-ng-tab]').forEach(b=>b.addEventListener('click',()=>switchFinanceTab(b.dataset.ngTab)));
 async function render(){document.getElementById('sq-ng-mobile-select').value=tab;root.querySelectorAll('[data-ng-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.ngTab===tab));const labels={finance:['Personal Finance Hub','Private spending and income, separate from your shared trackers.'],wallet:['Wallet & Settlements','Your balances across existing trackers, without changing any debts.'],trip:['Trip Mode','Your existing trips stay linked to their trackers.'],home:['Household Mode','Build shared routines around your existing trackers.'],subscriptions:['Subscription Manager','Manage recurring bills in your existing billing center.'],currencies:['Multi-Currency','Understand how currency conversion works in DoWeo.'],insights:['Smart Insights','Useful answers calculated from your saved financial records.']};document.getElementById('sq-ng-title').textContent=labels[tab][0];document.getElementById('sq-ng-subtitle').textContent=labels[tab][1];status.textContent='';content.innerHTML='<p>Loading your workspace…</p>';try{if(tab==='finance'||tab==='insights'){finance=await api('finance/transactions');drawFinance()}else if(tab==='wallet')await drawWallet();else await drawWorkspace()}catch(e){content.innerHTML='<div class="sq-ng-empty">'+esc(e.message||'Could not load this section')+'</div>';}}
 function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce((a,x)=>a+Number(x.amount),0),spent=finance.filter(x=>x.kind==='expense').reduce((a,x)=>a+Number(x.amount),0);const byCategory={};finance.filter(x=>x.kind==='expense').forEach(x=>byCategory[x.category]=(byCategory[x.category]||0)+Number(x.amount));if(tab==='insights'){const largest=Object.entries(byCategory).sort((a,b)=>b[1]-a[1])[0];content.innerHTML=`<div class="sq-ng-grid">${card('Recorded income',money(income),true)}${card('Recorded spending',money(spent))}${card('Net personal cash flow',money(income-spent))}</div><div class="sq-ng-card"><h2>Your spending insights</h2><p>${largest?'Your largest recorded spending category is '+esc(largest[0])+' at '+esc(money(largest[1]))+'.':'Add personal expenses to see category insights.'}</p><p class="sq-ng-note">These are calculations based on your private personal records, not a generative AI response. They do not include shared tracker debts.</p></div>`;return;}
-content.innerHTML=`<div class="sq-ng-grid">${card('Personal cash flow',money(income-spent),true)}${card('Total income',money(income))}${card('Total spending',money(spent))}</div><section class="sq-ng-card sq-ng-section"><h2>Add a personal transaction</h2><form class="sq-ng-form" id="sq-ng-add"><label>Type<select name="kind"><option value="expense">Expense</option><option value="income">Income</option></select></label><label>Description<input name="description" required maxlength="120" placeholder="Groceries" /></label><label>Category<input name="category" required maxlength="50" placeholder="Food" /></label><label>Amount (USD)<input name="amount" required type="number" min="0.01" max="99999999" step="0.01" /></label><button class="sq-ng-primary" type="submit">Save transaction</button></form></section><section class="sq-ng-card sq-ng-section"><h2>Recent personal activity</h2><div class="sq-ng-list">${finance.length?finance.map(x=>`<div class="sq-ng-item"><div><b>${esc(x.description)}</b><small>${esc(x.category)} · ${esc(x.kind)} · ${esc(x.occurred_on)}</small></div><div><b>${x.kind==='expense'?'-':'+'}${esc(money(x.amount))}</b> <button type="button" data-delete="${esc(x.id)}">Delete</button></div></div>`).join(''):'<div class="sq-ng-empty">No personal transactions yet. Add your first one above.</div>'}</div></section><p class="sq-ng-note">Personal records are private and never change shared tracker balances.</p>`;
-const form=document.getElementById('sq-ng-add');form.addEventListener('submit',async e=>{e.preventDefault();const b=Object.fromEntries(new FormData(form));const btn=form.querySelector('button');btn.disabled=true;try{await api('finance/transactions','POST',b);await render()}catch(err){status.textContent=err.message;btn.disabled=false}});content.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Delete this personal transaction?'))return;try{await api('finance/transactions/'+b.dataset.delete,'DELETE');await render()}catch(err){status.textContent=err.message}}));}
+content.innerHTML=`<div class="sq-ng-finance-overview"><div class="sq-ng-grid sq-ng-summary-stack">${card('Personal cash flow',money(income-spent),true)}${card('Total income',money(income))}${card('Total spending',money(spent))}</div><button type="button" class="sq-ng-add-action" id="sq-ng-open-transaction" aria-haspopup="dialog" aria-controls="sq-ng-txn-overlay"><span class="sq-ng-add-action-icon" aria-hidden="true">+</span><strong>Add Expense</strong><span class="sq-ng-add-action-hint">Or record income</span></button></div><section class="sq-ng-card sq-ng-section"><h2>Recent personal activity</h2><div class="sq-ng-list">${finance.length?finance.map(x=>`<div class="sq-ng-item"><div><b>${esc(x.description)}</b><small>${esc(x.category)} · ${esc(x.kind)} · ${esc(x.occurred_on)}</small></div><div><b>${x.kind==='expense'?'-':'+'}${esc(money(x.amount))}</b> <button type="button" data-delete="${esc(x.id)}">Delete</button></div></div>`).join(''):'<div class="sq-ng-empty">No personal transactions yet. Add your first one above.</div>'}</div></section><p class="sq-ng-note">Personal records are private and never change shared tracker balances.</p>`;
+const modalHtml = `<div id="sq-ng-txn-overlay" class="sq-ng-txn-overlay" hidden>
+ <section class="sq-ng-txn-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-ng-txn-title">
+  <header class="sq-ng-txn-header"><div><span class="sq-ng-txn-eyebrow">PERSONAL FINANCE</span><h2 id="sq-ng-txn-title">Add personal expense</h2><p>Track spending and income separately from shared trackers.</p></div><button type="button" class="sq-ng-txn-close" aria-label="Close transaction form">×</button></header>
+  <div class="sq-ng-txn-tabs" role="tablist" aria-label="Transaction type"><button type="button" role="tab" id="sq-ng-txn-tab-expense" aria-selected="true" aria-controls="sq-ng-txn-panel" data-txn-kind="expense">Expense</button><button type="button" role="tab" id="sq-ng-txn-tab-income" aria-selected="false" aria-controls="sq-ng-txn-panel" data-txn-kind="income" tabindex="-1">Income</button></div>
+  <div role="tabpanel" id="sq-ng-txn-panel" aria-labelledby="sq-ng-txn-tab-expense">
+   <form class="sq-ng-txn-form" id="sq-ng-add">
+    <input type="hidden" name="kind" value="expense">
+    <label for="sq-ng-txn-description">Description<input id="sq-ng-txn-description" name="description" required maxlength="120" placeholder="Groceries" autocomplete="off"></label>
+    <label for="sq-ng-txn-category">Category<input id="sq-ng-txn-category" name="category" required maxlength="50" placeholder="Food" autocomplete="off"></label>
+    <label for="sq-ng-txn-amount">Amount (USD)<input id="sq-ng-txn-amount" name="amount" type="number" min="0.01" max="99999999" step="0.01" inputmode="decimal" required placeholder="0.00"></label>
+    <p id="sq-ng-txn-feedback" class="sq-ng-txn-feedback" role="status" aria-live="polite"></p>
+    <button class="sq-ng-primary sq-ng-txn-save" type="submit">Save expense</button>
+   </form>
+  </div>
+ </section>
+</div>`;
+content.insertAdjacentHTML('beforeend',modalHtml);
+const overlay=content.querySelector('#sq-ng-txn-overlay');
+const opener=content.querySelector('#sq-ng-open-transaction');
+const form=content.querySelector('#sq-ng-add');
+const kindInput=form.elements.namedItem('kind');
+const saveButton=form.querySelector('button[type="submit"]');
+const feedback=content.querySelector('#sq-ng-txn-feedback');
+const tabs=[...content.querySelectorAll('[data-txn-kind]')];
+const setKind=kind=>{
+ if(!['expense','income'].includes(kind))return;
+ kindInput.value=kind;
+ tabs.forEach(button=>{
+  const active=button.dataset.txnKind===kind;
+  button.setAttribute('aria-selected',String(active));
+  button.tabIndex=active?0:-1;
+ });
+ content.querySelector('#sq-ng-txn-panel').setAttribute('aria-labelledby','sq-ng-txn-tab-'+kind);
+ content.querySelector('#sq-ng-txn-title').textContent=kind==='expense'?'Add personal expense':'Add personal income';
+ form.elements.namedItem('description').placeholder=kind==='expense'?'Groceries':'Paycheck';
+ form.elements.namedItem('category').placeholder=kind==='expense'?'Food':'Work';
+ saveButton.textContent=kind==='expense'?'Save expense':'Save income';
+ feedback.textContent='';
+};
+const closeModal=()=>{
+ overlay.hidden=true;
+ opener.focus();
+};
+opener.addEventListener('click',()=>{
+ form.reset();
+ setKind('expense');
+ overlay.hidden=false;
+ form.elements.namedItem('description').focus();
+});
+content.querySelector('.sq-ng-txn-close').addEventListener('click',closeModal);
+overlay.addEventListener('click',event=>{if(event.target===overlay)closeModal();});
+tabs.forEach(button=>button.addEventListener('click',()=>setKind(button.dataset.txnKind)));
+overlay.addEventListener('keydown',event=>{
+ if(event.key==='Escape'){event.preventDefault();closeModal();return;}
+ if((event.key==='ArrowLeft'||event.key==='ArrowRight')&&tabs.includes(document.activeElement)){
+  event.preventDefault();
+  const target=event.key==='ArrowRight'?tabs.find(button=>button.dataset.txnKind==='income'):tabs.find(button=>button.dataset.txnKind==='expense');
+  setKind(target.dataset.txnKind);target.focus();return;
+ }
+ if(event.key==='Tab'){
+  const focusables=[...overlay.querySelectorAll('button:not([disabled]):not([tabindex="-1"]),input:not([type="hidden"]):not([disabled])')];
+  const first=focusables[0],last=focusables[focusables.length-1];
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+ }
+});
+form.addEventListener('submit',async event=>{
+ event.preventDefault();
+ const values=Object.fromEntries(new FormData(form));
+ saveButton.disabled=true;
+ feedback.textContent='Saving…';
+ try{
+  await api('finance/transactions','POST',values);
+  await render();
+  status.textContent=values.kind==='expense'?'Personal expense saved.':'Personal income saved.';
+  content.querySelector('#sq-ng-open-transaction')?.focus();
+ }catch(error){
+  feedback.textContent=error.message||'Could not save transaction.';
+  saveButton.disabled=false;
+ }
+});
+content.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Delete this personal transaction?'))return;try{await api('finance/transactions/'+b.dataset.delete,'DELETE');await render()}catch(err){status.textContent=err.message}}));}
 async function drawWallet(){
  const trackers=await api('trackers');if(!Array.isArray(trackers))throw Error('Could not load trackers');
  const details=await Promise.all(trackers.map(async t=>{try{return {t,data:await api('trackers/'+encodeURIComponent(t.id))}}catch{return {t,data:null}}}));
@@ -13111,6 +13192,50 @@ html body #sq-startup-overlay .sq-startup-content{
  layout();window.addEventListener('resize',schedule,{passive:true});desktop.addEventListener('change',schedule);
  new MutationObserver(schedule).observe(document.body,{attributes:true,attributeFilter:['class']});
 })();
-</script></body>
+</script><style id="sq-personal-finance-mobile-modal-20261107">
+/* Personal Finance: smaller summary cards plus a dedicated add action. */
+body.sq-finance-open #sq-nextgen .sq-ng-finance-overview{display:grid;grid-template-columns:minmax(0,1fr) minmax(175px,220px);gap:16px;align-items:stretch;margin:10px 0 22px}
+body.sq-finance-open #sq-nextgen .sq-ng-finance-overview>.sq-ng-summary-stack{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important;margin:0!important;min-width:0!important}
+body.sq-finance-open #sq-nextgen .sq-ng-finance-overview>.sq-ng-summary-stack>.sq-ng-card:first-child{grid-column:auto!important}
+body.sq-finance-open #sq-nextgen .sq-ng-add-action{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;width:100%;min-width:0;border:1px solid #57c8bc;border-radius:20px;background:linear-gradient(155deg,#0f485c,#10344d);padding:20px 12px;color:#f0fcff;cursor:pointer;text-align:center;box-shadow:0 14px 30px #0003}
+body.sq-finance-open #sq-nextgen .sq-ng-add-action:hover{background:linear-gradient(155deg,#15586b,#143e58)}
+body.sq-finance-open #sq-nextgen .sq-ng-add-action:focus-visible{outline:3px solid #4bdbc6;outline-offset:3px}
+body.sq-finance-open #sq-nextgen .sq-ng-add-action-icon{display:grid;place-items:center;width:65px;height:65px;border-radius:50%;background:#25d0b6;color:#06333b;font-size:45px;font-weight:400;line-height:1}
+body.sq-finance-open #sq-nextgen .sq-ng-add-action strong{font-size:18px;line-height:1.25;font-weight:800}
+body.sq-finance-open #sq-nextgen .sq-ng-add-action-hint{font-size:12px;color:#bdd7df;line-height:1.35}
+#sq-nextgen .sq-ng-txn-overlay[hidden]{display:none!important}
+#sq-nextgen .sq-ng-txn-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(2,13,27,.78);overflow-y:auto}
+#sq-nextgen .sq-ng-txn-dialog{width:min(100%,490px);max-height:calc(100dvh - 40px);overflow-y:auto;background:linear-gradient(160deg,#102d43,#0b2235);border:1px solid #50798a;border-radius:22px;box-shadow:0 24px 72px #0009;padding:25px;color:#f2fbff;margin:auto}
+#sq-nextgen .sq-ng-txn-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:20px}
+#sq-nextgen .sq-ng-txn-header>div{min-width:0}
+#sq-nextgen .sq-ng-txn-header h2{font-size:25px;margin:7px 0;color:#fff}
+#sq-nextgen .sq-ng-txn-header p{font-size:13px;line-height:1.45;margin:0;color:#aac6d3}
+#sq-nextgen .sq-ng-txn-eyebrow{color:#66ddce;font-size:10px;font-weight:800;letter-spacing:.15em}
+#sq-nextgen .sq-ng-txn-close{border:1px solid #3d6178;background:#183b52;color:#fff;border-radius:10px;min-width:40px;height:40px;font-size:26px;line-height:1}
+#sq-nextgen .sq-ng-txn-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:20px}
+#sq-nextgen .sq-ng-txn-tabs button{min-height:48px;border:1px solid #446c81;background:#102b40;color:#c4d9e4;border-radius:12px;font-size:15px;font-weight:750}
+#sq-nextgen .sq-ng-txn-tabs button[aria-selected=true]{background:#40d4c1;color:#06232e;border-color:#70e7d6}
+#sq-nextgen .sq-ng-txn-tabs button:focus-visible,#sq-nextgen .sq-ng-txn-close:focus-visible{outline:3px solid #5be8d5;outline-offset:2px}
+#sq-nextgen .sq-ng-txn-form{display:grid;grid-template-columns:1fr;gap:15px}
+#sq-nextgen .sq-ng-txn-form label{font-size:13px;gap:7px}
+#sq-nextgen .sq-ng-txn-form input:not([type=hidden]){min-height:48px;border:1px solid #496a7e;border-radius:11px;background:#071d30;color:#fff;padding:12px 14px;font-size:16px}
+#sq-nextgen .sq-ng-txn-form input:focus-visible{outline:3px solid #42d7c3;outline-offset:1px}
+#sq-nextgen .sq-ng-txn-save{width:100%;min-height:50px;font-size:15px}
+#sq-nextgen .sq-ng-txn-feedback{margin:0;min-height:0;color:#d3f5f1;font-size:13px}
+#sq-nextgen .sq-ng-txn-feedback:empty{display:none}
+@media(max-width:800px){
+ body.sq-finance-open #sq-nextgen .sq-ng-finance-overview{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:12px!important;margin:12px 0 20px!important}
+ body.sq-finance-open #sq-nextgen .sq-ng-finance-overview>.sq-ng-summary-stack{grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+ body.sq-finance-open #sq-nextgen .sq-ng-finance-overview .sq-ng-summary-stack>.sq-ng-card{width:100%!important;min-width:0!important;min-height:100px;padding:15px 12px!important;display:flex;flex-direction:column;justify-content:center;gap:10px}
+ body.sq-finance-open #sq-nextgen .sq-ng-finance-overview .sq-ng-summary-stack>.sq-ng-card small{font-size:11px!important;line-height:1.35!important;letter-spacing:0!important;margin:0!important;overflow-wrap:break-word}
+ body.sq-finance-open #sq-nextgen .sq-ng-finance-overview .sq-ng-summary-stack>.sq-ng-card strong{font-size:clamp(21px,5.5vw,28px)!important;letter-spacing:-.045em!important;line-height:1.12!important;overflow-wrap:anywhere}
+ body.sq-finance-open #sq-nextgen .sq-ng-add-action{padding:14px 9px;gap:12px;border-radius:17px}
+ body.sq-finance-open #sq-nextgen .sq-ng-add-action-icon{width:58px;height:58px;font-size:42px}
+ body.sq-finance-open #sq-nextgen .sq-ng-add-action strong{font-size:clamp(16px,4.6vw,21px)}
+ body.sq-finance-open #sq-nextgen .sq-ng-add-action-hint{font-size:11px}
+ #sq-nextgen .sq-ng-txn-overlay{padding:14px}
+ #sq-nextgen .sq-ng-txn-dialog{padding:20px;max-height:calc(100dvh - 28px)}
+}
+</style></body>
 </html>
 
