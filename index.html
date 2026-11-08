@@ -13023,6 +13023,22 @@ html body #sq-startup-overlay .sq-startup-content{
  function place(){const parent=desktop.matches?left:right;if(activity.parentElement!==parent){if(desktop.matches)parent.append(activity);else parent.prepend(activity)}}
  place();desktop.addEventListener('change',place);
 })();
-</script><style id="doweo-add-button-inset">@media(min-width:901px){html body #tracker-dashboard.sq-tab-overview #sq-return-summary #dw-desktop-add{margin-right:20px!important}}</style></body>
+</script><style id="doweo-add-button-inset">@media(min-width:901px){html body #tracker-dashboard.sq-tab-overview #sq-return-summary #dw-desktop-add{margin-right:20px!important}}</style><style id="doweo-header-single-row">
+@media(min-width:901px){
+ html body .wrap>header.tracker-heading{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;gap:24px!important;min-height:92px!important;height:auto!important;padding:20px 24px!important}
+ html body .wrap>header.tracker-heading>.sq-title-and-tour{display:flex!important;flex:0 0 auto!important;flex-wrap:nowrap!important;align-items:center!important;width:auto!important;min-width:0!important;gap:0!important}
+ html body .wrap>header.tracker-heading>.sq-title-and-tour h1{margin:0!important;white-space:nowrap}
+ html body .wrap>header.tracker-heading>.sq-search-launch{position:static!important;transform:none!important;flex:0 1 420px!important;min-width:180px!important;width:420px!important;max-width:45%!important;margin:0!important;align-self:center!important;order:0!important}
+ html body .wrap>header.tracker-heading>#sq-desktop-friends-top{position:static!important;transform:none!important;flex:0 0 auto!important;align-self:center!important;margin:0 0 0 auto!important;order:0!important}
+}
+</style><script id="doweo-header-search-placement">
+(function(){
+ const header=document.querySelector('header.tracker-heading'),search=header?.querySelector('.sq-search-launch'),friends=document.getElementById('sq-desktop-friends-top');
+ if(!header||!search||!friends)return;
+ const parent=search.parentNode,next=search.nextSibling,desktop=window.matchMedia('(min-width:901px)');
+ function place(){if(desktop.matches){if(search.parentNode!==header)header.insertBefore(search,friends)}else if(search.parentNode!==parent){parent.insertBefore(search,next&&next.parentNode===parent?next:null)}}
+ place();desktop.addEventListener('change',place);
+})();
+</script></body>
 </html>
 
