@@ -341,6 +341,7 @@
       panel.style.removeProperty('--weo-visible-height');
     }
     if(editing)closeActions();
+    // Keep the welcome and suggestion buttons in the page's scrollable area.
   };
   prompt.addEventListener('focus',hideWhenTyping);
   prompt.addEventListener('blur',()=>setTimeout(hideWhenTyping,100));
