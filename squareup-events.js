@@ -1,5 +1,7 @@
+import {initBetaFeedback} from './beta-feedback.js';
 // DoWeo Events client. Uses the existing signed-in API client.
 export function initEvents({api,getTrackers,getUser}){
+ initBetaFeedback({api,getUser});
  const css=document.createElement('style');
  css.textContent=`
  body.sqev-page-open .wrap > :not(#sqev-view){display:none!important}
