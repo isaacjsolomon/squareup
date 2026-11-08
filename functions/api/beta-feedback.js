@@ -70,22 +70,64 @@ export async function onRequest({request, env}) {
     return reply({error:'Feedback was saved, but notification status could not be confirmed.'},202);
   }
 
-  // Plain-text email avoids interpreting any user-supplied text as HTML.
-  // The idempotency key prevents duplicate notifications for the same entry.
+  // A cohesive, mobile-friendly support notification. User content is HTML-escaped.
+  // Keep technical metadata in Supabase for troubleshooting, not in every email.
+  const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  })[character]);
+  const categoryLabel = {
+    bug:'Bug report',
+    idea:'Feature suggestion',
+    rating:'App rating'
+  }[category];
   const cleanSubject=title.replace(/[\r\n]+/g,' ').slice(0,100);
+  const senderEmail=user.email||'Unknown account';
+  const emailSubject='DoWeo feedback | '+categoryLabel+': '+cleanSubject;
   const emailText=[
-    'New DoWeo beta feedback',
-    'Category: '+category,
-    'Subject: '+title,
-    'Rating: '+(rating===null?'Not applicable':rating+'/5'),
-    'User: '+(user.email||'No email available'),
-    'User ID: '+user.id,
-    'Page: '+path,
-    'Device: '+payload.device_info,
-    'Feedback ID: '+feedbackId,
-    '---',
-    details
+    'DOWEO  /  BETA FEEDBACK',
+    '',
+    categoryLabel.toUpperCase(),
+    title,
+    '',
+    details,
+    ...(rating===null?[]:['','Rating: '+rating+' out of 5 stars']),
+    '',
+    'Submitted by: '+senderEmail,
+    '',
+    '— DoWeo Beta Feedback'
   ].join('\n');
+  const escapedDetails=escapeHtml(details).replace(/\r?\n/g,'<br>');
+  const ratingSection=rating===null?'':[
+    "<div style='margin-top:22px;padding-top:18px;border-top:1px solid #e5ecf3'>",
+    "<span style='font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#62758b'>Rating</span>",
+    "<div style='font-size:24px;letter-spacing:3px;color:#108e94;margin-top:5px'>",
+    '★'.repeat(rating)+'<span style="color:#cbd5e1">'+ '☆'.repeat(5-rating)+'</span>',
+    "<span style='font-size:13px;font-weight:600;letter-spacing:0;color:#53677e;margin-left:10px'>"+rating+"/5</span></div></div>"
+  ].join('');
+  const emailHtml=[
+    "<!doctype html><html lang='en'><head><meta charset='utf-8'>",
+    "<meta name='viewport' content='width=device-width, initial-scale=1'></head>",
+    "<body style='margin:0;padding:28px 12px;background:#eff3f8;font-family:Arial,Helvetica,sans-serif;color:#132b46'>",
+    "<div style='max-width:600px;margin:0 auto;border:1px solid #dce6ef;border-radius:16px;overflow:hidden;background:#ffffff'>",
+    "<div style='padding:28px 30px;background:#0b203d;color:#ffffff'>",
+    "<div style='font-size:28px;line-height:1.1;font-weight:800;letter-spacing:-1px'>DoWeo</div>",
+    "<div style='font-size:11px;font-weight:700;letter-spacing:2px;color:#a4d8e3;margin-top:9px'>BETA FEEDBACK</div>",
+    "</div>",
+    "<div style='padding:30px'>",
+    "<div style='font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1.4px;color:#147e86'>"+escapeHtml(categoryLabel)+"</div>",
+    "<h1 style='font-size:25px;line-height:1.25;margin:10px 0 20px;color:#102b49;font-weight:750'>"+escapeHtml(title)+"</h1>",
+    "<div style='background:#f4f8fb;border-left:4px solid #21c7bc;border-radius:8px;padding:19px 20px;font-size:16px;line-height:1.65;color:#253f58;overflow-wrap:anywhere'>",
+    escapedDetails,
+    "</div>",
+    ratingSection,
+    "<div style='border-top:1px solid #e5ecf3;margin-top:26px;padding-top:18px;font-size:13px;color:#61758a'>",
+    "Submitted by <span style='font-weight:700;color:#243d59;overflow-wrap:anywhere'>"+escapeHtml(senderEmail)+"</span>",
+    "</div>",
+    "</div>",
+    "<div style='background:#f7f9fc;border-top:1px solid #e5ecf3;padding:16px 30px;font-size:12px;color:#74869a'>",
+    "DoWeo · Feedback sent from the beta app",
+    "</div></div></body></html>"
+  ].join('');
   let emailSent=false;
   let providerId=null;
   let emailError='delivery_failed';
@@ -100,8 +142,9 @@ export async function onRequest({request, env}) {
       body:JSON.stringify({
         from:env.BETA_FEEDBACK_FROM_EMAIL,
         to:['help.doweo@gmail.com'],
-        subject:'[DoWeo Beta '+category+'] '+cleanSubject,
-        text:emailText
+        subject:emailSubject,
+        text:emailText,
+        html:emailHtml
       })
     });
     if (emailResponse.ok) {
