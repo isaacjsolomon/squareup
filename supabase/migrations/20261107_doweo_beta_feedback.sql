@@ -10,10 +10,15 @@ create table if not exists public.doweo_beta_feedback (
   page_path text not null default '/',
   device_info text not null default '',
   status text not null default 'new' check (status in ('new','reviewing','planned','resolved','closed')),
+  email_status text not null default 'pending' check (email_status in ('pending','sent','failed')),
+  email_provider_id text,
+  email_error text,
+  emailed_at timestamptz,
   created_at timestamptz not null default now(),
   constraint rating_required check ((category = 'rating' and rating is not null) or (category <> 'rating' and rating is null))
 );
 create index if not exists doweo_beta_feedback_user_recent on public.doweo_beta_feedback (user_id, created_at desc);
+create index if not exists doweo_beta_feedback_email_pending on public.doweo_beta_feedback (email_status, created_at) where email_status <> 'sent';
 create index if not exists doweo_beta_feedback_review on public.doweo_beta_feedback (status, created_at desc);
 alter table public.doweo_beta_feedback enable row level security;
 revoke all on public.doweo_beta_feedback from anon, authenticated;
