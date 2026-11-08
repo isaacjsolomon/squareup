@@ -7360,12 +7360,11 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  window.visualViewport?.addEventListener('scroll',fitChat);
  window.addEventListener('resize',fitChat);
  launch.addEventListener('click',event=>{
-  // On phones this is a real URL navigation, independent of chat JS timing.
-  // Preserve the existing in-page launch behavior on desktop.
-  if(mobile())return;
+  // The href is a no-JS fallback. In the running app, open Weo directly
+  // on both mobile and desktop; don't reload the entire app on iPhone.
   event.preventDefault();
-  setOpen(panel.hidden);
-});
+  setOpen(true);
+ });
  // Bind directly to the actual X button; no competing delegated close handlers.
  close.addEventListener('click',event=>{event.preventDefault();setOpen(false)});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)setOpen(false)});
