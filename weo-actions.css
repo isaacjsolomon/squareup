@@ -778,3 +778,187 @@ html body #sq-ai-window.weo-full-page #sq-ai-contact{
   transition:none!important;transform:none!important;
  }
 }
+
+
+/* Desktop workspace repair: real scrollable conversation, fixed composer and no footer grid. */
+@media (min-width:701px){
+ html body #sq-ai-window.weo-full-page{
+   --weo-side-width:0px;
+   display:flex!important;flex-direction:column!important;
+   padding:0!important;overflow:hidden!important;
+ }
+ html body #sq-ai-window.weo-full-page.weo-sidebar-open{
+   --weo-side-width:255px;
+ }
+ html body #sq-ai-window.weo-full-page .sq-ai-head{
+   flex:0 0 74px!important;
+   min-height:74px!important;
+   height:74px!important;
+   padding:12px 24px 12px calc(var(--weo-side-width) + 30px)!important;
+   gap:12px!important;
+   box-sizing:border-box!important;
+ }
+ html body #sq-ai-window.weo-full-page .sq-ai-head .sq-ai-avatar{
+   flex:0 0 44px!important;
+ }
+ html body #sq-ai-window.weo-full-page .sq-ai-head .weo-ai-brand{
+   min-width:0!important;
+ }
+ html body #sq-ai-window.weo-full-page #sq-ai-stream{
+   flex:1 1 0!important;
+   min-height:0!important;
+   height:auto!important;
+   width:calc(100% - var(--weo-side-width))!important;
+   margin:0 0 0 var(--weo-side-width)!important;
+   padding:26px max(30px,calc((100% - 920px)/2)) 34px!important;
+   display:flex!important;flex-direction:column!important;
+   overflow-y:auto!important;overflow-x:hidden!important;
+   box-sizing:border-box!important;
+   overscroll-behavior:contain!important;
+   gap:16px!important;
+ }
+ html body #sq-ai-window.weo-full-page #sq-ai-stream .sq-ai-welcome{
+   flex:0 0 auto!important;
+   padding:22px 0 8px!important;
+   margin:0 auto!important;
+   width:100%!important;
+   max-width:540px!important;
+ }
+ html body #sq-ai-window.weo-full-page #sq-ai-stream .sq-ai-welcome-mark.weo-mascot{
+   margin:0 auto 12px!important;
+   width:72px!important;height:72px!important;
+ }
+ html body #sq-ai-window.weo-full-page #sq-ai-stream .sq-ai-welcome h2{
+   margin:0 0 8px!important;
+   font-size:32px!important;
+   line-height:1.2!important;
+ }
+ html body #sq-ai-window.weo-full-page #sq-ai-stream .sq-ai-welcome p{
+   margin:0 auto!important;
+   font-size:14px!important;line-height:1.55!important;
+   max-width:460px!important;
+ }
+ html body #sq-ai-window.weo-full-page #sq-ai-stream .sq-ai-quick,
+ html body #sq-ai-window.weo-full-page #sq-ai-stream .weo-prompt-grid{
+   flex:0 0 auto!important;
+   width:min(100%,640px)!important;
+   margin:12px auto 0!important;
+   padding:0!important;
+   display:grid!important;
+   grid-template-columns:repeat(2,minmax(0,1fr))!important;
+   gap:11px!important;
+ }
+ html body #sq-ai-window.weo-full-page #sq-ai-stream .sq-ai-quick button,
+ html body #sq-ai-window.weo-full-page #sq-ai-stream .weo-prompt-card{
+   min-height:62px!important;
+   padding:14px 17px!important;
+   box-sizing:border-box!important;
+   font-size:13px!important;
+   line-height:1.4!important;
+ }
+ html body #sq-ai-window.weo-full-page #sq-ai-form{
+   position:relative!important;
+   display:flex!important;
+   align-items:center!important;
+   flex:0 0 auto!important;
+   z-index:6!important;
+   width:min(760px,calc(100% - var(--weo-side-width) - 64px))!important;
+   max-width:none!important;
+   margin:8px 0 0 calc(var(--weo-side-width) + (100% - var(--weo-side-width) - min(760px,100% - var(--weo-side-width) - 64px))/2)!important;
+   min-height:58px!important;
+   padding:9px 12px!important;
+   gap:10px!important;
+   border-radius:20px!important;
+   box-sizing:border-box!important;
+ }
+ html body #sq-ai-window.weo-full-page #sq-ai-form .weo-more-toggle{
+   display:flex!important;align-items:center!important;justify-content:center!important;
+   width:38px!important;height:38px!important;
+   flex:0 0 38px!important;
+   padding:0!important;
+   border:1px solid #426e7d!important;
+   border-radius:50%!important;
+   background:#225264!important;color:#a6fff1!important;
+   cursor:pointer;
+ }
+ html body #sq-ai-window.weo-full-page #sq-ai-form .weo-more-toggle svg{
+   display:block!important;width:20px!important;height:20px!important;
+ }
+ html body #sq-ai-window.weo-full-page #sq-ai-form .weo-quick-actions{
+   display:none!important;
+   position:absolute!important;
+   inset:auto 0 calc(100% + 10px) 0!important;
+   width:100%!important;
+   max-height:340px!important;
+   overflow-y:auto!important;
+   padding:14px!important;
+   border:1px solid #3a6274!important;
+   border-radius:16px!important;
+   background:#0e2638!important;
+   box-shadow:0 18px 44px #000a!important;
+   box-sizing:border-box!important;
+   z-index:30!important;
+ }
+ html body #sq-ai-window.weo-full-page #sq-ai-form .weo-quick-actions.weo-menu-open{
+   display:flex!important;flex-direction:column!important;gap:10px!important;
+ }
+ html body #sq-ai-window.weo-full-page .sq-ai-privacy{
+   flex:0 0 auto!important;
+   margin:9px 0 0 var(--weo-side-width)!important;
+   padding:0!important;
+   font-size:11px!important;
+ }
+ html body #sq-ai-window.weo-full-page #sq-ai-contact{
+   flex:0 0 auto!important;
+   margin-left:var(--weo-side-width)!important;
+   padding:8px 10px 18px!important;
+   font-size:11px!important;
+   text-align:center!important;
+ }
+ html body #sq-ai-window.weo-full-page.weo-sidebar-open .sq-ai-head,
+ html body #sq-ai-window.weo-full-page.weo-sidebar-open #sq-ai-stream,
+ html body #sq-ai-window.weo-full-page.weo-sidebar-open #sq-ai-form{
+   /* These logical offsets replace the earlier asymmetric sidebar math. */
+   box-sizing:border-box!important;
+ }
+ html body #sq-ai-window.weo-full-page #weo-history-drawer{
+   z-index:20!important;
+ }
+ html body #sq-ai-window.weo-full-page.weo-sidebar-open #weo-history-drawer{
+   width:255px!important;
+   inset:0 auto 0 0!important;
+   background:#0c1d2b!important;
+ }
+ html body #sq-ai-window.weo-full-page.weo-sidebar-open .weo-history-card{
+   padding:24px 12px!important;
+ }
+ html body #sq-ai-window.weo-full-page .weo-history-item{
+   padding:7px!important;
+ }
+ html body #sq-ai-window.weo-full-page .weo-history-open{
+   padding:8px 5px!important;
+ }
+}
+@media (min-width:701px) and (max-height:700px){
+ html body #sq-ai-window.weo-full-page #sq-ai-stream{padding-top:12px!important;padding-bottom:20px!important}
+ html body #sq-ai-window.weo-full-page #sq-ai-stream .sq-ai-welcome{padding-top:8px!important}
+ html body #sq-ai-window.weo-full-page #sq-ai-stream .sq-ai-welcome-mark.weo-mascot{width:55px!important;height:55px!important}
+ html body #sq-ai-window.weo-full-page #sq-ai-stream .sq-ai-quick button{min-height:54px!important}
+}
+
+
+/* Equal-or-higher specificity than the original sidebar offsets. */
+@media(min-width:1000px){
+ html body #sq-ai-window.weo-full-page.weo-sidebar-open .sq-ai-head{
+   padding:12px 24px 12px 285px!important;
+ }
+ html body #sq-ai-window.weo-full-page.weo-sidebar-open #sq-ai-stream{
+   margin:0 0 0 255px!important;
+   width:calc(100% - 255px)!important;
+   padding:26px max(26px,calc((100% - 920px)/2)) 34px!important;
+ }
+ html body #sq-ai-window.weo-full-page.weo-sidebar-open #sq-ai-form{
+   width:min(760px,calc(100% - 319px))!important;
+   margin:8px 0 0 calc(255px + (100% - 255px - min(760px,100% - 319px))/2)!important;
+ }
+}

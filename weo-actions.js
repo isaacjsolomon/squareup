@@ -66,13 +66,10 @@
     moreButton.setAttribute('aria-label','More Weo actions');
   };
   const syncActionPlacement=()=>{
-    if(phoneLayout.matches){
-      if(area.parentElement!==form)form.appendChild(area);
-      closeActions();
-    }else{
-      if(area.previousElementSibling!==support)support.insertAdjacentElement('afterend',area);
-      closeActions();
-    }
+    // A single compact + menu works consistently on desktop and mobile.
+    // Never reserve a separate footer for tools below the chat composer.
+    if(area.parentElement!==form)form.appendChild(area);
+    closeActions();
   };
   moreButton.addEventListener('click',()=>{
     const opening=!area.classList.contains('weo-menu-open');
@@ -81,7 +78,7 @@
     moreButton.setAttribute('aria-label',opening?'Close Weo actions':'More Weo actions');
   });
   document.addEventListener('pointerdown',event=>{
-    if(phoneLayout.matches && !form.contains(event.target))closeActions();
+    if(!form.contains(event.target))closeActions();
   });
   document.addEventListener('keydown',event=>{
     if(event.key==='Escape' && area.classList.contains('weo-menu-open')){
