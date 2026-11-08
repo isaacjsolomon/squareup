@@ -49,7 +49,7 @@ export function initBetaFeedback({api,getUser}) {
       </div></div>
       <label for="dw-beta-subject">Subject</label><input id="dw-beta-subject" maxlength="120" minlength="3" required placeholder="A short description">
       <label for="dw-beta-details">Details</label><textarea id="dw-beta-details" maxlength="2000" minlength="3" required placeholder="What happened? What would you like to see?"></textarea>
-      <p style="font-size:12px">Please don't include passwords, payment details, or other sensitive information.</p>
+      <p style="font-size:12px">Submissions are saved for DoWeo support and emailed to help.doweo@gmail.com. Don't include passwords, payment details, or other sensitive information.</p>
       <button class="dw-submit" type="submit">Send feedback</button>
       <p class="dw-message" id="dw-beta-message" role="status" aria-live="polite"></p>
     </form></div>`;
@@ -94,7 +94,7 @@ export function initBetaFeedback({api,getUser}) {
     const submit=form.querySelector('.dw-submit');
     submit.disabled=true;message.textContent='Sending…';
     try {
-      await api('beta-feedback','POST',{
+      const result=await api('beta-feedback','POST',{
         category,rating:category==='rating'?rating:null,
         title:form.querySelector('#dw-beta-subject').value,
         details:form.querySelector('#dw-beta-details').value,
@@ -103,7 +103,7 @@ export function initBetaFeedback({api,getUser}) {
       });
       form.reset();rating=0;
       modal.querySelectorAll('[data-rating]').forEach(b=>b.setAttribute('aria-pressed','false'));
-      message.textContent='Thanks! Your feedback was saved.';
+      message.textContent=result?.notice || (result?.email_sent?'Thanks! Your feedback was emailed to DoWeo support.':'Your feedback was saved; email delivery is pending.');
     }catch(error){message.textContent=error?.message||'Unable to send feedback right now.';}
     finally{submit.disabled=false;}
   });
