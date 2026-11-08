@@ -2241,7 +2241,18 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
-  <div class="sq-startup-content"><span class="sq-startup-ring" aria-hidden="true"></span><strong>Loading DoWeo…</strong><span>Getting your tracker ready</span><div class="sq-startup-progress" aria-hidden="true"></div></div>
+  <div class="sq-startup-content"><svg class="doweo-loading-logo" viewBox="0 0 972 972" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+<defs>
+ <linearGradient id="doweo-loader-mint" x1="180" y1="420" x2="425" y2="720" gradientUnits="userSpaceOnUse"><stop stop-color="#92ffb8"/><stop offset="1" stop-color="#00d9bc"/></linearGradient>
+ <linearGradient id="doweo-loader-cyan" x1="460" y1="480" x2="725" y2="700" gradientUnits="userSpaceOnUse"><stop stop-color="#28f9f1"/><stop offset="1" stop-color="#00badc"/></linearGradient>
+ <linearGradient id="doweo-loader-front" x1="330" y1="700" x2="575" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#00e4e7"/><stop offset="1" stop-color="#46fff1"/></linearGradient>
+</defs>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+ <path class="doweo-logo-trace doweo-logo-left" pathLength="1" d="M248 500 L380 690" stroke="url(#doweo-loader-mint)" stroke-width="176"/>
+ <path class="doweo-logo-trace doweo-logo-right" pathLength="1" d="M535 500 L669 688" stroke="url(#doweo-loader-cyan)" stroke-width="176"/>
+ <path class="doweo-logo-trace doweo-logo-front" pathLength="1" d="M380 688 L535 500" stroke="url(#doweo-loader-front)" stroke-width="176"/>
+ <path class="doweo-logo-trace doweo-logo-d" pathLength="1" d="M128 240 H616 C741 240 830 335 830 450 C830 549 758 652 669 700" stroke="#ffffff" stroke-width="130"/>
+</g></svg></div>
 </div>
 <button type="button" id="guest-auth-button" hidden>Log in or create account</button>
 <div id="backdrop" aria-hidden="true"></div>
@@ -12866,6 +12877,38 @@ html body #sq-ai-window button:focus-visible{outline:2px solid #7ae4cf!important
  html body #sq-ai-window .sq-ai-stream{padding:20px 18px!important}
 }
 @media(max-height:550px){html body #sq-ai-window .sq-ai-welcome-mark{display:none}html body #sq-ai-window .sq-ai-empty{justify-content:flex-start;gap:16px!important}html body #sq-ai-window .sq-ai-welcome h2{font-size:21px}}
+</style><style id="doweo-logo-loading-animation">
+/* Only the logo is visible; existing startup completion logic owns this overlay. */
+html body #sq-startup-overlay{
+ background:#051631!important;
+ -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html body #sq-startup-overlay .sq-startup-content{
+ display:grid!important;place-items:center!important;
+ width:auto!important;max-width:none!important;padding:0!important;
+ border:0!important;border-radius:0!important;background:transparent!important;
+ box-shadow:none!important;gap:0!important;
+}
+#sq-startup-overlay .doweo-loading-logo{
+ display:block;width:clamp(160px,27vw,240px);height:auto;overflow:visible;
+}
+#sq-startup-overlay .doweo-logo-trace{
+ stroke-dasharray:1;stroke-dashoffset:1;
+ animation:doweo-logo-draw 3.2s ease-in-out infinite;
+}
+#sq-startup-overlay .doweo-logo-left{animation-delay:0s}
+#sq-startup-overlay .doweo-logo-right{animation-delay:.12s}
+#sq-startup-overlay .doweo-logo-front{animation-delay:.24s}
+#sq-startup-overlay .doweo-logo-d{animation-delay:.4s}
+@keyframes doweo-logo-draw{
+ 0%,6%{stroke-dashoffset:1;opacity:0}
+ 10%{opacity:1}
+ 56%,84%{stroke-dashoffset:0;opacity:1}
+ 100%{stroke-dashoffset:0;opacity:0}
+}
+@media(prefers-reduced-motion:reduce){
+ #sq-startup-overlay .doweo-logo-trace{animation:none!important;stroke-dashoffset:0!important;opacity:1!important}
+}
 </style></body>
 </html>
 
