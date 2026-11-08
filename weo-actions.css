@@ -202,3 +202,92 @@
 @media(prefers-reduced-motion:reduce){
   #sq-ai-window .weo-more-toggle{transition:none!important}
 }
+
+
+/* Welcome screen v2: avoid giant cards, overlapping composer and excessive whitespace. */
+@media(max-width:700px){
+  html body #sq-ai-window{
+    display:flex!important;
+    flex-direction:column!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    padding-bottom:env(safe-area-inset-bottom,0px)!important;
+    overflow:hidden!important;
+    overscroll-behavior:contain;
+  }
+  html body #sq-ai-window .sq-ai-head{
+    min-height:0!important;
+    padding:10px 12px!important;
+    flex-shrink:0!important;
+  }
+  html body #sq-ai-window .sq-ai-welcome{
+    padding:16px 12px 14px!important;
+    width:100%;
+    max-width:420px!important;
+    flex:0 0 auto;
+    text-align:center;
+  }
+  html body #sq-ai-window .sq-ai-welcome h2{
+    font-size:23px!important;
+    line-height:1.2!important;
+    margin:0 0 8px!important;
+  }
+  html body #sq-ai-window .sq-ai-welcome p{
+    font-size:12.5px!important;
+    line-height:1.45!important;
+    margin:0 auto 14px!important;
+    max-width:320px!important;
+  }
+  html body #sq-ai-window .weo-prompt-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:9px!important;
+    width:100%!important;
+    padding:0 14px 10px!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+  }
+  html body #sq-ai-window .weo-prompt-card{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:56px!important;
+    height:auto!important;
+    margin:0!important;
+    padding:12px!important;
+    border-radius:13px!important;
+    font-size:13px!important;
+    line-height:1.3!important;
+    text-align:left!important;
+    white-space:normal!important;
+  }
+  html body #sq-ai-window .sq-ai-messages,
+  html body #sq-ai-window .sq-ai-body,
+  html body #sq-ai-window .sq-ai-chat-body{
+    min-height:0!important;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+  html body #sq-ai-window #sq-ai-form{
+    margin-top:auto!important;
+    flex-shrink:0!important;
+    box-sizing:border-box!important;
+  }
+  html body #sq-ai-window #sq-ai-contact{
+    flex:0 0 auto;
+    margin:5px auto 8px!important;
+    font-size:11px!important;
+  }
+  html body #sq-ai-window #sq-ai-form .weo-quick-actions:not(.weo-menu-open){
+    display:none!important;
+  }
+  html body #sq-ai-window #sq-ai-form .weo-quick-actions.weo-menu-open{
+    display:flex!important;
+  }
+}
+@media(max-width:380px){
+  html body #sq-ai-window .weo-prompt-grid{gap:7px!important;padding-left:10px!important;padding-right:10px!important}
+  html body #sq-ai-window .weo-prompt-card{padding:10px!important;font-size:12px!important}
+}
