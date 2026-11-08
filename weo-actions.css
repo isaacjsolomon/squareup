@@ -1038,3 +1038,6 @@ html body #sq-ai-window.weo-full-page #sq-ai-close{
     z-index:20!important;
   }
 }
+
+/* Weo now uses Back to Home in History for navigation; hide the old X. */
+#sq-ai-window #sq-ai-close{display:none!important}
