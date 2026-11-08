@@ -1968,6 +1968,56 @@ if (
 
 
     
+    // Account-specific Trip/Household directory links. The authenticated caller may
+    // link only trackers they can currently access, preventing cross-account access.
+    if (parts[0] === 'finance' && parts[1] === 'workspace-links') {
+      const table = 'squareup_finance_workspace_links';
+      const validTypes = ['trip', 'household'];
+      const kind = method === 'POST'
+        ? String(body.workspace_type || '')
+        : new URL(request.url).searchParams.get('type');
+      if (!validTypes.includes(kind)) return fail('Invalid workspace type', 400);
+
+      if (method === 'GET' && parts.length === 2) {
+        const rows = await db(table, {
+          filters: { user_id: 'eq.' + me.id, workspace_type: 'eq.' + kind },
+          order: 'created_at.desc',
+          limit: 300
+        });
+        const authorized = [];
+        for (const row of rows) {
+          if (await member(row.tracker_id)) authorized.push({tracker_id:row.tracker_id});
+        }
+        return json(authorized);
+      }
+
+      if (method === 'POST' && parts.length === 2) {
+        const trackerId = String(body.tracker_id || '');
+        if (!uuid.test(trackerId)) return fail('Invalid tracker ID',400);
+        if (!(await member(trackerId))) return fail('Tracker not found',404);
+        const filters={
+          user_id:'eq.'+me.id,tracker_id:'eq.'+trackerId,workspace_type:'eq.'+kind
+        };
+        const already=await db(table,{filters,limit:1});
+        if (!already.length) await db(table,{
+          method:'POST',body:{user_id:me.id,tracker_id:trackerId,workspace_type:kind}
+        });
+        return json({ok:true,tracker_id:trackerId,workspace_type:kind});
+      }
+
+      if (method === 'DELETE' && parts.length === 3) {
+        const trackerId=String(parts[2]||'');
+        if (!uuid.test(trackerId)) return fail('Invalid tracker ID',400);
+        await db(table,{
+          method:'DELETE',
+          filters:{user_id:'eq.'+me.id,tracker_id:'eq.'+trackerId,workspace_type:'eq.'+kind}
+        });
+        return json({ok:true});
+      }
+      return fail('Method not allowed',405);
+    }
+
+
     // FINANCE HUB: trip and household planning records.
     if (parts[0] === 'finance' && parts[1] === 'workspace') {
       const table = 'squareup_finance_workspace_items';
