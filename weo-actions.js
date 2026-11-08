@@ -462,18 +462,23 @@
     requestAnimationFrame(updatePageState);
   });
   pageObserver.observe(panel,{attributes:true,attributeFilter:['hidden','aria-hidden']});
-  const closeControls=[...panel.querySelectorAll('.sq-ai-head button, .sq-ai-head [role="button"]')];
-  const lastHeaderButton=closeControls.at(-1);
-  for(const control of closeControls){
-    const hint=((control.getAttribute('aria-label')||'')+' '+(control.title||'')+' '+(control.textContent||'')).toLowerCase();
-    if(control===lastHeaderButton||control.id==='sq-ai-close'||hint.includes('close')||hint.includes('×')||hint.includes('✕')||hint.includes('✖')){
-      control.addEventListener('click',()=>{
-        requestAnimationFrame(()=>{
-          deactivatePage(true);
-        });
-      });
+  // The existing chat script also has a close handler. On desktop the
+  // two handlers could race with the route observer and immediately reopen
+  // Weo. Handle the X once, synchronously, before the legacy bubble listener.
+  const closeButton=panel.querySelector('#sq-ai-close');
+  closeButton?.addEventListener('click',event=>{
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    routeSyncing=true;
+    try{
+      window.WeoChat?.close?.();
+      // Explicitly hide the panel even if a legacy callback is unavailable.
+      panel.hidden=true;
+      deactivatePage(true);
+    }finally{
+      routeSyncing=false;
     }
-  }
+  },true);
   window.addEventListener('popstate',()=>{
     routeSyncing=true;
     if(isWeoRoute()){
