@@ -79,18 +79,21 @@
 
  const desktop=window.matchMedia('(min-width:1000px)');
  let sidebarLoaded=false;
+ let autoOpened=false;
  function syncSidebar(){
    const show=desktop.matches&&panel.classList.contains('weo-full-page')&&!panel.hidden;
    if(show){
-     if(!sidebarLoaded){
+     if(!autoOpened){
        drawer.hidden=false;
        sidebarLoaded=true;
+       autoOpened=true;
        refresh();
      }
-     panel.classList.add('weo-sidebar-open');
+     panel.classList.toggle('weo-sidebar-open',sidebarLoaded);
    }else{
      panel.classList.remove('weo-sidebar-open');
      if(sidebarLoaded){drawer.hidden=true;sidebarLoaded=false}
+     autoOpened=false;
    }
  }
  button.addEventListener('click',()=>{
