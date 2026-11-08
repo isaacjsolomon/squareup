@@ -15,8 +15,8 @@ test('Weo actions and existing AI script parse and are included in Pages deploym
  assert.ok(aiScript);
  assert.doesNotThrow(()=>new Script(actions));
  assert.doesNotThrow(()=>new Script(aiScript));
- assert.match(html,/weo-actions\\.css\\?v=weo-close48/);
- assert.match(html,/weo-actions\\.js\\?v=weo-close48/);
+ assert.match(html,/weo-actions\.css\?v=weo-close48/);
+ assert.match(html,/weo-actions\.js\?v=weo-close48/);
  assert.match(workflow,/weo-actions\.js weo-actions\.css/);
 });
 
@@ -24,7 +24,7 @@ test('Four actions are real controls, and tracker actions reuse existing navigat
  for(const kind of ['image','poll','chat','expense'])assert.match(actions,new RegExp("'"+kind+"'"));
  assert.match(actions,/fileInput\.click\(\)/);
  assert.match(actions,/window\.squareUpApi\('trackers'\)/);
- assert.match(actions,/window\\.sqOpenTrackerForWeo\\(id\\)/);
+ assert.match(actions,/window\.sqOpenTrackerForWeo\(id\)/);
  assert.match(actions,/document\.getElementById\('nav-chat'\)/);
  assert.match(actions,/document\.getElementById\('quick-expense'\)/);
  assert.match(actions,/document\.getElementById\('sq-poll-toggle'\)/);
