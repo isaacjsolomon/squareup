@@ -12976,6 +12976,53 @@ html body #sq-startup-overlay .sq-startup-content{
  wrap.addEventListener('focusout',()=>{requestAnimationFrame(()=>{if(!wrap.contains(document.activeElement))close()})});
  window.matchMedia('(min-width:901px)').addEventListener('change',()=>close());
 })();
+</script><style id="doweo-desktop-compact-overview">
+/* Header occupies one row after removing the Help Center entry. */
+#nav-help-center{display:none!important}
+@media(min-width:901px){
+ html body .wrap>header.tracker-heading{
+  display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:20px!important;
+  min-height:0!important;height:auto!important;padding:20px 24px!important;
+ }
+ html body .wrap>header.tracker-heading .sq-title-and-tour{flex:0 0 auto!important;margin:0!important}
+ html body .wrap>header.tracker-heading h1{margin:0!important;white-space:nowrap}
+ html body .wrap>header.tracker-heading .sq-search-launch{
+  position:static!important;flex:1 1 360px!important;width:auto!important;min-width:160px!important;max-width:620px!important;margin:0!important;
+ }
+ html body .wrap>header.tracker-heading #sq-desktop-friends-top{
+  position:static!important;transform:none!important;margin:0 0 0 auto!important;flex:0 0 auto!important;align-self:center!important;
+ }
+ /* Activity now fills the former action space beneath the balance card. */
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary){
+  align-items:start!important;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)!important;
+  column-gap:18px!important;row-gap:18px!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>#sq-desktop-balance-layout{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;align-self:start!important;
+  gap:18px!important;min-height:0!important;height:auto!important;margin:0!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-balance{
+  min-height:0!important;height:auto!important;margin:0!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>#sq-desktop-balance-layout>.sq-overview-activity-panel{
+  display:block!important;position:static!important;grid-column:auto!important;grid-row:auto!important;
+  order:4!important;width:100%!important;max-width:none!important;min-height:0!important;height:auto!important;margin:0!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>.sq-return-grid{
+  align-self:start!important;gap:16px!important;min-height:0!important;height:auto!important;margin:0!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-panel{min-height:0!important}
+}
+</style><script id="doweo-desktop-compact-placement">
+(function(){
+ const summary=document.getElementById('sq-return-summary'),left=document.getElementById('sq-desktop-balance-layout');
+ const activity=document.getElementById('sq-return-activity')?.closest('.sq-return-panel');
+ const right=summary?.querySelector('.sq-return-grid');
+ if(!summary||!left||!activity||!right)return;
+ const desktop=window.matchMedia('(min-width:901px)');
+ function place(){const parent=desktop.matches?left:right;if(activity.parentElement!==parent){if(desktop.matches)parent.append(activity);else parent.prepend(activity)}}
+ place();desktop.addEventListener('change',place);
+})();
 </script></body>
 </html>
 
