@@ -7345,6 +7345,8 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
    if(mobile()&&!locked){savedScroll=window.scrollY;document.body.style.position='fixed';document.body.style.top=-savedScroll+'px';document.body.style.width='100%';locked=true}
    fitChat();
    if(!mobile())input.focus({preventScroll:true});
+   // Notify the dedicated-page controller synchronously, including on iPhone.
+   panel.dispatchEvent(new CustomEvent('weo:opened'));
   }else{
    input.blur();
    if(locked){document.body.style.removeProperty('position');document.body.style.removeProperty('top');document.body.style.removeProperty('width');locked=false;window.scrollTo({top:savedScroll,behavior:'instant'})}
@@ -7412,6 +7414,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  }
  form.addEventListener('submit',e=>{e.preventDefault();if(busy||(!input.value.trim()&&!window.WeoActions?.hasImage?.()))return;const text=input.value;const imageData=window.WeoActions?.takeImage?.()||null;input.value='';input.placeholder='Ask Weo anything…';resizeInput();ask(text,false,imageData);});
  window.WeoChat=Object.freeze({
+  open:()=>setOpen(true),
   close:()=>setOpen(false),
   refreshSend:resizeInput,
   getConversationId:()=>activeConversationId,
