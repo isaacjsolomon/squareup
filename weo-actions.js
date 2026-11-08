@@ -441,7 +441,13 @@
   };
   // The chat's own launch handler emits this event immediately after opening.
   // No computed-style probes, MutationObservers, or animation-frame race.
+  const mobileWeoDisabled=()=>window.matchMedia('(max-width:700px)').matches;
   panel.addEventListener('weo:opened',()=>{
+    if(mobileWeoDisabled()){
+      window.WeoChat?.close?.();
+      if(isWeoRoute())history.replaceState({...history.state,weoPage:false},'',routeUrl(false));
+      return;
+    }
     if(!routeSyncing)activatePage(!isWeoRoute());
   });
   // The inline chat owns visibility. WeoActions only handles route cleanup.
@@ -458,7 +464,7 @@
   window.addEventListener('popstate',()=>{
     routeSyncing=true;
     try{
-      if(isWeoRoute()){
+      if(isWeoRoute()&&!mobileWeoDisabled()){
         if(panel.hidden)window.WeoChat?.open?.();
         activatePage(false);
       }else{
@@ -470,9 +476,13 @@
     }
   });
   if(isWeoRoute()){
-    // A fresh link to /?view=weo must also show the actual conversation.
-    if(panel.hidden)window.WeoChat?.open?.();
-    activatePage(false);
+    if(mobileWeoDisabled()){
+      // An old mobile bookmark should not open a hidden assistant screen.
+      history.replaceState({...history.state,weoPage:false},'',routeUrl(false));
+    }else{
+      if(panel.hidden)window.WeoChat?.open?.();
+      activatePage(false);
+    }
   }
 
   // Load account-specific chat history without rebuilding existing Weo behavior.

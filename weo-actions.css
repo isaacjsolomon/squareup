@@ -1070,3 +1070,15 @@ html body #sq-ai-window.weo-full-page #sq-ai-close{
    outline-offset:2px;
  }
 }
+
+/* Weo remains available on desktop only. Do not remove saved conversations. */
+@media(max-width:700px){
+  html body #sq-ai-launch,
+  html body #sq-ai-window,
+  html body #sq-help-open-chat,
+  html body #sq-help-page .sq-help-card[onclick*="sq-help-open-chat"],
+  html body [data-next-tab="assistant"],
+  html body [data-next-panel="assistant"]{
+    display:none!important;
+  }
+}
