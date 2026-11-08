@@ -2,12 +2,19 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {Script} from 'node:vm';
-const actions=readFileSync(new URL('../weo-actions.js',import.meta.url),'utf8');
-test('Weo close X uses one synchronous capture handler',()=>{
+
+const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
+const html=read('index.html');
+const actions=read('weo-actions.js');
+const inline=html.match(/<script id="sq-ai-script">([\s\S]*?)<\/script>/)?.[1];
+
+test('Weo X closes native chat and navigates Home, controlled by one page state',()=>{
+ assert.ok(inline);
+ assert.doesNotThrow(()=>new Script(inline));
  assert.doesNotThrow(()=>new Script(actions));
- assert.match(actions,/querySelector\('#sq-ai-close'\)/);
- assert.match(actions,/event\.stopImmediatePropagation\(\)/);
- assert.match(actions,/window\.WeoChat\?\.close\?\.\(\)/);
- assert.match(actions,/panel\.hidden=true;\s*deactivatePage\(true\)/);
- assert.doesNotMatch(actions,/const lastHeaderButton=closeControls\.at\(-1\)/);
+ assert.match(inline,/close\.addEventListener\('click',\(\)=>\{setOpen\(false\);document\.getElementById\('nav-home'\)\?\.click\(\);\}\)/);
+ assert.match(inline,/window\.WeoPage\?\.sync\(open\)/);
+ assert.match(actions,/window\.WeoPage=Object\.freeze/);
+ assert.doesNotMatch(actions,/stopImmediatePropagation/);
+ assert.doesNotMatch(actions,/pageObserver=new MutationObserver/);
 });
