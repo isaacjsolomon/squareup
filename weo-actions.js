@@ -336,6 +336,28 @@
   prompt.addEventListener('focus',hideWhenTyping);
   prompt.addEventListener('blur',()=>setTimeout(hideWhenTyping,100));
   window.visualViewport?.addEventListener('resize',hideWhenTyping);
+
+  // Give the welcome prompts a reliable, responsive layout regardless of
+  // the older inline app stylesheet's card sizing and positioning rules.
+  const arrangePrompts=()=>{
+    const welcome=panel.querySelector('.sq-ai-welcome');
+    if(!welcome)return;
+    const titles=['Let’s talk',"Let's talk",'Make a plan','Brainstorm an idea','Get app help'];
+    const buttons=[...panel.querySelectorAll('button')].filter(button=>
+      titles.includes((button.textContent||'').trim())
+    );
+    if(buttons.length<4)return;
+    let common=buttons[0].parentElement;
+    while(common && !buttons.every(button=>common.contains(button)))common=common.parentElement;
+    if(common && common!==panel && common!==form && !common.contains(form)){
+      common.classList.add('weo-prompt-grid');
+      buttons.forEach(button=>button.classList.add('weo-prompt-card'));
+    }
+  };
+  arrangePrompts();
+  const promptObserver=new MutationObserver(arrangePrompts);
+  promptObserver.observe(panel,{childList:true,subtree:true});
+
   window.WeoActions=Object.freeze({
     hasImage:()=>Boolean(pendingImage),
     takeImage:()=>{
