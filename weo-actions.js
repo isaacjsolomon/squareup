@@ -418,11 +418,6 @@
       originalParent.insertBefore(panel,originalNext?.parentNode===originalParent?originalNext:null);
     }
   };
-  const isPanelVisible=()=>{
-    if(panel.hidden || panel.getAttribute('aria-hidden')==='true')return false;
-    const style=getComputedStyle(panel);
-    return style.display!=='none'&&style.visibility!=='hidden'&&panel.getClientRects().length>0;
-  };
   const activatePage=(push)=>{
     movePanelToBody();
     lockBackground();
@@ -444,24 +439,11 @@
     if(isWeoRoute())history.replaceState({...history.state,weoPage:false},'',routeUrl(false));
     if(goHome)document.getElementById('nav-home')?.click();
   };
-  const updatePageState=()=>{
-    if(routeSyncing)return;
-    if(isPanelVisible()){
-      activatePage(!isWeoRoute());
-    }else if(document.body.classList.contains('weo-page-active')){
-      deactivatePage(false);
-    }
-  };
-  // Existing launcher and close controls continue to operate normally.
-  pageLaunch?.addEventListener('click',()=>{
-    requestAnimationFrame(updatePageState);
+  // The chat's own launch handler emits this event immediately after opening.
+  // No computed-style probes, MutationObservers, or animation-frame race.
+  panel.addEventListener('weo:opened',()=>{
+    if(!routeSyncing)activatePage(!isWeoRoute());
   });
-  // Observe visibility only. Class changes from sidebar, keyboard and typing
-  // should never repeatedly recompute the entire page layout.
-  const pageObserver=new MutationObserver(()=>{
-    requestAnimationFrame(updatePageState);
-  });
-  pageObserver.observe(panel,{attributes:true,attributeFilter:['hidden','aria-hidden']});
   // The inline chat owns visibility. WeoActions only handles route cleanup.
   // No capture-phase interception, duplicate setOpen(), or delayed re-opening.
   panel.addEventListener('weo:closed',()=>{
@@ -475,22 +457,22 @@
   });
   window.addEventListener('popstate',()=>{
     routeSyncing=true;
-    if(isWeoRoute()){
-      if(!isPanelVisible())pageLaunch?.click();
-      activatePage(false);
-    }else{
-      if(isPanelVisible())window.WeoChat?.close?.();
-      deactivatePage(false);
+    try{
+      if(isWeoRoute()){
+        if(panel.hidden)window.WeoChat?.open?.();
+        activatePage(false);
+      }else{
+        if(!panel.hidden)window.WeoChat?.close?.();
+        deactivatePage(false);
+      }
+    }finally{
+      routeSyncing=false;
     }
-    routeSyncing=false;
   });
   if(isWeoRoute()){
-    requestAnimationFrame(()=>{
-      if(!isPanelVisible())pageLaunch?.click();
-      activatePage(false);
-    });
-  }else{
-    requestAnimationFrame(updatePageState);
+    // A fresh link to /?view=weo must also show the actual conversation.
+    if(panel.hidden)window.WeoChat?.open?.();
+    activatePage(false);
   }
 
   // Load account-specific chat history without rebuilding existing Weo behavior.
