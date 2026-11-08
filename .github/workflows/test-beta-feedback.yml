@@ -27,3 +27,5 @@ jobs:
         run: node --test test/beta-feedback.test.mjs
       - name: Check Personal Finance summary and transaction dialog
         run: node --test test/personal-finance-transaction-ui.test.mjs
+      - name: Check mobile wallet redesign, currency grouping and retained actions
+        run: node --test test/mobile-wallet-ui.test.mjs
