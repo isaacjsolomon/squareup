@@ -1041,3 +1041,32 @@ html body #sq-ai-window.weo-full-page #sq-ai-close{
 
 /* Weo now uses Back to Home in History for navigation; hide the old X. */
 #sq-ai-window #sq-ai-close{display:none!important}
+
+
+/* The dedicated Weo page always has a real Home link on phones. */
+#sq-ai-window .weo-mobile-back-home{display:none}
+@media(max-width:700px){
+ html body #sq-ai-window.weo-full-page .weo-mobile-back-home{
+   display:flex!important;
+   align-items:center!important;
+   justify-content:center!important;
+   flex:0 0 36px!important;
+   width:36px!important;
+   height:38px!important;
+   border:1px solid #365d6a!important;
+   border-radius:10px!important;
+   background:#183a49!important;
+   color:#b5fff0!important;
+   font:700 23px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+   text-decoration:none!important;
+   cursor:pointer!important;
+   pointer-events:auto!important;
+ }
+ html body #sq-ai-window.weo-full-page .sq-ai-head{
+   column-gap:7px!important;
+ }
+ html body #sq-ai-window.weo-full-page .weo-mobile-back-home:focus-visible{
+   outline:3px solid #72eedc;
+   outline-offset:2px;
+ }
+}
