@@ -585,3 +585,10 @@ html body > #sq-ai-window.weo-full-page{
  html body #sq-ai-window .weo-history-card{padding:13px;border-radius:14px}
  html body #sq-ai-window .weo-history-card h2{font-size:19px}
 }
+
+#sq-ai-window #weo-history-button{gap:6px}
+#sq-ai-window #weo-history-button svg{display:block;flex-shrink:0}
+@media(max-width:700px){
+ #sq-ai-window #weo-history-button{width:37px;height:37px;padding:0;flex:0 0 37px}
+ #sq-ai-window #weo-history-button span{display:none}
+}
