@@ -4,7 +4,7 @@ export function initBetaFeedback({api,getUser}) {
   const style=document.createElement('style');
   style.textContent=`
   #dw-beta-launch{position:fixed;right:18px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:8000;display:none;align-items:center;gap:8px;border:1px solid #6a8fb0;border-radius:999px;background:#0b2a52;color:white;padding:11px 17px;box-shadow:0 8px 26px #0005;font:700 13px system-ui;cursor:pointer}
-  #dw-beta-launch:focus-visible,#dw-beta-modal button:focus-visible,#dw-beta-modal input:focus-visible,#dw-beta-modal textarea:focus-visible{outline:3px solid #ffb04c;outline-offset:2px}
+  #dw-beta-launch:focus-visible,#dw-beta-modal button:focus-visible,#dw-beta-modal input:focus-visible,#dw-beta-modal textarea:focus-visible{outline:3px solid #ffffff;outline-offset:2px}
   #dw-beta-modal[hidden]{display:none!important}
   #dw-beta-modal{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;background:#020d23bd;padding:16px;color:#eef5ff;font:14px system-ui}
   #dw-beta-modal *{box-sizing:border-box}
@@ -15,14 +15,14 @@ export function initBetaFeedback({api,getUser}) {
   #dw-beta-modal .dw-close{border:0;background:transparent;color:#fff;font-size:26px;cursor:pointer}
   #dw-beta-modal .dw-types{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:20px 0}
   #dw-beta-modal .dw-types button{padding:12px 6px;border:1px solid #456a91;border-radius:11px;background:#153a65;color:#f0f6ff;cursor:pointer}
-  #dw-beta-modal .dw-types button[aria-pressed=true]{background:#e99c32;color:#081a32;border-color:#ffc16d;font-weight:800}
+  #dw-beta-modal .dw-types button[aria-pressed=true]{background:#ffffff;color:#081a32;border-color:#ffffff;font-weight:800}
   #dw-beta-modal label{display:block;margin:14px 0 6px;font-weight:650}
   #dw-beta-modal input,#dw-beta-modal textarea{display:block;width:100%;background:#071b35;color:#fff;border:1px solid #58759b;border-radius:10px;padding:12px;font:inherit}
   #dw-beta-modal textarea{resize:vertical;min-height:112px}
   #dw-beta-modal .dw-stars{display:flex;gap:6px;margin:10px 0}
   #dw-beta-modal .dw-stars button{border:0;background:transparent;color:#8ba7c6;font-size:32px;cursor:pointer;padding:3px}
-  #dw-beta-modal .dw-stars button[aria-pressed=true]{color:#ffb449}
-  #dw-beta-modal .dw-submit{width:100%;padding:13px;border:0;border-radius:11px;background:#f3a23a;color:#10213b;font-weight:800;cursor:pointer;margin-top:18px}
+  #dw-beta-modal .dw-stars button[aria-pressed=true]{color:#ffffff}
+  #dw-beta-modal .dw-submit{width:100%;padding:13px;border:0;border-radius:11px;background:#ffffff;color:#10213b;font-weight:800;cursor:pointer;margin-top:18px}
   #dw-beta-modal .dw-submit:disabled{opacity:.55;cursor:wait}
   #dw-beta-modal .dw-message{min-height:20px;font-size:13px;margin:10px 0 0}
   @media(max-width:650px){#dw-beta-launch{right:12px;bottom:calc(84px + env(safe-area-inset-bottom));padding:10px 13px}#dw-beta-modal .dw-panel{padding:19px}}
