@@ -71,7 +71,8 @@
     if(area.parentElement!==form)form.appendChild(area);
     closeActions();
   };
-  moreButton.addEventListener('click',()=>{
+  moreButton.addEventListener('click',(event)=>{
+    event.stopPropagation();
     const opening=!area.classList.contains('weo-menu-open');
     area.classList.toggle('weo-menu-open',opening);
     moreButton.setAttribute('aria-expanded',String(opening));
@@ -264,8 +265,8 @@
           catch(error){
             const message=error?.message||'Could not open that tracker.';
             if(panel.hidden){
-              showStatus(message);
-              window.document.getElementById('sq-ai-launch')?.click();
+              // Never silently navigate back into the assistant after a failed action.
+              console.warn('Weo tracker action failed:',message);
             }else{
               picker.hidden=false;
               choice=kind;
@@ -370,31 +371,7 @@
   promptObserver.observe(panel,{childList:true,subtree:true});
 
 
-  // Style the existing Instagram prompt's content, without changing
-  // its closing or follow-link behavior.
-  const centerInstagramPopup=()=>{
-    for(const el of document.querySelectorAll('h1,h2,h3,p')){
-      const copy=(el.textContent||'').replace(/\s+/g,' ').trim();
-      if(copy.includes('Follow DoWeo on Instagram') ||
-         (copy.includes('Get updates, new features') && copy.includes('@doweo.app'))){
-        el.style.setProperty('text-align','center','important');
-        el.style.setProperty('margin-left','auto','important');
-        el.style.setProperty('margin-right','auto','important');
-        el.style.setProperty('max-width','100%');
-      }
-    }
-  };
-  centerInstagramPopup();
-  let instagramScanPending=false;
-  new MutationObserver(()=>{
-    if(instagramScanPending)return;
-    instagramScanPending=true;
-    requestAnimationFrame(()=>{
-      instagramScanPending=false;
-      centerInstagramPopup();
-    });
-  }).observe(document.body,{childList:true,subtree:true});
-
+  // Instagram popup has its own scoped CSS; never scan the whole DOM on every mutation.
 
   // Weo is an app-level page, rather than a modal layered over Home.
   // The original chat instance and all of its message/action handlers stay intact.
@@ -417,7 +394,9 @@
   let pageScrollY=0;
   let pageLocked=false;
   const lockBackground=()=>{
-    if(pageLocked)return;
+    // The original Weo open handler already locks scrolling on mobile.
+    // Avoid a second conflicting lock and the extra layout recalculation.
+    if(pageLocked||document.body.style.position==='fixed')return;
     pageScrollY=window.scrollY||0;
     document.body.style.position='fixed';
     document.body.style.top=(-pageScrollY)+'px';
@@ -480,10 +459,12 @@
   pageLaunch?.addEventListener('click',()=>{
     requestAnimationFrame(updatePageState);
   });
+  // Observe visibility only. Class changes from sidebar, keyboard and typing
+  // should never repeatedly recompute the entire page layout.
   const pageObserver=new MutationObserver(()=>{
     requestAnimationFrame(updatePageState);
   });
-  pageObserver.observe(panel,{attributes:true,attributeFilter:['class','style','hidden','aria-hidden']});
+  pageObserver.observe(panel,{attributes:true,attributeFilter:['hidden','aria-hidden']});
   const closeControls=[...panel.querySelectorAll('.sq-ai-head button, .sq-ai-head [role="button"]')];
   const lastHeaderButton=closeControls.at(-1);
   for(const control of closeControls){
