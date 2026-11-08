@@ -63,11 +63,15 @@ test('unauthenticated POST is rejected',async()=>{
 });
 
 test('POST without email configuration is rejected before storing data',async()=>{
-  const response=await onRequest({
-    request:makeRequest(),
-    env:{SUPABASE_SERVICE_ROLE_KEY:'test-service-role-key'}
-  });
-  assert.equal(response.status,503);
+  const mock=mockBackend();
+  try {
+    const response=await onRequest({
+      request:makeRequest(),
+      env:{SUPABASE_SERVICE_ROLE_KEY:'test-service-role-key'}
+    });
+    assert.equal(response.status,503);
+    assert.equal(mock.calls.some(x=>x.method==='POST'),false);
+  } finally { mock.restore(); }
 });
 
 test('valid feedback is saved, emailed, and recorded as delivered',async()=>{
