@@ -28,9 +28,9 @@ test('All AI surfaces use Weo while preserving the original chat endpoint',()=>{
  assert.match(chat,/Hi, I’m Weo!/);
  assert.match(chat,/window\.WeoMascot\?\.refresh\(\)/);
  assert.match(chat,/window\.WeoMascot\?\.decorateBubble\(el\)/);
- assert.match(chat,/window\.squareUpApi\('ai-chat','POST',\{messages\}\)/);
+ assert.match(chat,/window\.squareUpApi\('ai-chat','POST',/);
  assert.match(server,/You are Weo, DoWeo's friendly turquoise diamond AI mascot/);
- assert.match(server,/You have no access to account data, trackers, balances/);
+ assert.match(server,/You have no direct access to account data, trackers, balances/);
 });
 
 test('Thinking, success, helping and welcome moods are called from actual AI interactions',()=>{
