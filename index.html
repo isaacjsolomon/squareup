@@ -7356,7 +7356,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  window.visualViewport?.addEventListener('resize',fitChat);
  window.visualViewport?.addEventListener('scroll',fitChat);
  window.addEventListener('resize',fitChat);
- launch.addEventListener('click',()=>setOpen(panel.hidden));close.addEventListener('click',()=>{setOpen(false);document.getElementById('nav-home')?.click();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)setOpen(false)});
+ launch.addEventListener('click',()=>setOpen(panel.hidden));close.addEventListener('click',()=>{setOpen(false);window.location.replace('/');});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)setOpen(false)});
  function bubble(message,user,imageData=null){const el=document.createElement('div');el.className='sq-ai-message'+(user?' user':'');el.textContent=message;if(user&&imageData){const picture=document.createElement('img');picture.className='weo-attached-image';picture.alt='Image attached to this message';picture.src=imageData;el.append(picture);}stream.append(el);if(!user)window.WeoMascot?.decorateBubble(el);return el;}
 
 
