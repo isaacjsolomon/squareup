@@ -50,7 +50,7 @@ test('Mobile keyboard hides quick actions, while tracker selection supports Esca
  assert.match(css,/#sq-ai-window\.weo-typing \.weo-quick-actions\{display:none!important\}/);
  assert.match(css,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
  assert.match(actions,/event\.key==='Escape'/);
- assert.match(actions,/event\.key==='Tab'/);
+ assert.match(actions,/event\.key!=='Tab'/);
  assert.match(actions,/prompt\.addEventListener\('focus',hideWhenTyping\)/);
  assert.match(actions,/aria-modal="true"/);
 });
