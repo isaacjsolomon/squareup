@@ -12909,6 +12909,73 @@ html body #sq-startup-overlay .sq-startup-content{
 @media(prefers-reduced-motion:reduce){
  #sq-startup-overlay .doweo-logo-trace{animation:none!important;stroke-dashoffset:0!important;opacity:1!important}
 }
-</style></body>
+</style><style id="doweo-desktop-add-menu-style">
+#dw-desktop-add{display:none}
+@media(min-width:901px){
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary .sq-return-welcome{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:20px!important;overflow:visible!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary .sq-overview-heading{flex:1;min-width:0}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary #dw-desktop-add{display:block;position:relative;flex:none;z-index:30}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary #dw-desktop-add-toggle{
+ display:inline-flex;align-items:center;justify-content:center;gap:8px;
+ min-height:50px;padding:12px 21px;background:#25dec0;color:#062b2b;border:1px solid #59f0d3;border-radius:14px;
+ font:750 15px/1.2 inherit;cursor:pointer;box-shadow:0 5px 18px #04182730;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary #dw-desktop-add-toggle>span:first-child{font-size:27px;line-height:1}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary #dw-desktop-add-toggle:hover{background:#61edd2}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary #dw-desktop-add-options{
+ position:absolute;right:0;top:calc(100% + 10px);width:310px;max-width:calc(100vw - 40px);
+ display:grid;gap:4px;padding:8px;border:1px solid #42677b;border-radius:17px;background:#0c2538;
+ box-shadow:0 16px 45px #0007;max-height:min(520px,70vh);overflow:auto;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary #dw-desktop-add-options[hidden]{display:none!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary #dw-desktop-add-options>button{
+ display:flex;align-items:center;gap:12px;width:100%;min-height:66px;padding:11px 12px;border:0;border-radius:11px;background:transparent;color:#eef8ff;text-align:left;cursor:pointer;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary #dw-desktop-add-options>button:hover{background:#1b4054}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary #dw-desktop-add-options strong{display:block;font-size:14px;line-height:1.4}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary #dw-desktop-add-options small{display:block;color:#a5bdcc;font-size:12px;line-height:1.4;margin-top:3px}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary .dw-add-icon{display:grid;place-items:center;width:35px;height:35px;flex:none;border-radius:10px;background:#1c454e;color:#6ce5cc;font-size:22px}
+ html body #dw-desktop-add button:focus-visible{outline:2px solid #7ff4d8;outline-offset:2px}
+ html body #dw-desktop-add button:disabled{opacity:.45;cursor:default}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions,
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary>#sq-quick-calc-launch{display:none!important}
+}
+</style><script id="doweo-desktop-add-menu">
+(function(){
+ const heading=document.querySelector('#sq-return-summary .sq-return-welcome');if(!heading)return;
+ const wrap=document.createElement('div');wrap.id='dw-desktop-add';
+ const toggle=document.createElement('button');toggle.type='button';toggle.id='dw-desktop-add-toggle';toggle.innerHTML='<span aria-hidden="true">＋</span><span>Add</span>';toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-controls','dw-desktop-add-options');
+ const options=document.createElement('div');options.id='dw-desktop-add-options';options.hidden=true;options.setAttribute('aria-label','Tracker actions');
+ const actions=[
+ ['quick-expense','＋','Add Expense','Manually add an expense'],
+ ['quick-pay-now','↗','Pay Now','Send via Venmo or Cash App'],
+ ['quick-payment','▤','Log Payment','Record a payment you made'],
+ ['sq-quick-calc-launch','▦','Quick Split Calculator','Calculate everyone’s share'],
+ ['quick-receipt','▧','Scan Receipt','Assign items to friends'],
+ ['quick-split','♧','Split a Bill','Divide an expense with friends']
+ ];
+ function close(restoreFocus=false){options.hidden=true;toggle.setAttribute('aria-expanded','false');if(restoreFocus)toggle.focus({preventScroll:true})}
+ for(const [id,icon,label,description]of actions){
+  const b=document.createElement('button');b.type='button';b.dataset.action=id;
+  const mark=document.createElement('span');mark.className='dw-add-icon';mark.textContent=icon;mark.setAttribute('aria-hidden','true');
+  const text=document.createElement('span'),title=document.createElement('strong'),caption=document.createElement('small');title.textContent=label;caption.textContent=description;text.append(title,caption);b.append(mark,text);
+  b.onclick=()=>{const original=document.getElementById(id);if(!original||original.disabled)return;close();original.click()};options.append(b);
+ }
+ wrap.append(toggle,options);heading.append(wrap);
+ toggle.onclick=()=>{const open=options.hidden;options.hidden=!open;toggle.setAttribute('aria-expanded',String(open));if(open)for(const b of options.children){const original=document.getElementById(b.dataset.action);b.disabled=!original||original.disabled}};
+ document.addEventListener('click',e=>{if(!wrap.contains(e.target))close()});
+ document.addEventListener('keydown',e=>{if(options.hidden)return;if(e.key==='Escape'){e.preventDefault();close(true)}});
+ wrap.addEventListener('keydown',e=>{
+  if(!['ArrowDown','ArrowUp','Home','End'].includes(e.key))return;
+  e.preventDefault();if(options.hidden){toggle.click()}
+  const buttons=[...options.querySelectorAll('button:not(:disabled)')];if(!buttons.length)return;
+  let index=buttons.indexOf(document.activeElement);
+  index=e.key==='Home'?0:e.key==='End'?buttons.length-1:e.key==='ArrowDown'?(index+1)%buttons.length:(index<=0?buttons.length:index)-1;
+  buttons[index].focus({preventScroll:true});
+ });
+ wrap.addEventListener('focusout',()=>{requestAnimationFrame(()=>{if(!wrap.contains(document.activeElement))close()})});
+ window.matchMedia('(min-width:901px)').addEventListener('change',()=>close());
+})();
+</script></body>
 </html>
 
