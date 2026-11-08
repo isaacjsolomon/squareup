@@ -11165,8 +11165,9 @@ async function drawWorkspace(){
     return;
   }
   const type=tab==='trip'?'trip':'household';
-  const [trackers,items]=await Promise.all([api('trackers'),api('finance/workspace?type='+type)]);
-  if(!Array.isArray(items)||!Array.isArray(trackers))throw Error('Could not load workspace');
+  const [trackers,items,links]=await Promise.all([api('trackers'),api('finance/workspace?type='+type),api('finance/workspace-links?type='+type)]);
+  if(!Array.isArray(items)||!Array.isArray(trackers)||!Array.isArray(links))throw Error('Could not load workspace');
+  const linkedIds=new Set(links.map(item=>item.tracker_id));
   const isTrip=type==='trip';
   const types=isTrip?['Itinerary','Reservation','Trip note','Trip budget']:['Chore','Grocery','Household note','Household budget'];
   // A tracker can power a separate trip or household workspace. The directory lists
@@ -11187,7 +11188,10 @@ async function drawWorkspace(){
       }catch(_){}
       const hasPlans=items.some(x=>x.tracker_id===t.id);
       const templateMatches=isTrip?[1,2,3,5].includes(template):[0,4].includes(template);
-      return hasPlans?3:templateMatches?2:0;
+      // Older templates were saved only on the device that created the tracker.
+      // Recognize clear household names across devices without guessing that all trackers belong here.
+      const householdName=!isTrip&&/\b(household|roommates?|housemates?|apartment|home bills?|home expenses?|shared living)\b/i.test(String(t.name||''));
+      return linkedIds.has(t.id)?5:hasPlans?4:templateMatches?3:householdName?2:0;
     };
     const ordered=trackers.filter(t=>priority(t)>0).sort((a,b)=>priority(b)-priority(a));
     const itemCount=id=>items.filter(x=>x.tracker_id===id).length;
@@ -11195,14 +11199,22 @@ async function drawWorkspace(){
     content.innerHTML=`<section class="sq-ng-workspace-directory" aria-label="${heading}">
       <div class="sq-ng-workspace-directory-head">
        <div><span class="sq-ng-workspace-kicker">YOUR DOWEO SPACES</span><h2>${heading}</h2><p>Open a ${workspaceName} to see its plans, spending categories, and linked tracker. You can manage more than one.</p></div>
-       <button type="button" class="sq-ng-workspace-create" id="sq-ng-workspace-new">＋ Create new ${workspaceName}</button>
+       <div class="sq-ng-workspace-directory-actions">
+        <button type="button" class="sq-ng-workspace-create" id="sq-ng-workspace-new">＋ Create new ${workspaceName}</button>
+        <button type="button" class="sq-ng-workspace-link" id="sq-ng-workspace-link">Link existing tracker</button>
+       </div>
       </div>
       <form id="sq-ng-workspace-create-form" class="sq-ng-workspace-create-form" hidden>
         <label for="sq-ng-workspace-name">Name your new ${workspaceName}</label>
         <div><input id="sq-ng-workspace-name" name="name" maxlength="90" required placeholder="${isTrip?'e.g. Summer vacation':'e.g. Our apartment'}" autocomplete="off"><button type="submit">Create ${workspaceName}</button><button type="button" id="sq-ng-workspace-cancel">Cancel</button></div>
         <p>A separate shared tracker will be created for this ${workspaceName}. You can add people from Trackers.</p>
       </form>
-      ${ordered.length?`<div class="sq-ng-workspace-directory-grid">${ordered.map(t=>`<article class="sq-ng-workspace-directory-card"><div class="sq-ng-workspace-cover"><span aria-hidden="true">${isTrip?'✈':'⌂'}</span><small>${priority(t)>0?'LINKED '+workspaceName.toUpperCase():'AVAILABLE TRACKER'}</small></div><div class="sq-ng-workspace-card-body"><h3>${esc(t.name||'Untitled tracker')}</h3><div class="sq-ng-workspace-card-meta"><span>${Number(t.memberCount)||1} ${Number(t.memberCount)===1?'member':'members'}</span><span>${itemCount(t.id)} saved ${itemCount(t.id)===1?'item':'items'}</span></div><button type="button" class="sq-ng-workspace-open" data-ng-workspace-open="${esc(t.id)}">Open ${workspaceName} <span aria-hidden="true">→</span></button></div></article>`).join('')}</div>`:`<div class="sq-ng-workspace-empty"><h3>No ${workspacePlural} saved yet</h3><p>Create your first ${workspaceName} here, or create a matching ${isTrip?'Vacation, School Trip, Weekend Getaway, or Camping Trip':'Roommates or Shared Household'} tracker from Trackers.</p></div>`}
+      <form id="sq-ng-workspace-link-form" class="sq-ng-workspace-link-form" hidden>
+       <label for="sq-ng-workspace-link-select">Choose the existing tracker you want to use for this ${workspaceName}</label>
+       <div><select id="sq-ng-workspace-link-select" name="tracker_id" required><option value="">Select a tracker</option>${trackers.filter(t=>!linkedIds.has(t.id)).map(t=>`<option value="${esc(t.id)}">${esc(t.name||'Untitled tracker')}</option>`).join('')}</select><button type="submit">Link ${workspaceName}</button><button type="button" id="sq-ng-workspace-link-cancel">Cancel</button></div>
+       <p>This only adds the tracker to your ${workspaceName} directory. Existing members, balances, and expenses stay unchanged.</p>
+      </form>
+      ${ordered.length?`<div class="sq-ng-workspace-directory-grid">${ordered.map(t=>`<article class="sq-ng-workspace-directory-card"><div class="sq-ng-workspace-cover"><span aria-hidden="true">${isTrip?'✈':'⌂'}</span><small>${linkedIds.has(t.id)?'LINKED '+workspaceName.toUpperCase():workspaceName.toUpperCase()+' TRACKER'}</small></div><div class="sq-ng-workspace-card-body"><h3>${esc(t.name||'Untitled tracker')}</h3><div class="sq-ng-workspace-card-meta"><span>${Number(t.memberCount)||1} ${Number(t.memberCount)===1?'member':'members'}</span><span>${itemCount(t.id)} saved ${itemCount(t.id)===1?'item':'items'}</span></div><button type="button" class="sq-ng-workspace-open" data-ng-workspace-open="${esc(t.id)}">Open ${workspaceName} <span aria-hidden="true">→</span></button></div></article>`).join('')}</div>`:`<div class="sq-ng-workspace-empty"><h3>No ${workspacePlural} linked yet</h3><p>If you already have a ${workspaceName} tracker, choose Link existing tracker above. Otherwise, create your first ${workspaceName} here.</p></div>`}
       <p class="sq-ng-workspace-note">Each space uses an existing DoWeo tracker. Opening a tracker here does not change the balances or expenses in other trackers.</p>
      </section>`;
     content.querySelectorAll('[data-ng-workspace-open]').forEach(button=>button.addEventListener('click',()=>{
@@ -11212,7 +11224,26 @@ async function drawWorkspace(){
     }));
     const createButton=document.getElementById('sq-ng-workspace-new');
     const createForm=document.getElementById('sq-ng-workspace-create-form');
-    createButton.addEventListener('click',()=>{createForm.hidden=!createForm.hidden;if(!createForm.hidden)createForm.elements.name.focus()});
+    const linkButton=document.getElementById('sq-ng-workspace-link');
+    const linkForm=document.getElementById('sq-ng-workspace-link-form');
+    linkButton.addEventListener('click',()=>{
+      linkForm.hidden=!linkForm.hidden;
+      if(!linkForm.hidden){createForm.hidden=true;linkForm.elements.tracker_id.focus();}
+    });
+    document.getElementById('sq-ng-workspace-link-cancel').addEventListener('click',()=>{linkForm.hidden=true;linkButton.focus();});
+    linkForm.addEventListener('submit',async e=>{
+      e.preventDefault();
+      const trackerId=linkForm.elements.tracker_id.value;
+      if(!trackers.some(t=>t.id===trackerId)){status.textContent='Select one of your existing trackers.';return;}
+      const btn=linkForm.querySelector('[type="submit"]');
+      btn.disabled=true;status.textContent='Linking your '+workspaceName+'…';
+      try{
+        await api('finance/workspace-links','POST',{workspace_type:type,tracker_id:trackerId});
+        await render();
+        status.textContent='Existing tracker linked. It will also appear on your other devices.';
+      }catch(err){status.textContent='Could not link tracker: '+(err.message||err);btn.disabled=false;}
+    });
+    createButton.addEventListener('click',()=>{createForm.hidden=!createForm.hidden;if(!createForm.hidden){linkForm.hidden=true;createForm.elements.name.focus()}});
     document.getElementById('sq-ng-workspace-cancel').addEventListener('click',()=>{createForm.hidden=true});
     createForm.addEventListener('submit',async e=>{
       e.preventDefault();
@@ -11223,9 +11254,12 @@ async function drawWorkspace(){
         const detail=await api('trackers','POST',{name:name.slice(0,90),currency:document.getElementById('new-currency')?.value||'USD',entries:[]});
         if(!detail?.id)throw Error('Tracker creation did not return an ID. Check Trackers before trying again.');
         try{localStorage.setItem('sq_tracker_template_'+detail.id,String(isTrip?1:4));sessionStorage.setItem('sq-ng-'+type+'-tracker',detail.id)}catch(_){}
+        let linked=true;
+        try{await api('finance/workspace-links','POST',{workspace_type:type,tracker_id:detail.id});}
+        catch(linkError){linked=false;console.warn('Created tracker; workspace link was not saved',linkError);}
         openedWorkspaces[type]=detail.id;
         await render();
-        status.textContent='Your new '+workspaceName+' is ready. Use Trackers to invite members.';
+        status.textContent=linked?'Your new '+workspaceName+' is ready. Use Trackers to invite members.':'Tracker created, but cross-device linking failed. You can link it from this directory later.';
       }catch(err){status.textContent='Could not create '+workspaceName+': '+(err.message||err);btn.disabled=false}
     });
     return;
