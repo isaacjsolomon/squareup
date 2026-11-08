@@ -1,0 +1,81 @@
+/* Weo — DoWeo's expressive diamond AI mascot.
+   Deliberately scoped to AI surfaces; no changes to the rest of the app. */
+.weo-svg{display:block;width:100%;height:100%;overflow:visible;flex:none}
+.weo-svg .weo-eyes-thinking,.weo-svg .weo-eyes-happy,
+.weo-svg .weo-mouth-thinking,.weo-svg .weo-mouth-happy,.weo-svg .weo-mouth-hello{display:none}
+.weo-mascot{isolation:isolate;display:grid!important;place-items:center!important;flex-shrink:0;position:relative}
+.weo-mascot .weo-svg{width:86%;height:86%;max-width:100%;max-height:100%}
+.weo-mascot[data-weo-mood="thinking"] .weo-eyes-normal,
+.weo-mascot[data-weo-mood="thinking"] .weo-mouth-idle,
+.weo-mascot[data-weo-mood="success"] .weo-eyes-normal,
+.weo-mascot[data-weo-mood="success"] .weo-mouth-idle,
+.weo-mascot[data-weo-mood="hello"] .weo-mouth-idle,
+.weo-mascot[data-weo-mood="helping"] .weo-mouth-idle{display:none}
+.weo-mascot[data-weo-mood="thinking"] .weo-eyes-thinking,
+.weo-mascot[data-weo-mood="thinking"] .weo-mouth-thinking,
+.weo-mascot[data-weo-mood="success"] .weo-eyes-happy,
+.weo-mascot[data-weo-mood="success"] .weo-mouth-happy,
+.weo-mascot[data-weo-mood="hello"] .weo-mouth-hello,
+.weo-mascot[data-weo-mood="helping"] .weo-mouth-hello{display:block}
+.weo-mascot[data-weo-mood="idle"] .weo-svg,
+.weo-mascot[data-weo-mood="hello"] .weo-svg{animation:weo-float 4s ease-in-out infinite}
+.weo-mascot[data-weo-mood="thinking"] .weo-svg{animation:weo-think 1.25s ease-in-out infinite}
+.weo-mascot[data-weo-mood="success"] .weo-svg{animation:weo-celebrate .65s cubic-bezier(.2,.75,.3,1) both}
+.weo-mascot[data-weo-mood="helping"] .weo-svg{animation:weo-tilt .5s ease-in-out both}
+@keyframes weo-float{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-2px) rotate(1.5deg)}}
+@keyframes weo-think{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 #63efe4)}50%{transform:scale(1.06);filter:drop-shadow(0 0 7px #5ff6e7aa)}}
+@keyframes weo-celebrate{0%{transform:scale(.94)}45%{transform:translateY(-5px) scale(1.13) rotate(6deg)}75%{transform:translateY(0) scale(.98) rotate(-2deg)}100%{transform:scale(1)}}
+@keyframes weo-tilt{0%{transform:rotate(0)}50%{transform:rotate(-8deg)}100%{transform:rotate(0)}}
+
+/* Existing "Ask DoWeo AI" control is reused, never duplicated. */
+html body #sq-ai-launch{border-color:#5ce8db70;gap:9px;transition:filter .2s,border-color .2s}
+html body #sq-ai-launch:hover{border-color:#7ffcec}
+html body #sq-ai-launch .sq-ai-mark.weo-mascot{
+  width:42px!important;height:42px!important;padding:1px;
+  border-radius:50%!important;background:radial-gradient(circle at 35% 25%,#136a84,#0c395a 75%)!important;
+  border:1px solid #45c6d557;box-shadow:inset 0 1px 5px #ffffff13;
+  font-size:0!important;color:transparent!important
+}
+html body #sq-ai-window .sq-ai-head .sq-ai-avatar.weo-mascot{
+  width:45px!important;height:45px!important;border-radius:50%!important;
+  background:linear-gradient(145deg,#0e5064,#0a2f4d)!important;
+  border:1px solid #4bbbbb66!important;font-size:0!important;color:transparent!important
+}
+#sq-ai-window .weo-ai-brand{display:flex;flex-direction:column;min-width:0;gap:2px}
+#sq-ai-window .weo-ai-brand strong{font-weight:800;letter-spacing:-.02em;font-size:17px!important;line-height:1.2}
+#sq-ai-window .weo-ai-brand small{font-size:11px!important;color:#91d7d6!important;letter-spacing:.015em}
+html body #sq-ai-window .sq-ai-welcome-mark.weo-mascot{
+  width:88px!important;height:88px!important;margin:0 auto 18px!important;
+  border:1px solid #459caa7a!important;border-radius:26px!important;
+  background:radial-gradient(circle at 35% 25%,#134e63,#0b2a42 75%)!important;
+  box-shadow:0 12px 35px #0005,inset 0 1px 16px #57b9d214!important;
+  font-size:0!important;color:transparent!important
+}
+#sq-ai-window .sq-ai-welcome h2{letter-spacing:-.04em}
+#sq-ai-window .weo-bubble-avatar{
+  display:grid;place-items:center;position:absolute;top:6px;left:0;
+  width:27px;height:27px;border-radius:10px;background:#102d40;
+  border:1px solid #2e6573;overflow:hidden
+}
+#sq-ai-window .weo-bubble-avatar .weo-svg{width:87%;height:87%}
+html body #sq-ai-window .sq-ai-message.weo-has-avatar:not(.user){
+  position:relative;padding-left:35px!important;max-width:100%!important;min-height:35px
+}
+#sq-ai-window .sq-ai-thinking .weo-bubble-avatar{border-color:#4be0d6}
+#sq-ai-window .sq-ai-thinking .weo-bubble-avatar .weo-svg{animation:weo-think 1.25s ease-in-out infinite}
+html body .wrap>header.tracker-heading #sq-ai-launch .sq-ai-mark.weo-mascot{
+  width:34px!important;height:34px!important
+}
+@media(max-width:700px){
+ html body #sq-ai-launch .sq-ai-mark.weo-mascot{width:46px!important;height:46px!important}
+ html body #sq-ai-window .sq-ai-welcome-mark.weo-mascot{width:82px!important;height:82px!important}
+ html body #sq-ai-window .sq-ai-head .sq-ai-avatar.weo-mascot{width:43px!important;height:43px!important}
+ #sq-ai-window .weo-ai-brand strong{font-size:16px!important}
+}
+@media(max-height:550px){html body #sq-ai-window .sq-ai-welcome-mark.weo-mascot{display:none!important}}
+@media(prefers-reduced-motion:reduce){
+ .weo-mascot .weo-svg,#sq-ai-window .sq-ai-thinking .weo-bubble-avatar .weo-svg{
+   animation:none!important;transform:none!important;filter:none!important
+ }
+ html body #sq-ai-launch{transition:none}
+}
