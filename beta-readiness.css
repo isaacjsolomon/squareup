@@ -1,0 +1,43 @@
+/* DoWeo beta-readiness: matches existing navy/teal presentation. */
+#dw-first-steps{
+  margin:13px 0 22px;padding:18px;border:1px solid #3d7380;border-radius:19px;
+  background:linear-gradient(125deg,#102b3e,#0a2033);color:#effcff;
+}
+#dw-first-steps .dw-first-title{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+#dw-first-steps h2{font-size:20px!important;margin:0 0 4px!important;color:#fff}
+#dw-first-steps p{margin:0;color:#afcbd7;font-size:13px;line-height:1.4}
+#dw-first-steps .dw-first-title>button,#dw-payment-dates button{
+  border:1px solid #3b7183;background:#143c51;border-radius:10px;padding:9px 12px;color:#ecffff;
+  font:700 12px/1.2 inherit;cursor:pointer;white-space:nowrap
+}
+#dw-first-steps .dw-first-step{display:flex;align-items:center;gap:12px;width:100%;margin:8px 0 0;
+  padding:12px;text-align:left;background:#123448;border:1px solid #36566a;border-radius:12px;
+  color:#eefbff;cursor:pointer;font:inherit}
+#dw-first-steps .dw-first-step:hover{border-color:#41d9c4;background:#174356}
+#dw-first-steps .dw-first-mark{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;
+  border-radius:50%;border:1px solid #5097a6;color:#8df9e6;font-weight:800}
+#dw-first-steps .dw-first-step.done .dw-first-mark{background:#20bba8;color:#062b31}
+#dw-first-steps .dw-first-step strong,#dw-first-steps .dw-first-step small{display:block}
+#dw-first-steps .dw-first-step strong{font-size:14px}
+#dw-first-steps .dw-first-step small{color:#bad3dc;font-size:12px;margin-top:3px;line-height:1.4}
+#dw-first-steps .dw-first-finish{margin-top:12px;color:#84f1d4}
+#dw-payment-dates{margin-top:15px;border-top:1px solid #34566b;padding-top:13px}
+#dw-payment-dates h3{margin:0 0 5px;font-size:16px;color:#f0ffff}
+#dw-payment-dates>p{margin:0 0 9px;font-size:12px;color:#acc7d5;line-height:1.5}
+#dw-payment-dates .dw-due-row{display:flex;align-items:center;justify-content:space-between;gap:14px;
+ border-bottom:1px solid #28485e;padding:11px 0}
+#dw-payment-dates .dw-due-row>div{min-width:0}
+#dw-payment-dates .dw-due-row strong,#dw-payment-dates .dw-due-row small{display:block;overflow-wrap:anywhere}
+#dw-payment-dates .dw-due-row strong{font-size:13px}
+#dw-payment-dates .dw-due-row small{font-size:12px;color:#adc6d6;margin-top:3px}
+#sq-nextgen .sq-enhanced-month-row{display:grid;grid-template-columns:70px minmax(30px,1fr) minmax(75px,max-content);gap:12px;align-items:center;margin:13px 0}
+#sq-nextgen .sq-enhanced-month-row>span{font-size:12px;color:#c4d8e1}
+#sq-nextgen .sq-enhanced-month-row>strong{font-size:13px;text-align:right;color:#fff}
+#sq-nextgen .sq-enhanced-month-track{height:10px;overflow:hidden;background:#244659;border-radius:20px}
+#sq-nextgen .sq-enhanced-month-track>i{display:block;height:100%;background:#28ddbd;border-radius:20px}
+@media(max-width:600px){
+ #dw-first-steps{padding:13px}
+ #dw-first-steps .dw-first-title{align-items:flex-start}
+ #dw-payment-dates .dw-due-row{align-items:flex-start;flex-wrap:wrap}
+ #sq-nextgen .sq-enhanced-month-row{grid-template-columns:58px minmax(30px,1fr) minmax(65px,max-content);gap:7px}
+}
