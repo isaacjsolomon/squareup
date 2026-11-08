@@ -52,7 +52,7 @@ test('Mobile keyboard hides quick actions, while tracker selection supports Esca
  assert.match(actions,/event\.key==='Escape'/);
  assert.match(actions,/event\.key==='Tab'/);
  assert.match(actions,/prompt\.addEventListener\('focus',hideWhenTyping\)/);
- assert.match(actions,/setAttribute\('aria-modal','true'\)/);
+ assert.match(actions,/aria-modal="true"/);
 });
 
 const env=(run)=>({SUPABASE_SERVICE_ROLE_KEY:'test-key',AI:{run}});
