@@ -945,3 +945,20 @@ html body #sq-ai-window.weo-full-page #sq-ai-contact{
  html body #sq-ai-window.weo-full-page #sq-ai-stream .sq-ai-welcome-mark.weo-mascot{width:55px!important;height:55px!important}
  html body #sq-ai-window.weo-full-page #sq-ai-stream .sq-ai-quick button{min-height:54px!important}
 }
+
+
+/* Equal-or-higher specificity than the original sidebar offsets. */
+@media(min-width:1000px){
+ html body #sq-ai-window.weo-full-page.weo-sidebar-open .sq-ai-head{
+   padding:12px 24px 12px 285px!important;
+ }
+ html body #sq-ai-window.weo-full-page.weo-sidebar-open #sq-ai-stream{
+   margin:0 0 0 255px!important;
+   width:calc(100% - 255px)!important;
+   padding:26px max(26px,calc((100% - 920px)/2)) 34px!important;
+ }
+ html body #sq-ai-window.weo-full-page.weo-sidebar-open #sq-ai-form{
+   width:min(760px,calc(100% - 319px))!important;
+   margin:8px 0 0 calc(255px + (100% - 255px - min(760px,100% - 319px))/2)!important;
+ }
+}
