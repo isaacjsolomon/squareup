@@ -277,18 +277,22 @@
         });
         pickerList.append(button);
       }
-    }catch(error){pickerStatus.textContent=error?.message||'Could not load your trackers.';}
+    }catch(error){
+      pickerStatus.textContent=error?.message||'Could not load your trackers.';
+      pickerList.querySelectorAll('button').forEach(button=>button.disabled=false);
+    }
   }
 
   async function navigate(kind,id){
-    // No expense or poll is posted automatically. The member reviews the existing form.
-    if(typeof window.openTracker!=='function')throw Error('Tracker navigation is unavailable. Open it from Trackers.');
-    // Clear the selector before closing Weo, so it doesn't reappear next time.
+    // Use the same validated tracker-open flow as the main app.
+    // Keep the chooser visible until a successful navigation.
+    if(typeof window.sqOpenTrackerForWeo!=='function')
+      throw Error('Tracker navigation is unavailable. Refresh DoWeo and try again.');
+    document.getElementById('nav-trackers')?.click();
+    await window.sqOpenTrackerForWeo(id);
     picker.hidden=true;
     choice=null;
     window.WeoChat?.close?.();
-    document.getElementById('nav-trackers')?.click();
-    await window.openTracker(id);
     if(kind==='expense'){
       document.getElementById('nav-home')?.click();
       const card=document.getElementById('entry-card');
@@ -352,23 +356,16 @@
   // Give the welcome prompts a reliable, responsive layout regardless of
   // the older inline app stylesheet's card sizing and positioning rules.
   const arrangePrompts=()=>{
-    const welcome=panel.querySelector('.sq-ai-welcome');
-    if(!welcome)return;
-    const titles=['Let’s talk',"Let's talk",'Make a plan','Brainstorm an idea','Get app help'];
-    const buttons=[...panel.querySelectorAll('button')].filter(button=>
-      titles.includes((button.textContent||'').trim())
-    );
-    if(buttons.length<4)return;
-    let common=buttons[0].parentElement;
-    while(common && !buttons.every(button=>common.contains(button)))common=common.parentElement;
-    if(common && common!==panel && common!==form && !common.contains(form)){
-      common.classList.add('weo-prompt-grid');
-      buttons.forEach(button=>button.classList.add('weo-prompt-card'));
-    }
+    // The native welcome() creates the four controls in one dedicated grid.
+    // Avoid scanning the whole assistant DOM on every chat message.
+    const quick=panel.querySelector('#sq-ai-quick');
+    if(!quick||quick.classList.contains('weo-prompt-grid'))return;
+    quick.classList.add('weo-prompt-grid');
+    for(const button of quick.querySelectorAll('button'))button.classList.add('weo-prompt-card');
   };
   arrangePrompts();
-  const promptObserver=new MutationObserver(arrangePrompts);
-  promptObserver.observe(panel,{childList:true,subtree:true});
+  const stream=panel.querySelector('#sq-ai-stream');
+  if(stream)new MutationObserver(arrangePrompts).observe(stream,{childList:true});
 
 
   // Instagram popup has its own scoped CSS; never scan the whole DOM on every mutation.
