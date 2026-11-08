@@ -2238,6 +2238,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
  }
 }
 </style>
+<link rel="stylesheet" href="/weo-mascot.css">
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
@@ -7312,12 +7313,12 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
 #sq-help-page{display:none;max-width:1100px;margin:20px auto 60px;color:#eef4ff}body.sq-help-view #sq-help-page{display:block!important}body.sq-help-view .wrap> :not(#sq-help-page):not(.sq-mobile-top){display:none!important}body.sq-help-view .tracker-heading{display:none!important}.sq-help-title{font-size:clamp(28px,4vw,39px);margin:0 0 7px}.sq-help-lead{color:#9fb8d2;margin-bottom:24px}.sq-help-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.sq-help-card{border:1px solid #30466d;background:linear-gradient(145deg,#102d4d,#14264a);padding:22px;border-radius:17px;color:#eef4ff;text-align:left;cursor:pointer}.sq-help-card span{display:block;font-size:25px;margin-bottom:13px}.sq-help-card strong{display:block;margin-bottom:8px}.sq-help-card small{color:#a9c0d7}.sq-help-topics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:15px}.sq-help-topics button{border:1px solid #314968;background:#112b49;color:#e7f0ff;border-radius:12px;text-align:left;padding:15px;cursor:pointer}.sq-help-sub{margin-top:27px;font-size:21px}
 @media(max-width:700px){#sq-ai-launch{bottom:85px;right:14px;padding:9px 12px}#sq-ai-window{inset:0;width:100vw;height:100dvh;border:0;border-radius:0;z-index:99999}#sq-ai-window .sq-ai-stream{padding-top:22px}.sq-help-grid{grid-template-columns:1fr}.sq-help-topics{grid-template-columns:1fr}#sq-help-page{padding:12px}}
 </style>
-<button id="sq-ai-launch" type="button" aria-label="Ask DoWeo AI" aria-controls="sq-ai-window" aria-expanded="false"><span class="sq-ai-mark">✦</span> Ask DoWeo AI</button>
-<section id="sq-ai-window" hidden role="dialog" aria-label="DoWeo AI conversation" aria-modal="false">
- <div class="sq-ai-head"><span class="sq-ai-avatar" aria-hidden="true">✦</span><div><strong>DoWeo AI</strong><small>Your everyday assistant</small></div><button class="doweo-close-control" type="button" id="sq-ai-close" aria-label="Close AI chat">×</button></div>
+<button id="sq-ai-launch" type="button" aria-label="Ask Weo, the DoWeo AI assistant" aria-controls="sq-ai-window" aria-expanded="false"><span class="sq-ai-mark" aria-hidden="true">✦</span><span class="sq-ai-label">Ask Weo</span></button>
+<section id="sq-ai-window" hidden role="dialog" aria-label="Weo, DoWeo AI conversation" aria-modal="false">
+ <div class="sq-ai-head"><span class="sq-ai-avatar" aria-hidden="true">✦</span><div class="weo-ai-brand"><strong>Weo</strong><small>Your DoWeo AI assistant</small></div><button class="doweo-close-control" type="button" id="sq-ai-close" aria-label="Close AI chat">×</button></div>
  <div class="sq-ai-stream" id="sq-ai-stream" role="log" aria-live="polite" aria-relevant="additions"></div>
  <button type="button" id="sq-ai-latest" hidden aria-label="Scroll to latest message">↓ Latest message</button>
- <form id="sq-ai-form" class="sq-ai-input"><textarea id="sq-ai-question" aria-label="Message DoWeo AI" placeholder="Message DoWeo AI…" rows="1" maxlength="2000" required></textarea><button type="submit" aria-label="Send message" disabled>↑</button></form>
+ <form id="sq-ai-form" class="sq-ai-input"><textarea id="sq-ai-question" aria-label="Message Weo, DoWeo AI" placeholder="Ask Weo anything…" rows="1" maxlength="2000" required></textarea><button type="submit" aria-label="Send message" disabled>↑</button></form>
  <a class="sq-ai-support" id="sq-ai-contact" href="mailto:help.doweo@gmail.com?subject=DoWeo%20Support%20Request">Contact support ↗</a>
 </section>
 <script id="sq-ai-script">
@@ -7333,6 +7334,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  }
  function setOpen(open){
   panel.hidden=!open;launch.setAttribute('aria-expanded',String(open));panel.setAttribute('aria-modal',String(open&&mobile()));
+  window.WeoMascot?.setMood(open?'hello':'idle');
   if(open){
    if(mobile()&&!locked){savedScroll=window.scrollY;document.body.style.position='fixed';document.body.style.top=-savedScroll+'px';document.body.style.width='100%';locked=true}
    fitChat();
@@ -7347,7 +7349,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  window.visualViewport?.addEventListener('scroll',fitChat);
  window.addEventListener('resize',fitChat);
  launch.addEventListener('click',()=>setOpen(panel.hidden));close.addEventListener('click',()=>setOpen(false));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)setOpen(false)});
- function bubble(message,user){const el=document.createElement('div');el.className='sq-ai-message'+(user?' user':'');el.textContent=message;stream.append(el);return el;}
+ function bubble(message,user){const el=document.createElement('div');el.className='sq-ai-message'+(user?' user':'');el.textContent=message;stream.append(el);if(!user)window.WeoMascot?.decorateBubble(el);return el;}
 
 
  let conversation=[],busy=false;
@@ -7358,17 +7360,18 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
   stream.replaceChildren();stream.classList.add('sq-ai-empty');latest.hidden=true;
   const hero=document.createElement('div');hero.className='sq-ai-welcome';
   const mark=document.createElement('span');mark.className='sq-ai-welcome-mark';mark.textContent='✦';
-  const heading=document.createElement('h2');heading.textContent='What’s on your mind?';
-  const intro=document.createElement('p');intro.textContent='Talk through an idea, make a plan, or get a little help.';
+  const heading=document.createElement('h2');heading.textContent='Hi, I’m Weo!';
+  const intro=document.createElement('p');intro.textContent='Your little DoWeo guide. Ask me about splitting bills, planning with friends, or finding your way around.';
   hero.append(mark,heading,intro);
   const quick=document.createElement('div');quick.className='sq-ai-quick';quick.id='sq-ai-quick';
   [['Let’s talk','Start a conversation with me'],['Make a plan','Help me plan a fun weekend with friends'],['Brainstorm an idea','Help me brainstorm an idea'],['Get app help','How do I create a tracker?']].forEach(([label,prompt])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.prompt=prompt;quick.append(b)});
   stream.append(hero,quick);
+  window.WeoMascot?.refresh();
  }
  function resizeInput(){input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px';send.disabled=busy||!input.value.trim()}
  input.addEventListener('input',resizeInput);
  input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!mobile()&&!e.isComposing){e.preventDefault();if(!send.disabled)form.requestSubmit()}});
- reset.onclick=()=>{if(busy)return;conversation=[];welcome()};
+ reset.onclick=()=>{if(busy)return;conversation=[];welcome();window.WeoMascot?.setMood('idle')};
  function updateLatest(){latest.hidden=stream.scrollHeight-stream.scrollTop-stream.clientHeight<60||stream.classList.contains('sq-ai-empty')}
  stream.addEventListener('scroll',updateLatest,{passive:true});
  latest.onclick=()=>{stream.scrollTo({top:stream.scrollHeight,behavior:window.matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});latest.hidden=true};
@@ -7377,15 +7380,18 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
   if(stream.classList.contains('sq-ai-empty')){stream.replaceChildren();stream.classList.remove('sq-ai-empty')}
   if(!retry)bubble(q,true);
   busy=true;send.disabled=true;reset.disabled=true;stream.setAttribute('aria-busy','true');
-  const pending=bubble('DoWeo AI is thinking…',false);pending.classList.add('sq-ai-thinking');
+  window.WeoMascot?.setMood('thinking');
+  const pending=bubble('Weo is thinking…',false);pending.classList.add('sq-ai-thinking');
   const messages=[...conversation,{role:'user',content:q}].slice(-15);
   try{
    if(typeof window.squareUpApi!=='function')throw Error('Please sign in to chat.');
    const result=await window.squareUpApi('ai-chat','POST',{messages});
    if(!result.reply)throw Error('No reply received. Please try again.');
    pending.remove();bubble(result.reply,false);
+   window.WeoMascot?.setMood('success');
    conversation=[...messages,{role:'assistant',content:result.reply.slice(0,2000)}].slice(-14);
   }catch(err){
+   window.WeoMascot?.setMood('helping');
    pending.remove();const error=bubble(err.message||'Could not send your message.',false);error.classList.add('sq-ai-error');
    const retryButton=document.createElement('button');retryButton.type='button';retryButton.textContent='Try again';retryButton.onclick=()=>{if(busy)return;error.remove();ask(q,true)};error.append(document.createElement('br'),retryButton);
   }finally{
@@ -13486,6 +13492,7 @@ body.sq-finance-open #sq-nextgen .sq-ng-add-action-hint{font-size:12px;color:#bd
   #sq-nextgen .sq-ng-workspace-link-form select{grid-column:1/-1;min-width:0;width:100%}
   #sq-nextgen .sq-ng-workspace-link-form button{min-width:0}
 }
-</style></body>
+</style><script src="/weo-mascot.js" defer></script>
+</body>
 </html>
 
