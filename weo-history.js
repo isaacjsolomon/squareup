@@ -47,7 +47,7 @@
  const historyButton=document.createElement('button');
  historyButton.id='weo-history-button';
  historyButton.type='button';
- historyButton.textContent='History';
+ historyButton.innerHTML='<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg><span>History</span>';
  historyButton.setAttribute('aria-label','View previous Weo conversations');
  const head=panel.querySelector('.sq-ai-head');
  if(head){
@@ -179,8 +179,8 @@
    const latest=data?.messages?.at(-1);
    if(activeId&&latest?.role==='user'){
      // Older messages from the active account history become model context.
-     const recent=activeMessages.slice(-15);
-     data.messages=[...recent,{role:'user',content:latest.content}].slice(-16);
+     const recent=activeMessages.slice(-15).map(m=>({role:m.role,content:String(m.content||'').slice(0,2000)}));
+     data.messages=[...recent,{role:'user',content:String(latest.content||'').slice(0,2000)}].slice(-16);
      data.conversationId=activeId;
    }
    const result=await originalFetch(input,{...options,body:JSON.stringify(data)});
