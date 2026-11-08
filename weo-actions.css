@@ -991,3 +991,19 @@ html body #sq-ai-window.weo-full-page #sq-ai-stream .sq-ai-quick button{
 html body #sq-ai-window.weo-full-page .weo-tracker-picker{
   z-index:120!important;
 }
+
+
+/* Keep the actual X above chat overlays and make its hit target reliable. */
+html body #sq-ai-window.weo-full-page .sq-ai-head{
+  position:relative!important;
+  z-index:50!important;
+  pointer-events:auto!important;
+}
+html body #sq-ai-window.weo-full-page #sq-ai-close{
+  position:relative!important;
+  z-index:51!important;
+  pointer-events:auto!important;
+  cursor:pointer!important;
+  flex-shrink:0!important;
+  touch-action:manipulation;
+}
