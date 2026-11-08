@@ -16,6 +16,11 @@ export async function onRequest({request, env}) {
   if (!session.ok) return reply({error:'Please sign in again'},401);
   const user = await session.json();
   if (!user?.id) return reply({error:'Invalid session'},401);
+  // Never accept feedback silently when notification delivery isn't configured.
+  // Both values are Cloudflare Pages encrypted environment secrets, not frontend keys.
+  if (!env.RESEND_API_KEY || !env.BETA_FEEDBACK_FROM_EMAIL) {
+    return reply({error:'Feedback email delivery is not configured yet. Please try again later.'},503);
+  }
   const raw = await request.text();
   if (raw.length > 12000) return reply({error:'Feedback is too large'},413);
   let body;
@@ -54,5 +59,79 @@ export async function onRequest({request, env}) {
     return reply({error:'Could not save feedback. Please try again later.'},503);
   }
   const data=await saved.json();
-  return reply({ok:true,id:data?.[0]?.id || null},201);
+  const feedbackId=data?.[0]?.id;
+  if (!feedbackId) {
+    console.error('Feedback saved but missing ID for email delivery');
+    return reply({error:'Feedback was saved, but notification status could not be confirmed.'},202);
+  }
+
+  // Plain-text email avoids interpreting any user-supplied text as HTML.
+  // The idempotency key prevents duplicate notifications for the same entry.
+  const cleanSubject=title.replace(/[\r\n]+/g,' ').slice(0,100);
+  const emailText=[
+    'New DoWeo beta feedback',
+    'Category: '+category,
+    'Subject: '+title,
+    'Rating: '+(rating===null?'Not applicable':rating+'/5'),
+    'User: '+(user.email||'No email available'),
+    'User ID: '+user.id,
+    'Page: '+path,
+    'Device: '+payload.device_info,
+    'Feedback ID: '+feedbackId,
+    '---',
+    details
+  ].join('\n');
+  let emailSent=false;
+  let providerId=null;
+  let emailError='delivery_failed';
+  try {
+    const emailResponse=await fetch('https://api.resend.com/emails',{
+      method:'POST',
+      headers:{
+        Authorization:'Bearer '+env.RESEND_API_KEY,
+        'Content-Type':'application/json',
+        'Idempotency-Key':'doweo-feedback-'+feedbackId
+      },
+      body:JSON.stringify({
+        from:env.BETA_FEEDBACK_FROM_EMAIL,
+        to:['help.doweo@gmail.com'],
+        subject:'[DoWeo Beta '+category+'] '+cleanSubject,
+        text:emailText
+      })
+    });
+    if (emailResponse.ok) {
+      const emailResult=await emailResponse.json().catch(()=>({}));
+      emailSent=true;
+      providerId=emailResult?.id||null;
+      emailError=null;
+    } else {
+      emailError='provider_http_'+emailResponse.status;
+      console.error('Beta feedback email provider rejected delivery:',emailResponse.status);
+    }
+  } catch(err) {
+    console.error('Beta feedback email request failed:',err?.message||'unknown error');
+    emailError='transport_error';
+  }
+  // Feedback was already saved: never tell a user it failed to save if
+  // only the notification email failed.
+  const recordUrl=new URL(PROJECT_URL+'/rest/v1/doweo_beta_feedback');
+  recordUrl.searchParams.set('id','eq.'+feedbackId);
+  const update=await fetch(recordUrl,{
+    method:'PATCH',
+    headers:{...headers,Prefer:'return=minimal'},
+    body:JSON.stringify({
+      email_status:emailSent?'sent':'failed',
+      email_provider_id:providerId,
+      email_error:emailError,
+      emailed_at:emailSent?new Date().toISOString():null
+    })
+  }).catch(()=>null);
+  if (!update?.ok) console.error('Beta feedback email status update failed');
+  return reply({
+    ok:true,id:feedbackId,
+    email_sent:emailSent,
+    notice:emailSent
+      ? 'Thanks! Your feedback was saved and emailed to DoWeo support.'
+      : 'Your feedback was saved, but the email notification could not be delivered. It is marked for follow-up.'
+  },emailSent?201:202);
 }
