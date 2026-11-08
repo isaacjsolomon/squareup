@@ -13068,6 +13068,49 @@ html body #sq-startup-overlay .sq-startup-content{
 #tracker-dashboard #sq-return-members .sq-return-icon>img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:inherit!important}
 </style><script id="doweo-member-photo-sync">
 (function(){const avatar=document.getElementById('me-avatar');if(!avatar)return;let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;window.sqRefreshRestoredSummary?.()})}).observe(avatar,{attributes:true,attributeFilter:['style','class'],childList:true})})();
+</script><style id="doweo-overview-layout-bugfixes">
+@media(min-width:901px){
+ html body .wrap>header.tracker-heading{margin-bottom:20px!important}
+ html body #tracker-dashboard{margin-top:0!important;padding-top:0!important}
+ html body #tracker-dashboard>.sq-workspace-tabs{margin-top:0!important;margin-bottom:18px!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary){
+  width:calc(100% + var(--dw-overview-bleed,0px) + var(--dw-overview-bleed,0px))!important;
+  margin-left:calc(0px - var(--dw-overview-bleed,0px))!important;
+  margin-right:calc(0px - var(--dw-overview-bleed,0px))!important;
+  max-width:none!important;box-sizing:border-box!important;
+ }
+ html body .wrap>header.tracker-heading #sq-ai-launch{
+  position:static!important;inset:auto!important;transform:none!important;
+  flex:0 0 auto!important;display:inline-flex!important;align-items:center!important;
+  gap:7px!important;min-height:44px!important;margin:0!important;padding:9px 12px!important;
+  border-radius:12px!important;font-size:12px!important;white-space:nowrap!important;
+  box-shadow:none!important;z-index:auto!important;
+ }
+ html body .wrap>header.tracker-heading #sq-ai-launch .sq-ai-mark{width:25px!important;height:25px!important;font-size:18px!important}
+ html body .wrap>header.tracker-heading{gap:14px!important}
+ html body .wrap>header.tracker-heading>.sq-search-launch{min-width:140px!important;flex:1 1 300px!important}
+}
+</style><script id="doweo-overview-layout-bugfixes-script">
+(function(){
+ const heading=document.querySelector('header.tracker-heading'),launch=document.getElementById('sq-ai-launch'),summary=document.getElementById('sq-return-summary'),wrap=document.querySelector('body>.wrap');
+ if(!heading||!launch||!summary||!wrap)return;
+ const originalParent=launch.parentNode,originalNext=launch.nextSibling,desktop=window.matchMedia('(min-width:901px)');
+ function layout(){
+  if(desktop.matches){
+   if(launch.parentNode!==heading)heading.append(launch);
+   const bounds=wrap.getBoundingClientRect(),side=document.querySelector('.sidebar'),sideBox=side?.getBoundingClientRect();
+   const boundary=sideBox&&sideBox.width>0&&sideBox.right>0&&getComputedStyle(side).display!=='none'?sideBox.right:0;
+   const room=Math.max(0,Math.min(48,bounds.left-boundary-16,window.innerWidth-bounds.right-16));
+   summary.style.setProperty('--dw-overview-bleed',Math.floor(room)+'px');
+  }else{
+   if(launch.parentNode!==originalParent)originalParent.insertBefore(launch,originalNext&&originalNext.parentNode===originalParent?originalNext:null);
+   summary.style.removeProperty('--dw-overview-bleed');
+  }
+ }
+ let queued=false;function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;layout()})}
+ layout();window.addEventListener('resize',schedule,{passive:true});desktop.addEventListener('change',schedule);
+ new MutationObserver(schedule).observe(document.body,{attributes:true,attributeFilter:['class']});
+})();
 </script></body>
 </html>
 
