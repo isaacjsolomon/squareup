@@ -3868,6 +3868,11 @@ async function api(path, method, body) {
   return data;
 }
 window.squareUpApi = api;
+// Expose only the existing tracker navigation to the Weo UI (no data writes).
+window.sqOpenTrackerForWeo = async function(id) {
+  if (typeof id !== 'string' || !id || id === 'local') throw new Error('Select a saved tracker.');
+  return openTracker(id);
+};
 
 sqFillCurrencies();
 // ============ DEDICATED SETTINGS PAGE ============
