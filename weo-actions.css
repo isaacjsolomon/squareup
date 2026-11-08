@@ -97,3 +97,108 @@
 @media(prefers-reduced-motion:reduce){
  #sq-ai-window .weo-action{transition:none;transform:none!important}
 }
+
+/* Mobile chat polish: compact welcome + one anchored composer. */
+#sq-ai-window .weo-more-toggle{display:none}
+@media(max-width:700px){
+  html body #sq-ai-window{
+    max-height:100dvh;
+    min-height:0;
+    overflow:hidden;
+    box-sizing:border-box;
+  }
+  #sq-ai-window .sq-ai-head{
+    flex:0 0 auto;
+    padding:12px 14px!important;
+    gap:9px!important;
+    min-height:64px;
+  }
+  #sq-ai-window .weo-ai-brand strong{font-size:16px!important}
+  #sq-ai-window .weo-ai-brand small{font-size:11px!important}
+  #sq-ai-window .sq-ai-welcome{
+    padding:18px 16px 14px!important;
+    margin:0 auto!important;
+    max-width:440px;
+    box-sizing:border-box;
+  }
+  html body #sq-ai-window .sq-ai-welcome-mark.weo-mascot{
+    width:66px!important;height:66px!important;
+    border-radius:20px!important;
+    margin:0 auto 12px!important;
+  }
+  #sq-ai-window .sq-ai-welcome h2{
+    font-size:25px!important;line-height:1.17!important;
+    margin:0 0 9px!important;
+  }
+  #sq-ai-window .sq-ai-welcome p{
+    font-size:13px!important;line-height:1.48!important;
+    margin:0 auto 14px!important;
+    max-width:330px;
+  }
+  #sq-ai-window #sq-ai-form{
+    display:flex!important;
+    align-items:center!important;
+    flex:0 0 auto;
+    position:relative!important;
+    gap:8px!important;
+    min-width:0;
+    z-index:5;
+  }
+  #sq-ai-window #sq-ai-question{
+    min-width:0!important;
+    flex:1 1 auto!important;
+    width:auto!important;
+    font-size:16px!important;
+  }
+  #sq-ai-window .weo-more-toggle{
+    display:grid!important;
+    place-items:center;
+    flex:0 0 38px;
+    width:38px;height:38px;
+    padding:0;border:1px solid #3e7081;
+    border-radius:50%;
+    background:#19394d;color:#74e9dc;
+    font:500 27px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    cursor:pointer;
+    transition:background .15s,transform .15s;
+  }
+  #sq-ai-window .weo-more-toggle[aria-expanded="true"]{
+    transform:rotate(45deg);
+    background:#20536a;border-color:#64cfc7;
+  }
+  #sq-ai-window .weo-more-toggle:focus-visible{
+    outline:3px solid #72eadd;outline-offset:2px;
+  }
+  #sq-ai-window #sq-ai-form .weo-quick-actions{
+    display:none!important;
+    position:absolute!important;
+    bottom:calc(100% + 10px);
+    left:0;right:0;
+    z-index:10;
+    padding:12px!important;
+    border:1px solid #345c6e;
+    border-radius:17px;
+    background:linear-gradient(155deg,#122d40,#0a1d2f);
+    box-shadow:0 16px 35px #0009;
+    box-sizing:border-box;
+    max-height:min(45dvh,300px);
+    overflow-y:auto;
+  }
+  #sq-ai-window #sq-ai-form .weo-quick-actions.weo-menu-open{
+    display:flex!important;
+  }
+  #sq-ai-window .weo-actions-title{font-size:12px!important}
+  #sq-ai-window .weo-actions-grid{gap:8px}
+  #sq-ai-window .weo-action{min-height:49px;font-size:12px}
+  #sq-ai-window .sq-ai-welcome + *{min-width:0}
+  #sq-ai-window .weo-image-draft{margin:5px 12px 7px}
+}
+@media(max-width:700px) and (max-height:640px){
+  #sq-ai-window .sq-ai-welcome{padding:10px 12px!important}
+  html body #sq-ai-window .sq-ai-welcome-mark.weo-mascot{width:50px!important;height:50px!important;margin-bottom:7px!important}
+  #sq-ai-window .sq-ai-welcome h2{font-size:21px!important}
+  #sq-ai-window .sq-ai-welcome p{font-size:12px!important;margin-bottom:8px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  #sq-ai-window .weo-more-toggle{transition:none!important}
+}
