@@ -991,3 +991,14 @@ html body #sq-ai-window.weo-full-page #sq-ai-stream .sq-ai-quick button{
 html body #sq-ai-window.weo-full-page .weo-tracker-picker{
   z-index:120!important;
 }
+
+
+/* Close-state invariant: hidden always wins over full-screen CSS.
+   This overrides legacy display:flex!important rules at every breakpoint. */
+html body #sq-ai-window[hidden],
+html body #sq-ai-window.weo-full-page[hidden],
+html body > #sq-ai-window.weo-full-page[hidden]{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
