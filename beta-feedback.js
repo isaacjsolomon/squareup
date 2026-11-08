@@ -25,7 +25,11 @@ export function initBetaFeedback({api,getUser}) {
   #dw-beta-modal .dw-submit{width:100%;padding:13px;border:0;border-radius:11px;background:#ffffff;color:#10213b;font-weight:800;cursor:pointer;margin-top:18px}
   #dw-beta-modal .dw-submit:disabled{opacity:.55;cursor:wait}
   #dw-beta-modal .dw-message{min-height:20px;font-size:13px;margin:10px 0 0}
-  @media(max-width:650px){#dw-beta-launch{right:12px;bottom:160px;padding:10px 13px}#dw-beta-modal .dw-panel{padding:19px}}
+  #sq-mobile-more-sheet #dw-beta-more-action{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:60px;margin-top:12px;padding:14px 20px;border:1px solid #bfeaff;border-radius:15px;background:linear-gradient(120deg,#b8e7ff,#88cdf4);color:#092743;font:inherit;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(42,147,210,.16)}
+  #sq-mobile-more-sheet #dw-beta-more-action:active{transform:translateY(1px);background:#83c5ec}
+  #sq-mobile-more-sheet #dw-beta-more-action:focus-visible{outline:3px solid #fff;outline-offset:3px}
+  @media(max-width:900px){#dw-beta-launch{display:none!important}#dw-beta-modal .dw-panel{padding:19px}}
+  @media(min-width:901px){#dw-beta-more-action{display:none!important}}
   `;
   document.head.appendChild(style);
   const launcher=document.createElement('button');
@@ -58,15 +62,15 @@ export function initBetaFeedback({api,getUser}) {
   const message=modal.querySelector('#dw-beta-message');
   let category='bug',rating=0,previousFocus=null;
   const close=()=>{modal.hidden=true;document.body.style.removeProperty('overflow');(previousFocus||launcher).focus();};
-  const open=()=>{
+  const open=(returnFocus)=>{
     if (!getUser?.()) return;
-    previousFocus=document.activeElement;
+    previousFocus=returnFocus||document.activeElement;
     modal.hidden=false;
     document.body.style.overflow='hidden';
     message.textContent='';
     modal.querySelector('.dw-close').focus();
   };
-  launcher.addEventListener('click',open);
+  launcher.addEventListener('click',()=>open());
   modal.querySelector('.dw-close').addEventListener('click',close);
   modal.addEventListener('click',e=>{if(e.target===modal)close();});
   modal.addEventListener('keydown',e=>{
@@ -108,25 +112,38 @@ export function initBetaFeedback({api,getUser}) {
     finally{submit.disabled=false;}
   });
   let emailReady=false;
-  // Keep this launcher above (not on top of) the Ask DoWeo AI pill.
-  // We measure the actual AI button, since its position/height changes on mobile.
-  const positionLauncher=()=>{
-    const ai=document.getElementById('sq-ai-launch');
-    if(!ai||!ai.getClientRects().length){
-      launcher.style.bottom='';
-      return;
-    }
-    const rect=ai.getBoundingClientRect();
-    const clearance=window.innerHeight-rect.top+12;
-    launcher.style.bottom=Math.ceil(Math.max(12,Math.min(clearance,window.innerHeight-70)))+'px';
+  let mobileAction=null;
+  // The actual mobile "More" sheet is rendered in index.html.
+  // Attach after its existing Log out button; no separate floating mobile pill.
+  const ensureMobileAction=()=>{
+    if(mobileAction?.isConnected)return;
+    const logout=document.getElementById('sq-mobile-more-logout');
+    if(!logout)return;
+    mobileAction=document.getElementById('dw-beta-more-action');
+    if(mobileAction)return;
+    mobileAction=document.createElement('button');
+    mobileAction.id='dw-beta-more-action';
+    mobileAction.type='button';
+    mobileAction.innerHTML='<span aria-hidden="true">✦</span><span>Beta Feedback</span>';
+    mobileAction.style.display='none';
+    logout.insertAdjacentElement('afterend',mobileAction);
+    mobileAction.addEventListener('click',()=>{
+      const more=document.getElementById('sq-mobile-more-sheet');
+      if(more)more.hidden=true;
+      document.body.classList.remove('sq-balanced-sheet-open');
+      open(document.getElementById('sq-mobile-more'));
+    });
   };
   const updateVisibility=()=>{
+    ensureMobileAction();
     const ai=document.getElementById('sq-ai-launch');
     const aiChatOpen=ai?.getAttribute('aria-expanded')==='true';
     const canSubmit=Boolean(getUser?.() && emailReady);
     launcher.style.display=canSubmit&&!aiChatOpen?'inline-flex':'none';
+    // CSS hides the floating button on mobile, irrespective of inline display.
+    // The More-sheet entry is only available to signed-in users when email works.
+    if(mobileAction)mobileAction.style.display=canSubmit?'flex':'none';
     if(!canSubmit&&!modal.hidden)close();
-    positionLauncher();
   };
   async function checkEmailReady(){
     try{
@@ -140,12 +157,8 @@ export function initBetaFeedback({api,getUser}) {
   checkEmailReady();
   const interval=setInterval(updateVisibility,1800);
   const statusInterval=setInterval(checkEmailReady,120000);
-  window.addEventListener('resize',positionLauncher);
-  window.addEventListener('orientationchange',positionLauncher);
   window.addEventListener('pagehide',()=>{
     clearInterval(interval);
     clearInterval(statusInterval);
-    window.removeEventListener('resize',positionLauncher);
-    window.removeEventListener('orientationchange',positionLauncher);
   },{once:true});
 }
