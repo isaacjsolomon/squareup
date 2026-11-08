@@ -2239,6 +2239,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 }
 </style>
 <link rel="stylesheet" href="/weo-mascot.css">
+<link rel="stylesheet" href="/weo-actions.css">
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
@@ -7349,7 +7350,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  window.visualViewport?.addEventListener('scroll',fitChat);
  window.addEventListener('resize',fitChat);
  launch.addEventListener('click',()=>setOpen(panel.hidden));close.addEventListener('click',()=>setOpen(false));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)setOpen(false)});
- function bubble(message,user){const el=document.createElement('div');el.className='sq-ai-message'+(user?' user':'');el.textContent=message;stream.append(el);if(!user)window.WeoMascot?.decorateBubble(el);return el;}
+ function bubble(message,user,imageData=null){const el=document.createElement('div');el.className='sq-ai-message'+(user?' user':'');el.textContent=message;if(user&&imageData){const picture=document.createElement('img');picture.className='weo-attached-image';picture.alt='Image attached to this message';picture.src=imageData;el.append(picture);}stream.append(el);if(!user)window.WeoMascot?.decorateBubble(el);return el;}
 
 
  let conversation=[],busy=false;
@@ -7368,24 +7369,25 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
   stream.append(hero,quick);
   window.WeoMascot?.refresh();
  }
- function resizeInput(){input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px';send.disabled=busy||!input.value.trim()}
+ function resizeInput(){input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px';send.disabled=busy||(!input.value.trim()&&!window.WeoActions?.hasImage?.())}
  input.addEventListener('input',resizeInput);
  input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!mobile()&&!e.isComposing){e.preventDefault();if(!send.disabled)form.requestSubmit()}});
- reset.onclick=()=>{if(busy)return;conversation=[];welcome();window.WeoMascot?.setMood('idle')};
+ reset.onclick=()=>{if(busy)return;conversation=[];window.WeoActions?.clearImage?.();input.placeholder='Ask Weo anything…';welcome();window.WeoMascot?.setMood('idle')};
  function updateLatest(){latest.hidden=stream.scrollHeight-stream.scrollTop-stream.clientHeight<60||stream.classList.contains('sq-ai-empty')}
  stream.addEventListener('scroll',updateLatest,{passive:true});
  latest.onclick=()=>{stream.scrollTo({top:stream.scrollHeight,behavior:window.matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});latest.hidden=true};
- async function ask(q,retry=false){
-  q=String(q||'').trim().slice(0,2000);if(!q||busy)return;
+ async function ask(q,retry=false,imageData=null){
+  q=String(q||'').trim().slice(0,2000);if((!q&&!imageData)||busy)return;
+  if(!q&&imageData)q='What can you tell me about this image?';
   if(stream.classList.contains('sq-ai-empty')){stream.replaceChildren();stream.classList.remove('sq-ai-empty')}
-  if(!retry)bubble(q,true);
+  if(!retry)bubble(q,true,imageData);
   busy=true;send.disabled=true;reset.disabled=true;stream.setAttribute('aria-busy','true');
   window.WeoMascot?.setMood('thinking');
   const pending=bubble('Weo is thinking…',false);pending.classList.add('sq-ai-thinking');
   const messages=[...conversation,{role:'user',content:q}].slice(-15);
   try{
    if(typeof window.squareUpApi!=='function')throw Error('Please sign in to chat.');
-   const result=await window.squareUpApi('ai-chat','POST',{messages});
+   const result=await window.squareUpApi('ai-chat','POST',imageData?{messages,image:imageData}:{messages});
    if(!result.reply)throw Error('No reply received. Please try again.');
    pending.remove();bubble(result.reply,false);
    window.WeoMascot?.setMood('success');
@@ -7393,12 +7395,13 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
   }catch(err){
    window.WeoMascot?.setMood('helping');
    pending.remove();const error=bubble(err.message||'Could not send your message.',false);error.classList.add('sq-ai-error');
-   const retryButton=document.createElement('button');retryButton.type='button';retryButton.textContent='Try again';retryButton.onclick=()=>{if(busy)return;error.remove();ask(q,true)};error.append(document.createElement('br'),retryButton);
+   const retryButton=document.createElement('button');retryButton.type='button';retryButton.textContent='Try again';retryButton.onclick=()=>{if(busy)return;error.remove();ask(q,true,imageData)};error.append(document.createElement('br'),retryButton);
   }finally{
    pending.remove();busy=false;reset.disabled=false;stream.setAttribute('aria-busy','false');resizeInput();updateLatest();
   }
  }
- form.addEventListener('submit',e=>{e.preventDefault();if(busy||!input.value.trim())return;const text=input.value;input.value='';resizeInput();ask(text);});
+ form.addEventListener('submit',e=>{e.preventDefault();if(busy||(!input.value.trim()&&!window.WeoActions?.hasImage?.()))return;const text=input.value;const imageData=window.WeoActions?.takeImage?.()||null;input.value='';input.placeholder='Ask Weo anything…';resizeInput();ask(text,false,imageData);});
+ window.WeoChat=Object.freeze({close:()=>setOpen(false),refreshSend:resizeInput});
  stream.addEventListener('click',e=>{const btn=e.target.closest('.sq-ai-quick button');if(btn)ask(btn.dataset.prompt)});
  welcome();
  function openHelp(){document.body.classList.remove('split-view','settings-view','about-view','trackers-view','analytics-view','friends-view','notifications-view');document.body.classList.add('sq-help-view');document.querySelectorAll('.sq-nav-link').forEach(b=>{b.classList.toggle('active',b.id==='nav-help-center');b.removeAttribute('aria-current')});document.getElementById('nav-help-center').setAttribute('aria-current','page');history.replaceState(null,'',location.pathname+location.search+'#help');window.scrollTo(0,0);}
@@ -13493,6 +13496,7 @@ body.sq-finance-open #sq-nextgen .sq-ng-add-action-hint{font-size:12px;color:#bd
   #sq-nextgen .sq-ng-workspace-link-form button{min-width:0}
 }
 </style><script src="/weo-mascot.js" defer></script>
+<script src="/weo-actions.js" defer></script>
 </body>
 </html>
 
