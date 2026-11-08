@@ -22,5 +22,6 @@ create index if not exists doweo_beta_feedback_email_pending on public.doweo_bet
 create index if not exists doweo_beta_feedback_review on public.doweo_beta_feedback (status, created_at desc);
 alter table public.doweo_beta_feedback enable row level security;
 revoke all on public.doweo_beta_feedback from anon, authenticated;
+grant select, insert, update on public.doweo_beta_feedback to service_role;
 -- No direct RLS policies: the service-role API validates the JWT and user ID on every request.
 comment on table public.doweo_beta_feedback is 'Private beta feedback submitted via authenticated DoWeo API; do not expose directly to browsers.';
