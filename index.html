@@ -7289,28 +7289,15 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
 </style>
 <button id="sq-ai-launch" type="button" aria-label="Ask DoWeo AI" aria-controls="sq-ai-window" aria-expanded="false"><span class="sq-ai-mark">✦</span> Ask DoWeo AI</button>
 <section id="sq-ai-window" hidden role="dialog" aria-label="DoWeo AI conversation" aria-modal="false">
- <div class="sq-ai-head"><span class="sq-ai-avatar">✦</span><div><strong>DoWeo AI</strong><small>● Conversation & app help</small></div><button class="doweo-close-control" type="button" id="sq-ai-close" aria-label="Close help chat">×</button></div>
- <div class="sq-ai-stream" id="sq-ai-stream" aria-live="polite"><div class="sq-ai-message">Hi! I'm DoWeo AI. Want to talk through an idea, plan something, or just chat? I can help with the app too. What's on your mind?</div><div class="sq-ai-quick" id="sq-ai-quick"><button type="button">Start a conversation with me</button><button type="button">Help me brainstorm something fun to do</button><button type="button">Help me plan a trip with friends</button><button type="button">How do I create a tracker?</button></div></div>
- <form id="sq-ai-form" class="sq-ai-input"><input id="sq-ai-question" aria-label="Ask a question" placeholder="Type a message…" maxlength="2000" required><button type="submit" aria-label="Send question">➤</button></form>
- <a class="sq-ai-support" id="sq-ai-contact" href="mailto:help.doweo@gmail.com?subject=DoWeo%20Support%20Request">✉ Contact Support ↗</a>
+ <div class="sq-ai-head"><span class="sq-ai-avatar" aria-hidden="true">✦</span><div><strong>DoWeo AI</strong><small>Your everyday assistant</small></div><button class="doweo-close-control" type="button" id="sq-ai-close" aria-label="Close AI chat">×</button></div>
+ <div class="sq-ai-stream" id="sq-ai-stream" role="log" aria-live="polite" aria-relevant="additions"></div>
+ <button type="button" id="sq-ai-latest" hidden aria-label="Scroll to latest message">↓ Latest message</button>
+ <form id="sq-ai-form" class="sq-ai-input"><textarea id="sq-ai-question" aria-label="Message DoWeo AI" placeholder="Message DoWeo AI…" rows="1" maxlength="2000" required></textarea><button type="submit" aria-label="Send message" disabled>↑</button></form>
+ <a class="sq-ai-support" id="sq-ai-contact" href="mailto:help.doweo@gmail.com?subject=DoWeo%20Support%20Request">Contact support ↗</a>
 </section>
 <script id="sq-ai-script">
 (function(){
  const launch=document.getElementById('sq-ai-launch'),panel=document.getElementById('sq-ai-window'),close=document.getElementById('sq-ai-close'),stream=document.getElementById('sq-ai-stream'),form=document.getElementById('sq-ai-form'),input=document.getElementById('sq-ai-question');
- const topics=[['Getting Started','Create a tracker, invite people and get started.'],['Add & Split Expenses','Record payments and split bills with friends.'],['Payments & Balances','Understand what you owe and who owes you.'],['Account & Settings','Login, password resets and profile settings.']];
- const faq=[
- [/creat.*tracker|new tracker|start.*tracker/i,'To create a tracker: open Trackers from the sidebar, select + New Tracker, enter a name, then save it. Open the tracker to start adding expenses.'],
- [/add.*expense|record.*expense/i,'Open a tracker and choose Add Expense. Enter the amount, description and the people involved, then save. Check the Expenses tab to confirm it was recorded.'],
- [/invit|shar.*tracker|add.*friend/i,'Go to Trackers, open the three-dot menu on your tracker and choose Share Tracker. Copy the invitation link and send it to your friend. They may need to create an account or sign in to join.'],
- [/split.*bill|receipt/i,'Open your tracker and select Split a Bill. Add the items or scan a receipt on mobile, assign each item to the right person, then save the assigned expenses.'],
- [/log.?in|sign.?in|password|verification|email.*confirm|access.*account/i,'For login problems: check your email and password, and use Forgot password? on the login screen to reset it. If you just signed up, check your email inbox and spam folder for a confirmation message. Never share your password or verification codes. If you still cannot sign in, select Contact Support below.'],
- [/balance|owe|owed|settle/i,'Balances show who owes whom within a tracker. Adding an expense can increase an amount owed; recording a payment through Pay Now can reduce it. If the amount seems wrong, check the tracker’s Expenses and Payments entries.'],
- [/backdrop|banner|background/i,'Go to Trackers, open the three-dot menu on the tracker card, then Tracker settings. Choose Change tracker backdrop to customize the background, or Change banner to update the banner.'],
- [/notif/i,'Open the bell icon to view notifications. You can filter notifications by category to find updates about expenses, payments and group chat.'],
- [/profile|username|venmo|cash.?app|settings/i,'Open Account from the sidebar to update your display name, username, profile photo, and payment usernames. Save your changes when finished.'],
- [/export|csv/i,'Open the relevant tracker and use Export CSV to download a copy of its expense information.'],
- [/chat|message/i,'Use Chat from the sidebar to open your tracker’s group conversation. If a tracker is required, open the tracker first.']
- ];
  let savedScroll=0,locked=false;
  const mobile=()=>window.matchMedia('(max-width:700px)').matches;
  function fitChat(){
@@ -7320,7 +7307,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
   panel.style.setProperty('--sq-chat-top',(v?v.offsetTop:0)+'px');
  }
  function setOpen(open){
-  panel.hidden=!open;launch.setAttribute('aria-expanded',String(open));
+  panel.hidden=!open;launch.setAttribute('aria-expanded',String(open));panel.setAttribute('aria-modal',String(open&&mobile()));
   if(open){
    if(mobile()&&!locked){savedScroll=window.scrollY;document.body.style.position='fixed';document.body.style.top=-savedScroll+'px';document.body.style.width='100%';locked=true}
    fitChat();
@@ -7335,28 +7322,54 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  window.visualViewport?.addEventListener('scroll',fitChat);
  window.addEventListener('resize',fitChat);
  launch.addEventListener('click',()=>setOpen(panel.hidden));close.addEventListener('click',()=>setOpen(false));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)setOpen(false)});
- function bubble(message,user){const el=document.createElement('div');el.className='sq-ai-message'+(user?' user':'');el.textContent=message;stream.append(el);}
+ function bubble(message,user){const el=document.createElement('div');el.className='sq-ai-message'+(user?' user':'');el.textContent=message;stream.append(el);return el;}
+
 
  let conversation=[],busy=false;
- const notice=document.createElement('small');notice.className='sq-ai-privacy';notice.textContent='AI can make mistakes. Messages are processed by Cloudflare AI. No tracker data is shared.';form.after(notice);
- const reset=document.createElement('button');reset.type='button';reset.className='sq-ai-reset';reset.textContent='New chat';close.before(reset);
- reset.onclick=()=>{if(busy)return;conversation=[];stream.replaceChildren();bubble("Hi! Want to talk through an idea, plan something, or chat about your day?",false)};
- async function ask(q){
- q=String(q||'').trim().slice(0,2000);if(!q||busy)return;
- document.getElementById('sq-ai-quick')?.remove();bubble(q,true);
- busy=true;form.querySelector('button').disabled=true;reset.disabled=true;
- const pending=document.createElement('div');pending.className='sq-ai-message';pending.textContent='Thinking…';stream.append(pending);
- const messages=[...conversation,{role:'user',content:q}].slice(-15);
- try{
- if(typeof window.squareUpApi!=='function')throw Error('Please sign in to chat.');
- const result=await window.squareUpApi('ai-chat','POST',{messages});
- if(!result.reply)throw Error('No reply received. Please try again.');
- bubble(result.reply,false);conversation=[...messages,{role:'assistant',content:result.reply.slice(0,2000)}].slice(-14);
- }catch(err){bubble(err.message||'Could not send your message. Please try again.',false)}
- finally{pending.remove();busy=false;form.querySelector('button').disabled=false;reset.disabled=false}
+ const send=form.querySelector('button'),latest=document.getElementById('sq-ai-latest');
+ const notice=document.createElement('small');notice.className='sq-ai-privacy';notice.textContent='AI can make mistakes · Powered by Cloudflare';notice.title='Messages are processed by Cloudflare AI. No tracker data is shared.';form.after(notice);
+ const reset=document.createElement('button');reset.type='button';reset.className='sq-ai-reset';reset.textContent='New chat';reset.setAttribute('aria-label','Start a new conversation');close.before(reset);
+ function welcome(){
+  stream.replaceChildren();stream.classList.add('sq-ai-empty');latest.hidden=true;
+  const hero=document.createElement('div');hero.className='sq-ai-welcome';
+  const mark=document.createElement('span');mark.className='sq-ai-welcome-mark';mark.textContent='✦';
+  const heading=document.createElement('h2');heading.textContent='What’s on your mind?';
+  const intro=document.createElement('p');intro.textContent='Talk through an idea, make a plan, or get a little help.';
+  hero.append(mark,heading,intro);
+  const quick=document.createElement('div');quick.className='sq-ai-quick';quick.id='sq-ai-quick';
+  [['Let’s talk','Start a conversation with me'],['Make a plan','Help me plan a fun weekend with friends'],['Brainstorm an idea','Help me brainstorm an idea'],['Get app help','How do I create a tracker?']].forEach(([label,prompt])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.prompt=prompt;quick.append(b)});
+  stream.append(hero,quick);
  }
-
- form.addEventListener('submit',e=>{e.preventDefault();ask(input.value);input.value='';if(!mobile())input.focus({preventScroll:true});});stream.addEventListener('click',e=>{const btn=e.target.closest('.sq-ai-quick button');if(btn)ask(btn.textContent)});
+ function resizeInput(){input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px';send.disabled=busy||!input.value.trim()}
+ input.addEventListener('input',resizeInput);
+ input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!mobile()&&!e.isComposing){e.preventDefault();if(!send.disabled)form.requestSubmit()}});
+ reset.onclick=()=>{if(busy)return;conversation=[];welcome()};
+ function updateLatest(){latest.hidden=stream.scrollHeight-stream.scrollTop-stream.clientHeight<60||stream.classList.contains('sq-ai-empty')}
+ stream.addEventListener('scroll',updateLatest,{passive:true});
+ latest.onclick=()=>{stream.scrollTo({top:stream.scrollHeight,behavior:window.matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});latest.hidden=true};
+ async function ask(q,retry=false){
+  q=String(q||'').trim().slice(0,2000);if(!q||busy)return;
+  if(stream.classList.contains('sq-ai-empty')){stream.replaceChildren();stream.classList.remove('sq-ai-empty')}
+  if(!retry)bubble(q,true);
+  busy=true;send.disabled=true;reset.disabled=true;stream.setAttribute('aria-busy','true');
+  const pending=bubble('DoWeo AI is thinking…',false);pending.classList.add('sq-ai-thinking');
+  const messages=[...conversation,{role:'user',content:q}].slice(-15);
+  try{
+   if(typeof window.squareUpApi!=='function')throw Error('Please sign in to chat.');
+   const result=await window.squareUpApi('ai-chat','POST',{messages});
+   if(!result.reply)throw Error('No reply received. Please try again.');
+   pending.remove();bubble(result.reply,false);
+   conversation=[...messages,{role:'assistant',content:result.reply.slice(0,2000)}].slice(-14);
+  }catch(err){
+   pending.remove();const error=bubble(err.message||'Could not send your message.',false);error.classList.add('sq-ai-error');
+   const retryButton=document.createElement('button');retryButton.type='button';retryButton.textContent='Try again';retryButton.onclick=()=>{if(busy)return;error.remove();ask(q,true)};error.append(document.createElement('br'),retryButton);
+  }finally{
+   pending.remove();busy=false;reset.disabled=false;stream.setAttribute('aria-busy','false');resizeInput();updateLatest();
+  }
+ }
+ form.addEventListener('submit',e=>{e.preventDefault();if(busy||!input.value.trim())return;const text=input.value;input.value='';resizeInput();ask(text);});
+ stream.addEventListener('click',e=>{const btn=e.target.closest('.sq-ai-quick button');if(btn)ask(btn.dataset.prompt)});
+ welcome();
  function openHelp(){document.body.classList.remove('split-view','settings-view','about-view','trackers-view','analytics-view','friends-view','notifications-view');document.body.classList.add('sq-help-view');document.querySelectorAll('.sq-nav-link').forEach(b=>{b.classList.toggle('active',b.id==='nav-help-center');b.removeAttribute('aria-current')});document.getElementById('nav-help-center').setAttribute('aria-current','page');history.replaceState(null,'',location.pathname+location.search+'#help');window.scrollTo(0,0);}
  // Move Help Center from the sidebar into the header, immediately after Search.
  const helpNav=document.getElementById('nav-help-center');
@@ -12815,6 +12828,44 @@ html body #sq-instagram-invite:has(.sq-ig-x) h2 { padding-right:48px; }
  html body #sq-ai-window .sq-ai-input input{font-size:16px!important}
  html body #sq-ai-window .sq-ai-input{margin:0!important}
 }
+</style>
+<style id="doweo-professional-chat">
+html body #sq-ai-window{background:#0b1725!important;border:1px solid #314459;box-shadow:0 20px 70px #0007;isolation:isolate;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+html body #sq-ai-window .sq-ai-head{padding:16px 18px!important;background:#0e1d2d!important;gap:12px;border-bottom:1px solid #26384a;min-height:76px!important}
+html body #sq-ai-window .sq-ai-head strong{font-size:16px;font-weight:700;letter-spacing:-.02em}
+html body #sq-ai-window .sq-ai-head small{display:block;color:#96aabd;font-size:12px!important;margin-top:3px}
+html body #sq-ai-window .sq-ai-avatar{width:36px;height:36px;background:#153d46;border:1px solid #2c5b64;color:#6be4d0;font-size:21px;flex:none}
+html body #sq-ai-window .sq-ai-reset{padding:8px 10px;min-height:44px;border:1px solid #3a5065;background:transparent;border-radius:10px;color:#d9e6ef;font-size:12px}
+html body #sq-ai-window #sq-ai-close{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;border:1px solid #50677b!important;background:#1b3042!important;box-shadow:none!important;border-radius:11px!important;font-size:25px!important}
+html body #sq-ai-window .sq-ai-stream{padding:22px 18px!important;gap:20px!important;scroll-padding:20px;overflow-anchor:none}
+html body #sq-ai-window .sq-ai-message{max-width:94%;padding:4px 0;background:transparent;border:0;border-radius:0;color:#e5edf4;font-size:15px;line-height:1.65;flex-shrink:0}
+html body #sq-ai-window .sq-ai-message.user{max-width:86%;padding:11px 15px;background:#20394c;border:1px solid #345267;border-radius:18px 18px 4px 18px;color:#f0f7fa;align-self:flex-end}
+html body #sq-ai-window .sq-ai-empty{justify-content:center;gap:25px!important}
+html body #sq-ai-window .sq-ai-welcome{text-align:center;margin:0 auto;max-width:330px}
+html body #sq-ai-window .sq-ai-welcome-mark{display:grid;place-items:center;width:52px;height:52px;border:1px solid #32646c;background:#12343c;color:#75e9d5;border-radius:17px;font-size:30px;margin:0 auto 20px}
+html body #sq-ai-window .sq-ai-welcome h2{font-size:25px;letter-spacing:-.035em;line-height:1.2;color:#f4f8fb;margin:0 0 12px}
+html body #sq-ai-window .sq-ai-welcome p{color:#a4b7c6;font-size:14px;line-height:1.6;margin:0}
+html body #sq-ai-window .sq-ai-quick{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:370px;align-self:center}
+html body #sq-ai-window .sq-ai-quick button{min-height:58px;padding:14px 12px;background:#112536;border:1px solid #2c4357;border-radius:13px;font-size:13px;line-height:1.4;color:#dceaf1}
+html body #sq-ai-window .sq-ai-input{display:flex;align-items:flex-end;gap:10px;margin:0 14px!important;padding:9px 10px 9px 14px;background:#14293a;border:1px solid #3b566c;border-radius:23px;flex-shrink:0}
+html body #sq-ai-window .sq-ai-input:focus-within{border-color:#70d8c6;box-shadow:0 0 0 2px #70d8c614}
+html body #sq-ai-window #sq-ai-question{flex:1;min-width:0;min-height:38px;max-height:120px;resize:none;overflow-y:auto;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;padding:8px 0;color:#f1f7fa;font:400 16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;border-radius:0}
+html body #sq-ai-window #sq-ai-question::placeholder{color:#8da7ba}
+html body #sq-ai-window .sq-ai-input>button{flex:none;width:40px;height:40px;border-radius:50%;background:#7ae4cf;color:#07352f;font-size:24px;font-weight:700}
+html body #sq-ai-window .sq-ai-input>button:disabled{background:#2c4356;color:#91a9ba;cursor:default;opacity:1}
+html body #sq-ai-window .sq-ai-privacy{text-align:center;padding:9px 12px 2px;font-size:10px;color:#8aa0b2;line-height:1.4}
+html body #sq-ai-window .sq-ai-support{font-size:11px;color:#9db2c2;padding:7px 12px 12px}
+html body #sq-ai-window #sq-ai-latest{align-self:center;flex:none;background:#213e51;color:#e4f4f6;border:1px solid #4b7186;padding:9px 15px;min-height:40px;border-radius:20px;cursor:pointer;font-size:12px;margin:-5px 0 10px}
+html body #sq-ai-window .sq-ai-thinking{color:#9bb2c4;font-size:13px}
+html body #sq-ai-window .sq-ai-error{padding:12px;border:1px solid #82535d;border-radius:12px;color:#ffd5dd}
+html body #sq-ai-window .sq-ai-error button{margin-top:8px;min-height:40px;padding:8px 14px;border:1px solid #906470;border-radius:9px;background:#392a37;color:#fff;cursor:pointer}
+html body #sq-ai-window button:focus-visible{outline:2px solid #7ae4cf!important;outline-offset:3px}
+@media(max-width:700px){
+ html body #sq-ai-window{padding-top:max(48px,env(safe-area-inset-top,0px))!important;padding-bottom:max(8px,env(safe-area-inset-bottom,0px))!important}
+ html body #sq-ai-window .sq-ai-head{padding:12px 16px!important;min-height:70px!important}
+ html body #sq-ai-window .sq-ai-stream{padding:20px 18px!important}
+}
+@media(max-height:550px){html body #sq-ai-window .sq-ai-welcome-mark{display:none}html body #sq-ai-window .sq-ai-empty{justify-content:flex-start;gap:16px!important}html body #sq-ai-window .sq-ai-welcome h2{font-size:21px}}
 </style></body>
 </html>
 
