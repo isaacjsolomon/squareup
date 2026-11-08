@@ -504,3 +504,84 @@ html body > #sq-ai-window.weo-full-page{
     -webkit-overflow-scrolling:touch;
   }
 }
+
+
+/* Private Weo conversation history — account-level panel. */
+#sq-ai-window #weo-history-button{
+ display:inline-flex;align-items:center;justify-content:center;
+ border:1px solid #35596b;border-radius:11px;
+ background:#132c3d;color:#d8f6f7;
+ min-height:38px;padding:7px 12px;
+ font:700 12px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ cursor:pointer;flex-shrink:0;
+}
+#sq-ai-window #weo-history-button:hover{background:#1e4556;border-color:#5fcfc3}
+#sq-ai-window #weo-history-drawer[hidden]{display:none!important}
+#sq-ai-window #weo-history-drawer{
+ position:absolute;inset:0;z-index:100;
+ background:rgba(3,13,23,.91);
+ display:flex;justify-content:center;align-items:stretch;
+ box-sizing:border-box;padding:18px;
+ overflow:hidden;
+}
+#sq-ai-window .weo-history-card{
+ display:flex;flex-direction:column;gap:12px;
+ width:min(100%,600px);min-height:0;
+ border:1px solid #375d70;border-radius:18px;
+ background:#0d2335;box-shadow:0 15px 40px #0008;
+ padding:18px;box-sizing:border-box;
+}
+#sq-ai-window .weo-history-card header{
+ display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+}
+#sq-ai-window .weo-history-card h2{margin:0 0 5px;color:#fff;font-size:21px}
+#sq-ai-window .weo-history-card p{margin:0;color:#9cbccc;font-size:12px;line-height:1.5}
+#sq-ai-window .weo-history-close{
+ width:36px;height:36px;flex-shrink:0;
+ border-radius:10px;border:1px solid #395b71;
+ background:#1c3c51;color:#fff;font-size:23px;cursor:pointer;
+}
+#sq-ai-window .weo-history-list{
+ display:flex;flex-direction:column;gap:8px;
+ flex:1;min-height:0;overflow-y:auto;
+ overscroll-behavior:contain;
+ -webkit-overflow-scrolling:touch;
+}
+#sq-ai-window .weo-history-item{
+ display:flex;align-items:center;gap:8px;
+ border:1px solid #2d5065;border-radius:12px;background:#122d40;
+ padding:7px;min-width:0;
+}
+#sq-ai-window .weo-history-open{
+ flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;
+ border:0;background:transparent;color:#eafcff;text-align:left;
+ padding:7px 9px;cursor:pointer;gap:5px;
+}
+#sq-ai-window .weo-history-open strong{
+ font-size:13px;line-height:1.3;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+ max-width:100%;
+}
+#sq-ai-window .weo-history-open small{color:#94b2c3;font-size:11px}
+#sq-ai-window .weo-history-delete{
+ flex:none;border:1px solid #5b4252;background:#372535;color:#ffd9e0;
+ border-radius:9px;padding:9px;font-size:11px;cursor:pointer;
+}
+#sq-ai-window .weo-history-status{padding:6px 3px;min-height:0}
+#sq-ai-window .weo-history-message{
+ max-width:min(88%,480px);white-space:pre-wrap;overflow-wrap:anywhere;
+}
+#sq-ai-window #weo-history-button:focus-visible,
+#sq-ai-window .weo-history-card button:focus-visible{
+ outline:3px solid #68e6d4;outline-offset:2px;
+}
+@media(max-width:700px){
+ #sq-ai-window #weo-history-button{
+   padding:7px 9px;min-height:36px;font-size:11px;border-radius:9px;
+ }
+ html body #sq-ai-window #weo-history-drawer{
+   padding:calc(8px + env(safe-area-inset-top,0px)) 8px calc(8px + env(safe-area-inset-bottom,0px));
+ }
+ html body #sq-ai-window .weo-history-card{padding:13px;border-radius:14px}
+ html body #sq-ai-window .weo-history-card h2{font-size:19px}
+}
