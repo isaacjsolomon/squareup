@@ -222,7 +222,15 @@
           pickerStatus.textContent='Opening tracker…';
           try{await navigate(kind,tracker.id);}
           catch(error){
-            pickerStatus.textContent=error?.message||'Could not open that tracker.';
+            const message=error?.message||'Could not open that tracker.';
+            if(panel.hidden){
+              showStatus(message);
+              window.document.getElementById('sq-ai-launch')?.click();
+            }else{
+              picker.hidden=false;
+              choice=kind;
+              pickerStatus.textContent=message;
+            }
             pickerList.querySelectorAll('button').forEach(b=>b.disabled=false);
           }
         });
@@ -234,6 +242,9 @@
   async function navigate(kind,id){
     // No expense or poll is posted automatically. The member reviews the existing form.
     if(typeof window.openTracker!=='function')throw Error('Tracker navigation is unavailable. Open it from Trackers.');
+    // Clear the selector before closing Weo, so it doesn't reappear next time.
+    picker.hidden=true;
+    choice=null;
     window.WeoChat?.close?.();
     document.getElementById('nav-trackers')?.click();
     await window.openTracker(id);
