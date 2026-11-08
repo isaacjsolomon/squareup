@@ -291,3 +291,45 @@
   html body #sq-ai-window .weo-prompt-grid{gap:7px!important;padding-left:10px!important;padding-right:10px!important}
   html body #sq-ai-window .weo-prompt-card{padding:10px!important;font-size:12px!important}
 }
+
+
+/* Keyboard-aware Weo chat on iPhone. Hide onboarding cards while composing. */
+@media(max-width:700px){
+  html body #sq-ai-window.weo-keyboard-open{
+    height:var(--weo-visible-height,100dvh)!important;
+    max-height:var(--weo-visible-height,100dvh)!important;
+    min-height:0!important;
+    padding-bottom:0!important;
+  }
+  html body #sq-ai-window.weo-typing .sq-ai-welcome,
+  html body #sq-ai-window.weo-typing .weo-prompt-grid{
+    display:none!important;
+  }
+  html body #sq-ai-window.weo-typing .sq-ai-head{
+    padding:7px 11px!important;
+  }
+  html body #sq-ai-window.weo-typing #sq-ai-form{
+    margin-top:auto!important;
+  }
+  html body #sq-ai-window .weo-more-toggle{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    line-height:1!important;
+  }
+  html body #sq-ai-window .weo-more-toggle svg{
+    display:block!important;
+    width:21px!important;height:21px!important;
+    margin:0!important;
+    flex:0 0 auto;
+    transform:none!important;
+  }
+  html body #sq-ai-window.weo-typing #sq-ai-contact{
+    display:none!important;
+  }
+  html body #sq-ai-window.weo-keyboard-open .sq-ai-messages{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+  }
+}

@@ -57,7 +57,7 @@
   moreButton.setAttribute('aria-controls','weo-quick-actions');
   moreButton.setAttribute('aria-expanded','false');
   moreButton.title='More actions';
-  moreButton.textContent='+';
+  moreButton.innerHTML='<svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
   form.insertBefore(moreButton,form.firstChild);
   const phoneLayout=window.matchMedia('(max-width:700px)');
   const closeActions=()=>{
@@ -329,13 +329,24 @@
 
   const isMobile=()=>window.matchMedia('(max-width:700px)').matches;
   const hideWhenTyping=()=>{
-    const keyboard=Boolean(isMobile()&&document.activeElement===prompt);
-    panel.classList.toggle('weo-typing',keyboard);
-    if(keyboard)closeActions();
+    const editing=Boolean(isMobile()&&document.activeElement===prompt);
+    const vv=window.visualViewport;
+    const visibleHeight=vv?.height||window.innerHeight;
+    const keyboardVisible=editing && visibleHeight < window.innerHeight-110;
+    panel.classList.toggle('weo-typing',editing);
+    panel.classList.toggle('weo-keyboard-open',keyboardVisible);
+    if(keyboardVisible){
+      panel.style.setProperty('--weo-visible-height',Math.round(visibleHeight)+'px');
+    }else{
+      panel.style.removeProperty('--weo-visible-height');
+    }
+    if(editing)closeActions();
   };
   prompt.addEventListener('focus',hideWhenTyping);
   prompt.addEventListener('blur',()=>setTimeout(hideWhenTyping,100));
   window.visualViewport?.addEventListener('resize',hideWhenTyping);
+  window.visualViewport?.addEventListener('scroll',hideWhenTyping);
+  window.addEventListener('resize',hideWhenTyping);
 
   // Give the welcome prompts a reliable, responsive layout regardless of
   // the older inline app stylesheet's card sizing and positioning rules.
@@ -357,6 +368,32 @@
   arrangePrompts();
   const promptObserver=new MutationObserver(arrangePrompts);
   promptObserver.observe(panel,{childList:true,subtree:true});
+
+
+  // Style the existing Instagram prompt's content, without changing
+  // its closing or follow-link behavior.
+  const centerInstagramPopup=()=>{
+    for(const el of document.querySelectorAll('h1,h2,h3,p')){
+      const copy=(el.textContent||'').replace(/\s+/g,' ').trim();
+      if(copy.includes('Follow DoWeo on Instagram') ||
+         (copy.includes('Get updates, new features') && copy.includes('@doweo.app'))){
+        el.style.setProperty('text-align','center','important');
+        el.style.setProperty('margin-left','auto','important');
+        el.style.setProperty('margin-right','auto','important');
+        el.style.setProperty('max-width','100%');
+      }
+    }
+  };
+  centerInstagramPopup();
+  let instagramScanPending=false;
+  new MutationObserver(()=>{
+    if(instagramScanPending)return;
+    instagramScanPending=true;
+    requestAnimationFrame(()=>{
+      instagramScanPending=false;
+      centerInstagramPopup();
+    });
+  }).observe(document.body,{childList:true,subtree:true});
 
   window.WeoActions=Object.freeze({
     hasImage:()=>Boolean(pendingImage),
