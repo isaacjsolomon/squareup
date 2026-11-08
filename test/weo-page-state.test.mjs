@@ -14,7 +14,7 @@ test('Weo has one authoritative native open and close implementation',()=>{
  assert.doesNotThrow(()=>new Script(inline));
  assert.doesNotThrow(()=>new Script(external));
  assert.match(inline,/window\.WeoPage\?\.sync\(open\)/);
- assert.match(inline,/close\.addEventListener\('click',\(\)=>\{setOpen\(false\);document\.getElementById\('nav-home'\)\?\.click\(\);\}\)/);
+ assert.match(inline,/close\.addEventListener\('click',\(\)=>\{setOpen\(false\);window\.location\.replace\('\/'\);\}\)/);
  assert.match(inline,/open:\(\)=>setOpen\(true\)/);
  assert.match(external,/window\.WeoPage=Object\.freeze\(/);
  assert.doesNotMatch(external,/const pageObserver=new MutationObserver/);
