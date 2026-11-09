@@ -32,14 +32,14 @@
  function translateDynamic(value){
    // Financial totals and record titles contain private amounts/descriptions.
    // Translate fixed phrases only; never send the whole string for translation.
-   const category=/^\\[Category: (Food & Dining|Food|Other)\\](.*)$/.exec(value);
+   const category=/^\[Category: (Food & Dining|Food|Other)\](.*)$/.exec(value);
    if(category){
      queueToken('Category:');queueToken(category[1]);
      const heading=cache['Category:']||'Category:';
      const label=cache[category[1]]||category[1];
      return '['+heading+' '+label+']'+category[2];
    }
-   const perPerson=/^(\\$[\\d,.]+) (per person)$/.exec(value);
+   const perPerson=/^(\$[\d,.]+) (per person)$/.exec(value);
    if(perPerson){
      queueToken('per person');
      return perPerson[1]+' '+(cache['per person']||'per person');
@@ -49,12 +49,12 @@
      queueToken(withTip[1]);
      return (cache[withTip[1]]||withTip[1])+withTip[2];
    }
-   const youName=/^(You)( \\([^)]+\\))$/.exec(value);
+   const youName=/^(You)( \([^)]+\))$/.exec(value);
    if(youName){
      queueToken('You');
      return (cache.You||'You')+youName[2];
    }
-   const splitSelected=/^(Split between)( \\(\\d+ selected\\))$/.exec(value);
+   const splitSelected=/^(Split between)( \(\d+ selected\))$/.exec(value);
    if(splitSelected){
      queueToken('Split between');queueToken('selected');
      const selected=cache.selected||'selected';
@@ -184,7 +184,7 @@
      if(!isSafe(el)||!visible(el))continue;
      const entry=getOriginal(node),key=entry.source.trim();
      if(!eligible(key)&&language==='en')continue;
-     if(!eligible(key)&&!/(\d+ (?:members?|total|saved)|Last activity · |monthly · |Next due |Welcome back, |Hi, |DOWEO GUIDE · |\\[Category: (?:Food & Dining|Food|Other)\\]|\\$[\\d,.]+ per person$|Total including tip:|^You \\(|^Split between \\(|Archived trackers \(\d+\)| owes |^(?:January|February|March|April|May|June|July|August|September|October|November|December) \d{4}$)/i.test(key))continue;
+     if(!eligible(key)&&!/(\d+ (?:members?|total|saved)|Last activity · |monthly · |Next due |Welcome back, |Hi, |DOWEO GUIDE · |\[Category: (?:Food & Dining|Food|Other)\]|\$[\d,.]+ per person$|Total including tip:|^You \(|^Split between \(|Archived trackers \(\d+\)| owes |^(?:January|February|March|April|May|June|July|August|September|October|November|December) \d{4}$)/i.test(key))continue;
      const next=translate(entry.source);
      if(node.nodeValue!==next){node.nodeValue=next;entry.rendered=next;}
      if(eligible(key))queueToken(key);
