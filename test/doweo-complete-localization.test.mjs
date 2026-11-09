@@ -53,7 +53,7 @@ test('client forwards language to Weo and avoids sending user content to transla
  const workflow=readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',import.meta.url),'utf8');
  assert.match(html,/payload\.locale=window\.DoWeoI18n\?\.resolve\(window\)\|\|'en'/);
  assert.match(html,/<script src="doweo-localize-ui\.js" defer><\/script>/);
- assert.match(ui,/approved\.has\(text\)/);
+ assert.match(ui,/approvedKey\(text\)/);
  assert.match(ui,/#sq-ai-stream/);
  assert.match(ui,/#tracker-chat-messages/);
  assert.match(ui,/\.expense-description/);

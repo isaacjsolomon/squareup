@@ -34,7 +34,7 @@ jobs:
       - name: Test complete localization integration and Weo response language
         run: node --test test/doweo-complete-localization.test.mjs
       - name: Test mixed-language and dynamic translation regressions
-        run: node --test test/doweo-localization-coverage.test.mjs test/doweo-translation-reliability.test.mjs
+        run: node --test test/doweo-localization-coverage.test.mjs test/doweo-translation-reliability.test.mjs test/doweo-screenshot-regressions.test.mjs
       - name: Test live translations and settings layout
         run: node --test test/doweo-translations-ui.test.mjs
       - name: Test language detection and preference override
