@@ -7481,7 +7481,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
   const messages=[...conversation,{role:'user',content:q}].slice(-15);
   try{
    if(typeof window.squareUpApi!=='function')throw Error('Please sign in to chat.');
-   const payload=imageData?{messages,image:imageData}:{messages};if(activeConversationId)payload.conversationId=activeConversationId;const result=await window.squareUpApi('ai-chat','POST',payload);if(result.conversationId)activeConversationId=result.conversationId;
+   const payload=imageData?{messages,image:imageData}:{messages};payload.locale=window.DoWeoI18n?.resolve(window)||'en';if(activeConversationId)payload.conversationId=activeConversationId;const result=await window.squareUpApi('ai-chat','POST',payload);if(result.conversationId)activeConversationId=result.conversationId;
    if(!result.reply)throw Error('No reply received. Please try again.');
    pending.remove();bubble(result.reply,false);
    window.WeoMascot?.setMood('success');
@@ -14155,6 +14155,7 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
 </style>
 <script src="doweo-i18n.js" defer></script>
 <script src="doweo-translations.js" defer></script>
+<script src="doweo-localize-ui.js" defer></script>
 
 <style id="dw-settings-account-language-layout">
 #settings-content-account > .settings-tab-grid{
@@ -14177,6 +14178,17 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
 }
 #settings-language-panel .dw-language-preference{margin:12px 0 0;}
 #settings-language-panel .dw-language-preference label{display:none;}
+</style>
+<style id="dw-rtl-language-text-support">
+/* Preserve existing app positioning while correctly flowing translated RTL text. */
+html:is([lang="he"],[lang="ar"]) :is(h1,h2,h3,h4,p,label,small,.sq-nav-label,.dw-nav-group-name,.settings-muted,.sq-ai-label,[role="tab"]){
+ direction:rtl;unicode-bidi:plaintext;
+}
+html:is([lang="he"],[lang="ar"]) .dw-language-preference select,
+html:is([lang="he"],[lang="ar"]) input:not([type="number"]):not([type="email"]),
+html:is([lang="he"],[lang="ar"]) textarea {direction:rtl}
+html:is([lang="he"],[lang="ar"]) input[type="email"],
+html:is([lang="he"],[lang="ar"]) input[type="number"]{direction:ltr}
 </style>
 </body>
 </html>
