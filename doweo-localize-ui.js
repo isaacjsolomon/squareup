@@ -76,7 +76,7 @@
  function approvedKey(value){
    const exact=String(value||'').trim();
    if(approved.has(exact))return exact;
-   const normalized=exact.replace(/\\s+/g,' ');
+   const normalized=exact.replace(/\s+/g,' ');
    if(approved.has(normalized))return normalized;
    if(normalized.endsWith(':')&&approved.has(normalized.slice(0,-1)))return normalized.slice(0,-1);
    return null;
