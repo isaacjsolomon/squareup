@@ -2482,7 +2482,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
         <label class="sq-analytics-filter">Time range <select id="analytics-range" aria-label="Analytics time range"><option value="6">Last 6 months</option><option value="12">Last 12 months</option><option value="all">All time</option></select></label>
       </div>
       <section class="sq-analytics-panel" id="sq-monthly-recap" aria-label="Monthly spending recap">
-        <div class="sq-analytics-panel-heading"><div><h3>Monthly spending recap</h3><p>Recorded expense entries in the currently open tracker</p></div><div class="sq-recap-controls"><label class="sq-analytics-filter">Month <input type="month" id="sq-recap-month" aria-label="Choose recap month"></label><button type="button" id="sq-recap-export" class="small-btn" aria-label="Export this month\'s expenses as CSV">Export CSV</button></div></div>
+        <div class="sq-analytics-panel-heading"><div><h3>Monthly spending recap</h3><p>Recorded expense entries in the currently open tracker</p></div><div class="sq-recap-controls"><label class="sq-analytics-filter">Month <input type="month" id="sq-recap-month" aria-label="Choose recap month"></label><button type="button" id="sq-recap-export" class="small-btn" aria-label="Export this month's expenses as CSV">Export CSV</button></div></div>
         <div id="sq-recap-summary" class="sq-recap-grid" aria-live="polite"><p>Open a tracker to see its monthly recap.</p></div>
         <div id="sq-recap-breakdown" class="sq-recap-breakdown"></div>
       </section>
@@ -5878,7 +5878,7 @@ document.getElementById('sq-recap-month').addEventListener('change',sqRenderMont
 document.getElementById('sq-recap-export').addEventListener('click',function(){
  if(!current){alert('Open a tracker before exporting its monthly recap.');return;}
  var month=document.getElementById('sq-recap-month').value;
- if(!/^\\d{4}-\\d{2}$/.test(month)){alert('Choose a valid month first.');return;}
+ if(!/^\d{4}-\d{2}$/.test(month)){alert('Choose a valid month first.');return;}
  var rows=[['Date','Description','From','To','Amount']];
  squareUpEntries().filter(squareUpConfirmedExpense).forEach(function(e){
   var raw=e.date||e.dateLabel||e.createdAt||e.created_at;if(!raw)return;
@@ -5893,7 +5893,7 @@ document.getElementById('sq-recap-export').addEventListener('click',function(){
   // Neutralize spreadsheet formulas in user-controlled labels.
   if(/^[=+@-]/.test(cell.trimStart()))cell="'"+cell;
   return '"'+cell.replace(/"/g,'""')+'"';
- }).join(',')).join('\\r\\n');
+ }).join(',')).join('\r\n');
  var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
  var url=URL.createObjectURL(blob);
  var link=document.createElement('a');link.href=url;
