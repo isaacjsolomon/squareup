@@ -14027,6 +14027,9 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
   const homeButton=nav.querySelector('#nav-home');
   if(homeButton)nav.prepend(homeButton);
   orderedGroups.forEach(group=>nav.append(group));
+  // Keep Beta Feedback as a standalone sidebar item after More.
+  const betaLauncher=nav.querySelector('#dw-beta-launch');
+  if(betaLauncher)nav.append(betaLauncher);
   document.addEventListener('click',function(event){
    const button=event.target.closest('.sidebar .sq-nav-link');
    if(!button)return;
@@ -14086,6 +14089,7 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
   .sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="finance"]{order:2!important}
   .sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="social"]{order:3!important}
   .sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="more"]{order:4!important}
+  .sidebar .squareup-nav #dw-beta-launch{order:5!important}
   body.side-collapsed .sidebar .squareup-nav .dw-nav-group{padding:3px!important}
   body.side-collapsed .sidebar .squareup-nav .dw-nav-group>summary{justify-content:center!important;padding:9px 3px!important}
 }
