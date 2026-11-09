@@ -36,11 +36,11 @@ export function initBetaFeedback({api,getUser}) {
       position:relative;left:auto;right:auto;top:auto;bottom:auto;z-index:auto;
       width:100%;max-width:100%;min-height:47px;box-sizing:border-box;
       margin:3px 0 2px;padding:12px 9px;justify-content:center;
-      border:1px solid #6a8fb0;border-radius:13px;
-      background:#0b2a52;color:white;box-shadow:0 5px 16px #0003;
+      border:1px solid #8e8aff66;border-radius:13px;
+      background:linear-gradient(120deg,#182d58,#5940e8);color:white;box-shadow:0 5px 16px #0003;
       font:700 13px system-ui;line-height:1.25;white-space:normal;
     }
-    .sidebar .squareup-nav #dw-beta-launch:hover{background:#143968;border-color:#85b6d9}
+    .sidebar .squareup-nav #dw-beta-launch:hover{background:linear-gradient(120deg,#182d58,#5940e8);filter:brightness(1.15)}
     body.side-collapsed .sidebar .squareup-nav #dw-beta-launch{
       min-height:42px;padding:8px 3px;font-size:0;
     }
