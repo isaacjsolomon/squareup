@@ -26,6 +26,10 @@ jobs:
           node --check weo-mascot.js
           node --check functions/api/ai-chat.js
           node --check weo-actions.js
+      - name: Check language foundation syntax and unit tests
+        run: |
+          node --check doweo-i18n.js
+          node --test test/doweo-i18n.test.cjs
       - name: Run feedback API unit tests (mocked requests, no real emails)
         run: node --test test/beta-feedback.test.mjs
       - name: Check Personal Finance summary and transaction dialog
