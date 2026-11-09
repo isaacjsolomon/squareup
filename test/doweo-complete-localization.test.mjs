@@ -6,7 +6,7 @@ import {validateTranslationRequest,parseTranslationResponse} from '../functions/
 import {Script} from 'node:vm';
 const aiScript=readFileSync(new URL('../functions/api/ai-chat.js',import.meta.url),'utf8');
 const sandbox={};
-new Script(aiScript.replace(/\\bexport\\s+(?=async\\s+function\\b)/g,'')+'\\nglobalThis.testNormalize=normalizeWeoLocale;').runInNewContext(sandbox);
+new Script(aiScript.replace('export async function onRequest','async function onRequest')+'\nglobalThis.testNormalize=normalizeWeoLocale;').runInNewContext(sandbox);
 const normalizeWeoLocale=sandbox.testNormalize;
 
 test('approved UI catalog is substantial and unique',()=>{
