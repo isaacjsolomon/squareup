@@ -30,7 +30,24 @@
    return entry;
  }
  function translateDynamic(value){
-   // Preserve personal names, amounts and dates; request only fixed UI labels.
+   // Translate fixed UI tokens in mixed status lines without touching names,
+   // expense descriptions, dates, amounts, or other user-authored data.
+   if(value.includes(' · ')){
+     const parts=value.split(' · ');
+     let changed=false;
+     const converted=parts.map(part=>{
+       const key=approvedKey(part);
+       if(key){queueToken(key);if(cache[key]){changed=true;return cache[key];}}
+       for(const token of ['Next due','added by','Previous month spending','Owed to you','You owe']){
+         if(part.startsWith(token+' ')){
+           queueToken(token);
+           if(cache[token]){changed=true;return cache[token]+part.slice(token.length);}
+         }
+       }
+       return part;
+     });
+     if(changed)return converted.join(' · ');
+   }
    const patterns=[
      /^(\d+) (members?|total|saved)$/i,
      /^(Last activity)( · .+)$/,
@@ -194,8 +211,7 @@
  function seedStaticTranslations(){
    const dictionary=root.DoWeoTranslations?.languages;
    const en=dictionary?.en, localized=dictionary?.[language];
-   if(!Array.isArray(en)||!Array.isArray(localized))return;
-   en.forEach((source,index)=>{
+   if(Array.isArray(en)&&Array.isArray(localized))en.forEach((source,index)=>{
      if(typeof localized[index]==='string'&&localized[index].trim()&&approved.has(source))cache[source]=localized[index];
    });
    // Reviewed Spanish labels override stale localStorage/AI values.
@@ -230,6 +246,8 @@
    });
    root.document.addEventListener('doweo:languagechange',schedule);
    root.addEventListener('pageshow',schedule);
+   // Allow the app to opt into targeted rescans after manually rendering a view.
+   root.document.addEventListener('doweo:uiupdated',schedule);
  }
  if(root.document.readyState==='loading')root.document.addEventListener('DOMContentLoaded',()=>{void init();},{once:true});
  else void init();
