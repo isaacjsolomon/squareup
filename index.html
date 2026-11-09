@@ -3041,15 +3041,32 @@ function populateExpenseMembers() {
 
 function renderSmartSettle(){
  var el=document.getElementById('smart-settle-list');if(!el)return;
- var net={};entries.forEach(function(e){if(e.paymentStatus&&e.paymentStatus!=='confirmed')return;
-  var a=norm(e.from),b=norm(e.to),c=Math.round(Number(e.amount)*100)*(e.type==='debt'?-1:1);
-  net[a]=(net[a]||0)+c;net[b]=(net[b]||0)-c;
+ // Use integer cents and confirmed entries only; suggestions never create payments.
+ var net=Object.create(null), valid=0;
+ entries.forEach(function(e){
+  if(e.paymentStatus&&e.paymentStatus!=='confirmed')return;
+  if(e.type!=='debt'&&e.type!=='payment')return;
+  var amount=Number(e.amount),a=norm(e.from||''),b=norm(e.to||'');
+  if(!Number.isFinite(amount)||amount<=0||!a||!b||a===b)return;
+  var cents=Math.round(amount*100);
+  if(!Number.isSafeInteger(cents)||cents<1)return;
+  var signed=cents*(e.type==='debt'?-1:1);
+  net[a]=(net[a]||0)+signed;net[b]=(net[b]||0)-signed;valid++;
  });
- var debtors=Object.keys(net).filter(k=>net[k]<0).map(k=>({name:k,amount:-net[k]})).sort((a,b)=>b.amount-a.amount);
- var creditors=Object.keys(net).filter(k=>net[k]>0).map(k=>({name:k,amount:net[k]})).sort((a,b)=>b.amount-a.amount);
- var suggestions=[],i=0,j=0;while(i<debtors.length&&j<creditors.length){var n=Math.min(debtors[i].amount,creditors[j].amount);if(n>0)suggestions.push({from:debtors[i].name,to:creditors[j].name,amount:n/100});debtors[i].amount-=n;creditors[j].amount-=n;if(!debtors[i].amount)i++;if(!creditors[j].amount)j++;}
- var names=nameMap();if(typeof window.squareUpExpenseMembers==='function')window.squareUpExpenseMembers().forEach(m=>{names[norm(m.name)]=m.name;});
- el.innerHTML=suggestions.map(s=>'<div class="smart-row"><span><b>'+esc(names[s.from]||s.from)+'</b> → <b>'+esc(names[s.to]||s.to)+'</b></span><strong>'+money(s.amount)+'</strong></div>').join('')||'<p class="dashboard-subheading">Everyone is squared up 🎉</p>';
+ var sortByAmount=(a,b)=>b.amount-a.amount||a.name.localeCompare(b.name);
+ var debtors=Object.keys(net).filter(k=>net[k]<0).map(k=>({name:k,amount:-net[k]})).sort(sortByAmount);
+ var creditors=Object.keys(net).filter(k=>net[k]>0).map(k=>({name:k,amount:net[k]})).sort(sortByAmount);
+ var suggestions=[],i=0,j=0,total=0;
+ while(i<debtors.length&&j<creditors.length){
+  var n=Math.min(debtors[i].amount,creditors[j].amount);
+  if(n>0){suggestions.push({from:debtors[i].name,to:creditors[j].name,amount:n/100});total+=n;}
+  debtors[i].amount-=n;creditors[j].amount-=n;
+  if(!debtors[i].amount)i++;if(!creditors[j].amount)j++;
+ }
+ var names=nameMap();
+ if(typeof window.squareUpExpenseMembers==='function')window.squareUpExpenseMembers().forEach(m=>{names[norm(m.name)]=m.name;});
+ var summary=suggestions.length?'<p class="dashboard-subheading">'+suggestions.length+' suggested '+(suggestions.length===1?'payment':'payments')+' · '+money(total/100)+' total. Suggestions only; no money moves automatically.</p>':'<p class="dashboard-subheading">'+(valid?'Everyone is squared up 🎉':'No confirmed expenses to settle yet.')+'</p>';
+ el.innerHTML=summary+suggestions.map(s=>'<div class="smart-row"><span><b>'+esc(names[s.from]||s.from)+'</b> → <b>'+esc(names[s.to]||s.to)+'</b></span><strong>'+money(s.amount)+'</strong></div>').join('');
 }
 function render() {
   var names = nameMap();
@@ -7105,15 +7122,15 @@ body.trackers-view > .wrap > :not(.tracker-heading):not(.sq-mobile-top):not(#tra
  async function send(feature,entry,data,method='POST'){return api(path(feature,entry),method,data)}
  function expensePicker(paymentsOnly=false){const list=(tracker()?.entries||[]).filter(x=>!paymentsOnly||x.type==='payment');return '<label>Choose an '+(paymentsOnly?'payment':'expense')+'<select id="sq-feat-expense">'+list.map(e=>'<option value="'+escapeHTML(e.id)+'">'+escapeHTML((e.note||e.from+' → '+e.to).slice(0,65))+' · '+Number(e.amount||0).toFixed(2)+'</option>').join('')+'</select></label>'}
  function chosen(){return document.getElementById('sq-feat-expense')?.value}
- function offlineKey(){const uid=(typeof currentUser!=='undefined'&&currentUser?.id)||null;return uid?'sq-offline-preview-'+uid:null}
- function saveOffline(){if(!tracker()||!offlineKey())return;try{sessionStorage.setItem(offlineKey(),JSON.stringify({saved:Date.now(),id:tracker().id,name:tracker().name,entries:(tracker().entries||[]).map(e=>({type:e.type,amount:e.amount,note:e.note,date:e.date}))}));}catch{}}
+ function offlineKey(){const uid=(typeof currentUser!=='undefined'&&currentUser?.id)||null;const id=tracker()?.id;return uid&&id?'sq-offline-preview-v2:'+uid+':'+id:null}
+ function saveOffline(){const t=tracker(),key=offlineKey();if(!t||!key||!navigator.onLine)return;try{sessionStorage.setItem(key,JSON.stringify({saved:Date.now(),id:t.id,name:t.name,entries:(t.entries||[]).filter(e=>e.paymentStatus==='confirmed'||!e.paymentStatus).slice(-30).map(e=>({type:e.type,amount:e.amount,note:e.note,date:e.date}))}));}catch{}}
  async function draw(){msg('');const t=tracker();if(!t){content.innerHTML='<p>Open a tracker first.</p>';return;}saveOffline();
   try{
    if(mode==='goals'){
     const goals=await get('goals');const blocks=await Promise.all(goals.map(async g=>{const c=await get('contributions',g.id);const total=c.reduce((s,x)=>s+Number(x.amount),0);return '<div class="sq-feature-card"><strong>'+escapeHTML(g.title)+'</strong><p>$'+total.toFixed(2)+' of $'+Number(g.target_amount).toFixed(2)+'</p><progress style="width:100%" max="100" value="'+Math.min(100,total/Number(g.target_amount)*100)+'"></progress><div class="sq-feature-actions"><input style="max-width:160px" type="number" min="0.01" step="0.01" placeholder="Contribution $" data-contribution="'+g.id+'"><button data-contribute="'+g.id+'">Record contribution</button></div><p class="sq-feature-muted">'+c.length+' recorded contributions. These do not affect expense balances.</p></div>'}));
     content.innerHTML='<h3>Shared savings goals</h3>'+blocks.join('')+'<div class="sq-feature-card"><strong>Create a goal</strong><label>Goal name<input id="sq-goal-title" maxlength="100" placeholder="Summer trip"></label><label>Target amount<input id="sq-goal-target" type="number" min="0.01" step="0.01"></label><button class="sq-feature-positive" id="sq-create-goal">Create goal</button></div>';
    }else if(mode==='offline'){
-    const saved=JSON.parse((offlineKey()?sessionStorage.getItem(offlineKey()):null)||'null');content.innerHTML='<h3>Read-only offline preview</h3><p>Previously viewed entries are saved only for this browser tab/session. This is not a full offline sync.</p>'+(saved?'<p>Saved: '+new Date(saved.saved).toLocaleString()+' · '+escapeHTML(saved.name)+'</p><div class="sq-feature-card">'+saved.entries.slice(-30).reverse().map(e=>'<p>'+escapeHTML(e.note||e.type)+' — $'+Number(e.amount).toFixed(2)+'</p>').join('')+'</div>':'<p>No offline snapshot yet.</p>')+'<button id="sq-clear-offline">Clear offline snapshot</button>';
+    const saved=JSON.parse((offlineKey()?sessionStorage.getItem(offlineKey()):null)||'null');if(saved&&saved.id!==t.id)throw Error('Offline preview does not belong to this tracker.');content.innerHTML='<h3>Read-only offline preview</h3><p>Previously viewed entries are saved only for this browser tab/session. This is not a full offline sync.</p>'+(saved?'<p>Saved: '+new Date(saved.saved).toLocaleString()+' · '+escapeHTML(saved.name)+'</p><div class="sq-feature-card">'+saved.entries.slice(-30).reverse().map(e=>'<p>'+escapeHTML(e.note||e.type)+' — $'+Number(e.amount).toFixed(2)+'</p>').join('')+'</div>':'<p>No offline snapshot yet.</p>')+'<button id="sq-clear-offline">Clear offline snapshot</button>';
    }else{
     const pay=mode==='disputes';content.innerHTML='<h3>'+({comments:'Expense comments & reactions',attachments:'Expense attachments',disputes:'Dispute resolution center'}[mode])+'</h3>'+expensePicker(pay)+'<div id="sq-feat-detail">Select an entry.</div>';
     document.getElementById('sq-feat-expense')?.addEventListener('change',detail);await detail();
@@ -11095,7 +11112,18 @@ document.getElementById('side-toggle')?.addEventListener('click',()=>{if(!root.h
 function switchFinanceTab(next){if(next===tab)return;previousFinanceTabs.push(tab);tab=next;openedWorkspaces.trip=null;openedWorkspaces.household=null;render();}
 document.getElementById('sq-finance-nav').addEventListener('click',()=>open('finance'));document.getElementById('sq-ng-mobile-select').addEventListener('change',e=>switchFinanceTab(e.target.value));root.querySelectorAll('[data-ng-tab]').forEach(b=>b.addEventListener('click',()=>switchFinanceTab(b.dataset.ngTab)));
 async function render(){document.getElementById('sq-ng-mobile-select').value=tab;root.querySelectorAll('[data-ng-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.ngTab===tab));const labels={finance:['Personal Finance Hub','Private spending and income, separate from your shared trackers.'],wallet:['Wallet & Settlements','Your balances across existing trackers, without changing any debts.'],trip:['Trip Mode','Your existing trips stay linked to their trackers.'],home:['Household Mode','Build shared routines around your existing trackers.'],subscriptions:['Subscription Manager','Manage recurring bills in your existing billing center.'],currencies:['Multi-Currency','Understand how currency conversion works in DoWeo.'],insights:['Smart Insights','Useful answers calculated from your saved financial records.']};document.getElementById('sq-ng-title').textContent=labels[tab][0];document.getElementById('sq-ng-subtitle').textContent=labels[tab][1];status.textContent='';content.innerHTML='<p>Loading your workspace…</p>';try{if(tab==='finance'||tab==='insights'){finance=await api('finance/transactions');drawFinance()}else if(tab==='wallet')await drawWallet();else await drawWorkspace()}catch(e){content.innerHTML='<div class="sq-ng-empty">'+esc(e.message||'Could not load this section')+'</div>';}}
-function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce((a,x)=>a+Number(x.amount),0),spent=finance.filter(x=>x.kind==='expense').reduce((a,x)=>a+Number(x.amount),0);const byCategory={};finance.filter(x=>x.kind==='expense').forEach(x=>byCategory[x.category]=(byCategory[x.category]||0)+Number(x.amount));if(tab==='insights'){const largest=Object.entries(byCategory).sort((a,b)=>b[1]-a[1])[0];content.innerHTML=`<div class="sq-ng-grid">${card('Recorded income',money(income),true)}${card('Recorded spending',money(spent))}${card('Net personal cash flow',money(income-spent))}</div><div class="sq-ng-card"><h2>Your spending insights</h2><p>${largest?'Your largest recorded spending category is '+esc(largest[0])+' at '+esc(money(largest[1]))+'.':'Add personal expenses to see category insights.'}</p><p class="sq-ng-note">These are calculations based on your private personal records, not a generative AI response. They do not include shared tracker debts.</p></div>`;return;}
+function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce((a,x)=>a+Number(x.amount),0),spent=finance.filter(x=>x.kind==='expense').reduce((a,x)=>a+Number(x.amount),0);const byCategory={};finance.filter(x=>x.kind==='expense').forEach(x=>byCategory[x.category]=(byCategory[x.category]||0)+Number(x.amount));if(tab==='insights'){
+ const largest=Object.entries(byCategory).sort((a,b)=>b[1]-a[1])[0];
+ const today=new Date(),thisMonth=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0');
+ const previousDate=new Date(today.getFullYear(),today.getMonth()-1,1),lastMonth=previousDate.getFullYear()+'-'+String(previousDate.getMonth()+1).padStart(2,'0');
+ const monthRows=finance.filter(x=>/^\\d{4}-\\d{2}-\\d{2}$/.test(String(x.occurred_on||''))&&Number.isFinite(Number(x.amount))&&Number(x.amount)>=0);
+ const monthTotal=(month,kind)=>Math.round(monthRows.filter(x=>String(x.occurred_on).slice(0,7)===month&&x.kind===kind).reduce((a,x)=>a+Number(x.amount),0)*100)/100;
+ const currentSpending=monthTotal(thisMonth,'expense'),previousSpending=monthTotal(lastMonth,'expense'),currentIncome=monthTotal(thisMonth,'income');
+ const difference=Math.round((currentSpending-previousSpending)*100)/100;
+ const monthlyByCategory={};monthRows.filter(x=>x.kind==='expense'&&String(x.occurred_on).startsWith(thisMonth)).forEach(x=>{var category=x.category||'Other';monthlyByCategory[category]=(monthlyByCategory[category]||0)+Number(x.amount)});
+ const categories=Object.entries(monthlyByCategory).sort((a,b)=>b[1]-a[1]).slice(0,6);
+ const categoryRows=categories.length?categories.map(([category,amount])=>'<div class="sq-ng-item"><span>'+esc(category)+'</span><strong>'+esc(money(amount))+'</strong></div>').join(''):'<p class="sq-ng-note">No personal expenses recorded this month.</p>';
+ content.innerHTML=`<div class="sq-ng-grid">${card('This month spending',money(currentSpending),true)}${card('This month income',money(currentIncome))}${card('Previous month spending',money(previousSpending))}</div><div class="sq-ng-card"><h2>Monthly spending comparison</h2><p>${difference===0?'Spending is unchanged from last month.':difference>0?'You have recorded '+esc(money(difference))+' more spending this month.':'You have recorded '+esc(money(-difference))+' less spending this month.'}</p><p class="sq-ng-note">Current month is still in progress. Only recorded transactions are counted.</p></div><div class="sq-ng-card sq-ng-section"><h2>Spending by category this month</h2><div class="sq-ng-list">${categoryRows}</div></div><div class="sq-ng-card sq-ng-section"><h2>All-time personal insights</h2><p>${largest?'Your largest recorded category is '+esc(largest[0])+' ('+esc(money(largest[1]))+').':'Add personal expenses to see spending insights.'}</p><p class="sq-ng-note">These calculations use your private personal transactions, not shared tracker debts. They are not financial advice.</p></div>`;return;}
 content.innerHTML=`<div class="sq-ng-finance-overview"><div class="sq-ng-grid sq-ng-summary-stack">${card('Personal cash flow',money(income-spent),true)}${card('Total income',money(income))}${card('Total spending',money(spent))}</div><button type="button" class="sq-ng-add-action" id="sq-ng-open-transaction" aria-haspopup="dialog" aria-controls="sq-ng-txn-overlay"><span class="sq-ng-add-action-icon" aria-hidden="true">+</span><strong>Add Expense</strong><span class="sq-ng-add-action-hint">Or record income</span></button></div><section class="sq-ng-card sq-ng-section"><h2>Recent personal activity</h2><div class="sq-ng-list">${finance.length?finance.map(x=>`<div class="sq-ng-item"><div><b>${esc(x.description)}</b><small>${esc(x.category)} · ${esc(x.kind)} · ${esc(x.occurred_on)}</small></div><div><b>${x.kind==='expense'?'-':'+'}${esc(money(x.amount))}</b> <button type="button" data-delete="${esc(x.id)}">Delete</button></div></div>`).join(''):'<div class="sq-ng-empty">No personal transactions yet. Add your first one above.</div>'}</div></section><p class="sq-ng-note">Personal records are private and never change shared tracker balances.</p>`;
 const modalHtml = `<div id="sq-ng-txn-overlay" class="sq-ng-txn-overlay" hidden>
  <section class="sq-ng-txn-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-ng-txn-title">
