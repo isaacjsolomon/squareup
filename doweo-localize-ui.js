@@ -102,7 +102,11 @@
        // Correct legacy singular "1 members" labels.
        if(match[1]==='1'&&token.toLowerCase()==='members')token='member';
        queueToken(token);
-       return match[1]+' '+(cache[token]||token);
+       // Japanese, Korean and Chinese counters join their classifiers without
+       // English-style whitespace: 2人, 2명, 2位成员.
+       const translated=cache[token]||token;
+       const separator=['ja','ko','zh-Hans'].includes(language)&&/^members?$/i.test(token)?'':' ';
+       return match[1]+separator+translated;
      }
      if(match[2]===' owes '){
        queueToken('owes');
