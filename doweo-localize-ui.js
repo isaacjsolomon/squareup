@@ -209,7 +209,6 @@
      const i=actionKeys.indexOf(source);
      if(i<0)continue;
      const label=actionLocales[language]?.[i]||source;
-     const plus=source.startsWith('Create new ')&&/^[+＋]/u.test(element.textContent.trim())?'＋ ':'';
      const arrow=source==='Open tracker'?' →':'';
      // Keep the leading plus for dynamically recreated controls.
      if(source.startsWith('Create new ')&&element.dataset.dwCreatePlus===undefined){
@@ -222,6 +221,7 @@
 
  function render(){
    hideDecorativeDescriptions();
+   translateCreateActions();
    const tree=root.document.createTreeWalker(root.document.body,NodeFilter.SHOW_TEXT);
    let node;
    while((node=tree.nextNode())){
