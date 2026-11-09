@@ -7,14 +7,17 @@
  const original=new WeakMap(),attributes=new WeakMap();
  const excluded='script,style,noscript,code,pre,svg,canvas,[contenteditable],#sq-ai-stream,#tracker-chat-messages,.chat-bubble,.chat-line,.message-bubble,.sq-chat-message,.expense-description,.tracker-member-name,.sq-member-name,.sq-friend-name,[data-user-content],[data-chat-id],[data-entry-id],.sq-detail-entry,.sq-return-row,.sq-ng-transaction,.notification-item,.sq-notification-row,#history,#sq-friends-results';
  const attrNames=['placeholder','aria-label','title','alt'];
- let approved=null,language='en',cache={},requested=new Set(),pending=new Set(),running=0,scanTimer=null,saveTimer=null;
+ let approved=null,language='en',cache={},requested=new Set(),pending=new Set(),running=0,scanTimer=null,saveTimer=null,retryTimer=null,lastRequest=0;
+ const retries=new Map();
+ const MAX_ATTEMPTS=4;
+ const SEND_INTERVAL=3100; // Stay below the API's 20 requests/minute per visitor.
  const storageKey=locale=>'doweo-interface-translations-v2-'+locale;
  function locale(){return i18n.resolve(root);}
  function visible(el){
-   if(el.closest('[hidden],[aria-hidden="true"],[inert]'))return false;
+   // Translate inactive tabs and dialogs too, before they are first opened.
+   // Text from user-generated areas is still blocked by isSafe().
    // Native select options typically have no client rect until opened.
-   if(el.tagName==='OPTION')return Boolean(el.parentElement?.getClientRects().length);
-   return Boolean(el.getClientRects().length);
+   return true;
  }
  function isSafe(element){
    return Boolean(element)&&!element.closest(excluded)&&!element.closest('[data-dw-language-select]');
@@ -96,26 +99,54 @@
      });
      save();schedule();
    }catch(_){
-     // Keep original English text and do not retry in a tight loop.
+     if(lang===language){
+       const now=Date.now();
+       for(const key of batch){
+         const count=(retries.get(key)||0)+1;
+         retries.set(key,count);
+         requested.delete(key);
+         if(count<MAX_ATTEMPTS)pending.add(key);
+       }
+       // Retry transient API failures without looping or exhausting rate limits.
+       const delay=4500*Math.min(4,Math.max(...batch.map(k=>retries.get(k)||1)));
+       if(retryTimer)clearTimeout(retryTimer);
+       retryTimer=setTimeout(()=>{retryTimer=null;pump();},delay);
+     }
    }finally{
      running--;pump();
    }
  }
  function pump(){
    if(!approved||language==='en')return;
-   while(running<2&&pending.size){
+   if(running>0||retryTimer)return;
+   const wait=SEND_INTERVAL-(Date.now()-lastRequest);
+   if(wait>0){retryTimer=setTimeout(()=>{retryTimer=null;pump();},wait);return;}
+   while(running<1&&pending.size){
      const batch=[];
      for(const key of pending){pending.delete(key);if(!requested.has(key)&&!cache[key]){batch.push(key);requested.add(key);}if(batch.length>=16)break;}
      if(!batch.length)continue;
+     if(!batch.length)return;
+     lastRequest=Date.now();
      running++;
      void send(batch,language);
    }
+ }
+ function seedStaticTranslations(){
+   const dictionary=root.DoWeoTranslations?.languages;
+   const en=dictionary?.en, localized=dictionary?.[language];
+   if(!Array.isArray(en)||!Array.isArray(localized))return;
+   en.forEach((source,index)=>{
+     if(typeof localized[index]==='string'&&localized[index].trim()&&approved.has(source))cache[source]=localized[index];
+   });
  }
  function scan(){
    if(!approved)return;
    const next=locale();
    if(language!==next){
-     language=next;pending.clear();requested.clear();readCache();
+     language=next;pending.clear();requested.clear();retries.clear();
+     if(retryTimer){clearTimeout(retryTimer);retryTimer=null;}
+     readCache();
+     seedStaticTranslations();
    }
    render();
  }
@@ -128,10 +159,10 @@
      const module=await import('/doweo-ui-catalog.mjs');
      approved=new Set(module.UI_PHRASES);
    }catch(_){return;}
-   language=locale();readCache();
+   language=locale();readCache();seedStaticTranslations();
    scan();
    new MutationObserver(schedule).observe(root.document.body,{
-     childList:true,subtree:true,attributes:true,attributeFilter:['class','hidden','aria-hidden','placeholder','title','aria-label']
+     childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['class','hidden','aria-hidden','placeholder','title','aria-label','alt']
    });
    root.document.addEventListener('doweo:languagechange',schedule);
    root.addEventListener('pageshow',schedule);
