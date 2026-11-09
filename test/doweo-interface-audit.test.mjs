@@ -51,3 +51,18 @@ test('reported static text across the app has immediate Spanish translations',()
  for(const [screen,phrases] of Object.entries(screens))
    for(const phrase of phrases)assert.ok(es[phrase]&&approved.has(phrase),screen+': '+phrase);
 });
+
+test('sidebar labels and personalized greeting translate while preserving the name',()=>{
+ const start=code.indexOf(' function translateDynamic(');
+ const end=code.indexOf(' function render(){',start);
+ const customApproved=new Set(UI_PHRASES);
+ const sandbox={cache:{'Hi,':'Hola,','Finance Hub':'Centro financiero','Beta Feedback':'Comentarios de la beta',owes:'debe','Archived trackers':'Grupos archivados'},approved:customApproved,language:'es',pending:new Set(),requested:new Set(),retries:new Map(),MAX_ATTEMPTS:4,Intl,Date};
+ vm.runInNewContext(code.slice(start,end)+'\n globalThis.test={translate,eligible};',sandbox);
+ const {translate,eligible}=sandbox.test;
+ assert.equal(translate('Hi, Isaac Solomon'),'Hola, Isaac Solomon');
+ assert.equal(translate('Finance Hub'),'Centro financiero');
+ assert.equal(translate('✦ Beta Feedback'),'✦ Comentarios de la beta');
+ assert.equal(translate('Archived trackers (0)'),'Grupos archivados (0)');
+ assert.equal(translate('Sasha owes Isaac $21.24'),'Sasha debe Isaac $21.24');
+ assert.equal(eligible('Hi, Isaac Solomon'),false);
+});
