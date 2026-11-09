@@ -22,7 +22,7 @@ test('hide decorative page descriptions but not financial or form instructions',
  assert.match(ui,/function hideDecorativeDescriptions\(\)/);
  assert.match(ui,/h1 \+ p, h2 \+ p, h3 \+ p/);
  assert.match(ui,/\.sqev-toolbar \.sqev-subtitle/);
- assert.match(ui,/closest\('form,dialog/);
+ assert.match(ui,/closest\('#about-page,form,dialog/);
  assert.match(ui,/password\|permanently\|cannot be undone/);
  assert.match(ui,/if\(!el\.hidden\)/);
  assert.match(ui,/hideDecorativeDescriptions\(\);/);
