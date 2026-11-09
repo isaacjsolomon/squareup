@@ -69,7 +69,7 @@
        queueToken(token);
        return match[1]+' '+(cache[token]||token);
      }
-     if(n===6){
+     if(match[2]===' owes '){
        queueToken('owes');
        return match[1]+' '+(cache.owes||'owes')+' '+match[3];
      }
