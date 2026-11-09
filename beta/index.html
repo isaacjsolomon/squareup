@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Apply to test DoWeo, an app for shared expenses, and help us build a better experience.">
+<title>Join the DoWeo Beta</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}
+body{margin:0;background:#071a36;color:#f7fbff;min-height:100vh}body:before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 90% 10%,#13cfbc20,transparent 40%),radial-gradient(ellipse at 0% 95%,#18cbe51c,transparent 45%);pointer-events:none}
+.container{max-width:1160px;margin:auto;padding:34px 28px 70px;position:relative}
+nav{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:84px}
+.logo{display:flex;align-items:center;gap:14px;font-size:28px;font-weight:850;letter-spacing:-1.5px;text-decoration:none;color:#fff}
+.logo img{width:44px;height:44px;border-radius:10px;object-fit:contain}
+nav a.back{color:#c7deec;text-decoration:none;font-size:14px}nav a.back:hover{text-decoration:underline}
+main{display:grid;grid-template-columns:1.02fr .98fr;gap:75px;align-items:start}
+.eyebrow{color:#64ead7;text-transform:uppercase;letter-spacing:3px;font-size:12px;font-weight:850}
+h1{font-size:clamp(48px,6vw,78px);letter-spacing:-.065em;line-height:1.03;margin:20px 0 25px;font-weight:850}
+h1 span{color:#79f4d4}
+.lead{font-size:19px;line-height:1.65;color:#c2d5e6;max-width:550px;margin-bottom:35px}
+.benefit{display:flex;gap:14px;margin:22px 0;align-items:flex-start;color:#dce9f4}
+.benefit b{display:block;color:#fff;margin-bottom:5px}.benefit small{display:block;font-size:14px;line-height:1.5;color:#b3c9da}
+.symbol{display:grid;place-items:center;width:42px;height:42px;border:1px solid #43dfc888;background:#0a3a4b;border-radius:13px;color:#7bf4db;flex-shrink:0;font-size:22px}
+.panel{border:1px solid #2f6076;background:linear-gradient(160deg,#112d4d,#0c223f);box-shadow:0 24px 80px #0005;border-radius:24px;padding:32px}
+h2{margin:0;font-size:27px;letter-spacing:-.03em} .sub{color:#b7cadb;font-size:14px;line-height:1.5;margin:9px 0 25px}
+.field{margin:17px 0}label{display:block;font-size:13px;font-weight:750;margin-bottom:8px}
+input,select,textarea{width:100%;background:#091d35;border:1px solid #456781;border-radius:12px;padding:13px 14px;font:inherit;color:#fff;outline:none}
+textarea{min-height:95px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:#6ef5d6;box-shadow:0 0 0 3px #6ef5d622}
+option{background:#091d35}.consent{display:flex;align-items:flex-start;gap:10px;margin-top:20px;color:#c0d3e3;font-size:13px;line-height:1.5}.consent input{width:18px;height:18px;accent-color:#52dbc3;flex:0 0 auto}
+button{border:0;width:100%;background:linear-gradient(110deg,#88f5d2,#2bded4);padding:16px;color:#092035;border-radius:13px;font-size:16px;font-weight:850;cursor:pointer;margin-top:20px}
+button:disabled{opacity:.6;cursor:wait}#message{min-height:22px;font-size:14px;margin-top:16px}#message.error{color:#ffb9ba}#message.success{color:#95f6d3}
+.footer{margin-top:70px;border-top:1px solid #25445e;padding-top:22px;font-size:13px;color:#93afc5;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.trap{position:absolute;left:-10000px;opacity:0}
+@media(max-width:850px){nav{margin-bottom:50px}main{grid-template-columns:1fr;gap:35px}h1{font-size:52px}.lead{font-size:17px}.panel{padding:24px}}@media(max-width:500px){.container{padding:22px 17px 40px}.logo{font-size:24px}.logo img{width:37px;height:37px}h1{font-size:46px}}
+</style></head><body>
+<div class="container"><nav><a class="logo" href="/" aria-label="DoWeo home"><img src="/icons/icon-192.png" alt="">DoWeo</a><a class="back" href="/">← Back to DoWeo</a></nav>
+<main><section><div class="eyebrow">DoWeo Beta Program</div><h1>Help build a <span>better way</span> to split expenses.</h1>
+<p class="lead">Try DoWeo on the real website, explore the features, and tell us what works—and what needs improvement. No separate app required.</p>
+<div class="benefit"><div class="symbol">✦</div><div><b>Try the real DoWeo</b><small>Create trackers, manage shared expenses, and explore the app at your own pace.</small></div></div>
+<div class="benefit"><div class="symbol">✎</div><div><b>Share what you think</b><small>Report bugs, suggest features, and rate your experience through our in-app Feedback Center.</small></div></div>
+<div class="benefit"><div class="symbol">♡</div><div><b>Shape what comes next</b><small>Your input helps us prioritize improvements for everyone.</small></div></div>
+</section>
+<section class="panel" aria-label="Beta application form"><h2>Apply to join the beta</h2><p class="sub">Tell us a little about yourself. Applications are reviewed before acceptance.</p>
+<form id="beta-form">
+<div class="field"><label for="display_name">Your name *</label><input id="display_name" name="display_name" required minlength="2" maxlength="80" autocomplete="name" placeholder="John Smith"></div>
+<div class="field"><label for="email">Email address *</label><input id="email" name="email" type="email" required maxlength="254" autocomplete="email" placeholder="you@example.com"></div>
+<div class="field"><label for="device">What will you test on? *</label><select id="device" name="device" required><option value="">Select your device</option><option value="iphone">iPhone</option><option value="android">Android</option><option value="desktop">Desktop / laptop</option><option value="multiple">Multiple devices</option></select></div>
+<div class="field"><label for="use_case">What would you use DoWeo for? *</label><select id="use_case" name="use_case" required><option value="">Choose an option</option><option value="friends">Splitting expenses with friends</option><option value="trips">Trips and events</option><option value="households">Household expenses</option><option value="personal">Personal financial tracking</option><option value="other">Something else</option></select></div>
+<div class="field"><label for="note">Anything you'd like us to know? (Optional)</label><textarea id="note" maxlength="600" placeholder="What interests you most about DoWeo?"></textarea></div>
+<div class="trap" aria-hidden="true"><label for="website">Website</label><input id="website" autocomplete="off" tabindex="-1"></div>
+<label class="consent"><input id="consent" type="checkbox" required><span>I agree to be contacted by DoWeo about my beta application. My details will be used to review my application, not displayed publicly.</span></label>
+<div id="verification"></div>
+<button type="submit" id="submit">Apply to Join →</button><div id="message" role="status" aria-live="polite"></div>
+</form></section></main>
+<div class="footer"><span>DoWeo Beta · Real website, real feedback.</span><span>Questions? <a href="mailto:help.doweo@gmail.com" style="color:#8cf5dd">help.doweo@gmail.com</a></span></div></div>
+<script>
+const form=document.getElementById('beta-form'),button=document.getElementById('submit'),status=document.getElementById('message');
+form.addEventListener('submit',async e=>{e.preventDefault();if(!form.reportValidity())return;button.disabled=true;status.className='';status.textContent='Submitting your application…';
+try{const r=await fetch('/api/beta-signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+display_name:form.display_name.value,email:form.email.value,device:form.device.value,use_case:form.use_case.value,note:document.getElementById('note').value,
+website:document.getElementById('website').value,consent:document.getElementById('consent').checked,turnstile_token:window.turnstile?.getResponse?.()||''
+})});const data=await r.json();if(!r.ok)throw new Error(data.error||'Submission failed');status.className='success';status.textContent=data.message||'Application received!';form.reset()}catch(err){status.className='error';status.textContent=err.message||'Something went wrong.'}finally{button.disabled=false}});
+</script></body></html>
