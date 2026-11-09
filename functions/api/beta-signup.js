@@ -2,7 +2,15 @@
 const PROJECT='https://pajrdqarszbnrlstoyly.supabase.co';
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export async function onRequest({request,env}) {
- if(request.method==='GET') return json({ready:Boolean(env.SUPABASE_SERVICE_ROLE_KEY)});
+ if(request.method==='GET') {
+  const oneCaptchaKey=Boolean(env.TURNSTILE_SECRET_KEY)!==Boolean(env.TURNSTILE_SITE_KEY);
+  return json({
+    ready:Boolean(env.SUPABASE_SERVICE_ROLE_KEY)&&!oneCaptchaKey,
+    turnstile_required:Boolean(env.TURNSTILE_SECRET_KEY)&&Boolean(env.TURNSTILE_SITE_KEY),
+    turnstile_site_key:env.TURNSTILE_SITE_KEY&&env.TURNSTILE_SECRET_KEY?env.TURNSTILE_SITE_KEY:null,
+    ...(oneCaptchaKey?{error:'Beta verification is not fully configured yet.'}:{})
+  });
+ }
  if(request.method!=='POST') return json({error:'Method not allowed'},405);
  const origin=request.headers.get('Origin');
  if(origin&&origin!==new URL(request.url).origin) return json({error:'Origin not allowed'},403);
