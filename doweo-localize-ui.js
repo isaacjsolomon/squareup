@@ -45,7 +45,9 @@
      const match=patterns[n].exec(clean);
      if(!match)continue;
      if(n===0){
-       const token=match[2];
+       let token=match[2];
+       // Correct legacy singular "1 members" labels.
+       if(match[1]==='1'&&token.toLowerCase()==='members')token='member';
        queueToken(token);
        return match[1]+' '+(cache[token]||token);
      }
@@ -68,14 +70,27 @@
    const match=/^(\s*)([\s\S]*?)(\s*)$/.exec(value);
    if(!match)return value;
    const key=match[2];
-   const canonical=approvedKey(key)||key;
-   const translated=cache[canonical];
-   const suffix=canonical!==key&&key.endsWith(':')?':':'';
-   return match[1]+(translated?translated+suffix:translateDynamic(key))+match[3];
+   // UI controls are often rendered with decorative icons or a plus/arrow.
+   // Translate only an approved label and preserve its decoration.
+   const decorated=/^([+☆★✦✧←→↗↖↘↙📌]\\s*)(.+)$/.exec(key);
+   const candidate=decorated?decorated[2]:key;
+   const canonical=approvedKey(candidate);
+   const suffix=canonical!==candidate&&candidate.endsWith(':')?':':'';
+   const translated=canonical&&cache[canonical];
+   if(translated)return match[1]+(decorated?decorated[1]:'')+translated+suffix+match[3];
+   const month=/^(January|February|March|April|May|June|July|August|September|October|November|December) (\\d{4})$/.exec(key);
+   if(month){
+     const year=Number(month[2]),index=['January','February','March','April','May','June','July','August','September','October','November','December'].indexOf(month[1]);
+     return match[1]+new Intl.DateTimeFormat(language,{month:'long',year:'numeric'}).format(new Date(Date.UTC(year,index,1)))+match[3];
+   }
+   return match[1]+translateDynamic(key)+match[3];
  }
  function approvedKey(value){
    const exact=String(value||'').trim();
    if(approved.has(exact))return exact;
+   // Prefix glyphs belong to the interface, never to customer data.
+   const decorated=/^[+☆★✦✧←→↗↖↘↙📌]\\s*(.+)$/.exec(exact);
+   if(decorated&&approved.has(decorated[1]))return decorated[1];
    const normalized=exact.replace(/\s+/g,' ');
    if(approved.has(normalized))return normalized;
    if(normalized.endsWith(':')&&approved.has(normalized.slice(0,-1)))return normalized.slice(0,-1);
@@ -93,7 +108,7 @@
      if(!isSafe(el)||!visible(el))continue;
      const entry=getOriginal(node),key=entry.source.trim();
      if(!eligible(key)&&language==='en')continue;
-     if(!eligible(key)&&!/(\d+ (?:members?|total|saved)|Last activity · |monthly · |Next due |Welcome back, |Archived trackers \(\d+\)| owes )/i.test(key))continue;
+     if(!eligible(key)&&!/(\d+ (?:members?|total|saved)|Last activity · |monthly · |Next due |Welcome back, |Archived trackers \(\d+\)| owes |^(?:January|February|March|April|May|June|July|August|September|October|November|December) \d{4}$)/i.test(key))continue;
      const next=translate(entry.source);
      if(node.nodeValue!==next){node.nodeValue=next;entry.rendered=next;}
      if(eligible(key))queueToken(key);
