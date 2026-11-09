@@ -9,7 +9,7 @@
   // Expose the offline dictionary only. doweo-localize-ui.js is the single
   // owner of DOM translations, preventing competing observers and stale sources.
   function translateText(value,lang){
-    const match=/^(\\s*)([\\s\\S]*?)(\\s*)$/.exec(value);
+    const match=/^(\s*)([\s\S]*?)(\s*)$/.exec(value);
     if(!match)return value;
     const id=index.get(match[2]);
     if(id===undefined)return value;
