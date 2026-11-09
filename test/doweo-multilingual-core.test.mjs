@@ -14,13 +14,15 @@ const required=[
  'Split method','Split summary','Pay Now','Scan Receipt','Split a Bill',
  'New chat','History','Your chats','Back to Home',
  'Finance Hub','Subscription Manager','Account Settings','Beta Feedback',
- 'Currency converter','Current balances','Recent Activity','Delete account'
+ 'Currency converter','Current balances','Recent Activity','Delete account',
+ 'Events','Your events','Archived trackers','Food & Dining','Active subscriptions',
+ 'Settings','Account','Bills','Home','Members','Last activity','Select a tracker'
 ];
 test('all DoWeo languages share the same common UI translation keys',()=>{
  const nonEnglish=I18n.SUPPORTED.filter(code=>code!=='en'&&code!=='es');
  assert.deepEqual(Object.keys(CORE_UI_TRANSLATIONS).sort(),nonEnglish.sort());
  assert.equal(new Set(CORE_UI_SOURCE_KEYS).size,CORE_UI_SOURCE_KEYS.length);
- assert.ok(CORE_UI_SOURCE_KEYS.length>=90);
+ assert.ok(CORE_UI_SOURCE_KEYS.length>=130);
  for(const key of CORE_UI_SOURCE_KEYS){
    assert.ok(UI_PHRASES.includes(key),'not approved: '+key);
    for(const code of nonEnglish){
