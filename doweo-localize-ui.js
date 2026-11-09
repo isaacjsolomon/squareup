@@ -6,7 +6,7 @@
  const i18n=root.DoWeoI18n;
  const original=new WeakMap(),attributes=new WeakMap();
  const excluded='script,style,noscript,code,pre,svg,canvas,[contenteditable],#sq-ai-stream,#tracker-chat-messages,.chat-bubble,.chat-line,.message-bubble,.sq-chat-message,.expense-description,.tracker-member-name,.sq-member-name,.sq-friend-name,[data-user-content],[data-chat-id],[data-entry-id],.sq-detail-entry,.sq-return-row,.sq-ng-transaction,.notification-item,.sq-notification-row,#history,#sq-friends-results';
- const attrNames=['placeholder','aria-label','title','alt'];
+ const attrNames=['placeholder','aria-label','title','alt','value'];
  let approved=null,language='en',cache={},requested=new Set(),pending=new Set(),running=0,scanTimer=null,saveTimer=null,retryTimer=null,lastRequest=0;
  const retries=new Map();
  const MAX_ATTEMPTS=4;
@@ -32,12 +32,12 @@
  function translateDynamic(value){
    // Preserve personal names, amounts and dates; request only fixed UI labels.
    const patterns=[
-     /^(\\d+) (members?|total|saved)$/i,
+     /^(\d+) (members?|total|saved)$/i,
      /^(Last activity)( · .+)$/,
      /^(monthly)( · .+)$/i,
      /^(Next due)( .+)$/i,
      /^(Welcome back)(, .+)$/,
-     /^(Archived trackers)( \\(\\d+\\))$/,
+     /^(Archived trackers)( \(\d+\))$/,
      /^(.*?)( owes )(.*)$/
    ];
    const clean=value.trim();
@@ -60,19 +60,30 @@
    return value;
  }
  function queueToken(key){
-   if(language!=='en'&&approved.has(key)&&!cache[key]&&!requested.has(key))pending.add(key);
+   const canonical=approvedKey(key);
+   if(language!=='en'&&canonical&&!cache[canonical]&&!requested.has(canonical))pending.add(canonical);
  }
  function translate(value){
    if(language==='en')return value;
    const match=/^(\s*)([\s\S]*?)(\s*)$/.exec(value);
    if(!match)return value;
    const key=match[2];
-   const translated=cache[key];
-   return match[1]+(translated||translateDynamic(key))+match[3];
+   const canonical=approvedKey(key)||key;
+   const translated=cache[canonical];
+   const suffix=canonical!==key&&key.endsWith(':')?':':'';
+   return match[1]+(translated?translated+suffix:translateDynamic(key))+match[3];
+ }
+ function approvedKey(value){
+   const exact=String(value||'').trim();
+   if(approved.has(exact))return exact;
+   const normalized=exact.replace(/\\s+/g,' ');
+   if(approved.has(normalized))return normalized;
+   if(normalized.endsWith(':')&&approved.has(normalized.slice(0,-1)))return normalized.slice(0,-1);
+   return null;
  }
  function eligible(value){
    const text=String(value||'').trim();
-   return text.length>1&&text.length<=170&&approved.has(text)&&!/^[\d\s$.,%+-]+$/.test(text);
+   return text.length>1&&text.length<=170&&Boolean(approvedKey(text))&&!/^[\d\s$.,%+-]+$/.test(text);
  }
  function render(){
    const tree=root.document.createTreeWalker(root.document.body,NodeFilter.SHOW_TEXT);
@@ -82,17 +93,17 @@
      if(!isSafe(el)||!visible(el))continue;
      const entry=getOriginal(node),key=entry.source.trim();
      if(!eligible(key)&&language==='en')continue;
-     if(!eligible(key)&&!/(\\d+ (?:members?|total|saved)|Last activity · |monthly · |Next due |Welcome back, |Archived trackers \\(\\d+\\)| owes )/i.test(key))continue;
+     if(!eligible(key)&&!/(\d+ (?:members?|total|saved)|Last activity · |monthly · |Next due |Welcome back, |Archived trackers \(\d+\)| owes )/i.test(key))continue;
      const next=translate(entry.source);
      if(node.nodeValue!==next){node.nodeValue=next;entry.rendered=next;}
      if(eligible(key))queueToken(key);
    }
-   root.document.querySelectorAll('[placeholder],[aria-label],[title],[alt]').forEach(el=>{
+   root.document.querySelectorAll('[placeholder],[aria-label],[title],[alt],input[type="button"],input[type="submit"],input[type="reset"]').forEach(el=>{
      if(!isSafe(el)||!visible(el))return;
      let record=attributes.get(el);
      if(!record){record={};attributes.set(el,record);}
      for(const name of attrNames){
-       if(!el.hasAttribute(name))continue;
+       if(!el.hasAttribute(name)||name==='value'&&!el.matches('input[type="button"],input[type="submit"],input[type="reset"]'))continue;
        const current=el.getAttribute(name);
        const last=record[name];
        if(!last||current!==last.rendered)record[name]={source:current,rendered:current};
