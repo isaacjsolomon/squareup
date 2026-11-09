@@ -95,7 +95,7 @@
    const key=match[2];
    // UI controls are often rendered with decorative icons or a plus/arrow.
    // Translate only an approved label and preserve its decoration.
-   const decorated=/^([+☆★✦✧←→↗↖↘↙📌📎▤▣]\s*)(.+)$/.exec(key);
+   const decorated=/^([+☆★✦✧←→↗↖↘↙📌📎▤▣]\s*)(.+)$/u.exec(key);
    const candidate=decorated?decorated[2]:key;
    const canonical=approvedKey(candidate);
    const suffix=canonical!==candidate&&candidate.endsWith(':')?':':'';
@@ -112,7 +112,7 @@
    const exact=String(value||'').trim();
    if(approved.has(exact))return exact;
    // Prefix glyphs belong to the interface, never to customer data.
-   const decorated=/^[+☆★✦✧←→↗↖↘↙📌📎▤▣]\s*(.+)$/.exec(exact);
+   const decorated=/^[+☆★✦✧←→↗↖↘↙📌📎▤▣]\s*(.+)$/u.exec(exact);
    if(decorated&&approved.has(decorated[1]))return decorated[1];
    const normalized=exact.replace(/\s+/g,' ');
    if(approved.has(normalized))return normalized;
