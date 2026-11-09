@@ -14005,6 +14005,9 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
    social:'<path d="M20 11.5a8 8 0 0 1-8 8 8 8 0 0 1-3.5-.8L4 20l1.3-4.5A8 8 0 1 1 20 11.5Z"/><path d="M8 11h8M8 14h5"/>',
    more:'<circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>'
   };
+  // Make the existing Friends route accessible within Social on desktop.
+  const friendsNav=nav.querySelector('#nav-friends');
+  if(friendsNav){friendsNav.hidden=false;friendsNav.removeAttribute('aria-hidden');friendsNav.removeAttribute('tabindex');}
   const groupFor=new Map();
   const orderedGroups=[];
   for(const item of groups){
@@ -14108,6 +14111,13 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
  });
 })();
 </script>
+
+<style id="dw-friends-in-social-desktop-20261108">
+@media(min-width:901px){
+  #sq-desktop-friends-top{display:none!important}
+  .sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="social"] #nav-friends{display:flex!important}
+}
+</style>
 </body>
 </html>
 
