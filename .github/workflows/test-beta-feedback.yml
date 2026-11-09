@@ -23,6 +23,7 @@ jobs:
           node --check doweo-i18n.js
           node --check doweo-translations.js
           node --check doweo-localize-ui.js
+          node --check doweo-core-locales.mjs
           node --check functions/api/ui-translate.js
           node --check functions/api/ai-chat.js
           node --check beta-feedback.js
@@ -31,6 +32,8 @@ jobs:
           node --check weo-mascot.js
           node --check functions/api/ai-chat.js
           node --check weo-actions.js
+      - name: Verify every production translation module is packaged
+        run: node --test test/doweo-production-locale-bundle.test.mjs
       - name: Test complete localization integration and Weo response language
         run: node --test test/doweo-complete-localization.test.mjs
       - name: Test mixed-language and dynamic translation regressions
