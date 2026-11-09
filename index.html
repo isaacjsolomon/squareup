@@ -14179,6 +14179,17 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
 #settings-language-panel .dw-language-preference{margin:12px 0 0;}
 #settings-language-panel .dw-language-preference label{display:none;}
 </style>
+<style id="dw-rtl-language-text-support">
+/* Preserve existing app positioning while correctly flowing translated RTL text. */
+html:is([lang="he"],[lang="ar"]) :is(h1,h2,h3,h4,p,label,small,.sq-nav-label,.dw-nav-group-name,.settings-muted,.sq-ai-label,[role="tab"]){
+ direction:rtl;unicode-bidi:plaintext;
+}
+html:is([lang="he"],[lang="ar"]) .dw-language-preference select,
+html:is([lang="he"],[lang="ar"]) input:not([type="number"]):not([type="email"]),
+html:is([lang="he"],[lang="ar"]) textarea {direction:rtl}
+html:is([lang="he"],[lang="ar"]) input[type="email"],
+html:is([lang="he"],[lang="ar"]) input[type="number"]{direction:ltr}
+</style>
 </body>
 </html>
 
