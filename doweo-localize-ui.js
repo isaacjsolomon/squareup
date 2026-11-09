@@ -7,7 +7,7 @@
  const original=new WeakMap(),attributes=new WeakMap();
  const excluded='script,style,noscript,code,pre,svg,canvas,[contenteditable],#sq-ai-stream,#tracker-chat-messages,.chat-bubble,.chat-line,.message-bubble,.sq-chat-message,.expense-description,.tracker-member-name,.sq-member-name,.sq-friend-name,[data-user-content],[data-chat-id],[data-entry-id]';
  const attrNames=['placeholder','aria-label','title','alt','value'];
- let approved=null,language='en',cache={},requested=new Set(),pending=new Set(),running=0,scanTimer=null,saveTimer=null,retryTimer=null,lastRequest=0;
+ let approved=null,coreTranslations=null,language='en',cache={},requested=new Set(),pending=new Set(),running=0,scanTimer=null,saveTimer=null,retryTimer=null,lastRequest=0;
  const retries=new Map();
  const MAX_ATTEMPTS=4;
  const localizedTokens=new Set(['members','member','Favorite','Last activity','OWES','owes','total','saved','monthly','Next due','Automatic','Tracker member','Outstanding balance','Who owes whom','confirmed','added by']);
@@ -319,6 +319,12 @@
    if(Array.isArray(en)&&Array.isArray(localized))en.forEach((source,index)=>{
      if(typeof localized[index]==='string'&&localized[index].trim()&&approved.has(source))cache[source]=localized[index];
    });
+   // Deterministic multilingual fallbacks must override stale AI/localStorage
+   // entries so frequently used controls work even when Workers AI is offline.
+   const core=coreTranslations?.[language];
+   if(core)for(const [source,destination] of Object.entries(core)){
+     if(approved.has(source)&&typeof destination==='string'&&destination.trim())cache[source]=destination;
+   }
    // Keep sidebar navigation immediately usable in every supported language,
    // including when the on-demand translation service is unavailable.
    const navTranslations={
@@ -359,8 +365,12 @@
  }
  async function init(){
    try{
-     const module=await import('/doweo-ui-catalog.mjs');
+     const [module,core]=await Promise.all([
+       import('/doweo-ui-catalog.mjs'),
+       import('/doweo-core-locales.mjs')
+     ]);
      approved=new Set(module.UI_PHRASES);
+     coreTranslations=core.CORE_UI_TRANSLATIONS;
    }catch(_){return;}
    language=locale();readCache();seedStaticTranslations();
    scan();
