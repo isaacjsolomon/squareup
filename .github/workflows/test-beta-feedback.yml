@@ -38,7 +38,7 @@ jobs:
       - name: Test live translations and settings layout
         run: node --test test/doweo-translations-ui.test.mjs
       - name: Test language detection and preference override
-        run: node --test test/doweo-i18n.test.mjs
+        run: node --test test/doweo-i18n.test.mjs test/doweo-language-flag-grid.test.mjs
       - name: Verify Settings language control placement
         run: node --test test/settings-language-location.test.mjs
       - name: Run feedback API unit tests (mocked requests, no real emails)
