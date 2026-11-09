@@ -12,7 +12,7 @@ test('localizer includes built-in translations as reliable fallbacks',()=>{
 test('inactive interface text and dynamic text changes are translated',()=>{
   assert.match(ui,/characterData:true/);
   assert.match(ui,/return true;/);
-  assert.match(ui,/approved\.has\(text\)/);
+  assert.match(ui,/approvedKey\(text\)/);
 });
 test('failed requests retry with a cap and bounded request cadence',()=>{
   assert.match(ui,/MAX_ATTEMPTS=4/);
