@@ -66,6 +66,7 @@
     if(label)label.hidden=true;
     const grid=doc.createElement('div');
     grid.className='dw-language-grid';
+    grid.setAttribute('data-dw-language-grid','');
     grid.setAttribute('role','group');
     grid.setAttribute('aria-label',t(resolve(win),'language'));
     const groupName=select.id||'doweo-language';
