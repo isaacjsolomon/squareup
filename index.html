@@ -2599,7 +2599,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
     <div id="settings-content-account" class="settings-tab-content" role="tabpanel" aria-labelledby="settings-tab-account" hidden>
       <div class="settings-tab-grid">
         <div><div class="settings-panel"><h3>Account</h3><div class="settings-actions"><button class="settings-action" id="settings-password" type="button">Change password</button><button class="settings-action" id="settings-signout" type="button">Log out</button></div></div></div>
-        <div><div class="settings-panel" id="settings-language-panel"><h3 data-dw-language-title>Language</h3><p class="settings-muted">Choose the language DoWeo uses on this device.</p><div class="dw-language-preference" data-dw-language-scope><label data-dw-language-title for="settings-language-preference">Language</label><select id="settings-language-preference" data-dw-language-select><option value="auto">Automatic (browser language)</option><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="he">עברית</option><option value="zh-Hans">简体中文</option><option value="pt">Português</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="ja">日本語</option><option value="ar">العربية</option><option value="ko">한국어</option><option value="hi">हिन्दी</option></select><p data-dw-language-hint>Choose a language. More translations are coming soon.</p></div></div></div>
+        <div><div class="settings-panel" id="settings-language-panel"><h3 data-dw-language-title>Language</h3><p class="settings-muted">Change the language used throughout DoWeo.</p><div class="dw-language-preference" data-dw-language-scope><label data-dw-language-title for="settings-language-preference">Language</label><select id="settings-language-preference" data-dw-language-select><option value="auto">Automatic (browser language)</option><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="he">עברית</option><option value="zh-Hans">简体中文</option><option value="pt">Português</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="ja">日本語</option><option value="ar">العربية</option><option value="ko">한국어</option><option value="hi">हिन्दी</option></select><p data-dw-language-hint>Choose a language. More translations are coming soon.</p></div></div></div>
         <div><div class="settings-panel" id="delete-account-panel"><h3>Delete account</h3><p class="settings-muted">Permanently delete your DoWeo account, profile, payment usernames, profile photo, and your saved tracker data. Trackers you own will also be deleted for their members. This cannot be undone.</p><button class="settings-action" id="settings-delete-account" style="background:#512334;color:#ffb5c4;border-color:#9e4158" type="button">Delete my account</button><div aria-live="polite" class="settings-notice" id="settings-delete-msg" role="status"></div></div></div>
       </div>
     </div>
@@ -14156,10 +14156,23 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
 <script src="doweo-i18n.js" defer></script>
 
 <style id="dw-settings-account-language-layout">
-@media(min-width:1200px){
-  #settings-content-account > .settings-tab-grid{
-    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:start!important;gap:22px!important;
-  }
+#settings-content-account > .settings-tab-grid{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:22px!important;align-items:start!important;
+}
+#settings-content-account > .settings-tab-grid > div:first-child{
+  grid-column:1!important;grid-row:1!important;
+}
+#settings-content-account > .settings-tab-grid > div:nth-child(2){
+  grid-column:1!important;grid-row:2!important;
+}
+#settings-content-account > .settings-tab-grid > div:nth-child(3){
+  grid-column:2!important;grid-row:1 / span 2!important;
+}
+#settings-language-panel .dw-language-preference{padding:0!important;border:0!important;background:transparent!important}
+#settings-language-panel .dw-language-preference select{width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;text-overflow:ellipsis!important}
+@media(max-width:780px){
+ #settings-content-account > .settings-tab-grid{grid-template-columns:minmax(0,1fr)!important}
+ #settings-content-account > .settings-tab-grid > div{grid-column:1!important;grid-row:auto!important}
 }
 #settings-language-panel .dw-language-preference{margin:12px 0 0;}
 #settings-language-panel .dw-language-preference label{display:none;}
