@@ -3,7 +3,11 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {UI_PHRASES} from '../doweo-ui-catalog.mjs';
 import {validateTranslationRequest,parseTranslationResponse} from '../functions/api/ui-translate.js';
-import {normalizeWeoLocale} from '../functions/api/ai-chat.js';
+import {Script} from 'node:vm';
+const aiScript=readFileSync(new URL('../functions/api/ai-chat.js',import.meta.url),'utf8');
+const sandbox={};
+new Script(aiScript.replace(/\\bexport\\s+(?=async\\s+function\\b)/g,'')+'\\nglobalThis.testNormalize=normalizeWeoLocale;').runInNewContext(sandbox);
+const normalizeWeoLocale=sandbox.testNormalize;
 
 test('approved UI catalog is substantial and unique',()=>{
  assert.ok(UI_PHRASES.length>800);
