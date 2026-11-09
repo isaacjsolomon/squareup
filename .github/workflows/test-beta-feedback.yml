@@ -29,6 +29,8 @@ jobs:
           node --check weo-actions.js
       - name: Test language detection and preference override
         run: node --test test/doweo-i18n.test.mjs
+      - name: Verify Settings language control placement
+        run: node --test test/settings-language-location.test.mjs
       - name: Run feedback API unit tests (mocked requests, no real emails)
         run: node --test test/beta-feedback.test.mjs
       - name: Check Personal Finance summary and transaction dialog
