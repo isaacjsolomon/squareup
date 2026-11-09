@@ -11096,7 +11096,19 @@ document.getElementById('side-toggle')?.addEventListener('click',()=>{if(!root.h
 function switchFinanceTab(next){if(next===tab)return;previousFinanceTabs.push(tab);tab=next;openedWorkspaces.trip=null;openedWorkspaces.household=null;render();}
 document.getElementById('sq-finance-nav').addEventListener('click',()=>open('finance'));document.getElementById('sq-ng-mobile-select').addEventListener('change',e=>switchFinanceTab(e.target.value));root.querySelectorAll('[data-ng-tab]').forEach(b=>b.addEventListener('click',()=>switchFinanceTab(b.dataset.ngTab)));
 async function render(){document.getElementById('sq-ng-mobile-select').value=tab;root.querySelectorAll('[data-ng-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.ngTab===tab));const labels={finance:['Personal Finance Hub','Private spending and income, separate from your shared trackers.'],wallet:['Wallet & Settlements','Your balances across existing trackers, without changing any debts.'],trip:['Trip Mode','Your existing trips stay linked to their trackers.'],home:['Household Mode','Build shared routines around your existing trackers.'],subscriptions:['Subscription Manager','Manage recurring bills in your existing billing center.'],currencies:['Multi-Currency','Understand how currency conversion works in DoWeo.'],insights:['Smart Insights','Useful answers calculated from your saved financial records.']};document.getElementById('sq-ng-title').textContent=labels[tab][0];document.getElementById('sq-ng-subtitle').textContent=labels[tab][1];status.textContent='';content.innerHTML='<p>Loading your workspace…</p>';try{if(tab==='finance'||tab==='insights'){finance=await api('finance/transactions');drawFinance()}else if(tab==='wallet')await drawWallet();else await drawWorkspace()}catch(e){content.innerHTML='<div class="sq-ng-empty">'+esc(e.message||'Could not load this section')+'</div>';}}
-function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce((a,x)=>a+Number(x.amount),0),spent=finance.filter(x=>x.kind==='expense').reduce((a,x)=>a+Number(x.amount),0);const byCategory={};finance.filter(x=>x.kind==='expense').forEach(x=>byCategory[x.category]=(byCategory[x.category]||0)+Number(x.amount));if(tab==='insights'){const largest=Object.entries(byCategory).sort((a,b)=>b[1]-a[1])[0];content.innerHTML=`<div class="sq-ng-grid">${card('Recorded income',money(income),true)}${card('Recorded spending',money(spent))}${card('Net personal cash flow',money(income-spent))}</div><div class="sq-ng-card"><h2>Your spending insights</h2><p>${largest?'Your largest recorded spending category is '+esc(largest[0])+' at '+esc(money(largest[1]))+'.':'Add personal expenses to see category insights.'}</p><p class="sq-ng-note">These are calculations based on your private personal records, not a generative AI response. They do not include shared tracker debts.</p></div>`;return;}
+function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce((a,x)=>a+Number(x.amount),0),spent=finance.filter(x=>x.kind==='expense').reduce((a,x)=>a+Number(x.amount),0);const byCategory={};finance.filter(x=>x.kind==='expense').forEach(x=>byCategory[x.category]=(byCategory[x.category]||0)+Number(x.amount));if(tab==='insights'){
+ const now=new Date(),months=[];
+ for(let n=5;n>=0;n--){const d=new Date(now.getFullYear(),now.getMonth()-n,1);months.push({key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleDateString(undefined,{month:'short',year:'2-digit'}),income:0,expense:0});}
+ const valid=finance.filter(x=>x&&['income','expense'].includes(x.kind)&&Number.isFinite(Number(x.amount))&&Number(x.amount)>=0);
+ for(const x of valid){const m=months.find(m=>m.key===String(x.occurred_on||'').slice(0,7));if(m)m[x.kind]+=Number(x.amount);}
+ const current=months[5],previous=months[4],categories={};
+ for(const x of valid.filter(x=>x.kind==='expense'&&String(x.occurred_on||'').slice(0,7)===current.key)){const name=String(x.category||'Uncategorized');categories[name]=(categories[name]||0)+Number(x.amount);}
+ const max=Math.max(1,...months.flatMap(m=>[m.income,m.expense]));
+ const chart=months.map(m=>`<div class="dw-analytics-month"><div class="dw-analytics-bars"><span class="dw-analytics-bar income" style="height:${Math.max(2,m.income/max*100)}%" title="Income ${esc(money(m.income))}"></span><span class="dw-analytics-bar expense" style="height:${Math.max(2,m.expense/max*100)}%" title="Spending ${esc(money(m.expense))}"></span></div><small>${esc(m.label)}</small></div>`).join('');
+ const breakdown=Object.entries(categories).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([name,amount])=>`<div class="dw-analytics-category"><span>${esc(name)}</span><strong>${esc(money(amount))}</strong><div class="dw-analytics-track"><span style="width:${current.expense?Math.min(100,100*amount/current.expense):0}%"></span></div></div>`).join('');
+ content.innerHTML=`<div class="sq-ng-grid">${card('This month income',money(current.income),true)}${card('This month spending',money(current.expense))}${card('Monthly cash flow',money(current.income-current.expense))}</div><div class="dw-analytics-layout"><section class="sq-ng-card"><h2>Last six months</h2><p class="sq-ng-note">Mint: income · Blue: spending</p><div class="dw-analytics-months" role="img" aria-label="Six-month income and spending chart">${chart}</div></section><section class="sq-ng-card"><h2>This month's spending categories</h2>${breakdown||'<p>No expenses recorded this month.</p>'}<p class="sq-ng-note">Previous month spending: ${esc(money(previous.expense))}</p></section></div><p class="sq-ng-note">Calculated from your private personal transactions in USD; shared tracker debts are excluded.</p>`;
+ return;
+}
 content.innerHTML=`<div class="sq-ng-finance-overview"><div class="sq-ng-grid sq-ng-summary-stack">${card('Personal cash flow',money(income-spent),true)}${card('Total income',money(income))}${card('Total spending',money(spent))}</div><button type="button" class="sq-ng-add-action" id="sq-ng-open-transaction" aria-haspopup="dialog" aria-controls="sq-ng-txn-overlay"><span class="sq-ng-add-action-icon" aria-hidden="true">+</span><strong>Add Expense</strong><span class="sq-ng-add-action-hint">Or record income</span></button></div><section class="sq-ng-card sq-ng-section"><h2>Recent personal activity</h2><div class="sq-ng-list">${finance.length?finance.map(x=>`<div class="sq-ng-item"><div><b>${esc(x.description)}</b><small>${esc(x.category)} · ${esc(x.kind)} · ${esc(x.occurred_on)}</small></div><div><b>${x.kind==='expense'?'-':'+'}${esc(money(x.amount))}</b> <button type="button" data-delete="${esc(x.id)}">Delete</button></div></div>`).join(''):'<div class="sq-ng-empty">No personal transactions yet. Add your first one above.</div>'}</div></section><p class="sq-ng-note">Personal records are private and never change shared tracker balances.</p>`;
 const modalHtml = `<div id="sq-ng-txn-overlay" class="sq-ng-txn-overlay" hidden>
  <section class="sq-ng-txn-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-ng-txn-title">
@@ -13884,6 +13896,70 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
   });
 })();
 </script>
+<style id="dw-wallet-activity-amount-typography-fix">
+/* Keep whole currency amounts readable without splitting cents across lines. */
+#sq-nextgen #sq-wallet-activity .sq-ng-item {
+  min-width: 0!important;
+  gap: 12px!important;
+}
+#sq-nextgen #sq-wallet-activity .sq-ng-item > div {
+  flex: 1 1 auto!important;
+  min-width: 0!important;
+}
+#sq-nextgen #sq-wallet-activity .sq-ng-item > div b {
+  font-size: clamp(14px, 1.2vw, 17px)!important;
+  line-height: 1.35!important;
+  overflow-wrap: anywhere;
+}
+#sq-nextgen #sq-wallet-activity .sq-ng-item > div small {
+  font-size: 12px!important;
+  line-height: 1.4!important;
+}
+#sq-nextgen .sq-wallet-compact-layout #sq-wallet-activity .sq-ng-item > strong {
+  display: block!important;
+  flex: 0 0 auto!important;
+  max-width: none!important;
+  font-size: clamp(17px, 1.7vw, 23px)!important;
+  font-weight: 800!important;
+  line-height: 1.15!important;
+  letter-spacing: -.025em!important;
+  font-variant-numeric: tabular-nums!important;
+  white-space: nowrap!important;
+  word-break: normal!important;
+  overflow-wrap: normal!important;
+  text-align: right!important;
+}
+@media (max-width: 520px) {
+  #sq-nextgen .sq-wallet-compact-layout #sq-wallet-activity .sq-ng-item {
+    padding: 12px!important;
+    gap: 8px!important;
+  }
+  #sq-nextgen .sq-wallet-compact-layout #sq-wallet-activity .sq-ng-item > strong {
+    font-size: clamp(16px, 4.4vw, 21px)!important;
+  }
+  #sq-nextgen #sq-wallet-activity .sq-ng-item > div b {
+    font-size: 13px!important;
+  }
+  #sq-nextgen #sq-wallet-activity .sq-ng-item > div small {
+    font-size: 11px!important;
+  }
+}
+</style>
+<style id="dw-finance-monthly-analytics-style">
+#sq-nextgen .dw-analytics-layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:15px}
+#sq-nextgen .dw-analytics-months{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;align-items:end;margin-top:15px}
+#sq-nextgen .dw-analytics-month{min-width:0;text-align:center}
+#sq-nextgen .dw-analytics-bars{display:flex;align-items:end;justify-content:center;gap:4px;height:140px;border-bottom:1px solid #416477}
+#sq-nextgen .dw-analytics-bar{display:block;width:min(35%,22px);min-height:2px;border-radius:5px 5px 0 0}
+#sq-nextgen .dw-analytics-bar.income{background:#2ed8bc}
+#sq-nextgen .dw-analytics-bar.expense{background:#8daaf2}
+#sq-nextgen .dw-analytics-month small{display:block;font-size:11px;margin-top:7px}
+#sq-nextgen .dw-analytics-category{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 12px;margin:15px 0}
+#sq-nextgen .dw-analytics-category strong{font-size:14px}
+#sq-nextgen .dw-analytics-track{grid-column:1/-1;height:6px;background:#254356;border-radius:6px;overflow:hidden}
+#sq-nextgen .dw-analytics-track>span{display:block;height:100%;background:#2ed8bc}
+@media(max-width:750px){#sq-nextgen .dw-analytics-layout{grid-template-columns:1fr}#sq-nextgen .dw-analytics-months{gap:3px}}
+</style>
 <style id="doweo-guided-first-run-style">
 #doweo-first-run[hidden],#doweo-connection-status[hidden]{display:none!important}
 #doweo-first-run{position:fixed;inset:0;z-index:2147482000;background:rgba(3,14,26,.84);display:grid;place-items:center;padding:18px;box-sizing:border-box}
