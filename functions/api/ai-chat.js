@@ -1,6 +1,6 @@
 const recent=new Map();
 const WEO_RESPONSE_LANGUAGES=Object.freeze({'en':'English','es':'Spanish','fr':'French','he':'Hebrew','zh-Hans':'Simplified Chinese','pt':'Portuguese','de':'German','it':'Italian','ja':'Japanese','ar':'Arabic','ko':'Korean','hi':'Hindi'});
-export function normalizeWeoLocale(value){
+function normalizeWeoLocale(value){
  if(typeof value!=='string')return 'en';
  const clean=value.trim().replace(/_/g,'-').toLowerCase();
  if(clean==='zh-hans'||clean.startsWith('zh-')||clean==='zh')return 'zh-Hans';
