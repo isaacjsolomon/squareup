@@ -365,12 +365,17 @@
  }
  async function init(){
    try{
-     const [module,core]=await Promise.all([
-       import('/doweo-ui-catalog.mjs'),
-       import('/doweo-core-locales.mjs')
-     ]);
+     // The catalog is required; the reviewed offline bundle is optional.
+     // A missing optional chunk must never disable all language switching.
+     const module=await import('/doweo-ui-catalog.mjs');
      approved=new Set(module.UI_PHRASES);
-     coreTranslations=core.CORE_UI_TRANSLATIONS;
+     try{
+       const core=await import('/doweo-core-locales.mjs');
+       coreTranslations=core.CORE_UI_TRANSLATIONS||null;
+     }catch(error){
+       coreTranslations=null;
+       console.warn('DoWeo offline locale bundle unavailable; using existing translations.',error);
+     }
    }catch(_){return;}
    language=locale();readCache();seedStaticTranslations();
    scan();
