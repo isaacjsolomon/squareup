@@ -215,6 +215,24 @@
    if(Array.isArray(en)&&Array.isArray(localized))en.forEach((source,index)=>{
      if(typeof localized[index]==='string'&&localized[index].trim()&&approved.has(source))cache[source]=localized[index];
    });
+   // Keep sidebar navigation immediately usable in every supported language,
+   // including when the on-demand translation service is unavailable.
+   const navTranslations={
+     es:['Centro financiero','Comentarios de la beta','Hola,'],
+     fr:['Centre financier','Avis bêta','Bonjour,'],
+     he:['מרכז פיננסי','משוב בטא','שלום,'],
+     'zh-Hans':['财务中心','测试反馈','你好，'],
+     pt:['Centro financeiro','Feedback beta','Olá,'],
+     de:['Finanzübersicht','Beta-Feedback','Hallo,'],
+     it:['Centro finanziario','Feedback beta','Ciao,'],
+     ja:['ファイナンスハブ','ベータ版への意見','こんにちは、'],
+     ar:['المركز المالي','ملاحظات تجريبية','مرحبًا،'],
+     ko:['금융 허브','베타 피드백','안녕하세요,'],
+     hi:['वित्तीय केंद्र','बीटा प्रतिक्रिया','नमस्ते,']
+   };
+   const sidebar=navTranslations[language];
+   if(sidebar)for(const [index,source] of ['Finance Hub','Beta Feedback','Hi,'].entries())
+     if(approved.has(source))cache[source]=sidebar[index];
    // Reviewed Spanish labels override stale localStorage/AI values.
    if(language==='es')for(const [source,destination] of Object.entries(screenshotSpanish)){
      if(approved.has(source))cache[source]=destination;
