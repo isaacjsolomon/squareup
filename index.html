@@ -13994,26 +13994,39 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
  const nav=document.querySelector('.sidebar .squareup-nav');
  if(nav&&!nav.querySelector('.dw-nav-group')){
   const groups=[
-   {name:'Groups',icon:'▦',open:true,ids:['nav-trackers','sqev-nav']},
-   {name:'Finance',icon:'▥',open:true,ids:['sq-finance-nav','nav-analytics']},
-   {name:'Social',icon:'◌',open:false,ids:['nav-chat','nav-friends']},
-   {name:'More',icon:'⚙',open:false,ids:['nav-profile','nav-help-center','nav-about']}
+   {name:'Groups',icon:'groups',ids:['nav-trackers','sqev-nav']},
+   {name:'Finance',icon:'finance',ids:['sq-finance-nav','nav-analytics']},
+   {name:'Social',icon:'social',ids:['nav-chat','nav-friends']},
+   {name:'More',icon:'more',ids:['nav-profile','nav-help-center','nav-about']}
   ];
+  const iconPaths={
+   groups:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+   finance:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18M7 15h4"/>',
+   social:'<path d="M20 11.5a8 8 0 0 1-8 8 8 8 0 0 1-3.5-.8L4 20l1.3-4.5A8 8 0 1 1 20 11.5Z"/><path d="M8 11h8M8 14h5"/>',
+   more:'<circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>'
+  };
   const groupFor=new Map();
+  const orderedGroups=[];
   for(const item of groups){
    const buttons=item.ids.map(id=>nav.querySelector('#'+id)).filter(Boolean);
    if(!buttons.length)continue;
    const container=document.createElement('details');
    container.className='dw-nav-group';
-   container.open=item.open;
+   container.open=true;
+   container.dataset.dwNavGroup=item.icon;
    const summary=document.createElement('summary');
-   const ico=document.createElement('span');ico.className='dw-nav-group-icon';ico.textContent=item.icon;ico.setAttribute('aria-hidden','true');
+   const ico=document.createElement('span');ico.className='dw-nav-group-icon';ico.setAttribute('aria-hidden','true');
+   ico.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+iconPaths[item.icon]+'</svg>';
    const label=document.createElement('span');label.className='dw-nav-group-name';label.textContent=item.name;
    const caret=document.createElement('span');caret.className='dw-nav-group-caret';caret.textContent='›';caret.setAttribute('aria-hidden','true');
    summary.append(ico,label,caret);container.append(summary);
    nav.insertBefore(container,buttons[0]);
    for(const button of buttons){container.append(button);groupFor.set(button.id,container);}
+   orderedGroups.push(container);
   }
+  const homeButton=nav.querySelector('#nav-home');
+  if(homeButton)nav.prepend(homeButton);
+  orderedGroups.forEach(group=>nav.append(group));
   document.addEventListener('click',function(event){
    const button=event.target.closest('.sidebar .sq-nav-link');
    if(!button)return;
@@ -14051,6 +14064,32 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
  }
 })();
 </script>
+<style id="dw-nav-sidebar-visual-polish-20261108">
+@media(min-width:901px){
+  /* Override legacy nav order rules and the obsolete section labels. */
+  .sidebar .squareup-nav:before,.sidebar .squareup-nav:after{content:none!important;display:none!important}
+  .sidebar .squareup-nav #nav-chat:before{content:none!important;display:none!important}
+  .sidebar .squareup-nav #nav-chat{margin-top:0!important;position:static!important}
+  .sidebar .squareup-nav{gap:10px!important;align-items:stretch!important}
+  .sidebar .squareup-nav #nav-home{order:-1!important;margin:0 0 7px!important;min-height:49px!important;background:rgba(30,76,101,.16)!important}
+  .sidebar .squareup-nav .dw-nav-group{order:0!important;display:block!important;margin:0!important;padding:5px!important;border:1px solid rgba(105,172,193,.22)!important;border-radius:16px!important;background:linear-gradient(150deg,rgba(21,55,75,.72),rgba(9,36,53,.55))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important}
+  .sidebar .squareup-nav .dw-nav-group>summary{display:flex!important;justify-content:flex-start!important;gap:10px!important;padding:9px 10px!important;min-height:42px!important;font-size:13px!important;font-weight:760!important;color:#e6f4f9!important;letter-spacing:0!important}
+  .sidebar .squareup-nav .dw-nav-group>summary:hover{background:rgba(64,125,147,.18)!important}
+  .sidebar .squareup-nav .dw-nav-group>summary .dw-nav-group-icon{width:21px;height:21px;display:inline-flex;align-items:center;justify-content:center;color:#67dfd0}
+  .sidebar .squareup-nav .dw-nav-group>summary .dw-nav-group-icon svg{display:block;width:20px;height:20px}
+  .sidebar .squareup-nav .dw-nav-group>summary .dw-nav-group-name{flex:1}
+  .sidebar .squareup-nav .dw-nav-group>summary .dw-nav-group-caret{font-size:16px}
+  .sidebar .squareup-nav .dw-nav-group>button.sq-nav-link{order:0!important;width:100%!important;min-height:43px!important;margin:2px 0!important;padding:9px 11px!important;border:1px solid rgba(101,155,178,.14)!important;border-radius:11px!important;background:rgba(7,32,51,.44)!important;box-shadow:none!important}
+  .sidebar .squareup-nav .dw-nav-group>button.sq-nav-link:hover{background:rgba(40,87,111,.5)!important;transform:none!important}
+  .sidebar .squareup-nav .dw-nav-group>button.sq-nav-link.active{background:rgba(35,117,117,.32)!important;border-color:rgba(75,223,195,.36)!important}
+  .sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="groups"]{order:1!important}
+  .sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="finance"]{order:2!important}
+  .sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="social"]{order:3!important}
+  .sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="more"]{order:4!important}
+  body.side-collapsed .sidebar .squareup-nav .dw-nav-group{padding:3px!important}
+  body.side-collapsed .sidebar .squareup-nav .dw-nav-group>summary{justify-content:center!important;padding:9px 3px!important}
+}
+</style>
 <script id="dw-mobile-reference-header-controls">
 (function(){
  'use strict';
