@@ -89,13 +89,13 @@
    const key=match[2];
    // UI controls are often rendered with decorative icons or a plus/arrow.
    // Translate only an approved label and preserve its decoration.
-   const decorated=/^([+☆★✦✧←→↗↖↘↙📌]\\s*)(.+)$/.exec(key);
+   const decorated=/^([+☆★✦✧←→↗↖↘↙📌]\s*)(.+)$/.exec(key);
    const candidate=decorated?decorated[2]:key;
    const canonical=approvedKey(candidate);
    const suffix=canonical!==candidate&&candidate.endsWith(':')?':':'';
    const translated=canonical&&cache[canonical];
    if(translated)return match[1]+(decorated?decorated[1]:'')+translated+suffix+match[3];
-   const month=/^(January|February|March|April|May|June|July|August|September|October|November|December) (\\d{4})$/.exec(key);
+   const month=/^(January|February|March|April|May|June|July|August|September|October|November|December) (\d{4})$/.exec(key);
    if(month){
      const year=Number(month[2]),index=['January','February','March','April','May','June','July','August','September','October','November','December'].indexOf(month[1]);
      return match[1]+new Intl.DateTimeFormat(language,{month:'long',year:'numeric'}).format(new Date(Date.UTC(year,index,1)))+match[3];
@@ -106,7 +106,7 @@
    const exact=String(value||'').trim();
    if(approved.has(exact))return exact;
    // Prefix glyphs belong to the interface, never to customer data.
-   const decorated=/^[+☆★✦✧←→↗↖↘↙📌]\\s*(.+)$/.exec(exact);
+   const decorated=/^[+☆★✦✧←→↗↖↘↙📌]\s*(.+)$/.exec(exact);
    if(decorated&&approved.has(decorated[1]))return decorated[1];
    const normalized=exact.replace(/\s+/g,' ');
    if(approved.has(normalized))return normalized;
