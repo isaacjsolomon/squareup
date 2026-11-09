@@ -31,6 +31,6 @@ test('missing optional locale bundles cannot prevent translator initialization',
 });
 test('language preference dispatches a translation refresh for all supported languages',()=>{
  assert.match(i18n,/win\.document\.dispatchEvent\(new win\.Event\('doweo:languagechange'/);
- assert.match(i18n,/input\.addEventListener\('change',\(\)=>\{if\(input\.checked\)\{set\(win,input\.value\);grid\.hidden=true/);
+ assert.match(i18n,/input\.addEventListener\('change',\(\)=>\{if\(input\.checked\)\{set\(win,input\.value\);dismiss\(\)/);
  assert.match(i18n,/syncLanguageGrids\(win\)/);
 });

@@ -51,13 +51,30 @@ test('Hebrew and Arabic labels align left visually and retain RTL reading order'
 });
 
 test('language tile grid is collapsed initially and shows the selected language summary',()=>{
- assert.match(script,/grid\.hidden=true/);
+ assert.match(script,/modal\.hidden=true/);
  assert.match(script,/toggle\.setAttribute\('aria-expanded','false'\)/);
- assert.match(script,/toggle\.setAttribute\('aria-controls',grid\.id\)/);
- assert.match(script,/grid\.hidden=!grid\.hidden/);
- assert.match(script,/input\.addEventListener\('change',\(\)=>\{if\(input\.checked\)\{set\(win,input\.value\);grid\.hidden=true/);
+ assert.match(script,/toggle\.setAttribute\('aria-controls',modalId\)/);
+ assert.match(script,/modal\.hidden=false/);
+ assert.match(script,/input\.addEventListener\('change',\(\)=>\{if\(input\.checked\)\{set\(win,input\.value\);dismiss\(\)/);
  assert.match(script,/const choice=LANGUAGE_CHOICES\.find\(option=>option\.code===selected\)/);
  assert.match(script,/name\.textContent=auto\?t\(resolve\(win\),'auto'\):\(choice\?\.name/);
  assert.match(script,/dw-language-picker-flag/);
- assert.match(script,/\.dw-language-grid\[hidden\]\{display:none!important\}/);
+ assert.match(script,/\.dw-language-modal\[hidden\]\{display:none!important\}/);
+});
+
+test('language choices appear in a centered accessible popup with a visible close button',()=>{
+ assert.match(script,/modal\.setAttribute\('role','dialog'\)/);
+ assert.match(script,/modal\.setAttribute\('aria-modal','true'\)/);
+ assert.match(script,/modal\.setAttribute\('aria-labelledby',title\.id\)/);
+ assert.match(script,/close\.textContent='×'/);
+ assert.match(script,/close\.addEventListener\('click',dismiss\)/);
+ assert.match(script,/backdrop\.addEventListener\('click',dismiss\)/);
+ assert.match(script,/event\.key==='Escape'/);
+ assert.match(script,/modal\.hidden=true/);
+ assert.match(script,/modal\.hidden=false/);
+ assert.match(script,/doc\.body\.appendChild\(modal\)/);
+ assert.match(script,/toggle\.focus\(\)/);
+ assert.match(script,/set\(win,input\.value\);dismiss\(\)/);
+ assert.match(script,/dw-language-modal-card\{[^}]*max-height:min\(88dvh,820px\)/);
+ assert.match(script,/dw-language-modal-scroll\{[^}]*overflow-y:auto/);
 });
