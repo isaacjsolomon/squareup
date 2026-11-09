@@ -16,6 +16,8 @@
     fr:{language:'Langue',auto:'Automatique (langue du navigateur)',hint:'Choisissez la langue utilisée dans DoWeo.',saved:'Préférence de langue enregistrée.',welcome:'Bienvenue sur DoWeo !',continue:'Continuer vers DoWeo'}
   });
 
+  const DIALOG_LABELS=Object.freeze({"en":["Language","Close language selector"],"es":["Idioma","Cerrar selector de idioma"],"fr":["Langue","Fermer le sélecteur de langue"],"he":["שפה","סגירת בחירת שפה"],"zh-Hans":["语言","关闭语言选择器"],"pt":["Idioma","Fechar seletor de idioma"],"de":["Sprache","Sprachauswahl schließen"],"it":["Lingua","Chiudi selettore della lingua"],"ja":["言語","言語選択を閉じる"],"ar":["اللغة","إغلاق اختيار اللغة"],"ko":["언어","언어 선택 닫기"],"hi":["भाषा","भाषा चयन बंद करें"]});
+  function dialogLabel(lang,index){return (DIALOG_LABELS[lang]||DIALOG_LABELS.en)[index];}
   // The flags are visual country examples; languages may be used in many countries.
   const LANGUAGE_CHOICES=Object.freeze([
     {code:'en',flag:'🇺🇸',name:'English',subtitle:'English'},
@@ -149,10 +151,10 @@
     const card=doc.createElement('div');card.className='dw-language-modal-card';
     const header=doc.createElement('div');header.className='dw-language-modal-header';
     const title=doc.createElement('span');title.className='dw-language-modal-title';
-    title.id=modalId+'-title';title.textContent=t(resolve(win),'language');
+    title.id=modalId+'-title';title.textContent=dialogLabel(resolve(win),0);
     modal.setAttribute('aria-labelledby',title.id);
     const close=doc.createElement('button');close.type='button';close.className='dw-language-modal-close';
-    close.textContent='×';close.setAttribute('aria-label','Close language selector');
+    close.textContent='×';close.setAttribute('aria-label',dialogLabel(resolve(win),1));
     header.append(title,close);
     const scroll=doc.createElement('div');scroll.className='dw-language-modal-scroll';
     const grid=doc.createElement('div');
@@ -221,7 +223,8 @@
       const modal=grid.closest('.dw-language-modal');
       const toggle=modal?win.document.querySelector('[aria-controls="'+modal.id+'"]'):null;
       if(toggle?.classList.contains('dw-language-picker-toggle')){
-        modal.querySelector('.dw-language-modal-title').textContent=t(resolve(win),'language');
+        modal.querySelector('.dw-language-modal-title').textContent=dialogLabel(resolve(win),0);
+        modal.querySelector('.dw-language-modal-close').setAttribute('aria-label',dialogLabel(resolve(win),1));
         const choice=LANGUAGE_CHOICES.find(option=>option.code===selected);
         const auto=selected==='auto';
         const detected=LANGUAGE_CHOICES.find(option=>option.code===resolve(win));
