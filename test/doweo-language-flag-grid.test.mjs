@@ -49,3 +49,15 @@ test('Hebrew and Arabic labels align left visually and retain RTL reading order'
  assert.match(script,/native\.dir=\(option\.code==='he'\|\|option\.code==='ar'\)\?'rtl':'auto'/);
  assert.deepEqual(i18n.LANGUAGE_CHOICES.filter(x=>['he','ar'].includes(x.code)).map(x=>x.name),['עברית','العربية']);
 });
+
+test('language tile grid is collapsed initially and shows the selected language summary',()=>{
+ assert.match(script,/grid\.hidden=true/);
+ assert.match(script,/toggle\.setAttribute\('aria-expanded','false'\)/);
+ assert.match(script,/toggle\.setAttribute\('aria-controls',grid\.id\)/);
+ assert.match(script,/grid\.hidden=!grid\.hidden/);
+ assert.match(script,/input\.addEventListener\('change',\(\)=>\{if\(input\.checked\)\{set\(win,input\.value\);grid\.hidden=true/);
+ assert.match(script,/const choice=LANGUAGE_CHOICES\.find\(option=>option\.code===selected\)/);
+ assert.match(script,/name\.textContent=auto\?t\(resolve\(win\),'auto'\):\(choice\?\.name/);
+ assert.match(script,/dw-language-picker-flag/);
+ assert.match(script,/\.dw-language-grid\[hidden\]\{display:none!important\}/);
+});
