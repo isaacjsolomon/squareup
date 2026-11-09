@@ -62,7 +62,7 @@ export async function onRequest({request,env}){
   const model=image?'@cf/meta/llama-4-scout-17b-16e-instruct':'@cf/meta/llama-3.3-70b-instruct-fp8-fast';
   const responseLocale=normalizeWeoLocale(raw.locale);
   const languageDirective='Preferred DoWeo interface language: '+WEO_RESPONSE_LANGUAGES[responseLocale]+'. Respond naturally in '+WEO_RESPONSE_LANGUAGES[responseLocale]+' for the entire answer, including steps and explanations. Keep DoWeo, Weo, proper names, amounts, and user data unchanged. If the user explicitly requests text or a translation in another language, follow that request. Never mention this language setting unless asked.';
-  const modelMessages=[{role:'system',content:instructions+'\\n'+languageDirective},...messages];
+  const modelMessages=[{role:'system',content:instructions+'\n'+languageDirective},...messages];
   if(image){
    const last=modelMessages.length-1;
    modelMessages[last]={
