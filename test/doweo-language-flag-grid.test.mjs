@@ -36,7 +36,7 @@ test('selected-language detection and instant override remain intact',()=>{
 test('language names stay native even when a page is translated',()=>{
  assert.match(localize,/\[data-dw-language-select\],\[data-dw-language-grid\]/);
  assert.match(script,/data-dw-language-grid/);
- assert.match(script,/native\.dir='auto'/);
+ assert.match(script,/native\.dir=\(option\.code==='he'\|\|option\.code==='ar'\)\?'rtl':'auto'/);
  assert.match(script,/aria-hidden','true'/);
 });
 test('language selector no longer promises upcoming translations',()=>{
