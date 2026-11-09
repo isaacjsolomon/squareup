@@ -48,7 +48,7 @@
      });
      if(changed)return converted.join(' · ');
    }
-   const tourStep=/^(DOWEO GUIDE) · (\\d+) OF (\\d+)$/.exec(value);
+   const tourStep=/^(DOWEO GUIDE) · (\d+) OF (\d+)$/.exec(value);
    if(tourStep){
      queueToken('DOWEO GUIDE');queueToken('OF');
      return (cache['DOWEO GUIDE']||'DOWEO GUIDE')+' · '+tourStep[2]+' '+(cache.OF||'OF')+' '+tourStep[3];
