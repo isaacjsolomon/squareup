@@ -6,6 +6,7 @@ export async function onRequest({request,env}) {
   const oneCaptchaKey=Boolean(env.TURNSTILE_SECRET_KEY)!==Boolean(env.TURNSTILE_SITE_KEY);
   return json({
     ready:Boolean(env.SUPABASE_SERVICE_ROLE_KEY)&&!oneCaptchaKey,
+    email_ready:Boolean(env.RESEND_API_KEY&&env.BETA_FEEDBACK_FROM_EMAIL),
     turnstile_required:Boolean(env.TURNSTILE_SECRET_KEY)&&Boolean(env.TURNSTILE_SITE_KEY),
     turnstile_site_key:env.TURNSTILE_SITE_KEY&&env.TURNSTILE_SECRET_KEY?env.TURNSTILE_SITE_KEY:null,
     ...(oneCaptchaKey?{error:'Beta verification is not fully configured yet.'}:{})
@@ -40,11 +41,87 @@ export async function onRequest({request,env}) {
   const check=await response.json().catch(()=>({success:false}));
   if(!check.success) return json({error:'Verification failed. Please try again.'},403);
  }
+
+ // Applications remain saved even if email delivery temporarily fails.
  const key=env.SUPABASE_SERVICE_ROLE_KEY;
  const result=await fetch(PROJECT+'/rest/v1/doweo_beta_applications',{
-  method:'POST',headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json','Prefer':'resolution=ignore-duplicates,return=minimal'},
+  method:'POST',headers:{
+   apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json',
+   'Prefer':'resolution=ignore-duplicates,return=representation'
+  },
   body:JSON.stringify({display_name,email,device,use_case,note})
  });
- if(!result.ok){console.error('Beta signup storage failure',result.status);return json({error:'Could not submit your application right now.'},503);}
- return json({ok:true,message:'Application received. We will review it and contact you by email if selected.'},201);
+ if(result.status===409){
+  const conflict=await result.json().catch(()=>({}));
+  if(conflict.code==='23505'&&String(conflict.message||'').includes('doweo_beta_applications_email_unique')){
+   return json({ok:true,duplicate:true,message:'An application for this email address is already on file. Thank you!'},200);
+  }
+ }
+ if(!result.ok){
+  console.error('Beta signup storage failure',result.status);
+  return json({error:'Could not submit your application right now.'},503);
+ }
+ const stored=await result.json().catch(()=>null);
+ if(!Array.isArray(stored))return json({error:'Unable to confirm application storage. Please contact support.'},503);
+ // The unique lower(email) index prevents duplicate rows and notifications.
+ if(stored.length===0)return json({ok:true,duplicate:true,message:'An application for this email address is already on file. Thank you!'},200);
+ const applicationId=stored[0]?.id;
+ if(!applicationId)return json({ok:true,email_sent:false,message:'Your application was saved, but we could not confirm the email notification. Please contact support if needed.'},202);
+ if(!env.RESEND_API_KEY||!env.BETA_FEEDBACK_FROM_EMAIL){
+  console.error('Beta application email not configured');
+  return json({ok:true,email_sent:false,message:'Your application was saved, but the support email notification is not configured yet.'},202);
+ }
+ const labels={
+  iphone:'iPhone',android:'Android',desktop:'Desktop / laptop',multiple:'Multiple devices',
+  friends:'Splitting expenses with friends',trips:'Trips and events',
+  households:'Household expenses',personal:'Personal finances',other:'Something else'
+ };
+ const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const subject='DoWeo Beta Signup — New Application';
+ const bodyText=[
+  'NEW DOWEO BETA APPLICATION','',
+  'Name: '+display_name,
+  'Email: '+email,
+  'Device: '+labels[device],
+  'Use case: '+labels[use_case],
+  'Additional note: '+(note||'None'),
+  '',
+  'Review privately in the Supabase doweo_beta_applications table.',
+  'Application ID: '+applicationId
+ ].join('\n');
+ const html='<div style="font:15px/1.6 Arial,sans-serif;color:#142942;max-width:580px">'
+  +'<div style="background:#071a36;color:#fff;padding:22px;border-radius:12px 12px 0 0"><h2 style="margin:0">DoWeo Beta</h2><p style="margin:7px 0 0;color:#96f5dc">New tester application</p></div>'
+  +'<div style="padding:22px;border:1px solid #dbe7ee;border-top:none;border-radius:0 0 12px 12px">'
+  +'<p><b>Name:</b> '+escapeHtml(display_name)+'</p>'
+  +'<p><b>Email:</b> '+escapeHtml(email)+'</p>'
+  +'<p><b>Device:</b> '+escapeHtml(labels[device])+'</p>'
+  +'<p><b>Use case:</b> '+escapeHtml(labels[use_case])+'</p>'
+  +'<p><b>Additional note:</b></p><p style="white-space:pre-wrap;overflow-wrap:anywhere">'+escapeHtml(note||'None')+'</p>'
+  +'<p style="color:#6b7e90;font-size:12px">Review this application privately in the DoWeo Supabase dashboard. ID: '+escapeHtml(applicationId)+'</p>'
+  +'</div></div>';
+ try{
+  const sent=await fetch('https://api.resend.com/emails',{
+   method:'POST',
+   headers:{
+    Authorization:'Bearer '+env.RESEND_API_KEY,
+    'Content-Type':'application/json',
+    'Idempotency-Key':'doweo-beta-signup-'+applicationId
+   },
+   body:JSON.stringify({
+    from:env.BETA_FEEDBACK_FROM_EMAIL,
+    to:['help.doweo@gmail.com'],
+    subject,
+    text:bodyText,
+    html
+   })
+  });
+  if(!sent.ok){
+   console.error('Beta signup email rejected',sent.status);
+   return json({ok:true,email_sent:false,message:'Application received and saved, but the email notification could not be delivered. DoWeo support can still review it.'},202);
+  }
+  return json({ok:true,email_sent:true,message:'Application received! DoWeo support has been notified.'},201);
+ }catch(error){
+  console.error('Beta signup email request failed');
+  return json({ok:true,email_sent:false,message:'Application received and saved, but the email notification could not be delivered. DoWeo support can still review it.'},202);
+ }
 }
