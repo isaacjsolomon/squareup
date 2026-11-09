@@ -21,7 +21,7 @@
    return true;
  }
  function isSafe(element){
-   return Boolean(element)&&!element.closest(excluded)&&!element.closest('[data-dw-language-select]');
+   return Boolean(element)&&!element.closest(excluded)&&!element.closest('[data-dw-language-select],[data-dw-language-grid]');
  }
  function getOriginal(node){
    const value=node.nodeValue;
