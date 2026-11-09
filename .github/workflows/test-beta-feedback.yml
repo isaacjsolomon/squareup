@@ -21,12 +21,15 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check doweo-i18n.js
+          node --check doweo-translations.js
           node --check beta-feedback.js
           node --check squareup-events.js
           node --check functions/api/beta-feedback.js
           node --check weo-mascot.js
           node --check functions/api/ai-chat.js
           node --check weo-actions.js
+      - name: Test live translations and settings layout
+        run: node --test test/doweo-translations-ui.test.mjs
       - name: Test language detection and preference override
         run: node --test test/doweo-i18n.test.mjs
       - name: Verify Settings language control placement
