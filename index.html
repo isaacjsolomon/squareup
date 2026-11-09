@@ -14008,11 +14008,12 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
  body.side-collapsed .sidebar .squareup-nav .dw-nav-group:not([open])>summary{color:#e3f5fb}
 }
 @media(max-width:900px){
- #sq-mobile-more-sheet .sq-balanced-more-grid{display:flex!important;flex-direction:column!important;gap:15px!important}
- #sq-mobile-more-sheet .dw-more-group{display:block;min-width:0}
- #sq-mobile-more-sheet .dw-more-group>h3{margin:0 0 8px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:#80d8d5}
- #sq-mobile-more-sheet .dw-more-group-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
- #sq-mobile-more-sheet .dw-more-group-grid>button{width:100%;min-width:0}
+ #sq-mobile-more-sheet .sq-balanced-more-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;align-items:stretch}
+ #sq-mobile-more-sheet .sq-balanced-more-grid>[data-sq-destination]{display:flex!important;width:100%;min-width:0;min-height:102px;box-sizing:border-box}
+ #sq-mobile-more-sheet .dw-more-group{display:contents!important}
+ #sq-mobile-more-sheet .dw-more-group>h3{display:none!important}
+ #sq-mobile-more-sheet .dw-more-group-grid{display:contents!important}
+ @media(max-width:340px){#sq-mobile-more-sheet .sq-balanced-more-grid{gap:8px!important}}
 }
 </style>
 <script id="doweo-grouped-navigation-init-20261108">
@@ -14076,25 +14077,17 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
   });
   observer.observe(nav,{attributes:true,attributeFilter:['class'],subtree:true});
  }
- // Mobile retains the existing bottom navigation and plus-sheet exactly as before.
+ // Keep mobile More as one uninterrupted two-column button grid.
+ // Move the existing elements, preserving their destinations, handlers and translations.
  const moreGrid=document.querySelector('#sq-mobile-more-sheet .sq-balanced-more-grid');
- if(moreGrid&&!moreGrid.querySelector('.dw-more-group')){
-  const sections=[
-   {name:'Groups & Events',ids:['sqev-nav']},
-   {name:'Finance',ids:['sq-finance-nav','nav-analytics']},
-   {name:'Social & Updates',ids:['nav-chat','nav-friends','sq-mobile-notifications']},
-   {name:'Account & Information',ids:['nav-profile','nav-about']}
-  ];
-  for(const item of sections){
-   const buttons=item.ids.map(id=>moreGrid.querySelector('[data-sq-destination="'+id+'"]')).filter(Boolean);
-   if(!buttons.length)continue;
-   const section=document.createElement('section');section.className='dw-more-group';
-   const heading=document.createElement('h3');heading.textContent=item.name;
-   const grid=document.createElement('div');grid.className='dw-more-group-grid';
-   buttons.forEach(button=>grid.append(button));
-   section.append(heading,grid);
-   moreGrid.append(section);
+ if(moreGrid){
+  const destinations=['sqev-nav','sq-finance-nav','nav-analytics','nav-chat','nav-friends','sq-mobile-notifications','nav-profile','nav-about'];
+  for(const destination of destinations){
+   const button=moreGrid.querySelector('[data-sq-destination="'+destination+'"]');
+   if(button)moreGrid.appendChild(button);
   }
+  // Flatten any previously inserted grouped wrappers without duplicating buttons.
+  moreGrid.querySelectorAll('.dw-more-group').forEach(group=>group.remove());
  }
 })();
 </script>
