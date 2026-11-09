@@ -8,8 +8,8 @@ const languageNames = {'es':'Spanish','fr':'French','he':'Hebrew','zh-Hans':'Sim
 const recent = new Map();
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export function validateTranslationRequest(body){
-  if(!body||typeof body!=='object'||!supported.has(body.locale)||!Array.isArray(body.texts)||body.texts.length<1||body.texts.length>16)return null;
-  if(body.texts.some(t=>typeof t!=='string'||t.length>180||!allowed.has(t)))return null;
+  if(!body||typeof body!=='object'||!supported.has(body.locale)||!Array.isArray(body.texts)||body.texts.length<1||body.texts.length>8)return null;
+  if(body.texts.some(t=>typeof t!=='string'||t.length>600||!allowed.has(t)))return null;
   return {locale:body.locale,texts:[...new Set(body.texts)]};
 }
 export function parseTranslationResponse(value,count){
@@ -20,7 +20,7 @@ export function parseTranslationResponse(value,count){
     if(start<0||end<=start)return null;
     output=JSON.parse(value.slice(start,end+1));
   }catch{return null;}
-  if(!Array.isArray(output)||output.length!==count||output.some(x=>typeof x!=='string'||!x.trim()||x.length>480))return null;
+  if(!Array.isArray(output)||output.length!==count||output.some(x=>typeof x!=='string'||!x.trim()||x.length>1400))return null;
   return output.map(x=>x.trim());
 }
 export async function onRequest({request,env}){
