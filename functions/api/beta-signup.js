@@ -51,6 +51,12 @@ export async function onRequest({request,env}) {
   },
   body:JSON.stringify({display_name,email,device,use_case,note})
  });
+ if(result.status===409){
+  const conflict=await result.json().catch(()=>({}));
+  if(conflict.code==='23505'&&String(conflict.message||'').includes('doweo_beta_applications_email_unique')){
+   return json({ok:true,duplicate:true,message:'An application for this email address is already on file. Thank you!'},200);
+  }
+ }
  if(!result.ok){
   console.error('Beta signup storage failure',result.status);
   return json({error:'Could not submit your application right now.'},503);
