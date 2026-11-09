@@ -1,4 +1,13 @@
 const recent=new Map();
+const WEO_RESPONSE_LANGUAGES=Object.freeze({'en':'English','es':'Spanish','fr':'French','he':'Hebrew','zh-Hans':'Simplified Chinese','pt':'Portuguese','de':'German','it':'Italian','ja':'Japanese','ar':'Arabic','ko':'Korean','hi':'Hindi'});
+export function normalizeWeoLocale(value){
+ if(typeof value!=='string')return 'en';
+ const clean=value.trim().replace(/_/g,'-').toLowerCase();
+ if(clean==='zh-hans'||clean.startsWith('zh-')||clean==='zh')return 'zh-Hans';
+ const base=clean.split('-')[0];
+ return Object.prototype.hasOwnProperty.call(WEO_RESPONSE_LANGUAGES,base)?base:'en';
+}
+
 const instructions = [
 "You are Weo, the built-in AI assistant for DoWeo, an app for coordinating groups, splitting expenses, and managing personal financial plans.",
 "Your job is to be a helpful, professional conversational assistant that can also answer normal questions, brainstorm, write, explain, summarize, and help users plan. Use clear paragraphs, short lists when useful, and direct answers. Be warm but never claim you are a person.",
@@ -51,7 +60,9 @@ export async function onRequest({request,env}){
   // Vision requests are opt-in and processed only for this message. The image
   // is not written to a tracker, stored in Supabase, or carried into history.
   const model=image?'@cf/meta/llama-4-scout-17b-16e-instruct':'@cf/meta/llama-3.3-70b-instruct-fp8-fast';
-  const modelMessages=[{role:'system',content:instructions},...messages];
+  const responseLocale=normalizeWeoLocale(raw.locale);
+  const languageDirective='Preferred DoWeo interface language: '+WEO_RESPONSE_LANGUAGES[responseLocale]+'. Respond naturally in '+WEO_RESPONSE_LANGUAGES[responseLocale]+' for the entire answer, including steps and explanations. Keep DoWeo, Weo, proper names, amounts, and user data unchanged. If the user explicitly requests text or a translation in another language, follow that request. Never mention this language setting unless asked.';
+  const modelMessages=[{role:'system',content:instructions+'\\n'+languageDirective},...messages];
   if(image){
    const last=modelMessages.length-1;
    modelMessages[last]={
