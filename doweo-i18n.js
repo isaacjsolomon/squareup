@@ -44,8 +44,21 @@
   .dw-language-picker-toggle .dw-language-picker-subtitle{font-size:12px;color:#bdd2df;line-height:1.25}
   .dw-language-picker-toggle .dw-language-picker-chevron{width:20px;height:20px;flex:0 0 auto;transition:transform .18s;color:#61e2d0}
   .dw-language-picker-toggle[aria-expanded="true"] .dw-language-picker-chevron{transform:rotate(180deg)}
-  .dw-language-grid-mode .dw-language-grid{margin-top:12px}
-  .dw-language-grid-mode .dw-language-grid[hidden]{display:none!important}
+  .dw-language-modal[hidden]{display:none!important}
+  .dw-language-modal{position:fixed!important;inset:0!important;z-index:2147483000!important;display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;direction:ltr}
+  .dw-language-modal-backdrop{position:absolute;inset:0;background:rgba(2,12,26,.75);backdrop-filter:blur(5px)}
+  .dw-language-modal-card{position:relative;display:flex;flex-direction:column;width:min(760px,100%);max-height:min(88dvh,820px);overflow:hidden;background:#0b2438;color:#f0f8ff;border:1px solid #42677a;border-radius:22px;box-shadow:0 24px 90px rgba(0,0,0,.5);direction:ltr}
+  .dw-language-modal-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 24px 16px;border-bottom:1px solid #2a4b60}
+  .dw-language-modal-title{font-weight:750;font-size:23px;line-height:1.3;text-align:left}
+  .dw-language-modal-close{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border:1px solid #42677a;border-radius:12px;background:#183b51;color:#fff;font:inherit;font-size:28px;cursor:pointer}
+  .dw-language-modal-close:hover{background:#24536b;border-color:#51dbc8}
+  .dw-language-modal-close:focus-visible{outline:3px solid #69ead5;outline-offset:2px}
+  .dw-language-modal-scroll{padding:20px 24px 24px;overflow-y:auto;overscroll-behavior:contain;min-height:0}
+  .dw-language-modal .dw-language-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .dw-language-modal .dw-language-grid[hidden]{display:none!important}
+  @media(max-width:520px){.dw-language-modal{padding:10px}.dw-language-modal-card{max-height:90dvh;border-radius:17px}.dw-language-modal-header{padding:16px}.dw-language-modal-title{font-size:19px}.dw-language-modal-scroll{padding:14px}.dw-language-modal .dw-language-grid{gap:8px}}
+  @media(max-width:350px){.dw-language-modal .dw-language-grid{grid-template-columns:1fr!important}}
+  
 
   .dw-language-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;width:100%;direction:ltr}
   .dw-language-grid label.dw-language-tile{display:flex!important;align-items:center;gap:10px;position:relative;min-width:0;min-height:66px;padding:10px 12px;border:1px solid #315269;border-radius:13px;background:#112b40;color:#eff8ff;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s;box-sizing:border-box}
@@ -80,9 +93,9 @@
     flex:1 1 auto;box-sizing:border-box;min-width:0;margin:0!important;
   }
   html body #settings-language-panel{width:100%;box-sizing:border-box}
-  html body #settings-language-panel .dw-language-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+  /* The full language grid now lives inside the centered popup. */
   @media(max-width:940px){
-    html body #settings-language-panel .dw-language-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .dw-language-modal .dw-language-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   }
   @media(max-width:780px){
     html body #settings-content-account > .settings-tab-grid{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto!important}
@@ -123,16 +136,57 @@
     summary.append(currentName,currentSubtitle);
     const chevron=doc.createElement('span');chevron.className='dw-language-picker-chevron';chevron.textContent='⌄';chevron.setAttribute('aria-hidden','true');
     toggle.append(flagDisplay,summary,chevron);
+    const modal=doc.createElement('div');
+    modal.className='dw-language-modal';
+    modal.hidden=true;
+    modal.setAttribute('data-dw-language-grid','');
+    modal.setAttribute('role','dialog');
+    modal.setAttribute('aria-modal','true');
+    const modalId=(select.id||'doweo-language')+'-modal';
+    modal.id=modalId;
+    toggle.setAttribute('aria-controls',modalId);
+    const backdrop=doc.createElement('div');backdrop.className='dw-language-modal-backdrop';backdrop.setAttribute('aria-hidden','true');
+    const card=doc.createElement('div');card.className='dw-language-modal-card';
+    const header=doc.createElement('div');header.className='dw-language-modal-header';
+    const title=doc.createElement('span');title.className='dw-language-modal-title';
+    title.id=modalId+'-title';title.textContent=t(resolve(win),'language');
+    modal.setAttribute('aria-labelledby',title.id);
+    const close=doc.createElement('button');close.type='button';close.className='dw-language-modal-close';
+    close.textContent='×';close.setAttribute('aria-label','Close language selector');
+    header.append(title,close);
+    const scroll=doc.createElement('div');scroll.className='dw-language-modal-scroll';
     const grid=doc.createElement('div');
     grid.className='dw-language-grid';
-    grid.hidden=true;
-    grid.id=(select.id||'doweo-language')+'-choices';
-    toggle.setAttribute('aria-controls',grid.id);
-    toggle.addEventListener('click',()=>{
-      grid.hidden=!grid.hidden;
-      toggle.setAttribute('aria-expanded',String(!grid.hidden));
-    });
+    grid.id=modalId+'-choices';
     grid.setAttribute('data-dw-language-grid','');
+    function dismiss(){
+      if(modal.hidden)return;
+      modal.hidden=true;
+      toggle.setAttribute('aria-expanded','false');
+      toggle.focus();
+    }
+    function open(){
+      // Close other language dialogs if onboarding and Settings both exist.
+      doc.querySelectorAll('.dw-language-modal:not([hidden])').forEach(other=>{
+        if(other!==modal){other.hidden=true;const previous=doc.querySelector('[aria-controls="'+other.id+'"]');previous?.setAttribute('aria-expanded','false');}
+      });
+      syncLanguageGrids(win);
+      modal.hidden=false;
+      toggle.setAttribute('aria-expanded','true');
+      close.focus();
+    }
+    toggle.addEventListener('click',open);
+    close.addEventListener('click',dismiss);
+    backdrop.addEventListener('click',dismiss);
+    modal.addEventListener('keydown',event=>{
+      if(event.key==='Escape'){event.preventDefault();dismiss();return;}
+      if(event.key!=='Tab')return;
+      const focusable=[close,...Array.from(grid.querySelectorAll('input[type="radio"]'))];
+      const first=focusable[0],last=focusable[focusable.length-1];
+      if(event.shiftKey&&doc.activeElement===first){event.preventDefault();last.focus();}
+      else if(!event.shiftKey&&doc.activeElement===last){event.preventDefault();first.focus();}
+    });
+    grid.setAttribute('role','group');
     grid.setAttribute('role','group');
     grid.setAttribute('aria-label',t(resolve(win),'language'));
     const groupName=select.id||'doweo-language';
@@ -144,7 +198,7 @@
       input.type='radio';input.name=groupName+'-grid';input.value=option.code;
       input.className='dw-language-radio';
       input.setAttribute('aria-label',option.name);
-      input.addEventListener('change',()=>{if(input.checked){set(win,input.value);grid.hidden=true;toggle.setAttribute('aria-expanded','false');}});
+      input.addEventListener('change',()=>{if(input.checked){set(win,input.value);dismiss();}});
       const flag=doc.createElement('span');flag.className='dw-language-flag';flag.textContent=option.flag;flag.setAttribute('aria-hidden','true');
       const info=doc.createElement('span');info.className='dw-language-info';
       const native=doc.createElement('span');native.className='dw-language-native';native.textContent=option.name;native.dir=(option.code==='he'||option.code==='ar')?'rtl':'auto';
@@ -156,15 +210,18 @@
       const tick=doc.createElement('span');tick.className='dw-language-check';tick.textContent='✓';tick.setAttribute('aria-hidden','true');
       tile.append(input,flag,info,tick);grid.appendChild(tile);
     }
-    select.insertAdjacentElement('afterend',grid);
-    grid.insertAdjacentElement('beforebegin',toggle);
+    scroll.appendChild(grid);card.append(header,scroll);modal.append(backdrop,card);
+    doc.body.appendChild(modal);
+    select.insertAdjacentElement('afterend',toggle);
   }
   function syncLanguageGrids(win){
     const selected=read(win)||'auto';
     win.document.querySelectorAll('.dw-language-grid').forEach(grid=>{
       grid.setAttribute('aria-label',t(resolve(win),'language'));
-      const toggle=grid.previousElementSibling;
+      const modal=grid.closest('.dw-language-modal');
+      const toggle=modal?win.document.querySelector('[aria-controls="'+modal.id+'"]'):null;
       if(toggle?.classList.contains('dw-language-picker-toggle')){
+        modal.querySelector('.dw-language-modal-title').textContent=t(resolve(win),'language');
         const choice=LANGUAGE_CHOICES.find(option=>option.code===selected);
         const auto=selected==='auto';
         const detected=LANGUAGE_CHOICES.find(option=>option.code===resolve(win));
