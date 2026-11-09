@@ -2549,7 +2549,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
     <div id="settings-content-profile" class="settings-tab-content" role="tabpanel" aria-labelledby="settings-tab-profile">
       <div class="settings-tab-grid">
         <div><div class="settings-panel">
-<h3>Edit Profile</h3><p class="settings-muted">Your name, username, bio, and profile picture.</p>
+<h3 data-dw-i18n="profile">Edit Profile</h3><p class="settings-muted">Your name, username, bio, and profile picture.</p>
 <div class="settings-avatar-row"><div class="settings-avatar" id="settings-avatar">?</div><div><button class="settings-action" id="settings-photo" type="button">Change profile picture</button><p class="settings-muted">JPG, PNG or WebP • up to 2 MB</p></div></div>
 <form id="settings-profile-form">
 <label class="settings-field">Display name<input autocomplete="nickname" id="settings-display-name" maxlength="60" placeholder="Your name" required=""/></label>
@@ -2558,6 +2558,8 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 <label class="settings-field">Bio<textarea id="settings-bio" maxlength="180" placeholder="A little about you (optional)"></textarea></label>
 <button class="settings-action primary" id="settings-profile-save" type="submit">Save profile</button>
 <div aria-live="polite" class="settings-notice" id="settings-profile-msg" role="status"></div>
+<div class="dw-language-preference" data-dw-language-area><h3 data-dw-i18n="settings">Language preferences</h3><label for="settings-language" data-dw-i18n="language">Language</label><select id="settings-language" data-dw-language-select aria-label="Language"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="he">עברית</option><option value="zh-Hans">简体中文</option><option value="pt">Português</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="ja">日本語</option><option value="ar">العربية</option><option value="ko">한국어</option><option value="hi">हिन्दी</option></select><p class="settings-muted" data-dw-i18n="settingsHint">Changes take effect immediately on this device.</p></div>
+
 </form>
 </div></div>
       </div>
@@ -2610,8 +2612,8 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 <!-- Only shown after a NEW account is created and signed in -->
 <section id="onboarding-page" aria-label="Set up your new DoWeo account" hidden>
   <div class="onboard-wrap">
-    <h1>Welcome to DoWeo!</h1>
-    <p class="settings-muted">Set up your new profile before you get started.</p>
+    <h1 data-dw-i18n="welcome">Welcome to DoWeo!</h1>
+    <p class="settings-muted" data-dw-i18n="setup">Set up your new profile before you get started.</p>
     <div class="onboard-panel">
       <div class="sq-onboard-steps"><strong>Step 1 of 2:</strong> Set up your profile · <strong>Step 2:</strong> Start sharing expenses</div><form id="onboard-form">
         <div class="onboard-photo">
@@ -2620,9 +2622,10 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
           <p class="settings-muted">Optional · JPG, PNG or WebP</p></div>
         </div>
         <input id="onboard-photo-file" type="file" accept="image/jpeg,image/png,image/webp" hidden>
-        <label for="onboard-display">Display name *</label>
+        <div class="dw-language-preference" data-dw-language-area><label for="onboard-language" data-dw-i18n="language">Language</label><select id="onboard-language" data-dw-language-select aria-label="Language"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="he">עברית</option><option value="zh-Hans">简体中文</option><option value="pt">Português</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="ja">日本語</option><option value="ar">العربية</option><option value="ko">한국어</option><option value="hi">हिन्दी</option></select></div>
+        <label for="onboard-display" data-dw-i18n="display">Display name *</label>
         <input id="onboard-display" maxlength="60" placeholder="How friends will see you" required>
-        <label for="onboard-username">Username *</label>
+        <label for="onboard-username" data-dw-i18n="username">Username *</label>
         <input id="onboard-username" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]{3,24}" placeholder="your_username" required autocapitalize="off" autocomplete="off">
         <p class="settings-muted">3–24 letters, numbers or underscores. Must be unique.</p>
         <label for="onboard-venmo">Venmo username (optional)</label>
@@ -2630,7 +2633,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
         <label for="onboard-cashapp">Cash App $Cashtag (optional)</label>
         <input id="onboard-cashapp" maxlength="21" placeholder="$yourcashtag" autocapitalize="off" autocomplete="off">
         <p class="settings-muted">DoWeo only shares your payment profile links with tracker members. It does not send money.</p>
-        <button id="onboard-continue" class="primary" type="submit">Continue to DoWeo →</button>
+        <button id="onboard-continue" class="primary" type="submit" data-dw-i18n="continue">Continue to DoWeo →</button>
         <div id="onboard-message" role="status" aria-live="polite"></div>
       </form>
     </div>
@@ -14146,6 +14149,14 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
 }
 </style>
 <style id="dw-monthly-recap-export-style">.sq-recap-controls{display:flex;align-items:center;flex-wrap:wrap;gap:10px}.sq-recap-controls #sq-recap-export{min-height:38px;white-space:nowrap}@media(max-width:600px){.sq-recap-controls{width:100%}}</style>
+<style id="dw-language-phase1-styles">
+.dw-language-preference{display:grid;gap:9px;margin:14px 0 18px;padding:15px;border:1px solid #36576c;border-radius:14px;background:rgba(17,49,68,.45);color:#eff9ff}
+.dw-language-preference label,.dw-language-preference h3{font-size:15px;font-weight:700;margin:0}
+.dw-language-preference select{display:block;width:100%;max-width:100%;min-height:44px;border-radius:9px;padding:9px 12px;border:1px solid #5a879b;background:#0b253a;color:#f5fcff;font:inherit}
+.dw-language-preference[dir="rtl"]{text-align:right;direction:rtl}
+.dw-language-preference[dir="rtl"] select{direction:rtl}
+</style>
+<script src="/doweo-i18n.js"></script>
 </body>
 </html>
 
