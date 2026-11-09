@@ -48,6 +48,41 @@
   .dw-language-grid .dw-language-tile:has(input:checked) .dw-language-check{visibility:visible}
   .dw-language-grid .dw-language-auto{grid-column:1/-1;min-height:61px!important}
   #settings-language-panel [data-dw-language-hint]{display:none!important}
+  /* Account + Delete account share a balanced first row; Language uses full width. */
+  html body #settings-content-account > .settings-tab-grid{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-template-rows:auto auto!important;align-items:stretch!important;gap:22px!important;
+  }
+  html body #settings-content-account > .settings-tab-grid > div:first-child{
+    grid-column:1!important;grid-row:1!important;display:flex;min-width:0;
+  }
+  html body #settings-content-account > .settings-tab-grid > div:nth-child(3){
+    grid-column:2!important;grid-row:1!important;display:flex;min-width:0;
+  }
+  html body #settings-content-account > .settings-tab-grid > div:nth-child(2){
+    grid-column:1 / -1!important;grid-row:2!important;min-width:0;
+  }
+  html body #settings-content-account > .settings-tab-grid > div:first-child > .settings-panel,
+  html body #settings-content-account > .settings-tab-grid > div:nth-child(3) > .settings-panel{
+    flex:1 1 auto;box-sizing:border-box;min-width:0;margin:0!important;
+  }
+  html body #settings-language-panel{width:100%;box-sizing:border-box}
+  html body #settings-language-panel .dw-language-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+  @media(max-width:940px){
+    html body #settings-language-panel .dw-language-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media(max-width:780px){
+    html body #settings-content-account > .settings-tab-grid{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto!important}
+    html body #settings-content-account > .settings-tab-grid > div:first-child,
+    html body #settings-content-account > .settings-tab-grid > div:nth-child(3),
+    html body #settings-content-account > .settings-tab-grid > div:nth-child(2){
+      grid-column:1!important;grid-row:auto!important;
+    }
+  }
+  @media(max-width:330px){
+    html body #settings-language-panel .dw-language-grid{grid-template-columns:1fr}
+  }
+
   @media(max-width:430px){.dw-language-grid{gap:7px}.dw-language-grid label.dw-language-tile{padding:9px 8px;gap:6px;min-height:64px}.dw-language-grid .dw-language-flag{font-size:21px;flex-basis:25px}.dw-language-grid .dw-language-native{font-size:12px}.dw-language-grid .dw-language-english{font-size:10px}}
   @media(max-width:330px){.dw-language-grid{grid-template-columns:1fr}}
   `;
