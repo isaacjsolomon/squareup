@@ -51,10 +51,63 @@ button:disabled{opacity:.6;cursor:wait}#message{min-height:22px;font-size:14px;m
 </form></section></main>
 <div class="footer"><span>DoWeo Beta · Real website, real feedback.</span><span>Questions? <a href="mailto:help.doweo@gmail.com" style="color:#8cf5dd">help.doweo@gmail.com</a></span></div></div>
 <script>
-const form=document.getElementById('beta-form'),button=document.getElementById('submit'),status=document.getElementById('message');
-form.addEventListener('submit',async e=>{e.preventDefault();if(!form.reportValidity())return;button.disabled=true;status.className='';status.textContent='Submitting your application…';
-try{const r=await fetch('/api/beta-signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-display_name:form.display_name.value,email:form.email.value,device:form.device.value,use_case:form.use_case.value,note:document.getElementById('note').value,
-website:document.getElementById('website').value,consent:document.getElementById('consent').checked,turnstile_token:window.turnstile?.getResponse?.()||''
-})});const data=await r.json();if(!r.ok)throw new Error(data.error||'Submission failed');status.className='success';status.textContent=data.message||'Application received!';form.reset()}catch(err){status.className='error';status.textContent=err.message||'Something went wrong.'}finally{button.disabled=false}});
+const form=document.getElementById('beta-form');
+const submitButton=document.getElementById('submit');
+const message=document.getElementById('message');
+const field=id=>document.getElementById(id);
+let turnstileWidgetId=null;
+let captchaRequired=false;
+let ready=false;
+function displayMessage(msg,isError){message.textContent=msg;message.className=isError?'error':'success';}
+function loadCaptcha(siteKey){
+  const script=document.createElement('script');
+  script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+  script.async=true;
+  script.onload=()=>{
+    try{
+      turnstileWidgetId=window.turnstile.render('#verification',{sitekey:siteKey,theme:'dark'});
+      submitButton.disabled=false;
+    }catch(e){displayMessage('Verification could not load. Please refresh this page.',true)}
+  };
+  script.onerror=()=>displayMessage('Verification is unavailable. Please try again later.',true);
+  document.head.appendChild(script);
+}
+async function checkReady(){
+  submitButton.disabled=true;
+  try{
+    const response=await fetch('/api/beta-signup',{cache:'no-store'});
+    const body=await response.json();
+    if(!response.ok||body.ready!==true){displayMessage(body.error||'Beta applications are temporarily unavailable. Please try again later.',true);return;}
+    ready=true;captchaRequired=body.turnstile_required===true;
+    if(captchaRequired)loadCaptcha(body.turnstile_site_key);
+    else submitButton.disabled=false;
+  }catch(e){displayMessage('Unable to connect to the signup service. Please try again later.',true);}
+}
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!ready||!form.reportValidity())return;
+  submitButton.disabled=true;message.className='';message.textContent='Submitting your application…';
+  try{
+    const captcha= captchaRequired ? window.turnstile?.getResponse?.(turnstileWidgetId)||'' : '';
+    if(captchaRequired&&!captcha)throw new Error('Please complete the verification.');
+    const response=await fetch('/api/beta-signup',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        display_name:field('display_name').value,email:field('email').value,
+        device:field('device').value,use_case:field('use_case').value,
+        note:field('note').value,website:field('website').value,
+        consent:field('consent').checked,turnstile_token:captcha
+      })
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data.error||'Unable to submit your application.');
+    displayMessage(data.message||'Application received!',false);
+    form.reset();
+  }catch(err){displayMessage(err.message||'Please try again.',true)}
+  finally{
+    if(captchaRequired&&turnstileWidgetId!==null)window.turnstile?.reset?.(turnstileWidgetId);
+    submitButton.disabled=!ready||(captchaRequired&&turnstileWidgetId===null);
+  }
+});
+checkReady();
 </script></body></html>
