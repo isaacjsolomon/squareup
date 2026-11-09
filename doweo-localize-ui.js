@@ -12,6 +12,8 @@
  function locale(){return i18n.resolve(root);}
  function visible(el){
    if(el.closest('[hidden],[aria-hidden="true"],[inert]'))return false;
+   // Native select options typically have no client rect until opened.
+   if(el.tagName==='OPTION')return Boolean(el.parentElement?.getClientRects().length);
    return Boolean(el.getClientRects().length);
  }
  function isSafe(element){
