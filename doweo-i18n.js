@@ -34,6 +34,19 @@
   const PICKER_STYLES=`
   .dw-language-preference.dw-language-grid-mode{display:block!important;padding:0!important;border:0!important;background:transparent!important;margin:12px 0!important}
   .dw-language-grid-mode [data-dw-language-select]{display:none!important}
+
+  .dw-language-grid-mode .dw-language-picker-toggle{display:flex;width:100%;min-height:66px;align-items:center;gap:13px;padding:13px 17px;background:#132f44;color:#f0f8ff;border:1px solid #385c70;border-radius:14px;cursor:pointer;text-align:left;box-sizing:border-box;font:inherit}
+  .dw-language-grid-mode .dw-language-picker-toggle:hover{border-color:#43d9c2;background:#173b4b}
+  .dw-language-grid-mode .dw-language-picker-toggle:focus-visible{outline:3px solid #67e5d3;outline-offset:2px}
+  .dw-language-picker-toggle .dw-language-picker-flag{font-size:26px;line-height:1;flex:0 0 32px;text-align:center}
+  .dw-language-picker-toggle .dw-language-picker-info{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:3px;direction:ltr;text-align:left}
+  .dw-language-picker-toggle .dw-language-picker-name{font-weight:700;font-size:16px;line-height:1.3;unicode-bidi:isolate}
+  .dw-language-picker-toggle .dw-language-picker-subtitle{font-size:12px;color:#bdd2df;line-height:1.25}
+  .dw-language-picker-toggle .dw-language-picker-chevron{width:20px;height:20px;flex:0 0 auto;transition:transform .18s;color:#61e2d0}
+  .dw-language-picker-toggle[aria-expanded="true"] .dw-language-picker-chevron{transform:rotate(180deg)}
+  .dw-language-grid-mode .dw-language-grid{margin-top:12px}
+  .dw-language-grid-mode .dw-language-grid[hidden]{display:none!important}
+
   .dw-language-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;width:100%;direction:ltr}
   .dw-language-grid label.dw-language-tile{display:flex!important;align-items:center;gap:10px;position:relative;min-width:0;min-height:66px;padding:10px 12px;border:1px solid #315269;border-radius:13px;background:#112b40;color:#eff8ff;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s;box-sizing:border-box}
   .dw-language-grid label.dw-language-tile:hover{background:#183b4c;border-color:#60bea9}
@@ -99,8 +112,26 @@
     parent.classList.add('dw-language-grid-mode');
     const label=parent.querySelector('[data-dw-language-title]');
     if(label)label.hidden=true;
+    const toggle=doc.createElement('button');
+    toggle.type='button';toggle.className='dw-language-picker-toggle';
+    toggle.setAttribute('aria-expanded','false');
+    toggle.setAttribute('data-dw-language-grid','');
+    const flagDisplay=doc.createElement('span');flagDisplay.className='dw-language-picker-flag';flagDisplay.setAttribute('aria-hidden','true');
+    const summary=doc.createElement('span');summary.className='dw-language-picker-info';
+    const currentName=doc.createElement('span');currentName.className='dw-language-picker-name';
+    const currentSubtitle=doc.createElement('span');currentSubtitle.className='dw-language-picker-subtitle';
+    summary.append(currentName,currentSubtitle);
+    const chevron=doc.createElement('span');chevron.className='dw-language-picker-chevron';chevron.textContent='⌄';chevron.setAttribute('aria-hidden','true');
+    toggle.append(flagDisplay,summary,chevron);
     const grid=doc.createElement('div');
     grid.className='dw-language-grid';
+    grid.hidden=true;
+    grid.id=(select.id||'doweo-language')+'-choices';
+    toggle.setAttribute('aria-controls',grid.id);
+    toggle.addEventListener('click',()=>{
+      grid.hidden=!grid.hidden;
+      toggle.setAttribute('aria-expanded',String(!grid.hidden));
+    });
     grid.setAttribute('data-dw-language-grid','');
     grid.setAttribute('role','group');
     grid.setAttribute('aria-label',t(resolve(win),'language'));
@@ -113,7 +144,7 @@
       input.type='radio';input.name=groupName+'-grid';input.value=option.code;
       input.className='dw-language-radio';
       input.setAttribute('aria-label',option.name);
-      input.addEventListener('change',()=>{if(input.checked)set(win,input.value);});
+      input.addEventListener('change',()=>{if(input.checked){set(win,input.value);grid.hidden=true;toggle.setAttribute('aria-expanded','false');}});
       const flag=doc.createElement('span');flag.className='dw-language-flag';flag.textContent=option.flag;flag.setAttribute('aria-hidden','true');
       const info=doc.createElement('span');info.className='dw-language-info';
       const native=doc.createElement('span');native.className='dw-language-native';native.textContent=option.name;native.dir=(option.code==='he'||option.code==='ar')?'rtl':'auto';
@@ -126,11 +157,24 @@
       tile.append(input,flag,info,tick);grid.appendChild(tile);
     }
     select.insertAdjacentElement('afterend',grid);
+    grid.insertAdjacentElement('beforebegin',toggle);
   }
   function syncLanguageGrids(win){
     const selected=read(win)||'auto';
     win.document.querySelectorAll('.dw-language-grid').forEach(grid=>{
       grid.setAttribute('aria-label',t(resolve(win),'language'));
+      const toggle=grid.previousElementSibling;
+      if(toggle?.classList.contains('dw-language-picker-toggle')){
+        const choice=LANGUAGE_CHOICES.find(option=>option.code===selected);
+        const auto=selected==='auto';
+        const detected=LANGUAGE_CHOICES.find(option=>option.code===resolve(win));
+        toggle.querySelector('.dw-language-picker-flag').textContent=auto?'🌐':(choice?.flag||'🌐');
+        const name=toggle.querySelector('.dw-language-picker-name');
+        name.textContent=auto?t(resolve(win),'auto'):(choice?.name||t(resolve(win),'auto'));
+        name.dir=choice&&(choice.code==='he'||choice.code==='ar')?'rtl':'auto';
+        toggle.querySelector('.dw-language-picker-subtitle').textContent=auto?(detected?.name||''):(choice?.subtitle!==choice?.name?choice?.subtitle||'':'');
+        toggle.setAttribute('aria-label',t(resolve(win),'language')+': '+name.textContent);
+      }
       grid.querySelectorAll('input[type="radio"]').forEach(input=>{
         input.checked=input.value===selected;
         if(input.value==='auto'){
