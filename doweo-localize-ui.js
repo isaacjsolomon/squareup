@@ -61,7 +61,7 @@
  }
  function queueToken(key){
    const canonical=approvedKey(key);
-   if(language!=='en'&&canonical&&!cache[canonical]&&!requested.has(canonical))pending.add(canonical);
+   if(language!=='en'&&canonical&&!cache[canonical]&&!requested.has(canonical)&&(retries.get(canonical)||0)<MAX_ATTEMPTS)pending.add(canonical);
  }
  function translate(value){
    if(language==='en')return value;
