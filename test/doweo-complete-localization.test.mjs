@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {UI_PHRASES} from '../doweo-ui-catalog.mjs';
-import {validateTranslationRequest,parseTranslationResponse} from '../functions/api/ui-translate.js';
+import {validateTranslationRequest,parseTranslationResponse,onRequest as handleTranslation} from '../functions/api/ui-translate.js';
 import {Script} from 'node:vm';
 const aiScript=readFileSync(new URL('../functions/api/ai-chat.js',import.meta.url),'utf8');
 const sandbox={};
@@ -29,6 +29,18 @@ test('malformed or mismatched AI translations are rejected',()=>{
  assert.equal(parseTranslationResponse('not json',1),null);
  assert.equal(parseTranslationResponse('[""]',1),null);
 });
+test('translation endpoint handles approved text and blocks unapproved user content',async()=>{
+ let calls=0;
+ const env={AI:{run:async()=>{calls++;return {response:'["Inicio"]'};}}};
+ const make=content=>new Request('https://doweo.pages.dev/api/ui-translate',{method:'POST',headers:{Origin:'https://doweo.pages.dev','Content-Type':'application/json'},body:JSON.stringify(content)});
+ const good=await handleTranslation({request:make({locale:'es',texts:['Home']}),env});
+ assert.equal(good.status,200);
+ assert.deepEqual(await good.json(),{locale:'es',translations:['Inicio']});
+ const bad=await handleTranslation({request:make({locale:'es',texts:['Private custom tracker title']}),env});
+ assert.equal(bad.status,400);
+ assert.equal(calls,1,'unapproved strings must never call AI');
+});
+
 test('Weo AI locale normalization supports all 12 language choices',()=>{
  const cases={'en-US':'en','es-MX':'es','fr-FR':'fr','he-IL':'he','zh-CN':'zh-Hans','pt-BR':'pt','de-DE':'de','it-IT':'it','ja-JP':'ja','ar-EG':'ar','ko-KR':'ko','hi-IN':'hi'};
  for(const [source,result] of Object.entries(cases))assert.equal(normalizeWeoLocale(source),result);
