@@ -1,0 +1,62 @@
+name: Auto-merge passing DoWeo pull requests
+
+# This workflow only uses the trusted workflow result and GitHub API.
+# It never checks out or executes pull-request code with write permissions.
+on:
+  workflow_run:
+    workflows:
+      - Test Beta Feedback Center
+    types:
+      - completed
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  merge:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge same-repository PR when all checks pass
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const run = context.payload.workflow_run;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            // Do not automatically merge pull requests from external forks.
+            if (run.head_repository?.full_name !== `${owner}/${repo}`) return;
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner, repo, state: 'open', per_page: 100
+            });
+            for (const candidate of prs) {
+              if (candidate.head.sha !== run.head_sha) continue;
+              if (candidate.base.ref !== 'main' || candidate.draft) continue;
+              if (candidate.head.repo?.full_name !== `${owner}/${repo}`) continue;
+              // Check every currently reported check, not just the triggering workflow.
+              const { data } = await github.rest.checks.listForRef({
+                owner, repo, ref: candidate.head.sha, per_page: 100
+              });
+              if (!data.check_runs.length ||
+                  data.check_runs.some(check => check.status !== 'completed' ||
+                    !['success', 'skipped', 'neutral'].includes(check.conclusion))) {
+                core.info(`PR #${candidate.number}: checks not all successful`);
+                continue;
+              }
+              // Do not merge an unreviewed PR authored by someone else.
+              if (candidate.user.login !== owner) {
+                core.info(`PR #${candidate.number}: requires manual review`);
+                continue;
+              }
+              try {
+                await github.rest.pulls.merge({
+                  owner, repo, pull_number: candidate.number,
+                  sha: candidate.head.sha, merge_method: 'squash'
+                });
+                core.info(`Merged PR #${candidate.number}; main push triggers Cloudflare deploy`);
+              } catch (error) {
+                core.warning(`PR #${candidate.number} was not merged: ${error.message}`);
+              }
