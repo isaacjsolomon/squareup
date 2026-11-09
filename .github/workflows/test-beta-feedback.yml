@@ -26,15 +26,5 @@ jobs:
           node --check weo-mascot.js
           node --check functions/api/ai-chat.js
           node --check weo-actions.js
-      - name: Run feedback API unit tests (mocked requests, no real emails)
-        run: node --test test/beta-feedback.test.mjs
-      - name: Check Personal Finance summary and transaction dialog
-        run: node --test test/personal-finance-transaction-ui.test.mjs
-      - name: Check mobile wallet redesign, currency grouping and retained actions
-        run: node --test test/mobile-wallet-ui.test.mjs
-      - name: Check Bills, Households and mobile Finance Hub tab navigation
-        run: node --test test/finance-household-tabs.test.mjs
-      - name: Check Weo mascot interactions and accessibility
-        run: node --test test/weo-mascot.test.mjs
-      - name: Check Weo quick actions and image understanding API
-        run: node --test test/weo-quick-actions.test.mjs
+      - name: Run all DoWeo regression tests
+        run: node --test test/*.test.mjs
