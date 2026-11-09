@@ -175,8 +175,53 @@
      });
    }
  }
+ const actionLocales={
+   es:['Crear nuevo grupo','Crear nuevo viaje','Crear nuevo hogar','Crear nuevo evento','Abrir grupo'],
+   fr:['Créer un groupe','Créer un voyage','Créer un foyer','Créer un événement','Ouvrir le groupe'],
+   he:['יצירת קבוצה חדשה','יצירת טיול חדש','יצירת משק בית חדש','יצירת אירוע חדש','פתיחת קבוצה'],
+   'zh-Hans':['创建新群组','创建新旅行','创建新家庭','创建新活动','打开群组'],
+   pt:['Criar novo grupo','Criar nova viagem','Criar nova casa','Criar novo evento','Abrir grupo'],
+   de:['Neue Gruppe erstellen','Neue Reise erstellen','Neuen Haushalt erstellen','Neue Veranstaltung erstellen','Gruppe öffnen'],
+   it:['Crea un nuovo gruppo','Crea un nuovo viaggio','Crea una nuova casa','Crea un nuovo evento','Apri gruppo'],
+   ja:['新しいグループを作成','新しい旅行を作成','新しい世帯を作成','新しいイベントを作成','グループを開く'],
+   ar:['إنشاء مجموعة جديدة','إنشاء رحلة جديدة','إنشاء منزل جديد','إنشاء فعالية جديدة','فتح المجموعة'],
+   ko:['새 그룹 만들기','새 여행 만들기','새 가구 만들기','새 이벤트 만들기','그룹 열기'],
+   hi:['नया समूह बनाएँ','नई यात्रा बनाएँ','नया घर बनाएँ','नया कार्यक्रम बनाएँ','समूह खोलें']
+ };
+ const actionKeys=['Create new tracker','Create new trip','Create new household','Create new event','Open tracker'];
+ // Gallery cards and workspace buttons are recreated by the app after asynchronous
+ // data loads. Translate from their original action identity on every scan,
+ // rather than relying on the rendered English text remaining unchanged.
+ function translateCreateActions(){
+   const targets=root.document.querySelectorAll('button');
+   for(const element of targets){
+     // The targeted controls contain only plain text. Never overwrite complex buttons.
+     if(element.children.length)continue;
+     let source=element.dataset.dwCreateAction;
+     if(!source){
+       const raw=element.textContent.trim();
+       const normalized=raw.replace(/^([+＋])\s*/,'').replace(/\s+/g,' ').replace(/\s*[→➜]\s*$/,'').trim();
+       const canonical=actionKeys.find(key=>key.toLowerCase()===normalized.toLowerCase());
+       if(!canonical)continue;
+       source=canonical;
+       element.dataset.dwCreateAction=source;
+     }
+     const i=actionKeys.indexOf(source);
+     if(i<0)continue;
+     const label=actionLocales[language]?.[i]||source;
+     const arrow=source==='Open tracker'?' →':'';
+     // Keep the leading plus for dynamically recreated controls.
+     if(source.startsWith('Create new ')&&element.dataset.dwCreatePlus===undefined){
+       element.dataset.dwCreatePlus=/^[+＋]/u.test(element.textContent.trim())?'true':'false';
+     }
+     const next=(source.startsWith('Create new ')&&element.dataset.dwCreatePlus==='true'?'＋ ':'')+label+arrow;
+     if(element.textContent!==next)element.textContent=next;
+   }
+ }
+
  function render(){
    hideDecorativeDescriptions();
+   translateCreateActions();
    const tree=root.document.createTreeWalker(root.document.body,NodeFilter.SHOW_TEXT);
    let node;
    while((node=tree.nextNode())){
@@ -205,6 +250,7 @@
        queueToken(key);
      }
    });
+   translateCreateActions();
    pump();
  }
  function save(){
