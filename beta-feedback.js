@@ -30,6 +30,24 @@ export function initBetaFeedback({api,getUser}) {
   #sq-mobile-more-sheet #dw-beta-more-action span:not([aria-hidden]){display:inline-flex;align-items:center;line-height:1.2}
   #sq-mobile-more-sheet #dw-beta-more-action:active{transform:translateY(1px);background:#83c5ec}
   #sq-mobile-more-sheet #dw-beta-more-action:focus-visible{outline:3px solid #fff;outline-offset:3px}
+  /* Standalone desktop sidebar destination below (not inside) the More dropdown. */
+  @media(min-width:901px){
+    .sidebar .squareup-nav #dw-beta-launch{
+      position:relative;left:auto;right:auto;top:auto;bottom:auto;z-index:auto;
+      width:100%;max-width:100%;min-height:47px;box-sizing:border-box;
+      margin:3px 0 2px;padding:12px 9px;justify-content:center;
+      border:1px solid #6a8fb0;border-radius:13px;
+      background:#0b2a52;color:white;box-shadow:0 5px 16px #0003;
+      font:700 13px system-ui;line-height:1.25;white-space:normal;
+    }
+    .sidebar .squareup-nav #dw-beta-launch:hover{background:#143968;border-color:#85b6d9}
+    body.side-collapsed .sidebar .squareup-nav #dw-beta-launch{
+      min-height:42px;padding:8px 3px;font-size:0;
+    }
+    body.side-collapsed .sidebar .squareup-nav #dw-beta-launch:before{
+      content:'✦';font-size:21px;line-height:1;
+    }
+  }
   @media(max-width:900px){#dw-beta-launch{display:none!important}#dw-beta-modal .dw-panel{padding:19px}}
   @media(min-width:901px){#dw-beta-more-action{display:none!important}}
   `;
@@ -60,6 +78,12 @@ export function initBetaFeedback({api,getUser}) {
       <p class="dw-message" id="dw-beta-message" role="status" aria-live="polite"></p>
     </form></div>`;
   document.body.append(launcher,modal);
+  // Grouped desktop sidebar: put the existing launcher directly below More.
+  // Do not move it inside <details>, which would hide it when More is collapsed.
+  const desktopNav=document.querySelector('.sidebar .squareup-nav');
+  const moreGroup=desktopNav?.querySelector('.dw-nav-group[data-dw-nav-group="more"]');
+  if(moreGroup) moreGroup.insertAdjacentElement('afterend',launcher);
+  else if(desktopNav) desktopNav.appendChild(launcher);
   const form=modal.querySelector('form');
   const message=modal.querySelector('#dw-beta-message');
   let category='bug',rating=0,previousFocus=null;
