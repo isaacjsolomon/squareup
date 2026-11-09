@@ -41,6 +41,6 @@ test('account settings places equal height cards above a full width language gri
  assert.match(picker,/div:nth-child\(3\)\{[\s\S]*?grid-column:2!important;grid-row:1!important;display:flex/);
  assert.match(picker,/div:nth-child\(2\)\{[\s\S]*?grid-column:1 \/ -1!important;grid-row:2!important/);
  assert.match(picker,/flex:1 1 auto;box-sizing:border-box/);
- assert.match(picker,/html body #settings-language-panel .dw-language-grid\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+ assert.match(picker,/\.dw-language-modal \.dw-language-grid\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)!important\}/);
  assert.match(picker,/@media\(max-width:780px\)/);
 });
