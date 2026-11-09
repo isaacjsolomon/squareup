@@ -36,9 +36,16 @@ test('selected-language detection and instant override remain intact',()=>{
 test('language names stay native even when a page is translated',()=>{
  assert.match(localize,/\[data-dw-language-select\],\[data-dw-language-grid\]/);
  assert.match(script,/data-dw-language-grid/);
- assert.match(script,/native\.dir='auto'/);
+ assert.match(script,/native\.dir=\(option\.code==='he'\|\|option\.code==='ar'\)\?'rtl':'auto'/);
  assert.match(script,/aria-hidden','true'/);
 });
 test('language selector no longer promises upcoming translations',()=>{
  assert.doesNotMatch(script,/More translations are coming soon|Pronto habrá más traducciones/);
+});
+
+test('Hebrew and Arabic labels align left visually and retain RTL reading order',()=>{
+ assert.match(script,/dw-language-info\{[^}]*direction:ltr;text-align:left;align-items:flex-start/);
+ assert.match(script,/dw-language-native\{[^}]*text-align:left;unicode-bidi:isolate/);
+ assert.match(script,/native\.dir=\(option\.code==='he'\|\|option\.code==='ar'\)\?'rtl':'auto'/);
+ assert.deepEqual(i18n.LANGUAGE_CHOICES.filter(x=>['he','ar'].includes(x.code)).map(x=>x.name),['עברית','العربية']);
 });

@@ -41,8 +41,8 @@
   .dw-language-grid .dw-language-tile:has(input:focus-visible){outline:3px solid #77baff;outline-offset:3px}
   .dw-language-grid .dw-language-radio{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
   .dw-language-grid .dw-language-flag{font-size:24px;line-height:1;flex:0 0 29px;display:inline-flex;justify-content:center}
-  .dw-language-grid .dw-language-info{min-width:0;display:flex;flex:1;flex-direction:column;gap:3px;overflow-wrap:anywhere}
-  .dw-language-grid .dw-language-native{font-size:14px;line-height:1.25;font-weight:700}
+  .dw-language-grid .dw-language-info{min-width:0;display:flex;flex:1;flex-direction:column;gap:3px;overflow-wrap:anywhere;direction:ltr;text-align:left;align-items:flex-start}
+  .dw-language-grid .dw-language-native{font-size:14px;line-height:1.25;font-weight:700;text-align:left;unicode-bidi:isolate}
   .dw-language-grid .dw-language-english{font-size:11px;line-height:1.25;font-weight:400;color:#b6cbd8}
   .dw-language-grid .dw-language-check{flex:0 0 auto;font-size:17px;font-weight:800;color:#4ce4c7;visibility:hidden}
   .dw-language-grid .dw-language-tile:has(input:checked) .dw-language-check{visibility:visible}
@@ -116,7 +116,7 @@
       input.addEventListener('change',()=>{if(input.checked)set(win,input.value);});
       const flag=doc.createElement('span');flag.className='dw-language-flag';flag.textContent=option.flag;flag.setAttribute('aria-hidden','true');
       const info=doc.createElement('span');info.className='dw-language-info';
-      const native=doc.createElement('span');native.className='dw-language-native';native.textContent=option.name;native.dir='auto';
+      const native=doc.createElement('span');native.className='dw-language-native';native.textContent=option.name;native.dir=(option.code==='he'||option.code==='ar')?'rtl':'auto';
       info.appendChild(native);
       if(option.subtitle&&option.subtitle!==option.name){
         const english=doc.createElement('span');english.className='dw-language-english';english.textContent=option.subtitle;
