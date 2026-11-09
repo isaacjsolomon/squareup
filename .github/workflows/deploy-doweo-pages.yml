@@ -27,6 +27,9 @@ jobs:
           test -s .pages-output/doweo-core-locales.mjs
           test -s .pages-output/doweo-ui-catalog.mjs
           test -s .pages-output/doweo-localize-ui.js
+          test -s .pages-output/beta/index.html
+          test -s functions/api/beta-signup.js
+          cp beta/index.html .pages-output/beta.html
 
       # Run Wrangler from the repository root so it discovers ./functions.
       # Uploading through the dashboard would not compile Pages Functions.
