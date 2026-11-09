@@ -24,13 +24,13 @@ test('Four actions are real controls, and tracker actions reuse existing navigat
  for(const kind of ['image','poll','chat','expense'])assert.match(actions,new RegExp("'"+kind+"'"));
  assert.match(actions,/fileInput\.click\(\)/);
  assert.match(actions,/window\.squareUpApi\('trackers'\)/);
- assert.match(actions,/window\.openTracker\(id\)/);
+ assert.match(actions,/window\.sqOpenTrackerForWeo\(id\)/);
  assert.match(actions,/document\.getElementById\('nav-chat'\)/);
  assert.match(actions,/document\.getElementById\('quick-expense'\)/);
  assert.match(actions,/document\.getElementById\('sq-poll-toggle'\)/);
  assert.match(actions,/document\.getElementById\('sq-poll-compose'\)/);
  assert.match(actions,/if\(compose&&!compose\.classList\.contains\('open'\)\)/);
- assert.match(actions,/No expense or poll is posted automatically/);
+ assert.match(actions,/Nothing is automatically posted to a tracker or saved as a financial transaction/);
 });
 
 test('Image attachments remain temporary and are attached to actual chat POST',()=>{

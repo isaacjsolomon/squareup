@@ -13959,6 +13959,98 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
 #sq-nextgen .dw-analytics-track>span{display:block;height:100%;background:#2ed8bc}
 @media(max-width:750px){#sq-nextgen .dw-analytics-layout{grid-template-columns:1fr}#sq-nextgen .dw-analytics-months{gap:3px}}
 </style>
+<style id="doweo-grouped-navigation-20261108">
+/* Navigation grouping only: existing controls, routes and handlers are preserved. */
+@media(min-width:901px){
+ .sidebar .squareup-nav .dw-nav-group{display:block;min-width:0;margin:3px 0 5px;padding:0;border:1px solid transparent;border-radius:13px}
+ .sidebar .squareup-nav .dw-nav-group[open]{background:rgba(17,46,65,.35);border-color:rgba(102,154,174,.19)}
+ .sidebar .squareup-nav .dw-nav-group>summary{display:flex;align-items:center;justify-content:space-between;gap:9px;min-height:38px;padding:8px 10px;border-radius:11px;color:#c8d9e5;cursor:pointer;list-style:none;font-size:12px;font-weight:750;letter-spacing:.015em}
+ .sidebar .squareup-nav .dw-nav-group>summary::-webkit-details-marker{display:none}
+ .sidebar .squareup-nav .dw-nav-group>summary:hover{background:#17394c;color:#f6ffff}
+ .sidebar .squareup-nav .dw-nav-group>summary:focus-visible{outline:2px solid #5de2cf;outline-offset:2px}
+ .sidebar .squareup-nav .dw-nav-group>summary .dw-nav-group-icon{font-size:16px;flex:none}
+ .sidebar .squareup-nav .dw-nav-group>summary .dw-nav-group-caret{font-size:14px;opacity:.72;transition:transform .15s}
+ .sidebar .squareup-nav .dw-nav-group[open]>summary .dw-nav-group-caret{transform:rotate(90deg)}
+ .sidebar .squareup-nav .dw-nav-group>button.sq-nav-link{margin:1px 3px;width:calc(100% - 6px)!important}
+ .sidebar .squareup-nav .dw-nav-group .sq-nav-link .sq-nav-label{min-width:0}
+ body.side-collapsed .sidebar .squareup-nav .dw-nav-group>summary{justify-content:center;padding:8px 4px;min-height:38px}
+ body.side-collapsed .sidebar .squareup-nav .dw-nav-group>summary .dw-nav-group-name,
+ body.side-collapsed .sidebar .squareup-nav .dw-nav-group>summary .dw-nav-group-caret{display:none}
+ body.side-collapsed .sidebar .squareup-nav .dw-nav-group{border-color:transparent;background:transparent}
+ body.side-collapsed .sidebar .squareup-nav .dw-nav-group:not([open])>summary{color:#e3f5fb}
+}
+@media(max-width:900px){
+ #sq-mobile-more-sheet .sq-balanced-more-grid{display:flex!important;flex-direction:column!important;gap:15px!important}
+ #sq-mobile-more-sheet .dw-more-group{display:block;min-width:0}
+ #sq-mobile-more-sheet .dw-more-group>h3{margin:0 0 8px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:#80d8d5}
+ #sq-mobile-more-sheet .dw-more-group-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ #sq-mobile-more-sheet .dw-more-group-grid>button{width:100%;min-width:0}
+}
+</style>
+<script id="doweo-grouped-navigation-init-20261108">
+(function(){
+ 'use strict';
+ // Preserve each actual sidebar button, ID, listener, and route.
+ const nav=document.querySelector('.sidebar .squareup-nav');
+ if(nav&&!nav.querySelector('.dw-nav-group')){
+  const groups=[
+   {name:'Groups',icon:'▦',open:true,ids:['nav-trackers','sqev-nav']},
+   {name:'Finance',icon:'▥',open:true,ids:['sq-finance-nav','nav-analytics']},
+   {name:'Social',icon:'◌',open:false,ids:['nav-chat','nav-friends']},
+   {name:'More',icon:'⚙',open:false,ids:['nav-profile','nav-help-center','nav-about']}
+  ];
+  const groupFor=new Map();
+  for(const item of groups){
+   const buttons=item.ids.map(id=>nav.querySelector('#'+id)).filter(Boolean);
+   if(!buttons.length)continue;
+   const container=document.createElement('details');
+   container.className='dw-nav-group';
+   container.open=item.open;
+   const summary=document.createElement('summary');
+   const ico=document.createElement('span');ico.className='dw-nav-group-icon';ico.textContent=item.icon;ico.setAttribute('aria-hidden','true');
+   const label=document.createElement('span');label.className='dw-nav-group-name';label.textContent=item.name;
+   const caret=document.createElement('span');caret.className='dw-nav-group-caret';caret.textContent='›';caret.setAttribute('aria-hidden','true');
+   summary.append(ico,label,caret);container.append(summary);
+   nav.insertBefore(container,buttons[0]);
+   for(const button of buttons){container.append(button);groupFor.set(button.id,container);}
+  }
+  document.addEventListener('click',function(event){
+   const button=event.target.closest('.sidebar .sq-nav-link');
+   if(!button)return;
+   const group=groupFor.get(button.id);
+   if(group)group.open=true;
+  },true);
+  // Keep the selected destination visible if navigation changes programmatically.
+  const observer=new MutationObserver(function(){
+   for(const [id,group] of groupFor){
+    const button=document.getElementById(id);
+    if(button?.classList.contains('active')&&!group.open){group.open=true;}
+   }
+  });
+  observer.observe(nav,{attributes:true,attributeFilter:['class'],subtree:true});
+ }
+ // Mobile retains the existing bottom navigation and plus-sheet exactly as before.
+ const moreGrid=document.querySelector('#sq-mobile-more-sheet .sq-balanced-more-grid');
+ if(moreGrid&&!moreGrid.querySelector('.dw-more-group')){
+  const sections=[
+   {name:'Groups & Events',ids:['sqev-nav']},
+   {name:'Finance',ids:['sq-finance-nav','nav-analytics']},
+   {name:'Social & Updates',ids:['nav-chat','nav-friends','sq-mobile-notifications']},
+   {name:'Account & Information',ids:['nav-profile','nav-about']}
+  ];
+  for(const item of sections){
+   const buttons=item.ids.map(id=>moreGrid.querySelector('[data-sq-destination="'+id+'"]')).filter(Boolean);
+   if(!buttons.length)continue;
+   const section=document.createElement('section');section.className='dw-more-group';
+   const heading=document.createElement('h3');heading.textContent=item.name;
+   const grid=document.createElement('div');grid.className='dw-more-group-grid';
+   buttons.forEach(button=>grid.append(button));
+   section.append(heading,grid);
+   moreGrid.append(section);
+  }
+ }
+})();
+</script>
 <script id="dw-mobile-reference-header-controls">
 (function(){
  'use strict';
