@@ -30,6 +30,11 @@
    return entry;
  }
  function translateDynamic(value){
+   const tourStep=/^(DOWEO GUIDE) · (\d+) OF (\d+)$/.exec(value);
+   if(tourStep){
+     queueToken('DOWEO GUIDE');queueToken('OF');
+     return (cache['DOWEO GUIDE']||'DOWEO GUIDE')+' · '+tourStep[2]+' '+(cache.OF||'OF')+' '+tourStep[3];
+   }
    // Translate fixed UI tokens in mixed status lines without touching names,
    // expense descriptions, dates, amounts, or other user-authored data.
    if(value.includes(' · ')){
@@ -47,11 +52,6 @@
        return part;
      });
      if(changed)return converted.join(' · ');
-   }
-   const tourStep=/^(DOWEO GUIDE) · (\d+) OF (\d+)$/.exec(value);
-   if(tourStep){
-     queueToken('DOWEO GUIDE');queueToken('OF');
-     return (cache['DOWEO GUIDE']||'DOWEO GUIDE')+' · '+tourStep[2]+' '+(cache.OF||'OF')+' '+tourStep[3];
    }
    const patterns=[
      /^(\d+) (members?|total|saved)$/i,
