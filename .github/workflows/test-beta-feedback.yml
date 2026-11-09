@@ -20,12 +20,15 @@ jobs:
           node-version: '22'
       - name: Check JavaScript syntax
         run: |
+          node --check doweo-i18n.js
           node --check beta-feedback.js
           node --check squareup-events.js
           node --check functions/api/beta-feedback.js
           node --check weo-mascot.js
           node --check functions/api/ai-chat.js
           node --check weo-actions.js
+      - name: Test language detection and preference override
+        run: node --test test/doweo-i18n.test.mjs
       - name: Run feedback API unit tests (mocked requests, no real emails)
         run: node --test test/beta-feedback.test.mjs
       - name: Check Personal Finance summary and transaction dialog
