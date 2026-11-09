@@ -131,8 +131,7 @@
        if(!text||text.length>260||el.querySelector('a,button,input,select,textarea'))return;
        // Exclude any instructions with safety, account deletion, or payment meaning.
        if(/password|permanently|cannot be undone|never transfers|confirm recipient|sensitive information|dispute|security|privacy policy|terms|warning|required/i.test(text))return;
-       el.hidden=true;
-       el.dataset.dwDecorativeDescription='true';
+       if(!el.hidden){el.hidden=true;el.dataset.dwDecorativeDescription='true';}
      });
    }
  }
