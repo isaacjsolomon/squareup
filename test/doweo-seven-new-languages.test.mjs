@@ -128,3 +128,17 @@ test('Russian member counts use correct one, few and many plural forms',()=>{
    assert.equal(sandbox.translateForTest(english),expected,english);
  }
 });
+
+test('the entire source-controlled interface catalog is accepted for each new locale',()=>{
+ const batches=[];
+ for(let i=0;i<UI_PHRASES.length;i+=8)batches.push(UI_PHRASES.slice(i,i+8));
+ for(const code of incoming){
+   for(const texts of batches){
+     const valid=validateTranslationRequest({locale:code,texts});
+     assert.ok(valid,code+' could not request translation of '+JSON.stringify(texts));
+     assert.equal(valid.locale,code);
+   }
+ }
+ // This validates API coverage, not linguistic accuracy or successful live AI responses.
+ assert.ok(batches.length>200);
+});
