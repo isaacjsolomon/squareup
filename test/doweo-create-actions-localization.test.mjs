@@ -12,7 +12,7 @@ function makeButton(text){
 }
 function initialize(buttons,lang='es'){
  const root={document:{querySelectorAll:()=>buttons}};
- const context={root,language:lang};
+ const context={root,language:lang,coreTranslations:null};
  vm.runInNewContext(run,context);
  return context;
 }
