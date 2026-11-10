@@ -64,3 +64,14 @@ test('feature captions are localized offline across all supported core locales',
   }
  }
 });
+
+test('all tutorial titles have offline translations in every core locale',()=>{
+ const titles=["Welcome to DoWeo","Home and balances","Trackers and invitations","Expenses and receipt splitting","Payments and settlements","Bills and subscriptions","Open your Finance Hub","Personal Finance","Trips and travel spending","Household tools","Currency converter and favorites","Chat, notifications, and friends","Account, help, and settings","You’re ready!"];
+ for(const key of titles)for(const code of locales)assert.ok(CORE_UI_TRANSLATIONS[code]?.[key],code+' missing tutorial title: '+key);
+});
+test('About headline fragments can be translated without leaving English words',()=>{
+ assert.ok(UI_PHRASES.includes('Keeping money'));
+ assert.ok(UI_PHRASES.includes('between friends '));
+ assert.ok(UI_PHRASES.includes('simple.'));
+ for(const key of ['Keeping money','between friends ','simple.'])assert.ok(CORE_UI_TRANSLATIONS.he[key], 'Hebrew headline fragment missing: '+key);
+});

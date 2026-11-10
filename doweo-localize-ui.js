@@ -174,7 +174,19 @@
      captionPending.add(key);
    }
  }
- function translate(value){
+ // Prefetch the entire first-party tutorial before the modal is opened,
+ // not one page at a time. This allows the chosen language to appear while
+ // stepping through the guide, instead of waiting for each step to translate.
+ const guideStrings=Object.freeze(["Welcome to DoWeo","Home and balances","Trackers and invitations","Expenses and receipt splitting","Payments and settlements","Bills and subscriptions","Open your Finance Hub","Personal Finance","Trips and travel spending","Household tools","Currency converter and favorites","Chat, notifications, and friends","Account, help, and settings","You’re ready!","DoWeo brings shared expense tracking and personal finance tools together. This guide explains the main pages and how to use them.","Open a tracker to view its Overview, net balance, expense activity, and quick actions. Each tracker keeps its own members and balances.","Use Trackers to create, open, and share groups. Tracker settings let you manage available permissions, names, and backdrops.","Add Expense records who paid and how the cost is divided. Split a Bill and Scan Receipt help assign purchases to the right people.","Use Pay Now and the tracker payment workflow to record and confirm settlements. The Finance Hub Wallet summarizes balances across trackers without merging currencies or duplicating debts.","The Bills section manages recurring bills and subscriptions, including available scheduling and payment-sharing controls. Finance Hub → Subscriptions links to this same billing center, not a second set of charges.","Select Finance in the mobile bottom navigation or the Finance Hub navigation entry on desktop. On mobile, use the Finance Hub section dropdown to switch between its tools.","Finance Hub → Personal Finance lets you add and manage private income and expense records. These are separate from shared tracker debts. Smart Insights summarizes the personal records you have saved.","Finance Hub → Trips lets you select a tracker, view travel spending and category breakdowns, and manage trip plans or budgets. Shared charges continue to use the tracker expense and payment system.","Finance Hub → Household connects household plans, chores, groceries, and notes to an existing tracker. Use the household workspace to create, edit, complete, or delete available items.","Finance Hub → Currencies converts amounts using the latest available exchange rates. Codes are shown with currency names; tap a star to favorite a currency and move it to the top of the selectors. Favorites are saved on this device. Conversions are estimates and do not change balances.","Use Chat to communicate, the bell for activity notifications, and available friend and member controls to find people and manage your groups. On mobile, Chat is in the top navigation.","Account lets you update your profile and available payment usernames. The About page includes this tutorial; you can replay it whenever you want.","You can revisit About → Site tutorial for a refresher. This guide never creates, edits, or deletes your records.","Keeping money","between friends ","simple.","ABOUT DOWEO","❔ Site tutorial","Site tutorial","← Back","Finish ✓","Next →","Close tutorial"]);
+ function queueGuideTranslations(){
+   if(language==='en'||!approved)return;
+   for(const phrase of guideStrings){
+     const canonical=approvedKey(phrase);
+     if(canonical&&!cache[canonical]&&!requested.has(canonical)&&(retries.get(canonical)||0)<MAX_ATTEMPTS)
+       captionPending.add(canonical);
+   }
+ }
+  function translate(value){
    if(language==='en')return value;
    const match=/^(\s*)([\s\S]*?)(\s*)$/.exec(value);
    if(!match)return value;
@@ -197,6 +209,9 @@
  function approvedKey(value){
    const exact=String(value||'').trim();
    if(approved.has(exact))return exact;
+   // The About hero deliberately splits its headline into text nodes with
+   // trailing spaces; keep the whitespace-qualified source key available.
+   if(approved.has(exact+' '))return exact+' ';
    // Prefix glyphs belong to the interface, never to customer data.
    const decorated=/^[+＋☆★✦✧←→↗↖↘↙📌📎▤▣]\s*(.+)$/u.exec(exact);
    if(decorated&&approved.has(decorated[1]))return decorated[1];
@@ -451,6 +466,7 @@
      if(retryTimer){clearTimeout(retryTimer);retryTimer=null;}
      readCache();
      seedStaticTranslations();
+     queueGuideTranslations();
    }
    render();
  }
@@ -473,6 +489,7 @@
      }
    }catch(_){return;}
    language=locale();readCache();seedStaticTranslations();
+   queueGuideTranslations();
    scan();
    new MutationObserver(schedule).observe(root.document.body,{
      childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['class','hidden','aria-hidden','placeholder','title','aria-label','alt']
