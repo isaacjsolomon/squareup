@@ -48,6 +48,8 @@ jobs:
         run: node --test test/beta-feedback.test.mjs
       - name: Check Personal Finance summary and transaction dialog
         run: node --test test/personal-finance-transaction-ui.test.mjs
+      - name: Test search navigation, keyboard access and stale profile results
+        run: node --test test/doweo-universal-search-quality.test.mjs
       - name: Check mobile wallet redesign, currency grouping and retained actions
         run: node --test test/mobile-wallet-ui.test.mjs test/doweo-mobile-more-flat-grid.test.mjs
       - name: Check Bills, Households and mobile Finance Hub tab navigation
