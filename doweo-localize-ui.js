@@ -265,7 +265,7 @@
    const ids=['settings-username','settings-venmo','settings-cashapp','settings-applecash'];
    for(const id of ids){
      const el=root.document.getElementById(id);
-     if(el){if(rtl)el.setAttribute('dir','ltr');else el.removeAttribute('dir');}
+     if(el){if(rtl){el.setAttribute('dir','ltr');el.style.setProperty('direction','ltr','important');}else{el.removeAttribute('dir');el.style.removeProperty('direction');}}
    }
  }
  function render(){
