@@ -41,3 +41,14 @@ test('sensitive user content is not treated as a static translation key',()=>{
   assert.equal(ui.has('Solomon Household'),false);
   assert.equal(ui.has('Sasha Levenson'),false);
 });
+
+test('all screenshot-reported navigation and tool labels have offline translations in every core locale',()=>{
+ const keys=["Payments and confirmations","Mentions in group chat","Venmo username","Save payment accounts","Find a message in this conversation","Send","Clear","Pending Requests","Find Friends","View profile","Quick add options","Scan receipt","Split a bill","Personal","Connected trackers","Settlement overview","Recent settlement activity","Balances by tracker","Sent","Received","No trips linked yet","Link existing tracker","Open household","Manage your bills and subscriptions","Open Bills & Subscriptions","Manage currencies","Convert","Monthly cash flow","Last six months","This month's spending categories","Monthly spending recap","Expenses by person","Recent expenses","How This Website Was Made","Site tutorial","Welcome to DoWeo"];
+ const approved=new Set(UI_PHRASES);
+ for(const key of keys){
+   assert.ok(approved.has(key),'Key is not in the approved UI catalog: '+key);
+   for(const lang of locales){
+     assert.ok(CORE_UI_TRANSLATIONS[lang]?.[key]?.trim(),lang+' is missing: '+key);
+   }
+ }
+});
