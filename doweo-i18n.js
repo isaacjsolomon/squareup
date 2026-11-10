@@ -415,5 +415,5 @@
     if(win.document.readyState==='loading')win.document.addEventListener('DOMContentLoaded',start,{once:true});
     else start();
   }
-  return Object.freeze({SUPPORTED,NAMES,LANGUAGE_CHOICES,KEY,normalize,detect,resolve,formatNumber,formatCurrency,formatDate,t,read,apply,set,init});
+  return Object.freeze({SUPPORTED,NAMES,LANGUAGE_CHOICES,KEY,normalize,detect,resolve,formatNumber,formatCurrency,formatDate,reportTranslationLabel,t,read,apply,set,init});
 });
