@@ -8,7 +8,7 @@ const languageNames = {'es':'Spanish','fr':'French','he':'Hebrew','zh-Hans':'Sim
 const recent = new Map();
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export function validateTranslationRequest(body){
-  if(!body||typeof body!=='object'||!supported.has(body.locale)||!Array.isArray(body.texts)||body.texts.length<1||body.texts.length>8)return null;
+  if(!body||typeof body!=='object'||!supported.has(body.locale)||!Array.isArray(body.texts)||body.texts.length<1||body.texts.length>12)return null;
   if(body.texts.some(t=>typeof t!=='string'||t.length>600||!allowed.has(t)))return null;
   return {locale:body.locale,texts:[...new Set(body.texts)]};
 }
@@ -28,11 +28,11 @@ export async function onRequest({request,env}){
   const origin=request.headers.get('Origin');
   if(origin&&origin!==new URL(request.url).origin)return json({error:'Origin not allowed'},403);
   const size=Number(request.headers.get('Content-Length')||0);
-  if(size>4200)return json({error:'Request too large'},413);
+  if(size>8200)return json({error:'Request too large'},413);
   let raw;
   try{
     const body=await request.text();
-    if(body.length>4200)return json({error:'Request too large'},413);
+    if(body.length>8200)return json({error:'Request too large'},413);
     raw=JSON.parse(body);
   }catch{return json({error:'Invalid request'},400);}
   const args=validateTranslationRequest(raw);
@@ -63,7 +63,7 @@ export async function onRequest({request,env}){
   try{
     const result=await env.AI.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast',{
       messages:[{role:'system',content:'You are a professional software-localization translator. Return accurate JSON only.'},{role:'user',content:prompt}],
-      temperature:0.1,max_tokens:1800
+      temperature:0.1,max_tokens:3000
     });
     const strings=parseTranslationResponse(result?.response,args.texts.length);
     if(!strings)return json({error:'Translation could not be verified'},502);
