@@ -311,7 +311,20 @@
     // Both Hebrew typography choices share the same translations, pluralization and RTL behavior.
     return selected==='he-script'?'he':selected;
   }
-  function t(lang,key){
+  // Display-only formatters: never convert currencies or alter stored values.
+  function formatNumber(win,value,options={}){
+    return new Intl.NumberFormat(resolve(win),options).format(value);
+  }
+  function formatCurrency(win,value,currency,options={}){
+    if(typeof currency!=='string'||!/^[A-Z]{3}$/.test(currency))throw new RangeError('Currency must be a three-letter ISO code');
+    return new Intl.NumberFormat(resolve(win),{...options,style:'currency',currency}).format(value);
+  }
+  function formatDate(win,value,options={year:'numeric',month:'short',day:'numeric'}){
+    const date=value instanceof Date?value:new Date(value);
+    if(Number.isNaN(date.getTime()))throw new RangeError('Invalid date');
+    return new Intl.DateTimeFormat(resolve(win),options).format(date);
+  }
+    function t(lang,key){
     return (strings[lang]&&strings[lang][key])||strings.en[key]||key;
   }
   function apply(win){
@@ -369,9 +382,17 @@
         createLanguageGrid(win,el);
       });
       apply(win);
+      // Language preferences remain local to this browser, but all open DoWeo
+      // tabs should reflect a change without needing a hard refresh.
+      if(!win.__dwLanguageStorageBound && typeof win.addEventListener==='function'){
+        win.__dwLanguageStorageBound=true;
+        win.addEventListener('storage',event=>{
+          if(event.key===KEY)apply(win);
+        });
+      }
     };
     if(win.document.readyState==='loading')win.document.addEventListener('DOMContentLoaded',start,{once:true});
     else start();
   }
-  return Object.freeze({SUPPORTED,NAMES,LANGUAGE_CHOICES,KEY,normalize,detect,resolve,t,read,apply,set,init});
+  return Object.freeze({SUPPORTED,NAMES,LANGUAGE_CHOICES,KEY,normalize,detect,resolve,formatNumber,formatCurrency,formatDate,t,read,apply,set,init});
 });
