@@ -75,7 +75,7 @@ test('the translation endpoint accepts 7 new locales and rejects unapproved user
    assert.deepEqual(validateTranslationRequest({locale:code,texts:['Home','Settings','Home']}),{locale:code,texts:['Home','Settings']});
    assert.equal(validateTranslationRequest({locale:code,texts:['private chat from user']}),null);
  }
- assert.match(translateApi,/Only source-controlled interface phrases/);
+ assert.match(translateApi,/source-controlled UI strings only/);
  assert.match(ui,/#tracker-chat-messages/);
  assert.match(ui,/\.expense-description/);
 });
