@@ -138,7 +138,7 @@
     const fontLink=win.document.createElement('link');
     fontLink.rel='stylesheet';
     fontLink.id='dw-hebrew-typefaces';
-    fontLink.href='https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&family=Solitreo&display=swap';
+    fontLink.href='https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&family=Gveret+Levin&display=swap';
     (win.document.head||win.document.documentElement).appendChild(fontLink);
     const fontStyle=win.document.createElement('style');
     fontStyle.id='dw-hebrew-typeface-style';
@@ -150,7 +150,7 @@
     }
     html[data-dw-hebrew-font="script"] body,
     html[data-dw-hebrew-font="script"] body :is(h1,h2,h3,h4,h5,h6,p,span,div,button,input,textarea,select,label,small,strong,b,em,a,li,td,th,summary,blockquote):not(.fa):not(.fas):not(.far):not(.fab):not(.material-icons):not([class*="icon-font"]):not([class*="iconify"]) {
-      font-family: 'Solitreo', 'Rubik', Arial, sans-serif !important;
+      font-family: 'Gveret Levin', 'Rubik', Arial, sans-serif !important;
     }
     /* User-entered handles and numerical inputs must remain readable in both styles. */
     html[data-dw-hebrew-font] :is(input[type="email"],input[type="number"],input[type="tel"],#settings-venmo,#settings-cashapp,#settings-username,#settings-applecash) {
