@@ -63,9 +63,9 @@ test('automatic Hebrew detection defaults to Rubik',()=>{
   assert.equal(win.document.documentElement.getAttribute('data-dw-hebrew-font'),'rubik');
 });
 
-test('language grid order matches design and puts both Hebrew options below Italian and Japanese',()=>{
+test('language grid order matches design with Hebrew Script at bottom-left',()=>{
  const codes=i18n.LANGUAGE_CHOICES.map(choice=>choice.code);
- assert.deepEqual(codes.slice(0,10),['en','es','fr','zh-Hans','pt','de','it','ja','he-script','he']);
+ assert.deepEqual(codes,['en','es','fr','zh-Hans','pt','de','it','ja','ar','he','hi','ko','tr','ru','nl','vi','sv','pl','he-script','bn']);
  assert.equal(new Set(codes).size,codes.length);
  assert.equal(codes.length,20);
 });
