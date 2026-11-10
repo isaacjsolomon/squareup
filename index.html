@@ -4088,19 +4088,25 @@ window.squareUpSendReminder = function (fromKey, toKey, shownAmount) {
   (current.entries || []).forEach(function(e){
     var a=String(e.from||'').trim().toLowerCase(), b=String(e.to||'').trim().toLowerCase();
     var d=(debtor.name||debtor.email).trim().toLowerCase(), c=(creditor.name||creditor.email).trim().toLowerCase();
-    var val=Math.round(Number(e.amount)*100)*(e.type==='debt'?1:-1);
-    if (!Number.isFinite(val)) return;
+    // Drafts must reflect only confirmed, valid ledger activity.
+    // Pending or disputed transfers cannot reduce the amount being requested.
+    if(e.paymentStatus&&e.paymentStatus!=='confirmed')return;
+    var sign=e.type==='debt'?1:e.type==='payment'?-1:0;
+    var val=Math.round(Number(e.amount)*100);
+    if(!sign||!Number.isSafeInteger(val)||val<0)return;
+    val*=sign;
     if (a===d && b===c) cents+=val;
     if (a===c && b===d) cents-=val;
   });
   if (cents<=0) { alert('There is no outstanding balance to remind this friend about.'); return; }
-  var amount=(cents/100).toFixed(2);
+  // Use the actual tracker currency; never label a non-USD balance with "$".
+  var amount=sqFormat(cents/100,sqCurrency());
   // This reminder is a draft only. A local cooldown reduces accidental repeat drafts;
   // it never claims an email was sent and does not affect another device.
   var reminderKey='sq-reminder-draft:'+String(current.id)+':'+String(debtor.email).toLowerCase();
   try { var lastDraft=Number(localStorage.getItem(reminderKey)||0);if(lastDraft&&Date.now()-lastDraft<24*60*60*1000){if(!confirm('You prepared a reminder for this person within the last 24 hours. Open another draft anyway?'))return;} }catch(_){}
-  var subject='DoWeo payment reminder: $'+amount;
-  var message='Hi '+(debtor.name||'there')+',\n\nJust a friendly reminder that you have an outstanding balance of $'+amount+' owed to '+(creditor.name||creditor.email)+' in our DoWeo tracker "'+current.name+'".\n\nPlease check the tracker for details and let me know when you have paid.\n\nThanks!';
+  var subject='DoWeo payment reminder: '+amount;
+  var message='Hi '+(debtor.name||'there')+',\n\nJust a friendly reminder that you have an outstanding balance of '+amount+' owed to '+(creditor.name||creditor.email)+' in our DoWeo tracker "'+current.name+'".\n\nPlease check the tracker for details and let me know when you have paid.\n\nThanks!';
   // Open Gmail compose directly: mailto: depends on a configured system email handler.
   var composeUrl='https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(debtor.email)+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(message);
   try{localStorage.setItem(reminderKey,String(Date.now()));}catch(_){}
