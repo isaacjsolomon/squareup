@@ -52,3 +52,15 @@ test('all screenshot-reported navigation and tool labels have offline translatio
    }
  }
 });
+
+test('feature captions are localized offline across all supported core locales',()=>{
+ const keys=["Assign items to friends","Divide an expense with friends","Send via Venmo or Cash App","Keep all your shared expenses in one place.","See who owes who with up-to-date balances.","Upload a receipt and assign items to friends.","Add due dates, get notifications, and settle up easily.","Make decisions together in chat."];
+ const approved=new Set(UI_PHRASES);
+ for(const key of keys){
+  assert.ok(approved.has(key),'caption not approved: '+key);
+  for(const locale of locales){
+   const translated=CORE_UI_TRANSLATIONS[locale]?.[key];
+   assert.ok(typeof translated==='string'&&translated.trim()&&translated!==key,locale+': missing caption '+key);
+  }
+ }
+});
