@@ -70,3 +70,17 @@ test('language preference sync only reacts to language storage key',()=>{
   assert.ok(source.includes('dw-language-feedback-link'));
   assert.ok(source.includes('mailto:help.doweo@gmail.com'));
 });
+
+test('first-of-month UTC dates stay in the intended month',()=>{
+ const win=fakeWindow('fr');
+ const start=new Date(Date.UTC(2026,10,1));
+ const month=i18n.formatDate(win,start,{month:'long',year:'numeric',timeZone:'UTC'});
+ assert.match(month,/novembre 2026/);
+ const source=readFileSync(new URL('../doweo-localize-ui.js',import.meta.url),'utf8');
+ assert.ok(source.includes("timeZone:'UTC'"));
+});
+test('translation cache saving captures the locale before debounce',()=>{
+ const source=readFileSync(new URL('../doweo-localize-ui.js',import.meta.url),'utf8');
+ assert.ok(source.includes('const forLocale=language, snapshot={...cache}'));
+ assert.ok(source.includes('storageKey(forLocale)'));
+});
