@@ -258,8 +258,19 @@
    }
  }
 
+ function fixRtlInputIdentifiers(){
+   // Hebrew/Arabic are RTL, but usernames, handles, phone numbers and
+   // email addresses must keep their original LTR character order.
+   const rtl=language==='he'||language==='ar';
+   const ids=['settings-username','settings-venmo','settings-cashapp','settings-applecash'];
+   for(const id of ids){
+     const el=root.document.getElementById(id);
+     if(el){if(rtl)el.setAttribute('dir','ltr');else el.removeAttribute('dir');}
+   }
+ }
  function render(){
    // Do not hide descriptive copy as a substitute for translating it.
+   fixRtlInputIdentifiers();
    translateCreateActions();
    const tree=root.document.createTreeWalker(root.document.body,NodeFilter.SHOW_TEXT);
    let node;
