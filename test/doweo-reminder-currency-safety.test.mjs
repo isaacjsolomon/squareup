@@ -74,7 +74,7 @@ test('no reminder is composed when confirmed balance is zero',()=>{
 });
 
 test('draft-only reminder keeps user confirmation requirement and local cooldown',()=>{
- assert.match(source,/Compose a reminder/);
+ assert.match(source,/This reminder is a draft only/);
  assert.match(source,/lastDraft&&Date\.now\(\)-lastDraft<24\*60\*60\*1000/);
  assert.match(source,/window\.open\(composeUrl,'_blank'\)/);
  assert.doesNotMatch(source,/sendEmail|sendReminderApi\(/);
