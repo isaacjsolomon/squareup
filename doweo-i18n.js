@@ -24,7 +24,9 @@
   });
 
   const DIALOG_LABELS=Object.freeze({"en":["Language","Close language selector"],"es":["Idioma","Cerrar selector de idioma"],"fr":["Langue","Fermer le sélecteur de langue"],"he":["שפה","סגירת בחירת שפה"],"zh-Hans":["语言","关闭语言选择器"],"pt":["Idioma","Fechar seletor de idioma"],"de":["Sprache","Sprachauswahl schließen"],"it":["Lingua","Chiudi selettore della lingua"],"ja":["言語","言語選択を閉じる"],"ar":["اللغة","إغلاق اختيار اللغة"],"ko":["언어","언어 선택 닫기"],"hi":["भाषा","भाषा चयन बंद करें"],"ru":["Язык","Закрыть выбор языка"],"tr":["Dil","Dil seçimini kapat"],"vi":["Ngôn ngữ","Đóng chọn ngôn ngữ"],"nl":["Taal","Taalkiezer sluiten"],"pl":["Język","Zamknij wybór języka"],"sv":["Språk","Stäng språkval"],"bn":["ভাষা","ভাষা নির্বাচন বন্ধ করুন"]});
-  function dialogLabel(lang,index){return (DIALOG_LABELS[lang]||DIALOG_LABELS.en)[index];}
+  const REPORT_TRANSLATION_LABELS=Object.freeze({"en":"Report a translation issue","es":"Informar de un problema de traducción","fr":"Signaler un problème de traduction","he":"דיווח על בעיית תרגום","zh-Hans":"报告翻译问题","pt":"Comunicar um problema de tradução","de":"Übersetzungsfehler melden","it":"Segnala un problema di traduzione","ja":"翻訳の問題を報告","ar":"الإبلاغ عن مشكلة في الترجمة","ko":"번역 문제 신고","hi":"अनुवाद की समस्या की रिपोर्ट करें","ru":"Сообщить об ошибке перевода","tr":"Çeviri sorununu bildir","vi":"Báo lỗi bản dịch","nl":"Vertaalprobleem melden","pl":"Zgłoś problem z tłumaczeniem","sv":"Rapportera översättningsproblem","bn":"অনুবাদের সমস্যা জানান"});
+  function reportTranslationLabel(lang){return REPORT_TRANSLATION_LABELS[lang]||REPORT_TRANSLATION_LABELS.en;}
+    function dialogLabel(lang,index){return (DIALOG_LABELS[lang]||DIALOG_LABELS.en)[index];}
   // The flags are visual country examples; languages may be used in many countries.
   const LANGUAGE_CHOICES=Object.freeze([
     {code:'en',flag:'🇺🇸',name:'English',subtitle:'English'},
@@ -71,6 +73,10 @@
   .dw-language-modal-close:hover{background:#24536b;border-color:#51dbc8}
   .dw-language-modal-close:focus-visible{outline:3px solid #69ead5;outline-offset:2px}
   .dw-language-modal-scroll{padding:20px 24px 24px;overflow-y:auto;overscroll-behavior:contain;min-height:0}
+  .dw-language-feedback-footer{padding:10px 24px 14px;border-top:1px solid #2a4b60;display:flex;justify-content:flex-start;flex-shrink:0}
+  .dw-language-feedback-link{font:inherit;font-size:13px;color:#86e9d8;text-decoration:underline;text-underline-offset:3px}
+  .dw-language-feedback-link:hover{color:#d8fff8}
+  .dw-language-feedback-link:focus-visible{outline:3px solid #69ead5;outline-offset:3px;border-radius:3px}
   .dw-language-modal .dw-language-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   .dw-language-modal .dw-language-grid[hidden]{display:none!important}
   @media(max-width:520px){.dw-language-modal{padding:10px}.dw-language-modal-card{max-height:90dvh;border-radius:17px}.dw-language-modal-header{padding:16px}.dw-language-modal-title{font-size:19px}.dw-language-modal-scroll{padding:14px}.dw-language-modal .dw-language-grid{gap:8px}}
@@ -222,7 +228,7 @@
     modal.addEventListener('keydown',event=>{
       if(event.key==='Escape'){event.preventDefault();dismiss();return;}
       if(event.key!=='Tab')return;
-      const focusable=[close,...Array.from(grid.querySelectorAll('input[type="radio"]'))];
+      const focusable=[close,...Array.from(grid.querySelectorAll('input[type="radio"]')),report];
       const first=focusable[0],last=focusable[focusable.length-1];
       if(event.shiftKey&&doc.activeElement===first){event.preventDefault();last.focus();}
       else if(!event.shiftKey&&doc.activeElement===last){event.preventDefault();first.focus();}
@@ -251,7 +257,20 @@
       const tick=doc.createElement('span');tick.className='dw-language-check';tick.textContent='✓';tick.setAttribute('aria-hidden','true');
       tile.append(input,flag,info,tick);grid.appendChild(tile);
     }
-    scroll.appendChild(grid);card.append(header,scroll);modal.append(backdrop,card);
+    const footer=doc.createElement('div');footer.className='dw-language-feedback-footer';
+    const report=doc.createElement('a');report.className='dw-language-feedback-link';
+    report.textContent=reportTranslationLabel(resolve(win));
+    // Explicit user interaction opens their mail app. Never send text or financial data automatically.
+    report.addEventListener('click',()=>{
+      const lang=resolve(win);
+      const subject='DoWeo translation feedback ('+lang+')';
+      const body='Language: '+lang+'\nScreen: \nIncorrect text: \nSuggested wording: ';
+      report.href='mailto:help.doweo@gmail.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+    });
+    // Set a usable URL before click too, for keyboard navigation and link previews.
+    report.href='mailto:help.doweo@gmail.com?subject='+encodeURIComponent('DoWeo translation feedback');
+    footer.appendChild(report);
+    scroll.appendChild(grid);card.append(header,scroll,footer);modal.append(backdrop,card);
     doc.body.appendChild(modal);
     select.insertAdjacentElement('afterend',toggle);
   }
@@ -264,6 +283,8 @@
       if(toggle?.classList.contains('dw-language-picker-toggle')){
         modal.querySelector('.dw-language-modal-title').textContent=dialogLabel(resolve(win),0);
         modal.querySelector('.dw-language-modal-close').setAttribute('aria-label',dialogLabel(resolve(win),1));
+        const feedback=modal.querySelector('.dw-language-feedback-link');
+        if(feedback)feedback.textContent=reportTranslationLabel(resolve(win));
         const choice=LANGUAGE_CHOICES.find(option=>option.code===selected);
         const auto=selected==='auto';
         const detected=LANGUAGE_CHOICES.find(option=>option.code===resolve(win));
