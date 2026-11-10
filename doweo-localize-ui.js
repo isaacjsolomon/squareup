@@ -344,7 +344,7 @@
    if(wait>0){retryTimer=setTimeout(()=>{retryTimer=null;pump();},wait);return;}
    while(running<1&&pending.size){
      const batch=[];
-     for(const key of pending){pending.delete(key);if(!requested.has(key)&&!cache[key]){const chars=batch.reduce((n,v)=>n+v.length,0);if(batch.length&&chars+key.length>4700)break;batch.push(key);requested.add(key);}if(batch.length>=12)break;}
+     for(const key of pending){if(!requested.has(key)&&!cache[key]){const chars=batch.reduce((n,v)=>n+v.length,0);if(batch.length&&chars+key.length>4700)break;batch.push(key);requested.add(key);}pending.delete(key);if(batch.length>=12)break;}
      if(!batch.length)return;
      lastRequest=Date.now();
      running++;
