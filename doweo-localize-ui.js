@@ -259,7 +259,7 @@
  }
 
  function render(){
-   hideDecorativeDescriptions();
+   // Do not hide descriptive copy as a substitute for translating it.
    translateCreateActions();
    const tree=root.document.createTreeWalker(root.document.body,NodeFilter.SHOW_TEXT);
    let node;
@@ -268,7 +268,7 @@
      if(!isSafe(el)||!visible(el))continue;
      const entry=getOriginal(node),key=entry.source.trim();
      if(!eligible(key)&&language==='en')continue;
-     if(!eligible(key)&&!/(\d+ (?:members?|total|saved)|Last activity · |monthly · |Next due |Welcome back, |Hi, |DOWEO GUIDE · |\[Category: (?:Food & Dining|Food|Other)\]|\$[\d,.]+ per person$|Total including tip:|^You \(|^Split between \(|Archived trackers \(\d+\)| owes |^(?:January|February|March|April|May|June|July|August|September|October|November|December) \d{4}$)/i.test(key))continue;
+     if(!eligible(key)&&!/(\d+ (?:members?|total|saved)|Last activity · |monthly · |Next due |Welcome back, |Hi, |DOWEO GUIDE · |\[Category: [^\]]+\]|\$[\d,.]+ per person$|Total including tip:|^You \(|^Split between \(|Previous month spending:|^(?:Sent|Received|Settlement payment) · |Archived trackers \(\d+\)| owes |^(?:January|February|March|April|May|June|July|August|September|October|November|December) \d{4}$)/i.test(key))continue;
      const next=translate(entry.source);
      if(node.nodeValue!==next){node.nodeValue=next;entry.rendered=next;}
      if(eligible(key))queueToken(key);
@@ -344,7 +344,7 @@
    if(wait>0){retryTimer=setTimeout(()=>{retryTimer=null;pump();},wait);return;}
    while(running<1&&pending.size){
      const batch=[];
-     for(const key of pending){pending.delete(key);if(!requested.has(key)&&!cache[key]){batch.push(key);requested.add(key);}if(batch.length>=8)break;}
+     for(const key of pending){pending.delete(key);if(!requested.has(key)&&!cache[key]){const chars=batch.reduce((n,v)=>n+v.length,0);if(batch.length&&chars+key.length>4700)break;batch.push(key);requested.add(key);}if(batch.length>=12)break;}
      if(!batch.length)return;
      lastRequest=Date.now();
      running++;
