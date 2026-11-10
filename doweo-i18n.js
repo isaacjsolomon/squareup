@@ -30,13 +30,13 @@
     {code:'en',flag:'🇺🇸',name:'English',subtitle:'English'},
     {code:'es',flag:'🇪🇸',name:'Español',subtitle:'Spanish'},
     {code:'fr',flag:'🇫🇷',name:'Français',subtitle:'French'},
-    {code:'he',flag:'🇮🇱',name:'עברית',subtitle:'Hebrew · Print'},
-    {code:'he-script',flag:'🇮🇱',name:'עברית (כתב יד)',subtitle:'Hebrew · Script'},
     {code:'zh-Hans',flag:'🇨🇳',name:'简体中文',subtitle:'Simplified Chinese'},
     {code:'pt',flag:'🇧🇷',name:'Português',subtitle:'Portuguese'},
     {code:'de',flag:'🇩🇪',name:'Deutsch',subtitle:'German'},
     {code:'it',flag:'🇮🇹',name:'Italiano',subtitle:'Italian'},
     {code:'ja',flag:'🇯🇵',name:'日本語',subtitle:'Japanese'},
+    {code:'he-script',flag:'🇮🇱',name:'עברית (כתב יד)',subtitle:'Hebrew · Script'},
+    {code:'he',flag:'🇮🇱',name:'עברית',subtitle:'Hebrew · Print'},
     {code:'ar',flag:'🇸🇦',name:'العربية',subtitle:'Arabic'},
     {code:'ko',flag:'🇰🇷',name:'한국어',subtitle:'Korean'},
     {code:'hi',flag:'🇮🇳',name:'हिन्दी',subtitle:'Hindi'},
@@ -351,6 +351,16 @@
           const existing=el.querySelector('option[value="he"]');
           if(existing)existing.after(option);else el.appendChild(option);
         }
+      });
+      // The native selector and the visual language grid must use identical order.
+      // Moving existing options retains their values and saved preference.
+      win.document.querySelectorAll('[data-dw-language-select]').forEach(el=>{
+        const saved=el.value;
+        for(const choice of LANGUAGE_CHOICES){
+          const option=Array.from(el.options).find(item=>item.value===choice.code);
+          if(option)el.appendChild(option);
+        }
+        el.value=saved;
       });
       win.document.querySelectorAll('[data-dw-language-select]').forEach(el=>{
         if(el.dataset.dwLanguageBound)return;
