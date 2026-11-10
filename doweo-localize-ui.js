@@ -426,7 +426,7 @@
    if(running>0||retryTimer)return;
    const wait=SEND_INTERVAL-(Date.now()-lastRequest);
    if(wait>0){retryTimer=setTimeout(()=>{retryTimer=null;pump();},wait);return;}
-   while(running<1&&pending.size){
+   while(running<1&&(pending.size||captionPending.size)){
      const batch=[];
      for(const source of [captionPending,pending]){
        for(const key of source){
