@@ -58,7 +58,7 @@
    if(statusPrefix){queueToken(statusPrefix[1]);return (cache[statusPrefix[1]]||statusPrefix[1])+statusPrefix[2];}
    const previousMonth=/^(Previous month spending:)( .+)$/.exec(value);
    if(previousMonth){queueToken('Previous month spending');return (cache['Previous month spending']||'Previous month spending')+':'+previousMonth[2];}
-   const categoryLabel=/^(\\[Category: )([^\\]]+)(\\])(.*)$/.exec(value);
+   const categoryLabel=/^(\[Category: )([^\]]+)(\])(.*)$/.exec(value);
    if(categoryLabel){
      queueToken('Category:');
      const label=approvedKey(categoryLabel[2]);
@@ -183,7 +183,7 @@
  }
  function eligible(value){
    const text=String(value||'').trim();
-   return text.length>1&&text.length<=600&&Boolean(approvedKey(text))&&!/^[\\d\\s$.,%+-]+$/.test(text);
+   return text.length>1&&text.length<=600&&Boolean(approvedKey(text))&&!/^[\d\s$.,%+-]+$/.test(text);
  }
  // Remove short decorative explanations directly below page/section headings.
  // Keep form hints, critical financial notices, user-authored event text and
@@ -258,8 +258,19 @@
    }
  }
 
+ function fixRtlInputIdentifiers(){
+   // Hebrew/Arabic are RTL, but usernames, handles, phone numbers and
+   // email addresses must keep their original LTR character order.
+   const rtl=language==='he'||language==='ar';
+   const ids=['settings-username','settings-venmo','settings-cashapp','settings-applecash'];
+   for(const id of ids){
+     const el=root.document.getElementById(id);
+     if(el){if(rtl){el.setAttribute('dir','ltr');el.style.setProperty('direction','ltr','important');}else{el.removeAttribute('dir');el.style.removeProperty('direction');}}
+   }
+ }
  function render(){
-   hideDecorativeDescriptions();
+   // Do not hide descriptive copy as a substitute for translating it.
+   fixRtlInputIdentifiers();
    translateCreateActions();
    const tree=root.document.createTreeWalker(root.document.body,NodeFilter.SHOW_TEXT);
    let node;
@@ -268,7 +279,7 @@
      if(!isSafe(el)||!visible(el))continue;
      const entry=getOriginal(node),key=entry.source.trim();
      if(!eligible(key)&&language==='en')continue;
-     if(!eligible(key)&&!/(\d+ (?:members?|total|saved)|Last activity · |monthly · |Next due |Welcome back, |Hi, |DOWEO GUIDE · |\[Category: (?:Food & Dining|Food|Other)\]|\$[\d,.]+ per person$|Total including tip:|^You \(|^Split between \(|Archived trackers \(\d+\)| owes |^(?:January|February|March|April|May|June|July|August|September|October|November|December) \d{4}$)/i.test(key))continue;
+     if(!eligible(key)&&!/(\d+ (?:members?|total|saved)|Last activity · |monthly · |Next due |Welcome back, |Hi, |DOWEO GUIDE · |\[Category: [^\]]+\]|\$[\d,.]+ per person$|Total including tip:|^You \(|^Split between \(|Previous month spending:|^(?:Sent|Received|Settlement payment) · |Archived trackers \(\d+\)| owes |^(?:January|February|March|April|May|June|July|August|September|October|November|December) \d{4}$)/i.test(key))continue;
      const next=translate(entry.source);
      if(node.nodeValue!==next){node.nodeValue=next;entry.rendered=next;}
      if(eligible(key))queueToken(key);
@@ -344,7 +355,7 @@
    if(wait>0){retryTimer=setTimeout(()=>{retryTimer=null;pump();},wait);return;}
    while(running<1&&pending.size){
      const batch=[];
-     for(const key of pending){pending.delete(key);if(!requested.has(key)&&!cache[key]){batch.push(key);requested.add(key);}if(batch.length>=8)break;}
+     for(const key of pending){if(!requested.has(key)&&!cache[key]){const chars=batch.reduce((n,v)=>n+v.length,0);if(batch.length&&chars+key.length>4700)break;batch.push(key);requested.add(key);}pending.delete(key);if(batch.length>=12)break;}
      if(!batch.length)return;
      lastRequest=Date.now();
      running++;
