@@ -6645,9 +6645,23 @@ const launch=document.createElement('button');launch.type='button';launch.classN
 const title=document.querySelector('.tracker-heading .sq-title-and-tour')||document.querySelector('.tracker-heading');if(title)title.append(launch);
 let returnFocus=null,friendSearchTimer=null,friendSearchSerial=0;
 function open(){returnFocus=document.activeElement;overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');input.value='';draw();input.focus();}
-function close(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');if(returnFocus&&returnFocus.focus)returnFocus.focus();}
+function close(){
+ friendSearchSerial++;clearTimeout(friendSearchTimer);
+ overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');results.replaceChildren();
+ if(returnFocus&&returnFocus.focus)returnFocus.focus();
+}
 launch.addEventListener('click',open);document.getElementById('sq-mobile-search')?.addEventListener('click',open);document.getElementById('sq-search-close').addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
-document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();overlay.classList.contains('open')?close():open();}else if(e.key==='Escape'&&overlay.classList.contains('open'))close();});
+document.addEventListener('keydown',e=>{
+ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();overlay.classList.contains('open')?close():open();}
+ else if(e.key==='Escape'&&overlay.classList.contains('open'))close();
+});
+overlay.addEventListener('keydown',e=>{
+ if(e.key!=='Tab'||!overlay.classList.contains('open'))return;
+ const focusable=[input,document.getElementById('sq-search-close'),...results.querySelectorAll('button:not([disabled])')].filter(Boolean);
+ const first=focusable[0],last=focusable[focusable.length-1];
+ if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+ else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+});
 function label(value){return String(value==null?'':value)}
 function group(name,items){if(!items.length)return;const head=document.createElement('div');head.className='sq-search-group';head.textContent=name;results.append(head);items.forEach(item=>{const btn=document.createElement('button');btn.type='button';btn.className='sq-search-hit';const icon=document.createElement('span');icon.textContent=item.icon;const body=document.createElement('span');const strong=document.createElement('strong');strong.textContent=item.title;const small=document.createElement('small');small.textContent=item.sub;body.append(strong,small);btn.append(icon,body);btn.addEventListener('click',async()=>{close();try{await item.action()}catch(err){console.error('Search navigation:',err);alert(err.message||'Could not open result.')}});results.append(btn);});}
 function draw(){const q=input.value.trim().toLocaleLowerCase();results.replaceChildren();if(!q){const p=document.createElement('p');p.className='sq-search-empty';p.textContent='Search pages, features, trackers, members, and expenses.';results.append(p);return;}
@@ -6657,6 +6671,13 @@ const active=typeof current!=='undefined'?current:null;
 const memberHits=(active&&Array.isArray(active.members)?active.members:[]).filter(m=>label(m.name||m.email).toLowerCase().includes(q)).slice(0,12).map(m=>({icon:'♙',title:label(m.name||m.email),sub:'Member · '+label(active.name),action:async()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab="members"]')?.click();}}));
 const expenseHits=(active&&Array.isArray(active.entries)?active.entries:[]).filter(e=>[e.note,e.from,e.to,e.amount,e.date].some(v=>label(v).toLowerCase().includes(q))).slice(0,20).map(e=>({icon:'▤',title:label(e.note|| (e.type==='payment'?'Payment':'Expense')),sub:label(e.from)+' → '+label(e.to)+' · '+label(e.amount),action:async()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab="expenses"]')?.click();const row=[...document.querySelectorAll('#history > .entry')].find(r=>r.querySelector('[data-del]')?.dataset.del===String(e.id));if(row){row.scrollIntoView({behavior:'smooth',block:'center'});row.querySelector('.sq-detail-btn')?.click();}}}));
 const features=[
+ ['Events','Group plans, upcoming events',()=>document.getElementById('sqev-nav')?.click()],
+ ['Finance Hub','Wallet, personal spending, trips, households and currencies',()=>document.getElementById('sq-finance-nav')?.click()],
+ ['Wallet','Balances and settlements',()=>document.getElementById('sq-finance-nav')?.click()],
+ ['Subscriptions & Bills','Recurring payments, subscriptions',()=>document.getElementById('sq-finance-nav')?.click()],
+ ['Trips','Travel trackers, shared trips',()=>document.getElementById('sq-finance-nav')?.click()],
+ ['Households','Household trackers, shared bills',()=>document.getElementById('sq-finance-nav')?.click()],
+ ['Currency converter','Convert between currencies',()=>document.getElementById('sq-finance-nav')?.click()],
  ['Home','Dashboard, overview',()=>document.getElementById('nav-home')?.click()],
  ['Trackers','My trackers, groups',()=>document.getElementById('nav-trackers')?.click()],
  ['Friends','Friend requests, find friends',()=>settingsRoute('friends')],
@@ -6667,7 +6688,6 @@ const features=[
  ['About','About DoWeo, tutorial',()=>document.getElementById('nav-about')?.click()],
  ['Notifications','Notification Center, alerts',()=>document.getElementById('nav-notifications')?.click()||document.getElementById('sq-mobile-notifications')?.click()],
  ['Expenses','Expense history, filters',()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab=expenses]')?.click()}],
- ['Budget','Budget planner',()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab=budget]')?.click()}],
  ['Members','Tracker members',()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab=members]')?.click()}],
  ['Add Expense','Create expense, owe money',()=>{document.getElementById('nav-home')?.click();document.getElementById('quick-expense')?.click()}],
  ['Pay Now','Record payment, settle balance',()=>{document.getElementById('nav-home')?.click();document.getElementById('quick-pay')?.click()}],
