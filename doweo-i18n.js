@@ -7,16 +7,23 @@
 })(typeof globalThis!=='undefined'?globalThis:null,function(){
   'use strict';
   const KEY='doweo-language-preference-v1';
-  const SUPPORTED=Object.freeze(['en','es','fr','he','zh-Hans','pt','de','it','ja','ar','ko','hi']);
-  const NAMES=Object.freeze({'en':'English','es':'Español','fr':'Français','he':'עברית','zh-Hans':'简体中文','pt':'Português','de':'Deutsch','it':'Italiano','ja':'日本語','ar':'العربية','ko':'한국어','hi':'हिन्दी'});
+  const SUPPORTED=Object.freeze(['en','es','fr','he','zh-Hans','pt','de','it','ja','ar','ko','hi','ru','tr','vi','nl','pl','sv','bn']);
+  const NAMES=Object.freeze({'en':'English','es':'Español','fr':'Français','he':'עברית','zh-Hans':'简体中文','pt':'Português','de':'Deutsch','it':'Italiano','ja':'日本語','ar':'العربية','ko':'한국어','hi':'हिन्दी','ru':'Русский','tr':'Türkçe','vi':'Tiếng Việt','nl':'Nederlands','pl':'Polski','sv':'Svenska','bn':'বাংলা'});
   const RTL=new Set(['he','ar']);
   const strings=Object.freeze({
     en:{language:'Language',auto:'Automatic (browser language)',hint:'Choose the language used throughout DoWeo.',saved:'Language preference saved.',welcome:'Welcome to DoWeo!',continue:'Continue to DoWeo'},
     es:{language:'Idioma',auto:'Automático (idioma del navegador)',hint:'Elige el idioma que se utilizará en DoWeo.',saved:'Preferencia de idioma guardada.',welcome:'¡Bienvenido a DoWeo!',continue:'Continuar a DoWeo'},
-    fr:{language:'Langue',auto:'Automatique (langue du navigateur)',hint:'Choisissez la langue utilisée dans DoWeo.',saved:'Préférence de langue enregistrée.',welcome:'Bienvenue sur DoWeo !',continue:'Continuer vers DoWeo'}
+    fr:{language:'Langue',auto:'Automatique (langue du navigateur)',hint:'Choisissez la langue utilisée dans DoWeo.',saved:'Préférence de langue enregistrée.',welcome:'Bienvenue sur DoWeo !',continue:'Continuer vers DoWeo'},
+    ru:{language:'Язык',auto:'Автоматически (язык браузера)',hint:'Выберите язык интерфейса DoWeo.',saved:'Язык сохранён.',welcome:'Добро пожаловать в DoWeo!',continue:'Перейти в DoWeo'},
+    tr:{language:'Dil',auto:'Otomatik (tarayıcı dili)',hint:'DoWeo uygulamasının dilini seçin.',saved:'Dil tercihi kaydedildi.',welcome:'DoWeo’ya hoş geldiniz!',continue:'DoWeo’ya devam et'},
+    vi:{language:'Ngôn ngữ',auto:'Tự động (ngôn ngữ trình duyệt)',hint:'Chọn ngôn ngữ sử dụng trong DoWeo.',saved:'Đã lưu tùy chọn ngôn ngữ.',welcome:'Chào mừng đến với DoWeo!',continue:'Tiếp tục vào DoWeo'},
+    nl:{language:'Taal',auto:'Automatisch (browsertaal)',hint:'Kies de taal voor DoWeo.',saved:'Taalvoorkeur opgeslagen.',welcome:'Welkom bij DoWeo!',continue:'Verder naar DoWeo'},
+    pl:{language:'Język',auto:'Automatycznie (język przeglądarki)',hint:'Wybierz język używany w DoWeo.',saved:'Zapisano preferencje językowe.',welcome:'Witaj w DoWeo!',continue:'Przejdź do DoWeo'},
+    sv:{language:'Språk',auto:'Automatiskt (webbläsarens språk)',hint:'Välj språk för DoWeo.',saved:'Språkvalet har sparats.',welcome:'Välkommen till DoWeo!',continue:'Fortsätt till DoWeo'},
+    bn:{language:'ভাষা',auto:'স্বয়ংক্রিয় (ব্রাউজারের ভাষা)',hint:'DoWeo-এর ভাষা বেছে নিন।',saved:'ভাষার পছন্দ সংরক্ষিত হয়েছে।',welcome:'DoWeo-তে স্বাগতম!',continue:'DoWeo-তে এগিয়ে যান'}
   });
 
-  const DIALOG_LABELS=Object.freeze({"en":["Language","Close language selector"],"es":["Idioma","Cerrar selector de idioma"],"fr":["Langue","Fermer le sélecteur de langue"],"he":["שפה","סגירת בחירת שפה"],"zh-Hans":["语言","关闭语言选择器"],"pt":["Idioma","Fechar seletor de idioma"],"de":["Sprache","Sprachauswahl schließen"],"it":["Lingua","Chiudi selettore della lingua"],"ja":["言語","言語選択を閉じる"],"ar":["اللغة","إغلاق اختيار اللغة"],"ko":["언어","언어 선택 닫기"],"hi":["भाषा","भाषा चयन बंद करें"]});
+  const DIALOG_LABELS=Object.freeze({"en":["Language","Close language selector"],"es":["Idioma","Cerrar selector de idioma"],"fr":["Langue","Fermer le sélecteur de langue"],"he":["שפה","סגירת בחירת שפה"],"zh-Hans":["语言","关闭语言选择器"],"pt":["Idioma","Fechar seletor de idioma"],"de":["Sprache","Sprachauswahl schließen"],"it":["Lingua","Chiudi selettore della lingua"],"ja":["言語","言語選択を閉じる"],"ar":["اللغة","إغلاق اختيار اللغة"],"ko":["언어","언어 선택 닫기"],"hi":["भाषा","भाषा चयन बंद करें"],"ru":["Язык","Закрыть выбор языка"],"tr":["Dil","Dil seçimini kapat"],"vi":["Ngôn ngữ","Đóng chọn ngôn ngữ"],"nl":["Taal","Taalkiezer sluiten"],"pl":["Język","Zamknij wybór języka"],"sv":["Språk","Stäng språkval"],"bn":["ভাষা","ভাষা নির্বাচন বন্ধ করুন"]});
   function dialogLabel(lang,index){return (DIALOG_LABELS[lang]||DIALOG_LABELS.en)[index];}
   // The flags are visual country examples; languages may be used in many countries.
   const LANGUAGE_CHOICES=Object.freeze([
@@ -31,7 +38,14 @@
     {code:'ja',flag:'🇯🇵',name:'日本語',subtitle:'Japanese'},
     {code:'ar',flag:'🇸🇦',name:'العربية',subtitle:'Arabic'},
     {code:'ko',flag:'🇰🇷',name:'한국어',subtitle:'Korean'},
-    {code:'hi',flag:'🇮🇳',name:'हिन्दी',subtitle:'Hindi'}
+    {code:'hi',flag:'🇮🇳',name:'हिन्दी',subtitle:'Hindi'},
+    {code:'ru',flag:'🇷🇺',name:'Русский',subtitle:'Russian'},
+    {code:'tr',flag:'🇹🇷',name:'Türkçe',subtitle:'Turkish'},
+    {code:'vi',flag:'🇻🇳',name:'Tiếng Việt',subtitle:'Vietnamese'},
+    {code:'nl',flag:'🇳🇱',name:'Nederlands',subtitle:'Dutch'},
+    {code:'pl',flag:'🇵🇱',name:'Polski',subtitle:'Polish'},
+    {code:'sv',flag:'🇸🇪',name:'Svenska',subtitle:'Swedish'},
+    {code:'bn',flag:'🇧🇩',name:'বাংলা',subtitle:'Bengali'}
   ]);
   const PICKER_STYLES=`
   .dw-language-preference.dw-language-grid-mode{display:block!important;padding:0!important;border:0!important;background:transparent!important;margin:12px 0!important}
