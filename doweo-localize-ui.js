@@ -58,7 +58,7 @@
    if(statusPrefix){queueToken(statusPrefix[1]);return (cache[statusPrefix[1]]||statusPrefix[1])+statusPrefix[2];}
    const previousMonth=/^(Previous month spending:)( .+)$/.exec(value);
    if(previousMonth){queueToken('Previous month spending');return (cache['Previous month spending']||'Previous month spending')+':'+previousMonth[2];}
-   const categoryLabel=/^(\\[Category: )([^\\]]+)(\\])(.*)$/.exec(value);
+   const categoryLabel=/^(\[Category: )([^\]]+)(\])(.*)$/.exec(value);
    if(categoryLabel){
      queueToken('Category:');
      const label=approvedKey(categoryLabel[2]);
@@ -183,7 +183,7 @@
  }
  function eligible(value){
    const text=String(value||'').trim();
-   return text.length>1&&text.length<=600&&Boolean(approvedKey(text))&&!/^[\\d\\s$.,%+-]+$/.test(text);
+   return text.length>1&&text.length<=600&&Boolean(approvedKey(text))&&!/^[\d\s$.,%+-]+$/.test(text);
  }
  // Remove short decorative explanations directly below page/section headings.
  // Keep form hints, critical financial notices, user-authored event text and
