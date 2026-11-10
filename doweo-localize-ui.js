@@ -102,6 +102,13 @@
        // Correct legacy singular "1 members" labels.
        if(match[1]==='1'&&token.toLowerCase()==='members')token='member';
        queueToken(token);
+       // Russian requires the correct form for quantities: 1 участник,
+       // 2 участника, 5 участников, 21 участник, 22 участника.
+       if(language==='ru'&&/^members?$/i.test(token)){
+         const quantity=Number(match[1]),lastTwo=quantity%100,last=quantity%10;
+         const noun=lastTwo>=11&&lastTwo<=14?'участников':last===1?'участник':last>=2&&last<=4?'участника':'участников';
+         return match[1]+' '+noun;
+       }
        // Japanese, Korean and Chinese counters join their classifiers without
        // English-style whitespace: 2人, 2명, 2位成员.
        const translated=cache[token]||token;
