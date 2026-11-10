@@ -15,9 +15,17 @@
  const storageKey=locale=>'doweo-interface-translations-v2-'+locale;
  function locale(){return i18n.resolve(root);}
  function visible(el){
-   // Translate inactive tabs and dialogs too, before they are first opened.
-   // Text from user-generated areas is still blocked by isSafe().
-   // Native select options typically have no client rect until opened.
+   // Translate the active view first. Previously every hidden page, dialog and
+   // dropdown queued thousands of requests ahead of the text on screen.
+   // Native option elements have no layout rectangles even while selectable.
+   if(el.matches?.('option,optgroup'))return true;
+   let node=el;
+   while(node&&node!==root.document.body){
+     if(node.hidden||node.getAttribute?.('aria-hidden')==='true'||node.getAttribute?.('inert')!==null)return false;
+     const style=root.getComputedStyle(node);
+     if(style.display==='none'||style.visibility==='hidden'||style.visibility==='collapse')return false;
+     node=node.parentElement;
+   }
    return true;
  }
  function isSafe(element){
@@ -43,6 +51,19 @@
    if(perPerson){
      queueToken('per person');
      return perPerson[1]+' '+(cache['per person']||'per person');
+   }
+   // User names, descriptions and amounts are never submitted to translation.
+   // Only translate the static pieces of mixed status/summary rows.
+   const statusPrefix=/^(Sent|Received|Settlement payment|income|expense|Job|Food)( · .+)$/.exec(value);
+   if(statusPrefix){queueToken(statusPrefix[1]);return (cache[statusPrefix[1]]||statusPrefix[1])+statusPrefix[2];}
+   const previousMonth=/^(Previous month spending:)( .+)$/.exec(value);
+   if(previousMonth){queueToken('Previous month spending');return (cache['Previous month spending']||'Previous month spending')+':'+previousMonth[2];}
+   const categoryLabel=/^(\\[Category: )([^\\]]+)(\\])(.*)$/.exec(value);
+   if(categoryLabel){
+     queueToken('Category:');
+     const label=approvedKey(categoryLabel[2]);
+     if(label)queueToken(label);
+     return '['+(cache['Category:']||'Category:')+' '+(label?(cache[label]||label):categoryLabel[2])+']'+categoryLabel[4];
    }
    const withTip=/^(Total including tip:)( .+)$/.exec(value);
    if(withTip){
@@ -162,7 +183,7 @@
  }
  function eligible(value){
    const text=String(value||'').trim();
-   return text.length>1&&text.length<=600&&Boolean(approvedKey(text))&&!/^[\d\s$.,%+-]+$/.test(text);
+   return text.length>1&&text.length<=600&&Boolean(approvedKey(text))&&!/^[\\d\\s$.,%+-]+$/.test(text);
  }
  // Remove short decorative explanations directly below page/section headings.
  // Keep form hints, critical financial notices, user-authored event text and
