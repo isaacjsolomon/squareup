@@ -30,7 +30,7 @@
     {code:'en',flag:'🇺🇸',name:'English',subtitle:'English'},
     {code:'es',flag:'🇪🇸',name:'Español',subtitle:'Spanish'},
     {code:'fr',flag:'🇫🇷',name:'Français',subtitle:'French'},
-    {code:'he',flag:'🇮🇱',name:'עברית',subtitle:'Hebrew · Rubik'},
+    {code:'he',flag:'🇮🇱',name:'עברית',subtitle:'Hebrew · Print'},
     {code:'he-script',flag:'🇮🇱',name:'עברית (כתב יד)',subtitle:'Hebrew · Script'},
     {code:'zh-Hans',flag:'🇨🇳',name:'简体中文',subtitle:'Simplified Chinese'},
     {code:'pt',flag:'🇧🇷',name:'Português',subtitle:'Portuguese'},
