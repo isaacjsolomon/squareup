@@ -7,7 +7,7 @@
  const original=new WeakMap(),attributes=new WeakMap();
  const excluded='script,style,noscript,code,pre,svg,canvas,[contenteditable],#sq-ai-stream,#tracker-chat-messages,.chat-bubble,.chat-line,.message-bubble,.sq-chat-message,.expense-description,.tracker-member-name,.sq-member-name,.sq-friend-name,[data-user-content],[data-chat-id],[data-entry-id]';
  const attrNames=['placeholder','aria-label','title','alt','value'];
- let approved=null,coreTranslations=null,language='en',cache={},requested=new Set(),pending=new Set(),running=0,scanTimer=null,saveTimer=null,retryTimer=null,lastRequest=0;
+ let approved=null,coreTranslations=null,language='en',cache={},requested=new Set(),pending=new Set(),captionPending=new Set(),running=0,scanTimer=null,saveTimer=null,retryTimer=null,lastRequest=0;
  const retries=new Map();
  const MAX_ATTEMPTS=4;
  const localizedTokens=new Set(['members','member','Favorite','Last activity','OWES','owes','total','saved','monthly','Next due','Automatic','Tracker member','Outstanding balance','Who owes whom','confirmed','added by']);
@@ -150,6 +150,30 @@
    const canonical=approvedKey(key);
    if(language!=='en'&&canonical&&!cache[canonical]&&!requested.has(canonical)&&(retries.get(canonical)||0)<MAX_ATTEMPTS)pending.add(canonical);
  }
+ // Explanatory captions frequently appear as smaller text inside feature cards,
+ // action menus, onboarding, settings, and page headers. Prioritize those
+ // approved, source-controlled strings over distant controls in the API queue.
+ function isFeatureCaption(el){
+   if(!el||el.closest('[data-user-content],#tracker-chat-messages,[contenteditable]'))return false;
+   if(el.matches('small,figcaption,[data-dw-caption],[class*="subtitle"],[class*="description"],[class*="hint"],[class*="helper"],[class*="caption"],.settings-muted'))return true;
+   if(el.matches('p,span,div')&&el.closest('.settings-panel,.sq-action-card,.sq-quick-action,.feature-card,.dw-feature-card,#about-page,[class*="feature"],[class*="quick-action"]'))return true;
+   if(el.matches('p')&&el.previousElementSibling?.matches('h1,h2,h3,h4'))return true;
+   return false;
+ }
+ function queueCaptions(){
+   // Re-scan on each route change so captions in newly opened views go first.
+   // Do not translate free-form user text or AI/chat output.
+   const tree=root.document.createTreeWalker(root.document.body,NodeFilter.SHOW_TEXT);
+   let node;
+   while((node=tree.nextNode())){
+     const el=node.parentElement;
+     if(!isSafe(el)||!visible(el)||!isFeatureCaption(el))continue;
+     const source=getOriginal(node).source.trim();
+     const key=approvedKey(source);
+     if(!key||cache[key]||requested.has(key)||(retries.get(key)||0)>=MAX_ATTEMPTS)continue;
+     captionPending.add(key);
+   }
+ }
  function translate(value){
    if(language==='en')return value;
    const match=/^(\s*)([\s\S]*?)(\s*)$/.exec(value);
@@ -271,6 +295,7 @@
  function render(){
    // Do not hide descriptive copy as a substitute for translating it.
    fixRtlInputIdentifiers();
+   queueCaptions();
    translateCreateActions();
    const tree=root.document.createTreeWalker(root.document.body,NodeFilter.SHOW_TEXT);
    let node;
@@ -349,13 +374,26 @@
    }
  }
  function pump(){
-   if(!approved||language==='en'||!pending.size)return;
+   if(!approved||language==='en'||(!pending.size&&!captionPending.size))return;
    if(running>0||retryTimer)return;
    const wait=SEND_INTERVAL-(Date.now()-lastRequest);
    if(wait>0){retryTimer=setTimeout(()=>{retryTimer=null;pump();},wait);return;}
    while(running<1&&pending.size){
      const batch=[];
-     for(const key of pending){if(!requested.has(key)&&!cache[key]){const chars=batch.reduce((n,v)=>n+v.length,0);if(batch.length&&chars+key.length>4700)break;batch.push(key);requested.add(key);}pending.delete(key);if(batch.length>=12)break;}
+     for(const source of [captionPending,pending]){
+       for(const key of source){
+         if(!requested.has(key)&&!cache[key]){
+           const chars=batch.reduce((n,v)=>n+v.length,0);
+           if(batch.length&&chars+key.length>4700)break;
+           batch.push(key);requested.add(key);
+         }
+         source.delete(key);
+         // The same key may have been queued as a regular text label.
+         if(source===captionPending)pending.delete(key);
+         if(batch.length>=12)break;
+       }
+       if(batch.length>=12)break;
+     }
      if(!batch.length)return;
      lastRequest=Date.now();
      running++;
@@ -409,7 +447,7 @@
    if(!approved)return;
    const next=locale();
    if(language!==next){
-     language=next;pending.clear();requested.clear();retries.clear();
+     language=next;pending.clear();captionPending.clear();requested.clear();retries.clear();
      if(retryTimer){clearTimeout(retryTimer);retryTimer=null;}
      readCache();
      seedStaticTranslations();
