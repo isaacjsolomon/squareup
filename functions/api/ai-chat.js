@@ -1,5 +1,5 @@
 const recent=new Map();
-const WEO_RESPONSE_LANGUAGES=Object.freeze({'en':'English','es':'Spanish','fr':'French','he':'Hebrew','zh-Hans':'Simplified Chinese','pt':'Portuguese','de':'German','it':'Italian','ja':'Japanese','ar':'Arabic','ko':'Korean','hi':'Hindi'});
+const WEO_RESPONSE_LANGUAGES=Object.freeze({'en':'English','es':'Spanish','fr':'French','he':'Hebrew','zh-Hans':'Simplified Chinese','pt':'Portuguese','de':'German','it':'Italian','ja':'Japanese','ar':'Arabic','ko':'Korean','hi':'Hindi','ru':'Russian','tr':'Turkish','vi':'Vietnamese','nl':'Dutch','pl':'Polish','sv':'Swedish','bn':'Bengali'});
 function normalizeWeoLocale(value){
  if(typeof value!=='string')return 'en';
  const clean=value.trim().replace(/_/g,'-').toLowerCase();
