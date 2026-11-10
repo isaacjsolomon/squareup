@@ -35,17 +35,17 @@
     {code:'de',flag:'🇩🇪',name:'Deutsch',subtitle:'German'},
     {code:'it',flag:'🇮🇹',name:'Italiano',subtitle:'Italian'},
     {code:'ja',flag:'🇯🇵',name:'日本語',subtitle:'Japanese'},
-    {code:'he-script',flag:'🇮🇱',name:'עברית (כתב יד)',subtitle:'Hebrew · Script'},
-    {code:'he',flag:'🇮🇱',name:'עברית',subtitle:'Hebrew · Print'},
     {code:'ar',flag:'🇸🇦',name:'العربية',subtitle:'Arabic'},
-    {code:'ko',flag:'🇰🇷',name:'한국어',subtitle:'Korean'},
+    {code:'he',flag:'🇮🇱',name:'עברית',subtitle:'Hebrew · Print'},
     {code:'hi',flag:'🇮🇳',name:'हिन्दी',subtitle:'Hindi'},
-    {code:'ru',flag:'🇷🇺',name:'Русский',subtitle:'Russian'},
+    {code:'ko',flag:'🇰🇷',name:'한국어',subtitle:'Korean'},
     {code:'tr',flag:'🇹🇷',name:'Türkçe',subtitle:'Turkish'},
-    {code:'vi',flag:'🇻🇳',name:'Tiếng Việt',subtitle:'Vietnamese'},
+    {code:'ru',flag:'🇷🇺',name:'Русский',subtitle:'Russian'},
     {code:'nl',flag:'🇳🇱',name:'Nederlands',subtitle:'Dutch'},
-    {code:'pl',flag:'🇵🇱',name:'Polski',subtitle:'Polish'},
+    {code:'vi',flag:'🇻🇳',name:'Tiếng Việt',subtitle:'Vietnamese'},
     {code:'sv',flag:'🇸🇪',name:'Svenska',subtitle:'Swedish'},
+    {code:'pl',flag:'🇵🇱',name:'Polski',subtitle:'Polish'},
+    {code:'he-script',flag:'🇮🇱',name:'עברית (כתב יד)',subtitle:'Hebrew · Script'},
     {code:'bn',flag:'🇧🇩',name:'বাংলা',subtitle:'Bengali'}
   ]);
   const PICKER_STYLES=`
