@@ -118,3 +118,13 @@ test('all full-site approved strings are eligible for AI fallback; private text 
  assert.match(ui,/new MutationObserver\(schedule\)/);
  assert.match(ui,/addEventListener\('doweo:languagechange',schedule\)/);
 });
+
+test('Russian member counts use correct one, few and many plural forms',()=>{
+ const from=ui.indexOf(' function translateDynamic(');
+ const to=ui.indexOf(' function hideDecorativeDescriptions(',from);
+ const sandbox={cache:CORE_UI_TRANSLATIONS.ru,language:'ru',approved:new Set(UI_PHRASES),pending:new Set(),requested:new Set(),retries:new Map(),MAX_ATTEMPTS:4,Intl,Date};
+ vm.runInNewContext(ui.slice(from,to)+'\n globalThis.translateForTest=translate;',sandbox);
+ for(const [english,expected] of [['1 members','1 участник'],['2 members','2 участника'],['3 members','3 участника'],['5 members','5 участников'],['11 members','11 участников'],['21 members','21 участник'],['22 members','22 участника'],['25 members','25 участников']]){
+   assert.equal(sandbox.translateForTest(english),expected,english);
+ }
+});
