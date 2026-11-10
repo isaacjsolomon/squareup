@@ -7,8 +7,8 @@
 })(typeof globalThis!=='undefined'?globalThis:null,function(){
   'use strict';
   const KEY='doweo-language-preference-v1';
-  const SUPPORTED=Object.freeze(['en','es','fr','he','zh-Hans','pt','de','it','ja','ar','ko','hi','ru','tr','vi','nl','pl','sv','bn']);
-  const NAMES=Object.freeze({'en':'English','es':'Español','fr':'Français','he':'עברית','zh-Hans':'简体中文','pt':'Português','de':'Deutsch','it':'Italiano','ja':'日本語','ar':'العربية','ko':'한국어','hi':'हिन्दी','ru':'Русский','tr':'Türkçe','vi':'Tiếng Việt','nl':'Nederlands','pl':'Polski','sv':'Svenska','bn':'বাংলা'});
+  const SUPPORTED=Object.freeze(['en','es','fr','he','he-script','zh-Hans','pt','de','it','ja','ar','ko','hi','ru','tr','vi','nl','pl','sv','bn']);
+  const NAMES=Object.freeze({'en':'English','es':'Español','fr':'Français','he':'עברית','he-script':'עברית (כתב יד)','zh-Hans':'简体中文','pt':'Português','de':'Deutsch','it':'Italiano','ja':'日本語','ar':'العربية','ko':'한국어','hi':'हिन्दी','ru':'Русский','tr':'Türkçe','vi':'Tiếng Việt','nl':'Nederlands','pl':'Polski','sv':'Svenska','bn':'বাংলা'});
   const RTL=new Set(['he','ar']);
   const strings=Object.freeze({
     en:{language:'Language',auto:'Automatic (browser language)',hint:'Choose the language used throughout DoWeo.',saved:'Language preference saved.',welcome:'Welcome to DoWeo!',continue:'Continue to DoWeo'},
@@ -30,7 +30,8 @@
     {code:'en',flag:'🇺🇸',name:'English',subtitle:'English'},
     {code:'es',flag:'🇪🇸',name:'Español',subtitle:'Spanish'},
     {code:'fr',flag:'🇫🇷',name:'Français',subtitle:'French'},
-    {code:'he',flag:'🇮🇱',name:'עברית',subtitle:'Hebrew'},
+    {code:'he',flag:'🇮🇱',name:'עברית',subtitle:'Hebrew · Rubik'},
+    {code:'he-script',flag:'🇮🇱',name:'עברית (כתב יד)',subtitle:'Hebrew · Script'},
     {code:'zh-Hans',flag:'🇨🇳',name:'简体中文',subtitle:'Simplified Chinese'},
     {code:'pt',flag:'🇧🇷',name:'Português',subtitle:'Portuguese'},
     {code:'de',flag:'🇩🇪',name:'Deutsch',subtitle:'German'},
@@ -133,6 +134,30 @@
     const style=win.document.createElement('style');
     style.id='dw-language-grid-style';style.textContent=PICKER_STYLES;
     (win.document.head||win.document.documentElement).appendChild(style);
+    // Load open-source Hebrew webfonts without shipping font binaries.
+    const fontLink=win.document.createElement('link');
+    fontLink.rel='stylesheet';
+    fontLink.id='dw-hebrew-typefaces';
+    fontLink.href='https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&family=Solitreo&display=swap';
+    (win.document.head||win.document.documentElement).appendChild(fontLink);
+    const fontStyle=win.document.createElement('style');
+    fontStyle.id='dw-hebrew-typeface-style';
+    fontStyle.textContent=`
+    /* Typography applies only in Hebrew; no visual changes to other locales. */
+    html[data-dw-hebrew-font="rubik"] body,
+    html[data-dw-hebrew-font="rubik"] body :is(h1,h2,h3,h4,h5,h6,p,span,div,button,input,textarea,select,label,small,strong,b,em,a,li,td,th,summary,blockquote) {
+      font-family: 'Rubik', Arial, sans-serif !important;
+    }
+    html[data-dw-hebrew-font="script"] body,
+    html[data-dw-hebrew-font="script"] body :is(h1,h2,h3,h4,h5,h6,p,span,div,button,input,textarea,select,label,small,strong,b,em,a,li,td,th,summary,blockquote) {
+      font-family: 'Solitreo', 'Rubik', Arial, sans-serif !important;
+    }
+    /* User-entered handles and numerical inputs must remain readable in both styles. */
+    html[data-dw-hebrew-font] :is(input[type="email"],input[type="number"],input[type="tel"],#settings-venmo,#settings-cashapp,#settings-username,#settings-applecash) {
+      font-family: 'Rubik', Arial, sans-serif !important;
+    }
+    `;
+    (win.document.head||win.document.documentElement).appendChild(fontStyle);
   }
   function createLanguageGrid(win,select){
     const parent=select.closest('[data-dw-language-scope]');
@@ -245,7 +270,7 @@
         toggle.querySelector('.dw-language-picker-flag').textContent=auto?'🌐':(choice?.flag||'🌐');
         const name=toggle.querySelector('.dw-language-picker-name');
         name.textContent=auto?t(resolve(win),'auto'):(choice?.name||t(resolve(win),'auto'));
-        name.dir=choice&&(choice.code==='he'||choice.code==='ar')?'rtl':'auto';
+        name.dir=choice&&(choice.code==='he'||choice.code==='he-script'||choice.code==='ar')?'rtl':'auto';
         toggle.querySelector('.dw-language-picker-subtitle').textContent=auto?(detected?.name||''):(choice?.subtitle!==choice?.name?choice?.subtitle||'':'');
         toggle.setAttribute('aria-label',t(resolve(win),'language')+': '+name.textContent);
       }
@@ -267,6 +292,7 @@
     if(!value)return null;
     const base=value.split('-')[0];
     if(base==='zh')return 'zh-Hans';
+    if(value==='he-script')return 'he-script';
     if(base==='iw')return 'he';
     return SUPPORTED.includes(base)?base:null;
   }
@@ -281,7 +307,9 @@
   function resolve(win){
     const preference=read(win);
     const browser=win.navigator||{};
-    return preference&&preference!=='auto'?preference:detect(browser.languages||[browser.language]);
+    const selected=preference&&preference!=='auto'?preference:detect(browser.languages||[browser.language]);
+    // Both Hebrew typography choices share the same translations, pluralization and RTL behavior.
+    return selected==='he-script'?'he':selected;
   }
   function t(lang,key){
     return (strings[lang]&&strings[lang][key])||strings.en[key]||key;
@@ -289,6 +317,9 @@
   function apply(win){
     const lang=resolve(win);
     win.document.documentElement.lang=lang;
+    const selected=read(win);
+    if(lang==='he')win.document.documentElement.setAttribute('data-dw-hebrew-font',selected==='he-script'?'script':'rubik');
+    else win.document.documentElement.removeAttribute('data-dw-hebrew-font');
     // Direction on language controls only until all legacy layouts are RTL-tested.
     win.document.querySelectorAll('[data-dw-language-scope]').forEach(el=>el.dir=RTL.has(lang)?'rtl':'ltr');
     win.document.querySelectorAll('[data-dw-language-title]').forEach(el=>el.textContent=t(lang,'language'));
@@ -311,6 +342,16 @@
     if(!win.document)return;
     const start=()=>{
       installPickerStyle(win);
+      // Inject the alternate display option into both Settings and onboarding
+      // without changing the underlying Hebrew locale or translation dictionaries.
+      win.document.querySelectorAll('[data-dw-language-select]').forEach(el=>{
+        if(!el.querySelector('option[value="he-script"]')){
+          const option=win.document.createElement('option');
+          option.value='he-script';option.textContent='עברית (כתב יד)';
+          const existing=el.querySelector('option[value="he"]');
+          if(existing)existing.after(option);else el.appendChild(option);
+        }
+      });
       win.document.querySelectorAll('[data-dw-language-select]').forEach(el=>{
         if(el.dataset.dwLanguageBound)return;
         el.dataset.dwLanguageBound='true';
