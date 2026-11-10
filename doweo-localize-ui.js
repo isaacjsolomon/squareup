@@ -202,7 +202,7 @@
    const month=/^(January|February|March|April|May|June|July|August|September|October|November|December) (\d{4})$/.exec(key);
    if(month){
      const year=Number(month[2]),index=['January','February','March','April','May','June','July','August','September','October','November','December'].indexOf(month[1]);
-     return match[1]+new Intl.DateTimeFormat(language,{month:'long',year:'numeric'}).format(new Date(Date.UTC(year,index,1)))+match[3];
+     return match[1]+i18n.formatDate(root,new Date(Date.UTC(year,index,1)),{month:'long',year:'numeric',timeZone:'UTC'})+match[3];
    }
    return match[1]+translateDynamic(key)+match[3];
  }
@@ -378,8 +378,11 @@
  }
  function save(){
    if(saveTimer)clearTimeout(saveTimer);
+   // Capture both the locale and its dictionary before the debounce timer.
+   // Switching languages must not accidentally save one locale under another.
+   const forLocale=language, snapshot={...cache};
    saveTimer=setTimeout(()=>{
-     try{root.localStorage.setItem(storageKey(language),JSON.stringify(cache));}catch(_){}
+     try{root.localStorage.setItem(storageKey(forLocale),JSON.stringify(snapshot));}catch(_){}
    },250);
  }
  function readCache(){
