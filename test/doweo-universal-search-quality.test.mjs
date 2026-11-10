@@ -27,7 +27,7 @@ test('global search preserves scoped access to only the active tracker detail',(
   assert.match(script,/const active=typeof current!=='undefined'\?current:null/);
   assert.match(script,/const expenseHits=\(active&&Array\.isArray\(active\.entries\)\?active\.entries:\[\]\)/);
   assert.match(script,/const memberHits=\(active&&Array\.isArray\(active\.members\)\?active\.members:\[\]\)/);
-  assert.match(script,/trackers\?trackers:\[\]/);
+  assert.match(script,/Array\.isArray\(trackers\)\?trackers:\[\]/);
 });
 test('search can be closed by Escape and focuses only controls in its dialog',()=>{
   assert.match(script,/overlay\.addEventListener\('keydown',e=>\{/);
