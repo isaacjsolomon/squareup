@@ -307,7 +307,39 @@
      if(el){if(rtl){el.setAttribute('dir','ltr');el.style.setProperty('direction','ltr','important');}else{el.removeAttribute('dir');el.style.removeProperty('direction');}}
    }
  }
- function render(){
+ function localizeAboutHeader(){
+   // Both About hero fragments and the tutorial control are static application
+   // text. Translate their actual text nodes so the hero keeps its <br> and <em>
+   // structure, without mixing languages or replacing DOM children.
+   const heading=root.document.querySelector('#about-page .about-hero-copy h2');
+   const dictionary=coreTranslations?.[language]||{};
+   if(heading){
+     const textNodes=Array.from(heading.childNodes).filter(n=>n.nodeType===3);
+     const emphasis=heading.querySelector('em');
+     const update=(node,source)=>{
+       if(!node)return;
+       const rendered=language==='en'?source:(dictionary[source]||cache[source]||source);
+       const entry=getOriginal(node);
+       if(node.nodeValue!==rendered){node.nodeValue=rendered;entry.rendered=rendered;}
+     };
+     update(textNodes[0],'Keeping money');
+     // Include one separator after the second line; languages with no spaces
+     // may omit it in the translation.
+     update(textNodes[1],'between friends ');
+     update(emphasis?.firstChild,'simple.');
+   }
+   const button=root.document.getElementById('sq-replay-tour');
+   if(button){
+     const node=Array.from(button.childNodes).find(n=>n.nodeType===3);
+     if(node){
+       const name=language==='en'?'Site tutorial':(dictionary['Site tutorial']||cache['Site tutorial']||'Site tutorial');
+       const label='❔ '+name;
+       const entry=getOriginal(node);
+       if(node.nodeValue!==label){node.nodeValue=label;entry.rendered=label;}
+     }
+   }
+ }
+  function render(){
    // Do not hide descriptive copy as a substitute for translating it.
    fixRtlInputIdentifiers();
    queueCaptions();
@@ -341,6 +373,7 @@
      }
    });
    translateCreateActions();
+   localizeAboutHeader();
    pump();
  }
  function save(){

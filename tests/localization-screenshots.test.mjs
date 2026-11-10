@@ -75,3 +75,16 @@ test('About headline fragments can be translated without leaving English words',
  assert.ok(UI_PHRASES.includes('simple.'));
  for(const key of ['Keeping money','between friends ','simple.'])assert.ok(CORE_UI_TRANSLATIONS.he[key], 'Hebrew headline fragment missing: '+key);
 });
+
+test('About hero fragments and tutorial button have offline translations for every locale',()=>{
+ for(const phrase of ['Keeping money','between friends ','simple.','Site tutorial']){
+   assert.ok(UI_PHRASES.includes(phrase),'Missing catalog phrase: '+phrase);
+   for(const locale of locales){
+     const translation=CORE_UI_TRANSLATIONS[locale]?.[phrase];
+     assert.ok(typeof translation==='string'&&translation.trim()&&translation!==phrase,
+       'Missing About translation for '+locale+': '+phrase);
+   }
+ }
+ assert.equal(CORE_UI_TRANSLATIONS.he['between friends '].trim(),'בין חברים');
+ assert.equal(CORE_UI_TRANSLATIONS.he['Site tutorial'],'מדריך האתר');
+});
