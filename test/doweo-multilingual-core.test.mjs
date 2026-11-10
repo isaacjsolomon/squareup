@@ -41,7 +41,7 @@ test('locale bundles take precedence over old cached AI output',()=>{
  const end=src.indexOf(' function scan(){',start);
  assert.ok(start>0&&end>start);
  const fn=src.slice(start,end)+'\n globalThis.seed=seedStaticTranslations;';
- for(const locale of ['fr','he','zh-Hans','pt','de','it','ja','ar','ko','hi','es']){
+ for(const locale of [...I18n.SUPPORTED.filter(code=>code!=='en'&&code!=='es'),'es']){
    const cache={'Create new trip':'STALE ENGLISH','Record payment':'STALE ENGLISH'};
    const sandbox={cache,language:locale,coreTranslations:CORE_UI_TRANSLATIONS,
      approved:new Set(UI_PHRASES),root:{DoWeoTranslations:{languages:{en:[]}}},screenshotSpanish:es};
@@ -73,7 +73,14 @@ test('irreversible account deletion warning is complete in every language',()=>{
   ja:[/完全に削除/,/メンバー/,/取り消せません/],
   ar:[/نهائيًا/,/أعضائها/,/لا يمكن التراجع/],
   ko:[/영구적으로/,/모든 구성원/,/취소할 수 없습니다/],
-  hi:[/स्थायी रूप से/,/सभी सदस्यों/,/वापस नहीं की जा सकती/]
+  hi:[/स्थायी रूप से/,/सभी सदस्यों/,/वापस नहीं की जा सकती/],
+  ru:[/Безвозвратно/,/участников/,/невозможно отменить/],
+  tr:[/kalıcı/,/üyeleri/,/geri alınamaz/],
+  vi:[/vĩnh viễn/,/tất cả thành viên/,/Không thể hoàn tác/],
+  nl:[/definitief/,/alle leden/,/niet ongedaan/],
+  pl:[/Trwale/,/wszystkich/,/nie można cofnąć/],
+  sv:[/permanent/,/alla deras medlemmar/,/kan inte ångras/],
+  bn:[/স্থায়ীভাবে/,/সব সদস্যের/,/ফিরিয়ে আনা যাবে না/]
  };
  for(const [locale,patterns] of Object.entries(checks)){
   const translated=locale==='es'?es[warning]:CORE_UI_TRANSLATIONS[locale]?.[warning];

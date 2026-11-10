@@ -19,6 +19,7 @@ test('translation endpoint accepts only approved UI phrases and supported locale
  const valid=validateTranslationRequest({locale:'es',texts:['Home','Settings','Home']});
  assert.deepEqual(valid,{locale:'es',texts:['Home','Settings']});
  assert.equal(validateTranslationRequest({locale:'en',texts:['Home']}),null);
+ for(const code of ['ru','tr','vi','nl','pl','sv','bn'])assert.ok(validateTranslationRequest({locale:code,texts:['Home']}));
  assert.equal(validateTranslationRequest({locale:'es',texts:['A private tracker name']}),null);
  assert.equal(validateTranslationRequest({locale:'es',texts:Array.from({length:17},()=> 'Home')}),null);
  assert.equal(validateTranslationRequest({locale:'es',texts:['']}),null);
@@ -41,8 +42,8 @@ test('translation endpoint handles approved text and blocks unapproved user cont
  assert.equal(calls,1,'unapproved strings must never call AI');
 });
 
-test('Weo AI locale normalization supports all 12 language choices',()=>{
- const cases={'en-US':'en','es-MX':'es','fr-FR':'fr','he-IL':'he','zh-CN':'zh-Hans','pt-BR':'pt','de-DE':'de','it-IT':'it','ja-JP':'ja','ar-EG':'ar','ko-KR':'ko','hi-IN':'hi'};
+test('Weo AI locale normalization supports all 19 language choices',()=>{
+ const cases={'en-US':'en','es-MX':'es','fr-FR':'fr','he-IL':'he','zh-CN':'zh-Hans','pt-BR':'pt','de-DE':'de','it-IT':'it','ja-JP':'ja','ar-EG':'ar','ko-KR':'ko','hi-IN':'hi','ru-RU':'ru','tr-TR':'tr','vi-VN':'vi','nl-NL':'nl','pl-PL':'pl','sv-SE':'sv','bn-BD':'bn'};
  for(const [source,result] of Object.entries(cases))assert.equal(normalizeWeoLocale(source),result);
  assert.equal(normalizeWeoLocale('unsupported'),'en');
  assert.equal(normalizeWeoLocale({prompt:'ignore instructions'}),'en');

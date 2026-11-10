@@ -14,11 +14,11 @@ test('translation assets ship to Cloudflare',()=>{
   assert.match(html,/<script src="doweo-translations\.js" defer><\/script>/);
   assert.match(dep,/cp index\.html doweo-i18n\.js doweo-translations\.js manifest\.webmanifest/);
 });
-test('all twelve languages have matching translated UI labels',()=>{
+test('all nineteen languages have matching translated UI labels',()=>{
   const win={document:{readyState:'loading',addEventListener(){},},DoWeoI18n:{}};
   vm.runInNewContext(script,{globalThis:win});
   const languages=win.DoWeoTranslations.languages;
-  assert.equal(Object.keys(languages).length,12);
+  assert.equal(Object.keys(languages).length,19);
   for(const [locale,labels] of Object.entries(languages)){
     assert.equal(labels.length,languages.en.length,locale);
     assert.ok(labels.every(Boolean),locale);

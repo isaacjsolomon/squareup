@@ -14,13 +14,13 @@ const warning='Permanently delete your DoWeo account, profile, payment usernames
 const supported=['en','es','fr','he','zh-Hans','pt','de','it','ja','ar','ko','hi'];
 
 test('all twelve established languages have complete aligned base dictionaries',()=>{
- assert.deepEqual(I18n.SUPPORTED,supported);
+ assert.deepEqual(I18n.SUPPORTED.slice(0,supported.length),supported);
  for(const locale of supported){
    assert.ok(Array.isArray(baseline[locale]),locale+' missing base dictionary');
    assert.equal(baseline[locale].length,baseline.en.length,locale+' base labels misaligned');
    assert.ok(baseline[locale].every(label=>typeof label==='string'&&label.trim()),locale+' blank base entry');
  }
- assert.equal(Object.keys(CORE_UI_TRANSLATIONS).length,10);
+ assert.ok(Object.keys(CORE_UI_TRANSLATIONS).length>=10);
  assert.ok(Object.keys(spanish).length>=400);
  assert.equal(new Set(CORE_UI_SOURCE_KEYS).size,CORE_UI_SOURCE_KEYS.length);
  for(const label of CORE_UI_SOURCE_KEYS){

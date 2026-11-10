@@ -102,6 +102,13 @@
        // Correct legacy singular "1 members" labels.
        if(match[1]==='1'&&token.toLowerCase()==='members')token='member';
        queueToken(token);
+       // Russian requires the correct form for quantities: 1 участник,
+       // 2 участника, 5 участников, 21 участник, 22 участника.
+       if(language==='ru'&&/^members?$/i.test(token)){
+         const quantity=Number(match[1]),lastTwo=quantity%100,last=quantity%10;
+         const noun=lastTwo>=11&&lastTwo<=14?'участников':last===1?'участник':last>=2&&last<=4?'участника':'участников';
+         return match[1]+' '+noun;
+       }
        // Japanese, Korean and Chinese counters join their classifiers without
        // English-style whitespace: 2人, 2명, 2位成员.
        const translated=cache[token]||token;
@@ -190,7 +197,14 @@
    ja:['新しいグループを作成','新しい旅行を作成','新しい世帯を作成','新しいイベントを作成','グループを開く'],
    ar:['إنشاء مجموعة جديدة','إنشاء رحلة جديدة','إنشاء منزل جديد','إنشاء فعالية جديدة','فتح المجموعة'],
    ko:['새 그룹 만들기','새 여행 만들기','새 가구 만들기','새 이벤트 만들기','그룹 열기'],
-   hi:['नया समूह बनाएँ','नई यात्रा बनाएँ','नया घर बनाएँ','नया कार्यक्रम बनाएँ','समूह खोलें']
+   hi:['नया समूह बनाएँ','नई यात्रा बनाएँ','नया घर बनाएँ','नया कार्यक्रम बनाएँ','समूह खोलें'],
+   ru:["Создать группу","Создать поездку","Создать совместное жильё","Создать событие","Открыть группу"],
+   tr:["Yeni grup oluştur","Yeni gezi oluştur","Yeni ortak hane oluştur","Yeni etkinlik oluştur","Grubu aç"],
+   vi:["Tạo nhóm mới","Tạo chuyến đi mới","Tạo hộ gia đình mới","Tạo sự kiện mới","Mở nhóm"],
+   nl:["Nieuwe groep maken","Nieuwe reis maken","Nieuw huishouden aanmaken","Nieuw evenement maken","Groep openen"],
+   pl:["Utwórz nową grupę","Utwórz nową podróż","Utwórz nowe gospodarstwo domowe","Utwórz nowe wydarzenie","Otwórz grupę"],
+   sv:["Skapa ny grupp","Skapa ny resa","Skapa nytt hushåll","Skapa nytt evenemang","Öppna grupp"],
+   bn:["নতুন গ্রুপ তৈরি করুন","নতুন ভ্রমণ তৈরি করুন","নতুন যৌথ পরিবার তৈরি করুন","নতুন ইভেন্ট তৈরি করুন","গ্রুপ খুলুন"]
  };
  const actionKeys=['Create new tracker','Create new trip','Create new household','Create new event','Open tracker'];
  // Gallery cards and workspace buttons are recreated by the app after asynchronous
@@ -212,7 +226,7 @@
      }
      const i=actionKeys.indexOf(source);
      if(i<0)continue;
-     const label=actionLocales[language]?.[i]||source;
+     const label=coreTranslations?.[language]?.[source]||actionLocales[language]?.[i]||source;
      const arrow=source==='Open tracker'?' →':'';
      // Keep the leading plus for dynamically recreated controls.
      if(source.startsWith('Create new ')&&element.dataset.dwCreatePlus===undefined){
@@ -342,7 +356,14 @@
      ja:['ファイナンスハブ','ベータ版への意見','こんにちは、'],
      ar:['المركز المالي','ملاحظات تجريبية','مرحبًا،'],
      ko:['금융 허브','베타 피드백','안녕하세요,'],
-     hi:['वित्तीय केंद्र','बीटा प्रतिक्रिया','नमस्ते,']
+     hi:['वित्तीय केंद्र','बीटा प्रतिक्रिया','नमस्ते,'],
+     ru:['Финансовый центр','Отзыв о бета-версии','Привет,'],
+     tr:['Finans Merkezi','Beta Geri Bildirimi','Merhaba,'],
+     vi:['Trung tâm tài chính','Phản hồi bản thử nghiệm','Xin chào,'],
+     nl:['Financieel overzicht','Bètafeedback','Hoi,'],
+     pl:['Centrum finansów','Opinie o wersji beta','Cześć,'],
+     sv:['Ekonomicenter','Betafeedback','Hej,'],
+     bn:['অর্থ ব্যবস্থাপনা','বেটা সংস্করণ সম্পর্কে মতামত','স্বাগতম,']
    };
    const sidebar=navTranslations[language];
    if(sidebar)for(const [index,source] of ['Finance Hub','Beta Feedback','Hi,'].entries())

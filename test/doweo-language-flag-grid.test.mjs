@@ -5,11 +5,11 @@ import i18n from '../doweo-i18n.js';
 
 const script=readFileSync(new URL('../doweo-i18n.js',import.meta.url),'utf8');
 const localize=readFileSync(new URL('../doweo-localize-ui.js',import.meta.url),'utf8');
-test('flag picker includes all 12 supported languages and their representative flags',()=>{
- const expected=['🇺🇸','🇪🇸','🇫🇷','🇮🇱','🇨🇳','🇧🇷','🇩🇪','🇮🇹','🇯🇵','🇸🇦','🇰🇷','🇮🇳'];
+test('flag picker includes all 19 supported languages and their representative flags',()=>{
+ const expected=['🇺🇸','🇪🇸','🇫🇷','🇮🇱','🇨🇳','🇧🇷','🇩🇪','🇮🇹','🇯🇵','🇸🇦','🇰🇷','🇮🇳','🇷🇺','🇹🇷','🇻🇳','🇳🇱','🇵🇱','🇸🇪','🇧🇩'];
  assert.deepEqual(i18n.LANGUAGE_CHOICES.map(item=>item.code),i18n.SUPPORTED);
  assert.deepEqual(i18n.LANGUAGE_CHOICES.map(item=>item.flag),expected);
- assert.equal(new Set(i18n.LANGUAGE_CHOICES.map(item=>item.code)).size,12);
+ assert.equal(new Set(i18n.LANGUAGE_CHOICES.map(item=>item.code)).size,19);
  assert.ok(i18n.LANGUAGE_CHOICES.every(item=>item.name&&item.subtitle));
 });
 test('the flag grid replaces visual dropdown but retains settings and onboarding compatibility',()=>{

@@ -3,8 +3,8 @@ import { UI_PHRASES } from '../../doweo-ui-catalog.mjs';
 // Static, source-controlled UI strings only. Never translate private tracker data,
 // typed messages, account details, or payment information through this endpoint.
 const allowed = new Set(UI_PHRASES);
-const supported = new Set(['es','fr','he','zh-Hans','pt','de','it','ja','ar','ko','hi']);
-const languageNames = {'es':'Spanish','fr':'French','he':'Hebrew','zh-Hans':'Simplified Chinese','pt':'Portuguese','de':'German','it':'Italian','ja':'Japanese','ar':'Arabic','ko':'Korean','hi':'Hindi'};
+const supported = new Set(['es','fr','he','zh-Hans','pt','de','it','ja','ar','ko','hi','ru','tr','vi','nl','pl','sv','bn']);
+const languageNames = {'es':'Spanish','fr':'French','he':'Hebrew','zh-Hans':'Simplified Chinese','pt':'Portuguese','de':'German','it':'Italian','ja':'Japanese','ar':'Arabic','ko':'Korean','hi':'Hindi','ru':'Russian','tr':'Turkish','vi':'Vietnamese','nl':'Dutch','pl':'Polish','sv':'Swedish','bn':'Bengali'};
 const recent = new Map();
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export function validateTranslationRequest(body){
