@@ -28,7 +28,7 @@ test('every supported non-English locale translates the create actions',()=>{
    assert.ok(button.textContent.startsWith('＋ '),lang+' icon');
   });
  }
- assert.equal(Object.keys(first.locales).length,11);
+ assert.equal(Object.keys(first.locales).length,18);
 });
 test('Spanish gallery buttons and tracker action translate after re-render',()=>{
  const gallery=makeButton('＋ Create new tracker');
