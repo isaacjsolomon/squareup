@@ -145,11 +145,11 @@
     fontStyle.textContent=`
     /* Typography applies only in Hebrew; no visual changes to other locales. */
     html[data-dw-hebrew-font="rubik"] body,
-    html[data-dw-hebrew-font="rubik"] body :is(h1,h2,h3,h4,h5,h6,p,span,div,button,input,textarea,select,label,small,strong,b,em,a,li,td,th,summary,blockquote) {
+    html[data-dw-hebrew-font="rubik"] body :is(h1,h2,h3,h4,h5,h6,p,span,div,button,input,textarea,select,label,small,strong,b,em,a,li,td,th,summary,blockquote):not(.fa):not(.fas):not(.far):not(.fab):not(.material-icons):not([class*="icon-font"]):not([class*="iconify"]) {
       font-family: 'Rubik', Arial, sans-serif !important;
     }
     html[data-dw-hebrew-font="script"] body,
-    html[data-dw-hebrew-font="script"] body :is(h1,h2,h3,h4,h5,h6,p,span,div,button,input,textarea,select,label,small,strong,b,em,a,li,td,th,summary,blockquote) {
+    html[data-dw-hebrew-font="script"] body :is(h1,h2,h3,h4,h5,h6,p,span,div,button,input,textarea,select,label,small,strong,b,em,a,li,td,th,summary,blockquote):not(.fa):not(.fas):not(.far):not(.fab):not(.material-icons):not([class*="icon-font"]):not([class*="iconify"]) {
       font-family: 'Solitreo', 'Rubik', Arial, sans-serif !important;
     }
     /* User-entered handles and numerical inputs must remain readable in both styles. */
@@ -242,7 +242,7 @@
       input.addEventListener('change',()=>{if(input.checked){set(win,input.value);dismiss();}});
       const flag=doc.createElement('span');flag.className='dw-language-flag';flag.textContent=option.flag;flag.setAttribute('aria-hidden','true');
       const info=doc.createElement('span');info.className='dw-language-info';
-      const native=doc.createElement('span');native.className='dw-language-native';native.textContent=option.name;native.dir=(option.code==='he'||option.code==='ar')?'rtl':'auto';
+      const native=doc.createElement('span');native.className='dw-language-native';native.textContent=option.name;native.dir=(option.code==='he'||option.code==='he-script'||option.code==='ar')?'rtl':'auto';
       info.appendChild(native);
       if(option.subtitle&&option.subtitle!==option.name){
         const english=doc.createElement('span');english.className='dw-language-english';english.textContent=option.subtitle;
