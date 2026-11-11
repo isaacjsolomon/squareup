@@ -14497,8 +14497,14 @@ html.dw-a11y-contrast body{--muted:#d6e9f5!important;--text:#fff!important}
 html.dw-a11y-contrast body :is(.settings-panel,.card,.dashboard-action,input,select,textarea,button){border-color:#90b9d2!important}
 html.dw-a11y-contrast body :is(.settings-muted,.action-sub,.muted){color:#e2f2ff!important}
 html.dw-a11y-contrast :focus-visible{outline:3px solid #ffe27b!important;outline-offset:3px!important}
-html.dw-a11y-motion *,html.dw-a11y-motion *::before,html.dw-a11y-motion *::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;scroll-behavior:auto!important}
-html.dw-a11y-targets body :is(button,.settings-action,.sq-mobile-nav a,.sq-mobile-nav button,input:not([type=checkbox]):not([type=radio]),select,textarea){min-height:48px!important}
+html.dw-a11y-motion,html.dw-a11y-motion *{scroll-behavior:auto!important}
+html.dw-a11y-motion *,html.dw-a11y-motion *::before,html.dw-a11y-motion *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+html.dw-a11y-motion :is(.loading-spinner,.dw-loading-logo){animation:none!important}
+html.dw-a11y-motion :is(.loading-spinner,.dw-loading-logo)::after{animation:none!important}
+html.dw-a11y-targets body :is(button,[role="button"],a,.settings-action,.sq-mobile-nav a,.sq-mobile-nav button,input:not([type=checkbox]):not([type=radio]),select,textarea){min-height:44px!important}
+html.dw-a11y-targets body :is(button,[role="button"],a){touch-action:manipulation}
+html.dw-a11y-targets body :is(.sq-mobile-nav a,.sq-mobile-nav button,.dw-language-option,.settings-action){min-width:44px!important;min-height:48px!important}
+html.dw-a11y-targets body :is(button,[role="button"],a,input,select,textarea):focus-visible{outline:3px solid #64f4d7!important;outline-offset:3px!important}
 html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:24px!important;min-height:24px!important}
 @media(max-width:650px){.dw-a11y-setting{padding:15px 12px}}
 </style>
@@ -14566,6 +14572,42 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
 #settings-accessibility-panel .dw-a11y-setting strong,
 #settings-accessibility-panel .dw-a11y-setting small{overflow-wrap:anywhere}
 </style>
+<style id="dw-account-unified-settings-css">
+#settings-content-account .settings-tab-grid{align-items:start}
+#settings-content-account .dw-account-combined{display:flex;flex-direction:column;gap:0}
+#settings-content-account .dw-account-combined>.settings-panel{border:0!important;background:transparent!important;box-shadow:none!important;padding:0!important;border-radius:0!important}
+#settings-content-account .dw-account-combined>.settings-panel+.settings-panel{border-top:1px solid rgba(156,200,222,.24)!important;margin-top:22px!important;padding-top:22px!important}
+#settings-content-account .dw-account-combined #settings-language-panel{width:100%!important}
+#settings-content-account .dw-account-combined #delete-account-panel{width:100%!important}
+#settings-content-account .dw-account-combined .dw-language-preference{max-width:100%}
+#settings-content-account .dw-account-combined .settings-muted{overflow-wrap:anywhere}
+@media(max-width:700px){#settings-content-account .dw-account-combined>.settings-panel+.settings-panel{margin-top:18px!important;padding-top:18px!important}}
+</style>
+<script id="dw-account-unified-settings-js">
+(function(){
+ function unify(){
+  const tab=document.getElementById('settings-content-account');
+  const grid=tab?.querySelector('.settings-tab-grid');
+  const lang=document.getElementById('settings-language-panel');
+  const deletion=document.getElementById('delete-account-panel');
+  if(!grid||!lang||!deletion||grid.querySelector('.dw-account-combined'))return;
+  const account=grid.querySelector('.settings-panel');
+  if(!account||account===lang||account===deletion)return;
+  const combined=document.createElement('div');
+  combined.className='dw-account-combined settings-panel';
+  const slot=account.parentElement;
+  slot.insertBefore(combined,account);
+  combined.appendChild(account);
+  combined.appendChild(lang);
+  combined.appendChild(deletion);
+  for(const node of [lang,deletion]){
+   const wrapper=[...grid.children].find(child=>child!==slot&&child.contains(node));
+   if(wrapper&&!wrapper.querySelector('.settings-panel'))wrapper.remove();
+  }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',unify,{once:true});else unify();
+})();
+</script>
 </body>
 </html>
 
