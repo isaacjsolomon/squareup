@@ -4833,7 +4833,8 @@ if (notify.user_id !== me.id) {
   const isPayment = e.type === 'payment';
   const needsApproval = e.type === 'debt' && pending;
 
-  await db('squareup_notifications', {
+  try {
+    await db('squareup_notifications', {
     method: 'POST',
     body: {
       recipient_id: notify.user_id,
@@ -4862,7 +4863,12 @@ if (notify.user_id !== me.id) {
             ' owes ' + e.to_name +
             ' $' + e.amount.toFixed(2) + '.'
     }
-  });
+    });
+  } catch (notificationError) {
+    // The expense or payment is already saved. Notification delivery is best-effort.
+    // Do not turn a successful financial write into a retry-inducing API error.
+    console.error('Entry notification failed:', notificationError);
+  }
 }
 
 
