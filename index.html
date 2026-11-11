@@ -14573,7 +14573,11 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
 #settings-accessibility-panel .dw-a11y-setting small{overflow-wrap:anywhere}
 </style>
 <style id="dw-account-unified-settings-css">
-#settings-content-account .settings-tab-grid{align-items:start}
+#settings-content-account .settings-tab-grid{align-items:start;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:24px!important}
+#settings-content-account .settings-tab-grid>.dw-account-combined{grid-column:1!important;min-width:0}
+#settings-content-account .settings-tab-grid>div:has(>#settings-accessibility-panel){grid-column:2!important;grid-row:1!important;min-width:0}
+@media(max-width:700px){#settings-content-account .settings-tab-grid{grid-template-columns:minmax(0,1fr)!important;gap:16px!important}#settings-content-account .settings-tab-grid>.dw-account-combined,#settings-content-account .settings-tab-grid>div:has(>#settings-accessibility-panel){grid-column:1!important;grid-row:auto!important}}
+
 #settings-content-account .dw-account-combined{display:flex;flex-direction:column;gap:0}
 #settings-content-account .dw-account-combined>.settings-panel{border:0!important;background:transparent!important;box-shadow:none!important;padding:0!important;border-radius:0!important}
 #settings-content-account .dw-account-combined>.settings-panel+.settings-panel{border-top:1px solid rgba(156,200,222,.24)!important;margin-top:22px!important;padding-top:22px!important}
@@ -14597,8 +14601,9 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
   const combined=document.createElement('div');
   combined.className='dw-account-combined settings-panel';
   const slot=account.parentElement;
-  slot.insertBefore(combined,account);
+  grid.insertBefore(combined,slot);
   combined.appendChild(account);
+  slot.remove();
   combined.appendChild(lang);
   combined.appendChild(deletion);
   for(const wrapper of wrappers){
