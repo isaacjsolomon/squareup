@@ -20,7 +20,7 @@ test('decorative prefixes, counts, metadata, calendar labels and safe dynamic te
  assert.ok(end>start);
  const sandbox={
    cache:es,approved,language:'es',pending:new Set(),requested:new Set(),retries:new Map(),
-   MAX_ATTEMPTS:4,Intl,Date
+   MAX_ATTEMPTS:4,Intl,Date,i18n:{formatDate:(_root,date,options)=>new Intl.DateTimeFormat('es-ES',options).format(date)},root:{}
  };
  vm.runInNewContext(code.slice(start,end)+'\n globalThis.test={translate,eligible,approvedKey};',sandbox);
  const {translate,eligible}=sandbox.test;
@@ -56,7 +56,7 @@ test('sidebar labels and personalized greeting translate while preserving the na
  const start=code.indexOf(' function translateDynamic(');
  const end=code.indexOf(' function render(){',start);
  const customApproved=new Set(UI_PHRASES);
- const sandbox={cache:{'Hi,':'Hola,','Finance Hub':'Centro financiero','Beta Feedback':'Comentarios de la beta',owes:'debe','Archived trackers':'Grupos archivados'},approved:customApproved,language:'es',pending:new Set(),requested:new Set(),retries:new Map(),MAX_ATTEMPTS:4,Intl,Date};
+ const sandbox={cache:{'Hi,':'Hola,','Finance Hub':'Centro financiero','Beta Feedback':'Comentarios de la beta',owes:'debe','Archived trackers':'Grupos archivados'},approved:customApproved,language:'es',pending:new Set(),requested:new Set(),retries:new Map(),MAX_ATTEMPTS:4,Intl,Date,i18n:{formatDate:(_root,date,options)=>new Intl.DateTimeFormat('es-ES',options).format(date)},root:{}};
  vm.runInNewContext(code.slice(start,end)+'\n globalThis.test={translate,eligible};',sandbox);
  const {translate,eligible}=sandbox.test;
  assert.equal(translate('Hi, Isaac Solomon'),'Hola, Isaac Solomon');
