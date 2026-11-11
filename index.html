@@ -14593,6 +14593,7 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
   if(!grid||!lang||!deletion||grid.querySelector('.dw-account-combined'))return;
   const account=grid.querySelector('.settings-panel');
   if(!account||account===lang||account===deletion)return;
+  const wrappers=[lang.parentElement,deletion.parentElement];
   const combined=document.createElement('div');
   combined.className='dw-account-combined settings-panel';
   const slot=account.parentElement;
@@ -14600,9 +14601,8 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
   combined.appendChild(account);
   combined.appendChild(lang);
   combined.appendChild(deletion);
-  for(const node of [lang,deletion]){
-   const wrapper=[...grid.children].find(child=>child!==slot&&child.contains(node));
-   if(wrapper&&!wrapper.querySelector('.settings-panel'))wrapper.remove();
+  for(const wrapper of wrappers){
+   if(wrapper!==slot&&wrapper.parentElement===grid&&!wrapper.querySelector('.settings-panel'))wrapper.remove();
   }
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',unify,{once:true});else unify();
