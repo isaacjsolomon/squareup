@@ -13272,6 +13272,31 @@ html body #sq-startup-overlay .sq-startup-content{
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions,
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary>#sq-quick-calc-launch{display:none!important}
 }
+</style>
+<style id="dw-mobile-home-quick-actions-two-only">
+/* Mobile tracker Home: retain only Pay Now and Log Payment as visible
+   quick-action cards. Other actions stay available via the existing + menu.
+   Keep original buttons and handlers mounted for those menu integrations. */
+@media (max-width:900px){
+  html body #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:12px!important;
+  }
+  html body #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>
+  :is(#quick-expense,#quick-receipt,#quick-split,#sq-quick-calc-launch,.sq-calculator-action){
+    display:none!important;
+  }
+  html body #tracker-dashboard.sq-tab-overview #sq-return-summary #sq-quick-calc-launch{
+    display:none!important;
+  }
+  html body #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>
+  :is(#quick-pay-now,#quick-payment).dashboard-action:not([hidden]){
+    display:flex!important;
+    grid-column:auto!important;
+    grid-row:auto!important;
+  }
+}
 </style><script id="doweo-desktop-add-menu">
 (function(){
  const heading=document.querySelector('#sq-return-summary .sq-return-welcome');if(!heading)return;
