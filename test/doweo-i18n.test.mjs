@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import i18n from '../doweo-i18n.js';
 
-test('all nineteen languages supported',()=>assert.equal(i18n.SUPPORTED.length,19));
+test('nineteen translation languages with a separate Hebrew Script font option',()=>{assert.equal(i18n.SUPPORTED.length,20);assert.equal(new Set(i18n.SUPPORTED.map(code=>code==='he-script'?'he':code)).size,19);});
 test('browser locale normalization and fallback',()=>{
   assert.equal(i18n.normalize('zh-CN'),'zh-Hans');
   assert.equal(i18n.normalize('he-IL'),'he');
@@ -16,7 +16,7 @@ test('browser locale normalization and fallback',()=>{
 function windowMock(browser,stored=null){
   let preference=stored;
   const attrs={};
-  const doc={documentElement:attrs,querySelectorAll:()=>[],dispatchEvent:()=>{},readyState:'complete'};
+  const doc={documentElement:{...attrs,setAttribute(k,v){this[k]=v;},removeAttribute(k){delete this[k];}},querySelectorAll:()=>[],dispatchEvent:()=>{},readyState:'complete'};
   return {navigator:{languages:browser},document:doc,Event:class{},localStorage:{
     getItem:()=>preference,setItem:(k,v)=>{assert.equal(k,i18n.KEY);preference=v;}
   }};
