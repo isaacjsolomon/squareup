@@ -14297,66 +14297,82 @@ html:is([lang="he"],[lang="ar"]) input[type="number"]{direction:ltr}
  }
 }
 </style>
-<style id="dw-mobile-overview-fit">
-@media(max-width:900px){
- html body #tracker-dashboard.sq-tab-overview #sq-mobile-extra-balances{display:none!important}
- /* Keep the page itself stationary. Only genuinely overflowing tracker content
-    scrolls, within the space between the fixed header and bottom navigation. */
- html.dw-mobile-overview{height:100%;overflow:hidden!important;overscroll-behavior:none}
- html.dw-mobile-overview body{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;min-height:0!important;overflow:hidden!important}
- html.dw-mobile-overview body #tracker-dashboard.sq-tab-overview{
-  max-height:var(--dw-overview-height,calc(100dvh - 202px))!important;
-  overflow-y:auto!important;overscroll-behavior-y:none;
-  -webkit-overflow-scrolling:touch;scroll-padding-block:12px;
- }
-}
-</style>
-<script id="dw-mobile-overview-fit-script">
-(function(){
- const root=document.documentElement,dashboard=document.getElementById('tracker-dashboard');
- if(!dashboard)return;
- let queued=false;
- const set=(name,value)=>{if(root.classList.contains(name)!==value)root.classList.toggle(name,value);};
- function update(){
-  queued=false;
-  const active=matchMedia('(max-width:900px)').matches&&dashboard.classList.contains('sq-tab-overview')&&dashboard.getClientRects().length>0&&getComputedStyle(dashboard).visibility!=='hidden';
-  set('dw-mobile-overview',active);
-  if(active){
-   const viewport=window.visualViewport;
-   const height=viewport?viewport.height:window.innerHeight;
-   const nav=document.querySelector('.sq-mobile-nav');
-   let bottom=height;
-   if(nav&&nav.getClientRects().length){
-    bottom=Math.min(bottom,nav.getBoundingClientRect().top);
-    const add=nav.querySelector('.sq-add .sq-m-icon');
-    if(add)bottom=Math.min(bottom,add.getBoundingClientRect().top);
-   }
-   const available=Math.max(0,Math.floor(bottom-dashboard.getBoundingClientRect().top-12));
-   const value=available+'px';
-   if(root.style.getPropertyValue('--dw-overview-height')!==value)root.style.setProperty('--dw-overview-height',value);
-  }else root.style.removeProperty('--dw-overview-height');
-  set('dw-mobile-overview-fit',active&&dashboard.scrollHeight<=dashboard.clientHeight+1);
- }
- function schedule(){if(!queued){queued=true;requestAnimationFrame(update);}}
- new ResizeObserver(schedule).observe(dashboard);
- new MutationObserver(schedule).observe(document.body,{attributes:true,attributeFilter:['class','style','hidden']});
- new MutationObserver(schedule).observe(dashboard,{attributes:true,childList:true,subtree:true,characterData:true});
- window.addEventListener('resize',schedule,{passive:true});
- window.visualViewport?.addEventListener('resize',schedule,{passive:true});
- update();
-})();
-</script>
-<style id="dw-mobile-nav-cards-viewport-fix-20261111">
-@media(max-width:900px){
- html.dw-mobile-overview body{box-sizing:border-box!important;padding-bottom:0!important}
- html body .sq-mobile-nav{position:fixed!important;inset:auto 0 0 0!important;width:100%!important;margin:0!important;box-sizing:border-box!important;transform:none!important;padding-bottom:max(10px,env(safe-area-inset-bottom,0px))!important}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions{align-items:stretch!important;margin-bottom:18px!important}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>:is(#quick-pay-now,#quick-payment).dashboard-action:not([hidden]){height:auto!important;min-height:170px!important;overflow:visible!important;padding:20px 12px!important;box-sizing:border-box!important;justify-content:center!important}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>:is(#quick-pay-now,#quick-payment) .action-sub{display:block!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
- html body #tracker-dashboard.sq-tab-overview{scroll-padding-bottom:20px!important;padding-bottom:20px!important}
-}
-</style>
+
+
 <!-- Trigger Cloudflare Pages redeploy after mobile nav/card fix merge: 2026-11-11 -->
+<style id="dw-mobile-viewport-scroll-repair-20261111">
+/* Use document scrolling, not a fixed body and measured dashboard viewport.
+   This keeps iOS Safari's fixed navigation attached to the actual screen. */
+@media(max-width:900px){
+ html.dw-mobile-overview,html.dw-mobile-overview body,
+ html body:not(.trackers-view){
+  position:static!important;
+  height:auto!important;
+  min-height:100dvh!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:auto!important;
+ }
+ html body,html body.side-collapsed,html body:not(.side-collapsed){
+  box-sizing:border-box!important;
+  padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))!important;
+ }
+ html body .sq-mobile-nav{
+  display:grid!important;
+  position:fixed!important;
+  top:auto!important;
+  bottom:0!important;
+  left:0!important;
+  right:0!important;
+  width:100%!important;
+  margin:0!important;
+  transform:none!important;
+  box-sizing:border-box!important;
+  padding-bottom:max(10px,env(safe-area-inset-bottom,0px))!important;
+  z-index:9999!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview{
+  height:auto!important;
+  max-height:none!important;
+  min-height:0!important;
+  overflow:visible!important;
+  padding-bottom:20px!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary{
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-items:stretch!important;
+  gap:12px!important;
+  margin-bottom:18px!important;
+  overflow:visible!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>:is(#quick-pay-now,#quick-payment).dashboard-action:not([hidden]){
+  display:flex!important;
+  flex-direction:column!important;
+  grid-column:auto!important;
+  height:auto!important;
+  min-height:180px!important;
+  max-height:none!important;
+  padding:18px 10px!important;
+  overflow:visible!important;
+  box-sizing:border-box!important;
+  justify-content:center!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions>:is(#quick-pay-now,#quick-payment) .action-sub{
+  display:block!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  height:auto!important;
+  max-height:none!important;
+ }
+}
+</style>
 </body>
 </html>
 
