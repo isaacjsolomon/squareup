@@ -14234,6 +14234,84 @@ html:is([lang="he"],[lang="ar"]) textarea {direction:rtl}
 html:is([lang="he"],[lang="ar"]) input[type="email"],
 html:is([lang="he"],[lang="ar"]) input[type="number"]{direction:ltr}
 </style>
+<style id="dw-mobile-overview-clean-end-20261110">
+/* Only the tracker Overview on mobile: do not show the redundant settle-up
+   suggestion panel or destructive clear-all control. Do not remove their DOM
+   nodes: Expenses and other tracker tabs continue using the original handlers. */
+@media (max-width:900px){
+  html body #tracker-dashboard.sq-tab-overview #sq-return-summary .sq-return-smart-panel{
+    display:none!important;
+  }
+  html body #tracker-dashboard.sq-tab-overview > footer,
+  html body #tracker-dashboard.sq-tab-overview > footer #clear{
+    display:none!important;
+  }
+  html body #tracker-dashboard.sq-tab-overview{
+    padding-bottom:0!important;
+    margin-bottom:0!important;
+    min-height:0!important;
+  }
+  html body #tracker-dashboard.sq-tab-overview #sq-return-summary{
+    padding-bottom:0!important;
+    margin-bottom:0!important;
+  }
+  html body #tracker-dashboard.sq-tab-overview #sq-return-summary > .sq-return-grid{
+    margin-bottom:0!important;
+    min-height:0!important;
+  }
+  /* Lock only an already fully fitting page. Never cut off controls
+     when the viewport is short or the on-screen keyboard is open. */
+  html.dw-mobile-overview-no-scroll,
+  body.dw-mobile-overview-no-scroll{
+    overflow-y:hidden!important;
+    overscroll-behavior-y:none!important;
+  }
+}
+</style>
+<script id="dw-mobile-overview-scroll-guard-20261110">
+(function(){
+ 'use strict';
+ const dashboard=document.getElementById('tracker-dashboard');
+ const summary=document.getElementById('sq-return-summary');
+ if(!dashboard||!summary)return;
+ let queued=false;
+ const excludedViews=['trackers-view','settings-view','about-view','analytics-view','friends-view','notifications-view','split-view','sq-bills-open','sq-help-view'];
+ const lockClass='dw-mobile-overview-no-scroll';
+ const update=()=>{
+   queued=false;
+   const body=document.body;
+   // Release the lock before measuring; measuring a locked document can
+   // incorrectly report no overflow after switching tabs or resizing.
+   body.classList.remove(lockClass);
+   document.documentElement.classList.remove(lockClass);
+   const mobile=window.matchMedia('(max-width:900px)').matches;
+   const overview=dashboard.classList.contains('sq-tab-overview')&&
+     getComputedStyle(dashboard).display!=='none'&&
+     getComputedStyle(summary).display!=='none'&&
+     !excludedViews.some(name=>body.classList.contains(name));
+   if(!mobile||!overview)return;
+   const fit=document.documentElement.scrollHeight<=window.innerHeight+2;
+   if(fit){
+     body.classList.add(lockClass);
+     document.documentElement.classList.add(lockClass);
+     if(window.scrollY>0)window.scrollTo(0,0);
+   }
+ };
+ const schedule=()=>{
+   if(queued)return;
+   queued=true;
+   window.requestAnimationFrame(update);
+ };
+ window.addEventListener('resize',schedule,{passive:true});
+ window.addEventListener('orientationchange',schedule,{passive:true});
+ document.addEventListener('doweo:uiupdated',schedule);
+ document.addEventListener('click',schedule);
+ // Navigation changes the active page and Overview/Expenses class names.
+ new MutationObserver(schedule).observe(document.body,{attributes:true,attributeFilter:['class']});
+ new MutationObserver(schedule).observe(dashboard,{attributes:true,attributeFilter:['class']});
+ schedule();
+})();
+</script>
 </body>
 </html>
 
