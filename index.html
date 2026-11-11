@@ -14281,6 +14281,22 @@ html:is([lang="he"],[lang="ar"]) textarea {direction:rtl}
 html:is([lang="he"],[lang="ar"]) input[type="email"],
 html:is([lang="he"],[lang="ar"]) input[type="number"]{direction:ltr}
 </style>
+<style id="dw-mobile-tracker-overview-compact">
+/* Hide the mobile Overview extras regardless of where responsive scripts move
+   Smart Settle-Up. Keep the original nodes and handlers for other views. */
+@media (max-width:900px) {
+ html body #tracker-dashboard.sq-tab-overview #smart-settle-card,
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary .sq-return-smart-panel,
+ html body #tracker-dashboard.sq-tab-overview > footer {
+  display:none!important;
+ }
+ /* Body already reserves space for the fixed navigation and safe area.
+    Remove the second 125px spacer; natural document overflow stays scrollable. */
+ html body:not(.trackers-view) #tracker-dashboard.sq-tab-overview {
+  padding-bottom:0!important;
+ }
+}
+</style>
 </body>
 </html>
 
