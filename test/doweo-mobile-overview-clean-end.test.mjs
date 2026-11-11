@@ -50,11 +50,11 @@ function runScrollGuard({height=800,scrollHeight=720,overview=true,bodyClasses=[
 }
 
 test('mobile Overview hides only the circled settlement card and clear-all footer',()=>{
-  assert.match(css,/@media\\s*\\(max-width:900px\\)/);
-  assert.match(css,/#tracker-dashboard\\.sq-tab-overview #sq-return-summary \\.sq-return-smart-panel\\s*\\{\\s*display:none!important;/);
-  assert.match(css,/#tracker-dashboard\\.sq-tab-overview > footer/);
-  assert.match(css,/#tracker-dashboard\\.sq-tab-overview > footer #clear/);
-  assert.match(css,/#tracker-dashboard\\.sq-tab-overview\\s*\\{\\s*padding-bottom:0!important;/);
+  assert.match(css,/@media\s*\(max-width:900px\)/);
+  assert.match(css,/#tracker-dashboard\.sq-tab-overview #sq-return-summary \.sq-return-smart-panel\s*\{\s*display:none!important;/);
+  assert.match(css,/#tracker-dashboard\.sq-tab-overview > footer/);
+  assert.match(css,/#tracker-dashboard\.sq-tab-overview > footer #clear/);
+  assert.match(css,/#tracker-dashboard\.sq-tab-overview\s*\{\s*padding-bottom:0!important;/);
 });
 
 test('original settle-up logic, clear action, payment cards, and bottom Add remain available',()=>{
@@ -85,5 +85,5 @@ test('other tabs and pages are never locked',()=>{
 });
 
 test('scroll guard ignores its own lock class when watching route changes',()=>{
-  assert.match(script,/filter\\(name=>name!==lockClass\\)\\.sort\\(\\)\\.join\\(' '\)/);
+  assert.match(script,/filter\(name=>name!==lockClass\)\.sort\(\)\.join\(' '\)/);
 });
