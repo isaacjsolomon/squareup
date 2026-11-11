@@ -2600,6 +2600,16 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
       <div class="settings-tab-grid">
         <div><div class="settings-panel"><h3>Account</h3><div class="settings-actions"><button class="settings-action" id="settings-password" type="button">Change password</button><button class="settings-action" id="settings-signout" type="button">Log out</button></div></div></div>
         <div><div class="settings-panel" id="settings-language-panel"><h3 data-dw-language-title>Language</h3><p class="settings-muted">Change the language used throughout DoWeo.</p><div class="dw-language-preference" data-dw-language-scope><label data-dw-language-title for="settings-language-preference">Language</label><select id="settings-language-preference" data-dw-language-select><option value="auto">Automatic (browser language)</option><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="he">עברית</option><option value="zh-Hans">简体中文</option><option value="pt">Português</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="ja">日本語</option><option value="ar">العربية</option><option value="ko">한국어</option><option value="hi">हिन्दी</option></select><p data-dw-language-hint>Choose a language. More translations are coming soon.</p></div></div></div>
+        <div><div class="settings-panel" id="settings-accessibility-panel">
+<h3>Accessibility</h3><p class="settings-muted">Customize how DoWeo looks and responds. Changes apply immediately on this device.</p>
+<div class="dw-a11y-controls">
+<label class="dw-a11y-setting"><span><strong>Larger text</strong><small>Make labels, descriptions and form text easier to read</small></span><input type="checkbox" id="dw-a11y-large-text"></label>
+<label class="dw-a11y-setting"><span><strong>High contrast</strong><small>Strengthen text, borders and focus indicators</small></span><input type="checkbox" id="dw-a11y-contrast"></label>
+<label class="dw-a11y-setting"><span><strong>Reduce motion</strong><small>Limit animations and transitions</small></span><input type="checkbox" id="dw-a11y-motion"></label>
+<label class="dw-a11y-setting"><span><strong>Larger touch targets</strong><small>Increase the clickable area of controls</small></span><input type="checkbox" id="dw-a11y-targets"></label>
+</div><button type="button" class="settings-action" id="dw-a11y-reset">Use device defaults</button>
+<p class="settings-muted" id="dw-a11y-status" role="status" aria-live="polite">Your device's accessibility settings are used by default.</p>
+</div></div>
         <div><div class="settings-panel" id="delete-account-panel"><h3>Delete account</h3><p class="settings-muted">Permanently delete your DoWeo account, profile, payment usernames, profile photo, and your saved tracker data. Trackers you own will also be deleted for their members. This cannot be undone.</p><button class="settings-action" id="settings-delete-account" style="background:#512334;color:#ffb5c4;border-color:#9e4158" type="button">Delete my account</button><div aria-live="polite" class="settings-notice" id="settings-delete-msg" role="status"></div></div></div>
       </div>
     </div>
@@ -14474,6 +14484,88 @@ html:is([lang="he"],[lang="ar"]) input[type="number"]{direction:ltr}
  modal.addEventListener('click',e=>{if(e.target===modal){document.getElementById('sq-entry-x')?.click()}});
 })();
 </script>
+<style id="dw-accessibility-preferences-css">
+.dw-a11y-controls{display:grid;gap:8px;margin:14px 0}
+.dw-a11y-setting{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 12px;border:1px solid #31506a;border-radius:12px;cursor:pointer}
+.dw-a11y-setting span{display:grid;gap:4px;min-width:0}
+.dw-a11y-setting strong{font-size:15px}
+.dw-a11y-setting small{font-size:12px;line-height:1.45;color:#b7cddd}
+.dw-a11y-setting input{width:22px;height:22px;flex:none;accent-color:#26d8b5;cursor:pointer}
+html.dw-a11y-large{font-size:110%!important}
+html.dw-a11y-large body :is(p,small,label,button,input,select,textarea,.settings-muted,.action-sub,.sq-action-title,.sq-mobile-nav span){font-size:max(1em,16px)!important;line-height:1.45!important}
+html.dw-a11y-contrast body{--muted:#d6e9f5!important;--text:#fff!important}
+html.dw-a11y-contrast body :is(.settings-panel,.card,.dashboard-action,input,select,textarea,button){border-color:#90b9d2!important}
+html.dw-a11y-contrast body :is(.settings-muted,.action-sub,.muted){color:#e2f2ff!important}
+html.dw-a11y-contrast :focus-visible{outline:3px solid #ffe27b!important;outline-offset:3px!important}
+html.dw-a11y-motion *,html.dw-a11y-motion *::before,html.dw-a11y-motion *::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;scroll-behavior:auto!important}
+html.dw-a11y-targets body :is(button,.settings-action,.sq-mobile-nav a,.sq-mobile-nav button,input:not([type=checkbox]):not([type=radio]),select,textarea){min-height:48px!important}
+html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:24px!important;min-height:24px!important}
+@media(max-width:650px){.dw-a11y-setting{padding:15px 12px}}
+</style>
+<script id="dw-accessibility-preferences-js">
+(function(){
+ 'use strict';
+ const KEY='doweo-accessibility-v1';
+ const ids={large:'dw-a11y-large-text',contrast:'dw-a11y-contrast',motion:'dw-a11y-motion',targets:'dw-a11y-targets'};
+ const classes={large:'dw-a11y-large',contrast:'dw-a11y-contrast',motion:'dw-a11y-motion',targets:'dw-a11y-targets'};
+ const queries={contrast:'(prefers-contrast: more)',motion:'(prefers-reduced-motion: reduce)'};
+ const media={contrast:matchMedia(queries.contrast),motion:matchMedia(queries.motion)};
+ let saved={};
+ try{const v=JSON.parse(localStorage.getItem(KEY)||'{}');if(v&&typeof v==='object')saved=v}catch(e){}
+ function effective(key){return typeof saved[key]==='boolean'?saved[key]:(media[key]?.matches||false)}
+ function apply(){
+  for(const key of Object.keys(ids)){
+   const enabled=effective(key);
+   document.documentElement.classList.toggle(classes[key],enabled);
+   const el=document.getElementById(ids[key]);if(el)el.checked=enabled;
+  }
+ }
+ function persist(){try{localStorage.setItem(KEY,JSON.stringify(saved))}catch(e){}}
+ for(const key of Object.keys(ids)){
+  const el=document.getElementById(ids[key]);
+  if(el)el.addEventListener('change',()=>{saved[key]=el.checked;persist();apply();const status=document.getElementById('dw-a11y-status');if(status)status.textContent='Accessibility preference saved on this device.'});
+ }
+ const reset=document.getElementById('dw-a11y-reset');
+ if(reset)reset.addEventListener('click',()=>{saved={};try{localStorage.removeItem(KEY)}catch(e){}apply();const status=document.getElementById('dw-a11y-status');if(status)status.textContent='Device defaults restored.'});
+ for(const mq of Object.values(media))mq.addEventListener?.('change',apply);
+ apply();
+})();
+</script>
+<script id="dw-accessibility-localization">
+(function(){
+ const translations={"en":["Accessibility","Customize how DoWeo looks and responds. Changes apply immediately on this device.","Larger text","Make labels, descriptions and form text easier to read","High contrast","Strengthen text, borders and focus indicators","Reduce motion","Limit animations and transitions","Larger touch targets","Increase the clickable area of controls","Use device defaults","Your device's accessibility settings are used by default.","Accessibility preference saved on this device.","Device defaults restored."],"es":["Accesibilidad","Personaliza la apariencia y el funcionamiento de DoWeo. Los cambios se aplican al instante en este dispositivo.","Texto más grande","Facilita la lectura de etiquetas, descripciones y formularios","Alto contraste","Mejora la visibilidad del texto, los bordes y el enfoque","Reducir movimiento","Limita las animaciones y transiciones","Áreas táctiles más grandes","Amplía las zonas que se pueden tocar","Usar ajustes del dispositivo","Se usan los ajustes de accesibilidad del dispositivo de forma predeterminada.","Preferencia de accesibilidad guardada en este dispositivo.","Se restauraron los ajustes del dispositivo."],"fr":["Accessibilité","Personnalisez l’apparence et le comportement de DoWeo. Les changements s’appliquent immédiatement sur cet appareil.","Texte agrandi","Facilite la lecture des libellés, descriptions et formulaires","Contraste élevé","Renforce la lisibilité du texte, des bordures et du focus","Réduire les animations","Limite les animations et les transitions","Zones tactiles agrandies","Agrandit les zones interactives","Utiliser les réglages de l’appareil","Les réglages d’accessibilité de l’appareil sont utilisés par défaut.","Préférence d’accessibilité enregistrée sur cet appareil.","Réglages de l’appareil rétablis."],"he":["נגישות","התאימו את המראה וההתנהגות של DoWeo. השינויים יחולו מיד במכשיר הזה.","טקסט גדול יותר","מקלים על קריאת תוויות, תיאורים וטפסים","ניגודיות גבוהה","משפרת את הנראות של טקסט, מסגרות וסימון מיקוד","הפחתת תנועה","מגבילה הנפשות ומעברים","אזורי מגע גדולים יותר","מגדילה את אזורי הלחיצה","שימוש בהגדרות המכשיר","הגדרות הנגישות של המכשיר משמשות כברירת מחדל.","העדפת הנגישות נשמרה במכשיר הזה.","הגדרות המכשיר שוחזרו."],"zh-Hans":["无障碍设置","自定义 DoWeo 的外观和交互方式。更改会立即应用于此设备。","放大文字","让标签、说明和表单文字更易阅读","高对比度","增强文字、边框和焦点提示的可见性","减少动态效果","减少动画和过渡效果","扩大触控区域","增大控件的可点击区域","使用设备默认设置","默认使用设备的无障碍设置。","无障碍偏好已保存在此设备上。","已恢复设备默认设置。"],"pt":["Acessibilidade","Personalize a aparência e o funcionamento do DoWeo. As alterações são aplicadas imediatamente neste dispositivo.","Texto maior","Facilita a leitura de rótulos, descrições e formulários","Alto contraste","Melhora a visibilidade de textos, bordas e foco","Reduzir movimento","Limita animações e transições","Áreas de toque maiores","Amplia as áreas clicáveis dos controles","Usar padrões do dispositivo","As configurações de acessibilidade do dispositivo são usadas por padrão.","Preferência de acessibilidade salva neste dispositivo.","Padrões do dispositivo restaurados."],"de":["Barrierefreiheit","Passe an, wie DoWeo aussieht und reagiert. Änderungen gelten sofort auf diesem Gerät.","Größerer Text","Macht Beschriftungen, Beschreibungen und Formulare lesbarer","Hoher Kontrast","Verstärkt Text, Rahmen und Fokusmarkierungen","Bewegung reduzieren","Begrenzt Animationen und Übergänge","Größere Touchflächen","Vergrößert die berührbaren Bereiche","Gerätestandards verwenden","Standardmäßig gelten die Bedienungshilfen des Geräts.","Einstellung zur Barrierefreiheit auf diesem Gerät gespeichert.","Gerätestandards wiederhergestellt."],"it":["Accessibilità","Personalizza l'aspetto e il comportamento di DoWeo. Le modifiche si applicano subito su questo dispositivo.","Testo più grande","Rende più leggibili etichette, descrizioni e moduli","Contrasto elevato","Migliora la visibilità di testo, bordi e indicatori di selezione","Riduci movimento","Limita animazioni e transizioni","Aree di tocco più grandi","Aumenta le aree selezionabili dei controlli","Usa impostazioni del dispositivo","Per impostazione predefinita si usano le opzioni di accessibilità del dispositivo.","Preferenza di accessibilità salvata su questo dispositivo.","Impostazioni del dispositivo ripristinate."],"ja":["アクセシビリティ","DoWeo の表示や操作を調整できます。変更はこの端末にすぐ反映されます。","文字を大きくする","ラベル、説明、フォームを読みやすくします","高コントラスト","文字、枠線、フォーカス表示を見やすくします","動きを減らす","アニメーションと画面遷移を減らします","タップ領域を大きくする","操作部分のタップ領域を広げます","端末の設定を使用","既定では端末のアクセシビリティ設定を使用します。","アクセシビリティ設定をこの端末に保存しました。","端末の既定の設定に戻しました。"],"ar":["إمكانية الوصول","خصّص مظهر DoWeo وطريقة تفاعله. تُطبَّق التغييرات فورًا على هذا الجهاز.","نص أكبر","يسهّل قراءة التسميات والأوصاف وحقول النماذج","تباين عالٍ","يحسّن وضوح النصوص والحدود ومؤشرات التركيز","تقليل الحركة","يقلّل الرسوم المتحركة والانتقالات","مناطق لمس أكبر","يوسّع المناطق القابلة للمس","استخدام إعدادات الجهاز","تُستخدم إعدادات إمكانية الوصول في الجهاز افتراضيًا.","تم حفظ تفضيل إمكانية الوصول على هذا الجهاز.","تمت استعادة إعدادات الجهاز."],"ko":["접근성","DoWeo의 표시와 동작을 조정하세요. 변경 사항은 이 기기에 즉시 적용됩니다.","큰 글씨","레이블, 설명, 양식의 글씨를 읽기 쉽게 합니다","고대비","글씨, 테두리, 포커스 표시를 더 선명하게 합니다","동작 줄이기","애니메이션과 전환 효과를 줄입니다","더 큰 터치 영역","컨트롤의 터치 영역을 넓힙니다","기기 기본값 사용","기기의 접근성 설정이 기본으로 적용됩니다.","접근성 설정이 이 기기에 저장되었습니다.","기기 기본값으로 복원했습니다."],"hi":["सुगम्यता","DoWeo का रूप और व्यवहार अपनी ज़रूरत के अनुसार बदलें। बदलाव इस डिवाइस पर तुरंत लागू होंगे।","बड़ा टेक्स्ट","लेबल, विवरण और फ़ॉर्म पढ़ना आसान बनाता है","उच्च कंट्रास्ट","टेक्स्ट, बॉर्डर और फ़ोकस संकेत स्पष्ट करता है","गति कम करें","एनिमेशन और ट्रांज़िशन कम करता है","बड़े टच क्षेत्र","नियंत्रणों को छूना आसान बनाता है","डिवाइस की डिफ़ॉल्ट सेटिंग","डिफ़ॉल्ट रूप से डिवाइस की सुगम्यता सेटिंग लागू होती हैं।","सुगम्यता प्राथमिकता इस डिवाइस पर सहेजी गई।","डिवाइस की डिफ़ॉल्ट सेटिंग बहाल की गई।"],"ru":["Специальные возможности","Настройте внешний вид и поведение DoWeo. Изменения сразу применяются на этом устройстве.","Увеличенный текст","Облегчает чтение подписей, описаний и форм","Высокая контрастность","Повышает видимость текста, границ и фокуса","Уменьшить движение","Ограничивает анимацию и переходы","Увеличенные области нажатия","Увеличивает области нажатия элементов","Использовать настройки устройства","По умолчанию используются настройки доступности устройства.","Настройка доступности сохранена на этом устройстве.","Настройки устройства восстановлены."],"tr":["Erişilebilirlik","DoWeo'nun görünümünü ve davranışını özelleştirin. Değişiklikler bu cihazda hemen uygulanır.","Daha büyük metin","Etiketleri, açıklamaları ve formları okumayı kolaylaştırır","Yüksek kontrast","Metin, kenarlık ve odak göstergelerini belirginleştirir","Hareketi azalt","Animasyonları ve geçişleri sınırlar","Daha büyük dokunma alanları","Kontrollerin dokunulabilir alanını büyütür","Cihaz varsayılanlarını kullan","Varsayılan olarak cihazın erişilebilirlik ayarları kullanılır.","Erişilebilirlik tercihi bu cihaza kaydedildi.","Cihaz varsayılanları geri yüklendi."],"vi":["Trợ năng","Tùy chỉnh giao diện và cách DoWeo hoạt động. Thay đổi có hiệu lực ngay trên thiết bị này.","Chữ lớn hơn","Giúp dễ đọc nhãn, mô tả và biểu mẫu","Độ tương phản cao","Làm rõ chữ, đường viền và dấu chỉ tiêu điểm","Giảm chuyển động","Hạn chế hiệu ứng và chuyển cảnh","Vùng chạm lớn hơn","Mở rộng vùng có thể chạm của các nút","Dùng mặc định của thiết bị","Mặc định sử dụng cài đặt trợ năng của thiết bị.","Đã lưu tùy chọn trợ năng trên thiết bị này.","Đã khôi phục mặc định của thiết bị."],"nl":["Toegankelijkheid","Pas de weergave en bediening van DoWeo aan. Wijzigingen gelden direct op dit apparaat.","Grotere tekst","Maakt labels, beschrijvingen en formulieren beter leesbaar","Hoog contrast","Maakt tekst, randen en focusmarkeringen duidelijker","Minder beweging","Beperkt animaties en overgangen","Grotere aanraakvlakken","Vergroot de aanraakbare delen van bedieningselementen","Apparaatinstellingen gebruiken","Standaard worden de toegankelijkheidsinstellingen van het apparaat gebruikt.","Toegankelijkheidsvoorkeur opgeslagen op dit apparaat.","Apparaatinstellingen hersteld."],"pl":["Ułatwienia dostępu","Dostosuj wygląd i działanie DoWeo. Zmiany zostaną od razu zastosowane na tym urządzeniu.","Większy tekst","Ułatwia czytanie etykiet, opisów i formularzy","Wysoki kontrast","Poprawia widoczność tekstu, obramowań i fokusu","Ogranicz ruch","Ogranicza animacje i przejścia","Większe obszary dotykowe","Powiększa obszary aktywne elementów","Użyj ustawień urządzenia","Domyślnie używane są ustawienia dostępności urządzenia.","Preferencja dostępności zapisana na tym urządzeniu.","Przywrócono ustawienia urządzenia."],"sv":["Tillgänglighet","Anpassa hur DoWeo ser ut och fungerar. Ändringarna gäller direkt på den här enheten.","Större text","Gör etiketter, beskrivningar och formulär lättare att läsa","Hög kontrast","Gör text, ramar och fokusmarkeringar tydligare","Minska rörelse","Begränsar animationer och övergångar","Större tryckytor","Gör kontroller lättare att trycka på","Använd enhetens standard","Enhetens tillgänglighetsinställningar används som standard.","Tillgänglighetsinställningen har sparats på den här enheten.","Enhetens standardinställningar har återställts."],"bn":["অ্যাক্সেসিবিলিটি","DoWeo-এর চেহারা ও ব্যবহার নিজের মতো সাজান। পরিবর্তন এই ডিভাইসে সঙ্গে সঙ্গে কার্যকর হবে।","বড় লেখা","লেবেল, বিবরণ ও ফর্ম পড়া সহজ করে","উচ্চ কনট্রাস্ট","লেখা, সীমানা ও ফোকাস নির্দেশক স্পষ্ট করে","নড়াচড়া কমান","অ্যানিমেশন ও ট্রানজিশন সীমিত করে","বড় স্পর্শের জায়গা","নিয়ন্ত্রণের স্পর্শযোগ্য অংশ বড় করে","ডিভাইসের ডিফল্ট ব্যবহার করুন","ডিফল্টভাবে ডিভাইসের অ্যাক্সেসিবিলিটি সেটিংস ব্যবহৃত হয়।","অ্যাক্সেসিবিলিটি পছন্দ এই ডিভাইসে সংরক্ষিত হয়েছে।","ডিভাইসের ডিফল্ট সেটিংস ফিরিয়ে আনা হয়েছে।"]};
+ const keys=['title','intro','large','largeHelp','contrast','contrastHelp','motion','motionHelp','targets','targetsHelp','reset','defaultStatus','savedStatus','resetStatus'];
+ const root=document.getElementById('settings-accessibility-panel');
+ if(!root)return;
+ const nodes=[root.querySelector('h3'),root.querySelector(':scope > p.settings-muted'),
+ ...Array.from(root.querySelectorAll('.dw-a11y-setting')).flatMap(el=>[el.querySelector('strong'),el.querySelector('small')]),
+ document.getElementById('dw-a11y-reset')];
+ const status=document.getElementById('dw-a11y-status');
+ function language(){const current=window.DoWeoI18n?.resolve?.(window)||document.documentElement.lang||'en';return current==='he-script'?'he':current}
+ function apply(){
+  const lang=language(),strings=translations[lang]||translations.en;
+  nodes.forEach((node,i)=>{if(node)node.textContent=strings[i]});
+  root.dir=(lang==='he'||lang==='ar')?'rtl':'ltr';
+  if(status){
+   const state=status.dataset.dwA11yStatus||'defaultStatus';
+   status.textContent=strings[Math.max(11,keys.indexOf(state))];
+  }
+ }
+ const reset=document.getElementById('dw-a11y-reset');
+ reset?.addEventListener('click',()=>{status.dataset.dwA11yStatus='resetStatus';queueMicrotask(apply)});
+ for(const el of root.querySelectorAll('.dw-a11y-setting input'))el.addEventListener('change',()=>{status.dataset.dwA11yStatus='savedStatus';queueMicrotask(apply)});
+ document.addEventListener('doweo:languagechange',apply);
+ // A later translation observer may update exact-match text: re-apply after it.
+ document.addEventListener('DOMContentLoaded',apply);
+ apply();
+})();
+</script>
+<style id="dw-accessibility-rtl-layout">
+#settings-accessibility-panel[dir="rtl"] .dw-a11y-setting{text-align:start}
+#settings-accessibility-panel .dw-a11y-setting{min-width:0}
+#settings-accessibility-panel .dw-a11y-setting strong,
+#settings-accessibility-panel .dw-a11y-setting small{overflow-wrap:anywhere}
+</style>
 </body>
 </html>
 
