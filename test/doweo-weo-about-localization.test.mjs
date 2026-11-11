@@ -11,8 +11,9 @@ assert.ok(match);
 const es=JSON.parse(match[1]);
 
 test('About page retains all descriptions and its static interface is localized',()=>{
- assert.match(code,/querySelectorAll\('#about-page \[data-dw-decorative-description\]'\)/);
- assert.match(code,/closest\('#about-page,form,dialog/);
+ assert.doesNotMatch(code,/function hideDecorativeDescriptions\(\)/);
+ assert.match(code,/function queueCaptions\(\)/);
+ assert.match(code,/function localizeAboutHeader\(\)/);
  for(const phrase of [
    'DoWeo makes it easy to track shared expenses, split bills, and settle up with friends. No awkward conversations, no spreadsheets — just a simple way to stay even.',
    'Keep all your shared expenses in one place.',
@@ -45,9 +46,9 @@ test('complete tutorial step texts are translatable and approved',()=>{
 
 test('runtime localizes icon-prefixed chat actions and tutorial progression',()=>{
  const start=code.indexOf(' function translateDynamic(');
- const end=code.indexOf(' function hideDecorativeDescriptions(',start);
+ const end=code.indexOf(' const actionLocales=',start);
  assert.ok(start>0&&end>start);
- const sandbox={cache:es,approved:new Set(UI_PHRASES),language:'es',pending:new Set(),requested:new Set(),retries:new Map(),MAX_ATTEMPTS:4,Intl,Date};
+ const sandbox={cache:es,approved:new Set(UI_PHRASES),language:'es',pending:new Set(),requested:new Set(),retries:new Map(),MAX_ATTEMPTS:4,Intl,Date,i18n:{formatDate(_win,date,options){return new Intl.DateTimeFormat('es',options).format(date);}},root:{}};
  vm.runInNewContext(code.slice(start,end)+'\n globalThis.test={translate,eligible};',sandbox);
  const {translate,eligible}=sandbox.test;
  assert.equal(translate('📎 Add attachment'),'📎 Añadir archivo adjunto');
