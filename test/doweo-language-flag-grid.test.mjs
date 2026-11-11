@@ -5,11 +5,11 @@ import i18n from '../doweo-i18n.js';
 
 const script=readFileSync(new URL('../doweo-i18n.js',import.meta.url),'utf8');
 const localize=readFileSync(new URL('../doweo-localize-ui.js',import.meta.url),'utf8');
-test('flag picker includes all 19 supported languages and their representative flags',()=>{
- const expected=['🇺🇸','🇪🇸','🇫🇷','🇮🇱','🇨🇳','🇧🇷','🇩🇪','🇮🇹','🇯🇵','🇸🇦','🇰🇷','🇮🇳','🇷🇺','🇹🇷','🇻🇳','🇳🇱','🇵🇱','🇸🇪','🇧🇩'];
+test('flag picker includes all 20 language and typography choices and their representative flags',()=>{
+ const expected=['🇺🇸','🇪🇸','🇫🇷','🇨🇳','🇧🇷','🇩🇪','🇮🇹','🇯🇵','🇸🇦','🇮🇱','🇮🇳','🇰🇷','🇹🇷','🇷🇺','🇳🇱','🇻🇳','🇸🇪','🇵🇱','🇮🇱','🇧🇩'];
  assert.deepEqual(i18n.LANGUAGE_CHOICES.map(item=>item.code),i18n.SUPPORTED);
  assert.deepEqual(i18n.LANGUAGE_CHOICES.map(item=>item.flag),expected);
- assert.equal(new Set(i18n.LANGUAGE_CHOICES.map(item=>item.code)).size,19);
+ assert.equal(new Set(i18n.LANGUAGE_CHOICES.map(item=>item.code)).size,20);
  assert.ok(i18n.LANGUAGE_CHOICES.every(item=>item.name&&item.subtitle));
 });
 test('the flag grid replaces visual dropdown but retains settings and onboarding compatibility',()=>{
@@ -25,7 +25,7 @@ test('the flag grid replaces visual dropdown but retains settings and onboarding
 });
 test('selected-language detection and instant override remain intact',()=>{
  const storage=new Map();
- const doc={documentElement:{},querySelectorAll:()=>[],dispatchEvent:()=>{}};
+ const doc={documentElement:{setAttribute(){},removeAttribute(){}},querySelectorAll:()=>[],dispatchEvent:()=>{}};
  const win={document:doc,navigator:{languages:['es-ES']},Event:class{},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)}};
  assert.equal(i18n.resolve(win),'es');
  assert.equal(i18n.set(win,'ja'),'ja');
