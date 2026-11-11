@@ -10,7 +10,7 @@ import {validateTranslationRequest} from '../functions/api/ui-translate.js';
 const incoming=['ru','tr','vi','nl','pl','sv','bn'];
 const names=['Русский','Türkçe','Tiếng Việt','Nederlands','Polski','Svenska','বাংলা'];
 const flags=['🇷🇺','🇹🇷','🇻🇳','🇳🇱','🇵🇱','🇸🇪','🇧🇩'];
-const all=['en','es','fr','he','zh-Hans','pt','de','it','ja','ar','ko','hi',...incoming];
+const all=['en','es','fr','he','he-script','zh-Hans','pt','de','it','ja','ar','ko','hi',...incoming];
 const script=fs.readFileSync(new URL('../doweo-translations.js',import.meta.url),'utf8');
 const ui=fs.readFileSync(new URL('../doweo-localize-ui.js',import.meta.url),'utf8');
 const i18nScript=fs.readFileSync(new URL('../doweo-i18n.js',import.meta.url),'utf8');
@@ -22,7 +22,7 @@ const warning='Permanently delete your DoWeo account, profile, payment usernames
 test('all 19 languages are selectable with stable native names and flags',()=>{
  assert.deepEqual(i18n.SUPPORTED,all);
  const choices=i18n.LANGUAGE_CHOICES;
- assert.equal(choices.length,19);
+ assert.equal(choices.length,20);
  for(const [i,code] of incoming.entries()){
    const option=choices.find(o=>o.code===code);
    assert.ok(option,code+' missing from modal');
@@ -41,7 +41,7 @@ test('browser language detection handles regional variants and manual reset',()=
    assert.equal(i18n.detect(['xx-ZZ',source,'en-US']),result);
  }
  const store=new Map(),events=[];
- const win={navigator:{languages:['bn-BD','en-US']},document:{documentElement:{},querySelectorAll:()=>[],dispatchEvent:e=>events.push(e.type)},Event:class{constructor(type){this.type=type}},localStorage:{getItem:key=>store.get(key)||null,setItem:(key,val)=>store.set(key,val)}};
+ const win={navigator:{languages:['bn-BD','en-US']},document:{documentElement:{setAttribute(k,v){this[k]=v},removeAttribute(k){delete this[k]}},querySelectorAll:()=>[],dispatchEvent:e=>events.push(e.type)},Event:class{constructor(type){this.type=type}},localStorage:{getItem:key=>store.get(key)||null,setItem:(key,val)=>store.set(key,val)}};
  for(const code of incoming){
    assert.equal(i18n.set(win,code),code);
    assert.equal(i18n.resolve(win),code);
@@ -121,8 +121,8 @@ test('all full-site approved strings are eligible for AI fallback; private text 
 
 test('Russian member counts use correct one, few and many plural forms',()=>{
  const from=ui.indexOf(' function translateDynamic(');
- const to=ui.indexOf(' function hideDecorativeDescriptions(',from);
- const sandbox={cache:CORE_UI_TRANSLATIONS.ru,language:'ru',approved:new Set(UI_PHRASES),pending:new Set(),requested:new Set(),retries:new Map(),MAX_ATTEMPTS:4,Intl,Date};
+ const to=ui.indexOf(' const actionLocales=',from);
+ const sandbox={cache:CORE_UI_TRANSLATIONS.ru,language:'ru',approved:new Set(UI_PHRASES),pending:new Set(),requested:new Set(),retries:new Map(),MAX_ATTEMPTS:4,Intl,Date,i18n:{formatDate(_win,date,options){return new Intl.DateTimeFormat('ru',options).format(date);}},root:{}};
  vm.runInNewContext(ui.slice(from,to)+'\n globalThis.translateForTest=translate;',sandbox);
  for(const [english,expected] of [['1 members','1 участник'],['2 members','2 участника'],['3 members','3 участника'],['5 members','5 участников'],['11 members','11 участников'],['21 members','21 участник'],['22 members','22 участника'],['25 members','25 участников']]){
    assert.equal(sandbox.translateForTest(english),expected,english);

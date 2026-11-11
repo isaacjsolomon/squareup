@@ -18,12 +18,13 @@ test('create-new buttons have approved Spanish fallback labels',()=>{
   assert.ok(spanish[english]&&spanish[english]!==english);
  }
 });
-test('hide decorative page descriptions but not financial or form instructions',()=>{
- assert.match(ui,/function hideDecorativeDescriptions\(\)/);
- assert.match(ui,/h1 \+ p, h2 \+ p, h3 \+ p/);
- assert.match(ui,/\.sqev-toolbar \.sqev-subtitle/);
- assert.match(ui,/closest\('#about-page,form,dialog/);
- assert.match(ui,/password\|permanently\|cannot be undone/);
- assert.match(ui,/if\(!el\.hidden\)/);
- assert.match(ui,/hideDecorativeDescriptions\(\);/);
+test('descriptive captions remain visible and are prioritized for translation',()=>{
+ // Untranslated captions must remain visible until their translation arrives.
+ assert.doesNotMatch(ui,/function hideDecorativeDescriptions\(\)/);
+ assert.match(ui,/function isFeatureCaption\(el\)/);
+ assert.match(ui,/function queueCaptions\(\)/);
+ assert.match(ui,/queueCaptions\(\);/);
+ assert.match(ui,/for\(const source of \[captionPending,pending\]\)/);
+ assert.match(ui,/while\(running<1&&\(pending.size\|\|captionPending.size\)\)/);
+ assert.match(ui,/\[data-user-content\],#tracker-chat-messages,\[contenteditable\]/);
 });

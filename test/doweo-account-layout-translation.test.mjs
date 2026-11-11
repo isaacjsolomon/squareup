@@ -9,8 +9,8 @@ const es=JSON.parse(ui.match(/const screenshotSpanish=(\{.*?\});\n function seed
 const approved=new Set(UI_PHRASES);
 function translator(){
  const start=ui.indexOf(' function translateDynamic(');
- const end=ui.indexOf(' function hideDecorativeDescriptions(',start);
- const ctx={cache:es,approved,language:'es',pending:new Set(),requested:new Set(),retries:new Map(),MAX_ATTEMPTS:4,Intl,Date};
+ const end=ui.indexOf(' const actionLocales=',start);
+ const ctx={cache:es,approved,language:'es',pending:new Set(),requested:new Set(),retries:new Map(),MAX_ATTEMPTS:4,Intl,Date,i18n:{formatDate(_win,date,options){return new Intl.DateTimeFormat('es',options).format(date);}},root:{}};
  vm.runInNewContext(ui.slice(start,end)+'\n globalThis.helpers={translate,eligible};',ctx);
  return ctx.helpers;
 }

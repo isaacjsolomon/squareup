@@ -14,7 +14,7 @@ const warning='Permanently delete your DoWeo account, profile, payment usernames
 const supported=['en','es','fr','he','zh-Hans','pt','de','it','ja','ar','ko','hi'];
 
 test('all twelve established languages have complete aligned base dictionaries',()=>{
- assert.deepEqual(I18n.SUPPORTED.slice(0,supported.length),supported);
+ assert.deepEqual(I18n.SUPPORTED.filter(code=>code!=='he-script').slice(0,supported.length),supported);
  for(const locale of supported){
    assert.ok(Array.isArray(baseline[locale]),locale+' missing base dictionary');
    assert.equal(baseline[locale].length,baseline.en.length,locale+' base labels misaligned');
@@ -50,12 +50,12 @@ test('East Asian member counters use classifiers and native spacing',()=>{
  assert.equal(CORE_UI_TRANSLATIONS.ja.members,'人');
  assert.equal(CORE_UI_TRANSLATIONS.ko.member,'명');
  const start=source.indexOf(' function translateDynamic(');
- const end=source.indexOf(' function hideDecorativeDescriptions(',start);
+ const end=source.indexOf(' const actionLocales=',start);
  const snippet=source.slice(start,end)+'\n globalThis.translate=translate;';
  for(const [locale,expected] of [['zh-Hans','2位成员'],['ja','2人'],['ko','2명'],['fr','2 membres'],['es','2 miembros'],['en','2 members']]){
    const cache={...CORE_UI_TRANSLATIONS[locale]};
    if(locale==='es')Object.assign(cache,spanish);
-   const ctx={cache,language:locale,approved:new Set(UI_PHRASES),pending:new Set(),requested:new Set(),retries:new Map(),MAX_ATTEMPTS:4,Intl,Date};
+   const ctx={cache,language:locale,approved:new Set(UI_PHRASES),pending:new Set(),requested:new Set(),retries:new Map(),MAX_ATTEMPTS:4,Intl,Date,i18n:{formatDate(_win,date,options){return new Intl.DateTimeFormat(locale,options).format(date);}},root:{}};
    vm.runInNewContext(snippet,ctx);
    assert.equal(ctx.translate('2 members'),expected,locale+' member counter');
  }

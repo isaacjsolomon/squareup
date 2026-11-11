@@ -10,9 +10,9 @@ const es=JSON.parse(match[1]);
 const approved=new Set(UI_PHRASES);
 function setup(){
  const start=source.indexOf(' function translateDynamic(');
- const end=source.indexOf(' function hideDecorativeDescriptions(',start);
+ const end=source.indexOf(' const actionLocales=',start);
  assert.ok(start>=0&&end>start);
- const context={cache:es,approved,language:'es',pending:new Set(),requested:new Set(),retries:new Map(),MAX_ATTEMPTS:4,Intl,Date};
+ const context={cache:es,approved,language:'es',pending:new Set(),requested:new Set(),retries:new Map(),MAX_ATTEMPTS:4,Intl,Date,i18n:{formatDate(_win,date,options){return new Intl.DateTimeFormat('es',options).format(date);}},root:{}};
  vm.runInNewContext(source.slice(start,end)+'\n globalThis.test={translate,eligible,approvedKey};',context);
  return context.test;
 }
