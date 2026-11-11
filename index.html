@@ -14499,15 +14499,6 @@ html.dw-a11y-contrast body :is(.settings-muted,.action-sub,.muted){color:#e2f2ff
 html.dw-a11y-contrast :focus-visible{outline:3px solid #ffe27b!important;outline-offset:3px!important}
 html.dw-a11y-motion,html.dw-a11y-motion *{scroll-behavior:auto!important}
 html.dw-a11y-motion *,html.dw-a11y-motion *::before,html.dw-a11y-motion *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-@keyframes dw-a11y-gentle-swipe{from{opacity:.65;transform:translate3d(12px,0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
-html.dw-a11y-motion body :is(.settings-tab-content,section[id$="-page"],#tracker-dashboard).dw-a11y-enter:not([hidden]){
- animation:dw-a11y-gentle-swipe 440ms ease-out both!important;
-}
-@media(prefers-reduced-motion:reduce){
- html.dw-a11y-motion body :is(.settings-tab-content,section[id$="-page"],#tracker-dashboard).dw-a11y-enter:not([hidden]){
- animation-duration:440ms!important;
- }
-}
 html.dw-a11y-motion :is(.loading-spinner,.dw-loading-logo){animation:none!important}
 html.dw-a11y-motion :is(.loading-spinner,.dw-loading-logo)::after{animation:none!important}
 html.dw-a11y-targets body :is(button,[role="button"],a,.settings-action,.sq-mobile-nav a,.sq-mobile-nav button,input:not([type=checkbox]):not([type=radio]),select,textarea){min-height:44px!important}
@@ -14622,31 +14613,7 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',unify,{once:true});else unify();
 })();
 </script>
-<script id="dw-a11y-gentle-swipe-js">
-(function(){
- const root=document.documentElement;
- const targets=document.querySelectorAll('.settings-tab-content,section[id$="-page"],#tracker-dashboard');
- const visible=el=>!el.hidden&&el.getClientRects().length>0&&getComputedStyle(el).display!=='none';
- const state=new WeakMap();
- const observer=new MutationObserver(()=>{
-  for(const el of targets){
-   const now=visible(el),before=state.get(el)||false;
-   if(now&&!before&&root.classList.contains('dw-a11y-motion')){
-    el.classList.remove('dw-a11y-enter');
-    void el.offsetWidth;
-    el.classList.add('dw-a11y-enter');
-   }
-   if(!now)el.classList.remove('dw-a11y-enter');
-   state.set(el,now);
-  }
- });
- targets.forEach(el=>state.set(el,visible(el)));
- observer.observe(document.body,{attributes:true,subtree:true,attributeFilter:['hidden','style','class']});
- document.getElementById('dw-a11y-motion')?.addEventListener('change',()=>{
-  if(!root.classList.contains('dw-a11y-motion'))targets.forEach(el=>el.classList.remove('dw-a11y-enter'));
- });
-})();
-</script>
+
 </body>
 </html>
 
