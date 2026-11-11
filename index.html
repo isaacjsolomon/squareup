@@ -13452,7 +13452,11 @@ html body #sq-startup-overlay .sq-startup-content{
  }
  let queued=false;function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;layout()})}
  layout();window.addEventListener('resize',schedule,{passive:true});desktop.addEventListener('change',schedule);
- new MutationObserver(schedule).observe(document.body,{attributes:true,attributeFilter:['class']});
+ let lastBodyClasses=[...document.body.classList].filter(name=>name!==lockClass).sort().join(' ');
+ new MutationObserver(()=>{
+   const classes=[...document.body.classList].filter(name=>name!==lockClass).sort().join(' ');
+   if(classes!==lastBodyClasses){lastBodyClasses=classes;schedule();}
+ }).observe(document.body,{attributes:true,attributeFilter:['class']});
 })();
 </script><style id="sq-personal-finance-mobile-modal-20261107">
 /* Personal Finance: smaller summary cards plus a dedicated add action. */
