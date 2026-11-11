@@ -14421,6 +14421,59 @@ html:is([lang="he"],[lang="ar"]) input[type="number"]{direction:ltr}
  schedule();
 })();
 </script>
+<style id="dw-mobile-entry-dialog-center-fix">
+@media(max-width:900px){
+ html body #sq-expense-dialog.sq-action-modal:not([hidden]){
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-sizing:border-box!important;
+  padding:max(12px,env(safe-area-inset-top,0px)) 12px max(12px,env(safe-area-inset-bottom,0px))!important;
+  overflow:hidden!important;
+  z-index:2147482900!important;
+ }
+ html body #sq-expense-dialog .sq-action-modal-inner{
+  position:relative!important;
+  flex:0 1 auto!important;
+  width:100%!important;
+  max-width:650px!important;
+  max-height:calc(100dvh - max(12px,env(safe-area-inset-top,0px)) - max(12px,env(safe-area-inset-bottom,0px)))!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch;
+  margin:auto!important;
+  box-sizing:border-box!important;
+ }
+ html body #sq-expense-dialog #entry-card{
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+ }
+ html body #sq-expense-dialog #entry-card .sq-entry-heading{
+  position:sticky!important;
+  top:0!important;
+  z-index:2!important;
+  background:#10283a!important;
+  padding:8px 0!important;
+ }
+}
+</style>
+<script id="dw-mobile-entry-dialog-reset-scroll">
+(function(){
+ const modal=document.getElementById('sq-expense-dialog');
+ if(!modal)return;
+ const inner=modal.querySelector('.sq-action-modal-inner');
+ const reset=()=>{if(!modal.hidden&&inner)requestAnimationFrame(()=>{inner.scrollTop=0})};
+ new MutationObserver(reset).observe(modal,{attributes:true,attributeFilter:['hidden']});
+ modal.addEventListener('click',e=>{if(e.target===modal){document.getElementById('sq-entry-x')?.click()}});
+})();
+</script>
 </body>
 </html>
 
