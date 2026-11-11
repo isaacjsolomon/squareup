@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import i18n from '../doweo-i18n.js';
 
-test('all nineteen languages supported',()=>assert.equal(i18n.SUPPORTED.length,19));
+test('all twenty language and typography choices supported',()=>assert.equal(i18n.SUPPORTED.length,20));
 test('browser locale normalization and fallback',()=>{
   assert.equal(i18n.normalize('zh-CN'),'zh-Hans');
   assert.equal(i18n.normalize('he-IL'),'he');
@@ -15,7 +15,7 @@ test('browser locale normalization and fallback',()=>{
 });
 function windowMock(browser,stored=null){
   let preference=stored;
-  const attrs={};
+  const attrs={setAttribute:(key,value)=>{attrs[key]=value;},removeAttribute:key=>{delete attrs[key];}};
   const doc={documentElement:attrs,querySelectorAll:()=>[],dispatchEvent:()=>{},readyState:'complete'};
   return {navigator:{languages:browser},document:doc,Event:class{},localStorage:{
     getItem:()=>preference,setItem:(k,v)=>{assert.equal(k,i18n.KEY);preference=v;}
