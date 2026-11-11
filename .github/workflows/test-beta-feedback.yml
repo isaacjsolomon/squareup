@@ -76,6 +76,8 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.65.0
           npx playwright install --with-deps chromium
+      - name: Check mobile tracker settings panel sizing and accessibility
+        run: node --test test/mobile-tracker-settings-panel.test.mjs
       - name: Check mobile Overview visibility, overflow and desktop preservation
         run: node --test test/mobile-tracker-overview.test.mjs
 
