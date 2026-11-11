@@ -41,7 +41,7 @@ test('browser language detection handles regional variants and manual reset',()=
    assert.equal(i18n.detect(['xx-ZZ',source,'en-US']),result);
  }
  const store=new Map(),events=[];
- const win={navigator:{languages:['bn-BD','en-US']},document:{documentElement:{},querySelectorAll:()=>[],dispatchEvent:e=>events.push(e.type)},Event:class{constructor(type){this.type=type}},localStorage:{getItem:key=>store.get(key)||null,setItem:(key,val)=>store.set(key,val)}};
+ const win={navigator:{languages:['bn-BD','en-US']},document:{documentElement:{setAttribute(k,v){this[k]=v},removeAttribute(k){delete this[k]}},querySelectorAll:()=>[],dispatchEvent:e=>events.push(e.type)},Event:class{constructor(type){this.type=type}},localStorage:{getItem:key=>store.get(key)||null,setItem:(key,val)=>store.set(key,val)}};
  for(const code of incoming){
    assert.equal(i18n.set(win,code),code);
    assert.equal(i18n.resolve(win),code);
