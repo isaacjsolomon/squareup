@@ -50,6 +50,8 @@ jobs:
         run: node --test test/doweo-recurring-expense-validation.test.mjs
       - name: Ensure saved entries succeed when notification delivery fails
         run: node --test test/doweo-entry-notification-resilience.test.mjs
+      - name: Test pending expense review actions and dispute authorization
+        run: node --test test/doweo-inline-expense-dispute.test.mjs
       - name: Test payment reminder currency and confirmed balance logic
         run: node --test test/doweo-reminder-currency-safety.test.mjs
       - name: Check Personal Finance summary and transaction dialog
