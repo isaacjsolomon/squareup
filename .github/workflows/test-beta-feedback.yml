@@ -60,3 +60,18 @@ jobs:
         run: node --test test/weo-mascot.test.mjs
       - name: Check Weo quick actions and image understanding API
         run: node --test test/weo-quick-actions.test.mjs
+
+  mobile-overview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test tools
+        run: |
+          npm install --no-save --package-lock=false playwright@1.65.0
+          npx playwright install --with-deps chromium
+      - name: Check mobile Overview visibility, overflow and desktop preservation
+        run: node --test test/mobile-tracker-overview.test.mjs
+
