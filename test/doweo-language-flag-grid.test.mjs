@@ -47,7 +47,7 @@ test('Hebrew and Arabic labels align left visually and retain RTL reading order'
  assert.match(script,/dw-language-info\{[^}]*direction:ltr;text-align:left;align-items:flex-start/);
  assert.match(script,/dw-language-native\{[^}]*text-align:left;unicode-bidi:isolate/);
  assert.ok(script.includes("native.dir=(option.code==='he'||option.code==='he-script'||option.code==='ar')?'rtl':'auto'"));
- assert.deepEqual(i18n.LANGUAGE_CHOICES.filter(x=>['he','ar'].includes(x.code)).map(x=>x.name),['עברית','العربية']);
+ assert.deepEqual(i18n.LANGUAGE_CHOICES.filter(x=>['he','ar'].includes(x.code)).map(x=>x.name),['العربية','עברית']);
 });
 
 test('language tile grid is collapsed initially and shows the selected language summary',()=>{
