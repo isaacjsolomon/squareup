@@ -68,7 +68,7 @@ async function executeTask(task) {
     task.finishedAt = new Date().toISOString();
     try {
       task.diff = (await git('diff', '--stat')).slice(0, 10000);
-      task.tests = await runCommand('node', ['--test', 'jarvis/tests/*.test.mjs'], 30000);
+      task.tests = await runCommand('node', ['--test', 'jarvis/tests/'], 30000);
     } catch (err) { append('\nPost-run check failed: ' + err.message); }
     running = false;
   });
