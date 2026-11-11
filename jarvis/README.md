@@ -45,7 +45,7 @@ Open http://127.0.0.1:4177 on the same computer.
 
     node --check jarvis/server.mjs
     node --check jarvis/app.js
-    node --test jarvis/tests/
+    node --test jarvis/tests/policy.test.mjs
 
 GitHub Actions runs these checks when a pull request changes Jarvis files.
 
