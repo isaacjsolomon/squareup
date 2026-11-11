@@ -1,0 +1,26 @@
+name: Test Jarvis developer tools
+on:
+  pull_request:
+    paths:
+      - 'jarvis/**'
+      - '.github/workflows/test-jarvis.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jarvis-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check syntax
+        run: |
+          node --check jarvis/server.mjs
+          node --check jarvis/policy.mjs
+          node --check jarvis/app.js
+      - name: Run isolated policy tests
+        run: node --test jarvis/tests/
