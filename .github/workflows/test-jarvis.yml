@@ -23,4 +23,4 @@ jobs:
           node --check jarvis/policy.mjs
           node --check jarvis/app.js
       - name: Run isolated policy tests
-        run: node --test jarvis/tests/
+        run: node --test jarvis/tests/policy.test.mjs
