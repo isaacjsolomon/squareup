@@ -2600,6 +2600,16 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
       <div class="settings-tab-grid">
         <div><div class="settings-panel"><h3>Account</h3><div class="settings-actions"><button class="settings-action" id="settings-password" type="button">Change password</button><button class="settings-action" id="settings-signout" type="button">Log out</button></div></div></div>
         <div><div class="settings-panel" id="settings-language-panel"><h3 data-dw-language-title>Language</h3><p class="settings-muted">Change the language used throughout DoWeo.</p><div class="dw-language-preference" data-dw-language-scope><label data-dw-language-title for="settings-language-preference">Language</label><select id="settings-language-preference" data-dw-language-select><option value="auto">Automatic (browser language)</option><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="he">עברית</option><option value="zh-Hans">简体中文</option><option value="pt">Português</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="ja">日本語</option><option value="ar">العربية</option><option value="ko">한국어</option><option value="hi">हिन्दी</option></select><p data-dw-language-hint>Choose a language. More translations are coming soon.</p></div></div></div>
+        <div><div class="settings-panel" id="settings-accessibility-panel">
+<h3>Accessibility</h3><p class="settings-muted">Customize how DoWeo looks and responds. Changes apply immediately on this device.</p>
+<div class="dw-a11y-controls">
+<label class="dw-a11y-setting"><span><strong>Larger text</strong><small>Make labels, descriptions and form text easier to read</small></span><input type="checkbox" id="dw-a11y-large-text"></label>
+<label class="dw-a11y-setting"><span><strong>High contrast</strong><small>Strengthen text, borders and focus indicators</small></span><input type="checkbox" id="dw-a11y-contrast"></label>
+<label class="dw-a11y-setting"><span><strong>Reduce motion</strong><small>Limit animations and transitions</small></span><input type="checkbox" id="dw-a11y-motion"></label>
+<label class="dw-a11y-setting"><span><strong>Larger touch targets</strong><small>Increase the clickable area of controls</small></span><input type="checkbox" id="dw-a11y-targets"></label>
+</div><button type="button" class="settings-action" id="dw-a11y-reset">Use device defaults</button>
+<p class="settings-muted" id="dw-a11y-status" role="status" aria-live="polite">Your device's accessibility settings are used by default.</p>
+</div></div>
         <div><div class="settings-panel" id="delete-account-panel"><h3>Delete account</h3><p class="settings-muted">Permanently delete your DoWeo account, profile, payment usernames, profile photo, and your saved tracker data. Trackers you own will also be deleted for their members. This cannot be undone.</p><button class="settings-action" id="settings-delete-account" style="background:#512334;color:#ffb5c4;border-color:#9e4158" type="button">Delete my account</button><div aria-live="polite" class="settings-notice" id="settings-delete-msg" role="status"></div></div></div>
       </div>
     </div>
@@ -14472,6 +14482,53 @@ html:is([lang="he"],[lang="ar"]) input[type="number"]{direction:ltr}
  const reset=()=>{if(!modal.hidden&&inner)requestAnimationFrame(()=>{inner.scrollTop=0})};
  new MutationObserver(reset).observe(modal,{attributes:true,attributeFilter:['hidden']});
  modal.addEventListener('click',e=>{if(e.target===modal){document.getElementById('sq-entry-x')?.click()}});
+})();
+</script>
+<style id="dw-accessibility-preferences-css">
+.dw-a11y-controls{display:grid;gap:8px;margin:14px 0}
+.dw-a11y-setting{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 12px;border:1px solid #31506a;border-radius:12px;cursor:pointer}
+.dw-a11y-setting span{display:grid;gap:4px;min-width:0}
+.dw-a11y-setting strong{font-size:15px}
+.dw-a11y-setting small{font-size:12px;line-height:1.45;color:#b7cddd}
+.dw-a11y-setting input{width:22px;height:22px;flex:none;accent-color:#26d8b5;cursor:pointer}
+html.dw-a11y-large{font-size:110%!important}
+html.dw-a11y-large body :is(p,small,label,button,input,select,textarea,.settings-muted,.action-sub,.sq-action-title,.sq-mobile-nav span){font-size:max(1em,16px)!important;line-height:1.45!important}
+html.dw-a11y-contrast body{--muted:#d6e9f5!important;--text:#fff!important}
+html.dw-a11y-contrast body :is(.settings-panel,.card,.dashboard-action,input,select,textarea,button){border-color:#90b9d2!important}
+html.dw-a11y-contrast body :is(.settings-muted,.action-sub,.muted){color:#e2f2ff!important}
+html.dw-a11y-contrast :focus-visible{outline:3px solid #ffe27b!important;outline-offset:3px!important}
+html.dw-a11y-motion *,html.dw-a11y-motion *::before,html.dw-a11y-motion *::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;scroll-behavior:auto!important}
+html.dw-a11y-targets body :is(button,.settings-action,.sq-mobile-nav a,.sq-mobile-nav button,input:not([type=checkbox]):not([type=radio]),select,textarea){min-height:48px!important}
+html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:24px!important;min-height:24px!important}
+@media(max-width:650px){.dw-a11y-setting{padding:15px 12px}}
+</style>
+<script id="dw-accessibility-preferences-js">
+(function(){
+ 'use strict';
+ const KEY='doweo-accessibility-v1';
+ const ids={large:'dw-a11y-large-text',contrast:'dw-a11y-contrast',motion:'dw-a11y-motion',targets:'dw-a11y-targets'};
+ const classes={large:'dw-a11y-large',contrast:'dw-a11y-contrast',motion:'dw-a11y-motion',targets:'dw-a11y-targets'};
+ const queries={contrast:'(prefers-contrast: more)',motion:'(prefers-reduced-motion: reduce)'};
+ const media={contrast:matchMedia(queries.contrast),motion:matchMedia(queries.motion)};
+ let saved={};
+ try{const v=JSON.parse(localStorage.getItem(KEY)||'{}');if(v&&typeof v==='object')saved=v}catch(e){}
+ function effective(key){return typeof saved[key]==='boolean'?saved[key]:(media[key]?.matches||false)}
+ function apply(){
+  for(const key of Object.keys(ids)){
+   const enabled=effective(key);
+   document.documentElement.classList.toggle(classes[key],enabled);
+   const el=document.getElementById(ids[key]);if(el)el.checked=enabled;
+  }
+ }
+ function persist(){try{localStorage.setItem(KEY,JSON.stringify(saved))}catch(e){}}
+ for(const key of Object.keys(ids)){
+  const el=document.getElementById(ids[key]);
+  if(el)el.addEventListener('change',()=>{saved[key]=el.checked;persist();apply();const status=document.getElementById('dw-a11y-status');if(status)status.textContent='Accessibility preference saved on this device.'});
+ }
+ const reset=document.getElementById('dw-a11y-reset');
+ if(reset)reset.addEventListener('click',()=>{saved={};try{localStorage.removeItem(KEY)}catch(e){}apply();const status=document.getElementById('dw-a11y-status');if(status)status.textContent='Device defaults restored.'});
+ for(const mq of Object.values(media))mq.addEventListener?.('change',apply);
+ apply();
 })();
 </script>
 </body>
