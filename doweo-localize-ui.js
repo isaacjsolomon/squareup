@@ -227,25 +227,6 @@
  // Remove short decorative explanations directly below page/section headings.
  // Keep form hints, critical financial notices, user-authored event text and
  // longer instructional or accessibility content.
- function hideDecorativeDescriptions(){
-   // About is editorial content; its descriptions are intentional.
-   for(const el of root.document.querySelectorAll('#about-page [data-dw-decorative-description]')){
-     el.hidden=false;
-     delete el.dataset.dwDecorativeDescription;
-   }
-   const roots=root.document.querySelectorAll('main, [role="main"], #sqev-view');
-   const scope=roots.length?roots:[root.document.body];
-   for(const container of scope){
-     container.querySelectorAll('h1 + p, h2 + p, h3 + p, .sqev-toolbar .sqev-subtitle').forEach(el=>{
-       if(el.closest('#about-page,form,dialog,[role="dialog"],[role="alert"],[role="status"],blockquote,[data-user-content],.sqev-detail-heading'))return;
-       const text=el.textContent.trim();
-       if(!text||text.length>260||el.querySelector('a,button,input,select,textarea'))return;
-       // Exclude any instructions with safety, account deletion, or payment meaning.
-       if(/password|permanently|cannot be undone|never transfers|confirm recipient|sensitive information|dispute|security|privacy policy|terms|warning|required/i.test(text))return;
-       if(!el.hidden){el.hidden=true;el.dataset.dwDecorativeDescription='true';}
-     });
-   }
- }
  const actionLocales={
    es:['Crear nuevo grupo','Crear nuevo viaje','Crear nuevo hogar','Crear nuevo evento','Abrir grupo'],
    fr:['Créer un groupe','Créer un voyage','Créer un foyer','Créer un événement','Ouvrir le groupe'],
