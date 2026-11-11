@@ -4771,6 +4771,17 @@ const pending =
   );
 
 
+        // Validate recurrence before writing any financial record.
+        // Previously invalid recurrence was rejected only after the entry was inserted.
+        if (
+          e.type === 'debt' &&
+          body.recurring &&
+          body.recurring !== 'none' &&
+          !['daily', 'weekly', 'biweekly', 'monthly'].includes(body.recurring)
+        ) {
+          return fail('Invalid recurrence', 400);
+        }
+
         const created = (await db('tracker_entries', {
           method: 'POST',
           body: {
@@ -4790,17 +4801,6 @@ exchange_rate: rate,
             body.recurring !== 'none') {
 
           const freq = body.recurring;
-
-          if (![
-            'daily',
-            'weekly',
-            'biweekly',
-            'monthly'
-          ].includes(freq))
-            return fail(
-              'Invalid recurrence',
-              400
-            );
 
           const start = new Date()
             .toISOString().slice(0, 10);
