@@ -10,7 +10,7 @@ import {validateTranslationRequest} from '../functions/api/ui-translate.js';
 const incoming=['ru','tr','vi','nl','pl','sv','bn'];
 const names=['Русский','Türkçe','Tiếng Việt','Nederlands','Polski','Svenska','বাংলা'];
 const flags=['🇷🇺','🇹🇷','🇻🇳','🇳🇱','🇵🇱','🇸🇪','🇧🇩'];
-const all=['en','es','fr','he','zh-Hans','pt','de','it','ja','ar','ko','hi',...incoming];
+const all=['en','es','fr','he','he-script','zh-Hans','pt','de','it','ja','ar','ko','hi',...incoming];
 const script=fs.readFileSync(new URL('../doweo-translations.js',import.meta.url),'utf8');
 const ui=fs.readFileSync(new URL('../doweo-localize-ui.js',import.meta.url),'utf8');
 const i18nScript=fs.readFileSync(new URL('../doweo-i18n.js',import.meta.url),'utf8');
@@ -19,10 +19,10 @@ const translateApi=fs.readFileSync(new URL('../functions/api/ui-translate.js',im
 const langs=JSON.parse(script.slice(script.indexOf('const languages=')+'const languages='.length,script.indexOf(';\n  const english=')));
 const warning='Permanently delete your DoWeo account, profile, payment usernames, profile photo, and your saved tracker data. Trackers you own will also be deleted for their members. This cannot be undone.';
 
-test('all 19 languages are selectable with stable native names and flags',()=>{
+test('all 20 choices are selectable with stable native names and flags',()=>{
  assert.deepEqual(i18n.SUPPORTED,all);
  const choices=i18n.LANGUAGE_CHOICES;
- assert.equal(choices.length,19);
+ assert.equal(choices.length,20);
  for(const [i,code] of incoming.entries()){
    const option=choices.find(o=>o.code===code);
    assert.ok(option,code+' missing from modal');
@@ -41,7 +41,7 @@ test('browser language detection handles regional variants and manual reset',()=
    assert.equal(i18n.detect(['xx-ZZ',source,'en-US']),result);
  }
  const store=new Map(),events=[];
- const win={navigator:{languages:['bn-BD','en-US']},document:{documentElement:{},querySelectorAll:()=>[],dispatchEvent:e=>events.push(e.type)},Event:class{constructor(type){this.type=type}},localStorage:{getItem:key=>store.get(key)||null,setItem:(key,val)=>store.set(key,val)}};
+ const win={navigator:{languages:['bn-BD','en-US']},document:{documentElement:{setAttribute(){},removeAttribute(){}},querySelectorAll:()=>[],dispatchEvent:e=>events.push(e.type)},Event:class{constructor(type){this.type=type}},localStorage:{getItem:key=>store.get(key)||null,setItem:(key,val)=>store.set(key,val)}};
  for(const code of incoming){
    assert.equal(i18n.set(win,code),code);
    assert.equal(i18n.resolve(win),code);
