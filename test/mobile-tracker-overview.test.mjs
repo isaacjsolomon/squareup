@@ -60,25 +60,38 @@ test('mobile Overview hides extras and scrolls only when its content overflows',
   assert.ok(await page.evaluate(()=>document.scrollingElement.scrollHeight<=innerHeight+1),'fitting content must not scroll');
   for(const height of [480,320]){
    await page.setViewportSize({width:320,height});
+   await page.waitForFunction(()=>{
+    const d=document.getElementById('tracker-dashboard');
+    const nav=document.querySelector('.sq-mobile-nav');
+    const add=nav.querySelector('.sq-add .sq-m-icon');
+    const bottom=Math.min(innerHeight,nav.getBoundingClientRect().top,add.getBoundingClientRect().top);
+    return parseFloat(getComputedStyle(d).maxHeight)===Math.max(0,Math.floor(bottom-d.getBoundingClientRect().top-12));
+   });
    await page.waitForFunction(()=>!document.documentElement.classList.contains('dw-mobile-overview-fit'));
-   assert.ok(await page.evaluate(()=>document.scrollingElement.scrollHeight>innerHeight),'small screens must overflow');
-   await page.evaluate(()=>{document.documentElement.style.scrollBehavior='auto';scrollTo(0,document.scrollingElement.scrollHeight);});
-   assert.ok(await page.evaluate(()=>scrollY>0),'overflow must remain scrollable');
-   assert.ok(await page.evaluate(()=>{
+   assert.ok(await page.locator('#tracker-dashboard').evaluate(e=>e.scrollHeight>e.clientHeight),'small screens must overflow inside the tracker');
+   await page.locator('#tracker-dashboard').evaluate(e=>e.scrollTop=e.scrollHeight);
+   assert.ok(await page.locator('#tracker-dashboard').evaluate(e=>e.scrollTop>0),'overflow must remain scrollable');
+   await page.mouse.move(2,150);await page.mouse.wheel(0,500);
+   assert.equal(await page.evaluate(()=>scrollY),0,'the page must stay stationary even when the tracker overflows');
+   const clearance=await page.evaluate(()=>{
     const content=document.getElementById('sq-return-summary').getBoundingClientRect();
     const nav=document.querySelector('.sq-mobile-nav').getBoundingClientRect();
-    return content.bottom<=nav.top;
-   }),'last content must clear fixed navigation at the end of the page');
+    const d=document.getElementById('tracker-dashboard');
+    return {content:content.bottom,nav:nav.top,top:d.getBoundingClientRect().top,bottom:d.getBoundingClientRect().bottom,scroll:d.scrollTop,max:d.scrollHeight-d.clientHeight,limit:getComputedStyle(d).maxHeight};
+   });
+   assert.ok(clearance.content<=clearance.nav,JSON.stringify(clearance));
   }
   await page.setViewportSize({width:390,height:1000});
   await page.evaluate(()=>{
    const p=document.createElement('p');p.textContent='Expanded balance details '.repeat(250);
    document.getElementById('sq-return-summary').append(p);
   });
-  assert.ok(await page.evaluate(()=>document.scrollingElement.scrollHeight>innerHeight),'expanded content must overflow');
+  assert.ok(await page.locator('#tracker-dashboard').evaluate(e=>e.scrollHeight>e.clientHeight),'expanded content must overflow inside the tracker');
   await page.waitForFunction(()=>!document.documentElement.classList.contains('dw-mobile-overview-fit'));
   // A different mobile tab must retain the original clear and settle controls.
   await page.evaluate(()=>document.getElementById('tracker-dashboard').className='sq-tab-members');
+  await page.waitForFunction(()=>!document.documentElement.classList.contains('dw-mobile-overview'));
+  assert.notEqual(await page.evaluate(()=>getComputedStyle(document.body).position),'fixed','other tabs must release the page lock');
   assert.equal(await visible('#clear'),true);
   assert.equal(await visible('#smart-settle-card'),true);
   await page.evaluate(()=>document.getElementById('tracker-dashboard').className='sq-tab-overview');

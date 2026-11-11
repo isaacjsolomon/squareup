@@ -14300,9 +14300,15 @@ html:is([lang="he"],[lang="ar"]) input[type="number"]{direction:ltr}
 <style id="dw-mobile-overview-fit">
 @media(max-width:900px){
  html body #tracker-dashboard.sq-tab-overview #sq-mobile-extra-balances{display:none!important}
- html.dw-mobile-overview body{min-height:100dvh!important}
- html.dw-mobile-overview{overscroll-behavior-y:none}
- html.dw-mobile-overview-fit,html.dw-mobile-overview-fit body{overflow-y:hidden!important}
+ /* Keep the page itself stationary. Only genuinely overflowing tracker content
+    scrolls, within the space between the fixed header and bottom navigation. */
+ html.dw-mobile-overview{height:100%;overflow:hidden!important;overscroll-behavior:none}
+ html.dw-mobile-overview body{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;min-height:0!important;overflow:hidden!important}
+ html.dw-mobile-overview body #tracker-dashboard.sq-tab-overview{
+  max-height:var(--dw-overview-height,calc(100dvh - 202px))!important;
+  overflow-y:auto!important;overscroll-behavior-y:none;
+  -webkit-overflow-scrolling:touch;scroll-padding-block:12px;
+ }
 }
 </style>
 <script id="dw-mobile-overview-fit-script">
@@ -14315,10 +14321,21 @@ html:is([lang="he"],[lang="ar"]) input[type="number"]{direction:ltr}
   queued=false;
   const active=matchMedia('(max-width:900px)').matches&&dashboard.classList.contains('sq-tab-overview')&&dashboard.getClientRects().length>0&&getComputedStyle(dashboard).visibility!=='hidden';
   set('dw-mobile-overview',active);
-  // Use the visible viewport, including browser chrome/keyboard changes. Never
-  // lock an overflowing page; body retains its fixed-navigation safe-area space.
-  const height=window.visualViewport?window.visualViewport.height:window.innerHeight;
-  set('dw-mobile-overview-fit',active&&document.scrollingElement.scrollHeight<=height+1);
+  if(active){
+   const viewport=window.visualViewport;
+   const height=viewport?viewport.height:window.innerHeight;
+   const nav=document.querySelector('.sq-mobile-nav');
+   let bottom=height;
+   if(nav&&nav.getClientRects().length){
+    bottom=Math.min(bottom,nav.getBoundingClientRect().top);
+    const add=nav.querySelector('.sq-add .sq-m-icon');
+    if(add)bottom=Math.min(bottom,add.getBoundingClientRect().top);
+   }
+   const available=Math.max(0,Math.floor(bottom-dashboard.getBoundingClientRect().top-12));
+   const value=available+'px';
+   if(root.style.getPropertyValue('--dw-overview-height')!==value)root.style.setProperty('--dw-overview-height',value);
+  }else root.style.removeProperty('--dw-overview-height');
+  set('dw-mobile-overview-fit',active&&dashboard.scrollHeight<=dashboard.clientHeight+1);
  }
  function schedule(){if(!queued){queued=true;requestAnimationFrame(update);}}
  new ResizeObserver(schedule).observe(dashboard);
