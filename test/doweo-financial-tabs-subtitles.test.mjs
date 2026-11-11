@@ -25,5 +25,7 @@ test('hide decorative page descriptions but not financial or form instructions',
  assert.match(ui,/closest\('#about-page,form,dialog/);
  assert.match(ui,/password\|permanently\|cannot be undone/);
  assert.match(ui,/if\(!el\.hidden\)/);
- assert.match(ui,/hideDecorativeDescriptions\(\);/);
+ assert.match(ui,/function render\(\)\{[\s\S]*?fixRtlInputIdentifiers\(\);/);
+ assert.doesNotMatch(ui,/function render\(\)\{[\s\S]*?hideDecorativeDescriptions\(\);/);
+ // Descriptive text must remain available to translation and accessibility.
 });
