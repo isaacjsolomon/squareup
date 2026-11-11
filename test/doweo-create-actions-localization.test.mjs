@@ -64,5 +64,5 @@ test('unrelated buttons, user-provided names and interactive child elements stay
 test('action translator runs before and after general UI translation',()=>{
  const render=source.slice(end,source.indexOf(' function save(){',end));
  assert.match(render,/queueCaptions\(\);\n   translateCreateActions\(\);/);
- assert.match(render,/translateCreateActions\(\);\n   pump\(\);/);
+ assert.match(render,/translateCreateActions\(\);\n   localizeAboutHeader\(\);\n   pump\(\);/);
 });
