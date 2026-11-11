@@ -2795,6 +2795,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
      <div class="sq-auth-field" id="sq-auth-password-wrap"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><input id="auth-password" type="password" aria-label="Password" placeholder="Password" autocomplete="current-password" required minlength="6"><button type="button" id="sq-auth-eye" aria-label="Show password" aria-pressed="false">Show</button></div>
      <div class="sq-auth-forgot-row"><button type="button" class="link-btn" id="auth-forgot">Forgot password?</button></div>
      <div class="msg" id="auth-msg" role="status" aria-live="polite"></div>
+     <button type="button" id="auth-resend" class="link-btn" hidden style="display:block;margin:8px auto 12px;font-weight:700;text-decoration:underline">Resend confirmation email</button>
      <button class="primary sq-auth-submit" type="submit" id="auth-submit">Continue with email <span aria-hidden="true">→</span></button>
      <button type="button" id="sq-auth-alternative">Create account</button>
      <p id="sq-auth-swap-copy">Don't have an account? <button type="button" id="sq-auth-swap">Create one</button></p>
@@ -3500,6 +3501,7 @@ const mapUser = u => u ? ({ id:u.id, email:u.email || "", name:u.user_metadata?.
 async function unwrap(p) { const {data,error}=await p; if(error) throw error; return data; }
 async function login(email,password) { const data=await unwrap(supabase.auth.signInWithPassword({email,password})); return mapUser(data.user); }
 async function signup(email,password,metadata) { const data=await unwrap(supabase.auth.signUp({email,password,options:{data:metadata || {},emailRedirectTo:location.origin+"/?setup=1"}})); return mapUser(data.user); }
+async function resendSignupConfirmation(email) { await unwrap(supabase.auth.resend({type:"signup",email:email,options:{emailRedirectTo:location.origin+"/?setup=1"}})); }
 async function logout() { await unwrap(supabase.auth.signOut()); }
 async function getUser() { const {data,error}=await supabase.auth.getUser(); return error ? null : mapUser(data.user); }
 function onAuthChange(cb) { return supabase.auth.onAuthStateChange((event,session)=>{ setTimeout(()=>cb(event,mapUser(session?.user)),0); }); }
@@ -3513,6 +3515,44 @@ async function authHeaders(extra={}) { const {data}=await supabase.auth.getSessi
 var $ = function (id) { return document.getElementById(id); };
 var authMode = "login"; // "login" | "signup" | "forgot" | "reset"
 var currentUser = null;
+var resendEmail = "";
+var resendUntil = 0;
+var resendTimer = null;
+function updateResendButton() {
+  var btn = $("auth-resend");
+  var seconds = Math.max(0,Math.ceil((resendUntil-Date.now())/1000));
+  btn.disabled = seconds > 0;
+  btn.textContent = seconds ? "Resend available in "+seconds+"s" : "Resend confirmation email";
+  if (!seconds && resendTimer) { clearInterval(resendTimer); resendTimer = null; }
+}
+function showResend(email) {
+  resendEmail = String(email||"").trim().toLowerCase();
+  $("auth-resend").hidden = !resendEmail;
+  updateResendButton();
+}
+function startResendCooldown() {
+  resendUntil=Date.now()+60000;
+  if (resendTimer) clearInterval(resendTimer);
+  resendTimer=setInterval(updateResendButton,1000);
+  updateResendButton();
+}
+$("auth-resend").addEventListener("click",async function(){
+  if (!resendEmail || this.disabled || Date.now()<resendUntil) return;
+  this.disabled=true;
+  showMsg("Requesting another confirmation email…");
+  try {
+    await resendSignupConfirmation(resendEmail);
+    startResendCooldown();
+    showMsg("Confirmation email requested. Check your inbox and spam folder, then use the newest link. Delivery may take a few minutes.","ok");
+  } catch(err) {
+    var code=String(err?.code||"");
+    var message=String(err?.message||"");
+    if(err?.status===429 || /rate.limit|security purposes/i.test(code+" "+message)) {
+      startResendCooldown();
+      showMsg("Too many requests. Please wait a minute before trying again.","error");
+    } else showMsg("Could not request a confirmation email: "+errorText(err),"error");
+  } finally { updateResendButton(); }
+});
 
 function showMsg(text, kind) {
   $("auth-msg").textContent = text || "";
@@ -3531,6 +3571,8 @@ function errorText(err) {
 
 function setAuthMode(m) {
   authMode = m;
+  $("auth-resend").hidden = true;
+  resendEmail = "";
   var titles = { login: "Log in", signup: "Create account", forgot: "Reset password", reset: "Set a new password" };
   var submits = { login: "Log in", signup: "Create account", forgot: "Send reset link", reset: "Save password" };
   $("auth-title").textContent = (m === "login" || m === "signup") ? "Welcome to DoWeo" : titles[m];
@@ -3683,7 +3725,9 @@ $("auth-form").addEventListener("submit", async function (e) {
         closeAuth();
         maybeShowOnboarding(user);
       } else {
-        showMsg("Almost done! Check your email to confirm your account.", "ok");
+        showMsg("Almost done! Check your email (including spam) to confirm your account. If it does not arrive, use the resend button below.", "ok");
+        showResend(email);
+        startResendCooldown();
       }
     } else if (authMode === "forgot") {
       await requestPasswordRecovery(email);
@@ -3697,7 +3741,10 @@ $("auth-form").addEventListener("submit", async function (e) {
       setTimeout(function () { $("auth-submit").hidden = false; closeAuth(); }, 1800);
     }
   } catch (err) {
-    showMsg(errorText(err), "error");
+    if(authMode==="login" && (/email.not.confirmed/i.test(String(err?.message||"")) || err?.code==="email_not_confirmed")) {
+      showMsg("This email has not been confirmed. Check your inbox or request a new confirmation email.","error");
+      showResend(email);
+    } else showMsg(errorText(err), "error");
   } finally {
     btn.disabled = false;
   }
