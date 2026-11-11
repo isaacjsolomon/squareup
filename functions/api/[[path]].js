@@ -4519,9 +4519,16 @@ if (
       method === 'PATCH'
     ) {
       const action = body.action;
+      // Dispute reasons are provided by the debtor and shared only with the
+      // expense creator through their existing tracker notification.
+      const disputeReason = clean(body.reason, 200);
 
       if (!['approve', 'dispute'].includes(action)) {
         return fail('Invalid approval action.', 400);
+      }
+
+      if (action === 'dispute' && !disputeReason) {
+        return fail('Please explain why you are disputing this expense.', 400);
       }
 
       const entry = (await db('tracker_entries', {
@@ -4595,7 +4602,7 @@ if (
               message: me.name +
                 (action === 'approve'
                   ? ' approved an expense.'
-                  : ' disputed an expense.')
+                  : ' disputed an expense. Reason: ' + disputeReason)
             }
           });
         } catch (error) {
