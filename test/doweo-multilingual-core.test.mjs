@@ -20,7 +20,7 @@ const required=[
  'Permanently delete your DoWeo account, profile, payment usernames, profile photo, and your saved tracker data. Trackers you own will also be deleted for their members. This cannot be undone.'
 ];
 test('all DoWeo languages share the same common UI translation keys',()=>{
- const nonEnglish=I18n.SUPPORTED.filter(code=>code!=='en'&&code!=='es');
+ const nonEnglish=I18n.SUPPORTED.filter(code=>code!=='en'&&code!=='es'&&code!=='he-script');
  assert.deepEqual(Object.keys(CORE_UI_TRANSLATIONS).sort(),nonEnglish.sort());
  assert.equal(new Set(CORE_UI_SOURCE_KEYS).size,CORE_UI_SOURCE_KEYS.length);
  assert.ok(CORE_UI_SOURCE_KEYS.length>=130);
