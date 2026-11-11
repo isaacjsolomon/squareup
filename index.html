@@ -832,7 +832,7 @@ body.trackers-view #tracker-dashboard,body.trackers-view #split-page,body.tracke
 .tracker-banner-dialog .banner-editor-actions{display:flex;justify-content:flex-end;gap:9px}
 .tracker-banner-dialog .banner-editor-actions button{border:0;border-radius:10px;padding:11px 16px;cursor:pointer;background:#23445b;color:white}
 .tracker-banner-dialog .banner-editor-actions button:first-child{background:#59edb0;color:#072638;font-weight:800}
-@media(max-width:760px){.tracker-tile-banner{background-image:none!important}}
+@media(max-width:760px){.tracker-tile-banner{background-size:cover!important;background-position:center!important}}
 
 /* Clean, open sidebar navigation matching the reference */
 .sidebar .squareup-nav{display:flex;flex-direction:column;gap:7px;margin:14px 0 18px;padding:6px 0}
@@ -1653,6 +1653,44 @@ body.friends-view .wrap #friends-page{display:block!important}
 #notifications-page .sq-unread-notification{border-left:3px solid #3de3b4!important}
 @media(max-width:1050px){.sq-inbox-columns{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:690px){.sq-inbox-columns{grid-template-columns:minmax(0,1fr);gap:12px}.sq-inbox-column{padding:12px}.sq-about-topline{gap:10px}.sq-about-topline .sq-header-tour-btn{font-size:12px;padding:8px 10px}#notifications-page #notifications-panel{padding:13px;border-radius:16px}}
+</style>
+<style id="sq-mobile-trackers-loading-banner-fix">
+/* Inline gallery indicator: branded DW trace, not a fullscreen blocker. */
+body.trackers-view #trackers-gallery>.sq-gallery-loading{
+ grid-column:1/-1;display:flex;align-items:center;justify-content:center;
+ flex-direction:column;gap:3px;margin:8px 0 18px;padding:16px;
+ border-radius:18px;border:1px solid rgba(77,221,206,.28);
+ background:linear-gradient(130deg,rgba(10,47,68,.94),rgba(9,34,54,.95));
+ color:#d7f5f7;font-weight:650;font-size:13px;min-height:120px;
+}
+#trackers-gallery .sq-gallery-loading .doweo-loading-logo{width:86px;height:86px;display:block;overflow:visible}
+#trackers-gallery .sq-gallery-loading .doweo-logo-trace{
+ stroke-dasharray:1;stroke-dashoffset:1;animation:doweo-logo-draw 3.2s ease-in-out infinite;
+}
+#trackers-gallery .sq-gallery-loading .doweo-logo-right{animation-delay:.12s}
+#trackers-gallery .sq-gallery-loading .doweo-logo-front{animation-delay:.24s}
+#trackers-gallery .sq-gallery-loading .doweo-logo-d{animation-delay:.4s}
+#sq-banner-editor.tracker-banner-editor{
+ position:fixed!important;inset:0!important;display:flex!important;align-items:center!important;
+ justify-content:center!important;box-sizing:border-box!important;
+ padding:calc(14px + env(safe-area-inset-top,0px)) 12px calc(14px + env(safe-area-inset-bottom,0px))!important;
+ overflow:hidden!important;z-index:2147482000!important;
+}
+#sq-banner-editor .tracker-banner-dialog{
+ box-sizing:border-box!important;width:min(520px,100%)!important;
+ max-height:calc(100dvh - 42px)!important;overflow-y:auto!important;
+ overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch;
+}
+@media(max-width:600px){
+ #sq-banner-editor .tracker-banner-dialog{padding:16px!important;border-radius:17px!important}
+ #sq-banner-editor .tracker-banner-presets{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #sq-banner-editor .tracker-banner-choice{min-height:65px!important}
+ #sq-banner-editor .banner-editor-actions button{min-height:44px!important}
+ body.trackers-view #trackers-gallery>.sq-gallery-loading{min-height:108px;padding:10px;margin:8px 0 14px}
+}
+@media(prefers-reduced-motion:reduce){
+ #trackers-gallery .sq-gallery-loading .doweo-logo-trace{animation:none!important;stroke-dashoffset:0!important;opacity:1!important}
+}
 </style>
 <style id="sq-startup-overlay-css">
 #sq-startup-overlay{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:24px;background:rgba(6,21,36,.76);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);color:#f6fbff;text-align:center}
@@ -2665,7 +2703,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 
 <section id="trackers-page" aria-label="Your trackers">
   <div class="trackers-header"><div><div class="eyebrow">YOUR DOWEO HOME</div><h2>My <span style="color:#60edaf">Trackers</span></h2><p>Your shared financial spaces. Choose a tracker to review balances, take action, or see recent activity.</p></div></div>
-  <button type="button" class="sq-feature-btn" id="sq-friends-mobile-link" style="margin:0 0 15px">♧ Friends & Requests</button><h2 class="sq-mobile-trackers-title">Trackers</h2><section id="sq-bills-directory" class="sq-bills-directory" hidden aria-hidden="true" style="display:none!important">
+  <h2 class="sq-mobile-trackers-title">Trackers</h2><section id="sq-bills-directory" class="sq-bills-directory" hidden aria-hidden="true" style="display:none!important">
   <button type="button" id="sq-bills-open" hidden tabindex="-1" aria-hidden="true">Open bills</button>
 </section>
 <section id="sq-bills-page" class="sq-bills-page" hidden aria-label="Subscriptions and bill manager">
@@ -4017,7 +4055,6 @@ $('nav-trackers').onclick=function(){settingsRoute('trackers');renderTrackerGall
 $('nav-profile').onclick=function(){openSettingsPage();};
 $('nav-about').onclick=function(){settingsRoute('about');};
 $('nav-friends').onclick=function(){settingsRoute('friends');};
-$('sq-friends-mobile-link').onclick=function(){settingsRoute('friends');};
 // Mobile About shortcut: open the same About page used by desktop navigation.
 $('sq-mobile-about').addEventListener('click',function(event){event.preventDefault();settingsRoute('about');});
 // Mobile Friends shortcut: use the same navigation path as the working sidebar Friends link.
@@ -4379,7 +4416,7 @@ function sqBannerApply(banner,value){
 }
 async function sqBannerEdit(trackerId,trackerName,banner){
  var existing=document.getElementById('sq-banner-editor');if(existing)existing.remove();
- var overlay=document.createElement('div');overlay.id='sq-banner-editor';overlay.className='tracker-banner-editor';
+ var overlay=document.createElement('div');overlay.id='sq-banner-editor';overlay.className='tracker-banner-editor';overlay.style.zIndex='2147482000';
  var dialog=document.createElement('div');dialog.className='tracker-banner-dialog';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Change tracker banner');
  var title=document.createElement('h2');title.textContent='Change banner · '+trackerName;
  var hint=document.createElement('p');hint.textContent='Choose a preset or upload a photo. Your choice is saved on this device.';
@@ -4390,7 +4427,7 @@ async function sqBannerEdit(trackerId,trackerName,banner){
  file.onchange=async function(){var f=file.files&&file.files[0];if(!f)return;if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>3*1024*1024){alert('Choose a JPG, PNG, or WebP image under 3 MB.');file.value='';return;}
  try{var data=await new Promise(function(resolve,reject){var r=new FileReader();r.onload=function(){resolve(r.result)};r.onerror=function(){reject(Error('Could not read image'))};r.readAsDataURL(f);});var v={image:data};await sqBannerSet(trackerId,v);sqBannerApply(banner,v);overlay.remove();}catch(e){alert('Could not save image. Try a smaller photo. '+e.message);}};
  var actions=document.createElement('div');actions.className='banner-editor-actions';var close=document.createElement('button');close.classList.add('doweo-close-control');close.textContent='Close';close.onclick=function(){overlay.remove()};actions.append(close);
- dialog.append(title,hint,presets,uploadLabel,file,actions);overlay.append(dialog);overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove()});document.body.append(overlay);close.focus();
+ dialog.append(title,hint,presets,uploadLabel,file,actions);overlay.append(dialog);overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove()});document.body.append(overlay);requestAnimationFrame(function(){close.focus();});
 }
 
 // Permission editor: all changes are verified and saved by the backend.
@@ -4585,8 +4622,16 @@ async function renderTrackerGallery(){
   var gallery=$('trackers-gallery');
   var serial=++trackerGallerySerial;
   if(!currentUser){sqGalleryKeepCreateRow(gallery);gallery.insertAdjacentHTML('beforeend','<div class="trackers-empty">Log in to create and share trackers.</div>');return;}
-  // Keep existing cards visible while fresh data loads; avoid a blank gallery on refresh.
-  if(!gallery.querySelector('.tracker-tile')){sqGalleryKeepCreateRow(gallery);gallery.insertAdjacentHTML('beforeend','<div class="sq-loading-skeleton" aria-label="Loading trackers"></div><div class="sq-loading-skeleton" aria-hidden="true"></div>');}
+  // Preserve visible cards during refresh, and show a compact branded loader.
+  if(!gallery.querySelector('.tracker-tile'))sqGalleryKeepCreateRow(gallery);
+  var oldLoader=gallery.querySelector('.sq-gallery-loading');if(oldLoader)oldLoader.remove();
+  var loading=document.createElement('div');loading.className='sq-gallery-loading';
+  loading.setAttribute('role','status');loading.setAttribute('aria-label','Loading trackers');
+  var startupLogo=document.querySelector('#sq-startup-overlay .doweo-loading-logo');
+  if(startupLogo){var logo=startupLogo.cloneNode(true);logo.setAttribute('aria-hidden','true');loading.append(logo);}
+  var loadingLabel=document.createElement('span');loadingLabel.textContent='Loading trackers…';loading.append(loadingLabel);
+  var createRow=gallery.querySelector('.sq-create-tracker-row');
+  if(createRow)createRow.after(loading);else gallery.prepend(loading);
   try{
     var list=await api('trackers');
     if(serial!==trackerGallerySerial)return;

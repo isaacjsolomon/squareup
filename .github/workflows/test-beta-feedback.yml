@@ -78,6 +78,8 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Check mobile tracker settings panel sizing and accessibility
         run: node --test test/mobile-tracker-settings-panel.test.mjs
+      - name: Verify mobile tracker banner, inline loading, and shortcut cleanup
+        run: node --test test/mobile-trackers-banner-loading.test.mjs
       - name: Check mobile Overview visibility, overflow and desktop preservation
         run: node --test test/mobile-tracker-overview.test.mjs
 
