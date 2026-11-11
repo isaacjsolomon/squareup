@@ -14373,47 +14373,52 @@ html:is([lang="he"],[lang="ar"]) input[type="number"]{direction:ltr}
  }
 }
 </style>
-<script id="dw-mobile-overview-scroll-boundary">
+
+<style id="dw-overview-document-scroll-lock-v3">
+@media(max-width:900px){
+ html.dw-overview-locked{
+  height:100%!important;max-height:100%!important;
+  overflow:hidden!important;overscroll-behavior-y:none!important;
+ }
+ html.dw-overview-locked body,
+ html.dw-overview-locked body:not(.trackers-view){
+  position:relative!important;
+  height:100dvh!important;min-height:100dvh!important;max-height:100dvh!important;
+  overflow:hidden!important;overscroll-behavior-y:none!important;
+  padding-bottom:0!important;
+ }
+ html.dw-overview-locked body>.wrap{max-height:100dvh!important;overflow:visible!important}
+}
+</style>
+<script id="dw-overview-document-scroll-lock-v3-js">
 (function(){
+ const root=document.documentElement;
  const dashboard=document.getElementById('tracker-dashboard');
  const nav=document.querySelector('.sq-mobile-nav');
  if(!dashboard||!nav)return;
- let correcting=false;
- function active(){
-  return matchMedia('(max-width:900px)').matches
+ let queued=false;
+ function update(){
+  queued=false;
+  const active=matchMedia('(max-width:900px)').matches
    &&dashboard.classList.contains('sq-tab-overview')
-   &&dashboard.getClientRects().length>0
-   &&getComputedStyle(dashboard).visibility!=='hidden'
-   &&nav.getClientRects().length>0;
+   &&dashboard.getClientRects().length>0&&nav.getClientRects().length>0;
+  const cards=['quick-pay-now','quick-payment'].map(id=>document.getElementById(id))
+   .filter(el=>el&&!el.hidden&&getComputedStyle(el).display!=='none');
+  // Compare absolute document coordinates, so scrolling cannot change the decision.
+  const cardBottom=cards.length===2?Math.max(...cards.map(el=>el.getBoundingClientRect().bottom+scrollY)):Infinity;
+  const navTop=nav.getBoundingClientRect().top;
+  const shouldLock=active&&cardBottom<=navTop-8;
+  if(shouldLock&&scrollY>0)window.scrollTo({top:0,behavior:'instant'});
+  root.classList.toggle('dw-overview-locked',shouldLock);
+  if(!active)root.classList.remove('dw-overview-locked');
  }
- function limit(){
-  if(!active())return null;
-  const actions=dashboard.querySelector('#sq-return-summary .dashboard-actions');
-  if(!actions)return null;
-  const cards=[...actions.querySelectorAll('#quick-pay-now,#quick-payment')]
-   .filter(el=>!el.hidden&&getComputedStyle(el).display!=='none');
-  if(cards.length!==2)return null;
-  // Compare in document coordinates, independent of the current scroll offset.
-  const bottom=Math.max(...cards.map(el=>el.getBoundingClientRect().bottom+window.scrollY));
-  const available=nav.getBoundingClientRect().top;
-  return Math.max(0,Math.ceil(bottom-available+8));
- }
- function enforce(){
-  if(correcting)return;
-  const max=limit();
-  if(max===null)return;
-  if(window.scrollY>max+1){
-   correcting=true;
-   window.scrollTo({top:max,behavior:'instant'});
-   requestAnimationFrame(()=>{correcting=false});
-  }
- }
- window.addEventListener('scroll',enforce,{passive:true});
- window.addEventListener('resize',enforce,{passive:true});
- window.visualViewport?.addEventListener('resize',enforce,{passive:true});
- new MutationObserver(()=>requestAnimationFrame(enforce))
-  .observe(dashboard,{attributes:true,attributeFilter:['class','hidden']});
- requestAnimationFrame(enforce);
+ function schedule(){if(!queued){queued=true;requestAnimationFrame(update)}}
+ window.addEventListener('resize',schedule,{passive:true});
+ window.addEventListener('orientationchange',schedule,{passive:true});
+ window.visualViewport?.addEventListener('resize',schedule,{passive:true});
+ new MutationObserver(schedule).observe(dashboard,{attributes:true,attributeFilter:['class','hidden'],subtree:true});
+ new ResizeObserver(schedule).observe(dashboard);
+ schedule();
 })();
 </script>
 </body>
