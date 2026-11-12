@@ -14849,6 +14849,29 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
 })();
 </script>
 
+
+<!-- DoWeo legal navigation: public signup, account settings, and sidebar -->
+<style id="doweo-legal-links-style">
+.doweo-legal-links{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 16px;font-size:12px;line-height:1.6;padding:12px 16px;color:#526779}
+.doweo-legal-links a{color:inherit;text-decoration:underline;text-underline-offset:3px;font-weight:600}
+.doweo-legal-links a:hover,.doweo-legal-links a:focus-visible{color:#087e83}
+#settings-page .doweo-legal-links{justify-content:flex-start;margin:12px 0 24px;background:#f2f7f9;border:1px solid #dce7ec;border-radius:10px}
+#auth-modal .doweo-legal-links{position:relative;z-index:2;background:#fff;color:#40596b}
+.sidebar .doweo-legal-links{justify-content:flex-start;padding:10px 12px}
+</style>
+<script id="doweo-legal-links-js">
+(function(){
+ const links='<a href="/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a><a href="/terms.html" target="_blank" rel="noopener noreferrer">Terms of Service</a>';
+ function mount(){
+  for(const [selector,id] of [['#auth-modal','doweo-auth-legal'],['#settings-page','doweo-settings-legal'],['.sidebar','doweo-sidebar-legal']]){
+   const parent=document.querySelector(selector);
+   if(!parent||document.getElementById(id))continue;
+   const nav=document.createElement('nav');nav.id=id;nav.className='doweo-legal-links';nav.setAttribute('aria-label','DoWeo legal documents');nav.innerHTML=links;parent.appendChild(nav);
+  }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+})();
+</script>
 </body>
 </html>
 
