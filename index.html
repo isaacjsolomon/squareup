@@ -2584,7 +2584,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
     </div>
   </section>
 
-<section id="sq-help-page" aria-label="DoWeo Help Center"><h2 class="sq-help-title">Help Center</h2><p class="sq-help-lead">Get answers, tutorials, and support with DoWeo.</p><div class="sq-help-grid"><button type="button" class="sq-help-card" id="sq-help-open-chat"><span>✦</span><strong>DoWeo AI</strong><small>Ask questions and get instant help.</small></button><button type="button" class="sq-help-card" onclick="document.getElementById('sq-help-open-chat').click()"><span>▤</span><strong>Guides & Tutorials</strong><small>Step-by-step help with common tasks.</small></button><a class="sq-help-card" style="text-decoration:none" href="mailto:help.doweo@gmail.com?subject=DoWeo%20Support%20Request"><span>✉</span><strong>Contact Support</strong><small>Still need help? Email our support team.</small></a></div><h3 class="sq-help-sub">Popular Help Topics</h3><div class="sq-help-topics" id="sq-help-topics"><button data-question="How do I create a tracker?">Getting Started →</button><button data-question="How do I split a bill?">Add & Split Expenses →</button><button data-question="Why isn't my balance updating?">Payments & Balances →</button><button data-question="I'm having a problem logging in">Account & Settings →</button></div></section>
+<section id="sq-help-page" aria-label="DoWeo Help Center"><h2 class="sq-help-title">Help Center</h2><p class="sq-help-lead">Get answers, tutorials, and support with DoWeo.</p><div class="sq-help-grid"><button type="button" class="sq-help-card" id="sq-help-open-chat"><span>✦</span><strong>DoWeo AI</strong><small>Ask questions and get instant help.</small></button><button type="button" class="sq-help-card" onclick="document.getElementById('sq-help-open-chat').click()"><span>▤</span><strong>Guides & Tutorials</strong><small>Step-by-step help with common tasks.</small></button><a class="sq-help-card" style="text-decoration:none" href="mailto:help@doweo.app?subject=DoWeo%20Support%20Request"><span>✉</span><strong>Contact Support</strong><small>Still need help? Email our support team.</small></a></div><h3 class="sq-help-sub">Popular Help Topics</h3><div class="sq-help-topics" id="sq-help-topics"><button data-question="How do I create a tracker?">Getting Started →</button><button data-question="How do I split a bill?">Add & Split Expenses →</button><button data-question="Why isn't my balance updating?">Payments & Balances →</button><button data-question="I'm having a problem logging in">Account & Settings →</button></div></section>
 <section id="settings-page" class="settings-shell" aria-label="Account Settings">
   <div class="settings-panel" hidden="" id="settings-guest"><h3>Sign in to edit your profile</h3><p class="settings-muted">Your settings are saved to your DoWeo account.</p><button class="settings-action primary" id="settings-login" type="button">Log in or create account</button></div>
   <div id="settings-signed-in" class="settings-tab-layout" hidden>
@@ -2761,7 +2761,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
     </ol>
   </section>
   <div class="about-mission"><div><div class="about-kicker">OUR MISSION</div><h2>Less confusion. <em>More time together.</em></h2><p>DoWeo was built to make managing shared money effortless, so you can focus on what actually matters — your friends, experiences, and memories.</p><div class="sq-about-actions"><button type="button" id="about-start" class="about-start">Go to your trackers →</button></div></div><div class="about-sunset" aria-hidden="true"><div class="about-sun"></div><div class="about-hills"></div><div class="about-sea"></div></div></div>
-  <p class="about-contact-caption" style="text-align:center;margin:24px 0 10px;color:#a9bfd3;font-size:13px;">Contact: <a href="mailto:help.doweo@gmail.com" style="color:inherit;text-decoration:underline;">help.doweo@gmail.com</a></p>
+  <p class="about-contact-caption" style="text-align:center;margin:24px 0 10px;color:#a9bfd3;font-size:13px;">Contact: <a href="mailto:help@doweo.app" style="color:inherit;text-decoration:underline;">help@doweo.app</a></p>
 </section>
 
 <div id="sq-tour-overlay" hidden aria-hidden="true">
@@ -2781,7 +2781,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
   <p style="margin-top:0;font-size:12px;color:#a8bfd0">Effective October 30, 2026 · Draft for review before publication</p>
   <div class="sq-legal-tabs" role="tablist" aria-label="Legal documents"><button type="button" data-legal="privacy" aria-selected="true">Privacy Policy</button><button type="button" data-legal="terms" aria-selected="false">Terms of Service</button><button type="button" data-legal="finance" aria-selected="false">Financial Disclaimer</button></div>
   <div id="sq-legal-content"></div>
-  <p class="sq-legal-contact">Questions, privacy requests, or account deletion help: <a href="mailto:help.doweo@gmail.com">help.doweo@gmail.com</a></p>
+  <p class="sq-legal-contact">Questions, privacy requests, or account deletion help: <a href="mailto:help@doweo.app">help@doweo.app</a></p>
  </section>
 </div>
 <template id="sq-legal-privacy"><div>
@@ -6105,7 +6105,7 @@ async function squareUpReact(id,emoji){if(!current)return;try{await api('tracker
 document.getElementById('tracker-chat-messages').addEventListener('click',e=>{var b=e.target.closest('button');if(!b)return;if(b.dataset.pin)squareUpPinMessage(b.dataset.pin);if(b.dataset.reply)squareUpChatReply(b.dataset.reply);if(b.dataset.react)squareUpReact(b.dataset.react,b.dataset.emoji);});
 // FRIENDS: uses authenticated, permission-checked Supabase RPCs from the accompanying SQL migration.
 var squareUpFriendsTab='friends',squareUpFriendRows=[];
-function squareUpFriendError(error){var msg=String(error?.message||error||'Unknown error');return /function .* does not exist|schema cache|Could not find the function/i.test(msg)?'Friends setup needs attention. Contact DoWeo support at help.doweo@gmail.com.':msg;}
+function squareUpFriendError(error){var msg=String(error?.message||error||'Unknown error');return /function .* does not exist|schema cache|Could not find the function/i.test(msg)?'Friends setup needs attention. Contact DoWeo support at help@doweo.app.':msg;}
 async function squareUpFriendRPC(name,args={}){var r=await supabase.rpc(name,args);if(r.error)throw r.error;return r.data||[];}
 async function squareUpLoadFriends(){var status=$('sq-friends-status'),list=$('sq-friends-results');if(!currentUser){status.textContent='Log in to use Friends.';list.replaceChildren();return;}
  status.textContent='Loading…';try{var q=$('sq-friend-query').value.trim();if(squareUpFriendsTab==='find'&&q.length<3){list.replaceChildren();status.textContent='Enter at least 3 characters to find someone by username.';return;}
@@ -7720,7 +7720,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
  <div class="sq-ai-stream" id="sq-ai-stream" role="log" aria-live="polite" aria-relevant="additions"></div>
  <button type="button" id="sq-ai-latest" hidden aria-label="Scroll to latest message">↓ Latest message</button>
  <form id="sq-ai-form" class="sq-ai-input"><textarea id="sq-ai-question" aria-label="Message Weo, DoWeo AI" placeholder="Ask Weo anything…" rows="1" maxlength="2000" required></textarea><button type="submit" aria-label="Send message" disabled>↑</button></form>
- <a class="sq-ai-support" id="sq-ai-contact" href="mailto:help.doweo@gmail.com?subject=DoWeo%20Support%20Request">Contact support ↗</a>
+ <a class="sq-ai-support" id="sq-ai-contact" href="mailto:help@doweo.app?subject=DoWeo%20Support%20Request">Contact support ↗</a>
 </section>
 <script id="sq-ai-script">
 (function(){
@@ -7985,7 +7985,7 @@ window.sqShowPaymentReceipt=function(d){modal('Payment recorded','DoWeo has reco
 document.addEventListener('click',function(event){var trigger=event.target.closest('[data-sq-detail]');if(!trigger)return;var id=trigger.getAttribute('data-sq-detail');var tracker=typeof current!=='undefined'?current:null;var entry=tracker&&Array.isArray(tracker.entries)?tracker.entries.find(function(e){return String(e.id)===id}):null;if(!entry)return;modal(entry.type==='payment'?'Payment details':'Expense details','Information saved in this tracker.',[['Amount','$'+Number(entry.amount||0).toFixed(2)],['From',entry.from||'—'],['To',entry.to||'—'],['Description',entry.note||'No description'],['Date',entry.date||'—'],['Status',entry.paymentStatus||'Confirmed'],['Due date',entry.dueDate||'Not set']],false)});
 })();
 </script>
-<nav class="sq-legal-footer" aria-label="Legal and support links"><span>© 2026 DoWeo</span><button type="button" data-open-legal="privacy">Privacy Policy</button><button type="button" data-open-legal="terms">Terms of Service</button><button type="button" data-open-legal="finance">Financial Disclaimer</button><a href="mailto:help.doweo@gmail.com" style="color:#8de0db">Contact</a></nav>
+<nav class="sq-legal-footer" aria-label="Legal and support links"><span>© 2026 DoWeo</span><button type="button" data-open-legal="privacy">Privacy Policy</button><button type="button" data-open-legal="terms">Terms of Service</button><button type="button" data-open-legal="finance">Financial Disclaimer</button><a href="mailto:help@doweo.app" style="color:#8de0db">Contact</a></nav>
 <script>
 (function(){
  const overlay=document.getElementById('sq-legal-overlay');const content=document.getElementById('sq-legal-content');const title=document.getElementById('sq-legal-title');let previousFocus;
