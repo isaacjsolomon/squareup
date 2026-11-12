@@ -7506,11 +7506,25 @@ body.trackers-view > .wrap > :not(.tracker-heading):not(.sq-mobile-top):not(#tra
  }
  window.addEventListener('squareup:details-open',e=>{
   const entry=e.detail?.entry;
-  const tracker=typeof current!=='undefined'?current:null;
+  // This is a classic script. The tracker state lives in a module and is
+  // exposed through this existing bridge, not through a global "current".
+  const tracker=typeof window.squareUpApprovalTracker==='function'
+    ? window.squareUpApprovalTracker() : null;
   selected=entry?.id||null;trackerId=tracker?.id||null;
+  ++serial; // Invalidate requests from a previous expense's discussion.
   field.value='';reactions.replaceChildren();comments.replaceChildren();
-  root.hidden=!selected||!trackerId;
-  if(!root.hidden)refresh();
+  root.hidden=!selected;
+  if(!selected)return;
+  if(!trackerId){
+    status.textContent='Comments and reactions are available for shared trackers. Open a shared tracker to participate.';
+    field.disabled=true;send.disabled=true;
+    reactions.hidden=true;comments.hidden=true;
+    return;
+  }
+  field.disabled=false;send.disabled=false;
+  reactions.hidden=false;comments.hidden=false;
+  status.textContent='Loading comments and reactions…';
+  refresh();
  });
  reactions.addEventListener('click',async e=>{
   const b=e.target.closest('button[data-emoji]');if(!b||busy||!selected)return;
