@@ -6541,10 +6541,13 @@ if ('serviceWorker' in navigator) {
       <summary>More details <span aria-hidden="true">⌄</span></summary>
       <dl class="sq-details-grid" id="sq-details-grid"></dl>
     </details>
+    <details class="sq-details-discussion">
+      <summary>Comments &amp; reactions <span aria-hidden="true">⌄</span></summary>
     <section id="sq-details-social" class="sq-details-social" aria-label="Expense comments and reactions">
-      <h3>Comments &amp; reactions</h3><div id="sq-details-social-status" role="status"></div><div id="sq-details-reactions"></div><div id="sq-details-comments"></div>
+      <h3 class="sq-sr-only">Comments &amp; reactions</h3><div id="sq-details-social-status" role="status"></div><div id="sq-details-reactions"></div><div id="sq-details-comments"></div>
       <label for="sq-details-comment-input">Add a comment</label><textarea id="sq-details-comment-input" maxlength="1500" rows="3" placeholder="Write a comment..."></textarea><button id="sq-details-comment-send" type="button">Post comment</button>
     </section>
+    </details>
     <button class="doweo-close-control settings-action primary" type="button" id="sq-details-close">Done</button>
   </div>
 </div>
@@ -6574,7 +6577,12 @@ if ('serviceWorker' in navigator) {
 #sq-details-overlay .sq-details-grid dt,#sq-details-overlay .sq-details-grid dd{font-size:13px!important;padding:10px 0!important}
 #sq-details-overlay .sq-practical-actions{display:flex;gap:9px;flex-wrap:wrap;margin:9px 0 14px}
 #sq-details-overlay .sq-practical-actions button{flex:1 1 150px;min-height:44px}
-#sq-details-overlay .sq-details-social{margin:6px 0 15px!important}
+#sq-details-overlay .sq-details-discussion{border-bottom:1px solid rgba(170,220,229,.19);margin:0 0 12px}
+#sq-details-overlay .sq-details-discussion>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;min-height:48px;font-weight:750;color:#d8f1f3;padding:0 3px}
+#sq-details-overlay .sq-details-discussion>summary::-webkit-details-marker{display:none}
+#sq-details-overlay .sq-details-discussion[open]>summary span{transform:rotate(180deg)}
+#sq-details-overlay .sq-details-social{margin:6px 0 15px!important;border-top:0!important}
+#sq-details-overlay .sq-sr-only{position:absolute!important;width:1px;height:1px;padding:0!important;margin:-1px!important;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0!important}
 #sq-details-overlay #sq-details-close{margin-top:8px;min-height:50px}
 @media(max-width:650px){
  #sq-details-overlay{padding:10px!important;align-items:center!important}
@@ -6648,6 +6656,7 @@ function show(entry, justSaved){
    grid.append(dt,dd);
  });
  var more=overlay.querySelector('.sq-details-more');if(more)more.open=false;
+ var discussion=overlay.querySelector('.sq-details-discussion');if(discussion)discussion.open=false;
  overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');
  window.dispatchEvent(new CustomEvent('squareup:details-open',{detail:{entry:entry}}));
  document.getElementById('sq-details-close').focus();
@@ -8232,7 +8241,7 @@ function calculate(){const amount=Number(total.value),rate=Number(tip.value),cou
 calcButton.addEventListener('click',()=>{modal.hidden=false;calculate();total.focus()});document.getElementById('sq-calc-close').addEventListener('click',()=>modal.hidden=true);modal.addEventListener('click',e=>{if(e.target===modal)modal.hidden=true});[total,tip,people].forEach(el=>el.addEventListener('input',calculate));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)modal.hidden=true});
 // These actions use the existing expense-details event, so they operate on the actual selected entry.
 const social=document.getElementById('sq-details-social');if(!social)return;
-const actions=document.createElement('div');actions.className='sq-practical-actions';const duplicate=document.createElement('button');duplicate.type='button';duplicate.className='sq-practical-btn';duplicate.textContent='Duplicate expense';const share=document.createElement('button');share.type='button';share.className='sq-practical-btn';share.textContent='Share summary';actions.append(duplicate,share);social.parentNode.insertBefore(actions,social);
+const actions=document.createElement('div');actions.className='sq-practical-actions';const duplicate=document.createElement('button');duplicate.type='button';duplicate.className='sq-practical-btn';duplicate.textContent='Duplicate expense';const share=document.createElement('button');share.type='button';share.className='sq-practical-btn';share.textContent='Share summary';actions.append(duplicate,share);const discussion=social.closest('.sq-details-discussion');const actionAnchor=discussion||social;actionAnchor.parentNode.insertBefore(actions,actionAnchor);
 let selected=null;
 window.addEventListener('squareup:details-open',e=>{selected=e.detail&&e.detail.entry;duplicate.hidden=!selected||selected.type!=='debt';share.hidden=!selected});
 function cleanNote(note){return String(note||'').replace(/^\[Category:\s*([^\]]+)\]\s*/i,'').trim()}
