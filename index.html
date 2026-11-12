@@ -3211,10 +3211,13 @@ function addEntry(type, from, to, amount, note) {
   entries.push(entry);
   saveEntries();
   render();
+  return true;
 }
 
-document.getElementById("form").addEventListener("submit", function (e) {
+var sqEntrySaveInFlight = false;
+document.getElementById("form").addEventListener("submit", async function (e) {
   e.preventDefault();
+  if (sqEntrySaveInFlight) return;
   var a = document.getElementById("person1").value;
   var b = document.getElementById("person2").value;
   var amt = parseFloat(document.getElementById("amount").value);
@@ -3226,12 +3229,25 @@ document.getElementById("form").addEventListener("submit", function (e) {
     }
   }
   if (!(amt > 0)) return;
-  addEntry(mode, a, b, amt, document.getElementById("note").value);
-  e.target.reset();
-  render();
-  document.getElementById("entry-card").classList.remove("entry-open");
-  document.getElementById("quick-expense").setAttribute("aria-expanded", "false");
-  document.getElementById("quick-payment").setAttribute("aria-expanded", "false");
+  var form = e.currentTarget;
+  var saveButton = form.querySelector('button[type="submit"],input[type="submit"]');
+  sqEntrySaveInFlight = true;
+  if (saveButton) { saveButton.disabled = true; saveButton.setAttribute('aria-busy', 'true'); }
+  try {
+    var saved = await addEntry(mode, a, b, amt, document.getElementById("note").value);
+    // A failed request must not erase the user's amount, payee, or notes.
+    if (saved === false) return;
+    form.reset();
+    render();
+    document.getElementById("entry-card").classList.remove("entry-open");
+    document.getElementById("quick-expense").setAttribute("aria-expanded", "false");
+    document.getElementById("quick-payment").setAttribute("aria-expanded", "false");
+  } catch (err) {
+    alert('Could not save the entry: ' + (err.message || err));
+  } finally {
+    sqEntrySaveInFlight = false;
+    if (saveButton) { saveButton.disabled = false; saveButton.removeAttribute('aria-busy'); }
+  }
 });
 
 function setMode(m) {
@@ -3531,15 +3547,31 @@ document.getElementById("settle-full").onchange = function (e) {
 document.getElementById("settle-close").onclick = closeSettle;
 document.getElementById("settle-modal").addEventListener("click", function (e) { if (e.target === e.currentTarget) closeSettle(); });
 document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeSettle(); });
-document.getElementById("settle-form").addEventListener("submit", function (e) {
+var sqSettlementSaveInFlight = false;
+document.getElementById("settle-form").addEventListener("submit", async function (e) {
   e.preventDefault();
-  if (!settling) return;
+  if (!settling || sqSettlementSaveInFlight) return;
   var amt = Math.round(parseFloat(document.getElementById("settle-amount").value) * 100) / 100;
   if (!(amt > 0)) { document.getElementById("settle-msg").textContent = "Enter an amount greater than $0."; return; }
   var full = Math.abs(amt - settling.owed) < 0.005;
-  var s = settling;
-  closeSettle();
-  addEntry("payment", s.from, s.to, amt, full ? "Settled up" : "Partial payment");
+  var payment = settling;
+  var saveButton = e.currentTarget.querySelector('button[type="submit"],input[type="submit"]');
+  sqSettlementSaveInFlight = true;
+  if (saveButton) { saveButton.disabled = true; saveButton.setAttribute('aria-busy','true'); }
+  document.getElementById("settle-msg").textContent = "Saving payment…";
+  try {
+    var saved = await addEntry("payment", payment.from, payment.to, amt, full ? "Settled up" : "Partial payment");
+    if (saved === false) {
+      document.getElementById("settle-msg").textContent = "Payment not saved. Check the error and try again.";
+      return;
+    }
+    closeSettle();
+  } catch (err) {
+    document.getElementById("settle-msg").textContent = "Payment not saved: " + (err.message || err);
+  } finally {
+    sqSettlementSaveInFlight = false;
+    if (saveButton) { saveButton.disabled = false; saveButton.removeAttribute('aria-busy'); }
+  }
 });
 
 document.getElementById("clear").onclick = function () {
@@ -5176,10 +5208,12 @@ async function mutate(path, method, body) {
     if (method === "POST" && /\/entries$/.test(path) && body && body.type === "debt") {
       window.dispatchEvent(new CustomEvent('squareup:expense-saved', {detail: {entry: body, tracker: savedDetail}}));
     }
+    return true;
   } catch (err) {
     if (status) status.textContent = "Not saved";
     alert(err.message);
     if (err.status === 404) loadTrackers();
+    return false;
   }
 }
 
