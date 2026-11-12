@@ -6521,7 +6521,68 @@ if ('serviceWorker' in navigator) {
   selectTab('profile');
 })();
 </script>
-<div id="sq-details-overlay" class="sq-details-overlay" role="dialog" aria-modal="true" aria-labelledby="sq-details-title" aria-hidden="true"><div class="sq-details-card"><div class="sq-details-top"><h2 id="sq-details-title">Expense details</h2><button type="button" class="doweo-close-control sq-details-x" id="sq-details-x" aria-label="Close expense details">×</button></div><div class="sq-details-hero"><span class="sq-details-symbol" aria-hidden="true">▤</span><div class="sq-details-description" id="sq-details-description">Expense</div><div class="sq-details-amount" id="sq-details-amount"></div><span class="sq-details-category" id="sq-details-category">Expense</span></div><dl class="sq-details-grid" id="sq-details-grid"></dl><section id="sq-details-social" class="sq-details-social" aria-label="Expense comments and reactions"><h3>Comments &amp; reactions</h3><div id="sq-details-social-status" role="status"></div><div id="sq-details-reactions"></div><div id="sq-details-comments"></div><label for="sq-details-comment-input">Add a comment</label><textarea id="sq-details-comment-input" maxlength="1500" rows="3" placeholder="Write a comment..."></textarea><button id="sq-details-comment-send" type="button">Post comment</button></section><button class="doweo-close-control settings-action primary" type="button" id="sq-details-close">Close</button></div></div>
+<div id="sq-details-overlay" class="sq-details-overlay" role="dialog" aria-modal="true" aria-labelledby="sq-details-title" aria-hidden="true">
+  <div class="sq-details-card">
+    <div class="sq-details-top">
+      <div class="sq-details-heading"><span class="sq-details-eyebrow">DOWEO TRACKER</span><h2 id="sq-details-title">Expense details</h2></div>
+      <button type="button" class="doweo-close-control sq-details-x" id="sq-details-x" aria-label="Close expense details">×</button>
+    </div>
+    <div class="sq-details-hero">
+      <span class="sq-details-category" id="sq-details-category">Expense</span>
+      <div class="sq-details-description" id="sq-details-description">Expense</div>
+      <div class="sq-details-amount" id="sq-details-amount"></div>
+      <p class="sq-details-parties" id="sq-details-parties"></p>
+    </div>
+    <section class="sq-details-guidance" aria-label="Expense status">
+      <span id="sq-details-status" class="sq-details-status">Status</span>
+      <p id="sq-details-next-step"></p>
+    </section>
+    <details class="sq-details-more">
+      <summary>More details <span aria-hidden="true">⌄</span></summary>
+      <dl class="sq-details-grid" id="sq-details-grid"></dl>
+    </details>
+    <section id="sq-details-social" class="sq-details-social" aria-label="Expense comments and reactions">
+      <h3>Comments &amp; reactions</h3><div id="sq-details-social-status" role="status"></div><div id="sq-details-reactions"></div><div id="sq-details-comments"></div>
+      <label for="sq-details-comment-input">Add a comment</label><textarea id="sq-details-comment-input" maxlength="1500" rows="3" placeholder="Write a comment..."></textarea><button id="sq-details-comment-send" type="button">Post comment</button>
+    </section>
+    <button class="doweo-close-control settings-action primary" type="button" id="sq-details-close">Done</button>
+  </div>
+</div>
+<style id="sq-expense-guided-details-v2">
+/* Expense confirmation: summary, meaningful status, then optional metadata. */
+#sq-details-overlay .sq-details-card{width:min(100%,500px)!important;box-sizing:border-box!important;padding:22px!important;max-height:calc(100dvh - 28px)!important;overscroll-behavior:contain}
+#sq-details-overlay .sq-details-top{flex-direction:row!important;align-items:flex-start!important;gap:12px!important}
+#sq-details-overlay .sq-details-heading{display:flex;flex-direction:column;gap:3px;min-width:0}
+#sq-details-overlay .sq-details-eyebrow{font-size:10px;letter-spacing:.16em;color:#83c9cc;font-weight:800}
+#sq-details-overlay .sq-details-top h2{font-size:19px!important;font-weight:800!important;line-height:1.25;letter-spacing:0!important;text-transform:none;color:#f1fbff!important}
+#sq-details-overlay .sq-details-x{margin-left:auto;flex:none!important;display:grid;place-items:center;border-radius:13px!important;min-width:44px!important;min-height:44px!important}
+#sq-details-overlay .sq-details-hero{text-align:left!important;padding:22px 0 18px!important}
+#sq-details-overlay .sq-details-category{font-size:12px!important}
+#sq-details-overlay .sq-details-description{font-size:19px;font-weight:750;margin:12px 0 0;line-height:1.35}
+#sq-details-overlay .sq-details-amount{font-size:clamp(37px,8vw,52px)!important;margin:3px 0 4px!important;line-height:1.1!important}
+#sq-details-overlay .sq-details-parties{margin:7px 0 0;color:#c0d9e2;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+#sq-details-overlay .sq-details-guidance{margin:16px 0 10px;padding:14px 15px;border:1px solid rgba(100,180,192,.32);border-radius:14px;background:rgba(20,68,81,.47)}
+#sq-details-overlay .sq-details-status{display:inline-flex;align-items:center;padding:5px 10px;border-radius:100px;background:#245d54;color:#b3f8e5;font-size:12px;font-weight:800}
+#sq-details-overlay .sq-details-status[data-status="pending"]{background:#68552b;color:#ffe4a1}
+#sq-details-overlay .sq-details-status[data-status="disputed"]{background:#633546;color:#ffd0db}
+#sq-details-overlay .sq-details-guidance p{margin:9px 0 0;color:#d8eaf0;font-size:13px;line-height:1.55}
+#sq-details-overlay .sq-details-more{border-bottom:1px solid rgba(170,220,229,.19);margin:5px 0 13px}
+#sq-details-overlay .sq-details-more summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;min-height:48px;font-weight:750;color:#d8f1f3;padding:0 3px}
+#sq-details-overlay .sq-details-more summary::-webkit-details-marker{display:none}
+#sq-details-overlay .sq-details-more[open] summary span{transform:rotate(180deg)}
+#sq-details-overlay .sq-details-grid{margin:0 0 12px!important;display:grid;grid-template-columns:1fr 1fr!important;gap:0!important}
+#sq-details-overlay .sq-details-grid dt,#sq-details-overlay .sq-details-grid dd{font-size:13px!important;padding:10px 0!important}
+#sq-details-overlay .sq-practical-actions{display:flex;gap:9px;flex-wrap:wrap;margin:9px 0 14px}
+#sq-details-overlay .sq-practical-actions button{flex:1 1 150px;min-height:44px}
+#sq-details-overlay .sq-details-social{margin:6px 0 15px!important}
+#sq-details-overlay #sq-details-close{margin-top:8px;min-height:50px}
+@media(max-width:650px){
+ #sq-details-overlay{padding:10px!important;align-items:center!important}
+ #sq-details-overlay .sq-details-card{padding:18px!important;max-height:calc(100dvh - 20px)!important}
+ #sq-details-overlay .sq-details-hero{padding:16px 0 14px!important}
+ #sq-details-overlay .sq-details-guidance{margin:12px 0 8px}
+}
+</style>
 <script id="sq-four-features-script">
 (function(){
 'use strict';
@@ -6543,7 +6604,54 @@ function close(){overlay.classList.remove('open');overlay.setAttribute('aria-hid
 document.getElementById('sq-details-close').addEventListener('click',close);document.getElementById('sq-details-x').addEventListener('click',close);
 overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
-function show(entry){if(!entry)return;var parsed=unpack(entry.note);var data=[['Type',entry.type==='payment'?'Payment':'Expense'],['Amount',Number(entry.amount||0).toLocaleString(undefined,{style:'currency',currency:entry.currency||'USD'})],['From',entry.from||'—'],['To',entry.to||'—'],['Category',entry.type==='payment'?'Payment':parsed.category],['Description',parsed.note||'No description'],['Date',entry.date||'—'],['Due date',entry.dueDate||'None'],['Status',entry.paymentStatus||'—'],['Created by',entry.createdBy||'—'],['Pinned',entry.pinned?'Yes':'No']];document.getElementById('sq-details-amount').textContent=data[1][1];document.getElementById('sq-details-description').textContent=parsed.note|| (entry.type==='payment'?'Payment':'Expense');document.getElementById('sq-details-category').textContent=data[4][1];grid.replaceChildren();data.forEach(function(row){var dt=document.createElement('dt');dt.textContent=row[0];var dd=document.createElement('dd');dd.textContent=row[1];grid.append(dt,dd);});overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');window.dispatchEvent(new CustomEvent('squareup:details-open',{detail:{entry:entry}}));document.getElementById('sq-details-close').focus();}
+function show(entry, justSaved){
+ if(!entry)return;
+ var parsed=unpack(entry.note);
+ var payment=entry.type==='payment';
+ var status=String(entry.paymentStatus||'confirmed').toLowerCase();
+ var currency=Number(entry.amount||0).toLocaleString(undefined,{style:'currency',currency:entry.currency||'USD'});
+ document.getElementById('sq-details-title').textContent=justSaved?(payment?'Payment recorded':'Expense recorded'):(payment?'Payment details':'Expense details');
+ document.getElementById('sq-details-amount').textContent=currency;
+ document.getElementById('sq-details-description').textContent=parsed.note||(payment?'Payment':'Expense');
+ document.getElementById('sq-details-category').textContent=payment?'Payment':parsed.category;
+ document.getElementById('sq-details-parties').textContent=(entry.from||'Unknown')+(payment?' paid ':' owes ')+(entry.to||'Unknown');
+ var badge=document.getElementById('sq-details-status');
+ badge.textContent=status==='pending'?'Pending':status==='disputed'?'Disputed':status==='confirmed'?'Confirmed':status;
+ badge.dataset.status=status;
+ var guidance=document.getElementById('sq-details-next-step');
+ if(status==='pending'){
+   guidance.textContent=payment
+     ? 'Waiting for the recipient to confirm this payment. The confirmed balance has not changed.'
+     : 'Waiting for the person charged to review this expense. It does not affect confirmed balances yet.';
+ }else if(status==='disputed'){
+   guidance.textContent=payment
+     ? 'This payment was disputed and has not reduced the confirmed balance.'
+     : 'This expense was disputed and is excluded from confirmed balances.';
+ }else if(status==='confirmed'){
+   guidance.textContent=payment
+     ? 'This payment has been confirmed and is reflected in the tracker balance.'
+     : 'This expense is confirmed and reflected in the tracker balance.';
+ }else{
+   guidance.textContent='Check the tracker for the latest status before taking further action.';
+ }
+ var data=[
+   ['Type',payment?'Payment':'Expense'],
+   ['Date',entry.date||'—'],
+   ['Due date',entry.dueDate||'None'],
+   ['Created by',entry.createdBy||'—'],
+   ['Pinned',entry.pinned?'Yes':'No']
+ ];
+ grid.replaceChildren();
+ data.forEach(function(row){
+   var dt=document.createElement('dt');dt.textContent=row[0];
+   var dd=document.createElement('dd');dd.textContent=row[1];
+   grid.append(dt,dd);
+ });
+ var more=overlay.querySelector('.sq-details-more');if(more)more.open=false;
+ overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');
+ window.dispatchEvent(new CustomEvent('squareup:details-open',{detail:{entry:entry}}));
+ document.getElementById('sq-details-close').focus();
+}
 // Show the saved expense in the existing Details dialog after the server confirms it.
 window.addEventListener('squareup:expense-saved',function(event){
  var payload=event.detail||{}, wanted=payload.entry||{}, tracker=payload.tracker||{};
@@ -6555,7 +6663,7 @@ window.addEventListener('squareup:expense-saved',function(event){
      String(e.note||'')===String(wanted.note||'');
  });
  var latest=matching.length?matching[matching.length-1]:null;
- if(latest)show(latest);
+ if(latest)show(latest,true);
 });
 var historyEl=document.getElementById('history');
 function decorate(){if(!historyEl)return;historyEl.querySelectorAll('.entry').forEach(function(row){if(row.dataset.sqEnhanced)return;var del=row.querySelector('[data-del]');if(!del)return;row.dataset.sqEnhanced='1';var id=del.dataset.del;var entry=(typeof entries!=='undefined'&&Array.isArray(entries))?entries.find(function(x){return String(x.id)===String(id);}):null;if(!entry)return;var parsed=unpack(entry.note);if(entry.type==='debt'){var chip=document.createElement('span');chip.className='sq-cat-chip';chip.textContent=parsed.category;var noteEl=row.querySelector('.note');if(noteEl){if(pattern.test(String(entry.note||'')))noteEl.textContent=noteEl.textContent.replace(pattern,'');noteEl.prepend(chip);}}var btn=document.createElement('button');btn.type='button';btn.className='small-btn sq-detail-btn';btn.textContent='Details';btn.addEventListener('click',function(){var fresh=(typeof entries!=='undefined'&&Array.isArray(entries))?entries.find(function(x){return String(x.id)===String(id);}):entry;show(fresh);});row.insertBefore(btn,del);});}
