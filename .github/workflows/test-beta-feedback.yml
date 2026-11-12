@@ -52,6 +52,8 @@ jobs:
         run: node --test test/doweo-entry-notification-resilience.test.mjs
       - name: Verify expense and payment forms wait for save confirmation
         run: node --test test/doweo-save-confirmation.test.mjs
+      - name: Verify guided expense details layout and retained actions
+        run: node --test test/doweo-guided-expense-details.test.mjs
       - name: Test payment reminder currency and confirmed balance logic
         run: node --test test/doweo-reminder-currency-safety.test.mjs
       - name: Check Personal Finance summary and transaction dialog
