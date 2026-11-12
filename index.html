@@ -14620,41 +14620,44 @@ html:is([lang="he"],[lang="ar"]) input[type="number"]{direction:ltr}
 }
 </style>
 
-<style id="dw-mobile-overview-end-stop-v4">
+<style id="dw-mobile-overview-viewport-lock-v5">
 @media(max-width:900px){
-/* The overview ends after the two quick-action cards. Other tabs remain scrollable. */
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions{margin-bottom:0!important;padding-bottom:0!important}
-html body #tracker-dashboard.sq-tab-overview{padding-bottom:0!important}
-html body #tracker-dashboard.sq-tab-overview #sq-return-summary{padding-bottom:0!important;margin-bottom:0!important}
+ html.dw-overview-viewport-locked,html.dw-overview-viewport-locked body{height:100%!important;max-height:100%!important;overflow:hidden!important;overscroll-behavior:none!important}
+ html.dw-overview-viewport-locked body{height:100dvh!important;max-height:100dvh!important;min-height:0!important;position:relative!important;padding-bottom:0!important}
+ html.dw-overview-viewport-locked body>.wrap{height:100dvh!important;max-height:100dvh!important;overflow:hidden!important}
+ html.dw-overview-viewport-locked #tracker-dashboard.sq-tab-overview{padding-bottom:0!important;margin-bottom:0!important;overflow:visible!important}
+ html.dw-overview-viewport-locked #tracker-dashboard.sq-tab-overview #sq-return-summary{padding-bottom:0!important;margin-bottom:0!important;transform-origin:top center!important}
+ html.dw-overview-viewport-locked #tracker-dashboard.sq-tab-overview #sq-return-summary .dashboard-actions{margin-bottom:0!important}
+ html.dw-overview-viewport-locked #tracker-dashboard.sq-tab-overview #sq-return-summary .sq-balance-breakdown{display:none!important}
 }
 </style>
-<script id="dw-mobile-overview-end-stop-v4-js">
+<script id="dw-mobile-overview-viewport-lock-v5-js">
 (function(){
- const dashboard=document.getElementById('tracker-dashboard'),nav=document.querySelector('.sq-mobile-nav');
- if(!dashboard||!nav)return;
- let correcting=false;
- function active(){
-  if(!matchMedia('(max-width:900px)').matches||!dashboard.classList.contains('sq-tab-overview')||!dashboard.getClientRects().length)return false;
-  // Never interfere with an open dialog or sheet.
-  if(document.querySelector('[role="dialog"]:not([hidden]),dialog[open],.sq-action-modal:not([hidden])'))return false;
-  return true;
- }
- function limit(){
-  if(correcting||!active())return;
-  const cards=['quick-pay-now','quick-payment'].map(id=>document.getElementById(id))
-   .filter(el=>el&&!el.hidden&&getComputedStyle(el).display!=='none');
-  if(cards.length!==2)return;
-  const bottom=Math.max(...cards.map(el=>el.getBoundingClientRect().bottom+window.scrollY));
-  const navHeight=nav.getBoundingClientRect().height;
-  // At the end, both buttons remain visible immediately above the fixed bottom nav.
-  const max=Math.max(0,Math.ceil(bottom-(innerHeight-navHeight-8)));
-  if(window.scrollY>max+1){correcting=true;window.scrollTo({top:max,behavior:'instant'});requestAnimationFrame(()=>{correcting=false})}
- }
- window.addEventListener('scroll',limit,{passive:true});
- window.addEventListener('resize',limit,{passive:true});
- window.addEventListener('orientationchange',limit,{passive:true});
- dashboard.addEventListener('click',()=>requestAnimationFrame(limit));
- requestAnimationFrame(limit);
+const root=document.documentElement,dashboard=document.getElementById('tracker-dashboard'),summary=document.getElementById('sq-return-summary'),nav=document.querySelector('.sq-mobile-nav');
+if(!dashboard||!summary||!nav)return;
+let scheduled=false,adjusting=false;
+function update(){
+ scheduled=false;if(adjusting)return;
+ const active=matchMedia('(max-width:900px)').matches&&dashboard.classList.contains('sq-tab-overview')&&dashboard.getClientRects().length>0;
+ root.classList.toggle('dw-overview-viewport-locked',active);
+ summary.style.removeProperty('zoom');
+ if(!active)return;
+ // Fit the existing overview, including the action cards, into the viewport above fixed navigation.
+ const cards=['quick-pay-now','quick-payment'].map(id=>document.getElementById(id)).filter(e=>e&&!e.hidden&&getComputedStyle(e).display!=='none');
+ if(cards.length!==2)return;
+ const top=summary.getBoundingClientRect().top,navTop=nav.getBoundingClientRect().top;
+ const bottom=Math.max(...cards.map(e=>e.getBoundingClientRect().bottom));
+ const available=Math.max(250,navTop-top-8),content=Math.max(1,bottom-top);
+ const scale=Math.min(1,available/content);
+ if(scale<.999)summary.style.setProperty('zoom',String(Math.max(.68,scale)));
+ if(window.scrollY>0){adjusting=true;window.scrollTo(0,0);requestAnimationFrame(()=>{adjusting=false})}
+}
+function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(update)}}
+window.addEventListener('resize',schedule,{passive:true});
+window.addEventListener('orientationchange',schedule,{passive:true});
+window.visualViewport?.addEventListener('resize',schedule,{passive:true});
+new MutationObserver(schedule).observe(dashboard,{attributes:true,attributeFilter:['class','hidden'],subtree:true});
+schedule();
 })();
 </script>
 <style id="dw-mobile-entry-dialog-center-fix">
