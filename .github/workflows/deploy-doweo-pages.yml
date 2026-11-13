@@ -23,6 +23,7 @@ jobs:
           mkdir -p .pages-output
           cp index.html doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs .pages-output/
           cp -R icons images beta .pages-output/
+          cp robots.txt sitemap.xml .pages-output/
           # Prevent green deployments with missing runtime translation modules.
           test -s .pages-output/doweo-core-locales.mjs
           test -s .pages-output/doweo-ui-catalog.mjs
