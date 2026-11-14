@@ -14857,24 +14857,24 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
 
 <!-- Screenshot-matched DoWeo desktop dashboard, v2. Existing content and handlers retained. -->
 
-<style id="dw-mobile-nav-viewport-bottom-v6">
+<style id="dw-mobile-nav-viewport-bottom-v7">
 @media(max-width:900px){
  html body .sq-mobile-nav{position:fixed!important;inset-inline:0!important;bottom:0!important;top:auto!important;transform:none!important;margin:0!important;width:100vw!important;max-width:100vw!important;box-sizing:border-box!important;z-index:2147481000!important}
  html.dw-overview-viewport-locked body{height:100dvh!important;min-height:100dvh!important;max-height:100dvh!important}
 }
 </style>
-<script id="dw-mobile-nav-viewport-bottom-v6-js">
+<script id="dw-mobile-nav-viewport-bottom-v7-js">
 (function(){
- const nav=document.querySelector('.sq-mobile-nav');if(!nav)return;
+ const nav=document.querySelector('.sq-mobile-nav');
+ if(!nav)return;
+ // The CSS fixed bottom:0 already follows the iOS layout viewport.
+ // Subtracting visualViewport.height creates a false gap above the screen bottom.
+ // Clear the stale inline offset from the previous version on every viewport change.
  let queued=false;
  function update(){
   queued=false;
-  if(!matchMedia('(max-width:900px)').matches){nav.style.removeProperty('bottom');return}
-  // iOS visual viewport may be smaller than the CSS layout viewport.
-  // Anchor the bar to the *visible* screen bottom, not the layout viewport.
-  const v=window.visualViewport;
-  const offset=v?Math.max(0,window.innerHeight-v.offsetTop-v.height):0;
-  nav.style.setProperty('bottom',offset+'px','important');
+  nav.style.removeProperty('bottom');
+  nav.style.removeProperty('top');
  }
  function schedule(){if(!queued){queued=true;requestAnimationFrame(update)}}
  window.addEventListener('resize',schedule,{passive:true});
