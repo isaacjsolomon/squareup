@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.doweo.twa",
+        "sha256_cert_fingerprints": ["F1:85:A4:34:42:78:F0:05:D9:C1:97:F8:44:3D:4E:99:34:F7:E3:7E:08:E1:AF:14:46:40:D3:CE:40:F7:CC:A7"]
+      }
+    }]
