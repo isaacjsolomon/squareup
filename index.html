@@ -2825,6 +2825,16 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 </div></template>
 
 <style id="dw-google-signin-style">#dw-google-signin{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:48px;margin:12px 0;padding:11px 16px;border:1px solid #cbd5e1;border-radius:12px;background:#fff;color:#172b45;font-family:inherit;font-weight:600;font-size:15px;line-height:1.4;cursor:pointer}#dw-google-signin:hover{background:#f5f9fc}#dw-google-signin:focus-visible{outline:3px solid #4b9cc7;outline-offset:2px}#dw-google-signin:disabled{opacity:.65;cursor:wait}#dw-google-signin[hidden]{display:none!important}#auth-modal #dw-google-signin{margin:5px 0 16px;min-height:52px}#auth-modal .sq-auth-divider{margin:13px 0 19px}#auth-modal .sq-auth-divider span{white-space:nowrap}#auth-modal .sq-auth-form-panel:has(#dw-google-signin:not([hidden])) #auth-form{margin-top:0}</style>
+<style id="dw-guest-invite-styles">
+#dw-guest-invite-preview[hidden]{display:none!important}
+#dw-guest-invite-preview{padding:16px;margin-bottom:16px;border:1px solid #86dcd2;border-radius:14px;background:#edfbf9;color:#12334b}
+#dw-guest-invite-preview .dw-guest-invite-eyebrow{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#137e78}
+#dw-guest-invite-preview h2{font-size:21px!important;color:#0c3042!important;margin:6px 0;overflow-wrap:anywhere}
+#dw-guest-invite-preview p{font-size:13px;color:#375767;margin:5px 0 12px}
+#dw-guest-invite-preview .dw-guest-invite-actions{display:flex;gap:9px}
+#dw-guest-invite-preview .dw-guest-invite-actions button{border:1px solid #087c75;background:#087c75;color:white;padding:10px 12px;border-radius:10px;font-weight:750;cursor:pointer}
+#dw-guest-invite-preview .dw-guest-invite-actions button+button{background:white;color:#075a61}
+</style>
 <!-- DEDICATED DOWEO AUTHENTICATION EXPERIENCE -->
 <div class="modal-bg" id="auth-modal">
  <div class="sq-auth-layout" role="dialog" aria-modal="true" aria-labelledby="auth-title">
@@ -2860,7 +2870,13 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
    <div class="sq-auth-form-panel">
     <h1 id="auth-title">Welcome to DoWeo</h1>
     <p id="sq-auth-subtitle">Sign in to your account or create a new one to get started.</p>
-    <div class="join-banner" id="auth-join" hidden>You've been invited to a shared tracker. Sign in or create an account to join.</div>
+    <section id="dw-guest-invite-preview" hidden aria-live="polite">
+<span class="dw-guest-invite-eyebrow">Your DoWeo invitation</span>
+<h2 id="dw-guest-invite-name">Loading invitation…</h2>
+<p id="dw-guest-invite-description">Sign in or create an account to join. Private expenses, balances and member information are not shown to visitors.</p>
+<div class="dw-guest-invite-actions"><button id="dw-guest-invite-signup" type="button">Create account</button><button id="dw-guest-invite-login" type="button">Sign in</button></div>
+</section>
+<div class="join-banner" id="auth-join" hidden>You've been invited to a shared tracker. Sign in or create an account to join.</div>
     <div class="toggle" id="auth-tabs" role="group" aria-label="Account access">
      <button type="button" id="tab-login" class="active">Sign in</button>
      <button type="button" id="tab-signup">Create account</button>
@@ -4015,6 +4031,33 @@ function store(key, value) {
 function read(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
 function pendingJoin() { return read(JOIN_KEY); }
 
+async function showGuestInvitation(){
+ const el=$('dw-guest-invite-preview'),token=pendingJoin();
+ if(!el||!token||currentUser)return;
+ el.hidden=false;
+ if(!/^[a-f0-9]{36}$/i.test(token)){
+   $('dw-guest-invite-name').textContent='Invalid invitation';
+   $('dw-guest-invite-description').textContent='Ask your friend for another link.';
+   $('dw-guest-invite-signup').hidden=true;
+   $('dw-guest-invite-login').hidden=true;
+   return;
+ }
+ try{
+   const response=await fetch('/api/invite-preview/'+encodeURIComponent(token),{cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer'});
+   const data=await response.json().catch(()=>({}));
+   if(token!==pendingJoin())return;
+   if(!response.ok)throw Error('Invalid invitation');
+   $('dw-guest-invite-name').textContent=data.name||'Shared tracker';
+ }catch(_){
+   $('dw-guest-invite-name').textContent='Invitation unavailable';
+   $('dw-guest-invite-description').textContent='This invitation may have been reset. Ask your friend for a new link.';
+   $('dw-guest-invite-signup').hidden=true;
+   $('dw-guest-invite-login').hidden=true;
+ }
+}
+$('dw-guest-invite-signup').addEventListener('click',function(){setAuthMode('signup');$('auth-name').focus();});
+$('dw-guest-invite-login').addEventListener('click',function(){setAuthMode('login');$('auth-email').focus();});
+
 // Remember an invite token from the URL (it survives the sign-up + email confirmation round trip)
 (function () {
   var params = new URLSearchParams(location.search);
@@ -4025,6 +4068,7 @@ function pendingJoin() { return read(JOIN_KEY); }
     var qs = params.toString();
     history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + location.hash);
   }
+  if(token)showGuestInvitation();
 })();
 
 async function api(path, method, body) {
