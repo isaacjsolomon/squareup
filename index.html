@@ -14393,7 +14393,7 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
    {name:'Groups',icon:'groups',ids:['nav-trackers','sqev-nav']},
    {name:'Finance',icon:'finance',ids:['sq-finance-nav','nav-analytics']},
    {name:'Social',icon:'social',ids:['nav-chat','nav-friends']},
-   {name:'More',icon:'more',ids:['nav-profile','nav-help-center','nav-about']}
+   {name:'More',icon:'more',ids:['nav-profile','nav-help-center','nav-about','nav-privacy-terms']}
   ];
   const iconPaths={
    groups:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
@@ -14448,7 +14448,7 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
  // Move the existing elements, preserving their destinations, handlers and translations.
  const moreGrid=document.querySelector('#sq-mobile-more-sheet .sq-balanced-more-grid');
  if(moreGrid){
-  const destinations=['sqev-nav','sq-finance-nav','nav-analytics','nav-chat','nav-friends','sq-mobile-notifications','nav-profile','nav-about'];
+  const destinations=['sqev-nav','sq-finance-nav','nav-analytics','nav-chat','nav-friends','sq-mobile-notifications','nav-profile','nav-about','nav-privacy-terms'];
   for(const destination of destinations){
    const button=moreGrid.querySelector('[data-sq-destination="'+destination+'"]');
    if(button)moreGrid.appendChild(button);
@@ -14886,6 +14886,13 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  window.addEventListener('pageshow',cleanup);
 })();
 </script>
+<style id="dw-privacy-more-icon-style">
+/* Use the same icon treatment as the other More dropdown buttons. */
+.sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="more"] #nav-privacy-terms .sq-nav-icon{color:inherit!important;opacity:1}
+.sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="more"] #nav-privacy-terms .sq-nav-icon svg{display:block;width:100%;height:100%;stroke:currentColor!important}
+#sq-mobile-more-sheet [data-sq-destination="nav-privacy-terms"] .sq-balanced-icon{color:inherit}
+#sq-mobile-more-sheet [data-sq-destination="nav-privacy-terms"] svg{stroke:currentColor!important}
+</style>
 <style id="dw-legal-links-style">
 #dw-legal-links-dialog{width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:28px;background:#0b273a;color:#eafaff;border:1px solid #327184;border-radius:20px;box-shadow:0 20px 65px #00121dbb;font-family:inherit}
 #dw-legal-links-dialog::backdrop{background:rgba(0,12,24,.75)}
