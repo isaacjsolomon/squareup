@@ -3606,7 +3606,7 @@ render();
 // ============ ACCOUNTS (Netlify Identity) ============
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const supabase = createClient("https://pajrdqarszbnrlstoyly.supabase.co", "sb_publishable_iyr6Jv8Xa4FjmkQNANtVUA_xaguZX5q");
-const mapUser = u => u ? ({ id:u.id, email:u.email || "", name:u.user_metadata?.full_name || u.email?.split("@")[0] || "", emailVerified: !!u.email_confirmed_at, confirmedAt:u.email_confirmed_at, createdAt:u.created_at }) : null;
+const mapUser = u => u ? ({ id:u.id, email:u.email || "", name:u.user_metadata?.full_name || u.email?.split("@")[0] || "", emailVerified: !!u.email_confirmed_at, confirmedAt:u.email_confirmed_at, createdAt:u.created_at, authProvider:u.app_metadata?.provider || "" }) : null;
 async function unwrap(p) { const {data,error}=await p; if(error) throw error; return data; }
 async function login(email,password) { const data=await unwrap(supabase.auth.signInWithPassword({email,password})); return mapUser(data.user); }
 async function signup(email,password,metadata) { const data=await unwrap(supabase.auth.signUp({email,password,options:{data:metadata || {},emailRedirectTo:location.origin+"/?setup=1"}})); return mapUser(data.user); }
@@ -3883,7 +3883,11 @@ async function maybeShowOnboarding(user) {
   // Email links may be opened on another device, where localStorage is empty.
   var createdTime = Date.parse(user.createdAt || '');
   var recentCreation = Number.isFinite(createdTime) && Date.now() - createdTime >= 0 && Date.now() - createdTime < 24*60*60*1000;
-  if (!matchingEmail && !(emailLink && recentCreation)) return;
+  // First-time Google users have no email-confirmation link or signup marker.
+  // Only recent accounts originally created through Google may enter this flow;
+  // the profile check below prevents onboarding an existing completed account.
+  var newGoogleAccount = user.authProvider === 'google' && recentCreation;
+  if (!matchingEmail && !(emailLink && recentCreation) && !newGoogleAccount) return;
   // Never show onboarding again if the user has already set a username.
   try {
     var existingProfile = await api('profile');
