@@ -12494,6 +12494,12 @@ body.sq-action-dialog-open{overflow:hidden!important}
  #sq-mobile-more-sheet .sq-mobile-social-options .sq-balanced-more-grid button,#sq-mobile-more-sheet .sq-mobile-social-options .sq-balanced-more-grid .sq-social-instagram{display:flex!important;min-height:102px!important;width:100%;min-width:0}
  #sq-mobile-more-sheet .sq-social-instagram{flex-direction:column;align-items:flex-start;justify-content:space-between;box-sizing:border-box;padding:14px;border:1px solid #355f73;border-radius:15px;background:#15394d;color:#edfaff;text-decoration:none;font:inherit;font-weight:700}
  #sq-mobile-more-sheet .sq-social-instagram .sq-balanced-icon{display:flex;align-items:center;justify-content:center}
+ #sq-mobile-more-sheet .sq-balanced-sheet.dw-social-active > :not(.sq-balanced-sheet-head):not(p):not(.sq-mobile-social-options){display:none!important}
+ #sq-mobile-more-sheet .sq-balanced-sheet.dw-social-active .sq-mobile-social-options{display:block!important}
+ #sq-mobile-more-sheet .sq-balanced-sheet.dw-social-active #sq-mobile-more-logout{display:none!important}
+ #sq-mobile-more-sheet .sq-mobile-social-options .sq-balanced-more-grid .sq-social-instagram{grid-column:1/-1!important;min-height:112px!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:18px!important;padding:18px 22px!important;background:linear-gradient(105deg,#833ab4 0%,#c13584 30%,#e1306c 58%,#f77737 83%,#fcaf45 100%)!important;border:1px solid rgba(255,255,255,.3)!important;color:#fff!important;box-shadow:0 6px 22px rgba(193,53,132,.18)!important}
+ #sq-mobile-more-sheet .sq-mobile-social-options .sq-social-instagram .sq-balanced-icon{background:rgba(255,255,255,.18)!important;color:white!important;flex-shrink:0}
+ #sq-mobile-more-sheet .sq-mobile-social-options .sq-social-instagram strong{font-size:19px!important;color:white!important}
  #sq-mobile-more-sheet .sq-social-instagram:focus-visible{outline:3px solid #54e5d0;outline-offset:3px}
 }
 </style>
@@ -12503,7 +12509,7 @@ body.sq-action-dialog-open{overflow:hidden!important}
  const add=document.getElementById('sq-balanced-add-sheet'),more=document.getElementById('sq-mobile-more-sheet');
  const mobile=()=>window.matchMedia('(max-width:900px)').matches;
  const social=more.querySelector('#sq-mobile-social-options'),grid=more.querySelector(':scope .sq-balanced-sheet > .sq-balanced-more-grid'),socialTrigger=more.querySelector('[data-sq-social-open]');
- const resetSocial=()=>{social.hidden=true;grid.hidden=false;socialTrigger.setAttribute('aria-expanded','false')};
+ const resetSocial=()=>{social.hidden=true;grid.hidden=false;more.querySelector('.sq-balanced-sheet')?.classList.remove('dw-social-active');socialTrigger.setAttribute('aria-expanded','false')};
  const close=()=>{add.hidden=true;more.hidden=true;resetSocial();document.body.classList.remove('sq-balanced-sheet-open')};
  const open=el=>{close();el.hidden=false;el.querySelector('[data-sq-close]')?.focus()};
  nav?.querySelector('.sq-add')?.addEventListener('click',e=>{if(!mobile())return;e.preventDefault();e.stopImmediatePropagation();open(add)},true);
@@ -12511,7 +12517,7 @@ body.sq-action-dialog-open{overflow:hidden!important}
  [add,more].forEach(el=>{
   el.addEventListener('click',e=>{
    if(e.target===el||e.target.closest('[data-sq-close]')){close();return}
-   if(el===more&&e.target.closest('[data-sq-social-open]')){grid.hidden=true;social.hidden=false;socialTrigger.setAttribute('aria-expanded','true');social.querySelector('[data-sq-social-back]')?.focus();return}
+   if(el===more&&e.target.closest('[data-sq-social-open]')){grid.hidden=true;social.hidden=false;more.querySelector('.sq-balanced-sheet')?.classList.add('dw-social-active');socialTrigger.setAttribute('aria-expanded','true');social.querySelector('[data-sq-social-back]')?.focus();return}
    if(el===more&&e.target.closest('[data-sq-social-back]')){resetSocial();socialTrigger.focus();return}
    const action=e.target.closest('[data-sq-action]');
    if(action){const id=action.dataset.sqAction;close();const target=document.getElementById(id);if(target){target.click()}return}
