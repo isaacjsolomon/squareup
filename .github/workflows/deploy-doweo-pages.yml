@@ -22,7 +22,7 @@ jobs:
         run: |
           mkdir -p .pages-output
           cp index.html doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs .pages-output/
-          cp -R icons images beta .pages-output/
+          cp -R icons images beta privacy terms .pages-output/
           cp robots.txt sitemap.xml .pages-output/
           mkdir -p .pages-output/.well-known
           cp .well-known/assetlinks.json .pages-output/.well-known/
@@ -31,6 +31,8 @@ jobs:
           test -s .pages-output/doweo-ui-catalog.mjs
           test -s .pages-output/doweo-localize-ui.js
           test -s .pages-output/beta/index.html
+          test -s .pages-output/privacy/index.html
+          test -s .pages-output/terms/index.html
           test -s functions/api/beta-signup.js
           cp beta/index.html .pages-output/beta.html
 
