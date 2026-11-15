@@ -2823,6 +2823,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
 <h3>No financial advice or debt collection</h3><p>DoWeo does not provide financial, tax, or legal advice, and it does not collect debts or resolve disputes between users.</p>
 </div></template>
 
+<style id="dw-google-signin-style">#dw-google-signin{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:48px;margin:12px 0;padding:11px 16px;border:1px solid #cbd5e1;border-radius:12px;background:#fff;color:#172b45;font-family:inherit;font-weight:600;font-size:15px;line-height:1.4;cursor:pointer}#dw-google-signin:hover{background:#f5f9fc}#dw-google-signin:focus-visible{outline:3px solid #4b9cc7;outline-offset:2px}#dw-google-signin:disabled{opacity:.65;cursor:wait}#dw-google-signin[hidden]{display:none!important}</style>
 <!-- DEDICATED DOWEO AUTHENTICATION EXPERIENCE -->
 <div class="modal-bg" id="auth-modal">
  <div class="sq-auth-layout" role="dialog" aria-modal="true" aria-labelledby="auth-title">
@@ -2876,6 +2877,7 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
      <p id="sq-auth-legal-note" hidden>Before registering, review the <button type="button" class="sq-legal-inline" data-open-legal="terms">Terms of Service</button> and <button type="button" class="sq-legal-inline" data-open-legal="privacy">Privacy Policy</button>. These documents are drafts pending review.</p>
     </form>
     <div class="sq-auth-divider"><span>or</span></div>
+    <button type="button" id="dw-google-signin" class="dw-google-signin"><svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6C44.4 38.03 46.98 31.88 46.98 24.55z"/><path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.6.27-3.16.76-4.59l-7.98-6.2A23.9 23.9 0 0 0 0 24c0 3.87.93 7.51 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.18 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><span>Continue with Google</span></button>
     <button type="button" id="sq-auth-invite"><span aria-hidden="true">↗</span> Join with invite link</button>
     <form id="sq-auth-invite-form" hidden>
      <label for="sq-auth-invite-input">Paste a DoWeo invite link</label>
@@ -3615,6 +3617,7 @@ async function refreshSession() { return supabase.auth.getSession(); }
 async function requestPasswordRecovery(email) { await unwrap(supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin})); }
 async function updateUser(values) { const data=await unwrap(supabase.auth.updateUser(values)); return mapUser(data.user); }
 async function handleAuthCallback() { const hash=new URLSearchParams(location.hash.slice(1)); if(hash.get("type")==="recovery") return {type:"recovery"}; const query=new URLSearchParams(location.search); if(query.has("code")) { await supabase.auth.exchangeCodeForSession(query.get("code")); history.replaceState(null,"",location.pathname); } return null; }
+async function loginWithGoogle() { const {data,error}=await supabase.auth.signInWithOAuth({provider:"google",options:{redirectTo:location.origin+location.pathname}}); if(error) throw error; return data; }
 const AuthError=Error, MissingIdentityError=Error;
 async function authHeaders(extra={}) { const {data}=await supabase.auth.getSession(); return {...extra,...(data.session?.access_token ? {Authorization:"Bearer "+data.session.access_token} : {})}; }
 
@@ -3678,6 +3681,7 @@ function errorText(err) {
 function setAuthMode(m) {
   authMode = m;
   $("auth-resend").hidden = true;
+  $("dw-google-signin").hidden = m === "forgot" || m === "reset";
   resendEmail = "";
   var titles = { login: "Log in", signup: "Create account", forgot: "Reset password", reset: "Set a new password" };
   var submits = { login: "Log in", signup: "Create account", forgot: "Send reset link", reset: "Save password" };
@@ -3710,6 +3714,13 @@ function setAuthMode(m) {
   $("auth-join").hidden = !pendingJoin() || m === "forgot" || m === "reset";
   showMsg("");
 }
+$("dw-google-signin").addEventListener("click", async function(){
+  if(this.disabled)return;
+  this.disabled=true;
+  showMsg("Redirecting to Google…");
+  try { await loginWithGoogle(); }
+  catch(err) { showMsg("Google sign-in is unavailable. Please use email sign-in or try again. "+errorText(err),"error"); this.disabled=false; }
+});
 function openAuth(m) {
   setAuthMode(m);
   $("auth-modal").classList.add("open");
