@@ -85,7 +85,7 @@
  window.addEventListener('resize',schedule);window.visualViewport?.addEventListener('resize',schedule);
  new ResizeObserver(schedule).observe(document.querySelector('.sq-mobile-top'));
  // Auth startup may finish after the classic scripts; do not change deep links.
- const startup=new MutationObserver(()=>{if(initialized||document.documentElement.classList.contains('sq-auth-loading')||body.classList.contains('sq-auth-guest'))return;initialized=true;startup.disconnect();if(!location.hash||location.hash==='#home')showHome();});
+ const startup=new MutationObserver(()=>{if(body.classList.contains('sq-auth-guest')){if(!home.hidden||home.childNodes.length){hideHome();home.replaceChildren();}initialized=false;firstTracker=true;return;}if(initialized||document.documentElement.classList.contains('sq-auth-loading'))return;initialized=true;if(!location.hash||location.hash==='#home')showHome();});
  startup.observe(document.documentElement,{attributes:true,attributeFilter:['class']});startup.observe(body,{attributes:true,attributeFilter:['class']});
  schedule();
 })();

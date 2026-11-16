@@ -242,6 +242,9 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   assert.equal(await page.locator('.sidebar details #dw-beta-launch').count(),1);
   await page.screenshot({path:resolve(root,'test-results/bills/navigation-home-1280.png'),fullPage:true});
   assert.equal(writes.filter(x=>x.method==='PATCH').length,16,'both kinds saved/reopened at all four widths');
+  // Signing out clears the account summary, including an in-flight render.
+  await page.evaluate(()=>document.body.classList.add('sq-auth-guest'));
+  await page.waitForFunction(()=>document.getElementById('dw-account-home').hidden&&document.getElementById('dw-account-home').childNodes.length===0);
   // Record errors alongside screenshots for debugging complete app integration.
   console.log('FULL_APP_ERRORS',JSON.stringify(errors));
  }finally{await browser.close();await new Promise(done=>server.close(done));}
