@@ -1,7 +1,7 @@
 /* DoWeo mobile Bills: calm subscription dashboard.
    All billing handlers and IDs remain in the original markup. Desktop is untouched. */
 @media (max-width:760px) {
-  body.trackers-view.sq-bills-open #sq-bills-page.dw-bills-compact {
+  body.sq-bills-open #sq-bills-page {
     display:flex!important;
     flex-direction:column!important;
     gap:14px!important;
@@ -13,7 +13,7 @@
     overflow:visible!important;
     color:#f3fcff;
   }
-  #sq-bills-page.dw-bills-compact > .sq-bills-back {
+  #sq-bills-page > .sq-bills-back {
     order:0!important;
     position:static!important;
     align-self:flex-start!important;
@@ -27,7 +27,7 @@
     font-size:13px!important;
     font-weight:700!important;
   }
-  #sq-bills-page.dw-bills-compact > .sq-bills-title {
+  #sq-bills-page > .sq-bills-title {
     order:1!important;
     display:flex!important;
     flex-direction:column!important;
@@ -40,7 +40,7 @@
     border:0!important;
     background:transparent!important;
   }
-  #sq-bills-page.dw-bills-compact > .sq-bills-title h2 {
+  #sq-bills-page > .sq-bills-title h2 {
     display:block!important;
     position:static!important;
     margin:0!important;
@@ -54,7 +54,7 @@
     white-space:normal!important;
     text-overflow:clip!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bills-tracker-compact {
+  #sq-bills-page .sq-bills-tracker-compact {
     display:flex!important;
     flex-direction:column!important;
     width:100%!important;
@@ -67,13 +67,13 @@
     box-shadow:none!important;
     box-sizing:border-box!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bills-tracker-compact label {
+  #sq-bills-page .sq-bills-tracker-compact label {
     font-size:12px!important;
     font-weight:650!important;
     margin:0 0 6px!important;
     color:#a8c8d3!important;
   }
-  #sq-bills-page.dw-bills-compact #sq-bills-tracker {
+  #sq-bills-page #sq-bills-tracker {
     width:100%!important;
     max-width:none!important;
     height:44px!important;
@@ -85,7 +85,7 @@
     padding:9px 12px!important;
     color:#f0faff!important;
   }
-  body.trackers-view.sq-bills-open #sq-bills-page.dw-bills-compact > .sq-bills-workspace-tabs {
+  body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
     order:2!important;
     position:static!important;
     inset:auto!important;
@@ -103,7 +103,7 @@
     border:1px solid #3a5870!important;
     box-shadow:none!important;
   }
-  #sq-bills-page.dw-bills-compact > .sq-bills-workspace-tabs > button {
+  #sq-bills-page > .sq-bills-workspace-tabs > button {
     min-width:0!important;
     min-height:42px!important;
     padding:8px 2px!important;
@@ -112,7 +112,7 @@
     line-height:1.15!important;
     border-radius:10px!important;
   }
-  #sq-bills-page.dw-bills-compact > .sq-premium-overview {
+  #sq-bills-page > .sq-premium-overview {
     order:3!important;
     display:flex!important;
     flex-direction:column!important;
@@ -125,7 +125,7 @@
     grid-template-columns:none!important;
     grid-template-rows:none!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-premium-metrics {
+  #sq-bills-page .sq-premium-metrics {
     display:grid!important;
     grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr)!important;
     gap:10px!important;
@@ -133,7 +133,7 @@
     min-width:0!important;
     margin:0!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-premium-metrics > article {
+  #sq-bills-page .sq-premium-metrics > article {
     display:flex!important;
     grid-column:auto!important;
     grid-row:auto!important;
@@ -152,18 +152,18 @@
     background:#102c40!important;
     box-shadow:none!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-premium-metrics > article:first-child {
+  #sq-bills-page .sq-premium-metrics > article:first-child {
     background:linear-gradient(140deg,#123b4b,#0b2d3f)!important;
     border-color:#367886!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-premium-metrics article span {
+  #sq-bills-page .sq-premium-metrics article span {
     font-size:12px!important;
     font-weight:600!important;
     line-height:1.35!important;
     letter-spacing:0!important;
     color:#b8d4db!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-premium-metrics article strong {
+  #sq-bills-page .sq-premium-metrics article strong {
     margin:3px 0!important;
     font-size:clamp(25px,7vw,34px)!important;
     font-weight:850!important;
@@ -172,13 +172,13 @@
     color:#fff!important;
     overflow-wrap:normal!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-premium-metrics article small {
+  #sq-bills-page .sq-premium-metrics article small {
     font-size:10px!important;
     font-weight:500!important;
     line-height:1.35!important;
     color:#91b6c2!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-premium-overview > .sq-bill-create-card {
+  #sq-bills-page .sq-premium-overview > .sq-bill-create-card {
     order:1!important;
     display:block!important;
     grid-column:auto!important;
@@ -194,7 +194,7 @@
     background:#12394b!important;
     box-shadow:none!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bill-create-card .sq-bill-create-heading {
+  #sq-bills-page .sq-bill-create-card .sq-bill-create-heading {
     display:flex!important;
     align-items:center!important;
     justify-content:space-between!important;
@@ -202,21 +202,21 @@
     padding:15px 15px!important;
     min-height:83px!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bill-create-heading h3 {
+  #sq-bills-page .sq-bill-create-heading h3 {
     margin:0!important;
     font-size:17px!important;
     font-weight:780!important;
     letter-spacing:-.02em!important;
     line-height:1.3!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bill-create-heading .sq-bills-help {
+  #sq-bills-page .sq-bill-create-heading .sq-bills-help {
     display:block!important;
     font-size:11px!important;
     line-height:1.35!important;
     color:#a9ccd5!important;
     margin:4px 0 0!important;
   }
-  #sq-bills-page.dw-bills-compact #sq-bill-mobile-toggle {
+  #sq-bills-page #sq-bill-mobile-toggle {
     display:grid!important;
     place-items:center!important;
     flex:0 0 46px!important;
@@ -230,7 +230,7 @@
     font-size:25px!important;
     box-shadow:none!important;
   }
-  #sq-bills-page.dw-bills-compact > .sq-bills-columns {
+  #sq-bills-page > .sq-bills-columns {
     order:4!important;
     display:grid!important;
     grid-template-columns:minmax(0,1fr)!important;
@@ -239,7 +239,7 @@
     margin:0!important;
     min-width:0!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bills-columns .sq-bills-card {
+  #sq-bills-page .sq-bills-columns .sq-bills-card {
     min-width:0!important;
     min-height:0!important;
     padding:16px!important;
@@ -249,7 +249,7 @@
     background:#0e2c40!important;
     box-shadow:none!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bills-columns .sq-bills-row {
+  #sq-bills-page .sq-bills-columns .sq-bills-row {
     display:flex!important;
     align-items:center!important;
     flex-wrap:wrap!important;
@@ -258,49 +258,49 @@
     border-bottom:1px solid rgba(128,188,202,.17)!important;
     min-width:0!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bills-columns .sq-bills-row:last-child{
+  #sq-bills-page .sq-bills-columns .sq-bills-row:last-child{
     border-bottom:0!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bills-columns .sq-bill-info {
+  #sq-bills-page .sq-bills-columns .sq-bill-info {
     min-width:0!important;
     flex:1 1 160px!important;
     overflow-wrap:anywhere!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bills-columns .sq-bills-row strong {
+  #sq-bills-page .sq-bills-columns .sq-bills-row strong {
     font-size:14px!important;
     line-height:1.25!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bills-columns .sq-bills-row small {
+  #sq-bills-page .sq-bills-columns .sq-bills-row small {
     font-size:11px!important;
     line-height:1.4!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bills-columns .sq-bills-row button{
+  #sq-bills-page .sq-bills-columns .sq-bills-row button{
     min-height:36px!important;
     padding:7px 10px!important;
     border-radius:10px!important;
     font-size:12px!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bills-list-head {
+  #sq-bills-page .sq-bills-list-head {
     display:flex!important;
     align-items:center!important;
     justify-content:space-between!important;
     gap:8px!important;
     margin:0 0 10px!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bills-list-head h3{
+  #sq-bills-page .sq-bills-list-head h3{
     margin:0!important;
     font-size:17px!important;
     font-weight:780!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bills-list-head span{
+  #sq-bills-page .sq-bills-list-head span{
     font-size:12px!important;color:#acd1da!important
   }
-  #sq-bills-page.dw-bills-compact #sq-bills-bill-list,
-  #sq-bills-page.dw-bills-compact #sq-bills-sub-list {
+  #sq-bills-page #sq-bills-bill-list,
+  #sq-bills-page #sq-bills-sub-list {
     overflow-wrap:anywhere;
     font-size:13px!important;
   }
-  #sq-bills-page.dw-bills-compact .dw-bills-calendar-fold {
+  #sq-bills-page .dw-bills-calendar-fold {
     order:5!important;
     width:100%!important;
     box-sizing:border-box!important;
@@ -310,7 +310,7 @@
     overflow:hidden!important;
     background:#0e2c40!important;
   }
-  #sq-bills-page.dw-bills-compact .dw-bills-calendar-fold > summary {
+  #sq-bills-page .dw-bills-calendar-fold > summary {
     display:flex!important;
     align-items:center!important;
     gap:10px!important;
@@ -321,8 +321,8 @@
     cursor:pointer!important;
     list-style:none!important;
   }
-  #sq-bills-page.dw-bills-compact .dw-bills-calendar-fold > summary::-webkit-details-marker{display:none}
-  #sq-bills-page.dw-bills-compact .dw-bills-calendar-fold > summary::after {
+  #sq-bills-page .dw-bills-calendar-fold > summary::-webkit-details-marker{display:none}
+  #sq-bills-page .dw-bills-calendar-fold > summary::after {
     content:'⌄';
     margin-left:auto;
     font-size:23px;
@@ -330,8 +330,8 @@
     color:#70dfd1;
     transition:transform .18s;
   }
-  #sq-bills-page.dw-bills-compact .dw-bills-calendar-fold[open] > summary::after{transform:rotate(180deg)}
-  #sq-bills-page.dw-bills-compact .dw-bills-calendar-fold .sq-premium-calendar {
+  #sq-bills-page .dw-bills-calendar-fold[open] > summary::after{transform:rotate(180deg)}
+  #sq-bills-page .dw-bills-calendar-fold .sq-premium-calendar {
     display:block!important;
     grid-column:auto!important;
     grid-row:auto!important;
@@ -347,34 +347,34 @@
     box-shadow:none!important;
     background:transparent!important;
   }
-  #sq-bills-page.dw-bills-compact .dw-bills-calendar-fold .sq-premium-calhead > h3{display:none!important}
-  #sq-bills-page.dw-bills-compact > #sq-bills-message {order:6!important;margin:0!important}
-  #sq-bills-page.dw-bills-compact #sq-bills-create:not([hidden]) {
+  #sq-bills-page .dw-bills-calendar-fold .sq-premium-calhead > h3{display:none!important}
+  #sq-bills-page > #sq-bills-message {order:6!important;margin:0!important}
+  #sq-bills-page #sq-bills-create:not([hidden]) {
     max-width:100%!important;
     box-sizing:border-box!important;
     padding:15px!important;
   }
-  #sq-bills-page.dw-bills-compact #sq-bills-create :is(input,select,button) {
+  #sq-bills-page #sq-bills-create :is(input,select,button) {
     max-width:100%!important;
     box-sizing:border-box!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bills-card.sq-bill-modal-open {
+  #sq-bills-page .sq-bills-card.sq-bill-modal-open {
     max-height:calc(100dvh - 24px)!important;
     overflow-y:auto!important;
     overscroll-behavior:contain!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bills-card.sq-bill-modal-open #sq-bills-create {
+  #sq-bills-page .sq-bills-card.sq-bill-modal-open #sq-bills-create {
     grid-template-columns:1fr!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-bills-card.sq-bill-modal-open #sq-bills-create > * {
+  #sq-bills-page .sq-bills-card.sq-bill-modal-open #sq-bills-create > * {
     grid-column:1/-1!important;
   }
 }
 @media (max-width:370px) {
-  #sq-bills-page.dw-bills-compact .sq-premium-metrics {
+  #sq-bills-page .sq-premium-metrics {
     grid-template-columns:minmax(0,1fr) minmax(0,.75fr)!important;
     gap:8px!important;
   }
-  #sq-bills-page.dw-bills-compact .sq-premium-metrics > article {padding:13px 10px!important}
-  #sq-bills-page.dw-bills-compact .sq-premium-metrics article strong{font-size:clamp(21px,6vw,28px)!important}
+  #sq-bills-page .sq-premium-metrics > article {padding:13px 10px!important}
+  #sq-bills-page .sq-premium-metrics article strong{font-size:clamp(21px,6vw,28px)!important}
 }
