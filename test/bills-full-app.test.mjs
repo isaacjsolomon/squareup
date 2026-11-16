@@ -69,7 +69,11 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
    assert.ok(state.overflow<=width+1,'no horizontal overflow');
    assert.ok(Math.abs(state.bottom.bottom-844)<2,'bottom navigation anchored');
    assert.equal(await page.locator('#sq-bills-create').isVisible(),false,'Add form stays collapsed until requested');
+   const gap=await page.evaluate(()=>document.querySelector('.sq-legal-footer').getBoundingClientRect().top-document.querySelector('.dw-bills-calendar-fold').getBoundingClientRect().bottom);
+   assert.ok(gap<90,'no unused spacer below the calendar: '+gap);
    await page.screenshot({path:resolve(root,`test-results/bills/mobile-${width}.png`),fullPage:true});
+   await page.locator('.dw-bills-calendar-fold').scrollIntoViewIfNeeded();
+   await page.screenshot({path:resolve(root,`test-results/bills/scrolled-${width}.png`)});
    for(const name of ['Electricity','Netflix']){
     const row=page.locator('.sq-bills-row').filter({hasText:name});
     await row.getByRole('button',{name:'Edit',exact:true}).click();

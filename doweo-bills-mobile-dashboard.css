@@ -6,7 +6,7 @@
     height:auto!important;min-height:0!important;margin:0!important;padding:0 0 12px!important;
     overflow:visible!important;box-sizing:border-box!important;background:transparent!important;
   }
-  body.sq-bills-open > .wrap > #trackers-page{margin:0 auto 12px!important}
+  body.sq-bills-open #trackers-page{margin:0 auto!important;padding-bottom:0!important}
   body.sq-bills-open .sq-bill-edit-overlay{z-index:2147483002!important}
   #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell,
   #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell *{box-sizing:border-box}
@@ -180,5 +180,6 @@
   }
   #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .dw-bills-calendar-fold .sq-premium-calhead h3{display:none!important}
   #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > #sq-bills-message{order:6!important}
+  #sq-bills-page.dw-bills-compact #sq-bills-message:empty{display:none!important}
 }
 
