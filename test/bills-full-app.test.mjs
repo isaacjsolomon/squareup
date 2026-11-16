@@ -142,11 +142,64 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   await page.waitForFunction(()=>!document.getElementById('sq-bills-page').classList.contains('dw-bills-compact'));
   assert.equal(await page.locator('.sq-premium-calendar').evaluate(e=>e.parentElement.className),'sq-premium-overview');
   await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+  for(const width of [1024,1280,1600]){
+   await page.setViewportSize({width,height:900});
+   const rows=await page.locator('#sq-bills-page .sq-bills-row').evaluateAll(rows=>rows.map(row=>{
+    const r=row.getBoundingClientRect(),buttons=[...row.querySelectorAll('.sq-premium-actions button')].map(b=>{const q=b.getBoundingClientRect();return {top:q.top,bottom:q.bottom,left:q.left,right:q.right,width:q.width}});
+    return {left:r.left,right:r.right,buttons};
+   }));
+   for(const row of rows){
+    assert.equal(row.buttons.length,3,'Details, Edit, Remove remain available');
+    assert.ok(row.buttons.every(b=>Math.abs(b.top-row.buttons[0].top)<1),'all record actions share one row at '+width);
+    assert.ok(row.buttons.every(b=>Math.abs(b.width-row.buttons[0].width)<1),'action buttons have equal widths');
+    assert.ok(row.buttons[0].left>=row.left-1&&row.buttons[2].right<=row.right+1,'actions fit the record');
+    assert.ok(row.buttons[0].right<row.buttons[1].left&&row.buttons[1].right<row.buttons[2].left,'actions do not overlap');
+   }
+   await page.screenshot({path:resolve(root,`test-results/bills/desktop-bills-actions-${width}.png`),fullPage:true});
+  }
+  await page.setViewportSize({width:1280,height:900});
   await page.screenshot({path:resolve(root,'test-results/bills/desktop-1280.png'),fullPage:true});
   await page.setViewportSize({width:375,height:844});
   await page.locator('.dw-bills-calendar-fold').waitFor();
   await page.locator('[data-sq-bills-tab="overview"]').click();
   await page.waitForFunction(()=>!document.body.classList.contains('sq-bills-open'));
+  // Overview, Expenses and Members keep their original bar and handlers too.
+  const trackerSafeArea=await page.addStyleTag({content:'html body:not(.dw-test-disabled) .wrap > .sq-mobile-top{top:59px!important;min-height:76px!important;height:76px!important}'});
+  for(const width of [320,375,390,430]){
+   await page.setViewportSize({width,height:844});
+   for(const section of ['overview','expenses','members']){
+    await page.locator('#tracker-dashboard [data-sq-tab="'+section+'"]').click();
+    await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+    await page.waitForFunction(()=>{const h=document.querySelector('.sq-mobile-top').getBoundingClientRect(),t=document.querySelector('#tracker-dashboard > .sq-workspace-tabs').getBoundingClientRect();return t.top>=h.bottom+8&&Math.abs(t.width-h.width)<1});
+    const state=await page.evaluate(section=>{
+     const bar=document.querySelector('#tracker-dashboard > .sq-workspace-tabs'),header=document.querySelector('.sq-mobile-top').getBoundingClientRect();
+     const rect=bar.getBoundingClientRect();
+     const content=document.querySelector(section==='overview'?'#sq-return-summary':section==='expenses'?'#balances-card':'#sq-tracker-profiles-card').getBoundingClientRect();
+     return {selected:bar.querySelector('[data-sq-tab="'+section+'"]').getAttribute('aria-selected'),top:rect.top,bottom:rect.bottom,left:rect.left,right:rect.right,headerTop:header.top,headerHeight:header.height,contentTop:content.top,overflow:document.documentElement.scrollWidth,
+      clickable:[...bar.querySelectorAll('button')].every(b=>{const r=b.getBoundingClientRect();return b.contains(document.elementFromPoint(r.left+r.width/2,r.top+r.height/2))})};
+    },section);
+    console.log('TRACKER_TAB_LAYOUT',width,section,JSON.stringify(state));
+    assert.ok(Math.abs(state.headerTop-59)<1&&state.headerHeight>=76,'safe area applied');
+    assert.equal(state.selected,'true','selected tab preserved');
+    assert.ok(state.clickable,'every tab is fully visible and clickable');
+    assert.ok(state.left>=0&&state.right<=width&&state.overflow<=width+1,'tabs fit viewport');
+    assert.ok(state.contentTop>=state.bottom+8,'tab bar reserves space above content');
+    await page.screenshot({path:resolve(root,`test-results/bills/tracker-${section}-${width}.png`)});
+    await page.evaluate(()=>window.scrollTo({top:Math.min(300,document.scrollingElement.scrollHeight-innerHeight),behavior:'instant'}));
+    const stillClear=await page.evaluate(()=>{const h=document.querySelector('.sq-mobile-top').getBoundingClientRect(),t=document.querySelector('#tracker-dashboard > .sq-workspace-tabs').getBoundingClientRect();return t.top>=h.bottom+8&&t.bottom<innerHeight-100});
+    assert.ok(stillClear,'tracker tabs stay below header when scrolled');
+    await page.screenshot({path:resolve(root,`test-results/bills/tracker-${section}-scrolled-${width}.png`)});
+   }
+  }
+  await trackerSafeArea.evaluate(el=>el.remove());
+  await page.setViewportSize({width:1280,height:900});
+  await page.waitForFunction(()=>!document.getElementById('tracker-dashboard').classList.contains('dw-mobile-tabs-ready'));
+  assert.notEqual(await page.locator('#tracker-dashboard > .sq-workspace-tabs').evaluate(e=>getComputedStyle(e).position),'fixed','desktop bar restores');
+  await page.setViewportSize({width:390,height:844});
+  await page.locator('#tracker-dashboard [data-sq-tab="bills"]').click();
+  await page.waitForFunction(()=>document.body.classList.contains('sq-bills-open'));
+  await page.locator('[data-sq-bills-tab="members"]').click();
+  await page.waitForFunction(()=>!document.body.classList.contains('sq-bills-open')&&document.getElementById('tracker-dashboard').classList.contains('sq-tab-members'));
   assert.equal(writes.filter(x=>x.method==='PATCH').length,16,'both kinds saved/reopened at all four widths');
   // Record errors alongside screenshots for debugging complete app integration.
   console.log('FULL_APP_ERRORS',JSON.stringify(errors));
