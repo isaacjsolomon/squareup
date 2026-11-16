@@ -63,8 +63,9 @@
   const wanted=['overview','expenses','bills','members','chat'];
   const candidates=[...document.querySelectorAll('[data-sq-tab]')];
   const buttons=wanted.map(name=>candidates.find(el=>
-    String(el.dataset.sqTab||'').toLowerCase()===name &&
-    el.getClientRects().length && !el.closest('#dw-legacy-navigation')));
+    el.getClientRects().length && !el.closest('#dw-legacy-navigation') &&
+    (String(el.dataset.sqTab||'').toLowerCase()===name ||
+     String(el.textContent||'').trim().toLowerCase()===name)));
   if(buttons.some(b=>!b))return;
   const bar=buttons[0].closest('.sq-workspace-tabs')||buttons[0].parentElement;
   if(!bar||!bar.getClientRects().length)return;
