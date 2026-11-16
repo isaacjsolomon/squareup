@@ -13,6 +13,8 @@ test('mobile Finance Hub keeps original tabs and shows a compact separate tools 
   await page.evaluate(()=>{
    const root=document.getElementById('sq-nextgen');
    root.hidden=false;
+   // Production boot scripts normally dismiss this overlay; they are deliberately removed in this isolated test.
+   document.getElementById('sq-startup-overlay')?.remove();
    document.body.classList.add('sq-finance-open');
    window.squareUpApi=async(path)=>{
     if(path==='trackers')return [{id:'22222222-2222-4222-8222-222222222222',name:'Shared tracker',currency:'USD'}];
