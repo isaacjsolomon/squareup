@@ -40,12 +40,13 @@ test('responsive billing page is compact on mobile and restores desktop structur
    const state=await page.evaluate(()=>{
     const box=sel=>document.querySelector(sel).getBoundingClientRect();
     const p=box('#sq-bills-page'),title=box('.sq-bills-title'),nav=box('.sq-bills-workspace-tabs'),a=box('.sq-premium-metrics article:first-child'),b=box('.sq-premium-metrics article:nth-child(2)');
-    return {pageWidth:p.width,titleBottom:title.bottom,navTop:nav.top,navBottom:nav.bottom,statsTop:a.top,statsColumns:Math.abs(a.top-b.top)<4,calendarHidden:!document.querySelector('.dw-bills-calendar-fold').open,calendarBelow:box('.dw-bills-calendar-fold').top>=box('.sq-bills-columns').bottom-3,scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth};
+    return {pageWidth:p.width,titleBottom:title.bottom,navTop:nav.top,navBottom:nav.bottom,statsTop:a.top,cardHeight:a.height,statsColumns:Math.abs(a.top-b.top)<4,calendarHidden:!document.querySelector('.dw-bills-calendar-fold').open,calendarBelow:box('.dw-bills-calendar-fold').top>=box('.sq-bills-columns').bottom-3,scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth};
    });
    assert.ok(state.pageWidth<=width+2,'page width at '+width+': '+JSON.stringify(state));
    assert.ok(state.titleBottom>=state.navBottom-3,'title must follow navigation at '+width+': '+JSON.stringify(state));
    assert.ok(state.statsTop>=state.titleBottom-3,'stats below navigation at '+width+': '+JSON.stringify(state));
    assert.ok(state.statsColumns,'metrics sit side by side at '+width);
+   assert.ok(state.cardHeight<=151,'metric cards stay compact at '+width+': '+JSON.stringify(state));
    assert.ok(state.calendarHidden&&state.calendarBelow,'calendar collapses after lists at '+width);
    assert.ok(state.scrollWidth<=width+2,'no horizontal overflow at '+width+': '+JSON.stringify(state));
    for(const id of ids)assert.equal(await page.locator('#'+id).count(),1,'preserve '+id);
@@ -55,6 +56,7 @@ test('responsive billing page is compact on mobile and restores desktop structur
   await page.setViewportSize({width:1000,height:844});
   assert.equal(await page.locator('#sq-bills-page').evaluate(el=>el.classList.contains('dw-bills-compact')),false,'desktop mode off');
   assert.equal(await page.locator('.sq-premium-calendar').evaluate(el=>el.parentElement.classList.contains('sq-premium-overview')),true,'desktop calendar returns to original grid');
+  assert.equal(await page.locator('.sq-bills-workspace-tabs').evaluate(el=>el.parentElement.id), 'sq-bills-page','desktop tabs restore their original parent');
   await page.setViewportSize({width:390,height:844});
   assert.equal(await page.locator('.sq-premium-calendar').evaluate(el=>el.parentElement.classList.contains('dw-bills-calendar-fold')),true,'calendar moves back on resize');
  }finally{await browser.close()}
