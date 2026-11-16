@@ -208,11 +208,10 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   // App navigation uses the original controls and the actual complete DOM.
   await page.setViewportSize({width:390,height:844});
   await page.evaluate(()=>document.getElementById('nav-home').click());
-  await page.locator('#dw-account-home .dw-home-trackers').waitFor();
-  assert.equal(await page.locator('#tracker-dashboard').isVisible(),false);
-  assert.ok(await page.locator('#dw-account-home h1').evaluate(e=>{const r=e.getBoundingClientRect();return e.contains(document.elementFromPoint(r.left+r.width/2,r.top+r.height/2))}),'Home heading must be painted above the background');
+  await page.locator('#tracker-dashboard [data-sq-tab="overview"]').waitFor({state:'visible'});
+  await page.locator('#sq-return-summary').waitFor({state:'visible'});
+  assert.equal(await page.locator('#dw-account-home').isVisible(),false,'original tracker overview remains Home');
   await page.screenshot({path:resolve(root,'test-results/bills/navigation-home-390.png'),fullPage:true});
-  await page.locator('[data-home-tracker]').click();
   await page.locator('#tracker-dashboard [data-sq-tab="chat"]').click();
   assert.ok(await page.locator('#chat-card').isVisible(),'Chat opens original message controls');
   assert.ok(await page.locator('#chat-card').evaluate(e=>e.open));
@@ -237,8 +236,24 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   await page.setViewportSize({width:1280,height:900});
   await page.screenshot({path:resolve(root,'test-results/bills/navigation-analytics-1280.png')});
   await page.evaluate(()=>document.getElementById('nav-home').click());
-  await page.locator('#dw-account-home .dw-home-trackers').waitFor();
-  assert.ok(await page.locator('#dw-account-home h1').evaluate(e=>{const r=e.getBoundingClientRect();return e.contains(document.elementFromPoint(r.left+r.width/2,r.top+r.height/2))}),'desktop Home is visible');
+  await page.locator('#tracker-dashboard [data-sq-tab="overview"]').waitFor({state:'visible'});
+  await page.locator('#sq-return-summary').waitFor({state:'visible'});
+  assert.equal(await page.locator('#dw-account-home').isVisible(),false,'desktop Home uses the original dashboard');
+  // Regression: selector MUST be inside the desktop header and five tabs MUST share one row.
+  await page.waitForFunction(()=>document.getElementById('dw-tracker-context').closest('.dw-tracker-desktop-header'));
+  const navLayout=await page.evaluate(()=>{
+    const header=document.querySelector('.dw-tracker-desktop-header').getBoundingClientRect();
+    const selector=document.getElementById('dw-tracker-context').getBoundingClientRect();
+    const names=['overview','expenses','bills','members','chat'];
+    const tabs=names.map(name=>document.querySelector('#tracker-dashboard [data-sq-tab="'+name+'"]')?.getBoundingClientRect());
+    return {headerTop:header.top,headerBottom:header.bottom,selectorTop:selector.top,selectorBottom:selector.bottom,
+      tabs:tabs.map(t=>t?({top:t.top,bottom:t.bottom,left:t.left,right:t.right}):null)};
+  });
+  assert.ok(navLayout.selectorTop>=navLayout.headerTop-1&&navLayout.selectorBottom<=navLayout.headerBottom+1,'tracker selector stays inside desktop top bar');
+  assert.ok(navLayout.tabs.every(Boolean),'all five tabs exist');
+  assert.ok(navLayout.tabs.every(t=>Math.abs(t.top-navLayout.tabs[0].top)<=2),'all five tracker tabs share one horizontal line');
+  assert.ok(navLayout.tabs.every((t,i)=>i===0||t.left>=navLayout.tabs[i-1].right-2),'tabs do not overlap');
+  console.log('DESKTOP_TRACKER_NAV_LAYOUT',JSON.stringify(navLayout));
   const sidebar=await page.locator('.sidebar .squareup-nav > button').evaluateAll(nodes=>nodes.filter(n=>n.getClientRects().length).map(n=>n.id));
   assert.deepEqual(sidebar,['nav-home','nav-trackers','sqev-nav','sq-finance-nav','nav-friends']);
   assert.equal(await page.locator('.sidebar .squareup-nav details').count(),1);
@@ -253,10 +268,10 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   await page.locator('#friends-page').waitFor();
   assert.equal(await page.locator('#sq-friends-workspace-tabs').isVisible(),false,'Friends is app-wide, without duplicate tracker tabs');
   await page.evaluate(()=>document.getElementById('nav-home').click());
-  await page.locator('#dw-account-home .dw-home-trackers').waitFor();
-  // Signing out clears the account summary, including an in-flight render.
+  await page.locator('#sq-return-summary').waitFor({state:'visible'});
+  // Signing out must not leave an account summary visible.
   await page.evaluate(()=>document.body.classList.add('sq-auth-guest'));
-  await page.waitForFunction(()=>document.getElementById('dw-account-home').hidden&&document.getElementById('dw-account-home').childNodes.length===0);
+  await page.waitForFunction(()=>document.getElementById('dw-account-home').hidden);
   // Record errors alongside screenshots for debugging complete app integration.
   console.log('FULL_APP_ERRORS',JSON.stringify(errors));
  }finally{await browser.close();await new Promise(done=>server.close(done));}
