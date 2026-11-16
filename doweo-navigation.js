@@ -28,19 +28,55 @@
   const id=body.classList.contains('sq-bills-open')?$('sq-bills-tracker')?.value:window.sqLastOpenedTrackerDetail?.id||source.value;
   if([...picker.options].some(o=>o.value===id))picker.value=id;
  }
- // Find the real desktop header instead of attaching the selector beneath it.
- // Require both the brand and Ask Weo within a compact container to avoid selecting the page.
+ // Find the visible top bar by its actual rendered controls rather than a guessed CSS class.
  function findDesktopHeader(){
-  const ask=[...document.querySelectorAll('button,a')].find(n=>/ask weo/i.test(n.textContent||'')&&n.getClientRects().length);
+  const candidates=[...document.querySelectorAll('button,a,[role="button"]')]
+    .filter(n=>/ask\s+weo/i.test(n.textContent||'')&&n.getClientRects().length);
+  const ask=candidates.find(n=>/ask\s+weo/i.test(n.textContent||''));
   if(!ask)return null;
-  for(let p=ask.parentElement,depth=0;p&&depth<8;p=p.parentElement,depth++){
+  let best=null;
+  for(let p=ask.parentElement,depth=0;p&&depth<10;p=p.parentElement,depth++){
    const rect=p.getBoundingClientRect();
-   if(rect.height>50&&rect.height<210&&rect.width>450&&/DoWeo/i.test(p.textContent||'')&&p.querySelector('input,[role="search"],[class*="search"]')){
-    p.classList.add('dw-tracker-desktop-header');
-    return p;
-   }
+   if(rect.width<500||rect.height<45||rect.height>230)continue;
+   const title=p.textContent||'';
+   if(!/doweo/i.test(title)||!/search/i.test(title))continue;
+   best=p;break;
   }
-  return null;
+  if(best)best.classList.add('dw-tracker-desktop-header');
+  return best;
+ }
+ function insertSelectorInHeader(header){
+  const children=[...header.children];
+  // Insert directly before the search region in the existing header flex row.
+  const searchChild=children.find(n=>/search/i.test(n.textContent||'')||
+    n.matches?.('[role="search"],[class*="search"]')||
+    n.querySelector?.('input[placeholder*="earch"],[role="searchbox"]'));
+  if(searchChild&&searchChild!==context)header.insertBefore(context,searchChild);
+  else {
+   const askChild=children.find(n=>/ask\s+weo/i.test(n.textContent||''));
+   header.insertBefore(context,askChild||null);
+  }
+ }
+ // Apply layout to the five rendered tracker controls, even when legacy CSS
+ // selectors refer to a different wrapper or a button has been moved.
+ function fixTrackerTabs(){
+  const wanted=['overview','expenses','bills','members','chat'];
+  const candidates=[...document.querySelectorAll('[data-sq-tab]')];
+  const buttons=wanted.map(name=>candidates.find(el=>
+    String(el.dataset.sqTab||'').toLowerCase()===name &&
+    el.getClientRects().length && !el.closest('#dw-legacy-navigation')));
+  if(buttons.some(b=>!b))return;
+  const bar=buttons[0].closest('.sq-workspace-tabs')||buttons[0].parentElement;
+  if(!bar||!bar.getClientRects().length)return;
+  bar.classList.add('dw-tracker-tabs-row');
+  for(const button of buttons){
+   if(button.parentElement!==bar)bar.append(button);
+   button.classList.add('dw-tracker-tab-item');
+  }
+  // Explicit layout guarantees Chat never becomes an orphaned second row.
+  bar.style.setProperty('display','grid','important');
+  bar.style.setProperty('grid-template-columns','repeat(5,minmax(0,1fr))','important');
+  bar.style.setProperty('grid-auto-flow','row','important');
  }
  function trackerContextBottom(){
   const shown=isTracker();context.hidden=!shown;if(body.classList.contains('dw-tracker-context-visible')!==shown)body.classList.toggle('dw-tracker-context-visible',shown);
@@ -49,13 +85,13 @@
   const mobile=matchMedia('(max-width:900px)').matches;
   const desktopHeader=mobile?null:findDesktopHeader();
   const parent=mobile?body:(desktopHeader|| (body.classList.contains('sq-bills-open')?$('sq-bills-page'):$('tracker-dashboard')));
-  if(context.parentNode!==parent){if(mobile)parent.append(context);else if(desktopHeader)desktopHeader.insertBefore(context,desktopHeader.children[1]||null);else parent.prepend(context);}
+  if(context.parentNode!==parent){if(mobile)parent.append(context);else if(desktopHeader)insertSelectorInHeader(desktopHeader);else parent.prepend(context);}
   context.classList.toggle('dw-tracker-header-inline',Boolean(desktopHeader&&!mobile));
   if(!mobile){context.style.removeProperty('top');context.style.removeProperty('left');context.style.removeProperty('width');}
   if(matchMedia('(max-width:900px)').matches&&header.getClientRects().length){const r=header.getBoundingClientRect();context.style.top=Math.ceil(r.bottom+8)+'px';context.style.left=r.left+'px';context.style.width=r.width+'px';}
   return context.getBoundingClientRect().bottom;
  }
- function sync(){frame=0;syncPicker();trackerContextBottom();}
+ function sync(){frame=0;syncPicker();trackerContextBottom();fixTrackerTabs();}
  function schedule(){if(!frame)frame=requestAnimationFrame(sync);}
  picker.addEventListener('change',async()=>{
   const id=picker.value;picker.disabled=true;
@@ -108,6 +144,7 @@
  $('nav-chat').addEventListener('click',e=>{e.stopImmediatePropagation();$('nav-home').click();document.querySelector('[data-sq-tab="chat"]').click();},true);
  new MutationObserver(schedule).observe(body,{attributes:true,attributeFilter:['class']});
  new MutationObserver(schedule).observe(source,{childList:true,subtree:true});
+ new MutationObserver(schedule).observe($('tracker-dashboard'),{childList:true,subtree:true});
  new MutationObserver(schedule).observe($('sq-bills-tracker'),{childList:true,subtree:true});
  window.addEventListener('squareup:tracker-detail',()=>{syncPicker();if(analytics?.closest('#sq-ng-content'))window.squareUpRenderAnalytics?.();});
  window.addEventListener('resize',schedule);window.visualViewport?.addEventListener('resize',schedule);
