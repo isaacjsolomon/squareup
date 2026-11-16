@@ -47,10 +47,10 @@
   if(!shown)return 0;
   const header=document.querySelector('.sq-mobile-top');
   const mobile=matchMedia('(max-width:900px)').matches;
-  const header=mobile?null:findDesktopHeader();
-  const parent=mobile?body:(header|| (body.classList.contains('sq-bills-open')?$('sq-bills-page'):$('tracker-dashboard')));
-  if(context.parentNode!==parent){if(mobile)parent.append(context);else if(header)header.insertBefore(context,header.children[1]||null);else parent.prepend(context);}
-  context.classList.toggle('dw-tracker-header-inline',Boolean(header&&!mobile));
+  const desktopHeader=mobile?null:findDesktopHeader();
+  const parent=mobile?body:(desktopHeader|| (body.classList.contains('sq-bills-open')?$('sq-bills-page'):$('tracker-dashboard')));
+  if(context.parentNode!==parent){if(mobile)parent.append(context);else if(desktopHeader)desktopHeader.insertBefore(context,desktopHeader.children[1]||null);else parent.prepend(context);}
+  context.classList.toggle('dw-tracker-header-inline',Boolean(desktopHeader&&!mobile));
   if(!mobile){context.style.removeProperty('top');context.style.removeProperty('left');context.style.removeProperty('width');}
   if(matchMedia('(max-width:900px)').matches&&header.getClientRects().length){const r=header.getBoundingClientRect();context.style.top=Math.ceil(r.bottom+8)+'px';context.style.left=r.left+'px';context.style.width=r.width+'px';}
   return context.getBoundingClientRect().bottom;
