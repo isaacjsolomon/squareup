@@ -45,3 +45,29 @@ body.dw-account-home-open #tracker-dashboard,body.dw-account-home-open #trackers
  body.dw-tracker-context-visible .sq-workspace-tabs>button,body.dw-tracker-context-visible .sq-bills-workspace-tabs>button{padding:10px 2px!important;font-size:11px!important;min-width:0!important}
  #sq-ng-content #analytics-page{padding:12px!important}
 }
+
+/* Tracker selector lives in the desktop glass top bar, not in a second row. */
+@media(min-width:901px){
+ .dw-tracker-desktop-header{display:flex!important;align-items:center!important;gap:clamp(12px,1.5vw,24px)!important}
+ .dw-tracker-desktop-header #dw-tracker-context,
+ #dw-tracker-context.dw-tracker-header-inline{
+  position:relative!important;inset:auto!important;
+  display:flex!important;flex:0 1 320px!important;min-width:170px!important;
+  max-width:340px!important;width:auto!important;margin:0!important;
+  padding:0!important;border:0!important;background:transparent!important;
+  height:auto!important;z-index:auto!important;
+ }
+ #dw-tracker-context.dw-tracker-header-inline label{white-space:nowrap}
+ #dw-tracker-context.dw-tracker-header-inline select{width:100%!important;max-width:none!important;min-width:0!important}
+}
+/* Five real tabs; no orphan Chat row or unintended second grid row. */
+#tracker-dashboard .sq-workspace-tabs,
+.sq-bills-workspace-tabs{grid-template-columns:repeat(5,minmax(0,1fr))!important;grid-auto-flow:row!important}
+#tracker-dashboard .sq-workspace-tabs>button,
+.sq-bills-workspace-tabs>button{min-width:0!important;max-width:100%!important;white-space:nowrap!important}
+@media(max-width:600px){
+ #tracker-dashboard .sq-workspace-tabs,
+ .sq-bills-workspace-tabs{gap:2px!important}
+ #tracker-dashboard .sq-workspace-tabs>button,
+ .sq-bills-workspace-tabs>button{font-size:clamp(9px,2.3vw,11px)!important;padding:10px 1px!important;letter-spacing:-.02em}
+}
