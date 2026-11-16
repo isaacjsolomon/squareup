@@ -10,7 +10,7 @@ test('mobile More displays a flat two-column grid with no category headers',()=>
  assert.match(html,/#sq-mobile-more-sheet \.sq-balanced-more-grid\{display:grid!important;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)!important/);
  assert.doesNotMatch(grouped,/const sections=\[/);
  assert.doesNotMatch(grouped,/heading\.textContent=item\.name/);
- assert.match(grouped,/const destinations=\['sqev-nav','sq-finance-nav','nav-analytics','nav-chat','nav-friends','sq-mobile-notifications','nav-profile','nav-about','nav-privacy-terms'\]/);
+ assert.match(grouped,/const destinations=\['sqev-nav','sq-finance-nav','nav-analytics','sq-mobile-notifications','nav-profile','nav-about','nav-privacy-terms'\]/);
  assert.match(grouped,/moreGrid\.appendChild\(button\)/);
 });
 test('all nine mobile destinations remain unique and use existing route click handlers',()=>{
