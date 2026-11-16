@@ -15872,6 +15872,48 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
   }
 }
 </style>
+
+<style id="dw-desktop-flyout-tracker-polish-20261116">
+@media(min-width:901px){
+  html body .dw-desktop-side-flyout{
+    width:188px!important;max-width:calc(100vw - 20px)!important;
+    padding:6px!important;border-radius:12px!important;
+  }
+  html body .dw-desktop-side-flyout .sq-nav-link{
+    display:flex!important;flex-direction:row!important;
+    justify-content:flex-start!important;align-items:center!important;
+    text-align:left!important;gap:9px!important;
+    min-height:38px!important;padding:9px 10px!important;
+  }
+  html body .dw-desktop-side-flyout .sq-nav-link .sq-nav-icon{
+    display:inline-flex!important;flex:0 0 19px!important;
+    margin:0!important;width:19px!important;height:19px!important;
+  }
+  html body .dw-desktop-side-flyout .sq-nav-link .sq-nav-label{
+    display:inline-block!important;flex:0 1 auto!important;
+    width:auto!important;min-width:0!important;
+    margin:0!important;padding:0!important;text-align:left!important;
+    font-size:14px!important;font-weight:600!important;
+    white-space:normal!important;line-height:1.25!important;
+  }
+  /* Keep the top tracker chooser readable, native, and keyboard accessible. */
+  #tracker-bar #tracker-select,
+  #sq-bills-tracker,
+  #sq-nextgen .sq-ng-tracker-picker select{
+    font-size:17px!important;font-weight:650!important;
+    line-height:1.35!important;
+    padding-right:38px!important;
+    appearance:none!important;-webkit-appearance:none!important;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23c4ebf0' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important;
+    background-repeat:no-repeat!important;
+    background-position:right 12px center!important;
+    background-size:19px 19px!important;
+  }
+  #tracker-bar #tracker-select{min-height:44px!important;}
+  #sq-bills-page .sq-bills-tracker-compact label,
+  #sq-nextgen .sq-ng-tracker-picker label{font-size:15px!important;font-weight:700!important;}
+}
+</style>
 </body>
 </html>
 
