@@ -8864,9 +8864,10 @@ share.addEventListener('click',async()=>{if(!selected)return;const tracker=selec
  const tools=document.createElement('details');
  tools.id='sq-mobile-extra-balances';
  tools.className='sq-mobile-extra-balances';
- const summary=document.createElement('summary');
- summary.textContent='View balance breakdown';
- tools.append(summary);
+ // Keep these existing balance statistics available to the desktop layout,
+ // but do not show an extra disclosure row on the mobile Home screen.
+ tools.hidden=true;
+ tools.style.display='none';
  function arrange(){
    if(window.matchMedia('(max-width:680px)').matches){
      if(!tools.isConnected)document.getElementById('sq-desktop-balance-layout').insertAdjacentElement('afterend',tools);
@@ -8885,15 +8886,9 @@ share.addEventListener('click',async()=>{if(!selected)return;const tracker=selec
 })();
 </script>
 <style id="sq-mobile-balance-disclosure-css">
-@media(max-width:680px){
- #tracker-dashboard .sq-mobile-extra-balances{margin:9px 0 0!important}
- #tracker-dashboard .sq-mobile-extra-balances>summary{list-style:none;cursor:pointer;color:#b7d4e2;text-align:center;font-size:12px;font-weight:650;padding:6px 0;user-select:none}
- #tracker-dashboard .sq-mobile-extra-balances>summary::-webkit-details-marker{display:none}
- #tracker-dashboard .sq-mobile-extra-balances>summary:after{content:'  ▾';color:#39dbc4}
- #tracker-dashboard .sq-mobile-extra-balances[open]>summary:after{content:'  ▴'}
- #tracker-dashboard .sq-mobile-extra-balances:not([open]) #sq-overview-stats{display:none!important}
-}
-@media(min-width:681px){#sq-mobile-extra-balances{display:none!important}}
+/* The mobile overview uses the balance card and action tiles only.
+   Never show an additional balance breakdown toggle below the tiles. */
+#tracker-dashboard #sq-mobile-extra-balances{display:none!important}
 </style>
 <script id="sq-overview-dropdown-behavior">
 (function(){
