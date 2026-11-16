@@ -122,3 +122,114 @@
  if(media.addEventListener)media.addEventListener('change',schedule);else media.addListener(schedule);
  schedule();
 })();
+
+
+/*
+ * Desktop tracker toolbar. This intentionally enhances the existing header
+ * and the original four-tab bar; it never substitutes the Home/dashboard.
+ * It also leaves the isolated mobile Bills layout untouched.
+ */
+(function(){
+ 'use strict';
+ const desktop=window.matchMedia('(min-width:901px)');
+ const dashboard=document.getElementById('tracker-dashboard');
+ const source=document.getElementById('tracker-select');
+ if(!dashboard||!source)return;
+ const tabbar=dashboard.querySelector('.sq-workspace-tabs');
+ if(!tabbar)return;
+ const picker=document.createElement('div');
+ picker.id='dw-inline-tracker-picker';
+ picker.innerHTML='<span class="dw-inline-tracker-symbol" aria-hidden="true">▱</span><label for="dw-inline-tracker-select">Tracker</label><select id="dw-inline-tracker-select" aria-label="Switch tracker"></select>';
+ const select=picker.querySelector('select');
+ const chat=document.createElement('button');
+ chat.type='button';
+ chat.className='dw-inline-chat-tab';
+ chat.textContent='Chat';
+ chat.setAttribute('aria-label','Open chat');
+ chat.setAttribute('role','tab');
+ chat.setAttribute('aria-selected','false');
+ chat.addEventListener('click',()=>{
+  const original=document.getElementById('nav-chat');
+  if(original&&original!==chat){original.click();return;}
+  const mobileChat=document.getElementById('sq-mobile-chat-top');
+  const action=mobileChat?.querySelector('button,a');
+  if(action)action.click();
+ });
+ let frame=0;
+ function findHeader(){
+  const ask=[...document.querySelectorAll('button,a,[role="button"]')]
+   .find(node=>/ask\s+weo/i.test(node.textContent||'')&&node.getClientRects().length);
+  if(!ask)return null;
+  for(let node=ask.parentElement,depth=0;node&&depth<9;node=node.parentElement,depth++){
+   const r=node.getBoundingClientRect();
+   if(r.width<470||r.height<46||r.height>190)continue;
+   if(!/doweo/i.test(node.textContent||''))continue;
+   if(!node.querySelector('input,[role="search"],[role="searchbox"],[class*="search"],[id*="search"]') &&
+      !/search/i.test(node.textContent||''))continue;
+   return node;
+  }
+  return null;
+ }
+ function syncOptions(){
+  const options=[...source.options].filter(option=>option.value&&option.value!=='manage'&&!option.value.startsWith('─'));
+  const signature=options.map(option=>option.value+'\u0000'+option.text).join('\n');
+  if(select.dataset.signature!==signature){
+   select.replaceChildren(...options.map(option=>new Option(option.text,option.value)));
+   select.dataset.signature=signature;
+  }
+  if(options.some(option=>option.value===source.value))select.value=source.value;
+ }
+ select.addEventListener('change',()=>{
+  const id=select.value;
+  const original=source.value;
+  source.value=id;
+  source.dispatchEvent(new Event('change',{bubbles:true}));
+  // The legacy select may be a filter only; the existing global tracker
+  // opening function is the application's own navigation handler.
+  if(typeof window.openTracker==='function' && id!==original){
+   Promise.resolve(window.openTracker(id)).catch(error=>console.warn('Tracker switch failed',error));
+  }
+ });
+ function apply(){
+  frame=0;
+  if(!desktop.matches){
+   document.body.classList.remove('dw-desktop-tracker-tools');
+   return;
+  }
+  const visible=(dashboard.getClientRects().length>0 || document.body.classList.contains('sq-bills-open')) &&
+   !document.body.classList.contains('sq-auth-guest') &&
+   !document.body.classList.contains('settings-view') &&
+   !document.body.classList.contains('trackers-view');
+  const header=visible?findHeader():null;
+  const shouldShow=Boolean(visible&&header);
+  document.body.classList.toggle('dw-desktop-tracker-tools',shouldShow);
+  if(!shouldShow)return;
+  syncOptions();
+  // Insert alongside the existing search control; preserve search and Weo.
+  if(picker.parentElement!==header){
+   const search=header.querySelector('input[type="search"],input[placeholder*="earch"],[role="searchbox"],[role="search"],[class*="search"]');
+   let region=search;
+   while(region&&region.parentElement!==header)region=region.parentElement;
+   if(region&&region!==picker)header.insertBefore(picker,region);
+   else {
+    const askChild=[...header.children].find(el=>/ask\s+weo/i.test(el.textContent||''));
+    header.insertBefore(picker,askChild||null);
+   }
+  }
+  header.classList.add('dw-inline-tracker-header');
+  const tabs=[...tabbar.querySelectorAll('button[data-sq-tab]')];
+  if(tabs.length>=4&&!tabbar.contains(chat))tabbar.append(chat);
+  tabbar.classList.add('dw-inline-five-tabs');
+ }
+ function schedule(){if(!frame)frame=requestAnimationFrame(apply)}
+ const observer=new MutationObserver(schedule);
+ observer.observe(document.body,{attributes:true,attributeFilter:['class'],childList:true,subtree:false});
+ observer.observe(dashboard,{attributes:true,attributeFilter:['class','hidden'],childList:true});
+ observer.observe(source,{childList:true,subtree:true,attributes:true,attributeFilter:['value']});
+ window.addEventListener('squareup:tracker-detail',schedule);
+ window.addEventListener('resize',schedule,{passive:true});
+ window.addEventListener('pageshow',schedule);
+ if(desktop.addEventListener)desktop.addEventListener('change',schedule);
+ source.addEventListener('change',schedule);
+ schedule();
+})();
