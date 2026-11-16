@@ -63,8 +63,8 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
    });
    console.log('FULL_APP_LAYOUT',width,JSON.stringify(state));
    assert.ok(state.nav.top>=state.header.bottom+8,'all tabs must be below the fixed header');
-   assert.ok(state.nav.bottom<=state.back.top+1,'tabs must be above Back');
-   assert.ok(state.back.bottom<=state.title.top+1,'Back must be above title');
+   assert.ok(state.nav.bottom<=state.title.top+1,'tabs must be above title');
+   assert.equal(await page.locator('#sq-bills-back').isVisible(),false,'Overview replaces the redundant Back button');
    assert.ok(state.title.bottom<=state.a.top+1,'metrics below title');
    assert.ok(Math.abs(state.a.top-state.b.top)<2,'metrics side by side');
    assert.ok(state.a.height<=150&&state.b.height<=150,'compact metrics');
@@ -113,11 +113,11 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   // Match the reported page: no bills and one saved subscription.
   const allBills=bills;bills=bills.filter(item=>item.kind==='subscription');
   await page.setViewportSize({width:390,height:844});
-  await page.locator('#sq-bills-tracker').selectOption(tracker);
+  await page.locator('#dw-tracker-picker').selectOption(tracker);
   await page.waitForFunction(()=>document.getElementById('sq-bills-bill-list').textContent==='No bills yet.');
   await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
   await page.screenshot({path:resolve(root,'test-results/bills/iphone-subscriptions-only-390.png')});
-  bills=allBills;await page.locator('#sq-bills-tracker').selectOption(tracker);
+  bills=allBills;await page.locator('#dw-tracker-picker').selectOption(tracker);
   await page.locator('#sq-bills-bill-list .sq-bills-row').waitFor();
   await safeAreaStyle.evaluate(el=>el.remove());
   await page.locator('.dw-bills-calendar-fold > summary').click();
@@ -200,6 +200,38 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   await page.waitForFunction(()=>document.body.classList.contains('sq-bills-open'));
   await page.locator('[data-sq-bills-tab="members"]').click();
   await page.waitForFunction(()=>!document.body.classList.contains('sq-bills-open')&&document.getElementById('tracker-dashboard').classList.contains('sq-tab-members'));
+  // App navigation uses the original controls and the actual complete DOM.
+  await page.setViewportSize({width:390,height:844});
+  await page.evaluate(()=>document.getElementById('nav-home').click());
+  await page.locator('#dw-account-home .dw-home-trackers').waitFor();
+  assert.equal(await page.locator('#tracker-dashboard').isVisible(),false);
+  await page.screenshot({path:resolve(root,'test-results/bills/navigation-home-390.png'),fullPage:true});
+  await page.locator('[data-home-tracker]').click();
+  await page.locator('#tracker-dashboard [data-sq-tab="chat"]').click();
+  assert.ok(await page.locator('#chat-card').isVisible(),'Chat opens original message controls');
+  assert.ok(await page.locator('#chat-card').evaluate(e=>e.open));
+  await page.waitForFunction(()=>document.getElementById('dw-tracker-picker').getBoundingClientRect().bottom<=document.querySelector('#tracker-dashboard .sq-workspace-tabs').getBoundingClientRect().top);
+  assert.equal(await page.locator('#dw-tracker-picker').inputValue(),tracker);
+  await page.screenshot({path:resolve(root,'test-results/bills/navigation-chat-390.png'),fullPage:true});
+  await page.evaluate(()=>document.getElementById('nav-analytics').click());
+  await page.locator('#sq-ng-content #analytics-page').waitFor();
+  assert.ok(await page.locator('#dw-analytics-context select').isVisible());
+  assert.equal(await page.locator('#sq-ng-title').textContent(),'Analytics');
+  await page.screenshot({path:resolve(root,'test-results/bills/navigation-analytics-390.png'),fullPage:true});
+  await page.evaluate(()=>document.querySelector('#sq-nextgen [data-ng-tab="finance"]').click());
+  await page.locator('#sq-ng-open-transaction').waitFor();
+  assert.equal(await page.locator('#sq-ng-content #analytics-page').count(),0,'tracker analytics restores before Finance content is replaced');
+  await page.evaluate(()=>document.querySelector('#sq-nextgen [data-ng-tab="insights"]').click());
+  await page.locator('#sq-ng-content #analytics-page').waitFor();
+  await page.setViewportSize({width:1280,height:900});
+  await page.screenshot({path:resolve(root,'test-results/bills/navigation-analytics-1280.png'),fullPage:true});
+  await page.evaluate(()=>document.getElementById('nav-home').click());
+  await page.locator('#dw-account-home .dw-home-trackers').waitFor();
+  const sidebar=await page.locator('.sidebar .squareup-nav > button').evaluateAll(nodes=>nodes.filter(n=>n.getClientRects().length).map(n=>n.id));
+  assert.deepEqual(sidebar,['nav-home','nav-trackers','sqev-nav','sq-finance-nav','nav-friends']);
+  assert.equal(await page.locator('.sidebar .squareup-nav details').count(),1);
+  assert.equal(await page.locator('.sidebar details #dw-beta-launch').count(),1);
+  await page.screenshot({path:resolve(root,'test-results/bills/navigation-home-1280.png'),fullPage:true});
   assert.equal(writes.filter(x=>x.method==='PATCH').length,16,'both kinds saved/reopened at all four widths');
   // Record errors alongside screenshots for debugging complete app integration.
   console.log('FULL_APP_ERRORS',JSON.stringify(errors));
