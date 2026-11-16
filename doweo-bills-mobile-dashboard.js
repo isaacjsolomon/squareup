@@ -19,6 +19,8 @@
  const back=page.querySelector(':scope > .sq-bills-back');
  const heading=page.querySelector(':scope > .sq-bills-title');
  const metrics=overview.querySelector('.sq-premium-metrics');
+ const originalTabsAnchor=document.createComment('bills-tabs-desktop-position');
+ if(tabs)tabs.before(originalTabsAnchor);
  const cards=Array.from(metrics?.querySelectorAll(':scope > article')||[]);
  const set=(node,property,value)=>node?.style.setProperty(property,value,'important');
  const clear=(node,properties)=>properties.forEach(p=>node?.style.removeProperty(p));
@@ -36,10 +38,13 @@
   set(metrics,'display','grid');set(metrics,'grid-template-columns','minmax(0,1.25fr) minmax(0,.75fr)');
   set(metrics,'gap','10px');set(metrics,'width','100%');
   cards.forEach(card=>{set(card,'grid-column','auto');set(card,'grid-row','auto');set(card,'min-height','108px');set(card,'width','auto');set(card,'margin','0');});
-  set(create,'order','0');set(metrics,'order','1');
+  // Show the important totals first; adding a bill is the next clear action.
+  set(metrics,'order','0');set(create,'order','1');
   set(page.querySelector('.sq-bills-columns'),'order','4');
  };
  const restoreDesktop=()=>{
+  // Undo mobile-only DOM movement when the viewport expands.
+  if(tabs&&originalTabsAnchor.parentNode)originalTabsAnchor.after(tabs);
   for(const [node,props] of [
    [page,['display','flex-direction','gap','padding-top','height']],
    [tabs,['position','top','inset','transform','margin','width']],
