@@ -4,9 +4,9 @@
  const page=document.getElementById('sq-bills-page');
  if(!page||page.dataset.dwBillsResponsive==='ready')return;
  const overview=page.querySelector('.sq-premium-overview');
- const calendar=overview?.querySelector('.sq-premium-calendar');
- const create=overview?.querySelector('.sq-bill-create-card');
- if(!overview||!calendar||!create)return;
+ const calendar=page.querySelector('.sq-premium-calendar');
+ const create=page.querySelector('.sq-bill-create-card');
+ if(!overview||!calendar)return;
  page.dataset.dwBillsResponsive='ready';
  const media=window.matchMedia('(max-width:760px)');
  const calendarFold=document.createElement('details');
@@ -22,7 +22,7 @@
    if(calendar.parentElement!==calendarFold)calendarFold.append(calendar);
    if(calendarFold.parentElement!==page)page.append(calendarFold);
   }else{
-   if(calendar.parentElement!==overview)overview.insertBefore(calendar,create);
+   if(calendar.parentElement!==overview){if(create&&create.parentElement===overview)overview.insertBefore(calendar,create);else overview.append(calendar);}
    calendarFold.remove();
   }
  };
