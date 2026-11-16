@@ -17,7 +17,7 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   res.setHeader('Content-Type',types[extname(path)]||'application/octet-stream');res.end(readFileSync(path));
  });
  await new Promise(done=>server.listen(0,'127.0.0.1',done));
- const origin='http://127.0.0.1:'+server.address().port;
+ const origin=process.env.BILLS_BASE_URL||'http://127.0.0.1:'+server.address().port;
  const browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{})});
  const tracker='11111111-1111-4111-8111-111111111111',user='22222222-2222-4222-8222-222222222222',friend='33333333-3333-4333-8333-333333333333';
  const detail={id:tracker,name:'Weekend apartment',role:'owner',members:[{id:user,name:'Alex',isYou:true},{id:friend,name:'Jordan'}],entries:[],currency:'USD'};
@@ -40,7 +40,7 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
    }
    await route.fulfill({json:data});
   });
-  await context.route('https://**',route=>new URL(route.request().url()).hostname==='esm.sh'?route.fallback():route.abort());
+  await context.route('https://**',route=>(new URL(route.request().url()).hostname==='esm.sh'||new URL(route.request().url()).origin===origin)?route.fallback():route.abort());
   const page=await context.newPage();page.on('pageerror',error=>errors.push(error.stack));
   await page.goto(origin,{waitUntil:'networkidle'});
   await page.waitForFunction(()=>typeof window.squareUpApi==='function');
@@ -57,7 +57,8 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
     const nav=box('.sq-bills-workspace-tabs'),back=box('.sq-bills-back'),title=box('.sq-bills-title');
     const a=box('.sq-premium-metrics article:first-child'),b=box('.sq-premium-metrics article:nth-child(2)');
     const bottom=box('.sq-mobile-nav');
-    return {nav,back,title,a,b,bottom,width:innerWidth,overflow:document.documentElement.scrollWidth,body:document.body.className};
+    const styles=s=>{const e=document.querySelector(s),c=getComputedStyle(e);return {box:box(s),height:c.height,minHeight:c.minHeight,padding:c.padding,margin:c.margin}};
+    return {nav,back,title,a,b,bottom,width:innerWidth,overflow:document.documentElement.scrollWidth,body:document.body.className,wrap:styles('body > .wrap'),manager:styles('#trackers-page'),footer:styles('.sq-legal-footer')};
    });
    console.log('FULL_APP_LAYOUT',width,JSON.stringify(state));
    assert.ok(state.nav.bottom<=state.back.top+1,'tabs must be above Back');

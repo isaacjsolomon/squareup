@@ -54,10 +54,13 @@ test('responsive billing page is compact on mobile and restores desktop structur
   await page.locator('.dw-bills-calendar-fold > summary').click();
   assert.equal(await page.locator('.dw-bills-calendar-fold').evaluate(el=>el.open),true,'calendar can be expanded');
   await page.setViewportSize({width:1000,height:844});
+  await page.waitForFunction(()=>!document.getElementById('sq-bills-page').classList.contains('dw-bills-compact'));
   assert.equal(await page.locator('#sq-bills-page').evaluate(el=>el.classList.contains('dw-bills-compact')),false,'desktop mode off');
   assert.equal(await page.locator('.sq-premium-calendar').evaluate(el=>el.parentElement.classList.contains('sq-premium-overview')),true,'desktop calendar returns to original grid');
   assert.equal(await page.locator('.sq-bills-workspace-tabs').evaluate(el=>el.parentElement.id), 'sq-bills-page','desktop tabs restore their original parent');
   await page.setViewportSize({width:390,height:844});
+  await page.waitForFunction(()=>document.getElementById('sq-bills-page').classList.contains('dw-bills-compact'));
   assert.equal(await page.locator('.sq-premium-calendar').evaluate(el=>el.parentElement.classList.contains('dw-bills-calendar-fold')),true,'calendar moves back on resize');
  }finally{await browser.close()}
 });
+
