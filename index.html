@@ -2301,6 +2301,35 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
  }
 }
 </style>
+<style id="dw-tracker-settings-redesign">
+/* Compact action drawer: one-column list, not a giant nested settings card. */
+html body .tracker-tile-menu-panel:has(.tracker-settings-view:not([hidden])){
+  padding:10px!important;border-radius:16px!important;
+  background:#0b263b!important;box-shadow:0 16px 42px #0009!important;
+}
+html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]){gap:4px!important}
+html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .sq-tracker-settings-group{
+  display:block!important;padding:2px!important;margin:0!important;
+  border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;
+}
+html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .sq-tracker-settings-group-title{
+  margin:7px 4px 3px!important;padding:3px 5px!important;border:0!important;
+  font-size:10px!important;letter-spacing:.13em!important;
+}
+html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .sq-tracker-settings-action{
+  min-height:43px!important;height:auto!important;padding:6px 8px!important;
+  gap:10px!important;border:0!important;border-radius:9px!important;
+  font-size:13px!important;
+}
+html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .sq-tracker-settings-action .tracker-menu-glyph{
+  width:28px!important;height:28px!important;min-width:28px!important;
+  font-size:16px!important;border-radius:8px!important;
+}
+html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker-menu-chevron{font-size:19px!important}
+html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker-settings-back{
+  padding:7px 9px!important;min-height:37px!important;font-size:16px!important;
+}
+</style>
 <link rel="stylesheet" href="/weo-mascot.css">
 <link rel="stylesheet" href="/weo-actions.css">
 
@@ -4906,29 +4935,40 @@ async function renderTrackerGallery(){
       // actions remain accessible, including on short cards and mobile screens.
       function placeTrackerMenu(){
         if(!menu.open)return;
-        var rect=menuToggle.getBoundingClientRect();
         var showingSettings=!settingsView.hidden;
-        var isMobile=window.matchMedia('(max-width: 600px)').matches;
-        var viewportHeight=window.visualViewport ? window.visualViewport.height : window.innerHeight;
-        var viewportTop=window.visualViewport ? window.visualViewport.offsetTop : 0;
-        var width=Math.min(showingSettings ? 430 : 310,window.innerWidth-24);
-        var left=showingSettings && isMobile
-          ? Math.max(12,(window.innerWidth-width)/2)
-          : Math.max(12,Math.min(window.innerWidth-width-12,rect.right-width));
-        menuPanel.style.position='fixed';menuPanel.style.boxSizing='border-box';
+        var viewport=window.visualViewport;
+        var vw=window.innerWidth;
+        var vh=viewport?viewport.height:window.innerHeight;
+        var vt=viewport?viewport.offsetTop:0;
+        var rect=menuToggle.getBoundingClientRect();
+        var sidebar=document.querySelector('.sidebar');
+        var sideRect=sidebar?sidebar.getBoundingClientRect():null;
+        var sidebarEdge=sideRect && sideRect.right>0 && sideRect.left<vw && vw>800
+          ? Math.min(vw-80,Math.max(0,sideRect.right)):0;
+        var available=vw-sidebarEdge;
+        var width=showingSettings?Math.min(360,available-32):Math.min(310,vw-24);
+        var left=showingSettings
+          ? sidebarEdge+Math.max(12,(available-width)/2)
+          : Math.max(12,Math.min(vw-width-12,rect.right-width));
+        menuPanel.style.position='fixed';
+        menuPanel.style.boxSizing='border-box';
+        menuPanel.style.transform='none';
         menuPanel.style.width=width+'px';
-        menuPanel.style.left=left+'px';menuPanel.style.right='auto';
+        menuPanel.style.minWidth='0';
+        menuPanel.style.maxWidth=width+'px';
+        menuPanel.style.left=left+'px';
+        menuPanel.style.right='auto';
         menuPanel.style.zIndex='100000';
-        menuPanel.style.maxHeight=(showingSettings ? Math.min(680,viewportHeight-24) : Math.min(440,viewportHeight-24))+'px';
+        menuPanel.style.maxHeight=(showingSettings?Math.min(490,vh-24):Math.min(440,vh-24))+'px';
         menuPanel.style.overflowY='auto';
         menuPanel.style.visibility='hidden';
-        var height=Math.min(menuPanel.getBoundingClientRect().height,viewportHeight-24);
-        var below=viewportTop+viewportHeight-rect.bottom-12;
-        var above=rect.top-viewportTop-12;
-        var top=showingSettings && isMobile
-          ? viewportTop+Math.max(12,(viewportHeight-height)/2)
-          : (below>=Math.min(height,280)||below>=above) ? rect.bottom+7 : rect.top-height-7;
-        menuPanel.style.top=Math.max(viewportTop+12,Math.min(viewportTop+viewportHeight-height-12,top))+'px';
+        var height=Math.min(menuPanel.getBoundingClientRect().height,vh-24);
+        var below=vt+vh-rect.bottom-12;
+        var above=rect.top-vt-12;
+        var top=showingSettings
+          ? vt+Math.max(12,(vh-height)/2)
+          : (below>=Math.min(height,280)||below>=above)?rect.bottom+7:rect.top-height-7;
+        menuPanel.style.top=Math.max(vt+12,Math.min(vt+vh-height-12,top))+'px';
         menuPanel.style.visibility='visible';
       }
       function closeTrackerMenu(){menu.open=false;}
