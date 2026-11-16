@@ -13,7 +13,7 @@
  const message=page.querySelector('#sq-bills-message');
  if(!overview||!calendar||!create||!tabs||!back||!heading||!columns)return;
  page.dataset.dwBillsResponsive='ready';
- const media=window.matchMedia('(max-width:760px)');
+ const media=window.matchMedia('(max-width:900px)');
  const shell=document.createElement('div');
  shell.className='dw-bills-mobile-shell';
  const workspace=document.createElement('div');workspace.className='dw-bills-workspace';
@@ -55,7 +55,7 @@
   if(!media.matches||!page.getClientRects().length)return;
   const header=document.querySelector('.sq-mobile-top');
   if(!header||!header.getClientRects().length)return;
-  const bottom=Math.ceil(header.getBoundingClientRect().bottom)+10;
+  const bottom=Math.ceil(window.DoWeoNavigation?.trackerContextBottom()||header.getBoundingClientRect().bottom)+10;
   const pageBox=page.getBoundingClientRect();
   const documentTop=pageBox.top+window.scrollY;
   shell.style.setProperty('--dw-bills-header-bottom',bottom+'px');
@@ -102,7 +102,7 @@
   if(!dashboard.getClientRects().length||!header.getClientRects().length||document.body.classList.contains('sq-bills-open'))return;
   if(!dashboard.classList.contains('dw-mobile-tabs-ready'))dashboard.classList.add('dw-mobile-tabs-ready');
   const edge=header.getBoundingClientRect();
-  const top=Math.ceil(edge.bottom)+10;
+  const top=Math.ceil(window.DoWeoNavigation?.trackerContextBottom()||edge.bottom)+10;
   dashboard.style.setProperty('--dw-tracker-tabs-top',top+'px');
   dashboard.style.setProperty('--dw-tracker-tabs-left',edge.left+'px');
   dashboard.style.setProperty('--dw-tracker-tabs-width',edge.width+'px');

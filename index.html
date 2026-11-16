@@ -2791,7 +2791,7 @@ html body #sq-payment-dispute-overlay textarea{
   <div id="sq-tracker-loading" class="sq-tracker-loading" role="status" aria-live="polite" hidden>
     <span class="sq-tracker-spinner" aria-hidden="true"></span><span>Loading tracker data…</span>
   </div>
-  <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="bills" role="tab" aria-selected="false">Bills</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button></div>
+  <div class="sq-workspace-tabs" role="tablist" aria-label="Tracker sections"><button type="button" data-sq-tab="overview" role="tab" aria-selected="true">Overview</button><button type="button" data-sq-tab="expenses" role="tab" aria-selected="false">Expenses</button><button type="button" data-sq-tab="bills" role="tab" aria-selected="false">Bills</button><button type="button" data-sq-tab="members" role="tab" aria-selected="false">Members</button><button type="button" data-sq-tab="chat" role="tab" aria-selected="false">Chat</button></div>
   
 
   <section id="sq-template-dashboard" class="sq-template-dashboard" hidden aria-label="Tracker template overview"></section>
@@ -3111,7 +3111,7 @@ html body #sq-payment-dispute-overlay textarea{
   <button type="button" data-sq-bills-tab="overview" role="tab" aria-selected="false">Overview</button>
   <button type="button" data-sq-bills-tab="expenses" role="tab" aria-selected="false">Expenses</button>
   <button type="button" data-sq-bills-tab="bills" role="tab" aria-selected="true">Bills</button>
-  <button type="button" data-sq-bills-tab="members" role="tab" aria-selected="false">Members</button>
+  <button type="button" data-sq-bills-tab="members" role="tab" aria-selected="false">Members</button><button type="button" data-sq-bills-tab="chat" role="tab" aria-selected="false">Chat</button>
 </nav>
   <button type="button" id="sq-bills-back" class="sq-bills-back">← Back to Home</button>
   <div class="sq-bills-title dw-page-header"><div><h2>Subscriptions & Bills</h2></div><div class="sq-bills-tracker-compact"><label for="sq-bills-tracker">Select a tracker</label><select id="sq-bills-tracker"><option value="">Loading trackers…</option></select></div></div>
@@ -4488,6 +4488,7 @@ sqFillCurrencies();
 var myProfileSettings = null;
 function settingsMessage(id, message, ok) { var el=$(id); el.textContent=message; el.style.color=ok?'#65f5ac':'#ff9db1'; }
 function settingsRoute(page) {
+  window.DoWeoNavigation?.route(page);
   document.body.classList.remove('sq-help-view');
   document.body.classList.remove('split-view','settings-view','about-view','trackers-view','analytics-view','friends-view','notifications-view');
   if(page==='friends')document.body.classList.add('friends-view');
@@ -5762,6 +5763,7 @@ function sqSetTrackerLoading(loading) {
 }
 
 async function openTracker(id) {
+  window.DoWeoNavigation?.trackerWillOpen(id);
   sqSetTrackerLoading(true);
   store(CURRENT_KEY, id);
   lastSnapshot = "";
@@ -6503,6 +6505,8 @@ function sqRenderMonthlyRecap(){
  out.innerHTML=cards.map(function(c){return '<div class="sq-recap-stat"><span>'+esc(c[0])+'</span><strong>'+esc(c[1])+'</strong></div>';}).join('');
  breakdown.textContent='Based on recorded debt entries dated in this month. Split bills can create multiple entries; totals reflect entries, not unique receipts. Undated and pending/disputed entries are excluded.';
 }
+window.squareUpRenderAnalytics=()=>renderSquareUpAnalytics();
+window.squareUpNavigateTracker=async id=>{settingsRoute("dashboard");await openTracker(id);document.querySelector('[data-sq-tab="overview"]')?.click();};
 function renderSquareUpAnalytics(){
  var title=document.getElementById('analytics-tracker-title'),stats=document.getElementById('analytics-stats'),friends=document.getElementById('analytics-friends'),monthsEl=document.getElementById('analytics-months'),peopleEl=document.getElementById('analytics-people'),recentEl=document.getElementById('analytics-recent');
  sqRenderMonthlyRecap();
@@ -6727,6 +6731,7 @@ import('./squareup-events.js').then(module => module.initEvents({api, getTracker
  const cards=Array.from(dashboard.children).filter(e=>e.classList.contains('card')||e.classList.contains('tracker-tools-grid')||e.classList.contains('dashboard-actions'));
  const tools=document.querySelector('.tracker-tools-grid');
  function tab(name){
+  window.DoWeoNavigation?.trackerTab(name);
   tabs.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.sqTab===name)));
   cards.forEach(e=>e.classList.toggle('sq-tab-hidden',name!=='overview'));
   document.getElementById('sq-overview-stats').classList.toggle('sq-tab-hidden',name!=='overview');
@@ -11826,7 +11831,7 @@ header p{color:#b1c7d5!important}
 <section id="sq-nextgen" hidden aria-label="DoWeo Finance Workspace">
  <div class="sq-ng-shell">
   <header class="sq-ng-header"><div class="sq-ng-heading"><button type="button" id="sq-ng-back" aria-label="Back to Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Home</span></button><span class="sq-ng-kicker">DOWEO / YOUR MONEY</span><h1 id="sq-ng-title">Finance Hub</h1><p id="sq-ng-subtitle">A clearer picture of your finances.</p></div>
-  <div class="sq-ng-mobile-picker" style="display:none!important" aria-hidden="true"><label for="sq-ng-mobile-select">Finance Hub section</label><div class="sq-ng-mobile-select-wrap"><select id="sq-ng-mobile-select" aria-label="Choose Finance Hub section"><option value="finance">Personal Finance</option><option value="wallet">Wallet &amp; Settlements</option><option value="trip">Trips</option><option value="home">Household</option><option value="subscriptions">Subscriptions</option><option value="currencies">Currencies</option><option value="insights">Smart Insights</option></select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+  <div class="sq-ng-mobile-picker" style="display:none!important" aria-hidden="true"><label for="sq-ng-mobile-select">Finance Hub section</label><div class="sq-ng-mobile-select-wrap"><select id="sq-ng-mobile-select" aria-label="Choose Finance Hub section"><option value="finance">Personal Finance</option><option value="wallet">Wallet &amp; Settlements</option><option value="trip">Trips</option><option value="home">Household</option><option value="subscriptions">Subscriptions</option><option value="currencies">Currencies</option><option value="insights">Analytics</option></select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
   <nav id="sq-finance-mobile-tiles" aria-label="Finance Hub sections">
 <button id="sq-ng-prev-tabs" type="button" aria-label="Show previous Finance Hub sections" title="Show previous sections"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
 <button type="button" data-ng-tab="finance" data-sq-visible="true" class="selected">Personal</button>
@@ -11835,10 +11840,10 @@ header p{color:#b1c7d5!important}
 <button type="button" data-ng-tab="home">Household</button>
 <button type="button" data-ng-tab="subscriptions">Bills</button>
 <button type="button" data-ng-tab="currencies">Currencies</button>
-<button type="button" data-ng-tab="insights">Insights</button>
+<button type="button" data-ng-tab="insights">Analytics</button>
 <button id="sq-ng-next-tabs" type="button" aria-label="Show next Finance Hub sections" title="Show more sections"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
 </nav>
-  <div class="sq-ng-tabs"><button type="button" data-ng-tab="finance" class="selected" aria-label="Personal Finance">Personal</button><button type="button" data-ng-tab="wallet" aria-label="Wallet & Settlements">Wallet</button><button type="button" data-ng-tab="trip" aria-label="Trips">Trips</button><button type="button" data-ng-tab="home" aria-label="Household">Household</button><button type="button" data-ng-tab="subscriptions" aria-label="Subscriptions">Bills</button><button type="button" data-ng-tab="currencies" aria-label="Currencies">Currencies</button><button type="button" data-ng-tab="insights" aria-label="Smart Insights">Insights</button></div>
+  <div class="sq-ng-tabs"><button type="button" data-ng-tab="finance" class="selected" aria-label="Personal Finance">Personal</button><button type="button" data-ng-tab="wallet" aria-label="Wallet & Settlements">Wallet</button><button type="button" data-ng-tab="trip" aria-label="Trips">Trips</button><button type="button" data-ng-tab="home" aria-label="Household">Household</button><button type="button" data-ng-tab="subscriptions" aria-label="Subscriptions">Bills</button><button type="button" data-ng-tab="currencies" aria-label="Currencies">Currencies</button><button type="button" data-ng-tab="insights" aria-label="Analytics">Analytics</button></div>
   <p id="sq-ng-status" role="status" aria-live="polite"></p><div id="sq-ng-content"></div>
  </div>
 </section>
@@ -11988,14 +11993,14 @@ document.addEventListener('click',event=>{
 const root=document.getElementById('sq-nextgen'), content=document.getElementById('sq-ng-content'), status=document.getElementById('sq-ng-status');let tab='finance', finance=[];const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=(v,c='USD')=>{try{return new Intl.NumberFormat(undefined,{style:'currency',currency:c}).format(v)}catch{return String(v)}};const api=(path,method='GET',body)=>window.squareUpApi(path,method,body);
 const card=(name,val,feature=false)=>`<article class="sq-ng-card ${feature?'feature':''}"><small>${esc(name)}</small><strong>${esc(val)}</strong></article>`;
 let previousFinanceTabs=[];const openedWorkspaces={trip:null,household:null};function syncFinanceSidebar(){const sidebar=document.querySelector('.sidebar');const rect=sidebar?.getBoundingClientRect();const offset=rect&&rect.width&&rect.right>0?Math.ceil(rect.right):0;document.body.style.setProperty('--sq-finance-sidebar-offset',offset+'px');}
-function open(which){previousFinanceTabs=[];openedWorkspaces.trip=null;openedWorkspaces.household=null;root.hidden=false;document.body.classList.add('sq-finance-open');syncFinanceSidebar();document.body.style.overflow='hidden';tab=which;render();}
-function close(){root.hidden=true;document.body.classList.remove('sq-finance-open');document.body.style.removeProperty('--sq-finance-sidebar-offset');document.body.style.overflow='';previousFinanceTabs=[];}
+function open(which){window.DoWeoNavigation?.financeWillOpen();previousFinanceTabs=[];openedWorkspaces.trip=null;openedWorkspaces.household=null;root.hidden=false;document.body.classList.add('sq-finance-open');syncFinanceSidebar();document.body.style.overflow='hidden';tab=which;render();}
+function close(){window.DoWeoNavigation?.restoreAnalytics();root.hidden=true;document.body.classList.remove('sq-finance-open');document.body.style.removeProperty('--sq-finance-sidebar-offset');document.body.style.overflow='';previousFinanceTabs=[];}
 document.getElementById('sq-ng-back')?.addEventListener('click',()=>{close();document.getElementById('nav-home')?.click();});
 window.addEventListener('resize',()=>{if(!root.hidden)syncFinanceSidebar()});
 document.getElementById('side-toggle')?.addEventListener('click',()=>{if(!root.hidden)requestAnimationFrame(syncFinanceSidebar)});
 function switchFinanceTab(next){if(next===tab)return;previousFinanceTabs.push(tab);tab=next;openedWorkspaces.trip=null;openedWorkspaces.household=null;render();}
 document.getElementById('sq-finance-nav').addEventListener('click',()=>open('finance'));document.getElementById('sq-ng-mobile-select').addEventListener('change',e=>switchFinanceTab(e.target.value));root.querySelectorAll('[data-ng-tab]').forEach(b=>b.addEventListener('click',()=>switchFinanceTab(b.dataset.ngTab)));
-async function render(){document.getElementById('sq-ng-mobile-select').value=tab;root.querySelectorAll('[data-ng-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.ngTab===tab));const labels={finance:['Personal Finance Hub','Private spending and income, separate from your shared trackers.'],wallet:['Wallet & Settlements','Your balances across existing trackers, without changing any debts.'],trip:['Trip Mode','Your existing trips stay linked to their trackers.'],home:['Household Mode','Build shared routines around your existing trackers.'],subscriptions:['Subscription Manager','Manage recurring bills in your existing billing center.'],currencies:['Multi-Currency','Understand how currency conversion works in DoWeo.'],insights:['Smart Insights','Useful answers calculated from your saved financial records.']};document.getElementById('sq-ng-title').textContent=labels[tab][0];document.getElementById('sq-ng-subtitle').textContent=labels[tab][1];status.textContent='';content.innerHTML='<p>Loading your workspace…</p>';try{if(tab==='finance'||tab==='insights'){finance=await api('finance/transactions');drawFinance()}else if(tab==='wallet')await drawWallet();else await drawWorkspace()}catch(e){content.innerHTML='<div class="sq-ng-empty">'+esc(e.message||'Could not load this section')+'</div>';}}
+async function render(){window.DoWeoNavigation?.restoreAnalytics();document.getElementById('sq-ng-mobile-select').value=tab;root.querySelectorAll('[data-ng-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.ngTab===tab));const labels={finance:['Personal Finance Hub','Private spending and income, separate from your shared trackers.'],wallet:['Wallet & Settlements','Your balances across existing trackers, without changing any debts.'],trip:['Trip Mode','Your existing trips stay linked to their trackers.'],home:['Household Mode','Build shared routines around your existing trackers.'],subscriptions:['Subscription Manager','Manage recurring bills in your existing billing center.'],currencies:['Multi-Currency','Understand how currency conversion works in DoWeo.'],insights:['Analytics','Useful answers calculated from your saved financial records.']};document.getElementById('sq-ng-title').textContent=labels[tab][0];document.getElementById('sq-ng-subtitle').textContent=labels[tab][1];status.textContent='';content.innerHTML='<p>Loading your workspace…</p>';try{if(tab==='finance'||tab==='insights'){finance=await api('finance/transactions');drawFinance()}else if(tab==='wallet')await drawWallet();else await drawWorkspace()}catch(e){content.innerHTML='<div class="sq-ng-empty">'+esc(e.message||'Could not load this section')+'</div>';}}
 function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce((a,x)=>a+Number(x.amount),0),spent=finance.filter(x=>x.kind==='expense').reduce((a,x)=>a+Number(x.amount),0);const byCategory={};finance.filter(x=>x.kind==='expense').forEach(x=>byCategory[x.category]=(byCategory[x.category]||0)+Number(x.amount));if(tab==='insights'){
  const now=new Date(),months=[];
  for(let n=5;n>=0;n--){const d=new Date(now.getFullYear(),now.getMonth()-n,1);months.push({key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleDateString(undefined,{month:'short',year:'2-digit'}),income:0,expense:0});}
@@ -12007,7 +12012,7 @@ function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce(
  const chart=months.map(m=>`<div class="dw-analytics-month"><div class="dw-analytics-bars"><span class="dw-analytics-bar income" style="height:${Math.max(2,m.income/max*100)}%" title="Income ${esc(money(m.income))}"></span><span class="dw-analytics-bar expense" style="height:${Math.max(2,m.expense/max*100)}%" title="Spending ${esc(money(m.expense))}"></span></div><small>${esc(m.label)}</small></div>`).join('');
  const breakdown=Object.entries(categories).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([name,amount])=>`<div class="dw-analytics-category"><span>${esc(name)}</span><strong>${esc(money(amount))}</strong><div class="dw-analytics-track"><span style="width:${current.expense?Math.min(100,100*amount/current.expense):0}%"></span></div></div>`).join('');
  content.innerHTML=`<div class="sq-ng-grid">${card('This month income',money(current.income),true)}${card('This month spending',money(current.expense))}${card('Monthly cash flow',money(current.income-current.expense))}</div><div class="dw-analytics-layout"><section class="sq-ng-card"><h2>Last six months</h2><p class="sq-ng-note">Mint: income · Blue: spending</p><div class="dw-analytics-months" role="img" aria-label="Six-month income and spending chart">${chart}</div></section><section class="sq-ng-card"><h2>This month's spending categories</h2>${breakdown||'<p>No expenses recorded this month.</p>'}<p class="sq-ng-note">Previous month spending: ${esc(money(previous.expense))}</p></section></div><p class="sq-ng-note">Calculated from your private personal transactions in USD; shared tracker debts are excluded.</p>`;
- return;
+ window.DoWeoNavigation?.mountAnalytics(content);return;
 }
 content.innerHTML=`<div class="sq-ng-finance-overview"><div class="sq-ng-grid sq-ng-summary-stack">${card('Personal cash flow',money(income-spent),true)}${card('Total income',money(income))}${card('Total spending',money(spent))}</div><button type="button" class="sq-ng-add-action" id="sq-ng-open-transaction" aria-haspopup="dialog" aria-controls="sq-ng-txn-overlay"><span class="sq-ng-add-action-icon" aria-hidden="true">+</span><strong>Add Expense</strong><span class="sq-ng-add-action-hint">Or record income</span></button></div><section class="sq-ng-card sq-ng-section"><h2>Recent personal activity</h2><div class="sq-ng-list">${finance.length?finance.map(x=>`<div class="sq-ng-item"><div><b>${esc(x.description)}</b><small>${esc(x.category)} · ${esc(x.kind)} · ${esc(x.occurred_on)}</small></div><div><b>${x.kind==='expense'?'-':'+'}${esc(money(x.amount))}</b> <button type="button" data-delete="${esc(x.id)}">Delete</button></div></div>`).join(''):'<div class="sq-ng-empty">No personal transactions yet. Add your first one above.</div>'}</div></section><p class="sq-ng-note">Personal records are private and never change shared tracker balances.</p>`;
 const modalHtml = `<div id="sq-ng-txn-overlay" class="sq-ng-txn-overlay" hidden>
@@ -12092,7 +12097,7 @@ form.addEventListener('submit',async event=>{
  }
 });
 content.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Delete this personal transaction?'))return;try{await api('finance/transactions/'+b.dataset.delete,'DELETE');await render()}catch(err){status.textContent=err.message}}));}
-async function drawWallet(){
+async function readWallet(){
  const trackers=await api('trackers');if(!Array.isArray(trackers))throw Error('Could not load trackers');
  const details=await Promise.all(trackers.map(async t=>{try{return {t,data:await api('trackers/'+encodeURIComponent(t.id))}}catch{return {t,data:null}}}));
  const rows=[],activity=[];let unavailable=0;
@@ -12101,6 +12106,12 @@ async function drawWallet(){
    if(e.type==='payment'&&sign!==0)activity.push({tracker:t.name,id:t.id,currency,amount:n,direction:sign===1?'Received':'Sent',date:e.date||e.createdAt||e.created_at||'',description:e.description||'Settlement payment'});
   }rows.push({name:t.name,currency,net:Math.round(net*100)/100,id:t.id});
  }
+ return {rows,activity,unavailable};
+}
+window.squareUpWalletSnapshot=readWallet;
+window.squareUpCloseFinanceHub=close;
+async function drawWallet(){
+ const {rows,activity,unavailable}=await readWallet();
  const groups={};for(const r of rows){(groups[r.currency]??={owed:0,owe:0}).owed+=Math.max(0,r.net);groups[r.currency].owe+=Math.max(0,-r.net)}
  const currencies=Object.entries(groups).sort(([a],[b])=>a.localeCompare(b));
  const currencySummary=currencies.map(([c,v])=>`<div class="sq-wallet-currency"><b>${esc(c)}</b><span><small>Owed to you</small><strong class="sq-wallet-positive">${esc(money(v.owed,c))}</strong></span><span><small>You owe</small><strong class="sq-wallet-negative">${esc(money(v.owe,c))}</strong></span></div>`).join('');
@@ -15538,8 +15549,8 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
 <script src="/doweo-finance-planning.js" defer></script>
 <script src="/doweo-trips-activity.js" defer></script>
 <script src="/doweo-paylinks-currency.js" defer></script>
-<link rel="stylesheet" href="/doweo-bills-mobile-dashboard.css?v=20261116-tracker-tabs-v4">
-<script src="/doweo-bills-mobile-dashboard.js?v=20261116-tracker-tabs-v4" defer></script>
+<link rel="stylesheet" href="/doweo-bills-mobile-dashboard.css?v=20261116-navigation-v5">
+<script src="/doweo-bills-mobile-dashboard.js?v=20261116-navigation-v5" defer></script>
 <style id="dw-flat-sidebar-and-bill-editor-20261116">
 @media(min-width:901px){
  .sidebar .squareup-nav{gap:6px!important}
@@ -15559,6 +15570,8 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  .sq-bill-edit-overlay .sq-bill-edit-form button{min-height:44px!important}
 }
 </style>
+<link rel="stylesheet" href="/doweo-navigation.css?v=20261116-navigation-v5">
+<script src="/doweo-navigation.js?v=20261116-navigation-v5"></script>
 </body>
 </html>
 
