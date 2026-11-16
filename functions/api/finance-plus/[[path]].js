@@ -98,6 +98,47 @@ async function onRequest({request,env,params}){
    }
    return fail('Method not allowed',405);
   }
+  // Read-only activity timeline. Personal entries stay private; tracker entries
+  // require membership and are never mixed into another user's personal records.
+  if(action==='activity'){
+   if(request.method!=='GET'||parts.length!==1)return fail('Method not allowed',405);
+   const trackerId=url.searchParams.get('tracker_id');
+   const kind=url.searchParams.get('kind')||'all';
+   const needle=(url.searchParams.get('q')||'').trim().toLowerCase();
+   const take=Number(url.searchParams.get('limit')||50);
+   if(!['all','expense','income','debt','payment'].includes(kind)
+      ||needle.length>100||!Number.isInteger(take)||take<1||take>100)return fail('Invalid activity filters.');
+   let rows,currency='USD',scope='personal';
+   if(trackerId){
+    if(!(await member(trackerId)))return fail('Tracker not found or not accessible.',404);
+    const tracker=await query('trackers',{filters:{id:'eq.'+trackerId},limit:1});
+    currency=String(tracker[0]?.currency||'USD').toUpperCase();
+    scope='tracker';
+    rows=await query('tracker_entries',{filters:{tracker_id:'eq.'+trackerId},order:'created_at.desc',limit:500});
+   }else{
+    rows=await query('squareup_personal_transactions',{filters:{user_id:'eq.'+uid},order:'created_at.desc',limit:500});
+   }
+   const mapped=rows.map(item=>{
+    const entryKind=String(item.kind||item.type||'entry').toLowerCase();
+    const description=scope==='personal'?String(item.description||'Transaction'):String(item.note||item.type||'Tracker entry');
+    const amount=Number(item.amount);
+    return {
+     id:item.id,
+     scope,kind:entryKind,description:description.slice(0,240),
+     amount:Number.isFinite(amount)?amount:0,
+     currency:scope==='personal'?String(item.currency||'USD').toUpperCase():currency,
+     category:scope==='personal'?String(item.category||'').slice(0,60):'',
+     from:scope==='tracker'?String(item.from_name||'').slice(0,80):'',
+     to:scope==='tracker'?String(item.to_name||'').slice(0,80):'',
+     status:scope==='tracker'?String(item.payment_status||'').slice(0,40):'',
+     date:item.occurred_on||item.date_label||item.created_at||null,
+     created_at:item.created_at||null
+    };
+   });
+   const filtered=mapped.filter(item=>(kind==='all'||item.kind===kind)&&
+     (!needle||[item.description,item.category,item.from,item.to].join(' ').toLowerCase().includes(needle)));
+   return response({scope,items:filtered.slice(0,take),has_more:filtered.length>take,limited_to_recent:rows.length===500});
+  }
   return fail('Not found',404);
  }catch(error){console.error('DoWeo planning failure',String(error?.message||''));return fail('Could not complete the financial planning request.',503)}
 }
