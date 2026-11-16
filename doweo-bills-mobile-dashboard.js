@@ -13,7 +13,7 @@
  const message=page.querySelector('#sq-bills-message');
  if(!overview||!calendar||!create||!tabs||!back||!heading||!columns)return;
  page.dataset.dwBillsResponsive='ready';
- const media=window.matchMedia('(max-width:760px)');
+ const media=window.matchMedia('(max-width:900px)');
  const shell=document.createElement('div');
  shell.className='dw-bills-mobile-shell';
  const workspace=document.createElement('div');workspace.className='dw-bills-workspace';

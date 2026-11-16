@@ -1,6 +1,6 @@
 /* Bills owns its mobile presentation here; desktop layout stays in index.html. */
 #sq-bills-page .sq-bill-price::before{content:' · '}
-@media(max-width:760px){
+@media(max-width:900px){
  body.sq-bills-open > .wrap{isolation:auto!important;z-index:auto!important}
  body.sq-bills-open #trackers-page{margin:0 auto!important;padding-bottom:0!important}
  body.sq-bills-open .sq-bill-edit-overlay{z-index:2147483002!important}

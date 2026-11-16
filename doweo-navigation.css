@@ -1,6 +1,6 @@
 /* App destinations stay in the sidebar; tracker destinations share one bar. */
 #dw-legacy-navigation,[hidden]#dw-tracker-context,[hidden]#dw-account-home{display:none!important}
-#sq-mobile-chat-top,#sq-friends-workspace-tabs{display:none!important}
+#sq-mobile-chat-top,html body.friends-view #friends-page #sq-friends-workspace-tabs{display:none!important}
 #dw-tracker-context{display:flex;align-items:center;gap:12px;margin:18px 0 12px;padding:10px 16px;box-sizing:border-box;background:#092c3d;border:1px solid #386575;border-radius:14px;color:#b4d0da}
 #dw-tracker-context label{font-size:13px;font-weight:700}
 #dw-tracker-picker{flex:1;min-width:0;max-width:420px;background:#0c2333;color:#f3fbff;border:1px solid #426979;border-radius:9px;padding:9px 12px;font:inherit;min-height:42px}

@@ -159,6 +159,9 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
    }
    await page.screenshot({path:resolve(root,`test-results/bills/desktop-bills-actions-${width}.png`),fullPage:true});
   }
+  await page.setViewportSize({width:800,height:900});
+  await page.waitForFunction(()=>document.querySelector('.dw-bills-calendar-fold')&&document.getElementById('dw-tracker-context').getBoundingClientRect().bottom<=document.querySelector('.sq-bills-workspace-tabs').getBoundingClientRect().top);
+  await page.screenshot({path:resolve(root,'test-results/bills/tablet-bills-800.png')});
   await page.setViewportSize({width:1280,height:900});
   await page.screenshot({path:resolve(root,'test-results/bills/desktop-1280.png'),fullPage:true});
   await page.setViewportSize({width:375,height:844});
