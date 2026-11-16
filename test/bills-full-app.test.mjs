@@ -242,6 +242,15 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   assert.equal(await page.locator('.sidebar details #dw-beta-launch').count(),1);
   await page.screenshot({path:resolve(root,'test-results/bills/navigation-home-1280.png'),fullPage:true});
   assert.equal(writes.filter(x=>x.method==='PATCH').length,16,'both kinds saved/reopened at all four widths');
+  await page.evaluate(()=>document.getElementById('sqev-nav').click());
+  await page.locator('#sqev-view').waitFor();
+  await page.waitForFunction(()=>document.getElementById('sqev-nav').classList.contains('active')&&!document.body.classList.contains('dw-account-home-open'));
+  assert.equal(await page.locator('#dw-account-home').isVisible(),false,'Events keeps its route when it reuses the legacy Home handler');
+  await page.evaluate(()=>document.getElementById('nav-friends').click());
+  await page.locator('#friends-page').waitFor();
+  assert.equal(await page.locator('#sq-friends-workspace-tabs').isVisible(),false,'Friends is app-wide, without duplicate tracker tabs');
+  await page.evaluate(()=>document.getElementById('nav-home').click());
+  await page.locator('#dw-account-home .dw-home-trackers').waitFor();
   // Signing out clears the account summary, including an in-flight render.
   await page.evaluate(()=>document.body.classList.add('sq-auth-guest'));
   await page.waitForFunction(()=>document.getElementById('dw-account-home').hidden&&document.getElementById('dw-account-home').childNodes.length===0);

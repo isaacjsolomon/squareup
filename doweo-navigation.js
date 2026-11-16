@@ -71,7 +71,7 @@
    home.querySelectorAll('[data-home-tracker]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{await window.squareUpNavigateTracker(b.dataset.homeTracker);}catch(error){b.disabled=false;alert(error.message||'Could not open tracker');}});
   }catch(error){if(token===renderToken)home.innerHTML='<h1>Home</h1><p role="alert">Could not load your balances. Please reopen Home to retry.</p><button type="button" id="dw-home-retry">Retry</button>';if($('dw-home-retry'))$('dw-home-retry').onclick=showHome;}
  }
- $('nav-home').addEventListener('click',()=>{homeRequest=true;inHomeClick=true;queueMicrotask(()=>{inHomeClick=false;if(homeRequest){homeRequest=false;showHome();}});},true);
+ $('nav-home').addEventListener('click',()=>{homeRequest=true;inHomeClick=true;queueMicrotask(()=>{inHomeClick=false;if(homeRequest){homeRequest=false;if(body.classList.contains('sqev-page-open'))active('sqev-nav');else showHome();}});},true);
  document.addEventListener('click',event=>{
   if(event.target.closest('[data-sq-tab],[data-sq-bills-tab],#sq-bills-open')){hideHome();active('nav-trackers');schedule();}
   else if(event.target.closest('.squareup-nav button:not(#nav-home),#sqev-nav,#sq-finance-nav'))hideHome();
