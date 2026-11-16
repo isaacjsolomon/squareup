@@ -3585,6 +3585,49 @@ for (const x of shares) {
     return json(saved[0], 201);
   }
 
+  // Edit an existing bill without recreating it or changing its identity.
+  if (sub === 'bills' && method === 'PATCH' && recordId) {
+    const existing = (await db(table, {
+      filters: { tracker_id: 'eq.' + id, id: 'eq.' + recordId }, limit: 1
+    }))[0];
+    if (!existing) return fail('Bill not found.', 404);
+    if (!owner && String(existing.created_by).toLowerCase() !== String(me.id).toLowerCase() &&
+        !can('edit_all_expenses')) return fail('You cannot edit this bill.', 403);
+    const name = clean(body.name, 90);
+    const due = String(body.due || '');
+    const amount = Number(body.amount);
+    const frequency = String(body.frequency || '');
+    const kind = String(body.kind || '');
+    const validDate = /^\\d{4}-\\d{2}-\\d{2}$/.test(due) &&
+      !Number.isNaN(Date.parse(due + 'T12:00:00Z')) &&
+      new Date(due + 'T12:00:00Z').toISOString().slice(0,10) === due;
+    if (!name || !validDate || !Number.isFinite(amount) || amount <= 0 ||
+        amount > 1e9 || !['weekly','monthly','yearly'].includes(frequency) ||
+        !['bill','subscription'].includes(kind))
+      return fail('Invalid bill details.', 400);
+    const cents = Math.round(amount * 100);
+    const previous = Array.isArray(existing.shares) ? existing.shares : [];
+    let shares = previous;
+    if (existing.recurring_enabled && cents !== Math.round(Number(existing.amount)*100)) {
+      if (!previous.length || previous.some(x => !uuid.test(x.user_id) ||
+          !Number.isSafeInteger(x.amount_cents) || x.amount_cents < 0))
+        return fail('This bill needs a valid split before changing its amount.', 400);
+      // Preserve custom split proportions; allocate leftover cents deterministically.
+      const total = previous.reduce((sum,x)=>sum+x.amount_cents,0);
+      if (total <= 0) return fail('Cannot adjust an empty split.', 400);
+      const amounts = previous.map(x=>Math.floor(cents*x.amount_cents/total));
+      let remainder = cents-amounts.reduce((a,b)=>a+b,0);
+      for(let i=0;remainder>0;i=(i+1)%amounts.length,remainder--) amounts[i]++;
+      shares = previous.map((x,i)=>({user_id:x.user_id,amount_cents:amounts[i]}));
+    }
+    const saved = await db(table, {
+      method:'PATCH',
+      filters:{tracker_id:'eq.'+id,id:'eq.'+recordId},
+      body:{name,due,amount:cents/100,frequency,kind,shares}
+    });
+    return json(saved[0] || {ok:true});
+  }
+
   // DELETE: Remove existing record
   if (method === 'DELETE' && recordId) {
 
