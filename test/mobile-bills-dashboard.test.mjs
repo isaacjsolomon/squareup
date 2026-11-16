@@ -13,8 +13,8 @@ test('mobile billing dashboard preserves all original actions and data anchors',
  for(const id of ['sq-bills-tracker','sq-bill-mobile-toggle','sq-bills-create','sq-bill-paid-by','sq-bill-split-mode','sq-premium-monthly','sq-premium-active','sq-premium-prev','sq-premium-next','sq-bills-bill-list','sq-bills-sub-list','sq-bills-back']){
   assert.match(markup,new RegExp('id="'+id+'"'),'preserve '+id);
  }
- assert.match(html,/src="\/doweo-bills-mobile-dashboard\.js"/);
- assert.match(html,/href="\/doweo-bills-mobile-dashboard\.css"/);
+ assert.match(html,/src="\\/doweo-bills-mobile-dashboard\\.js\\?v=/);
+ assert.match(html,/href="\\/doweo-bills-mobile-dashboard\\.css\\?v=/);
  assert.match(js,/overview\.insertBefore\(calendar,create\)/,'desktop restores existing calendar');
 });
 
