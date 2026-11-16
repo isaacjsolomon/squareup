@@ -31,6 +31,8 @@ function harness(code,formId){
  const button={disabled:false,setAttribute:()=>{},removeAttribute:()=>{}};
  const form={reset:()=>calls.push('reset'),querySelector:()=>button};
  const sandbox={
+  // The extracted submit handler runs in a browser where window exists.
+  window:{dispatchEvent:()=>{}}, Event:class Event{constructor(type){this.type=type;}},
   document:{getElementById(id){if(id===formId)return {addEventListener(_event,fn){handlers.submit=fn;}};
     return values[id]||{};}},
   alert:message=>alerts.push(message),norm:s=>String(s).toLowerCase(),

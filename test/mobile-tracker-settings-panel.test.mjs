@@ -21,7 +21,7 @@ test('compact drawer removes large cards and keeps all actions',()=>{
  assert.match(html,/if\(event\.key==='Escape'&&menu\.open\)closeTrackerMenu\(\)/);
 });
 test('old stylesheet no longer forces settings position',()=>{
- assert.doesNotMatch(css,/left:max\(280px/);
+ assert.doesNotMatch(css,/(?:^|[;{\s])left\s*:\s*max\(280px/m);
  assert.doesNotMatch(css,/left:calc\(50vw \+ 120px\)/);
  assert.doesNotMatch(css,/width:min\(420px,calc\(100vw - 304px\)\)/);
 });

@@ -1083,4 +1083,35 @@ html body #sq-ai-window.weo-full-page #sq-ai-close{
   }
 }
 
-
+/* Mobile viewport foundation: protect navigation and dialogs without page redesign.
+   Keep document scrolling available on short screens; never fix the body. */
+@media (max-width:900px) {
+  html,body {
+    max-width:100%;
+    overflow-x:clip;
+  }
+  html {scroll-padding-bottom:calc(76px + env(safe-area-inset-bottom, 0px));}
+  body .sq-mobile-nav {
+    position:fixed!important;
+    inset-inline:0!important;
+    left:0!important;
+    right:0!important;
+    bottom:0!important;
+    top:auto!important;
+    width:100%!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+  body .wrap,body #tracker-dashboard {
+    min-width:0;
+    max-width:100%;
+    box-sizing:border-box;
+  }
+  body .modal-bg > .card.modal {
+    box-sizing:border-box;
+    max-width:calc(100vw - 24px)!important;
+    max-height:calc(100dvh - 24px)!important;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+}
