@@ -1110,3 +1110,57 @@ body.trackers-view .tracker-tile-menu-panel .tracker-menu-main > button:nth-of-t
     box-sizing:border-box!important;
   }
 }
+
+
+/* Compact tracker-settings popover — v2.  The tracker menu is portalled to
+   document.body and is positioned inline by placeTrackerMenu().  These rules
+   override the inline left/width so the expanded settings menu occupies the
+   content column rather than covering the navigation sidebar.  No changes
+   to open/close/share/delete behavior. */
+@media (min-width: 801px) {
+  html body .tracker-tile-menu-panel:has(.tracker-settings-view:not([hidden])) {
+    position:fixed!important;
+    left:calc(50vw + 120px)!important;
+    right:auto!important;
+    transform:translateX(-50%)!important;
+    width:min(350px, calc(100vw - 290px))!important;
+    min-width:0!important;
+    max-width:calc(100vw - 290px)!important;
+    max-height:min(580px, calc(100dvh - 36px))!important;
+    overflow-y:auto!important;
+    box-sizing:border-box!important;
+    padding:10px!important;
+    overscroll-behavior:contain;
+  }
+}
+@media (max-width: 800px) {
+  html body .tracker-tile-menu-panel:has(.tracker-settings-view:not([hidden])) {
+    position:fixed!important;
+    left:50%!important;
+    right:auto!important;
+    transform:translateX(-50%)!important;
+    width:min(350px, calc(100vw - 24px))!important;
+    min-width:0!important;
+    max-width:calc(100vw - 24px)!important;
+    max-height:calc(100dvh - 28px)!important;
+    overflow-y:auto!important;
+    box-sizing:border-box!important;
+    padding:10px!important;
+    overscroll-behavior:contain;
+  }
+}
+html body .tracker-tile-menu-panel:has(.tracker-settings-view:not([hidden])) .sq-tracker-settings-group {
+  padding:8px!important;
+  margin:4px 0!important;
+}
+html body .tracker-tile-menu-panel:has(.tracker-settings-view:not([hidden])) .sq-tracker-settings-action {
+  min-height:46px!important;
+  padding:8px 10px!important;
+  gap:9px!important;
+  font-size:14px!important;
+}
+html body .tracker-tile-menu-panel:has(.tracker-settings-view:not([hidden])) .tracker-settings-back {
+  min-height:42px!important;
+  font-size:17px!important;
+  padding:8px 10px!important;
+}
