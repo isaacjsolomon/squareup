@@ -3,9 +3,11 @@
   body.sq-bills-open #sq-bills-page.dw-bills-compact{
     display:block!important;position:relative!important;inset:auto!important;transform:none!important;
     width:100%!important;max-width:100%!important;min-width:0!important;
-    height:auto!important;min-height:0!important;margin:0!important;padding:0 0 calc(108px + env(safe-area-inset-bottom,0px))!important;
+    height:auto!important;min-height:0!important;margin:0!important;padding:0 0 12px!important;
     overflow:visible!important;box-sizing:border-box!important;background:transparent!important;
   }
+  body.sq-bills-open > .wrap > #trackers-page{margin:0 auto 12px!important}
+  body.sq-bills-open .sq-bill-edit-overlay{z-index:2147483002!important}
   #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell,
   #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell *{box-sizing:border-box}
   #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell{
@@ -26,7 +28,11 @@
   #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > .sq-bills-workspace-tabs button{
     display:block!important;width:100%!important;min-width:0!important;min-height:42px!important;
     margin:0!important;padding:8px 1px!important;white-space:nowrap!important;
+    border:0!important;background:transparent!important;color:#d7e8ef!important;font-family:inherit!important;font-weight:700!important;
     font-size:clamp(11px,3vw,14px)!important;line-height:1.15!important;border-radius:10px!important;
+  }
+  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > .sq-bills-workspace-tabs button[aria-selected="true"]{
+    background:#0e8588!important;color:#fff!important;box-shadow:inset 0 0 0 1px #23c1bd!important;
   }
   #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > .sq-bills-back{
     display:inline-flex!important;align-self:flex-start!important;position:static!important;
@@ -120,7 +126,7 @@
     background:#0b6f77!important;color:#fff!important;border:1px solid #30bcb7!important;
     font-size:24px!important;
   }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell #sq-bills-create:not([hidden]){
+  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell #sq-bills-create:not([aria-hidden="true"]){
     display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important;
     width:100%!important;min-width:0!important;max-width:100%!important;padding:13px!important;
   }

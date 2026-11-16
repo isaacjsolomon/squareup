@@ -41,7 +41,7 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
    await route.fulfill({json:data});
   });
   await context.route('https://**',route=>new URL(route.request().url()).hostname==='esm.sh'?route.fallback():route.abort());
-  const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));
+  const page=await context.newPage();page.on('pageerror',error=>errors.push(error.stack));
   await page.goto(origin,{waitUntil:'networkidle'});
   await page.waitForFunction(()=>typeof window.squareUpApi==='function');
   await page.locator('#auth-modal.open').waitFor({state:'hidden'});
@@ -67,6 +67,7 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
    assert.ok(state.a.height<=150&&state.b.height<=150,'compact metrics');
    assert.ok(state.overflow<=width+1,'no horizontal overflow');
    assert.ok(Math.abs(state.bottom.bottom-844)<2,'bottom navigation anchored');
+   assert.equal(await page.locator('#sq-bills-create').isVisible(),false,'Add form stays collapsed until requested');
    await page.screenshot({path:resolve(root,`test-results/bills/mobile-${width}.png`),fullPage:true});
    for(const name of ['Electricity','Netflix']){
     const row=page.locator('.sq-bills-row').filter({hasText:name});
@@ -89,7 +90,7 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   await page.locator('#sq-bill-mobile-toggle').click();
   await page.locator('#sq-bill-name').fill('Water');await page.locator('#sq-bill-amount').fill('32');await page.locator('#sq-bill-date').fill('2026-12-10');
   await page.locator('.sq-bill-type-tab[data-kind="bill"]').click();
-  await page.screenshot({path:resolve(root,'test-results/bills/add-430.png'),fullPage:true});
+  await page.screenshot({path:resolve(root,'test-results/bills/add-430.png')});
   await page.locator('#sq-bills-create button[type="submit"]').click();
   await page.locator('#sq-bill-saved-overlay').waitFor();
   assert.equal(writes.filter(x=>x.method==='POST').length,1,'one create request');
@@ -97,12 +98,13 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   // Close the existing add dialog after saving, then reopen the saved record.
   if(await page.locator('.sq-bill-modal-portal:not([hidden])').count())await page.locator('#sq-bill-mobile-toggle').click();
   await page.locator('.sq-bills-row').filter({hasText:'Water'}).getByRole('button',{name:'Edit',exact:true}).click();
-  await page.screenshot({path:resolve(root,'test-results/bills/edit-430.png'),fullPage:true});
+  await page.screenshot({path:resolve(root,'test-results/bills/edit-430.png')});
   assert.equal(await page.getByRole('dialog',{name:'Edit bill or subscription'}).getByLabel('Name',{exact:true}).inputValue(),'Water');
   await page.getByRole('button',{name:'Cancel',exact:true}).click();
   await page.setViewportSize({width:1280,height:900});
   await page.waitForFunction(()=>!document.getElementById('sq-bills-page').classList.contains('dw-bills-compact'));
   assert.equal(await page.locator('.sq-premium-calendar').evaluate(e=>e.parentElement.className),'sq-premium-overview');
+  await page.evaluate(()=>window.scrollTo(0,0));
   await page.screenshot({path:resolve(root,'test-results/bills/desktop-1280.png'),fullPage:true});
   await page.setViewportSize({width:375,height:844});
   await page.locator('.dw-bills-calendar-fold').waitFor();
