@@ -82,7 +82,7 @@
   }
  }
  function trackerContextBottom(){
-  const shown=isTracker();context.hidden=!shown;if(body.classList.contains('dw-tracker-context-visible')!==shown)body.classList.toggle('dw-tracker-context-visible',shown);
+  const shown=isTracker()&&!matchMedia('(max-width:900px)').matches;context.hidden=!shown;if(body.classList.contains('dw-tracker-context-visible')!==shown)body.classList.toggle('dw-tracker-context-visible',shown);
   if(!shown)return 0;
   const header=document.querySelector('.sq-mobile-top');
   const mobile=matchMedia('(max-width:900px)').matches;
