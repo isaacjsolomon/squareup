@@ -2655,6 +2655,38 @@ html body #sq-payment-dispute-overlay textarea{
  #notifications-list .dw-guided-empty{padding:22px 14px!important}
 }
 </style>
+<style id="dw-action-feedback-style">
+/* Action feedback: a small consistent status toast, never a blocking alert. */
+#dw-action-feedback-stack{position:fixed;z-index:2147483100;right:clamp(12px,3vw,24px);bottom:calc(20px + env(safe-area-inset-bottom,0px));width:min(380px,calc(100vw - 24px));display:grid;gap:9px;pointer-events:none}
+.dw-action-feedback{box-sizing:border-box;display:flex;align-items:flex-start;gap:10px;pointer-events:auto;padding:13px 14px;border:1px solid #3d8e99;border-radius:13px;background:linear-gradient(140deg,#10394c,#0b283d);color:#f3ffff;box-shadow:0 13px 36px #001526a8;font-size:14px;line-height:1.45}
+.dw-action-feedback[data-kind="error"]{border-color:#e49aaa;background:linear-gradient(140deg,#462638,#2c1d31)}
+.dw-action-feedback-mark{display:grid;place-items:center;flex:none;width:25px;height:25px;border-radius:50%;background:#227e76;color:white;font-weight:800}
+.dw-action-feedback[data-kind="error"] .dw-action-feedback-mark{background:#b44361}
+.dw-action-feedback-message{flex:1;min-width:0;overflow-wrap:anywhere}
+.dw-action-feedback-close{border:0;background:transparent;color:inherit;cursor:pointer;min-width:28px;min-height:28px;display:grid;place-items:center;font-size:19px;line-height:1;padding:0;border-radius:7px}
+.dw-action-feedback-close:focus-visible{outline:2px solid #8af9de;outline-offset:2px}
+@media(max-width:700px){#dw-action-feedback-stack{left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:auto}}
+@media(prefers-reduced-motion:reduce){.dw-action-feedback{transition:none!important;animation:none!important}}
+</style>
+<script id="dw-action-feedback-script">
+/* Exposes status-only feedback; confirmation/validation dialogs stay blocking. */
+(function(){
+  function notify(message,kind){
+    if(!message)return;
+    var stack=document.getElementById('dw-action-feedback-stack');
+    if(!stack){stack=document.createElement('div');stack.id='dw-action-feedback-stack';stack.setAttribute('aria-label','Action feedback');document.body.append(stack);}
+    while(stack.children.length>=3)stack.firstElementChild.remove();
+    var toast=document.createElement('div');toast.className='dw-action-feedback';toast.dataset.kind=kind==='error'?'error':'success';
+    toast.setAttribute('role',kind==='error'?'alert':'status');
+    var mark=document.createElement('span');mark.className='dw-action-feedback-mark';mark.textContent=kind==='error'?'!':'✓';mark.setAttribute('aria-hidden','true');
+    var copy=document.createElement('span');copy.className='dw-action-feedback-message';copy.textContent=String(message);
+    var close=document.createElement('button');close.type='button';close.className='dw-action-feedback-close';close.textContent='×';close.setAttribute('aria-label','Dismiss notification');close.addEventListener('click',function(){toast.remove();});
+    toast.append(mark,copy,close);stack.append(toast);
+    window.setTimeout(function(){toast.remove();},kind==='error'?8000:4500);
+  }
+  window.dwNotify=notify;
+})();
+</script>
 <link rel="stylesheet" href="/weo-mascot.css">
 <link rel="stylesheet" href="/weo-actions.css">
 
@@ -3621,13 +3653,14 @@ document.getElementById("form").addEventListener("submit", async function (e) {
     var saved = await addEntry(mode, a, b, amt, document.getElementById("note").value);
     // A failed request must not erase the user's amount, payee, or notes.
     if (saved === false) return;
+    window.dwNotify?.(mode === 'payment' ? 'Payment recorded.' : 'Expense saved.','success');
     form.reset();
     render();
     document.getElementById("entry-card").classList.remove("entry-open");
     document.getElementById("quick-expense").setAttribute("aria-expanded", "false");
     document.getElementById("quick-payment").setAttribute("aria-expanded", "false");
   } catch (err) {
-    alert('Could not save the entry: ' + (err.message || err));
+    window.dwNotify?.('Could not save the entry: ' + (err.message || err),'error');
   } finally {
     sqEntrySaveInFlight = false;
     if (saveButton) { saveButton.disabled = false; saveButton.removeAttribute('aria-busy'); }
@@ -5236,16 +5269,16 @@ async function renderTrackerGallery(){
           save.disabled=true;save.textContent='Saving…';
           try{await api('trackers/'+encodeURIComponent(t.id),'PATCH',{name:newName});
             t.name=newName;if(current&&current.id===t.id)current.name=newName;
-            overlay.remove();await renderTrackerGallery();
-          }catch(error){alert('Could not rename tracker: '+(error.message||error));save.disabled=false;save.textContent='Save name';}
+            overlay.remove();await renderTrackerGallery();window.dwNotify?.('Tracker renamed.','success');
+          }catch(error){window.dwNotify?.('Could not rename tracker: '+(error.message||error),'error');save.disabled=false;save.textContent='Save name';}
         };
         document.body.append(overlay);input.focus();input.select();
       });
       // Archiving is a personal, reversible view preference until a server-side archive endpoint is installed.
       settingsAction('▣','Archive tracker',async function(){
         if(!confirm('Archive '+t.name+' from your tracker list on this browser? Expenses and members will NOT be deleted.'))return;
-        try{var key='sq-archived-'+String(currentUser&&currentUser.id||'local');var ids=JSON.parse(localStorage.getItem(key)||'[]');if(!ids.includes(String(t.id)))ids.push(String(t.id));localStorage.setItem(key,JSON.stringify(ids));await renderTrackerGallery();}
-        catch(e){alert('Could not archive this tracker: '+e.message);}
+        try{var key='sq-archived-'+String(currentUser&&currentUser.id||'local');var ids=JSON.parse(localStorage.getItem(key)||'[]');if(!ids.includes(String(t.id)))ids.push(String(t.id));localStorage.setItem(key,JSON.stringify(ids));await renderTrackerGallery();window.dwNotify?.('Tracker archived on this device.','success');}
+        catch(e){window.dwNotify?.('Could not archive this tracker: '+e.message,'error');}
       });
       settingsAction('♙','Manage permissions',async function(){await sqManagePermissions(t);});
       if(t.role==='owner'||(d&&d.role==='owner')) settingsAction('✓','Expense approval',async function(){
@@ -5278,7 +5311,7 @@ async function renderTrackerGallery(){
         dialog.onsubmit=async function(ev){ev.preventDefault();save.disabled=true;toggle.disabled=true;status.textContent='Saving…';
           try{
             await api(endpoint,'PATCH',{requireExpenseApproval:toggle.checked});
-            overlay.remove();
+            overlay.remove();window.dwNotify?.('Expense approval setting saved.','success');
           }catch(err){status.textContent='Could not save: '+(err.message||err);save.disabled=false;toggle.disabled=false;}
         };
       });
@@ -5287,7 +5320,7 @@ async function renderTrackerGallery(){
       mainView.append(document.createElement('hr'));
       mainView.append(makeMenuButton('↥','Share tracker','',async function(){menu.open=false;await openTracker(t.id);if(current&&current.id===t.id)await openShare();}));
       mainView.append(document.createElement('hr'));
-      mainView.append(makeMenuButton('♜',t.role==='owner'?'Delete tracker':'Leave tracker','danger',async function(){menu.open=false;try{if(await removeTracker(t))await renderTrackerGallery();}catch(err){alert(err.message||'Could not remove tracker.');}}));
+      mainView.append(makeMenuButton('♜',t.role==='owner'?'Delete tracker':'Leave tracker','danger',async function(){menu.open=false;try{if(await removeTracker(t)){await renderTrackerGallery();window.dwNotify?.(t.role==='owner'?'Tracker deleted.':'You left the tracker.','success');}}catch(err){window.dwNotify?.(err.message||'Could not remove tracker.','error');}}));
       // Render the action panel outside the clipped tracker tile so all original
       // actions remain accessible, including on short cards and mobile screens.
       function placeTrackerMenu(){
