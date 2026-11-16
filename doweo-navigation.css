@@ -71,3 +71,55 @@ body.dw-account-home-open #tracker-dashboard,body.dw-account-home-open #trackers
  #tracker-dashboard .sq-workspace-tabs>button,
  .sq-bills-workspace-tabs>button{font-size:clamp(9px,2.3vw,11px)!important;padding:10px 1px!important;letter-spacing:-.02em}
 }
+
+/* Rendered, real tracker-tab row: five equal-width destinations, one line. */
+.dw-tracker-tabs-row{
+ display:grid!important;
+ grid-template-columns:repeat(5,minmax(0,1fr))!important;
+ grid-auto-flow:row!important;
+ grid-template-rows:minmax(0,auto)!important;
+ width:100%!important;
+ gap:clamp(3px,.7vw,12px)!important;
+ align-items:stretch!important;
+ padding:6px!important;
+ box-sizing:border-box!important;
+ min-width:0!important;
+}
+.dw-tracker-tabs-row>.dw-tracker-tab-item{
+ display:flex!important;
+ justify-content:center!important;
+ align-items:center!important;
+ width:100%!important;
+ min-width:0!important;
+ max-width:none!important;
+ flex:none!important;
+ margin:0!important;
+ padding:clamp(9px,1vw,14px) 3px!important;
+ white-space:nowrap!important;
+ overflow:hidden!important;
+ text-overflow:ellipsis!important;
+ grid-row:1!important;
+}
+.dw-tracker-tabs-row>.dw-tracker-tab-item:nth-child(1){grid-column:1!important}
+.dw-tracker-tabs-row>.dw-tracker-tab-item:nth-child(2){grid-column:2!important}
+.dw-tracker-tabs-row>.dw-tracker-tab-item:nth-child(3){grid-column:3!important}
+.dw-tracker-tabs-row>.dw-tracker-tab-item:nth-child(4){grid-column:4!important}
+.dw-tracker-tabs-row>.dw-tracker-tab-item:nth-child(5){grid-column:5!important}
+@media(min-width:901px){
+ .dw-tracker-desktop-header{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+ }
+ .dw-tracker-desktop-header #dw-tracker-context{
+  flex:0 1 280px!important;
+  min-width:160px!important;
+  max-width:300px!important;
+  order:0;
+ }
+ .dw-tracker-desktop-header #dw-tracker-picker{max-width:none!important}
+}
+@media(max-width:650px){
+ .dw-tracker-tabs-row{gap:2px!important;padding:3px!important}
+ .dw-tracker-tabs-row>.dw-tracker-tab-item{font-size:clamp(9px,2.3vw,11px)!important;padding:9px 1px!important}
+}
