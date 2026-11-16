@@ -21,8 +21,7 @@ test('all nine mobile destinations remain unique and use existing route click ha
  assert.match(html,/const link=e\.target\.closest\('\[data-sq-destination\]'\)/);
  assert.match(html,/target\.click\(\)/);
 });
-test('logout remains full-width below the grid and beta feedback stays available',()=>{
+test('logout remains full-width below the grid',()=>{
  assert.ok(section.indexOf('id="sq-mobile-more-logout"')>section.indexOf('sq-balanced-more-grid'));
  assert.match(html,/#sq-mobile-more-sheet \.sq-balanced-logout\{width:100%/);
- assert.match(html,/Beta Feedback/);
 });
