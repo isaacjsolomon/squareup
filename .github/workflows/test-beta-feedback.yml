@@ -72,6 +72,8 @@ jobs:
         run: node --test test/doweo-universal-search-quality.test.mjs
       - name: Check mobile wallet redesign, currency grouping and retained actions
         run: node --test test/mobile-wallet-ui.test.mjs test/doweo-mobile-more-flat-grid.test.mjs
+      - name: Verify sidebar keeps More as its only dropdown
+        run: node --test test/doweo-flat-sidebar.test.mjs
       - name: Check Bills, Households and mobile Finance Hub tab navigation
         run: node --test test/finance-household-tabs.test.mjs
       - name: Check Weo mascot interactions and accessibility
