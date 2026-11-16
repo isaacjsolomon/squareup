@@ -152,8 +152,46 @@
  window.addEventListener('squareup:tracker-detail',()=>{syncPicker();if(analytics?.closest('#sq-ng-content'))window.squareUpRenderAnalytics?.();});
  window.addEventListener('resize',schedule);window.visualViewport?.addEventListener('resize',schedule);
  new ResizeObserver(schedule).observe(document.querySelector('.sq-mobile-top'));
- // Auth startup may finish after the classic scripts; do not change deep links.
- const startup=new MutationObserver(()=>{if(body.classList.contains('sq-auth-guest')){if(!home.hidden||home.childNodes.length){hideHome();home.replaceChildren();}initialized=false;firstTracker=true;return;}if(initialized||document.documentElement.classList.contains('sq-auth-loading'))return;initialized=true;if(!location.hash||location.hash==='#home')showTrackerOverview();});
- startup.observe(document.documentElement,{attributes:true,attributeFilter:['class']});startup.observe(body,{attributes:true,attributeFilter:['class']});
+ // First launch must follow the very same route as clicking Home.  Previously
+ // the startup observer marked itself initialized before auth/tracker data were
+ // ready, so the newer empty/aggregate page could remain until a manual click.
+ const launchWantsHome=!location.hash||location.hash==='#home';
+ let launchCancelled=false,launchQueued=false,launchInProgress=false;
+ function launchOriginalHome(){
+  if(initialized||launchCancelled||launchInProgress||!launchWantsHome)return;
+  if(body.classList.contains('sq-auth-guest')||document.documentElement.classList.contains('sq-auth-loading'))return;
+  if(!source||!window.squareUpNavigateTracker)return;
+  const ids=[...source.options].filter(o=>o.value&&o.value!=='manage'&&!o.value.startsWith('─'));
+  if(!ids.length)return; // Wait for tracker data, not just authentication.
+  if(launchQueued)return;
+  launchQueued=true;
+  // Let existing app startup finish DOM changes before choosing its route.
+  requestAnimationFrame(()=>{
+   launchQueued=false;
+   if(initialized||launchCancelled||body.classList.contains('sq-auth-guest'))return;
+   initialized=true;
+   launchInProgress=true;
+   Promise.resolve(showTrackerOverview()).finally(()=>{launchInProgress=false;});
+  });
+ }
+ const startup=new MutationObserver(()=>{
+  if(body.classList.contains('sq-auth-guest')){
+   if(!home.hidden||home.childNodes.length){hideHome();home.replaceChildren();}
+   initialized=false;firstTracker=true;launchQueued=false;
+   return;
+  }
+  launchOriginalHome();
+ });
+ startup.observe(document.documentElement,{attributes:true,attributeFilter:['class']});
+ startup.observe(body,{attributes:true,attributeFilter:['class']});
+ // The tracker list often arrives AFTER auth completes.
+ startup.observe(source,{childList:true,subtree:true});
+ source.addEventListener('change',launchOriginalHome);
+ window.addEventListener('squareup:tracker-detail',launchOriginalHome);
+ // Respect explicit user navigation while the app is still loading.
+ document.addEventListener('click',event=>{
+  if(!initialized&&!launchInProgress&&event.target.closest('.squareup-nav .sq-nav-link,.sq-mobile-nav button,[data-sq-tab],[data-sq-bills-tab]'))launchCancelled=true;
+ },true);
+ launchOriginalHome();
  schedule();
 })();
