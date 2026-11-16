@@ -2611,6 +2611,50 @@ html body #sq-payment-dispute-overlay textarea{
   }
 }
 </style>
+<style id="dw-guided-empty-states">
+/* Consistent, actionable empty states. Never shown during active loading. */
+#trackers-gallery .dw-guided-empty,
+#sq-friends-results .dw-guided-empty,
+#notifications-list .dw-guided-empty{
+  box-sizing:border-box!important;
+  width:100%;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:clamp(22px,4vw,38px)!important;
+  border:1px dashed rgba(111,185,197,.42)!important;
+  border-radius:17px!important;
+  background:linear-gradient(160deg,rgba(20,58,76,.62),rgba(10,33,53,.65))!important;
+  text-align:center;
+  color:#eafaff;
+}
+#trackers-gallery .dw-guided-empty{grid-column:1/-1}
+.dw-guided-empty strong{font-size:18px;line-height:1.3;font-weight:750}
+.dw-guided-empty p{margin:0!important;color:#afccd6!important;font-size:13px;line-height:1.5;max-width:340px}
+.dw-guided-empty-icon{
+  display:grid;place-items:center;width:42px;height:42px;
+  border-radius:13px;background:#164e61;color:#74f1d9;font-size:25px;
+}
+.dw-guided-empty .dw-guided-empty-action{
+  display:inline-flex;align-items:center;justify-content:center;
+  margin-top:8px;min-height:43px;padding:10px 17px;
+  border:1px solid #47d6c5;border-radius:11px;
+  background:#176c71;color:#efffff;font:inherit;font-size:14px;font-weight:750;
+  cursor:pointer;
+}
+.dw-guided-empty .dw-guided-empty-action:focus-visible{
+  outline:3px solid #64eed6;outline-offset:3px;
+}
+#sq-friends-results[aria-busy="true"]{opacity:.65;pointer-events:none}
+@media(max-width:600px){
+ #trackers-gallery .dw-guided-empty,
+ #sq-friends-results .dw-guided-empty,
+ #notifications-list .dw-guided-empty{padding:22px 14px!important}
+}
+</style>
 <link rel="stylesheet" href="/weo-mascot.css">
 <link rel="stylesheet" href="/weo-actions.css">
 
@@ -5051,7 +5095,15 @@ async function renderTrackerGallery(){
     trackers=list;
     if(document.body.classList.contains('notifications-view')){try{window.dispatchEvent(new Event('sq-trackers-updated'));}catch(_){}}
     renderPicker();
-    if(!list.length){sqGalleryKeepCreateRow(gallery);gallery.insertAdjacentHTML('beforeend','<div class="trackers-empty">No trackers yet. Create your first tracker to get started.</div>');return;}
+    if(!list.length){
+      sqGalleryKeepCreateRow(gallery);
+      var empty=document.createElement('section');empty.className='trackers-empty dw-guided-empty';
+      empty.setAttribute('role','status');
+      empty.innerHTML='<span class="dw-guided-empty-icon" aria-hidden="true">＋</span><strong>No trackers yet</strong><p>Create a tracker to start splitting expenses with friends.</p>';
+      var start=document.createElement('button');start.type='button';start.className='dw-guided-empty-action';start.textContent='Create your first tracker';
+      start.addEventListener('click',function(){gallery.querySelector('#tracker-gallery-new')?.click();});
+      empty.append(start);gallery.append(empty);return;
+    }
     var details=await Promise.all(list.map(async function(t){try{return await api('trackers/'+encodeURIComponent(t.id));}catch(err){return {loadError:err.message};}}));
     if(serial!==trackerGallerySerial)return;
     sqGalleryKeepCreateRow(gallery);
@@ -6524,12 +6576,26 @@ var squareUpFriendsTab='friends',squareUpFriendRows=[];
 function squareUpFriendError(error){var msg=String(error?.message||error||'Unknown error');return /function .* does not exist|schema cache|Could not find the function/i.test(msg)?'Friends setup needs attention. Contact DoWeo support at help@doweo.app.':msg;}
 async function squareUpFriendRPC(name,args={}){var r=await supabase.rpc(name,args);if(r.error)throw r.error;return r.data||[];}
 async function squareUpLoadFriends(){var status=$('sq-friends-status'),list=$('sq-friends-results');if(!currentUser){status.textContent='Log in to use Friends.';list.replaceChildren();return;}
- status.textContent='Loading…';try{var q=$('sq-friend-query').value.trim();if(squareUpFriendsTab==='find'&&q.length<3){list.replaceChildren();status.textContent='Enter at least 3 characters to find someone by username.';return;}
+ status.textContent='Loading friends…';list.setAttribute('aria-busy','true');try{var q=$('sq-friend-query').value.trim();if(squareUpFriendsTab==='find'&&q.length<3){list.replaceChildren();status.textContent='Enter at least 3 characters to find someone by username.';return;}
  squareUpFriendRows=await squareUpFriendRPC(squareUpFriendsTab==='find'?'sq_find_users':'sq_list_friends',squareUpFriendsTab==='find'?{search_term:q}:{ });
  var rows=squareUpFriendRows.map((x,i)=>({...x,_originalIndex:i})).filter(x=>squareUpFriendsTab==='find'||(squareUpFriendsTab==='friends'?x.status==='accepted':x.status==='pending'));
  list.innerHTML=rows.map((x,i)=>{var name=esc(x.display_name||x.username||'DoWeo user'),username=esc(x.username||''),actions='';if(squareUpFriendsTab==='find'){actions=x.relationship==='accepted'?'<small>Already friends</small>':x.relationship==='pending'?'<small>Request pending</small>':'<button type="button" data-friend-action="request" data-index="'+x._originalIndex+'">Add Friend</button>';}else if(x.status==='accepted'){actions='<button type="button" data-friend-action="remove" data-index="'+x._originalIndex+'">Remove</button>';}else if(x.direction==='received'){actions='<button type="button" data-friend-action="accept" data-index="'+x._originalIndex+'">Accept</button><button type="button" data-friend-action="decline" data-index="'+x._originalIndex+'">Decline</button>';}else{actions='<small>Request sent</small><button type="button" data-friend-action="remove" data-index="'+x._originalIndex+'">Cancel</button>';}
- return '<div class="sq-friend-row"><div class="sq-friend-avatar">'+name.slice(0,1).toUpperCase()+'</div><div class="sq-friend-info"><strong>'+name+'</strong><small>@'+username+'</small></div><div class="sq-friend-actions">'+actions+'</div></div>';}).join('');status.textContent=rows.length?rows.length+' result'+(rows.length===1?'':'s'):'Nothing to show yet.';
- }catch(err){list.replaceChildren();status.textContent=squareUpFriendError(err);}}
+ return '<div class="sq-friend-row"><div class="sq-friend-avatar">'+name.slice(0,1).toUpperCase()+'</div><div class="sq-friend-info"><strong>'+name+'</strong><small>@'+username+'</small></div><div class="sq-friend-actions">'+actions+'</div></div>';}).join('');
+ if(rows.length){status.textContent=rows.length+' result'+(rows.length===1?'':'s');}
+ else {
+   status.textContent='';
+   var empty=document.createElement('section');empty.className='dw-guided-empty';empty.setAttribute('role','status');
+   var title=document.createElement('strong');title.textContent=squareUpFriendsTab==='pending'?'No pending requests':squareUpFriendsTab==='find'?'No matching people':'No friends yet';
+   var hint=document.createElement('p');hint.textContent=squareUpFriendsTab==='pending'?'New friend requests will appear here.':squareUpFriendsTab==='find'?'Try another username.':'Find someone by username to start sharing.';
+   empty.append(title,hint);
+   if(squareUpFriendsTab==='friends'){
+     var find=document.createElement('button');find.type='button';find.className='dw-guided-empty-action';find.textContent='Find friends';
+     find.addEventListener('click',function(){document.querySelector('[data-friends-tab="find"]')?.click();document.getElementById('sq-friend-query')?.focus();});
+     empty.append(find);
+   }
+   list.append(empty);
+ }
+ }catch(err){list.replaceChildren();status.textContent=squareUpFriendError(err);}finally{list.removeAttribute('aria-busy');}}
 $('sq-friends-refresh').onclick=squareUpLoadFriends;
 $('sq-friend-query').addEventListener('input',()=>{if(squareUpFriendsTab==='find'){clearTimeout(window.sqFriendTimer);window.sqFriendTimer=setTimeout(squareUpLoadFriends,350);}});
 document.querySelectorAll('[data-friends-tab]').forEach(b=>b.addEventListener('click',()=>{squareUpFriendsTab=b.dataset.friendsTab;document.querySelectorAll('[data-friends-tab]').forEach(x=>x.setAttribute('aria-selected',String(x===b)));squareUpLoadFriends();}));
@@ -7241,8 +7307,16 @@ function filterRows(){
  let empty=notificationList.querySelector('.sq-inbox-filter-empty');
  const hasMatches=Array.from(notificationList.querySelectorAll('.sq-inbox-column')).some(section=>!section.hidden);
  if(!hasMatches){
-  if(!empty){empty=document.createElement('p');empty.className='sq-inbox-filter-empty';empty.setAttribute('role','status');notificationList.append(empty);}
-  empty.textContent=selection==='all'?'No notifications to display.':'No notifications match this filter. Choose All notifications to see everything.';
+  if(!empty){empty=document.createElement('div');empty.className='sq-inbox-filter-empty dw-guided-empty';empty.setAttribute('role','status');notificationList.append(empty);}
+  empty.replaceChildren();
+  var heading=document.createElement('strong');heading.textContent=selection==='all'?'All caught up':'Nothing matches this filter';
+  var note=document.createElement('p');note.textContent=selection==='all'?'New expenses, payments and messages will appear here.':'Try another filter to find notifications.';
+  empty.append(heading,note);
+  if(selection!=='all'){
+    var reset=document.createElement('button');reset.type='button';reset.className='dw-guided-empty-action';reset.textContent='Show all notifications';
+    reset.addEventListener('click',function(){if(notificationFilter){notificationFilter.value='all';filterRows();}});
+    empty.append(reset);
+  }
  }else if(empty){empty.remove();}
 }
 notificationFilter?.addEventListener('change',function(){if(!notificationList.querySelector('.sq-inbox-columns')){organizeInbox();}else{filterRows();}});
