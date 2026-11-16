@@ -46,7 +46,7 @@
     holder=document.createElement('div');holder.id='dw-integrated-picker';holder.className='dw-integrated-picker';
     const icon=document.createElementNS('http://www.w3.org/2000/svg','svg');
     icon.classList.add('dw-picker-icon');icon.setAttribute('viewBox','0 0 24 24');icon.setAttribute('fill','none');icon.setAttribute('stroke-linecap','round');icon.setAttribute('stroke-linejoin','round');icon.setAttribute('aria-hidden','true');
-    for(const d of ['m12 2 9 5-9 5-9-5 9-5Z','m3 12 9 5 9-5','m3 17 9 5 9-5']){
+    for(const d of ['m3 6 2 2 4-4','M13 6h8','M3 17h3','M10 17h11']){
      const line=document.createElementNS('http://www.w3.org/2000/svg','path');line.setAttribute('d',d);icon.append(line);
     }
     const label=document.createElement('label');label.htmlFor='dw-integrated-tracker-select';label.textContent='Tracker';
