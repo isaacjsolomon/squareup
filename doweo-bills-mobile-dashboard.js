@@ -157,16 +157,17 @@
  });
  let frame=0;
  function findHeader(){
-  const ask=[...document.querySelectorAll('button,a,[role="button"]')]
-   .find(node=>/ask\s+weo/i.test(node.textContent||'')&&node.getClientRects().length);
-  if(!ask)return null;
-  for(let node=ask.parentElement,depth=0;node&&depth<9;node=node.parentElement,depth++){
-   const r=node.getBoundingClientRect();
-   if(r.width<470||r.height<46||r.height>190)continue;
-   if(!/doweo/i.test(node.textContent||''))continue;
-   if(!node.querySelector('input,[role="search"],[role="searchbox"],[class*="search"],[id*="search"]') &&
-      !/search/i.test(node.textContent||''))continue;
-   return node;
+  const visible=node=>Boolean(node&&node.getClientRects().length);
+  const asks=[...document.querySelectorAll('button,a,[role="button"]')]
+    .filter(node=>visible(node)&&/ask\s*weo/i.test(node.textContent||''));
+  for(const ask of asks){
+   for(let node=ask.parentElement,depth=0;node&&depth<10;node=node.parentElement,depth++){
+    const rect=node.getBoundingClientRect();
+    if(rect.width<400||rect.height<40||rect.height>220)continue;
+    if(!/doweo/i.test(node.textContent||''))continue;
+    const search=node.querySelector('input[type="search"],input[placeholder*="earch" i],[role="search"],[role="searchbox"],[class*="search"],[id*="search"]');
+    if(search||/search/i.test(node.textContent||''))return node;
+   }
   }
   return null;
  }
@@ -207,12 +208,12 @@
   syncOptions();
   // Insert alongside the existing search control; preserve search and Weo.
   if(picker.parentElement!==header){
-   const search=header.querySelector('input[type="search"],input[placeholder*="earch"],[role="searchbox"],[role="search"],[class*="search"]');
+   const search=header.querySelector('input[type="search"],input[placeholder*="earch" i],[role="searchbox"],[role="search"],[class*="search"]');
    let region=search;
    while(region&&region.parentElement!==header)region=region.parentElement;
    if(region&&region!==picker)header.insertBefore(picker,region);
    else {
-    const askChild=[...header.children].find(el=>/ask\s+weo/i.test(el.textContent||''));
+    const askChild=[...header.children].find(el=>/ask\s*weo/i.test(el.textContent||''));
     header.insertBefore(picker,askChild||null);
    }
   }
