@@ -33,7 +33,7 @@
   // The old lookup required the literal word "Search" in textContent, which
   // fails for placeholder-only search fields. Inspect rendered structure instead.
   const ask=[...document.querySelectorAll('button,a,[role="button"]')]
-   .find(n=>/ask\\s+weo/i.test(n.textContent||'')&&n.getClientRects().length);
+   .find(n=>/ask\s+weo/i.test(n.textContent||'')&&n.getClientRects().length);
   if(!ask)return null;
   for(let node=ask.parentElement,depth=0;node&&depth<10;node=node.parentElement,depth++){
    const bounds=node.getBoundingClientRect();
@@ -54,7 +54,7 @@
   while(child&&child.parentElement!==header)child=child.parentElement;
   if(child&&child!==context)header.insertBefore(context,child);
   else {
-   const ask=[...header.children].find(n=>/ask\\s+weo/i.test(n.textContent||''));
+   const ask=[...header.children].find(n=>/ask\s+weo/i.test(n.textContent||''));
    header.insertBefore(context,ask||null);
   }
  }
@@ -75,7 +75,7 @@
    const tabs=expected.map(tabFor);
    if(tabs.some(tab=>!tab))continue;
    // Use native nodes: existing listeners, selected states and ARIA survive.
-   tabs.forEach(tab=>{if(tab.parentElement!==bar)bar.appendChild(tab);tab.classList.add('dw-tracker-tab-item');});
+   tabs.forEach((tab,i)=>{if(tab.parentElement!==bar)bar.appendChild(tab);tab.classList.add('dw-tracker-tab-item');tab.dataset.dwTrackerTab=expected[i];});
    bar.classList.add('dw-tracker-tabs-row');
    return;
   }
