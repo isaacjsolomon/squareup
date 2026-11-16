@@ -55,6 +55,18 @@ self.addEventListener('fetch', event => {
   );
 });
 
+// Keep push destinations on this app. Reject external and protocol-relative URLs.
+function safeNotificationUrl(input) {
+  try {
+    if (typeof input !== 'string' || !input.startsWith('/') || input.startsWith('//')) return self.location.origin + '/';
+    const url = new URL(input, self.location.origin);
+    if (url.origin !== self.location.origin) return self.location.origin + '/';
+    return url.href;
+  } catch (_) {
+    return self.location.origin + '/';
+  }
+}
+
 // Receive push notifications.
 self.addEventListener('push', event => {
   let payload = {};
@@ -71,7 +83,7 @@ self.addEventListener('push', event => {
         icon: '/icons/icon-192.png',
         badge: '/icons/icon-192.png',
         data: {
-          url: payload.url || '/'
+          url: safeNotificationUrl(payload.url || '/')
         }
       }
     )
@@ -82,18 +94,23 @@ self.addEventListener('push', event => {
 self.addEventListener('notificationclick', event => {
   event.notification.close();
 
-  const target = new URL(
-    event.notification.data?.url || '/',
-    self.location.origin
-  );
+  const target = safeNotificationUrl(event.notification.data?.url || '/');
 
-  if (target.origin !== self.location.origin) {
-    target.pathname = '/';
-    target.search = '';
-    target.hash = '';
-  }
-
-  event.waitUntil(
-    clients.openWindow(target.href)
-  );
+  event.waitUntil((async () => {
+    const windows = await clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const matching = windows.find(client => {
+      try {
+        const existing = new URL(client.url);
+        return existing.origin === self.location.origin && existing.pathname === new URL(target).pathname;
+      } catch (_) { return false; }
+    });
+    if (matching) {
+      if (typeof matching.navigate === 'function' && matching.url !== target) {
+        const navigated = await matching.navigate(target);
+        if (navigated && typeof navigated.focus === 'function') return navigated.focus();
+      }
+      return matching.focus();
+    }
+    return clients.openWindow(target);
+  })());
 });
