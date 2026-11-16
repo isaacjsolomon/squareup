@@ -24,6 +24,17 @@ jobs:
           cp index.html doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs doweo-bills-mobile-dashboard.js doweo-bills-mobile-dashboard.css doweo-finance-planning.js doweo-trips-activity.js doweo-paylinks-currency.js .pages-output/
           # Bump these URLs in the published HTML to invalidate old browser-cached UI assets.
           sed -E -i 's#(doweo-bills-mobile-dashboard\.(css|js))\?v=[^\"]+#\1?v=20261116-inline-header-v1#g' .pages-output/index.html
+          cp doweo-tracker-header.css doweo-tracker-header.js .pages-output/
+          python3 - <<'PY'
+          from pathlib import Path
+          page = Path('.pages-output/index.html')
+          html = page.read_text()
+          css = '<link rel="stylesheet" href="/doweo-tracker-header.css?v=20261116-restore-1">'
+          js = '<script defer src="/doweo-tracker-header.js?v=20261116-restore-1"></script>'
+          assert '</head>' in html and '</body>' in html
+          html = html.replace('</head>', css + '</head>', 1).replace('</body>', js + '</body>', 1)
+          page.write_text(html)
+          PY
           cp -R icons images beta privacy terms .pages-output/
           cp robots.txt sitemap.xml .pages-output/
           mkdir -p .pages-output/.well-known
