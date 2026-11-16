@@ -44,9 +44,18 @@
    let holder=$('dw-integrated-picker');
    if(!holder){
     holder=document.createElement('div');holder.id='dw-integrated-picker';holder.className='dw-integrated-picker';
+    const icon=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    icon.classList.add('dw-picker-icon');icon.setAttribute('viewBox','0 0 24 24');icon.setAttribute('fill','none');icon.setAttribute('stroke-linecap','round');icon.setAttribute('stroke-linejoin','round');icon.setAttribute('aria-hidden','true');
+    for(const d of ['m12 2 9 5-9 5-9-5 9-5Z','m3 12 9 5 9-5','m3 17 9 5 9-5']){
+     const line=document.createElementNS('http://www.w3.org/2000/svg','path');line.setAttribute('d',d);icon.append(line);
+    }
     const label=document.createElement('label');label.htmlFor='dw-integrated-tracker-select';label.textContent='Tracker';
+    const wrap=document.createElement('div');wrap.className='dw-picker-select-wrap';
     const select=document.createElement('select');select.id='dw-integrated-tracker-select';select.setAttribute('aria-label','Switch tracker');
-    holder.append(label,select);
+    const arrow=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    arrow.classList.add('dw-picker-chevron');arrow.setAttribute('viewBox','0 0 24 24');arrow.setAttribute('fill','none');arrow.setAttribute('stroke-linecap','round');arrow.setAttribute('stroke-linejoin','round');arrow.setAttribute('aria-hidden','true');
+    const chevron=document.createElementNS('http://www.w3.org/2000/svg','path');chevron.setAttribute('d','m6 9 6 6 6-6');arrow.append(chevron);
+    wrap.append(select,arrow);holder.append(icon,label,wrap);
     select.addEventListener('change',()=>{source.value=select.value;source.dispatchEvent(new Event('change',{bubbles:true}));});
    }
    if(holder.parentElement!==header||holder.nextElementSibling!==searchRoot)header.insertBefore(holder,searchRoot);
