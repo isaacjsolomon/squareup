@@ -1084,8 +1084,7 @@ html body #sq-ai-window.weo-full-page #sq-ai-close{
 }
 
 
-/* Tracker actions: consistent Lucide-style icons and sidebar-safe desktop settings.
-   Target only the portalled Trackers menu; preserve its existing button handlers. */
+/* Tracker action icon refinements (settings positioning now handled by index.html). */
 body.trackers-view .tracker-tile-menu-panel .tracker-menu-main > button:nth-of-type(2) > :first-child,
 body.trackers-view .tracker-tile-menu-panel .tracker-menu-main > button:nth-of-type(3) > :first-child{
   font-size:0!important; width:26px!important; height:26px!important; min-width:26px!important;
@@ -1094,73 +1093,3 @@ body.trackers-view .tracker-tile-menu-panel .tracker-menu-main > button:nth-of-t
 }
 body.trackers-view .tracker-tile-menu-panel .tracker-menu-main > button:nth-of-type(2) > :first-child{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236cebd7%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2218%22%20cy%3D%225%22%20r%3D%223%22%2F%3E%3Ccircle%20cx%3D%226%22%20cy%3D%2212%22%20r%3D%223%22%2F%3E%3Ccircle%20cx%3D%2218%22%20cy%3D%2219%22%20r%3D%223%22%2F%3E%3Cpath%20d%3D%22m8.7%2013.5%206.6%204M15.3%206.5l-6.6%204%22%2F%3E%3C%2Fsvg%3E")!important}
 body.trackers-view .tracker-tile-menu-panel .tracker-menu-main > button:nth-of-type(3) > :first-child{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236cebd7%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3%206h18M8%206V4h8v2M19%206l-1%2014H6L5%206M10%2010v6m4-6v6%22%2F%3E%3C%2Fsvg%3E")!important}
-@media(min-width:801px){
-  body.trackers-view .tracker-tile-menu-panel:has(.tracker-settings-view:not([hidden])){
-    left:max(280px,calc((100vw + 268px - 420px)/2))!important;
-    right:auto!important;width:min(420px,calc(100vw - 304px))!important;
-    max-width:calc(100vw - 304px)!important;
-    box-sizing:border-box!important;
-  }
-}
-@media(max-width:800px){
-  body.trackers-view .tracker-tile-menu-panel:has(.tracker-settings-view:not([hidden])){
-    left:50%!important;right:auto!important;transform:translateX(-50%)!important;
-    width:min(390px,calc(100vw - 24px))!important;
-    max-width:calc(100vw - 24px)!important;
-    box-sizing:border-box!important;
-  }
-}
-
-
-/* Compact tracker-settings popover — v2.  The tracker menu is portalled to
-   document.body and is positioned inline by placeTrackerMenu().  These rules
-   override the inline left/width so the expanded settings menu occupies the
-   content column rather than covering the navigation sidebar.  No changes
-   to open/close/share/delete behavior. */
-@media (min-width: 801px) {
-  html body .tracker-tile-menu-panel:has(.tracker-settings-view:not([hidden])) {
-    position:fixed!important;
-    left:calc(50vw + 120px)!important;
-    right:auto!important;
-    transform:translateX(-50%)!important;
-    width:min(350px, calc(100vw - 290px))!important;
-    min-width:0!important;
-    max-width:calc(100vw - 290px)!important;
-    max-height:min(580px, calc(100dvh - 36px))!important;
-    overflow-y:auto!important;
-    box-sizing:border-box!important;
-    padding:10px!important;
-    overscroll-behavior:contain;
-  }
-}
-@media (max-width: 800px) {
-  html body .tracker-tile-menu-panel:has(.tracker-settings-view:not([hidden])) {
-    position:fixed!important;
-    left:50%!important;
-    right:auto!important;
-    transform:translateX(-50%)!important;
-    width:min(350px, calc(100vw - 24px))!important;
-    min-width:0!important;
-    max-width:calc(100vw - 24px)!important;
-    max-height:calc(100dvh - 28px)!important;
-    overflow-y:auto!important;
-    box-sizing:border-box!important;
-    padding:10px!important;
-    overscroll-behavior:contain;
-  }
-}
-html body .tracker-tile-menu-panel:has(.tracker-settings-view:not([hidden])) .sq-tracker-settings-group {
-  padding:8px!important;
-  margin:4px 0!important;
-}
-html body .tracker-tile-menu-panel:has(.tracker-settings-view:not([hidden])) .sq-tracker-settings-action {
-  min-height:46px!important;
-  padding:8px 10px!important;
-  gap:9px!important;
-  font-size:14px!important;
-}
-html body .tracker-tile-menu-panel:has(.tracker-settings-view:not([hidden])) .tracker-settings-back {
-  min-height:42px!important;
-  font-size:17px!important;
-  padding:8px 10px!important;
-}
