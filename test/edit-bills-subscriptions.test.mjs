@@ -5,8 +5,9 @@ const ui=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const api=readFileSync(new URL('../functions/api/[[path]].js',import.meta.url),'utf8');
 test('bill edit controls exist in both list and details modal',()=>{
  assert.match(ui,/edit\.textContent='Edit';edit\.addEventListener\('click',\(\)=>window\.sqPremiumEdit/);
- assert.match(ui,/edit\.textContent='Edit bill'/);
+ assert.match(ui,/edit\\.textContent=item\\.kind==='subscription'\\?'Edit subscription':'Edit bill'/);
  assert.match(ui,/window\.sqPremiumEdit=function\(item,trackerId\)/);
+ assert.match(ui,/if\(!name\.value\.trim\(\)\)/);
  assert.match(ui,/squareUpApi\('trackers\/'\+trackerId\+'\/bills\/'\+item\.id,'PATCH'/);
 });
 test('backend verifies tracker scope and edit permissions before patch',()=>{
