@@ -215,6 +215,7 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
     await page.locator('#tracker-dashboard [data-sq-tab="'+section+'"]').click();
     await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
     await assertSingleTabRow('#tracker-dashboard > .sq-workspace-tabs',width);
+    if(width===1280&&section==='overview'){const preview=await page.locator('#tracker-dashboard > .sq-workspace-tabs').screenshot({animations:'disabled'});console.log('DESKTOP_TRACKER_TAB_PREVIEW '+preview.toString('base64'));}
     await page.screenshot({path:resolve(root,`test-results/bills/desktop-tracker-${section}-${width}.png`),animations:'disabled'});
    }
   }
