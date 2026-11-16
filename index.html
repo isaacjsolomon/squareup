@@ -15458,6 +15458,89 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  close.addEventListener('click',function(){dialog.close()});
  dialog.addEventListener('click',function(e){if(e.target===dialog)dialog.close()});
 })();</script>
+<style id="dw-consistent-standard-buttons">
+/* Shared button rhythm for ordinary actions only. Keep destructive,
+   promotional, branded, top navigation and bottom navigation controls intact. */
+:root{
+  --dw-btn-radius:11px;
+  --dw-btn-border:#42667a;
+  --dw-btn-bg:#17394f;
+  --dw-btn-bg-hover:#235169;
+  --dw-btn-text:#eef9ff;
+}
+#notifications-page .small-btn:not(.accent):not(.danger):not(.primary),
+#friends-page .sq-feature-btn,
+#friends-page .sq-friend-tabs button,
+#friends-page .sq-friend-actions button:not(.danger):not([data-friend-action='remove']):not([data-friend-action='decline']),
+#settings-page .settings-action:not(.primary):not(.danger):not(#settings-signout):not(#settings-delete-account),
+#analytics-page .small-btn:not(.accent):not(.danger):not(.primary),
+#split-page .small-btn:not(.accent):not(.danger):not(.primary),
+#sq-bills-page .small-btn:not(.accent):not(.danger):not(.primary),
+#tracker-dashboard .small-btn:not(.accent):not(.danger):not(.primary),
+#tracker-dashboard .sq-approval-actions button:not(.primary):not(.danger) {
+  box-sizing:border-box;
+  min-height:42px;
+  min-width:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:9px 15px;
+  font-family:inherit;
+  font-size:14px;
+  font-weight:700;
+  line-height:1.3;
+  border-radius:var(--dw-btn-radius);
+  border:1px solid var(--dw-btn-border);
+  background:var(--dw-btn-bg);
+  color:var(--dw-btn-text);
+  cursor:pointer;
+  transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+#notifications-page .small-btn:not(.accent):not(.danger):not(.primary):hover,
+#friends-page .sq-feature-btn:hover,
+#friends-page .sq-friend-tabs button:hover:not([aria-selected="true"]),
+#friends-page .sq-friend-actions button:not(.danger):not([data-friend-action='remove']):not([data-friend-action='decline']):hover,
+#settings-page .settings-action:not(.primary):not(.danger):not(#settings-signout):not(#settings-delete-account):hover,
+#analytics-page .small-btn:not(.accent):not(.danger):not(.primary):hover,
+#split-page .small-btn:not(.accent):not(.danger):not(.primary):hover,
+#sq-bills-page .small-btn:not(.accent):not(.danger):not(.primary):hover,
+#tracker-dashboard .small-btn:not(.accent):not(.danger):not(.primary):hover,
+#tracker-dashboard .sq-approval-actions button:not(.primary):not(.danger):hover {
+  background:var(--dw-btn-bg-hover);
+  border-color:#54b9bb;
+}
+/* Preserve the established mint selected state for Friends tabs. */
+#friends-page .sq-friend-tabs button[aria-selected="true"]{
+  background:#43dfb3;
+  color:#062a35;
+  border-color:#43dfb3;
+}
+:is(#notifications-page,#friends-page,#settings-page,#analytics-page,#split-page,#sq-bills-page,#tracker-dashboard)
+  :is(.small-btn,.sq-feature-btn,.settings-action,.sq-friend-tabs button,.sq-friend-actions button,.sq-approval-actions button):focus-visible{
+  outline:3px solid #68eed8;
+  outline-offset:2px;
+}
+:is(#notifications-page,#friends-page,#settings-page,#analytics-page,#split-page,#sq-bills-page,#tracker-dashboard)
+  :is(.small-btn,.sq-feature-btn,.sq-friend-tabs button,.sq-friend-actions button,.settings-action,.sq-approval-actions button):disabled{
+  cursor:not-allowed;
+  opacity:.6;
+}
+@media(max-width:600px){
+  #friends-page .sq-friend-tabs button,
+  #friends-page .sq-friend-actions button:not(.danger):not([data-friend-action='remove']):not([data-friend-action='decline']),
+  #settings-page .settings-action:not(#settings-signout):not(#settings-delete-account),
+  #notifications-page .small-btn:not(.danger):not(.accent){
+    min-height:44px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #notifications-page .small-btn,#friends-page .sq-feature-btn,
+  #friends-page .sq-friend-tabs button,#friends-page .sq-friend-actions button,
+  #settings-page .settings-action,#analytics-page .small-btn,#split-page .small-btn,
+  #sq-bills-page .small-btn,#tracker-dashboard .small-btn{transition:none!important}
+}
+</style>
 </body>
 </html>
 
