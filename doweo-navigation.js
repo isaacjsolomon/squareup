@@ -152,46 +152,75 @@
  window.addEventListener('squareup:tracker-detail',()=>{syncPicker();if(analytics?.closest('#sq-ng-content'))window.squareUpRenderAnalytics?.();});
  window.addEventListener('resize',schedule);window.visualViewport?.addEventListener('resize',schedule);
  new ResizeObserver(schedule).observe(document.querySelector('.sq-mobile-top'));
- // First launch must follow the very same route as clicking Home.  Previously
- // the startup observer marked itself initialized before auth/tracker data were
- // ready, so the newer empty/aggregate page could remain until a manual click.
- const launchWantsHome=!location.hash||location.hash==='#home';
- let launchCancelled=false,launchQueued=false,launchInProgress=false;
- function launchOriginalHome(){
-  if(initialized||launchCancelled||launchInProgress||!launchWantsHome)return;
-  if(body.classList.contains('sq-auth-guest')||document.documentElement.classList.contains('sq-auth-loading'))return;
-  if(!source||!window.squareUpNavigateTracker)return;
-  const ids=[...source.options].filter(o=>o.value&&o.value!=='manage'&&!o.value.startsWith('─'));
-  if(!ids.length)return; // Wait for tracker data, not just authentication.
-  if(launchQueued)return;
-  launchQueued=true;
-  // Let existing app startup finish DOM changes before choosing its route.
-  requestAnimationFrame(()=>{
-   launchQueued=false;
-   if(initialized||launchCancelled||body.classList.contains('sq-auth-guest'))return;
-   initialized=true;
-   launchInProgress=true;
-   Promise.resolve(showTrackerOverview()).finally(()=>{launchInProgress=false;});
-  });
+ // Use the working Home navigation after the app has hydrated, not just
+ // after the first auth class change. On a cold load the tracker list and
+ // dashboard can be replaced by the app's own startup routing afterwards.
+ const startupHash=location.hash.toLowerCase();
+ const launchWantsHome=!startupHash||['#home','#dashboard','#overview','#tracker'].includes(startupHash);
+ let launchCancelled=false,launchRunning=false,launchComplete=false,launchAttempts=0,launchTimer=0;
+ function originalDashboardVisible(){
+  const dashboard=$('tracker-dashboard');
+  return Boolean(dashboard&&dashboard.getClientRects().length&&home.hidden &&
+   !body.classList.contains('dw-account-home-open')&&
+   !body.classList.contains('sq-auth-guest')&&
+   !body.classList.contains('trackers-view'));
+ }
+ function scheduleOriginalHome(delay=0){
+  if(!launchWantsHome||launchCancelled||launchComplete||launchRunning||launchAttempts>=6)return;
+  clearTimeout(launchTimer);
+  launchTimer=setTimeout(launchOriginalHome,delay);
+ }
+ async function launchOriginalHome(){
+  if(!launchWantsHome||launchCancelled||launchComplete||launchRunning||launchAttempts>=6)return;
+  if(body.classList.contains('sq-auth-guest')||document.documentElement.classList.contains('sq-auth-loading')){
+   scheduleOriginalHome(650);return;
+  }
+  if(!window.squareUpNavigateTracker){scheduleOriginalHome(650);return;}
+  const validOptions=[...source.options].filter(o=>o.value&&o.value!=='manage'&&!o.value.startsWith('─'));
+  const trackerId=window.sqLastOpenedTrackerDetail?.id||source.value||validOptions[0]?.value;
+  if(!trackerId){scheduleOriginalHome(650);return;}
+  launchRunning=true;
+  launchAttempts++;
+  try{
+   // This is the same route used by the visible Home button.
+   await showTrackerOverview();
+   // Allow the existing app's delayed initial route to finish before checking.
+   await new Promise(resolve=>setTimeout(resolve,550));
+   if(launchCancelled)return;
+   if(originalDashboardVisible()){
+    launchComplete=true;
+    initialized=true;
+    active('nav-home');
+   }
+  }catch(error){console.warn('DoWeo initial Home navigation failed',error);}
+  finally{
+   launchRunning=false;
+   if(!launchComplete&&!launchCancelled)scheduleOriginalHome(Math.min(1200*launchAttempts,4000));
+  }
  }
  const startup=new MutationObserver(()=>{
   if(body.classList.contains('sq-auth-guest')){
    if(!home.hidden||home.childNodes.length){hideHome();home.replaceChildren();}
-   initialized=false;firstTracker=true;launchQueued=false;
+   initialized=false;firstTracker=true;launchComplete=false;
    return;
   }
-  launchOriginalHome();
+  if(!launchComplete&&!launchRunning)scheduleOriginalHome(200);
  });
  startup.observe(document.documentElement,{attributes:true,attributeFilter:['class']});
  startup.observe(body,{attributes:true,attributeFilter:['class']});
- // The tracker list often arrives AFTER auth completes.
  startup.observe(source,{childList:true,subtree:true});
- source.addEventListener('change',launchOriginalHome);
- window.addEventListener('squareup:tracker-detail',launchOriginalHome);
- // Respect explicit user navigation while the app is still loading.
+ source.addEventListener('change',()=>scheduleOriginalHome(200));
+ window.addEventListener('squareup:tracker-detail',()=>scheduleOriginalHome(250));
+ window.addEventListener('load',()=>scheduleOriginalHome(600),{once:true});
  document.addEventListener('click',event=>{
-  if(!initialized&&!launchInProgress&&event.target.closest('.squareup-nav .sq-nav-link,.sq-mobile-nav button,[data-sq-tab],[data-sq-bills-tab]'))launchCancelled=true;
+  // Only actual user navigation cancels a pending auto-route. Programmatic
+  // navigation performed by the app during hydration is not user intent.
+  if(!event.isTrusted)return;
+  if(event.target.closest('#nav-home')){launchComplete=true;initialized=true;clearTimeout(launchTimer);return;}
+  if(event.target.closest('.squareup-nav .sq-nav-link,.sq-mobile-nav button,[data-sq-tab],[data-sq-bills-tab]')){
+   launchCancelled=true;clearTimeout(launchTimer);
+  }
  },true);
- launchOriginalHome();
+ scheduleOriginalHome(550);
  schedule();
 })();
