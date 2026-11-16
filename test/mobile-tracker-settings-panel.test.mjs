@@ -1,30 +1,27 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-
-test('portalled mobile tracker settings keep their own visible styling',()=>{
-  assert.match(html,/body\.trackers-view \.tracker-tile-menu-panel:has\(\.tracker-settings-view:not\(\[hidden\]\)\)/);
-  assert.match(html,/max-width:calc\(100vw - 24px\)/);
-  assert.match(html,/\.tracker-settings-back\{position:sticky;top:0/);
+const css=readFileSync(new URL('../weo-actions.css',import.meta.url),'utf8');
+test('settings uses sidebar-aware position instead of tracker card anchor',()=>{
+ assert.match(html,/var sidebar=document\.querySelector\('\.sidebar'\)/);
+ assert.match(html,/var available=vw-sidebarEdge/);
+ assert.match(html,/var left=showingSettings/);
+ assert.match(html,/sidebarEdge\+Math\.max\(12,\(available-width\)\/2\)/);
+ assert.match(html,/Math\.min\(360,available-32\)/);
+ assert.match(html,/Math\.min\(490,vh-24\)/);
 });
-
-test('tracker settings changes trigger menu repositioning',()=>{
-  assert.match(html,/settingsHeader\.onclick=function\(\)\{settingsView\.hidden=true;mainView\.hidden=false;placeTrackerMenu\(\)/);
-  assert.match(html,/mainView\.hidden=true;settingsView\.hidden=false;placeTrackerMenu\(\)/);
+test('compact drawer removes large cards and keeps all actions',()=>{
+ assert.match(html,/id="dw-tracker-settings-redesign"/);
+ assert.match(html,/\.sq-tracker-settings-group\{/);
+ assert.match(html,/border:0!important;border-radius:0!important;background:none!important/);
+ for(const label of ['Change banner','Change tracker backdrop','Rename tracker','Archive tracker','Manage permissions','Expense approval'])
+   assert.ok(html.includes("'"+label+"'"),label);
+ assert.match(html,/settingsView\.hidden=false;placeTrackerMenu\(\)/);
+ assert.match(html,/if\(event\.key==='Escape'&&menu\.open\)closeTrackerMenu\(\)/);
 });
-
-test('mobile settings are wider than the regular action menu and fit the viewport',()=>{
-  assert.match(html,/var width=Math\.min\(showingSettings \? 430 : 310,window\.innerWidth-24\)/);
-  assert.match(html,/var isMobile=window\.matchMedia\('\(max-width: 600px\)'\)\.matches/);
-  assert.match(html,/var viewportHeight=window\.visualViewport \? window\.visualViewport\.height : window\.innerHeight/);
-  assert.match(html,/menuPanel\.style\.maxHeight=\(showingSettings \? Math\.min\(680,viewportHeight-24\)/);
-});
-
-test('settings actions still invoke their existing handlers without deleting controls',()=>{
-  for(const text of ['Change banner','Change tracker backdrop','Rename tracker','Archive tracker','Manage permissions','Expense approval']){
-    assert.ok(html.includes("settingsAction(") && html.includes("'"+text+"'"),'missing settings action: '+text);
-  }
-  assert.match(html,/if\(event\.key==='Escape'&&menu\.open\)closeTrackerMenu\(\)/);
+test('old stylesheet no longer forces settings position',()=>{
+ assert.doesNotMatch(css,/left:max\(280px/);
+ assert.doesNotMatch(css,/left:calc\(50vw \+ 120px\)/);
+ assert.doesNotMatch(css,/width:min\(420px,calc\(100vw - 304px\)\)/);
 });
