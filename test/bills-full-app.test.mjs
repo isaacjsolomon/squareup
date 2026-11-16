@@ -56,11 +56,12 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
     const box=s=>{const r=document.querySelector(s).getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height}};
     const nav=box('.sq-bills-workspace-tabs'),back=box('.sq-bills-back'),title=box('.sq-bills-title');
     const a=box('.sq-premium-metrics article:first-child'),b=box('.sq-premium-metrics article:nth-child(2)');
-    const bottom=box('.sq-mobile-nav');
+    const bottom=box('.sq-mobile-nav'),header=box('.sq-mobile-top');
     const styles=s=>{const e=document.querySelector(s),c=getComputedStyle(e);return {box:box(s),height:c.height,minHeight:c.minHeight,padding:c.padding,margin:c.margin}};
-    return {nav,back,title,a,b,bottom,width:innerWidth,overflow:document.documentElement.scrollWidth,body:document.body.className,wrap:styles('body > .wrap'),manager:styles('#trackers-page'),footer:styles('.sq-legal-footer')};
+    return {nav,back,title,a,b,bottom,header,width:innerWidth,overflow:document.documentElement.scrollWidth,body:document.body.className,wrap:styles('body > .wrap'),manager:styles('#trackers-page'),footer:styles('.sq-legal-footer')};
    });
    console.log('FULL_APP_LAYOUT',width,JSON.stringify(state));
+   assert.ok(state.nav.top>=state.header.bottom+8,'all tabs must be below the fixed header');
    assert.ok(state.nav.bottom<=state.back.top+1,'tabs must be above Back');
    assert.ok(state.back.bottom<=state.title.top+1,'Back must be above title');
    assert.ok(state.title.bottom<=state.a.top+1,'metrics below title');
@@ -72,9 +73,12 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
    const gap=await page.evaluate(()=>document.querySelector('.sq-legal-footer').getBoundingClientRect().top-document.querySelector('.dw-bills-calendar-fold').getBoundingClientRect().bottom);
    assert.ok(gap<90,'no unused spacer below the calendar: '+gap);
    await page.screenshot({path:resolve(root,`test-results/bills/mobile-${width}.png`),fullPage:true});
+   await page.screenshot({path:resolve(root,`test-results/bills/viewport-${width}.png`)});
    await page.locator('.dw-bills-calendar-fold').scrollIntoViewIfNeeded();
    const headerOnTop=await page.evaluate(()=>{const r=document.querySelector('.sq-mobile-top').getBoundingClientRect();return !!document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)?.closest('.sq-mobile-top')});
    assert.ok(headerOnTop,'fixed header remains above Bills while scrolling');
+   const visibleTabs=await page.evaluate(()=>{const h=document.querySelector('.sq-mobile-top').getBoundingClientRect(),t=document.querySelector('.sq-bills-workspace-tabs').getBoundingClientRect();return t.top>=h.bottom+8&&t.bottom<innerHeight-100});
+   assert.ok(visibleTabs,'entire tab bar stays visible while scrolling');
    await page.screenshot({path:resolve(root,`test-results/bills/scrolled-${width}.png`)});
    for(const name of ['Electricity','Netflix']){
     const row=page.locator('.sq-bills-row').filter({hasText:name});
@@ -90,11 +94,25 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
     await dialog.getByRole('button',{name:'Save changes'}).click();await dialog.waitFor({state:'hidden'});
    }
   }
+  // Model the standalone iPhone status safe area and a taller header. This only
+  // changes the environment around the real page; Bills markup/styles stay intact.
+  const safeAreaStyle=await page.addStyleTag({content:'html body .wrap > .sq-mobile-top{top:59px!important;min-height:76px!important;height:76px!important}'});
+  for(const width of [320,375,390,430]){
+   await page.setViewportSize({width,height:844});
+   await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+   await page.waitForFunction(()=>{const h=document.querySelector('.sq-mobile-top').getBoundingClientRect(),t=document.querySelector('.sq-bills-workspace-tabs').getBoundingClientRect();return t.top>=h.bottom+8});
+   await page.screenshot({path:resolve(root,`test-results/bills/iphone-safe-area-${width}.png`)});
+   await page.locator('.dw-bills-calendar-fold').scrollIntoViewIfNeeded();
+   const clear=await page.evaluate(()=>{const h=document.querySelector('.sq-mobile-top').getBoundingClientRect(),t=document.querySelector('.sq-bills-workspace-tabs').getBoundingClientRect();return t.top>=h.bottom+8&&t.bottom<innerHeight-100});
+   assert.ok(clear,'safe-area header never covers sticky tabs at '+width);
+   await page.screenshot({path:resolve(root,`test-results/bills/iphone-safe-area-scrolled-${width}.png`)});
+  }
+  await safeAreaStyle.evaluate(el=>el.remove());
   await page.locator('.dw-bills-calendar-fold > summary').click();
   assert.ok(await page.locator('#sq-premium-next').isVisible());
   await page.locator('#sq-premium-next').click();
   await page.screenshot({path:resolve(root,'test-results/bills/calendar-430.png'),fullPage:true});
-  await page.locator('#sq-bill-mobile-toggle').click();
+  await page.locator('.sq-bill-create-heading h3').click();
   await page.locator('#sq-bill-name').fill('Water');await page.locator('#sq-bill-amount').fill('32');await page.locator('#sq-bill-date').fill('2026-12-10');
   await page.locator('.sq-bill-type-tab[data-kind="bill"]').click();
   await page.screenshot({path:resolve(root,'test-results/bills/add-430.png')});

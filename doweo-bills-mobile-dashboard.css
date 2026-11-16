@@ -1,188 +1,122 @@
-/* Isolated mobile Bills interface. No legacy direct-child grid rules can reach the shell's controls. */
+/* Bills owns its mobile presentation here; desktop layout stays in index.html. */
+#sq-bills-page .sq-bill-price::before{content:' · '}
 @media(max-width:760px){
-  body.sq-bills-open #sq-bills-page.dw-bills-compact{
-    display:block!important;position:relative!important;inset:auto!important;transform:none!important;
-    width:100%!important;max-width:100%!important;min-width:0!important;
-    height:auto!important;min-height:0!important;margin:0!important;padding:0 0 12px!important;
-    overflow:visible!important;box-sizing:border-box!important;background:transparent!important;
-  }
-  /* The header stays inside .wrap while the router moves Trackers to body.
-     Let its fixed layer escape the old isolated wrapper when Bills is open. */
-  body.sq-bills-open > .wrap{isolation:auto!important;z-index:auto!important}
-  body.sq-bills-open #trackers-page{margin:0 auto!important;padding-bottom:0!important}
-  body.sq-bills-open .sq-bill-edit-overlay{z-index:2147483002!important}
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell,
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell *{box-sizing:border-box}
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell{
-    display:flex!important;flex-direction:column!important;align-items:stretch!important;
-    gap:12px!important;width:100%!important;max-width:100%!important;min-width:0!important;
-    margin:0!important;padding:8px 12px 0!important;position:static!important;transform:none!important;
-    height:auto!important;min-height:0!important;overflow:visible!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > .sq-bills-workspace-tabs{
-    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
-    position:static!important;inset:auto!important;top:auto!important;left:auto!important;
-    margin:0!important;padding:4px!important;transform:none!important;z-index:auto!important;
-    width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;
-    min-height:0!important;gap:4px!important;border-radius:14px!important;box-shadow:none!important;
-    border:1px solid #36576c!important;background:#172e42!important;
-    order:0!important;overflow:hidden!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > .sq-bills-workspace-tabs button{
-    display:block!important;width:100%!important;min-width:0!important;min-height:42px!important;
-    margin:0!important;padding:8px 1px!important;white-space:nowrap!important;
-    border:0!important;background:transparent!important;color:#d7e8ef!important;font-family:inherit!important;font-weight:700!important;
-    font-size:clamp(11px,3vw,14px)!important;line-height:1.15!important;border-radius:10px!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > .sq-bills-workspace-tabs button[aria-selected="true"]{
-    background:#0e8588!important;color:#fff!important;box-shadow:inset 0 0 0 1px #23c1bd!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > .sq-bills-back{
-    display:inline-flex!important;align-self:flex-start!important;position:static!important;
-    order:1!important;top:auto!important;left:auto!important;transform:none!important;
-    width:auto!important;max-width:100%!important;height:auto!important;min-height:36px!important;
-    margin:0!important;padding:7px 11px!important;font-size:12px!important;
-    background:#173c50!important;border:1px solid #376477!important;border-radius:10px!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > .sq-bills-title{
-    order:2!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;
-    position:static!important;transform:none!important;inset:auto!important;gap:12px!important;
-    margin:0!important;padding:14px!important;width:100%!important;min-width:0!important;
-    height:auto!important;min-height:0!important;
-    border:1px solid #315f71!important;border-radius:16px!important;background:#0d3043!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > .sq-bills-title > div{
-    width:100%!important;max-width:100%!important;min-width:0!important;
-    flex:none!important;margin:0!important;padding:0!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-bills-title h2{
-    margin:0!important;padding:0!important;font-size:clamp(21px,5.5vw,27px)!important;
-    line-height:1.2!important;letter-spacing:-.025em!important;white-space:normal!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-bills-tracker-compact{
-    display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;
-    margin:0!important;padding:0!important;background:transparent!important;border:0!important;
-    box-shadow:none!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-bills-tracker-compact label{
-    display:block!important;margin:0 0 5px!important;font-size:11px!important;color:#aacbd5!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell #sq-bills-tracker{
-    display:block!important;width:100%!important;max-width:100%!important;
-    min-height:43px!important;height:43px!important;padding:7px 12px!important;margin:0!important;
-    border-radius:10px!important;background:#092638!important;border:1px solid #426f81!important;
-    color:white!important;font-size:14px!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > .sq-premium-overview{
-    order:3!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;
-    position:static!important;gap:12px!important;min-width:0!important;width:100%!important;
-    height:auto!important;min-height:0!important;margin:0!important;padding:0!important;
-    grid-template-columns:none!important;grid-template-rows:none!important;background:transparent!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-premium-overview > .sq-premium-metrics{
-    display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,.85fr)!important;
-    grid-template-rows:auto!important;gap:9px!important;order:0!important;
-    width:100%!important;min-width:0!important;margin:0!important;padding:0!important;
-    height:auto!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-premium-metrics > article{
-    display:flex!important;flex-direction:column!important;justify-content:center!important;
-    grid-column:auto!important;grid-row:auto!important;order:0!important;
-    width:100%!important;max-width:100%!important;min-width:0!important;
-    height:auto!important;min-height:106px!important;max-height:150px!important;
-    margin:0!important;padding:14px 12px!important;border-radius:15px!important;
-    border:1px solid #366a79!important;background:#103548!important;box-shadow:none!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-premium-metrics article span{
-    font-size:clamp(10px,2.7vw,12px)!important;line-height:1.25!important;overflow-wrap:anywhere!important;
-    letter-spacing:0!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-premium-metrics article strong{
-    font-size:clamp(21px,6vw,29px)!important;line-height:1.1!important;margin:6px 0 2px!important;
-    white-space:nowrap!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-premium-metrics article small{
-    font-size:10px!important;line-height:1.2!important;overflow-wrap:anywhere!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-premium-overview > .sq-bill-create-card{
-    display:block!important;position:static!important;order:1!important;
-    width:100%!important;max-width:100%!important;min-width:0!important;
-    height:auto!important;min-height:0!important;max-height:none!important;
-    margin:0!important;padding:0!important;border-radius:15px!important;
-    border:1px solid #377684!important;background:#113b4d!important;box-shadow:none!important;
-    grid-column:auto!important;grid-row:auto!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-bill-create-heading{
-    display:flex!important;align-items:center!important;justify-content:space-between!important;
-    gap:10px!important;min-height:72px!important;height:auto!important;padding:14px!important;margin:0!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-bill-create-heading h3{
-    font-size:16px!important;line-height:1.25!important;margin:0!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-bill-create-heading p{
-    margin:4px 0 0!important;font-size:11px!important;line-height:1.3!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell #sq-bill-mobile-toggle{
-    display:grid!important;place-items:center!important;flex:0 0 44px!important;
-    width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;
-    margin:0!important;padding:0!important;border-radius:11px!important;
-    background:#0b6f77!important;color:#fff!important;border:1px solid #30bcb7!important;
-    font-size:24px!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell #sq-bills-create:not([aria-hidden="true"]){
-    display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important;
-    width:100%!important;min-width:0!important;max-width:100%!important;padding:13px!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell #sq-bills-create > *{
-    grid-column:1/-1!important;min-width:0!important;max-width:100%!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell #sq-bills-create :is(input,select,button){
-    max-width:100%!important;box-sizing:border-box!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > .sq-bills-columns{
-    order:4!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;
-    gap:12px!important;width:100%!important;min-width:0!important;height:auto!important;
-    margin:0!important;padding:0!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-bills-columns > .sq-bills-card{
-    min-width:0!important;width:100%!important;height:auto!important;min-height:0!important;
-    margin:0!important;padding:14px!important;border-radius:16px!important;
-    border:1px solid #356b7b!important;background:#0e3044!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-bills-row{
-    display:grid!important;grid-template-columns:minmax(0,1fr)!important;align-items:center!important;gap:9px!important;
-    min-width:0!important;padding:10px 0!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-premium-actions{
-    display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;gap:8px!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-premium-actions button{
-    flex:1 1 auto!important;min-height:42px!important;margin:0!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-bill-info{
-    flex:1 1 160px!important;min-width:0!important;overflow-wrap:anywhere!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .dw-bills-calendar-fold{
-    order:5!important;width:100%!important;min-width:0!important;overflow:hidden!important;
-    margin:0!important;border-radius:15px!important;border:1px solid #366475!important;background:#103044!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .dw-bills-calendar-fold > summary{
-    display:flex!important;align-items:center!important;min-height:51px!important;padding:12px 15px!important;
-    font-size:15px!important;font-weight:750!important;list-style:none!important;cursor:pointer!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .dw-bills-calendar-fold > summary::-webkit-details-marker{display:none}
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .dw-bills-calendar-fold > summary::after{
-    content:'⌄';margin-left:auto;font-size:21px;color:#5ee0d0;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .dw-bills-calendar-fold[open] > summary::after{transform:rotate(180deg)}
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .dw-bills-calendar-fold .sq-premium-calendar{
-    display:block!important;position:static!important;grid-column:auto!important;grid-row:auto!important;
-    width:100%!important;min-width:0!important;max-width:100%!important;
-    margin:0!important;padding:0 12px 12px!important;box-shadow:none!important;
-    border:none!important;border-radius:0!important;background:transparent!important;
-  }
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .dw-bills-calendar-fold .sq-premium-calhead h3{display:none!important}
-  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > #sq-bills-message{order:6!important}
-  #sq-bills-page.dw-bills-compact #sq-bills-message:empty{display:none!important}
+ body.sq-bills-open > .wrap{isolation:auto!important;z-index:auto!important}
+ body.sq-bills-open #trackers-page{margin:0 auto!important;padding-bottom:0!important}
+ body.sq-bills-open .sq-bill-edit-overlay{z-index:2147483002!important}
+ body.sq-bills-open #sq-bills-page.dw-bills-compact{
+  --bills-ink:#edf7fb;--bills-muted:#a4bdc9;--bills-line:#294657;
+  display:block!important;position:relative!important;inset:auto!important;transform:none!important;
+  width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;
+  margin:0!important;padding:0 0 12px!important;overflow:visible!important;background:transparent!important;
+  color:var(--bills-ink)!important;-webkit-text-size-adjust:100%;text-size-adjust:100%;
+ }
+ #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell,
+ #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell *{box-sizing:border-box}
+ #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:14px!important;
+  width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;
+  margin:0!important;padding:var(--dw-bills-start-inset,12px) 0 0!important;position:static!important;transform:none!important;overflow:visible!important;
+ }
+ #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > .sq-bills-workspace-tabs{
+  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important;
+  position:sticky!important;inset:auto!important;top:var(--dw-bills-header-bottom,0px)!important;z-index:1000!important;
+  width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;
+  margin:0!important;padding:5px!important;border:1px solid #345064!important;border-radius:16px!important;
+  background:#10283a!important;box-shadow:0 6px 18px #00101f33!important;transform:none!important;overflow:hidden!important;
+ }
+ #sq-bills-page.dw-bills-compact .sq-bills-workspace-tabs button{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:100%!important;min-width:0!important;min-height:42px!important;height:auto!important;
+  margin:0!important;padding:10px 2px!important;border:0!important;border-radius:11px!important;
+  background:transparent!important;color:#a9c0cd!important;font-size:clamp(11px,3vw,14px)!important;font-weight:650!important;line-height:1.2!important;font-family:inherit!important;
+  white-space:nowrap!important;cursor:pointer!important;
+ }
+ #sq-bills-page.dw-bills-compact .sq-bills-workspace-tabs button[aria-selected="true"]{
+  background:#1d514f!important;color:#8df2d6!important;box-shadow:inset 0 0 0 1px #3d8c82!important;
+ }
+ #sq-bills-page.dw-bills-compact .dw-bills-workspace{
+  display:flex!important;flex-direction:column!important;gap:22px!important;min-width:0!important;
+  padding:20px 18px!important;border:1px solid #2c485b!important;border-radius:22px!important;
+  background:linear-gradient(155deg,#0d2638,#091e2e)!important;box-shadow:0 12px 35px #00101f26!important;
+ }
+ #sq-bills-page.dw-bills-compact .dw-bills-workspace > .sq-bills-back{
+  position:static!important;inset:auto!important;transform:none!important;align-self:flex-start!important;
+  width:auto!important;max-width:100%!important;height:auto!important;min-height:32px!important;
+  margin:-5px 0 -12px!important;padding:6px 0!important;border:0!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;color:#a5c8d5!important;font-size:12px!important;
+ }
+ #sq-bills-page.dw-bills-compact .dw-bills-workspace > .sq-bills-title{
+  position:static!important;inset:auto!important;transform:none!important;display:flex!important;flex-direction:column!important;gap:18px!important;
+  width:100%!important;min-width:0!important;min-height:0!important;height:auto!important;margin:0!important;padding:0!important;
+  border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+ }
+ #sq-bills-page.dw-bills-compact .sq-bills-title > div{width:100%!important;max-width:100%!important;min-width:0!important;flex:none!important;margin:0!important;padding:0!important}
+ #sq-bills-page.dw-bills-compact .sq-bills-title h2{font-size:clamp(22px,5.8vw,27px)!important;font-weight:730!important;line-height:1.2!important;letter-spacing:-.035em!important;margin:0!important}
+ #sq-bills-page.dw-bills-compact .sq-bills-tracker-compact{display:block!important;border:0!important;background:transparent!important;box-shadow:none!important}
+ #sq-bills-page.dw-bills-compact .sq-bills-tracker-compact label{font-size:11px!important;font-weight:600!important;color:var(--bills-muted)!important;margin:0 0 7px!important}
+ #sq-bills-page.dw-bills-compact #sq-bills-tracker{
+  display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;min-height:46px!important;height:46px!important;
+  padding:10px 12px!important;margin:0!important;border:1px solid #345265!important;border-radius:12px!important;
+  background:#122f42!important;color:#eef8fa!important;font-size:15px!important;
+ }
+ #sq-bills-page.dw-bills-compact .dw-bills-workspace > .sq-premium-overview{
+  display:flex!important;flex-direction:column!important;gap:18px!important;position:static!important;
+  width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;
+  grid-template-columns:none!important;grid-template-rows:none!important;background:transparent!important;
+ }
+ #sq-bills-page.dw-bills-compact .sq-premium-overview > .sq-premium-metrics{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:auto!important;gap:0!important;
+  order:0!important;width:100%!important;min-width:0!important;height:auto!important;margin:0!important;padding:15px 0!important;
+  border-top:1px solid var(--bills-line)!important;border-bottom:1px solid var(--bills-line)!important;
+ }
+ #sq-bills-page.dw-bills-compact .dw-bills-workspace .sq-premium-metrics > article{
+  display:flex!important;flex-direction:column!important;justify-content:center!important;grid-column:auto!important;grid-row:auto!important;order:0!important;
+  min-width:0!important;width:auto!important;height:auto!important;min-height:62px!important;max-height:none!important;margin:0!important;padding:0 12px 0 0!important;
+  border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+ }
+ #sq-bills-page.dw-bills-compact .dw-bills-workspace .sq-premium-metrics > article:nth-child(2){border-left:1px solid var(--bills-line)!important;padding:0 0 0 16px!important}
+ #sq-bills-page.dw-bills-compact .sq-premium-metrics article span{font-size:11px!important;line-height:1.4!important;color:var(--bills-muted)!important;letter-spacing:0!important;overflow-wrap:anywhere!important}
+ #sq-bills-page.dw-bills-compact .sq-premium-metrics article strong{font-size:clamp(23px,6vw,29px)!important;font-weight:720!important;line-height:1.2!important;margin:5px 0 0!important;overflow-wrap:anywhere!important}
+ #sq-bills-page.dw-bills-compact .sq-premium-metrics article small{display:none!important}
+ #sq-bills-page.dw-bills-compact .dw-bills-workspace .sq-premium-overview > .sq-bill-create-card{
+  display:block!important;position:static!important;order:1!important;grid-column:auto!important;grid-row:auto!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
+  margin:0!important;padding:0!important;border:1px solid #3a8b7a!important;border-radius:13px!important;background:#184c49!important;box-shadow:none!important;
+ }
+ #sq-bills-page.dw-bills-compact .dw-bills-workspace .sq-bill-create-heading{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;min-height:54px!important;height:auto!important;margin:0!important;padding:8px 12px 8px 15px!important}
+ #sq-bills-page.dw-bills-compact .dw-bills-workspace .sq-bill-create-heading h3{font-size:14px!important;line-height:1.4!important;font-weight:700!important;margin:0!important;color:#d6fff0!important}
+ #sq-bills-page.dw-bills-compact .dw-bills-workspace .sq-bill-create-heading p{display:none!important}
+ #sq-bills-page.dw-bills-compact .dw-bills-workspace #sq-bill-mobile-toggle{display:grid!important;place-items:center!important;flex:0 0 38px!important;width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;margin:0!important;padding:0!important;border:0!important;border-radius:10px!important;background:#8de6cd!important;color:#103c37!important;font-size:24px!important;cursor:pointer!important}
+ #sq-bills-page.dw-bills-compact .dw-bills-workspace > .sq-bills-columns{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:24px!important;width:100%!important;min-width:0!important;margin:0!important;padding:0!important}
+ #sq-bills-page.dw-bills-compact .dw-bills-workspace .sq-bills-columns > .sq-bills-card{
+  display:block!important;width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;
+  border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+ }
+ #sq-bills-page.dw-bills-compact .sq-bills-list-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;margin:0 0 12px!important;padding:0!important;border:0!important}
+ #sq-bills-page.dw-bills-compact .sq-bills-list-head h3{font-size:17px!important;font-weight:700!important;line-height:1.3!important;margin:0!important}
+ #sq-bills-page.dw-bills-compact .sq-bills-list-head > span{font-size:11px!important;font-weight:550!important;color:var(--bills-muted)!important;background:transparent!important;border:0!important;padding:0!important}
+ #sq-bills-page.dw-bills-compact :is(#sq-bills-bill-list,#sq-bills-sub-list){display:grid!important;gap:10px!important;padding:0!important;color:var(--bills-muted)!important;font-size:13px!important;line-height:1.5!important}
+ #sq-bills-page.dw-bills-compact .dw-bills-workspace .sq-bills-row{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:13px!important;width:100%!important;min-width:0!important;padding:14px!important;margin:0!important;background:#122f40!important;border:1px solid #294a5a!important;border-radius:14px!important;scroll-margin-top:calc(var(--dw-bills-header-bottom,0px) + 70px)}
+ #sq-bills-page.dw-bills-compact .sq-bill-info{display:grid!important;grid-template-columns:34px minmax(0,1fr)!important;gap:11px!important;min-width:0!important;align-items:start!important}
+ #sq-bills-page.dw-bills-compact .sq-bill-info > div{min-width:0!important}
+ #sq-bills-page.dw-bills-compact .sq-bill-info .sq-service-icon{width:34px!important;height:34px!important;border-radius:9px!important;font-size:18px!important}
+ #sq-bills-page.dw-bills-compact .sq-bills-row strong{display:flex!important;justify-content:space-between!important;align-items:flex-start!important;gap:10px!important;font-size:14px!important;line-height:1.4!important;color:#f0f8fb!important}
+ #sq-bills-page.dw-bills-compact .sq-bill-name{min-width:0!important;flex:1 1 auto!important;overflow-wrap:anywhere!important}
+ #sq-bills-page.dw-bills-compact .sq-bill-price{flex:0 0 auto!important;font-variant-numeric:tabular-nums!important;font-weight:700!important;color:#a3f0d9!important}
+ #sq-bills-page.dw-bills-compact .sq-bill-price::before{content:none}
+ #sq-bills-page.dw-bills-compact .sq-bills-row small{font-size:11px!important;line-height:1.6!important;margin-top:5px!important;color:var(--bills-muted)!important;overflow-wrap:anywhere!important}
+ #sq-bills-page.dw-bills-compact .sq-premium-actions{display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;gap:7px!important;margin:0!important;padding-top:11px!important;border-top:1px solid #2b4757!important}
+ #sq-bills-page.dw-bills-compact .sq-premium-actions button{flex:1 1 auto!important;min-height:36px!important;height:auto!important;padding:8px 7px!important;margin:0!important;border:0!important;border-radius:8px!important;background:#1a3b4c!important;color:#b8d0da!important;font-size:12px!important;font-weight:650!important;line-height:1.3!important;font-family:inherit!important;cursor:pointer!important}
+ #sq-bills-page.dw-bills-compact .sq-premium-actions button:nth-child(2){background:#22554f!important;color:#a9f2da!important}
+ #sq-bills-page.dw-bills-compact .sq-premium-actions button:last-child{color:#e3b5bc!important}
+ #sq-bills-page.dw-bills-compact .dw-bills-calendar-fold{width:100%!important;min-width:0!important;margin:0!important;border:1px solid var(--bills-line)!important;border-radius:13px!important;background:#102a3b!important;overflow:hidden!important}
+ #sq-bills-page.dw-bills-compact .dw-bills-calendar-fold > summary{display:flex!important;align-items:center!important;min-height:49px!important;padding:12px 14px!important;list-style:none!important;cursor:pointer!important;font-size:14px!important;font-weight:650!important}
+ #sq-bills-page.dw-bills-compact .dw-bills-calendar-fold > summary::-webkit-details-marker{display:none}
+ #sq-bills-page.dw-bills-compact .dw-bills-calendar-fold > summary::after{content:'⌄';margin-left:auto;color:#8bddcd;font-size:20px}
+ #sq-bills-page.dw-bills-compact .dw-bills-calendar-fold[open] > summary::after{transform:rotate(180deg)}
+ #sq-bills-page.dw-bills-compact .dw-bills-calendar-fold .sq-premium-calendar{display:block!important;position:static!important;grid-column:auto!important;grid-row:auto!important;width:100%!important;min-width:0!important;max-width:100%!important;margin:0!important;padding:0 12px 14px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+ #sq-bills-page.dw-bills-compact .dw-bills-calendar-fold .sq-premium-calhead h3{display:none!important}
+ #sq-bills-page.dw-bills-compact #sq-bills-message{margin:0!important;font-size:12px!important;line-height:1.5!important}
+ #sq-bills-page.dw-bills-compact #sq-bills-message:empty{display:none!important}
 }
-
