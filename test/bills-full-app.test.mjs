@@ -52,6 +52,7 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   for(const width of [320,375,390,430]){
    await page.setViewportSize({width,height:844});
    await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+   await page.waitForFunction(()=>{const t=document.querySelector('.sq-bills-workspace-tabs').getBoundingClientRect(),h=document.querySelector('.sq-mobile-top').getBoundingClientRect(),p=document.getElementById('sq-bills-page').getBoundingClientRect();return t.top>=h.bottom+8&&Math.abs(t.width-p.width)<1});
    const state=await page.evaluate(()=>{
     const box=s=>{const r=document.querySelector(s).getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height}};
     const nav=box('.sq-bills-workspace-tabs'),back=box('.sq-bills-back'),title=box('.sq-bills-title');
@@ -100,7 +101,7 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   for(const width of [320,375,390,430]){
    await page.setViewportSize({width,height:844});
    await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
-   await page.waitForFunction(()=>{const h=document.querySelector('.sq-mobile-top').getBoundingClientRect(),t=document.querySelector('.sq-bills-workspace-tabs').getBoundingClientRect();return t.top>=h.bottom+8});
+   await page.waitForFunction(()=>{const h=document.querySelector('.sq-mobile-top').getBoundingClientRect(),t=document.querySelector('.sq-bills-workspace-tabs').getBoundingClientRect();return t.top>=h.bottom+8&&Math.abs(t.width-document.getElementById('sq-bills-page').getBoundingClientRect().width)<1});
    await page.screenshot({path:resolve(root,`test-results/bills/iphone-safe-area-${width}.png`)});
    await page.locator('.dw-bills-calendar-fold').scrollIntoViewIfNeeded();
    const clear=await page.evaluate(()=>{const h=document.querySelector('.sq-mobile-top').getBoundingClientRect(),t=document.querySelector('.sq-bills-workspace-tabs').getBoundingClientRect();return t.top>=h.bottom+8&&t.bottom<innerHeight-100});
