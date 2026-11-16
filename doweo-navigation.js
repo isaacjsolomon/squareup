@@ -221,6 +221,41 @@
    launchCancelled=true;clearTimeout(launchTimer);
   }
  },true);
+ // Mobile-only navigation: tracker members and chat live under More > Social.
+ // Keep the original tab elements (and their event handlers) intact on desktop.
+ function syncMobileSocialLinks(){
+  const sheet=$('sq-mobile-more-sheet');
+  if(!sheet)return;
+  let links=$('dw-mobile-social-links');
+  if(!links){
+   links=document.createElement('section');
+   links.id='dw-mobile-social-links';
+   links.setAttribute('aria-label','Social');
+   links.innerHTML='<h3>Social</h3><div class="dw-mobile-social-actions"><button type="button" data-dw-social-tab="members">Members</button><button type="button" data-dw-social-tab="chat">Chat</button></div>';
+   const headings=[...sheet.querySelectorAll('h2,h3,h4,[class*="heading"],[class*="title"]')];
+   const social=headings.find(h=>(h.textContent||'').trim().toLowerCase()==='social');
+   if(social&&social.parentElement!==sheet){
+    const group=social.parentElement;
+    group.append(links);
+    links.querySelector('h3').hidden=true;
+   }else sheet.append(links);
+   links.addEventListener('click',event=>{
+    const btn=event.target.closest('[data-dw-social-tab]');
+    if(!btn)return;
+    const name=btn.dataset.dwSocialTab;
+    // Use the existing tracker tab so permissions, data, and navigation remain unchanged.
+    const target=document.querySelector('#tracker-dashboard [data-sq-tab="'+name+'"],#tracker-dashboard [data-dw-tracker-tab="'+name+'"],.sq-workspace-tabs [data-sq-tab="'+name+'"],.sq-bills-workspace-tabs [data-sq-tab="'+name+'"]');
+    if(!target)return;
+    const close=sheet.querySelector('[data-sq-more-close],[aria-label="Close"],[aria-label="Close menu"]');
+    if(close)close.click();
+    target.click();
+   });
+  }
+ }
+ const mobileSocialObserver=new MutationObserver(()=>syncMobileSocialLinks());
+ // The mobile More sheet may be created after auth; install then and on later rerenders.
+ mobileSocialObserver.observe(body,{childList:true,subtree:true});
+ syncMobileSocialLinks();
  scheduleOriginalHome(550);
  schedule();
 })();
