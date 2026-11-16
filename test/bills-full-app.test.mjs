@@ -51,7 +51,7 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   mkdirSync(resolve(root,'test-results/bills'),{recursive:true});
   for(const width of [320,375,390,430]){
    await page.setViewportSize({width,height:844});
-   await page.evaluate(()=>window.scrollTo(0,0));
+   await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
    const state=await page.evaluate(()=>{
     const box=s=>{const r=document.querySelector(s).getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height}};
     const nav=box('.sq-bills-workspace-tabs'),back=box('.sq-bills-back'),title=box('.sq-bills-title');
@@ -73,6 +73,8 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
    assert.ok(gap<90,'no unused spacer below the calendar: '+gap);
    await page.screenshot({path:resolve(root,`test-results/bills/mobile-${width}.png`),fullPage:true});
    await page.locator('.dw-bills-calendar-fold').scrollIntoViewIfNeeded();
+   const headerOnTop=await page.evaluate(()=>{const r=document.querySelector('.sq-mobile-top').getBoundingClientRect();return !!document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)?.closest('.sq-mobile-top')});
+   assert.ok(headerOnTop,'fixed header remains above Bills while scrolling');
    await page.screenshot({path:resolve(root,`test-results/bills/scrolled-${width}.png`)});
    for(const name of ['Electricity','Netflix']){
     const row=page.locator('.sq-bills-row').filter({hasText:name});
@@ -109,7 +111,7 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   await page.setViewportSize({width:1280,height:900});
   await page.waitForFunction(()=>!document.getElementById('sq-bills-page').classList.contains('dw-bills-compact'));
   assert.equal(await page.locator('.sq-premium-calendar').evaluate(e=>e.parentElement.className),'sq-premium-overview');
-  await page.evaluate(()=>window.scrollTo(0,0));
+  await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
   await page.screenshot({path:resolve(root,'test-results/bills/desktop-1280.png'),fullPage:true});
   await page.setViewportSize({width:375,height:844});
   await page.locator('.dw-bills-calendar-fold').waitFor();
