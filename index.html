@@ -2344,6 +2344,98 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
   padding:7px 9px!important;min-height:37px!important;font-size:16px!important;
 }
 </style>
+<style id="dw-consistent-page-headers">
+/* Shared page-header rhythm; keeps each existing heading and action wired up. */
+#notifications-page .dw-page-header,
+#trackers-page .dw-page-header,
+#friends-page .dw-page-header,
+#sq-bills-page .dw-page-header,
+#split-page .dw-page-header,
+#analytics-page .dw-page-header {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  flex-wrap:wrap!important;
+  column-gap:18px!important;
+  row-gap:12px!important;
+  padding:8px 0 17px!important;
+  margin:0 0 20px!important;
+  border:0!important;
+  border-bottom:1px solid rgba(117,182,197,.22)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  min-width:0!important;
+}
+#notifications-page .dw-page-header h2,
+#trackers-page .dw-page-header h2,
+#friends-page .dw-page-header h2,
+#sq-bills-page .dw-page-header h2,
+#split-page .dw-page-header h2,
+#analytics-page .dw-page-header h2 {
+  font-size:clamp(25px,2.5vw,34px)!important;
+  font-weight:760!important;
+  line-height:1.2!important;
+  letter-spacing:-.025em!important;
+  margin:0!important;
+  padding:0!important;
+}
+#notifications-page .dw-page-header > :first-child,
+#trackers-page .dw-page-header > :first-child,
+#friends-page .dw-page-header > :first-child,
+#sq-bills-page .dw-page-header > :first-child,
+#analytics-page .dw-page-header > :first-child {min-width:0}
+#notifications-page .dw-page-header .small-btn,
+#friends-page .dw-page-header .sq-feature-btn {
+  min-height:42px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:11px!important;
+  padding:9px 15px!important;
+  white-space:nowrap;
+}
+#sq-bills-page .dw-page-header .sq-bills-tracker-compact {
+  margin:0!important;
+  flex:0 1 280px!important;
+  min-width:min(240px,100%)!important;
+}
+#split-page .dw-page-header > label,
+#analytics-page .dw-page-header > label {
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:wrap!important;
+  gap:8px!important;
+  margin:0!important;
+  min-width:0!important;
+}
+@media(max-width:700px){
+  #notifications-page .dw-page-header,
+  #trackers-page .dw-page-header,
+  #friends-page .dw-page-header,
+  #sq-bills-page .dw-page-header,
+  #split-page .dw-page-header,
+  #analytics-page .dw-page-header {
+    padding:6px 0 14px!important;
+    margin:0 0 16px!important;
+    row-gap:12px!important;
+  }
+  #notifications-page .dw-page-header h2,
+  #trackers-page .dw-page-header h2,
+  #friends-page .dw-page-header h2,
+  #sq-bills-page .dw-page-header h2,
+  #split-page .dw-page-header h2,
+  #analytics-page .dw-page-header h2 {font-size:26px!important}
+  #sq-bills-page .dw-page-header .sq-bills-tracker-compact{
+    flex:1 1 100%!important;
+    min-width:0!important;
+  }
+  #friends-page .dw-page-header .sq-feature-btn,
+  #notifications-page .dw-page-header .small-btn {
+    max-width:100%!important;
+  }
+}
+</style>
 <link rel="stylesheet" href="/weo-mascot.css">
 <link rel="stylesheet" href="/weo-actions.css">
 
@@ -2437,7 +2529,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
   </header>
 
   <section id="notifications-page" aria-label="Notification Center">
-    <div class="sq-notifications-header"><div><h2>Notification Center</h2></div><button type="button" id="notifications-back" class="small-btn">← Back to Home</button></div>
+    <div class="sq-notifications-header dw-page-header"><div><h2>Notification Center</h2></div><button type="button" id="notifications-back" class="small-btn">← Back to Home</button></div>
     <div id="notifications-panel" class="sidebar-notification-panel"><div class="notification-panel-heading">Your updates</div><div class="sq-notification-tools"><label>Show <select id="sq-notification-filter"><option value="all">All notifications</option><option value="unread">Unread only</option><option value="payments">Payments</option><option value="messages">Messages</option><option value="expenses">Expenses & invites</option></select></label></div><div id="notifications-list"><p>Loading notifications…</p></div></div>
   </section>
   <div id="tracker-dashboard" class="sq-tab-overview">
@@ -2585,7 +2677,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
 
   <section id="analytics-page" aria-label="Spending analytics">
     <div class="sq-analytics-shell">
-      <div class="sq-analytics-header">
+      <div class="sq-analytics-header dw-page-header">
         <div><h2>Spending Analytics</h2><p id="analytics-tracker-title">Select a tracker to see its spending.</p></div>
         <label class="sq-analytics-filter">Time range <select id="analytics-range" aria-label="Analytics time range"><option value="6">Last 6 months</option><option value="12">Last 12 months</option><option value="all">All time</option></select></label>
       </div>
@@ -2605,7 +2697,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
   </section>
   <section id="split-page" aria-label="Split a Bill">
     <button type="button" id="split-back" class="split-back">← Back to Dashboard</button>
-    <div class="split-header"><h2>Split a Bill</h2><label>Bill currency <select id="split-currency" class="sq-currency-select"></select></label></div>
+    <div class="split-header dw-page-header"><h2>Split a Bill</h2><label>Bill currency <select id="split-currency" class="sq-currency-select"></select></label></div>
     <div class="split-layout">
       <div class="split-panel">
         <div class="receipt-scan-box"><strong>Scan a receipt with AI-assisted text recognition</strong><p class="feature-muted">On mobile, take a photo of your receipt to recognize items and prices. Review everything before splitting. Recognition runs in your browser.</p><label for="split-receipt-file">Take or upload receipt photo (mobile)</label><input type="file" id="split-receipt-file" accept="image/*" capture="environment" aria-label="Choose receipt photo"><div id="split-receipt-status" class="feature-muted" role="status"></div><div id="split-receipt-items"></div><button type="button" id="split-use-itemized" hidden>Assign receipt items to friends →</button></div>
@@ -2757,7 +2849,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
 </section>
 
 <section id="trackers-page" aria-label="Your trackers">
-  <div class="trackers-header"><div><h2>My <span style="color:#60edaf">Trackers</span></h2></div></div>
+  <div class="trackers-header dw-page-header"><div><h2>My <span style="color:#60edaf">Trackers</span></h2></div></div>
   <h2 class="sq-mobile-trackers-title">Trackers</h2><section id="sq-bills-directory" class="sq-bills-directory" hidden aria-hidden="true" style="display:none!important">
   <button type="button" id="sq-bills-open" hidden tabindex="-1" aria-hidden="true">Open bills</button>
 </section>
@@ -2769,7 +2861,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
   <button type="button" data-sq-bills-tab="members" role="tab" aria-selected="false">Members</button>
 </nav>
   <button type="button" id="sq-bills-back" class="sq-bills-back">← Back to Home</button>
-  <div class="sq-bills-title"><div><h2>Subscriptions & Bills</h2></div><div class="sq-bills-tracker-compact"><label for="sq-bills-tracker">Select a tracker</label><select id="sq-bills-tracker"><option value="">Loading trackers…</option></select></div></div>
+  <div class="sq-bills-title dw-page-header"><div><h2>Subscriptions & Bills</h2></div><div class="sq-bills-tracker-compact"><label for="sq-bills-tracker">Select a tracker</label><select id="sq-bills-tracker"><option value="">Loading trackers…</option></select></div></div>
   <section class="sq-premium-overview" aria-label="Bills overview"><div class="sq-premium-metrics"><article><span>Estimated monthly recurring</span><strong id="sq-premium-monthly">$0.00</strong><small>Based on saved schedules</small></article><article><span>Active subscriptions</span><strong id="sq-premium-active">0</strong><small>In selected tracker</small></article><span id="sq-premium-upcoming" hidden aria-hidden="true">0</span></div><div class="sq-premium-calendar"><div class="sq-premium-calhead"><h3>Billing calendar</h3><div><button type="button" id="sq-premium-prev" aria-label="Previous month">‹</button><strong id="sq-premium-month"></strong><button type="button" id="sq-premium-next" aria-label="Next month">›</button></div></div><div class="sq-premium-days" id="sq-premium-days"></div><div id="sq-premium-selected" class="sq-premium-selected" aria-live="polite">Select a date to view scheduled bills.</div></div>  <div class="sq-bills-card sq-bill-create-card"><div class="sq-bill-create-heading"><div><h3>Add a bill or subscription</h3><p class="sq-bills-help">Set up a recurring expense for your tracker.</p></div><button type="button" id="sq-bill-mobile-toggle" class="sq-bill-mobile-toggle" aria-controls="sq-bills-create" aria-expanded="false" aria-label="Expand add a bill or subscription"><span aria-hidden="true">+</span></button></div>
 <form id="sq-bills-create" class="sq-bills-form">
 <div class="sq-bill-type-tabs" role="group" aria-label="Choose bill or subscription"><button type="button" class="sq-bill-type-tab" data-kind="subscription" aria-pressed="true">Subscription</button><button type="button" class="sq-bill-type-tab" data-kind="bill" aria-pressed="false">Bill</button></div>
@@ -2790,7 +2882,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
 <div id="trackers-gallery" class="trackers-grid" aria-live="polite"><div class="sq-create-tracker-row"><button type="button" id="tracker-gallery-new" class="tracker-create">＋ Create new tracker</button><span>Choose from 7 templates or start with a blank tracker.</span></div></div>
 </section>
 <section id="friends-page" aria-label="Friends">
- <div class="sq-friends-layout"><div class="sq-feature-head"><div><h2>Friends <span style="color:#60edaf">System</span></h2></div><button type="button" id="sq-friends-refresh" class="sq-feature-btn">↻ Refresh</button></div>
+ <div class="sq-friends-layout"><div class="sq-feature-head dw-page-header"><div><h2>Friends <span style="color:#60edaf">System</span></h2></div><button type="button" id="sq-friends-refresh" class="sq-feature-btn">↻ Refresh</button></div>
  <div class="card"><label for="sq-friend-query">Search for DoWeo users</label><input id="sq-friend-query" class="sq-friend-search" maxlength="24" placeholder="Enter at least 3 username characters" autocomplete="off"/><div class="sq-friend-tabs"><button type="button" data-friends-tab="friends" aria-selected="true">My Friends</button><button type="button" data-friends-tab="pending" aria-selected="false">Pending Requests</button><button type="button" data-friends-tab="find" aria-selected="false">Find Friends</button></div><p id="sq-friends-status" class="sq-feature-status" role="status"></p><div id="sq-friends-results" class="sq-friend-list"></div></div></div>
 </section>
 <section id="about-page" aria-label="About DoWeo">
