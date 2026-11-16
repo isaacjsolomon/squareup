@@ -15613,8 +15613,198 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
 <script src="/doweo-finance-planning.js" defer></script>
 <script src="/doweo-trips-activity.js" defer></script>
 <script src="/doweo-paylinks-currency.js" defer></script>
-<link rel="stylesheet" href="/doweo-bills-mobile-dashboard.css">
-<script src="/doweo-bills-mobile-dashboard.js" defer></script>
+<style id="dw-bills-mobile-structural-fix">
+/* Self-contained Bills layout: overrides earlier page-state and grid rules.
+   Intentionally anchored to the actual Bills page, NOT a JS-injected class. */
+@media(max-width:760px){
+  html body #trackers-page #sq-bills-page:not([hidden]){
+    display:flex!important;flex-direction:column!important;align-items:stretch!important;
+    gap:12px!important;position:relative!important;inset:auto!important;
+    width:100%!important;max-width:100%!important;min-width:0!important;
+    padding:6px 0 calc(116px + env(safe-area-inset-bottom,0px))!important;
+    margin:0!important;box-sizing:border-box!important;overflow:visible!important;
+  }
+  html body #sq-bills-page > .sq-bills-workspace-tabs {
+    order:0!important;position:relative!important;top:auto!important;bottom:auto!important;
+    inset:auto!important;transform:none!important;z-index:1!important;
+    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:3px!important;padding:4px!important;margin:0!important;min-height:0!important;
+    width:100%!important;max-width:100%!important;box-sizing:border-box!important;
+    background:#1b3147!important;border:1px solid #3c6276!important;
+    border-radius:14px!important;box-shadow:none!important;backdrop-filter:none!important;
+  }
+  html body #sq-bills-page > .sq-bills-workspace-tabs > button {
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    min-width:0!important;width:100%!important;min-height:43px!important;
+    padding:7px 2px!important;font-size:clamp(11px,3.1vw,14px)!important;
+    font-weight:750!important;line-height:1.2!important;border-radius:10px!important;
+  }
+  html body #sq-bills-page > #sq-bills-back {
+    order:1!important;position:relative!important;inset:auto!important;transform:none!important;
+    align-self:flex-start!important;min-height:37px!important;width:auto!important;
+    margin:0!important;padding:7px 12px!important;font-size:12px!important;
+    border-radius:10px!important;
+  }
+  html body #sq-bills-page > .sq-bills-title {
+    order:2!important;position:relative!important;inset:auto!important;transform:none!important;
+    display:flex!important;flex-direction:column!important;align-items:stretch!important;
+    width:100%!important;min-width:0!important;max-width:100%!important;
+    gap:10px!important;margin:0!important;padding:0!important;border:0!important;
+    min-height:0!important;background:transparent!important;box-shadow:none!important;
+  }
+  html body #sq-bills-page > .sq-bills-title > div:first-child{
+    display:block!important;flex:0 0 auto!important;width:100%!important;
+    max-width:100%!important;min-width:0!important;margin:0!important;padding:0!important;
+  }
+  html body #sq-bills-page > .sq-bills-title h2{
+    display:block!important;position:relative!important;inset:auto!important;
+    font-size:clamp(23px,6.4vw,29px)!important;line-height:1.17!important;
+    letter-spacing:-.035em!important;white-space:normal!important;overflow:visible!important;
+    margin:0!important;padding:0!important;max-width:100%!important;
+  }
+  html body #sq-bills-page .sq-bills-tracker-compact{
+    flex:0 0 auto!important;display:block!important;
+    width:100%!important;min-width:0!important;max-width:100%!important;
+    margin:0!important;padding:12px!important;box-sizing:border-box!important;
+    border:1px solid #39687a!important;border-radius:15px!important;
+    background:#0e3044!important;
+  }
+  html body #sq-bills-page .sq-bills-tracker-compact label{
+    display:block!important;margin:0 0 6px!important;font-size:12px!important;
+  }
+  html body #sq-bills-page #sq-bills-tracker{
+    width:100%!important;min-width:0!important;max-width:100%!important;
+    min-height:44px!important;height:44px!important;padding:8px 12px!important;
+    font-size:15px!important;
+  }
+  html body #sq-bills-page > .sq-premium-overview{
+    order:3!important;display:flex!important;flex-direction:column!important;
+    gap:12px!important;grid-template:none!important;margin:0!important;
+    padding:0!important;height:auto!important;min-width:0!important;
+    max-width:100%!important;align-items:stretch!important;
+  }
+  html body #sq-bills-page > .sq-premium-overview > .sq-bill-create-card{
+    order:0!important;display:block!important;grid-column:auto!important;grid-row:auto!important;
+    position:relative!important;inset:auto!important;transform:none!important;
+    min-width:0!important;width:100%!important;height:auto!important;min-height:0!important;
+    margin:0!important;padding:0!important;box-sizing:border-box!important;
+    border-radius:15px!important;box-shadow:none!important;
+  }
+  html body #sq-bills-page > .sq-premium-overview > .sq-bill-create-card.sq-bill-modal-open{
+    position:relative!important; /* The opened form is moved into its own portal by existing code. */
+  }
+  html body #sq-bills-page .sq-bill-create-heading{
+    display:flex!important;align-items:center!important;justify-content:space-between!important;
+    gap:10px!important;padding:14px!important;min-height:69px!important;
+    box-sizing:border-box!important;
+  }
+  html body #sq-bills-page .sq-bill-create-heading h3{
+    font-size:16px!important;line-height:1.3!important;margin:0!important;
+  }
+  html body #sq-bills-page .sq-bill-create-heading .sq-bills-help{
+    font-size:11px!important;line-height:1.3!important;margin:3px 0 0!important;
+  }
+  html body #sq-bills-page #sq-bill-mobile-toggle{
+    width:42px!important;height:42px!important;min-height:42px!important;
+    flex:0 0 42px!important;font-size:26px!important;border-radius:12px!important;
+  }
+  html body #sq-bills-page > .sq-premium-overview > .sq-premium-metrics{
+    order:1!important;display:grid!important;
+    grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)!important;
+    grid-template-rows:auto!important;gap:9px!important;
+    margin:0!important;padding:0!important;width:100%!important;min-width:0!important;
+  }
+  html body #sq-bills-page > .sq-premium-overview > .sq-premium-metrics > article{
+    display:flex!important;flex-direction:column!important;justify-content:center!important;
+    grid-column:auto!important;grid-row:auto!important;order:initial!important;
+    min-width:0!important;width:auto!important;height:auto!important;min-height:106px!important;
+    margin:0!important;padding:12px!important;box-sizing:border-box!important;
+    border-radius:15px!important;box-shadow:none!important;
+  }
+  html body #sq-bills-page .sq-premium-metrics article strong{
+    font-size:clamp(22px,6vw,30px)!important;line-height:1.1!important;margin:4px 0!important;
+    overflow-wrap:anywhere!important;
+  }
+  html body #sq-bills-page .sq-premium-metrics article span{
+    font-size:11px!important;line-height:1.3!important;
+  }
+  html body #sq-bills-page .sq-premium-metrics article small{
+    font-size:10px!important;line-height:1.3!important;
+  }
+  html body #sq-bills-page > .sq-bills-columns{
+    order:4!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+    gap:12px!important;margin:0!important;padding:0!important;min-width:0!important;
+  }
+  html body #sq-bills-page > .sq-bills-columns > .sq-bills-card{
+    margin:0!important;min-height:0!important;padding:15px!important;
+    border-radius:15px!important;
+  }
+  html body #sq-bills-page > .dw-bills-calendar-fold {
+    order:5!important;min-width:0!important;width:100%!important;max-width:100%!important;
+    margin:0!important;box-sizing:border-box!important;
+    border:1px solid #355d70!important;border-radius:15px!important;
+    background:#0e2c40!important;overflow:hidden!important;
+  }
+  html body #sq-bills-page > .dw-bills-calendar-fold > summary{
+    display:flex!important;align-items:center!important;justify-content:space-between!important;
+    cursor:pointer!important;min-height:50px!important;padding:12px 15px!important;
+    font-weight:750!important;color:white!important;
+  }
+  html body #sq-bills-page > .dw-bills-calendar-fold > .sq-premium-calendar{
+    display:block!important;grid-column:auto!important;grid-row:auto!important;
+    position:relative!important;inset:auto!important;
+    width:100%!important;max-width:100%!important;
+    padding:10px!important;margin:0!important;box-sizing:border-box!important;
+    border:0!important;box-shadow:none!important;background:transparent!important;
+  }
+  html body #sq-bills-page > .dw-bills-calendar-fold > .sq-premium-calendar .sq-premium-calhead h3{
+    display:none!important;
+  }
+  html body #sq-bills-page > #sq-bills-message{order:6!important;margin:0!important;}
+  html body #sq-bills-page .sq-bills-row{min-width:0!important;flex-wrap:wrap!important;}
+  html body #sq-bills-page .sq-premium-actions{flex-wrap:wrap!important;}
+  html body #sq-bills-page :is(input,select,button){box-sizing:border-box;max-width:100%;}
+}
+@media(max-width:350px){
+ html body #sq-bills-page > .sq-premium-overview > .sq-premium-metrics > article{padding:10px 8px!important;}
+ html body #sq-bills-page .sq-premium-metrics article strong{font-size:21px!important;}
+}
+</style>
+<script id="dw-bills-mobile-structural-controller">
+/* Reflow the calendar without depending on the add-card's parent or hidden state.
+   Works before and after the bill modal reparents the editor. */
+(function(){
+ 'use strict';
+ const page=document.getElementById('sq-bills-page');
+ if(!page)return;
+ const calendar=page.querySelector('.sq-premium-calendar');
+ const overview=page.querySelector('.sq-premium-overview');
+ if(!calendar||!overview)return;
+ let fold=page.querySelector('.dw-bills-calendar-fold');
+ if(!fold){
+   fold=document.createElement('details');
+   fold.className='dw-bills-calendar-fold';
+   const summary=document.createElement('summary');
+   summary.textContent='Billing calendar';
+   fold.append(summary);
+ }
+ const media=window.matchMedia('(max-width:760px)');
+ const apply=()=>{
+   const mobile=media.matches;
+   page.classList.toggle('dw-bills-compact',mobile);
+   if(mobile){
+     if(calendar.parentElement!==fold)fold.append(calendar);
+     if(fold.parentElement!==page)page.append(fold);
+   }else{
+     if(calendar.parentElement!==overview)overview.append(calendar);
+     fold.remove();
+   }
+ };
+ if(media.addEventListener)media.addEventListener('change',apply);
+ else if(media.addListener)media.addListener(apply);
+ apply();
+})();
+</script>
 </body>
 </html>
 
