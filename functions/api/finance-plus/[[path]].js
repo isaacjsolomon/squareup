@@ -98,6 +98,94 @@ async function onRequest({request,env,params}){
    }
    return fail('Method not allowed',405);
   }
+  if(action==='trips'){
+   const trackerId=request.method==='GET'?url.searchParams.get('tracker_id'):body.tracker_id;
+   if(!(await member(trackerId)))return fail('Tracker not found or not accessible.',404);
+   if(parts[1]==='items'){
+    const tripId=request.method==='GET'?url.searchParams.get('trip_id'):body.trip_id;
+    if(!UUID.test(tripId||''))return fail('Invalid trip ID.');
+    const trips=await query('squareup_trips',{filters:{id:'eq.'+tripId,tracker_id:'eq.'+trackerId},limit:1});
+    if(!trips.length)return fail('Trip not found.',404);
+    if(request.method==='GET')return response(await query('squareup_trip_items',{filters:{tracker_id:'eq.'+trackerId,trip_id:'eq.'+tripId},order:'date.asc.nullslast,created_at.asc',limit:300}));
+    if(request.method==='POST'){
+     const title=text(body.title,120),type=text(body.type,32);
+     const date=body.date==null||body.date===''?null:String(body.date);
+     const estimated=body.estimated_cost==null||body.estimated_cost===''?null:money(body.estimated_cost);
+     if(!title||!['activity','reservation','packing','task','travel','lodging'].includes(type)||date&&!/^\d{4}-\d{2}-\d{2}$/.test(date)||estimated===null&&body.estimated_cost!=null&&body.estimated_cost!=='')return fail('Invalid trip item.');
+     const rawLink=text(body.link_url,350);
+     if(rawLink&&!/^https:\/\//i.test(rawLink))return fail('Use a secure HTTPS link.');
+     const saved=await query('squareup_trip_items',{method:'POST',body:{tracker_id:trackerId,trip_id:tripId,created_by:uid,title,type,date,done:false,notes:text(body.notes,500),estimated_cost:estimated,link_url:rawLink||null}});
+     return response(saved[0],201);
+    }
+    if(request.method==='PATCH'&&UUID.test(parts[2]||'')&&typeof body.done==='boolean'){
+     const item=await query('squareup_trip_items',{filters:{id:'eq.'+parts[2],tracker_id:'eq.'+trackerId,trip_id:'eq.'+tripId},limit:1});
+     if(!item.length)return fail('Trip item not found.',404);
+     const saved=await query('squareup_trip_items',{method:'PATCH',filters:{id:'eq.'+parts[2],tracker_id:'eq.'+trackerId,trip_id:'eq.'+tripId},body:{done:body.done}});
+     return response(saved[0]);
+    }
+    return fail('Method not allowed',405);
+   }
+   if(request.method==='GET')return response(await query('squareup_trips',{filters:{tracker_id:'eq.'+trackerId},order:'created_at.desc',limit:100}));
+   if(request.method==='POST'){
+    const name=text(body.name,100),date=body.date==null||body.date===''?null:String(body.date);
+    if(!name||date&&!/^\d{4}-\d{2}-\d{2}$/.test(date))return fail('Invalid trip details.');
+    const saved=await query('squareup_trips',{method:'POST',body:{tracker_id:trackerId,created_by:uid,name,date}});
+    return response(saved[0],201);
+   }
+   return fail('Method not allowed',405);
+  }
+  if(action==='activity'){
+   if(request.method!=='GET')return fail('Method not allowed',405);
+   const trackerId=url.searchParams.get('tracker_id');
+   if(!(await member(trackerId)))return fail('Tracker not found or not accessible.',404);
+   const [entries,personal]=await Promise.all([
+    query('tracker_entries',{filters:{tracker_id:'eq.'+trackerId},order:'created_at.desc',limit:500}),
+    query('squareup_personal_transactions',{filters:{user_id:'eq.'+uid},order:'created_at.desc',limit:500})
+   ]);
+   const timeline=[
+    ...entries.map(e=>({id:e.id,source:'tracker',kind:e.type,created_at:e.created_at,amount:e.amount,currency:e.currency||'USD',original_amount:e.original_amount,original_currency:e.original_currency,exchange_rate:e.exchange_rate,payment_status:e.payment_status,description:e.note||e.type})),
+    ...personal.map(e=>({id:e.id,source:'personal',kind:e.kind,created_at:e.created_at,amount:e.amount,currency:e.currency||'USD',description:e.description,category:e.category}))
+   ].sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,700);
+   return response({timeline,notice:'Timeline contains saved transaction records; edit/deletion audit events are not yet recorded.'});
+  }
+  if(action==='payment-requests'){
+   const trackerId=request.method==='GET'?url.searchParams.get('tracker_id'):body.tracker_id;
+   if(!(await member(trackerId)))return fail('Tracker not found or not accessible.',404);
+   if(request.method==='GET'){
+    return response(await query('doweo_payment_requests',{filters:{tracker_id:'eq.'+trackerId,created_by:'eq.'+uid},order:'created_at.desc',limit:50}));
+   }
+   if(request.method==='POST'&&parts[1]==='revoke'){
+    if(!UUID.test(body.id||''))return fail('Invalid request ID.');
+    const saved=await query('doweo_payment_requests',{method:'PATCH',filters:{id:'eq.'+body.id,created_by:'eq.'+uid,tracker_id:'eq.'+trackerId},body:{revoked_at:new Date().toISOString()}});
+    if(!saved.length)return fail('Request not found.',404);
+    return response({ok:true});
+   }
+   if(request.method==='POST'&&parts.length===1){
+    const amount=money(body.amount),note=text(body.public_note||'',120);
+    const rows=await query('trackers',{filters:{id:'eq.'+trackerId},limit:1});
+    if(!rows.length)return fail('Tracker not found.',404);
+    const currency=String(rows[0].currency||'USD').toUpperCase();
+    if(!/^[A-Z]{3}$/.test(currency)||amount===null)return fail('Invalid request amount.');
+    const recent=await query('doweo_payment_requests',{filters:{created_by:'eq.'+uid,created_at:'gte.'+new Date(Date.now()-86400000).toISOString()},limit:21});
+    if(recent.length>=20)return fail('Daily payment-request limit reached.',429);
+    const saved=await query('doweo_payment_requests',{method:'POST',body:{tracker_id:trackerId,created_by:uid,amount,currency,public_note:note}});
+    return response({id:saved[0].id,url:new URL('/pay/?token='+encodeURIComponent(saved[0].token),url.origin).href,expires_at:saved[0].expires_at,tracking_only:true},201);
+   }
+   return fail('Method not allowed',405);
+  }
+  if(action==='currency-quote'){
+   if(request.method!=='GET')return fail('Method not allowed',405);
+   const from=String(url.searchParams.get('from')||'').toUpperCase(),to=String(url.searchParams.get('to')||'').toUpperCase(),amount=money(url.searchParams.get('amount'));
+   const allowed=['USD','EUR','GBP','CAD','AUD','JPY','CHF','CNY','INR','MXN','BRL','KRW','SGD','HKD','NZD','SEK','NOK','DKK','ILS','ZAR'];
+   if(!allowed.includes(from)||!allowed.includes(to)||amount===null)return fail('Invalid currency or amount.');
+   if(from===to)return response({from,to,amount,rate:1,converted:amount,as_of:new Date().toISOString(),estimate:true});
+   const provider=await fetch('https://open.er-api.com/v6/latest/'+from);
+   if(!provider.ok)return fail('Exchange rate is temporarily unavailable.',503);
+   const data=await provider.json();
+   const rate=Number(data.rates?.[to]);
+   if(data.result!=='success'||!Number.isFinite(rate)||rate<=0)return fail('Exchange rate is unavailable.',503);
+   return response({from,to,amount,rate,converted:Math.round(amount*rate*100)/100,as_of:data.time_last_update_utc||null,estimate:true,source:'open.er-api.com'});
+  }
   return fail('Not found',404);
  }catch(error){console.error('DoWeo planning failure',String(error?.message||''));return fail('Could not complete the financial planning request.',503)}
 }

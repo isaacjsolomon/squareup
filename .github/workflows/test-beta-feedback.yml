@@ -52,6 +52,10 @@ jobs:
         run: node --check sw.js && node --test test/doweo-push-navigation.test.mjs
       - name: Ensure saved entries succeed when notification delivery fails
         run: node --test test/doweo-entry-notification-resilience.test.mjs
+      - name: Test payment requests, currency quotes, and Weo consent
+        run: node --check 'functions/api/payment-preview/[token].js' && node --check doweo-paylinks-currency.js && node --check functions/api/ai-chat.js && node --test test/doweo-finance-paylinks-ai.test.mjs
+      - name: Test trip planning and financial activity timeline
+        run: node --check doweo-trips-activity.js && node --test test/doweo-trip-activity.test.mjs
       - name: Test personal budgets and shared savings goals
         run: node --check 'functions/api/finance-plus/[[path]].js' && node --check doweo-finance-planning.js && node --test test/doweo-finance-planning.test.mjs
       - name: Verify expense and payment forms wait for save confirmation
@@ -88,6 +92,8 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Verify mobile viewport foundation across screen sizes
         run: node --test test/mobile-viewport-foundation.test.mjs
+      - name: Check new Finance Hub tools on mobile
+        run: node --test test/finance-addons-mobile.test.mjs
       - name: Check mobile tracker settings panel sizing and accessibility
         run: node --test test/mobile-tracker-settings-panel.test.mjs
       - name: Verify mobile tracker banner, inline loading, and shortcut cleanup
