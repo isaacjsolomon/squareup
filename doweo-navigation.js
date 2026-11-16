@@ -14,7 +14,7 @@
  const home=document.createElement('section');home.id='dw-account-home';home.hidden=true;home.setAttribute('aria-label','Account overview');body.append(home);
  const context=document.createElement('div');context.id='dw-tracker-context';context.hidden=true;
  context.innerHTML='<label for="dw-tracker-picker">Tracker</label><select id="dw-tracker-picker" aria-label="Current tracker"></select>';
- $('tracker-dashboard').before(context);
+ body.append(context);
  const picker=$('dw-tracker-picker'),source=$('tracker-select');
  let homeRequest=false,inHomeClick=false,firstTracker=true,renderToken=0,initialized=false,frame=0;
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -23,7 +23,7 @@
  function restoreAnalytics(){if(analytics&&analytics.parentNode!==anchor.parentNode)anchor.after(analytics);}
  function isTracker(){return !body.classList.contains('dw-account-home-open')&&!body.classList.contains('sq-finance-open')&&!body.classList.contains('sq-auth-guest')&&(body.classList.contains('sq-bills-open')||(!/settings-view|about-view|trackers-view|analytics-view|friends-view|notifications-view|sq-help-view/.test(body.className)&&$('tracker-dashboard').getClientRects().length>0));}
  function syncPicker(){
-  const options=[...source.options];const signature=options.map(o=>o.value+'\0'+o.text).join('\n');
+  const options=[...(body.classList.contains('sq-bills-open')?$('sq-bills-tracker'):source).options].filter(o=>o.value!=='manage'&&!o.value.startsWith('─'));const signature=options.map(o=>o.value+'\0'+o.text).join('\n');
   if(picker.dataset.options!==signature){picker.replaceChildren(...options.map(o=>new Option(o.text,o.value)));picker.dataset.options=signature;}
   const id=body.classList.contains('sq-bills-open')?$('sq-bills-tracker')?.value:window.sqLastOpenedTrackerDetail?.id||source.value;
   if([...picker.options].some(o=>o.value===id))picker.value=id;
@@ -32,6 +32,10 @@
   const shown=isTracker();context.hidden=!shown;if(body.classList.contains('dw-tracker-context-visible')!==shown)body.classList.toggle('dw-tracker-context-visible',shown);
   if(!shown)return 0;
   const header=document.querySelector('.sq-mobile-top');
+  const mobile=matchMedia('(max-width:900px)').matches;
+  const parent=mobile?body:body.classList.contains('sq-bills-open')?$('sq-bills-page'):$('tracker-dashboard');
+  if(context.parentNode!==parent){if(mobile)parent.append(context);else parent.prepend(context);}
+  if(!mobile){context.style.removeProperty('top');context.style.removeProperty('left');context.style.removeProperty('width');}
   if(matchMedia('(max-width:900px)').matches&&header.getClientRects().length){const r=header.getBoundingClientRect();context.style.top=Math.ceil(r.bottom+8)+'px';context.style.left=r.left+'px';context.style.width=r.width+'px';}
   return context.getBoundingClientRect().bottom;
  }
@@ -39,7 +43,7 @@
  function schedule(){if(!frame)frame=requestAnimationFrame(sync);}
  picker.addEventListener('change',async()=>{
   const id=picker.value;picker.disabled=true;
-  try{if(body.classList.contains('sq-bills-open')){const bills=$('sq-bills-tracker');bills.value=id;bills.dispatchEvent(new Event('change',{bubbles:true}));}
+  try{if(body.classList.contains('sq-bills-open')){const bills=$('sq-bills-tracker');bills.value=id;bills.dispatchEvent(new Event('change',{bubbles:true}));source.value=id;source.dispatchEvent(new Event('change',{bubbles:true}));}
    else await window.squareUpNavigateTracker(id);
   }finally{picker.disabled=false;schedule();}
  });
@@ -61,7 +65,7 @@
   try{
    const {rows,unavailable}=await window.squareUpWalletSnapshot();if(token!==renderToken)return;
    const currencies={};for(const r of rows){const g=currencies[r.currency]??={owed:0,owe:0};g.owed+=Math.max(0,r.net);g.owe+=Math.max(0,-r.net);}
-   const money=(v,c)=>new Intl.NumberFormat(undefined,{style:'currency',currency:c}).format(v);
+   const money=(v,c)=>{try{return new Intl.NumberFormat(undefined,{style:'currency',currency:c}).format(v);}catch{return c+' '+v.toFixed(2);}};
    home.innerHTML='<header><span class="dw-eyebrow">YOUR DOWEO</span><h1>Home</h1><p>Your balances across every tracker.</p></header><div class="dw-home-balances">'+Object.entries(currencies).map(([c,v])=>'<article><span>'+esc(c)+'</span><div><span>Owed to you<strong>'+esc(money(v.owed,c))+'</strong></span><span>You owe<strong>'+esc(money(v.owe,c))+'</strong></span></div></article>').join('')+'</div><section class="dw-home-trackers"><header><h2>Your trackers</h2><button type="button" id="dw-home-manage">Manage trackers →</button></header><div>'+rows.map(r=>'<button type="button" data-home-tracker="'+esc(r.id)+'"><span><strong>'+esc(r.name)+'</strong><small>'+esc(r.currency)+' · '+(Math.abs(r.net)<.005?'Settled up':r.net>0?'Owed to you':'You owe')+'</small></span><b>'+esc(money(Math.abs(r.net),r.currency))+' →</b></button>').join('')+'</div>'+(!rows.length?'<p>No trackers yet. Create one to start sharing expenses.</p>':'')+(unavailable?'<p role="status">'+unavailable+' tracker(s) could not be loaded. Reopen Home to retry.</p>':'')+'</section>';
    $('dw-home-manage').onclick=()=>$('nav-trackers').click();
    home.querySelectorAll('[data-home-tracker]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{await window.squareUpNavigateTracker(b.dataset.homeTracker);}catch(error){b.disabled=false;alert(error.message||'Could not open tracker');}});
@@ -76,6 +80,7 @@
  $('nav-chat').addEventListener('click',e=>{e.stopImmediatePropagation();$('nav-home').click();document.querySelector('[data-sq-tab="chat"]').click();},true);
  new MutationObserver(schedule).observe(body,{attributes:true,attributeFilter:['class']});
  new MutationObserver(schedule).observe(source,{childList:true,subtree:true});
+ new MutationObserver(schedule).observe($('sq-bills-tracker'),{childList:true,subtree:true});
  window.addEventListener('squareup:tracker-detail',()=>{syncPicker();if(analytics?.closest('#sq-ng-content'))window.squareUpRenderAnalytics?.();});
  window.addEventListener('resize',schedule);window.visualViewport?.addEventListener('resize',schedule);
  new ResizeObserver(schedule).observe(document.querySelector('.sq-mobile-top'));

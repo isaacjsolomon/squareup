@@ -63,6 +63,8 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
    });
    console.log('FULL_APP_LAYOUT',width,JSON.stringify(state));
    assert.ok(state.nav.top>=state.header.bottom+8,'all tabs must be below the fixed header');
+   assert.ok(await page.locator('#dw-tracker-picker').isVisible(),'shared tracker selector must be visible');
+   assert.ok(await page.locator('#dw-tracker-context').evaluate(e=>{const c=e.getBoundingClientRect(),t=document.querySelector('.sq-bills-workspace-tabs').getBoundingClientRect();return c.height>=44&&c.bottom<=t.top}),'selector is above the tabs');
    assert.ok(state.nav.bottom<=state.title.top+1,'tabs must be above title');
    assert.equal(await page.locator('#sq-bills-back').isVisible(),false,'Overview replaces the redundant Back button');
    assert.ok(state.title.bottom<=state.a.top+1,'metrics below title');
