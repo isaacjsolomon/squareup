@@ -92,6 +92,8 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Verify mobile viewport foundation across screen sizes
         run: node --test test/mobile-viewport-foundation.test.mjs
+      - name: Check new Finance Hub tools on mobile
+        run: node --test test/finance-addons-mobile.test.mjs
       - name: Check mobile tracker settings panel sizing and accessibility
         run: node --test test/mobile-tracker-settings-panel.test.mjs
       - name: Verify mobile tracker banner, inline loading, and shortcut cleanup
