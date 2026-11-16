@@ -1598,7 +1598,7 @@ th,td{border-color:#2c4b61!important}
 .sq-mobile-header-actions button{display:grid;place-items:center;width:42px;height:42px;border:1px solid #2d5166!important;border-radius:12px;background:#132f44!important}
 .sq-mobile-header-actions button:hover{background:#1d4456!important}
 @media(max-width:1100px) and (min-width:901px){body:not(.side-collapsed){padding-left:270px}.wrap{padding:0 6px}}
-@media(max-width:900px){body,body:not(.side-collapsed),body.side-collapsed{padding:16px 13px 100px!important}.wrap{padding:0!important;max-width:100%!important}.sidebar{display:none!important}.tracker-heading{padding:9px 0 15px!important;margin-bottom:17px!important}.tracker-heading h1{font-size:25px!important}.sq-mobile-top{margin-bottom:10px!important}.sq-mobile-nav{background:#0c2336!important;border-top:1px solid #315064!important;box-shadow:0 -8px 26px #020c1755!important;backdrop-filter:blur(15px)}#tracker-dashboard .sq-clean-balance{padding:25px 21px!important;border-radius:19px!important}#tracker-dashboard .sq-workspace-tabs{width:100%;max-width:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:5px}#tracker-dashboard .sq-workspace-tabs button{padding:11px 5px!important;font-size:12px!important}#tracker-dashboard .dashboard-action:not([hidden]){min-height:118px!important}.card,details.card{border-radius:16px!important}}
+@media(max-width:900px){body,body:not(.side-collapsed),body.side-collapsed{padding:16px 13px 100px!important}.wrap{padding:0!important;max-width:100%!important}.sidebar{display:none!important}.tracker-heading{padding:9px 0 15px!important;margin-bottom:17px!important}.tracker-heading h1{font-size:25px!important}.sq-mobile-top{margin-bottom:10px!important}.sq-mobile-nav{background:#0c2336!important;border-top:1px solid #315064!important;box-shadow:0 -8px 26px #020c1755!important;backdrop-filter:blur(15px)}#tracker-dashboard .sq-clean-balance{padding:25px 21px!important;border-radius:19px!important}#tracker-dashboard .sq-workspace-tabs{width:100%;max-width:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:5px}#tracker-dashboard .sq-workspace-tabs button{padding:11px 5px!important;font-size:12px!important}#tracker-dashboard .dashboard-action:not([hidden]){min-height:118px!important}.card,details.card{border-radius:16px!important}}
 @media(max-width:520px){#tracker-dashboard .sq-clean-balance{padding:22px 17px!important}#tracker-dashboard .sq-clean-balance-actions{gap:8px}#tracker-dashboard .sq-clean-balance-actions button{padding:11px 8px!important;font-size:12px}#tracker-dashboard .dashboard-actions{gap:9px!important}#tracker-dashboard .dashboard-action:not([hidden]){min-height:115px!important;padding:12px 8px!important}#tracker-dashboard .dashboard-action .action-icon{width:42px!important;height:42px!important}.sq-mobile-header-actions button{width:40px;height:40px}.sq-overview-stats{gap:7px!important}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
 
@@ -10066,7 +10066,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
   body { font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important; }
   .wrap { max-width:1480px!important; }
   #tracker-dashboard, #trackers-page, #friends-page, #analytics-page, #notifications-page { min-width:0; }
-  #tracker-dashboard .sq-workspace-tabs { display:grid!important;grid-template-columns:repeat(4,minmax(130px,1fr))!important;width:100%!important;max-width:none!important;gap:7px!important;padding:7px!important;margin:0 0 26px!important;border-radius:18px!important;background:rgba(6,27,44,.94)!important;border:1px solid var(--sq-desktop-edge)!important;box-shadow:0 12px 32px #00131e33!important; }
+  #tracker-dashboard .sq-workspace-tabs { display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;width:100%!important;max-width:none!important;gap:7px!important;padding:7px!important;margin:0 0 26px!important;border-radius:18px!important;background:rgba(6,27,44,.94)!important;border:1px solid var(--sq-desktop-edge)!important;box-shadow:0 12px 32px #00131e33!important; }
   #tracker-dashboard .sq-workspace-tabs button { min-height:48px!important;padding:11px 18px!important;border-radius:12px!important;font-size:14px!important;letter-spacing:.01em!important; }
   #tracker-dashboard .sq-workspace-tabs button[aria-selected="true"] {background:linear-gradient(115deg,#0c7e80,#155e74)!important;color:#fff!important;box-shadow:inset 0 0 0 1px #40d9c077!important;}
   #tracker-dashboard .sq-return-summary {max-width:none!important;margin-top:0!important;}
@@ -10118,7 +10118,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
 }
 @media (min-width:901px) and (max-width:1180px) {
   body.trackers-view #trackers-gallery.trackers-grid {grid-template-columns:repeat(auto-fit,minmax(255px,1fr))!important;}
-  #tracker-dashboard .sq-workspace-tabs {grid-template-columns:repeat(4,minmax(0,1fr))!important;}
+  #tracker-dashboard .sq-workspace-tabs {grid-template-columns:repeat(5,minmax(0,1fr))!important;}
 }
 @media (prefers-reduced-motion:reduce) {
   body.trackers-view #trackers-gallery>.tracker-tile, #tracker-dashboard .dashboard-action {transition:none!important;}
@@ -11087,7 +11087,7 @@ form.addEventListener('reset',()=>queueMicrotask(()=>setKind(tabs.find(t=>t.getA
  #sq-desktop-friends-top{display:none!important}
  /* Keep the mobile overview clean; the saved preferences still work on desktop. */
  #tracker-dashboard #sq-layout-tools,#tracker-dashboard .sq-return-welcome #sq-layout-tools{display:none!important}
- #tracker-dashboard .sq-workspace-tabs{grid-template-columns:repeat(4,minmax(0,1fr))!important;min-width:0!important;overflow:hidden!important}
+ #tracker-dashboard .sq-workspace-tabs{grid-template-columns:repeat(5,minmax(0,1fr))!important;min-width:0!important;overflow:hidden!important}
  #tracker-dashboard .sq-workspace-tabs button[data-sq-tab]{display:flex!important;align-items:center!important;justify-content:center!important;min-width:0!important;width:100%!important;padding:11px 2px!important;font-size:clamp(11px,2.9vw,15px)!important}
 }
 /* On the Bills view the dedicated manager takes the place of the dashboard. */
@@ -15549,8 +15549,8 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
 <script src="/doweo-finance-planning.js" defer></script>
 <script src="/doweo-trips-activity.js" defer></script>
 <script src="/doweo-paylinks-currency.js" defer></script>
-<link rel="stylesheet" href="/doweo-bills-mobile-dashboard.css?v=20261116-navigation-v5">
-<script src="/doweo-bills-mobile-dashboard.js?v=20261116-navigation-v5" defer></script>
+<link rel="stylesheet" href="/doweo-bills-mobile-dashboard.css?v=20261116-navigation-v6">
+<script src="/doweo-bills-mobile-dashboard.js?v=20261116-navigation-v6" defer></script>
 <style id="dw-flat-sidebar-and-bill-editor-20261116">
 @media(min-width:901px){
  .sidebar .squareup-nav{gap:6px!important}
@@ -15570,8 +15570,8 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  .sq-bill-edit-overlay .sq-bill-edit-form button{min-height:44px!important}
 }
 </style>
-<link rel="stylesheet" href="/doweo-navigation.css?v=20261116-navigation-v5">
-<script src="/doweo-navigation.js?v=20261116-navigation-v5"></script>
+<link rel="stylesheet" href="/doweo-navigation.css?v=20261116-navigation-v6">
+<script src="/doweo-navigation.js?v=20261116-navigation-v6"></script>
 </body>
 </html>
 

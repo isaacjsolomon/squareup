@@ -42,6 +42,14 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   });
   await context.route('https://**',route=>(new URL(route.request().url()).hostname==='esm.sh'||new URL(route.request().url()).origin===origin)?route.fallback():route.abort());
   const page=await context.newPage();page.on('pageerror',error=>errors.push(error.stack));
+  async function assertSingleTabRow(selector,width){
+   const state=await page.locator(selector).evaluate(bar=>{
+    const r=bar.getBoundingClientRect();return {left:r.left,right:r.right,buttons:[...bar.querySelectorAll('button')].map(b=>{const q=b.getBoundingClientRect();return {top:q.top,left:q.left,right:q.right,width:q.width,textFits:b.scrollWidth<=b.clientWidth+1,clickable:b.contains(document.elementFromPoint(q.left+q.width/2,q.top+q.height/2))}})};
+   });
+   assert.equal(state.buttons.length,5,'all five tracker tabs exist');
+   assert.ok(state.buttons.every(b=>Math.abs(b.top-state.buttons[0].top)<1),'Chat and other tabs share one row at '+width);
+   assert.ok(state.buttons.every(b=>b.textFits&&b.clickable&&b.left>=state.left&&b.right<=state.right),'all tab labels fit and remain clickable at '+width);
+  }
   await page.goto(origin,{waitUntil:'networkidle'});
   await page.waitForFunction(()=>typeof window.squareUpApi==='function');
   await page.locator('#auth-modal.open').waitFor({state:'hidden'});
@@ -146,6 +154,7 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
   for(const width of [1024,1280,1600]){
    await page.setViewportSize({width,height:900});
+   await assertSingleTabRow('.sq-bills-workspace-tabs',width);
    const rows=await page.locator('#sq-bills-page .sq-bills-row').evaluateAll(rows=>rows.map(row=>{
     const r=row.getBoundingClientRect(),buttons=[...row.querySelectorAll('.sq-premium-actions button')].map(b=>{const q=b.getBoundingClientRect();return {top:q.top,bottom:q.bottom,left:q.left,right:q.right,width:q.width}});
     return {left:r.left,right:r.right,buttons};
@@ -200,6 +209,15 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   await page.setViewportSize({width:1280,height:900});
   await page.waitForFunction(()=>!document.getElementById('tracker-dashboard').classList.contains('dw-mobile-tabs-ready'));
   assert.notEqual(await page.locator('#tracker-dashboard > .sq-workspace-tabs').evaluate(e=>getComputedStyle(e).position),'fixed','desktop bar restores');
+  for(const width of [1024,1280,1600,1920]){
+   await page.setViewportSize({width,height:900});
+   for(const section of ['overview','expenses','members','chat']){
+    await page.locator('#tracker-dashboard [data-sq-tab="'+section+'"]').click();
+    await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+    await assertSingleTabRow('#tracker-dashboard > .sq-workspace-tabs',width);
+    await page.screenshot({path:resolve(root,`test-results/bills/desktop-tracker-${section}-${width}.png`),animations:'disabled'});
+   }
+  }
   await page.setViewportSize({width:390,height:844});
   await page.locator('#tracker-dashboard [data-sq-tab="bills"]').click();
   await page.waitForFunction(()=>document.body.classList.contains('sq-bills-open'));
