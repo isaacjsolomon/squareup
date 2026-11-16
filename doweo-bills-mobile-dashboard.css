@@ -154,3 +154,114 @@
   margin:0!important;padding:8px 6px!important;white-space:nowrap!important;
  }
 }
+
+
+/* Desktop-only tracker header and navigation. Dashboard/cards unchanged. */
+@media (min-width:901px){
+ body.dw-desktop-tracker-tools .dw-inline-tracker-header{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  column-gap:clamp(10px,1.5vw,26px)!important;
+  min-width:0!important;
+ }
+ body.dw-desktop-tracker-tools #dw-inline-tracker-picker{
+  display:flex!important;
+  flex:0 1 305px!important;
+  min-width:185px!important;
+  max-width:330px!important;
+  height:56px!important;
+  min-height:0!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:0 12px!important;
+  align-items:center!important;
+  gap:10px!important;
+  border:1px solid rgba(176,216,236,.43)!important;
+  border-radius:32px!important;
+  background:rgba(4,35,59,.30)!important;
+  color:#e6f9ff!important;
+  overflow:hidden!important;
+ }
+ body.dw-desktop-tracker-tools #dw-inline-tracker-picker label{
+  font:500 13px/1.2 inherit!important;
+  color:#c8e0e8!important;
+  white-space:nowrap!important;
+  margin:0!important;
+ }
+ body.dw-desktop-tracker-tools .dw-inline-tracker-symbol{
+  flex:none;
+  color:#62e4d4;
+  font-size:23px;
+  font-weight:800;
+  line-height:1;
+ }
+ body.dw-desktop-tracker-tools #dw-inline-tracker-select{
+  flex:1 1 0!important;
+  display:block!important;
+  min-width:0!important;
+  width:auto!important;
+  max-width:100%!important;
+  height:46px!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0 7px!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  color:#f5fdff!important;
+  font:600 15px/1.2 inherit!important;
+  cursor:pointer;
+ }
+ body.dw-desktop-tracker-tools #dw-inline-tracker-select option{background:#10283c;color:#f4fbff}
+ body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-five-tabs{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  grid-template-rows:auto!important;
+  grid-auto-flow:row!important;
+  gap:clamp(3px,.75vw,12px)!important;
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  padding:8px!important;
+  overflow:hidden!important;
+ }
+ body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-five-tabs>button{
+  box-sizing:border-box!important;
+  grid-row:1!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  min-height:47px!important;
+  margin:0!important;
+  padding:8px 4px!important;
+  flex:none!important;
+  font-size:clamp(12px,1.15vw,16px)!important;
+  white-space:nowrap!important;
+  text-overflow:ellipsis!important;
+  overflow:hidden!important;
+ }
+ body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-five-tabs>button[data-sq-tab="overview"]{grid-column:1!important}
+ body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-five-tabs>button[data-sq-tab="expenses"]{grid-column:2!important}
+ body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-five-tabs>button[data-sq-tab="bills"]{grid-column:3!important}
+ body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-five-tabs>button[data-sq-tab="members"]{grid-column:4!important}
+ body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-five-tabs>.dw-inline-chat-tab{grid-column:5!important}
+ body.dw-desktop-tracker-tools .dw-inline-chat-tab{
+  color:#f2fbff!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:12px!important;
+  font-weight:650!important;
+  cursor:pointer;
+ }
+ body.dw-desktop-tracker-tools .dw-inline-chat-tab:hover{background:rgba(101,207,215,.12)!important}
+}
+@media (max-width:900px){
+ #dw-inline-tracker-picker{display:none!important}
+ #tracker-dashboard>.sq-workspace-tabs>.dw-inline-chat-tab{display:none!important}
+}
