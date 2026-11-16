@@ -12,7 +12,7 @@ async function invoke(path,method='GET',body,outsider=false){
  globalThis.fetch=async(input,options={})=>{
   const url=new URL(input),table=url.pathname.split('/').pop();operations.push({table,method:options.method||'GET',query:url.searchParams,body:options.body&&JSON.parse(options.body)});
   if(url.pathname.endsWith('/auth/v1/user'))return Response.json({id:me});
-  if(table==='trackers')return Response.json([{id:tracker,owner_id:outsider?'another-user':me}]);
+  if(table==='trackers')return Response.json([{id:tracker,owner_id:outsider?'another-user':me,currency:'EUR'}]);
   if(table==='tracker_members')return Response.json([]);
   if(table==='squareup_trips')return Response.json([{id:trip,tracker_id:tracker,name:'Conference'}]);
   if(table==='squareup_trip_items')return Response.json([{id:'44444444-4444-4444-8444-444444444444',tracker_id:tracker,title:'Flight',type:'travel',date:'2026-12-01',done:false}]);
@@ -47,6 +47,9 @@ test('activity history combines only member tracker entries and personal transac
  const data=await invoke('activity?tracker_id='+tracker);
  assert.equal(data.status,200);
  assert.deepEqual(data.result.timeline.map(x=>x.id),['2','1']);
+ assert.equal(data.result.timeline.find(x=>x.source==='tracker').currency,'EUR','Tracker balance must show the base currency');
+ assert.equal(data.result.timeline.find(x=>x.source==='personal').currency,'USD','Personal transaction currency must remain intact');
+ assert.ok(data.operations.some(x=>x.table==='trackers'&&x.query.get('id')==='eq.'+tracker));
  assert.ok(data.operations.some(x=>x.table==='tracker_entries'&&x.query.get('tracker_id')==='eq.'+tracker));
  assert.ok(data.operations.some(x=>x.table==='squareup_personal_transactions'&&x.query.get('user_id')==='eq.'+me));
 });

@@ -138,12 +138,16 @@ async function onRequest({request,env,params}){
    if(request.method!=='GET')return fail('Method not allowed',405);
    const trackerId=url.searchParams.get('tracker_id');
    if(!(await member(trackerId)))return fail('Tracker not found or not accessible.',404);
-   const [entries,personal]=await Promise.all([
+   const [entries,personal,trackerRows]=await Promise.all([
     query('tracker_entries',{filters:{tracker_id:'eq.'+trackerId},order:'created_at.desc',limit:500}),
-    query('squareup_personal_transactions',{filters:{user_id:'eq.'+uid},order:'created_at.desc',limit:500})
+    query('squareup_personal_transactions',{filters:{user_id:'eq.'+uid},order:'created_at.desc',limit:500}),
+    query('trackers',{filters:{id:'eq.'+trackerId},limit:1})
    ]);
+   // Tracker entries store converted balances in the tracker's base currency.
+   // Legacy entries may have no individual currency column.
+   const trackerCurrency=String(trackerRows[0]?.currency||'USD').toUpperCase();
    const timeline=[
-    ...entries.map(e=>({id:e.id,source:'tracker',kind:e.type,created_at:e.created_at,amount:e.amount,currency:e.currency||'USD',original_amount:e.original_amount,original_currency:e.original_currency,exchange_rate:e.exchange_rate,payment_status:e.payment_status,description:e.note||e.type})),
+    ...entries.map(e=>({id:e.id,source:'tracker',kind:e.type,created_at:e.created_at||e.date_label,amount:e.amount,currency:trackerCurrency,original_amount:e.original_amount,original_currency:e.original_currency,exchange_rate:e.exchange_rate,payment_status:e.payment_status,description:e.note||e.type})),
     ...personal.map(e=>({id:e.id,source:'personal',kind:e.kind,created_at:e.created_at,amount:e.amount,currency:e.currency||'USD',description:e.description,category:e.category}))
    ].sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,700);
    return response({timeline,notice:'Timeline contains saved transaction records; edit/deletion audit events are not yet recorded.'});
