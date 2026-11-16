@@ -28,13 +28,29 @@
   const id=body.classList.contains('sq-bills-open')?$('sq-bills-tracker')?.value:window.sqLastOpenedTrackerDetail?.id||source.value;
   if([...picker.options].some(o=>o.value===id))picker.value=id;
  }
+ // Find the real desktop header instead of attaching the selector beneath it.
+ // Require both the brand and Ask Weo within a compact container to avoid selecting the page.
+ function findDesktopHeader(){
+  const ask=[...document.querySelectorAll('button,a')].find(n=>/ask weo/i.test(n.textContent||'')&&n.getClientRects().length);
+  if(!ask)return null;
+  for(let p=ask.parentElement,depth=0;p&&depth<8;p=p.parentElement,depth++){
+   const rect=p.getBoundingClientRect();
+   if(rect.height>50&&rect.height<210&&rect.width>450&&/DoWeo/i.test(p.textContent||'')&&p.querySelector('input,[role="search"],[class*="search"]')){
+    p.classList.add('dw-tracker-desktop-header');
+    return p;
+   }
+  }
+  return null;
+ }
  function trackerContextBottom(){
   const shown=isTracker();context.hidden=!shown;if(body.classList.contains('dw-tracker-context-visible')!==shown)body.classList.toggle('dw-tracker-context-visible',shown);
   if(!shown)return 0;
   const header=document.querySelector('.sq-mobile-top');
   const mobile=matchMedia('(max-width:900px)').matches;
-  const parent=mobile?body:body.classList.contains('sq-bills-open')?$('sq-bills-page'):$('tracker-dashboard');
-  if(context.parentNode!==parent){if(mobile)parent.append(context);else parent.prepend(context);}
+  const desktopHeader=mobile?null:findDesktopHeader();
+  const parent=mobile?body:(desktopHeader|| (body.classList.contains('sq-bills-open')?$('sq-bills-page'):$('tracker-dashboard')));
+  if(context.parentNode!==parent){if(mobile)parent.append(context);else if(desktopHeader)desktopHeader.insertBefore(context,desktopHeader.children[1]||null);else parent.prepend(context);}
+  context.classList.toggle('dw-tracker-header-inline',Boolean(desktopHeader&&!mobile));
   if(!mobile){context.style.removeProperty('top');context.style.removeProperty('left');context.style.removeProperty('width');}
   if(matchMedia('(max-width:900px)').matches&&header.getClientRects().length){const r=header.getBoundingClientRect();context.style.top=Math.ceil(r.bottom+8)+'px';context.style.left=r.left+'px';context.style.width=r.width+'px';}
   return context.getBoundingClientRect().bottom;
@@ -71,7 +87,19 @@
    home.querySelectorAll('[data-home-tracker]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{await window.squareUpNavigateTracker(b.dataset.homeTracker);}catch(error){b.disabled=false;alert(error.message||'Could not open tracker');}});
   }catch(error){if(token===renderToken)home.innerHTML='<h1>Home</h1><p role="alert">Could not load your balances. Please reopen Home to retry.</p><button type="button" id="dw-home-retry">Retry</button>';if($('dw-home-retry'))$('dw-home-retry').onclick=showHome;}
  }
- $('nav-home').addEventListener('click',()=>{homeRequest=true;inHomeClick=true;queueMicrotask(()=>{inHomeClick=false;if(homeRequest){homeRequest=false;if(body.classList.contains('sqev-page-open'))active('sqev-nav');else showHome();}});},true);
+ // Home should open the original tracker overview, not the simplified replacement dashboard.
+ async function showTrackerOverview(){
+  hideHome();
+  try{
+   const trackerId=window.sqLastOpenedTrackerDetail?.id||source?.value;
+   if(trackerId&&typeof window.squareUpNavigateTracker==='function')await window.squareUpNavigateTracker(trackerId);
+   else $('nav-trackers')?.click();
+   document.querySelector('#tracker-dashboard [data-sq-tab="overview"]')?.click();
+   active('nav-home');
+  }catch(error){console.warn('Tracker overview unavailable',error);$('nav-trackers')?.click();}
+  schedule();
+ }
+ $('nav-home').addEventListener('click',()=>{homeRequest=true;inHomeClick=true;queueMicrotask(()=>{inHomeClick=false;if(homeRequest){homeRequest=false;if(body.classList.contains('sqev-page-open'))active('sqev-nav');else showTrackerOverview();}});},true);
  document.addEventListener('click',event=>{
   if(event.target.closest('[data-sq-tab],[data-sq-bills-tab],#sq-bills-open')){hideHome();active('nav-trackers');schedule();}
   else if(event.target.closest('.squareup-nav button:not(#nav-home),#sqev-nav,#sq-finance-nav'))hideHome();
@@ -85,7 +113,7 @@
  window.addEventListener('resize',schedule);window.visualViewport?.addEventListener('resize',schedule);
  new ResizeObserver(schedule).observe(document.querySelector('.sq-mobile-top'));
  // Auth startup may finish after the classic scripts; do not change deep links.
- const startup=new MutationObserver(()=>{if(body.classList.contains('sq-auth-guest')){if(!home.hidden||home.childNodes.length){hideHome();home.replaceChildren();}initialized=false;firstTracker=true;return;}if(initialized||document.documentElement.classList.contains('sq-auth-loading'))return;initialized=true;if(!location.hash||location.hash==='#home')showHome();});
+ const startup=new MutationObserver(()=>{if(body.classList.contains('sq-auth-guest')){if(!home.hidden||home.childNodes.length){hideHome();home.replaceChildren();}initialized=false;firstTracker=true;return;}if(initialized||document.documentElement.classList.contains('sq-auth-loading'))return;initialized=true;if(!location.hash||location.hash==='#home')showTrackerOverview();});
  startup.observe(document.documentElement,{attributes:true,attributeFilter:['class']});startup.observe(body,{attributes:true,attributeFilter:['class']});
  schedule();
 })();
