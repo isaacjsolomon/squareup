@@ -61,11 +61,12 @@
  function fixTrackerTabs(){
   // Use the actual five visible controls inside the tracker navigation.
   // Data attributes may differ between page versions, so do not depend on them.
-  const dashboard=$('tracker-dashboard');
-  if(!dashboard||!dashboard.getClientRects().length)return;
+  if(!isTracker())return;
   const expected=['overview','expenses','bills','members','chat'];
-  const bars=[...dashboard.querySelectorAll('.sq-workspace-tabs,.sq-bills-workspace-tabs,[role="tablist"]')]
-   .filter(el=>el.getClientRects().length);
+  // The tab bar is often a sibling ABOVE #tracker-dashboard; look across
+  // the rendered page rather than assuming it lives inside that section.
+  const bars=[...document.querySelectorAll('.sq-workspace-tabs,.sq-bills-workspace-tabs,[role="tablist"]')]
+   .filter(el=>el.getClientRects().length&&!el.closest('#dw-legacy-navigation'));
   for(const bar of bars){
    const controls=[...bar.querySelectorAll('button,[role="tab"]')]
     .filter(el=>el.getClientRects().length);
