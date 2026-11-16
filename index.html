@@ -15626,6 +15626,99 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  },true);
 })();
 </script>
+
+<style id="dw-desktop-sideways-navigation-v1">
+@media(min-width:901px){
+ .sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="more"]>button{display:none!important}
+ .sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="more"]{background:transparent!important;border-color:transparent!important}
+ .sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="more"]>summary .dw-nav-group-caret{transform:none!important}
+ .sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="more"]>summary,
+ .sidebar .squareup-nav .dw-nav-social-trigger{
+   display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;
+   min-height:46px;border:1px solid rgba(137,175,196,.27);border-radius:12px;
+   background:#102b40;color:#eef7fc;font-size:14px;font-weight:700;
+   padding:10px 14px;cursor:pointer;text-align:left;
+ }
+ .sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="more"]>summary{font-size:14px!important}
+ .sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="more"]>summary .dw-nav-group-name{flex:1}
+ .sidebar .squareup-nav .dw-nav-social-trigger:hover,
+ .sidebar .squareup-nav .dw-nav-group[data-dw-nav-group="more"]>summary:hover{background:#183b50}
+ .sidebar .squareup-nav .dw-nav-social-trigger:focus-visible{outline:2px solid #5de2cf;outline-offset:2px}
+ .sidebar .squareup-nav .dw-nav-social-trigger svg{width:21px;height:21px;flex:none}
+ .sidebar .squareup-nav .dw-nav-social-trigger .dw-flyout-caret{margin-left:auto;font-size:22px;line-height:1;color:#add4e3}
+ body.side-collapsed .sidebar .squareup-nav .dw-nav-social-trigger{justify-content:center;padding:10px 4px}
+ body.side-collapsed .sidebar .squareup-nav .dw-nav-social-trigger .dw-social-label,
+ body.side-collapsed .sidebar .squareup-nav .dw-nav-social-trigger .dw-flyout-caret{display:none}
+ .dw-desktop-side-flyout{position:fixed;z-index:2147481000;width:230px;max-width:calc(100vw - 20px);
+   padding:8px;border:1px solid #34566a;border-radius:15px;background:#082638;
+   box-shadow:0 15px 40px rgba(0,0,0,.38);box-sizing:border-box}
+ .dw-desktop-side-flyout[hidden]{display:none!important}
+ .dw-desktop-side-flyout .sq-nav-link{display:flex!important;align-items:center;gap:12px;width:100%!important;min-height:43px;
+   margin:2px 0!important;padding:9px 11px!important;color:#eaf7fd!important;background:transparent!important;
+   border:0!important;border-radius:10px!important;text-align:left;font:inherit;font-size:13px!important;font-weight:650!important;cursor:pointer}
+ .dw-desktop-side-flyout .sq-nav-link:hover,.dw-desktop-side-flyout .sq-nav-link:focus-visible{background:#1c4459!important;outline:none}
+ .dw-desktop-side-flyout .sq-nav-link.active{background:#154353!important;box-shadow:inset 3px 0 #54e1d1}
+ .dw-desktop-side-flyout .sq-nav-icon{display:inline-flex!important;align-items:center;justify-content:center;width:23px;height:23px;flex:none}
+ .dw-desktop-side-flyout .sq-nav-icon svg{width:21px;height:21px}
+ .dw-desktop-side-flyout .sq-nav-label{display:inline!important;white-space:normal!important}
+}
+@media(max-width:900px){.dw-desktop-side-flyout,.dw-nav-social-trigger{display:none!important}}
+</style>
+<script id="dw-desktop-sideways-navigation-v1-script">
+(function(){
+ 'use strict';
+ if(!window.matchMedia('(min-width:901px)').matches)return;
+ const nav=document.querySelector('.sidebar .squareup-nav');
+ const more=nav?.querySelector('.dw-nav-group[data-dw-nav-group="more"]');
+ if(!nav||!more)return;
+ const summary=more.querySelector('summary');
+ const social=document.createElement('button');
+ social.type='button';social.className='dw-nav-social-trigger';
+ social.setAttribute('aria-haspopup','true');social.setAttribute('aria-expanded','false');
+ social.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M18 8v8M14 12h8"/></svg><span class="dw-social-label">Social</span><span class="dw-flyout-caret" aria-hidden="true">›</span>';
+ nav.insertBefore(social,more);
+ const makePanel=(id,ids)=>{
+   const panel=document.createElement('div');panel.id=id;panel.className='dw-desktop-side-flyout';
+   panel.hidden=true;panel.setAttribute('role','group');panel.setAttribute('aria-label',id==='dw-social-flyout'?'Social navigation':'More navigation');
+   for(const name of ids){const item=document.getElementById(name);if(item)panel.appendChild(item);}
+   document.body.appendChild(panel);return panel;
+ };
+ const socialPanel=makePanel('dw-social-flyout',['nav-chat','nav-friends']);
+ const morePanel=makePanel('dw-more-flyout',['nav-profile','nav-help-center','nav-about','nav-privacy-terms']);
+ social.setAttribute('aria-controls',socialPanel.id);
+ summary.setAttribute('aria-controls',morePanel.id);summary.setAttribute('aria-expanded','false');
+ more.open=false;
+ let active=null;
+ const close=()=>{socialPanel.hidden=true;morePanel.hidden=true;more.open=false;social.setAttribute('aria-expanded','false');summary.setAttribute('aria-expanded','false');active=null;};
+ const position=(button,panel)=>{
+   const rect=button.getBoundingClientRect();
+   const width=panel.offsetWidth||230,height=panel.offsetHeight||190;
+   const right=rect.right+10;
+   const left=right+width>window.innerWidth-10?Math.max(10,rect.left-width-10):right;
+   panel.style.left=Math.round(left)+'px';
+   panel.style.top=Math.round(Math.max(10,Math.min(rect.top,window.innerHeight-height-10)))+'px';
+ };
+ const toggle=(button,panel)=>{
+   if(active===panel&&!panel.hidden){close();return;}
+   close();panel.hidden=false;active=panel;position(button,panel);
+   if(panel===morePanel){more.open=true;summary.setAttribute('aria-expanded','true');}
+   else social.setAttribute('aria-expanded','true');
+ };
+ summary.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();toggle(summary,morePanel);});
+ social.addEventListener('click',event=>{event.preventDefault();toggle(social,socialPanel);});
+ for(const panel of [socialPanel,morePanel])panel.addEventListener('click',event=>{
+   if(event.target.closest('button.sq-nav-link'))close();
+ });
+ document.addEventListener('pointerdown',event=>{
+   if(active&&!active.contains(event.target)&&!social.contains(event.target)&&!summary.contains(event.target))close();
+ },true);
+ document.addEventListener('keydown',event=>{
+   if(event.key==='Escape'&&active){close();(document.activeElement?.blur?.());}
+ });
+ window.addEventListener('resize',close);
+ document.querySelector('.sidebar')?.addEventListener('scroll',close,{passive:true});
+})();
+</script>
 </body>
 </html>
 
