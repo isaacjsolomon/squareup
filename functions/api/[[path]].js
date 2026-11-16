@@ -3585,6 +3585,108 @@ for (const x of shares) {
     return json(saved[0], 201);
   }
 
+  // PATCH: Edit an existing bill or subscription without replacing its identity
+  // or changing previously saved expenses. Matches deletion permissions.
+  if (sub === 'bills' && method === 'PATCH' && recordId) {
+    const existing = (await db(table, {
+      filters: { tracker_id: 'eq.' + id, id: 'eq.' + recordId },
+      limit: 1
+    }))[0];
+
+    if (!existing) return fail('Bill or subscription not found.', 404);
+    if (!owner && existing.created_by !== me.id) {
+      return fail('Only the creator or tracker owner can edit this record.', 403);
+    }
+
+    const name = clean(body.name, 90);
+    const amountValue = Number(body.amount);
+    const due = String(body.due || '');
+    const frequency = String(body.frequency || '');
+    const billKind = String(body.kind || '');
+    if (!name || typeof body.amount !== 'number' ||
+        !Number.isFinite(amountValue) || amountValue <= 0 || amountValue > 1e9 ||
+        !/^\\d{4}-\\d{2}-\\d{2}$/.test(due) ||
+        !Number.isFinite(Date.parse(due + 'T12:00:00Z')) ||
+        new Date(due + 'T12:00:00Z').toISOString().slice(0, 10) !== due ||
+        !['weekly', 'monthly', 'yearly'].includes(frequency) ||
+        !['bill', 'subscription'].includes(billKind) ||
+        typeof body.active !== 'boolean') {
+      return fail('Invalid bill or subscription details.', 400);
+    }
+
+    const amountCents = Math.round(amountValue * 100);
+    if (amountCents < 1) return fail('Enter an amount of at least $0.01.', 400);
+
+    // Keep the existing payer, split method and participating members. When the
+    // amount changes, distribute cents proportionally using largest remainders
+    // so the total remains exact and there is no silent loss of rounding cents.
+    let shares = existing.shares;
+    if (existing.recurring_enabled) {
+      if (!uuid.test(existing.payer_id || '') ||
+          !['single', 'equal', 'custom'].includes(existing.split_mode) ||
+          !Array.isArray(shares) || !shares.length || shares.length > 100) {
+        return fail('This schedule has incomplete split information. Recreate its assignment before editing the amount.', 409);
+      }
+
+      const members = await db('tracker_members', {
+        filters: { tracker_id: 'eq.' + id }
+      });
+      if (!members.some(m => m.user_id === existing.payer_id) ||
+          shares.some(share => !uuid.test(share?.user_id) ||
+            !members.some(m => m.user_id === share.user_id) ||
+            !Number.isSafeInteger(share.amount_cents) || share.amount_cents < 0) ||
+          new Set(shares.map(share => share.user_id)).size !== shares.length) {
+        return fail('Saved bill recipients are no longer valid. Review tracker members before editing.', 409);
+      }
+
+      const oldTotal = shares.reduce((total, share) => total + share.amount_cents, 0);
+      if (!Number.isSafeInteger(oldTotal) || oldTotal <= 0) {
+        return fail('Saved split totals are invalid. Editing is unavailable.', 409);
+      }
+      if (existing.split_mode === 'single' && shares.length !== 1) {
+        return fail('Saved single-payer assignment is invalid.', 409);
+      }
+      if (amountCents !== oldTotal) {
+        if (existing.split_mode === 'equal') {
+          if (amountCents < shares.length) return fail('Amount is too small to split among all members.', 400);
+          shares = shares.map((share, index) => ({
+            user_id: share.user_id,
+            amount_cents: Math.floor(amountCents / shares.length) +
+              (index < amountCents % shares.length ? 1 : 0)
+          }));
+        } else {
+          const portions = shares.map((share, index) => {
+            const exact = share.amount_cents / oldTotal * amountCents;
+            const floor = Math.floor(exact);
+            return { user_id: share.user_id, index, amount_cents: floor, remainder: exact - floor };
+          });
+          let remaining = amountCents - portions.reduce((sum, share) => sum + share.amount_cents, 0);
+          for (const portion of [...portions].sort((a, b) => b.remainder - a.remainder || a.index - b.index)) {
+            if (remaining-- <= 0) break;
+            portion.amount_cents++;
+          }
+          shares = portions.sort((a, b) => a.index - b.index).map(({ user_id, amount_cents }) => ({ user_id, amount_cents }));
+        }
+      }
+    }
+
+    const changes = {
+      name,
+      amount: amountCents / 100,
+      due,
+      frequency,
+      kind: billKind,
+      active: body.active,
+      ...(existing.recurring_enabled ? { shares } : {})
+    };
+    const updated = await db(table, {
+      method: 'PATCH',
+      filters: { tracker_id: 'eq.' + id, id: 'eq.' + recordId },
+      body: changes
+    });
+    return updated.length ? json(updated[0]) : fail('Bill was not updated.', 409);
+  }
+
   // DELETE: Remove existing record
   if (method === 'DELETE' && recordId) {
 
