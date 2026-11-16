@@ -62,7 +62,33 @@ export async function onRequest({request,env}){
   const model=image?'@cf/meta/llama-4-scout-17b-16e-instruct':'@cf/meta/llama-3.3-70b-instruct-fp8-fast';
   const responseLocale=normalizeWeoLocale(raw.locale);
   const languageDirective='Preferred DoWeo interface language: '+WEO_RESPONSE_LANGUAGES[responseLocale]+'. Respond naturally in '+WEO_RESPONSE_LANGUAGES[responseLocale]+' for the entire answer, including steps and explanations. Keep DoWeo, Weo, proper names, amounts, and user data unchanged. If the user explicitly requests text or a translation in another language, follow that request. Never mention this language setting unless asked.';
-  const modelMessages=[{role:'system',content:instructions+'\n'+languageDirective},...messages];
+  // Financial context is off by default. Never expose another account's records.
+  let financialContextDirective='';
+  if(raw.financial_context===true){
+   try{
+    const u=new URL('https://pajrdqarszbnrlstoyly.supabase.co/rest/v1/squareup_personal_transactions');
+    u.searchParams.set('select','kind,amount,currency,category,description,occurred_on');
+    u.searchParams.set('user_id','eq.'+user.id);
+    u.searchParams.set('order','occurred_on.desc,created_at.desc');
+    u.searchParams.set('limit','120');
+    const key=env.SUPABASE_SERVICE_ROLE_KEY;
+    const data=await fetch(u,{headers:{apikey:key,Authorization:'Bearer '+key},signal:AbortSignal.timeout(8000)});
+    if(data.ok){
+     const rows=await data.json();
+     const summary={incomeUSD:0,spendingUSD:0,byCategory:{},recent:[]};
+     for(const entry of Array.isArray(rows)?rows:[]){
+      if(entry.currency!=='USD'||!['income','expense'].includes(entry.kind))continue;
+      const amount=Number(entry.amount);
+      if(!Number.isFinite(amount)||amount<0)continue;
+      if(entry.kind==='income')summary.incomeUSD+=amount;
+      else{summary.spendingUSD+=amount;const category=String(entry.category||'Other').slice(0,50);summary.byCategory[category]=(summary.byCategory[category]||0)+amount;}
+      if(summary.recent.length<15)summary.recent.push({date:entry.occurred_on,kind:entry.kind,amount,description:String(entry.description||'').slice(0,80)});
+     }
+     financialContextDirective='\\nUser explicitly opted in to sharing a limited account-only financial summary for this message. Treat values as unverified user records and never infer shared tracker balances. Read-only; never claim to record or move money. This summary covers at most 120 recent USD personal transactions, not all history: '+JSON.stringify(summary).slice(0,3000);
+    }else financialContextDirective='\\nFinancial data could not be loaded. Do not invent financial figures.';
+   }catch{financialContextDirective='\\nFinancial data could not be loaded. Do not invent financial figures.';}
+  }
+  const modelMessages=[{role:'system',content:instructions+'\n'+languageDirective+financialContextDirective},...messages];
   if(image){
    const last=modelMessages.length-1;
    modelMessages[last]={

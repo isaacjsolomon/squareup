@@ -5,6 +5,25 @@
  const tabs=root?.querySelector('.sq-ng-tabs');
  const shell=root?.querySelector('.sq-ng-shell');
  if(!root||!tabs||!shell||document.getElementById('dw-planning-launch'))return;
+ function toolsBar(){
+  let host=document.getElementById('dw-finance-extras');
+  if(!host){
+   host=document.createElement('div');host.id='dw-finance-extras';host.setAttribute('aria-label','Additional finance tools');
+   host.style.cssText='display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:10px 0 13px;max-width:100%;';
+   tabs.after(host);
+   host.addEventListener('click',event=>{
+    const active=event.target.closest('button')?.id;
+    const panels={'dw-planning-launch':'dw-planning-pane','dw-trip-plus-launch':'dw-trip-plus','dw-paylink-launch':'dw-paylink-pane'};
+    for(const [launcher,panel] of Object.entries(panels)){
+     if(launcher===active)continue;
+     const el=document.getElementById(panel),button=document.getElementById(launcher);
+     if(el)el.hidden=true;
+     button?.setAttribute('aria-pressed','false');
+    }
+   });
+  }
+  return host;
+ }
  const style=document.createElement('style');
  style.textContent=`
  #dw-planning-launch{border:1px solid #4a7e88;border-radius:12px;background:#153849;color:#e7f9fa;min-height:44px;padding:10px 16px;font-weight:750;cursor:pointer}
@@ -32,7 +51,7 @@
  document.head.append(style);
  const launch=document.createElement('button');
  launch.type='button';launch.id='dw-planning-launch';launch.textContent='Goals & Budgets';launch.setAttribute('aria-pressed','false');
- tabs.append(launch);
+ toolsBar().append(launch);
  const pane=document.createElement('section');
  pane.id='dw-planning-pane';pane.hidden=true;
  pane.innerHTML=`<div class="dw-plan-row"><div><h2>Goals & Budgets</h2><p>Plan spending and track savings progress without moving money.</p></div><button id="dw-plan-close" type="button">Close</button></div>

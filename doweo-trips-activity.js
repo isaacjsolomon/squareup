@@ -3,6 +3,25 @@
  'use strict';
  const root=document.getElementById('sq-nextgen'),tabs=root?.querySelector('.sq-ng-tabs'),shell=root?.querySelector('.sq-ng-shell');
  if(!root||!tabs||!shell||document.getElementById('dw-trip-plus-launch'))return;
+ function toolsBar(){
+  let host=document.getElementById('dw-finance-extras');
+  if(!host){
+   host=document.createElement('div');host.id='dw-finance-extras';host.setAttribute('aria-label','Additional finance tools');
+   host.style.cssText='display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:10px 0 13px;max-width:100%;';
+   tabs.after(host);
+   host.addEventListener('click',event=>{
+    const active=event.target.closest('button')?.id;
+    const panels={'dw-planning-launch':'dw-planning-pane','dw-trip-plus-launch':'dw-trip-plus','dw-paylink-launch':'dw-paylink-pane'};
+    for(const [launcher,panel] of Object.entries(panels)){
+     if(launcher===active)continue;
+     const el=document.getElementById(panel),button=document.getElementById(launcher);
+     if(el)el.hidden=true;
+     button?.setAttribute('aria-pressed','false');
+    }
+   });
+  }
+  return host;
+ }
  const style=document.createElement('style');style.textContent=`
  #dw-trip-plus-launch{border:1px solid #487784;border-radius:12px;background:#12354a;color:#e9faff;min-height:44px;padding:10px 14px;font-weight:750;cursor:pointer}
  #dw-trip-plus-launch[aria-pressed=true]{background:#138781;border-color:#4ad5c2}
@@ -24,7 +43,7 @@
  #dw-trip-plus .dw-trip-status{min-height:22px;color:#b8ecdf;font-size:12px}
  @media(max-width:700px){#dw-trip-plus{padding:13px;margin:12px 0}#dw-trip-plus .dw-trip-row>*{width:100%;flex:1 1 100%}}
  `;document.head.append(style);
- const launch=document.createElement('button');launch.id='dw-trip-plus-launch';launch.type='button';launch.textContent='Trip Planner & Activity';launch.setAttribute('aria-pressed','false');tabs.append(launch);
+ const launch=document.createElement('button');launch.id='dw-trip-plus-launch';launch.type='button';launch.textContent='Trip Planner & Activity';launch.setAttribute('aria-pressed','false');toolsBar().append(launch);
  const pane=document.createElement('section');pane.id='dw-trip-plus';pane.hidden=true;
  pane.innerHTML=`<div class="dw-trip-row"><h2>Trips & financial activity</h2><button id="dw-trip-close" type="button">Close</button></div>
  <div class="dw-trip-row"><label>Tracker<select id="dw-trip-tracker"></select></label><button type="button" id="dw-trip-tab" class="dw-trip-primary">Trip manager</button><button type="button" id="dw-activity-tab">Activity timeline</button></div>

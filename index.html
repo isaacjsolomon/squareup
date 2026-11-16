@@ -8322,7 +8322,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
   const messages=[...conversation,{role:'user',content:q}].slice(-15);
   try{
    if(typeof window.squareUpApi!=='function')throw Error('Please sign in to chat.');
-   const payload=imageData?{messages,image:imageData}:{messages};payload.locale=window.DoWeoI18n?.resolve(window)||'en';if(activeConversationId)payload.conversationId=activeConversationId;const result=await window.squareUpApi('ai-chat','POST',payload);if(result.conversationId)activeConversationId=result.conversationId;
+   const payload=imageData?{messages,image:imageData}:{messages};payload.locale=window.DoWeoI18n?.resolve(window)||'en';payload.financial_context=Boolean(document.getElementById('dw-weo-financial-context')?.checked);if(activeConversationId)payload.conversationId=activeConversationId;const result=await window.squareUpApi('ai-chat','POST',payload);if(result.conversationId)activeConversationId=result.conversationId;
    if(!result.reply)throw Error('No reply received. Please try again.');
    pending.remove();bubble(result.reply,false);
    window.WeoMascot?.setMood('success');
@@ -15538,6 +15538,7 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
 </style>
 <script src="/doweo-finance-planning.js" defer></script>
 <script src="/doweo-trips-activity.js" defer></script>
+<script src="/doweo-paylinks-currency.js" defer></script>
 </body>
 </html>
 
