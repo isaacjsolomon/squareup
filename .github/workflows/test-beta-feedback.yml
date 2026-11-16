@@ -92,6 +92,8 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Verify mobile viewport foundation across screen sizes
         run: node --test test/mobile-viewport-foundation.test.mjs
+      - name: Check compact Bills mobile dashboard and calendar behavior
+        run: node --check doweo-bills-mobile-dashboard.js && node --test test/mobile-bills-dashboard.test.mjs
       - name: Check new Finance Hub tools on mobile
         run: node --test test/finance-addons-mobile.test.mjs
       - name: Check mobile tracker settings panel sizing and accessibility
