@@ -1,9 +1,26 @@
 /* Desktop tracker header refinement. Original dashboard and mobile remain untouched. */
 @media(min-width:901px){
  .dw-integrated-header{display:flex!important;align-items:center!important;gap:clamp(12px,1.4vw,26px)!important;flex-wrap:nowrap!important}
- .dw-integrated-header .dw-integrated-picker{display:flex;align-items:center;gap:10px;flex:0 1 315px;min-width:170px;max-width:340px;padding:9px 13px;border:1px solid rgba(176,218,238,.4);border-radius:28px;background:rgba(8,42,65,.4);color:#edfaff;box-sizing:border-box}
- .dw-integrated-picker label{font-size:13px;font-weight:600;white-space:nowrap}
- .dw-integrated-picker select{background:transparent;color:#f5fbff;border:0;min-width:0;width:100%;font:inherit;font-weight:700;cursor:pointer}
+ .dw-integrated-header .dw-integrated-picker{
+  display:flex;align-items:center;gap:12px;flex:0 1 355px;min-width:210px;max-width:355px;
+  min-height:60px;padding:9px 17px;border:1px solid rgba(170,220,236,.52);
+  border-radius:22px;background:linear-gradient(135deg,rgba(14,60,83,.78),rgba(10,46,71,.75));
+  color:#f0fbff;box-sizing:border-box;box-shadow:inset 0 1px rgba(255,255,255,.08),0 5px 20px rgba(1,18,33,.12);
+  transition:border-color .2s ease,background .2s ease,box-shadow .2s ease;
+ }
+ .dw-integrated-picker:hover{border-color:rgba(75,237,213,.7);background:rgba(12,62,84,.88)}
+ .dw-integrated-picker:focus-within{border-color:#4bead7;box-shadow:0 0 0 3px rgba(45,215,194,.22)}
+ .dw-integrated-picker .dw-picker-icon{width:26px;height:26px;flex:none;color:#51e1d4;stroke:currentColor;stroke-width:2.2}
+ .dw-integrated-picker label{font-size:16px;font-weight:600;color:#d8eef7;white-space:nowrap;letter-spacing:-.01em;cursor:pointer}
+ .dw-integrated-picker .dw-picker-select-wrap{position:relative;display:flex;align-items:center;flex:1;min-width:0}
+ .dw-integrated-picker select{
+  appearance:none;-webkit-appearance:none;background:transparent;color:#fff;border:0;outline:0;
+  min-width:0;width:100%;padding:9px 25px 9px 0;font:inherit;font-size:19px;font-weight:750;
+  letter-spacing:-.015em;cursor:pointer;text-overflow:ellipsis;
+ }
+ .dw-integrated-picker select option{color:#f2fbff;background:#10334a}
+ .dw-integrated-picker .dw-picker-chevron{position:absolute;right:0;width:18px;height:18px;pointer-events:none;color:#e1f7fa;stroke:currentColor;stroke-width:2;transition:transform .2s ease}
+ .dw-integrated-picker:focus-within .dw-picker-chevron{transform:rotate(180deg)}
  .dw-integrated-header .dw-integrated-search{flex:1 1 260px!important;min-width:120px!important}
  .dw-original-picker-hidden{display:none!important}
  .dw-integrated-tabs{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;grid-template-rows:auto!important;gap:clamp(4px,.7vw,12px)!important;align-items:stretch!important;min-width:0!important;box-sizing:border-box}
