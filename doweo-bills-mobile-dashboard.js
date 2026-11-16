@@ -16,6 +16,7 @@
  const media=window.matchMedia('(max-width:760px)');
  const shell=document.createElement('div');
  shell.className='dw-bills-mobile-shell';
+ const workspace=document.createElement('div');workspace.className='dw-bills-workspace';
  const fold=document.createElement('details');fold.className='dw-bills-calendar-fold';fold.setAttribute('aria-label','Billing calendar');
  const foldTitle=document.createElement('summary');foldTitle.textContent='Billing calendar';fold.append(foldTitle);
  // Each element gets a placeholder so desktop restoration is lossless.
@@ -38,13 +39,44 @@
   if(!media.matches){restore();return;}
   page.classList.add('dw-bills-compact');
   // Append only actual page elements, never copies or substitute action buttons.
-  for(const node of [tabs,back,heading,overview,columns])shell.append(node);
+  shell.append(tabs,workspace);
+  for(const node of [back,heading,overview,columns])workspace.append(node);
   if(calendar.parentElement!==fold)fold.append(calendar);
-  shell.append(fold);
-  if(message)shell.append(message);
+  workspace.append(fold);
+  if(message)workspace.append(message);
   if(shell.parentElement!==page)page.prepend(shell);
+  scheduleMeasure();
  };
+ // iPhone safe areas and larger text change the fixed header's actual bottom.
+ // Use its measured edge for both initial clearance and sticky tab positioning.
+ let measureFrame=0;
+ function measureHeader(){
+  measureFrame=0;
+  if(!media.matches||!page.getClientRects().length)return;
+  const header=document.querySelector('.sq-mobile-top');
+  if(!header||!header.getClientRects().length)return;
+  const bottom=Math.ceil(header.getBoundingClientRect().bottom)+10;
+  const pageBox=page.getBoundingClientRect();
+  const documentTop=pageBox.top+window.scrollY;
+  shell.style.setProperty('--dw-bills-header-bottom',bottom+'px');
+  shell.style.setProperty('--dw-bills-tabs-left',pageBox.left+'px');
+  shell.style.setProperty('--dw-bills-tabs-width',pageBox.width+'px');
+  shell.style.setProperty('--dw-bills-start-inset',Math.max(8,Math.ceil(bottom+tabs.getBoundingClientRect().height+14-documentTop))+'px');
+ }
+ function scheduleMeasure(){if(!measureFrame)measureFrame=requestAnimationFrame(measureHeader)}
+ const header=document.querySelector('.sq-mobile-top');
+ if(header&&typeof ResizeObserver!=='undefined')new ResizeObserver(scheduleMeasure).observe(header);
+ new MutationObserver(scheduleMeasure).observe(document.body,{attributes:true,attributeFilter:['class']});
+ window.addEventListener('resize',scheduleMeasure,{passive:true});
+ window.addEventListener('pageshow',scheduleMeasure);
+ window.visualViewport?.addEventListener('resize',scheduleMeasure,{passive:true});
+ // The entire Add tile is clickable; the original button retains its keyboard
+ // access, label and dialog handler. Never intercept fields inside the editor.
+ create.addEventListener('click',event=>{
+  if(media.matches&&create.classList.contains('sq-mobile-collapsed')&&!event.target.closest('button,input,select,textarea,a'))document.getElementById('sq-bill-mobile-toggle')?.click();
+ });
  if(media.addEventListener)media.addEventListener('change',apply);
  else media.addListener(apply);
  apply();
 })();
+
