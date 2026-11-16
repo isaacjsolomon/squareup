@@ -137,3 +137,31 @@ body.dw-account-home-open #tracker-dashboard,body.dw-account-home-open #trackers
  .dw-tracker-desktop-header>#dw-tracker-context{flex:0 1 265px!important;min-width:170px!important;max-width:285px!important}
  .dw-tracker-desktop-header>#dw-tracker-context select{font-size:14px!important}
 }
+
+/* Mobile only: three workspace tabs; Social actions move into More. */
+@media(max-width:900px){
+ #dw-tracker-context{display:none!important}
+ #tracker-dashboard .sq-workspace-tabs,
+ .sq-bills-workspace-tabs,
+ .dw-tracker-tabs-row{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-rows:auto!important;
+ }
+ #tracker-dashboard .sq-workspace-tabs>[data-sq-tab="members"],
+ #tracker-dashboard .sq-workspace-tabs>[data-sq-tab="chat"],
+ .sq-bills-workspace-tabs>[data-sq-tab="members"],
+ .sq-bills-workspace-tabs>[data-sq-tab="chat"],
+ .dw-tracker-tabs-row>[data-dw-tracker-tab="members"],
+ .dw-tracker-tabs-row>[data-dw-tracker-tab="chat"]{
+  display:none!important;
+ }
+ .dw-tracker-tabs-row>[data-dw-tracker-tab="overview"]{grid-column:1!important}
+ .dw-tracker-tabs-row>[data-dw-tracker-tab="expenses"]{grid-column:2!important}
+ .dw-tracker-tabs-row>[data-dw-tracker-tab="bills"]{grid-column:3!important}
+ #dw-mobile-social-links{padding:8px 0}
+ #dw-mobile-social-links h3{font-size:14px;font-weight:750;margin:8px 12px}
+ #dw-mobile-social-links .dw-mobile-social-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ #dw-mobile-social-links button{font:inherit;font-weight:700;color:#eefaff;background:#12354a;border:1px solid #416b7b;border-radius:12px;padding:14px 10px;min-width:0;cursor:pointer}
+}
+@media(min-width:901px){#dw-mobile-social-links{display:none!important}}
