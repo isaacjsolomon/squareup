@@ -18,7 +18,7 @@
  const picker=$('dw-tracker-picker'),source=$('tracker-select');
  let homeRequest=false,inHomeClick=false,firstTracker=true,renderToken=0,initialized=false,frame=0;
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const active=id=>{document.querySelectorAll('.squareup-nav .sq-nav-link').forEach(n=>{const yes=n.id===id;n.classList.toggle('active',yes);if(yes)n.setAttribute('aria-current','page');else n.removeAttribute('aria-current');});};
+ const active=id=>{document.querySelectorAll('.squareup-nav .sq-nav-link').forEach(n=>{const yes=n.id===id;n.classList.toggle('active',yes);if(yes)n.setAttribute('aria-current','page');else n.removeAttribute('aria-current');});document.querySelectorAll('.sq-mobile-nav button').forEach(n=>{const yes=n.dataset.target===id;n.classList.toggle('active',yes);if(yes)n.setAttribute('aria-current','page');else n.removeAttribute('aria-current');});};
  function hideHome(){homeRequest=false;home.hidden=true;body.classList.remove('dw-account-home-open');renderToken++;}
  function restoreAnalytics(){if(analytics&&analytics.parentNode!==anchor.parentNode)anchor.after(analytics);}
  function isTracker(){return !body.classList.contains('dw-account-home-open')&&!body.classList.contains('sq-finance-open')&&!body.classList.contains('sq-auth-guest')&&(body.classList.contains('sq-bills-open')||(!/settings-view|about-view|trackers-view|analytics-view|friends-view|notifications-view|sq-help-view/.test(body.className)&&$('tracker-dashboard').getClientRects().length>0));}

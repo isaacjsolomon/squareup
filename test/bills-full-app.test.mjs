@@ -213,6 +213,7 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   await page.locator('#tracker-dashboard [data-sq-tab="chat"]').click();
   assert.ok(await page.locator('#chat-card').isVisible(),'Chat opens original message controls');
   assert.ok(await page.locator('#chat-card').evaluate(e=>e.open));
+  assert.ok(await page.locator('.sq-mobile-nav [data-target="nav-trackers"]').evaluate(e=>e.classList.contains('active')),'tracker tools highlight Trackers in bottom navigation');
   await page.waitForFunction(()=>document.getElementById('dw-tracker-picker').getBoundingClientRect().bottom<=document.querySelector('#tracker-dashboard .sq-workspace-tabs').getBoundingClientRect().top);
   assert.equal(await page.locator('#dw-tracker-picker').inputValue(),tracker);
   await page.screenshot({path:resolve(root,'test-results/bills/navigation-chat-390.png'),fullPage:true});
