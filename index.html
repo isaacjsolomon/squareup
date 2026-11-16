@@ -2436,6 +2436,95 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
   }
 }
 </style>
+<style id="dw-core-dialog-consistency">
+/* Shared layout for the six core account/tracker dialogs. Authentication and
+   specialized payment/receipt sheets intentionally keep their own layouts. */
+html body .dw-standard-dialog-overlay{
+  box-sizing:border-box!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:clamp(10px,3vw,24px)!important;
+  overscroll-behavior:contain!important;
+}
+html body .dw-standard-dialog-overlay > .card.modal{
+  box-sizing:border-box!important;
+  width:min(100%,540px)!important;
+  min-width:0!important;
+  max-height:calc(100dvh - 28px)!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  border:1px solid rgba(95,163,180,.42)!important;
+  border-radius:18px!important;
+  background:linear-gradient(150deg,#102d43,#091f33)!important;
+  box-shadow:0 22px 64px rgba(0,0,0,.48)!important;
+  color:#ecf9ff!important;
+  padding:clamp(16px,2.6vw,24px)!important;
+}
+html body .dw-standard-dialog-overlay > .card.modal > h2{
+  font-size:clamp(21px,2.4vw,25px)!important;
+  line-height:1.25!important;
+  letter-spacing:-.02em!important;
+  margin:0 0 16px!important;
+  padding:0!important;
+}
+html body .dw-standard-dialog-overlay > .card.modal > .close{
+  box-sizing:border-box!important;
+  display:grid!important;
+  place-items:center!important;
+  width:40px!important;
+  height:40px!important;
+  min-width:40px!important;
+  border:1px solid rgba(121,173,191,.52)!important;
+  border-radius:12px!important;
+  background:#1c4056!important;
+  color:#effcff!important;
+  font-size:24px!important;
+  line-height:1!important;
+  cursor:pointer!important;
+}
+html body .dw-standard-dialog-overlay > .card.modal > .close:focus-visible{
+  outline:3px solid #65efda!important;
+  outline-offset:2px!important;
+}
+html body .dw-standard-dialog-overlay .modal-actions{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px!important;
+}
+html body .dw-standard-dialog-overlay .modal-actions > button{
+  min-height:42px!important;
+  border-radius:11px!important;
+}
+/* Create and Share have genuinely longer content: preserve their custom
+   scroll/close behavior and give them room for templates and invitation QR. */
+html body #new-modal.dw-standard-dialog-overlay > .card.modal{
+  width:min(100%,650px)!important;
+}
+html body #share-modal.dw-standard-dialog-overlay > .card.modal{
+  width:min(100%,620px)!important;
+}
+@media(max-width:600px){
+  html body .dw-standard-dialog-overlay{
+    padding:8px!important;
+  }
+  html body .dw-standard-dialog-overlay > .card.modal{
+    width:100%!important;
+    max-width:100%!important;
+    max-height:calc(100dvh - 16px)!important;
+    border-radius:16px!important;
+    padding:16px!important;
+  }
+  html body #new-modal.dw-standard-dialog-overlay > .card.modal{
+    padding:16px!important;
+  }
+  html body #share-modal.dw-standard-dialog-overlay > .card.modal{
+    padding:16px 15px 95px!important;
+  }
+}
+</style>
 <link rel="stylesheet" href="/weo-mascot.css">
 <link rel="stylesheet" href="/weo-actions.css">
 
@@ -3043,7 +3132,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
 </div>
 
 <!-- PROFILE PHOTO MODAL -->
-<div class="modal-bg" id="photo-modal">
+<div class="modal-bg dw-standard-dialog-overlay" id="photo-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="photo-title">
     <button type="button" class="doweo-close-control close" id="photo-close" aria-label="Close">×</button>
     <h2 id="photo-title">Profile photo</h2>
@@ -3059,7 +3148,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
 </div>
 
 <!-- SETTLE UP MODAL -->
-<div class="modal-bg" id="settle-modal">
+<div class="modal-bg dw-standard-dialog-overlay" id="settle-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="settle-title">
     <button type="button" class="doweo-close-control close" id="settle-close" aria-label="Close">×</button>
     <h2 id="settle-title">Settle up</h2>
@@ -3075,7 +3164,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
 </div>
 
 <!-- NEW TRACKER MODAL -->
-<div class="modal-bg" id="new-modal">
+<div class="modal-bg dw-standard-dialog-overlay" id="new-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="new-title">
     <button type="button" class="doweo-close-control close" data-close aria-label="Close">×</button>
     <h2 id="new-title">New tracker</h2>
@@ -3090,7 +3179,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
 </div>
 
 <!-- MY TRACKERS MODAL -->
-<div class="modal-bg" id="manage-modal">
+<div class="modal-bg dw-standard-dialog-overlay" id="manage-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="manage-title">
     <button type="button" class="doweo-close-control close" data-close aria-label="Close">×</button>
     <h2 id="manage-title">My trackers</h2>
@@ -3101,7 +3190,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
 </div>
 
 <!-- BACKDROP MODAL -->
-<div class="modal-bg" id="backdrop-modal">
+<div class="modal-bg dw-standard-dialog-overlay" id="backdrop-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="backdrop-title">
     <button type="button" class="doweo-close-control close" data-close aria-label="Close">×</button>
     <h2 id="backdrop-title">Backdrop</h2>
@@ -3116,7 +3205,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
 </div>
 
 <!-- SHARE MODAL -->
-<div class="modal-bg" id="share-modal">
+<div class="modal-bg dw-standard-dialog-overlay" id="share-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="share-title">
     <button type="button" class="doweo-close-control close" data-close aria-label="Close">×</button>
     <h2 id="share-title">Share tracker</h2>
