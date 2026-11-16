@@ -1,6 +1,7 @@
 /* Keep the original bills page and handlers. Reflow only on small screens. */
 (function(){
  'use strict';
+ const initialize=()=>{
  const page=document.getElementById('sq-bills-page');
  if(!page||page.dataset.dwBillsResponsive==='ready')return;
  const overview=page.querySelector('.sq-premium-overview');
@@ -29,4 +30,7 @@
  if(typeof media.addEventListener==='function')media.addEventListener('change',apply);
  else if(typeof media.addListener==='function')media.addListener(apply);
  apply();
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize,{once:true});
+ else initialize();
 })();
