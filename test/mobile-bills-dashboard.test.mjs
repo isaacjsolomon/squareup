@@ -22,7 +22,7 @@ test('responsive billing page is compact on mobile and restores desktop structur
  const browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{})});
  try {
   const page=await browser.newPage({viewport:{width:390,height:844}});
-  await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body class="trackers-view sq-bills-open"><section id="trackers-page">'+markup+'</section></body></html>');
+  await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body class="sq-bills-open"><section id="trackers-page">'+markup+'</section></body></html>');
   await page.addStyleTag({content:`
     #sq-bills-page{width:100%;box-sizing:border-box}
     #sq-bills-page .sq-premium-overview{display:grid;grid-template-columns:1fr 1fr}

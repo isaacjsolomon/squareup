@@ -1,7 +1,7 @@
 /* DoWeo mobile Bills: calm subscription dashboard.
    All billing handlers and IDs remain in the original markup. Desktop is untouched. */
 @media (max-width:760px) {
-  body.trackers-view.sq-bills-open #sq-bills-page.dw-bills-compact {
+  #sq-bills-page.dw-bills-compact {
     display:flex!important;
     flex-direction:column!important;
     gap:14px!important;
@@ -14,7 +14,7 @@
     color:#f3fcff;
   }
   #sq-bills-page.dw-bills-compact > .sq-bills-back {
-    order:0!important;
+    order:1!important;
     position:static!important;
     align-self:flex-start!important;
     width:auto!important;
@@ -28,7 +28,7 @@
     font-weight:700!important;
   }
   #sq-bills-page.dw-bills-compact > .sq-bills-title {
-    order:1!important;
+    order:2!important;
     display:flex!important;
     flex-direction:column!important;
     align-items:stretch!important;
@@ -85,8 +85,8 @@
     padding:9px 12px!important;
     color:#f0faff!important;
   }
-  body.trackers-view.sq-bills-open #sq-bills-page.dw-bills-compact > .sq-bills-workspace-tabs {
-    order:2!important;
+  #sq-bills-page.dw-bills-compact > .sq-bills-workspace-tabs {
+    order:0!important;
     position:static!important;
     inset:auto!important;
     top:auto!important;
@@ -377,4 +377,13 @@
   }
   #sq-bills-page.dw-bills-compact .sq-premium-metrics > article {padding:13px 10px!important}
   #sq-bills-page.dw-bills-compact .sq-premium-metrics article strong{font-size:clamp(21px,6vw,28px)!important}
+}
+
+/* v2: override legacy sticky-tab rules even without a trackers-view body class. */
+@media(max-width:760px){
+ body.sq-bills-open #sq-bills-page.dw-bills-compact > .sq-bills-workspace-tabs{position:relative!important;top:auto!important;inset:auto!important;transform:none!important;margin:0!important;z-index:1!important}
+ #sq-bills-page.dw-bills-compact > .sq-bills-title{margin:0!important;transform:none!important}
+ #sq-bills-page.dw-bills-compact > .sq-premium-overview > .sq-premium-metrics{display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr)!important}
+ #sq-bills-page.dw-bills-compact > .sq-premium-overview > .sq-premium-metrics > article{grid-row:auto!important;grid-column:auto!important;min-height:115px!important}
+ #sq-bills-page.dw-bills-compact .sq-bill-create-heading{min-height:70px!important}
 }
