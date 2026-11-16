@@ -140,3 +140,17 @@
   font-size:clamp(11px,3vw,14px)!important;line-height:1.2!important;white-space:nowrap!important;
  }
 }
+/* Keep each desktop record's actions together, never wrapping individual buttons. */
+@media(min-width:761px){
+ #sq-bills-page .sq-bills-columns .sq-bills-row{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:12px!important}
+ #sq-bills-page .sq-bills-columns .sq-bill-info{flex:1 1 160px!important;min-width:0!important}
+ #sq-bills-page .sq-bills-columns .sq-bill-info > div{min-width:0!important;overflow-wrap:anywhere}
+ #sq-bills-page .sq-bills-row .sq-premium-actions{
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;
+  flex:0 1 228px!important;width:228px!important;max-width:100%!important;margin-left:auto!important;
+ }
+ #sq-bills-page .sq-bills-row .sq-premium-actions button{
+  box-sizing:border-box!important;width:100%!important;min-width:0!important;min-height:40px!important;
+  margin:0!important;padding:8px 6px!important;white-space:nowrap!important;
+ }
+}

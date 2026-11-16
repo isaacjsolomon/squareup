@@ -142,6 +142,22 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   await page.waitForFunction(()=>!document.getElementById('sq-bills-page').classList.contains('dw-bills-compact'));
   assert.equal(await page.locator('.sq-premium-calendar').evaluate(e=>e.parentElement.className),'sq-premium-overview');
   await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+  for(const width of [1024,1280,1600]){
+   await page.setViewportSize({width,height:900});
+   const rows=await page.locator('#sq-bills-page .sq-bills-row').evaluateAll(rows=>rows.map(row=>{
+    const r=row.getBoundingClientRect(),buttons=[...row.querySelectorAll('.sq-premium-actions button')].map(b=>{const q=b.getBoundingClientRect();return {top:q.top,bottom:q.bottom,left:q.left,right:q.right,width:q.width}});
+    return {left:r.left,right:r.right,buttons};
+   }));
+   for(const row of rows){
+    assert.equal(row.buttons.length,3,'Details, Edit, Remove remain available');
+    assert.ok(row.buttons.every(b=>Math.abs(b.top-row.buttons[0].top)<1),'all record actions share one row at '+width);
+    assert.ok(row.buttons.every(b=>Math.abs(b.width-row.buttons[0].width)<1),'action buttons have equal widths');
+    assert.ok(row.buttons[0].left>=row.left-1&&row.buttons[2].right<=row.right+1,'actions fit the record');
+    assert.ok(row.buttons[0].right<row.buttons[1].left&&row.buttons[1].right<row.buttons[2].left,'actions do not overlap');
+   }
+   await page.screenshot({path:resolve(root,`test-results/bills/desktop-bills-actions-${width}.png`),fullPage:true});
+  }
+  await page.setViewportSize({width:1280,height:900});
   await page.screenshot({path:resolve(root,'test-results/bills/desktop-1280.png'),fullPage:true});
   await page.setViewportSize({width:375,height:844});
   await page.locator('.dw-bills-calendar-fold').waitFor();
