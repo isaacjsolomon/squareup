@@ -2525,6 +2525,92 @@ html body #share-modal.dw-standard-dialog-overlay > .card.modal{
   }
 }
 </style>
+<style id="dw-financial-dialog-consistency">
+/* Financial dialog design system: visuals only, preserve legacy action handlers,
+   per-flow heights, dismiss/keyboard behavior, and form validation. */
+html body #sq-expense-dialog .sq-action-modal-inner,
+html body #sq-receipt-dialog .sq-action-modal-inner,
+html body #sq-nextgen .sq-ng-txn-dialog,
+html body #sq-payment-dispute-overlay .sq-dispute-dialog {
+  box-sizing:border-box!important;
+  border:1px solid rgba(95,163,180,.43)!important;
+  border-radius:18px!important;
+  background:linear-gradient(150deg,#102d43,#091f33)!important;
+  box-shadow:0 22px 64px rgba(0,0,0,.48)!important;
+  color:#ecf9ff!important;
+  min-width:0!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+}
+html body #sq-expense-dialog .sq-action-modal-inner,
+html body #sq-receipt-dialog .sq-action-modal-inner{
+  max-width:calc(100vw - 24px)!important;
+}
+html body #sq-nextgen .sq-ng-txn-dialog{
+  width:min(100%,490px)!important;
+  max-width:calc(100vw - 24px)!important;
+  padding:clamp(16px,2.5vw,24px)!important;
+}
+html body #sq-payment-dispute-overlay .sq-dispute-dialog{
+  width:min(460px,100%)!important;
+  max-width:calc(100vw - 24px)!important;
+  padding:clamp(18px,3vw,26px)!important;
+}
+html body #sq-nextgen .sq-ng-txn-header h2,
+html body #sq-payment-dispute-overlay .sq-dispute-dialog h2{
+  font-size:clamp(21px,2.4vw,25px)!important;
+  line-height:1.25!important;
+  letter-spacing:-.02em!important;
+}
+html body #sq-nextgen .sq-ng-txn-close,
+html body #sq-expense-dialog #sq-entry-x,
+html body #sq-receipt-dialog #sq-receipt-x{
+  min-width:40px!important;
+  min-height:40px!important;
+  border-radius:11px!important;
+  cursor:pointer!important;
+}
+html body #sq-nextgen .sq-ng-txn-close:focus-visible,
+html body #sq-expense-dialog #sq-entry-x:focus-visible,
+html body #sq-receipt-dialog #sq-receipt-x:focus-visible,
+html body #sq-payment-dispute-overlay button:focus-visible{
+  outline:3px solid #65efda!important;
+  outline-offset:2px!important;
+}
+html body #sq-nextgen .sq-ng-txn-form input:not([type=hidden]),
+html body #sq-nextgen .sq-ng-txn-form select,
+html body #sq-payment-dispute-overlay textarea{
+  min-width:0!important;
+  box-sizing:border-box!important;
+  border-radius:11px!important;
+}
+@media(max-width:650px){
+  html body #sq-receipt-dialog.sq-action-modal:not([hidden]){
+    box-sizing:border-box!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding:8px!important;
+  }
+  html body #sq-receipt-dialog .sq-action-modal-inner{
+    max-height:calc(100dvh - 16px)!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  html body #sq-nextgen .sq-ng-txn-overlay:not([hidden]),
+  html body #sq-payment-dispute-overlay:not([hidden]){
+    box-sizing:border-box!important;
+    padding:12px!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+  html body #sq-nextgen .sq-ng-txn-dialog,
+  html body #sq-payment-dispute-overlay .sq-dispute-dialog{
+    max-height:calc(100dvh - 24px)!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+}
+</style>
 <link rel="stylesheet" href="/weo-mascot.css">
 <link rel="stylesheet" href="/weo-actions.css">
 
