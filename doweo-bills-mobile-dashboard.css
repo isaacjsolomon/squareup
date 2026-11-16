@@ -141,8 +141,14 @@
     border:1px solid #356b7b!important;background:#0e3044!important;
   }
   #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-bills-row{
-    display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:9px!important;
+    display:grid!important;grid-template-columns:minmax(0,1fr)!important;align-items:center!important;gap:9px!important;
     min-width:0!important;padding:10px 0!important;
+  }
+  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-premium-actions{
+    display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;gap:8px!important;
+  }
+  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-premium-actions button{
+    flex:1 1 auto!important;min-height:42px!important;margin:0!important;
   }
   #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .sq-bill-info{
     flex:1 1 160px!important;min-width:0!important;overflow-wrap:anywhere!important;
@@ -169,3 +175,4 @@
   #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell .dw-bills-calendar-fold .sq-premium-calhead h3{display:none!important}
   #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > #sq-bills-message{order:6!important}
 }
+
