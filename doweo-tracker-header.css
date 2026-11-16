@@ -31,3 +31,54 @@
  .dw-integrated-tabs>[data-sq-tab="members"]{grid-column:4!important}
  .dw-integrated-tabs>[data-sq-tab="chat"]{grid-column:5!important}
 }
+
+
+/* Desktop sidebar grouping: mobile layout and existing destination handlers unchanged. */
+@media(min-width:901px){
+ .sidebar .squareup-nav.dw-desktop-sidebar-compact #nav-analytics,
+ .sidebar .squareup-nav.dw-desktop-sidebar-compact #nav-chat,
+ .sidebar .squareup-nav.dw-desktop-sidebar-compact #nav-friends{display:none!important}
+ .sidebar .squareup-nav #dw-desktop-social,
+ .sidebar .squareup-nav #dw-desktop-finance-more{box-sizing:border-box;width:100%;min-width:0}
+ .sidebar .squareup-nav #dw-desktop-finance-more{position:relative;margin-top:-6px!important}
+ .sidebar .squareup-nav .dw-sidebar-finance-toggle{
+  position:absolute;right:9px;top:-47px;z-index:2;
+  display:grid;place-items:center;width:34px;height:34px;padding:8px;
+  color:#d3ebf3;background:transparent;border:0;border-radius:9px;
+  cursor:pointer;
+ }
+ .sidebar .squareup-nav .dw-sidebar-finance-toggle:hover,
+ .sidebar .squareup-nav .dw-sidebar-finance-toggle:focus-visible{background:#1b4156;outline:2px solid #37dccc;outline-offset:1px}
+ .sidebar .squareup-nav .dw-sidebar-finance-toggle svg{width:17px;height:17px;transition:transform .18s ease}
+ .sidebar .squareup-nav .dw-sidebar-finance-toggle[aria-expanded=true] svg{transform:rotate(90deg)}
+ .sidebar .squareup-nav .dw-sidebar-finance-submenu{padding:3px 0 5px 13px}
+ .sidebar .squareup-nav .dw-sidebar-finance-submenu[hidden]{display:none!important}
+ .sidebar .squareup-nav .dw-sidebar-social{margin:0!important;padding:0;background:none;border:none}
+ .sidebar .squareup-nav .dw-sidebar-social>summary{
+  display:flex;align-items:center;gap:12px;cursor:pointer;list-style:none;
+  color:#f0faff;font-size:inherit;font-weight:650;
+  min-height:50px;padding:12px 14px;border:1px solid #36566d;
+  border-radius:13px;background:#102b40;box-sizing:border-box;
+ }
+ .sidebar .squareup-nav .dw-sidebar-social>summary::-webkit-details-marker{display:none}
+ .sidebar .squareup-nav .dw-sidebar-social>summary:hover{background:#16394e;border-color:#408b99}
+ .sidebar .squareup-nav .dw-sidebar-social>summary:focus-visible{outline:2px solid #33ddca;outline-offset:2px}
+ .sidebar .squareup-nav .dw-sidebar-social>summary svg{width:21px;height:21px;flex:none}
+ .sidebar .squareup-nav .dw-sidebar-social>summary .dw-social-chevron{margin-left:auto;width:16px;height:16px;transition:transform .18s ease}
+ .sidebar .squareup-nav .dw-sidebar-social[open]>summary .dw-social-chevron{transform:rotate(90deg)}
+ .sidebar .squareup-nav .dw-sidebar-social-submenu{display:grid;gap:5px;padding:7px 0 6px 13px}
+ .sidebar .squareup-nav .dw-sidebar-subitem{
+  display:flex;align-items:center;gap:11px;text-align:left;
+  padding:10px 12px;width:100%;min-height:41px;
+  font:inherit;font-size:14px;font-weight:600;
+  color:#d8ebf3;background:#0e2b40;border:1px solid #30536b;border-radius:10px;
+  cursor:pointer;box-sizing:border-box;
+ }
+ .sidebar .squareup-nav .dw-sidebar-subitem:hover{background:#174158;border-color:#32c8be;color:#fff}
+ .sidebar .squareup-nav .dw-sidebar-subitem:focus-visible{outline:2px solid #38dfcf;outline-offset:1px}
+ .sidebar .squareup-nav .dw-sidebar-subitem svg{width:18px;height:18px;flex:none}
+}
+@media(max-width:900px){
+ .sidebar .squareup-nav #dw-desktop-social,
+ .sidebar .squareup-nav #dw-desktop-finance-more{display:none!important}
+}
