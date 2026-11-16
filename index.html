@@ -2437,7 +2437,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
   </header>
 
   <section id="notifications-page" aria-label="Notification Center">
-    <div class="sq-notifications-header"><div><h2>Notification Center</h2><p>Expenses, payments, invitations, and group updates in one place.</p></div><button type="button" id="notifications-back" class="small-btn">← Back to Home</button></div>
+    <div class="sq-notifications-header"><div><h2>Notification Center</h2></div><button type="button" id="notifications-back" class="small-btn">← Back to Home</button></div>
     <div id="notifications-panel" class="sidebar-notification-panel"><div class="notification-panel-heading">Your updates</div><div class="sq-notification-tools"><label>Show <select id="sq-notification-filter"><option value="all">All notifications</option><option value="unread">Unread only</option><option value="payments">Payments</option><option value="messages">Messages</option><option value="expenses">Expenses & invites</option></select></label></div><div id="notifications-list"><p>Loading notifications…</p></div></div>
   </section>
   <div id="tracker-dashboard" class="sq-tab-overview">
@@ -2464,7 +2464,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
 </section>
 
   <section class="sq-return-summary" id="sq-return-summary" aria-label="Tracker summary">
-    <header class="sq-return-welcome"><div class="sq-overview-heading"><span class="sq-overview-kicker">YOUR SHARED SPACE</span><h2 id="sq-return-greeting">Welcome back</h2><p class="sq-overview-intro">Your people, payments, and shared activity.</p></div></header>
+    <header class="sq-return-welcome"><div class="sq-overview-heading"><h2 id="sq-return-greeting">Welcome back</h2></div></header>
 
   <div class="sq-desktop-balance-layout" id="sq-desktop-balance-layout">
   <section class="sq-clean-balance" id="sq-clean-balance" aria-label="Your balance">
@@ -2495,13 +2495,13 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
   <!-- CURRENT BALANCES: EXPENSES TAB -->
   <div class="card" id="balances-card">
     <h2>Current balances</h2>
-    <p class="sq-expense-subtitle">Who owes whom in this tracker</p>
+    
     <div id="nets"></div>
   </div>
 
   <!-- TRACKER MEMBER PROFILES: MEMBERS TAB -->
   <div class="card" id="sq-tracker-profiles-card" aria-label="Tracker member profiles">
-    <div class="sq-members-heading"><div><h2>Tracker members</h2><p>People sharing this tracker</p></div></div>
+    <div class="sq-members-heading"><div><h2>Tracker members</h2></div></div>
     <div id="sq-tracker-profiles" class="sq-member-profiles-grid"><p class="sq-members-empty">Open a tracker to see its members.</p></div>
   </div>
 
@@ -2543,7 +2543,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
     <div class="tracker-tools-left">
   <details class="card tracker-collapsible" id="smart-settle-card" open><summary><span class="tool-heading-label"><svg class="tool-heading-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M30 9 33.9 20.1 45 24l-11.1 3.9L30 39l-3.9-11.1L15 24l11.1-3.9L30 9Z"/><path d="m11 5 2.1 5.9L19 13l-5.9 2.1L11 21l-2.1-5.9L3 13l5.9-2.1L11 5Z"/></svg><span>Smart settle-up</span></span><span class="collapse-chevron" aria-hidden="true">⌄</span></summary><div class="tracker-collapsible-body"><p class="dashboard-subheading">Simplify group debts into fewer payments. Suggestions do not move money.</p><div id="smart-settle-list"></div></div></details>
   <section class="card tracker-collapsible" id="budget-card" aria-label="Budget and spending dashboard">
-    <div class="sb-head"><div><h2>▣ Budget &amp; Spending</h2><p>Set a budget, track spending, and see where your group's money is going.</p></div><div class="sb-tabs" role="tablist"><button type="button" data-sb-view="overview" class="active">Overview</button><button type="button" data-sb-view="categories">Categories</button></div></div>
+    <div class="sb-head"><div><h2>▣ Budget &amp; Spending</h2></div><div class="sb-tabs" role="tablist"><button type="button" data-sb-view="overview" class="active">Overview</button><button type="button" data-sb-view="categories">Categories</button></div></div>
     <div class="sb-grid-top"><div class="sb-panel sb-hero"><div class="sb-title">◎ Group budget</div><div id="sb-period-title" class="sb-muted"></div><div id="sq-budget-display"></div></div><form id="sq-budget-form" class="sb-panel sb-settings"><div class="sb-title">⚙ Budget settings</div><label>Budget type</label><div class="sb-toggle"><button type="button" data-sb-type="recurring" class="active">Recurring</button><button type="button" data-sb-type="one-time">One-time</button><button type="button" data-sb-type="none">No budget</button></div><div class="sb-form-row"><label>Time period<select id="sb-period"><option value="monthly">Monthly</option><option value="all">All time</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option><option value="custom">Custom dates</option></select></label><label>Budget amount<input type="number" id="sq-budget-amount" min="0.01" step="0.01" placeholder="Amount"></label></div><div class="sb-dates" id="sb-dates" hidden><label>From<input type="date" id="sb-start"></label><label>Through<input type="date" id="sb-end"></label></div><button type="submit" class="primary sb-save">Update budget</button><button type="button" id="sq-budget-clear" class="sb-clear">Remove budget goal</button><small class="sb-note">Amount is shared with your tracker. Period settings are saved in this browser.</small><div class="sb-custom-categories"><div class="sb-category-manage-title">Custom expense categories</div><p class="sb-note">Create categories for this tracker. They appear when adding an expense.</p><div class="sb-category-add"><input id="sb-new-category" type="text" maxlength="45" placeholder="e.g. Concert tickets" aria-label="New category name"><button type="button" id="sb-add-category">+ Add</button></div><div id="sb-custom-category-list" class="sb-custom-category-list" aria-live="polite"></div><small class="sb-note">Custom category names are saved on this device. Categories already assigned to expenses remain on those expenses if removed here.</small></div></form></div>
     <div class="sb-grid-middle"><div class="sb-panel" id="sb-category-panel"><div class="sb-panel-top"><h3>◉ Spending by category</h3><span id="sb-category-period" class="sb-muted"></span></div><div class="sb-category-body"><div id="sb-donut" class="sb-donut"><div id="sb-donut-center"></div></div><div id="sb-category-list" class="sb-category-list"></div></div></div><div class="sb-panel" id="sb-member-panel"><div class="sb-panel-top"><h3>♟ Member spending</h3><span class="sb-muted">Expense shares owed</span></div><div id="sb-member-list"></div></div></div>
     <div class="sb-grid-bottom"><div class="sb-panel" id="sb-recent-panel"><div class="sb-panel-top"><h3>▤ Recent spending</h3><button type="button" id="sb-view-expenses">View all expenses →</button></div><div class="sb-table-wrap"><table class="sb-table"><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th><th>Member</th></tr></thead><tbody id="sb-recent-body"></tbody></table></div></div><div class="sb-panel"><div class="sb-panel-top"><h3>▥ Spending insights</h3></div><div id="sb-insights"></div></div></div>
@@ -2570,13 +2570,13 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
     <button class="sq-side-action" type="button" data-sq-quick="quick-receipt"><span class="sq-side-icon">▧</span><span class="sq-side-copy"><strong>Scan receipt</strong><small>Assign items to friends</small></span><span aria-hidden="true">›</span></button>
     <button class="sq-side-action" type="button" data-sq-quick="quick-split"><span class="sq-side-icon">♧</span><span class="sq-side-copy"><strong>Split a bill</strong><small>Divide an expense with friends</small></span><span aria-hidden="true">›</span></button>
     <button class="sq-side-action" type="button" data-sq-quick="quick-pay-now"><span class="sq-side-icon">↗</span><span class="sq-side-copy"><strong>Pay Now</strong><small>Send via Venmo or Cash App</small></span><span aria-hidden="true">›</span></button>
-    <div class="sq-expense-filters"><h3>Filters</h3><p>Filter expenses by category or person</p><label>Category<select id="sq-expense-category"><option value="all">All categories</option></select></label><label>Member<select id="sq-expense-member"><option value="all">All members</option></select></label></div>
+    <div class="sq-expense-filters"><h3>Filters</h3><label>Category<select id="sq-expense-category"><option value="all">All categories</option></select></label><label>Member<select id="sq-expense-member"><option value="all">All members</option></select></label></div>
   </aside>
 
   <!-- FULL BALANCE TABLE -->
   <div class="card sq-clean-matrix-card">
     <h2>Who owes who</h2>
-    <p class="dashboard-subheading">Full breakdown for everyone in this tracker</p>
+    
     <div class="table-scroll" id="matrix"></div>
   </div>
 
@@ -2590,22 +2590,22 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
         <label class="sq-analytics-filter">Time range <select id="analytics-range" aria-label="Analytics time range"><option value="6">Last 6 months</option><option value="12">Last 12 months</option><option value="all">All time</option></select></label>
       </div>
       <section class="sq-analytics-panel" id="sq-monthly-recap" aria-label="Monthly spending recap">
-        <div class="sq-analytics-panel-heading"><div><h3>Monthly spending recap</h3><p>Recorded expense entries in the currently open tracker</p></div><div class="sq-recap-controls"><label class="sq-analytics-filter">Month <input type="month" id="sq-recap-month" aria-label="Choose recap month"></label><button type="button" id="sq-recap-export" class="small-btn" aria-label="Export this month's expenses as CSV">Export CSV</button></div></div>
+        <div class="sq-analytics-panel-heading"><div><h3>Monthly spending recap</h3></div><div class="sq-recap-controls"><label class="sq-analytics-filter">Month <input type="month" id="sq-recap-month" aria-label="Choose recap month"></label><button type="button" id="sq-recap-export" class="small-btn" aria-label="Export this month's expenses as CSV">Export CSV</button></div></div>
         <div id="sq-recap-summary" class="sq-recap-grid" aria-live="polite"><p>Open a tracker to see its monthly recap.</p></div>
         <div id="sq-recap-breakdown" class="sq-recap-breakdown"></div>
       </section>
       <div class="analytics-stats" id="analytics-stats"></div>
       <div class="sq-analytics-charts">
-        <section class="sq-analytics-panel"><div class="sq-analytics-panel-heading"><div><h3>Monthly spending</h3><p>Total recorded expenses by month</p></div></div><div id="analytics-months" class="sq-month-chart"></div></section>
-        <section class="sq-analytics-panel"><div class="sq-analytics-panel-heading"><div><h3>Expenses by person</h3><p>Share of recorded expenses</p></div></div><div id="analytics-people" class="sq-person-chart"></div></section>
+        <section class="sq-analytics-panel"><div class="sq-analytics-panel-heading"><div><h3>Monthly spending</h3></div></div><div id="analytics-months" class="sq-month-chart"></div></section>
+        <section class="sq-analytics-panel"><div class="sq-analytics-panel-heading"><div><h3>Expenses by person</h3></div></div><div id="analytics-people" class="sq-person-chart"></div></section>
       </div>
-      <section class="sq-analytics-panel"><div class="sq-analytics-panel-heading"><div><h3>Recent expenses</h3><p>Most recent recorded expense entries</p></div></div><div id="analytics-recent" class="sq-analytics-recent"></div></section>
+      <section class="sq-analytics-panel"><div class="sq-analytics-panel-heading"><div><h3>Recent expenses</h3></div></div><div id="analytics-recent" class="sq-analytics-recent"></div></section>
       <section class="sq-analytics-panel"><div class="sq-analytics-panel-heading"><div><h3>Tracker members</h3><p>Select a friend to view their profile and shared expense history</p></div></div><div id="analytics-friends" class="sq-analytics-friends"></div><div id="friend-profile-detail" hidden></div></section>
     </div>
   </section>
   <section id="split-page" aria-label="Split a Bill">
     <button type="button" id="split-back" class="split-back">← Back to Dashboard</button>
-    <div class="split-header"><h2>Split a Bill</h2><label>Bill currency <select id="split-currency" class="sq-currency-select"></select></label><p>Divide an expense with your friends.</p></div>
+    <div class="split-header"><h2>Split a Bill</h2><label>Bill currency <select id="split-currency" class="sq-currency-select"></select></label></div>
     <div class="split-layout">
       <div class="split-panel">
         <div class="receipt-scan-box"><strong>Scan a receipt with AI-assisted text recognition</strong><p class="feature-muted">On mobile, take a photo of your receipt to recognize items and prices. Review everything before splitting. Recognition runs in your browser.</p><label for="split-receipt-file">Take or upload receipt photo (mobile)</label><input type="file" id="split-receipt-file" accept="image/*" capture="environment" aria-label="Choose receipt photo"><div id="split-receipt-status" class="feature-muted" role="status"></div><div id="split-receipt-items"></div><button type="button" id="split-use-itemized" hidden>Assign receipt items to friends →</button></div>
@@ -2646,7 +2646,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
     <div class="settings-heading-area">
       <button type="button" class="split-back" id="settings-back">← Back to Dashboard</button>
       <h2 class="settings-heading">Account Settings</h2>
-      <p class="settings-muted">Manage your profile, payments, and preferences.</p>
+      
     </div>
     <div class="settings-tabs" role="tablist" aria-label="Account settings sections">
       <button type="button" class="settings-tab active" id="settings-tab-profile" role="tab" aria-selected="true" aria-controls="settings-content-profile" data-settings-tab="profile">Profile</button>
@@ -2657,7 +2657,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
     <div id="settings-content-profile" class="settings-tab-content" role="tabpanel" aria-labelledby="settings-tab-profile">
       <div class="settings-tab-grid">
         <div><div class="settings-panel">
-<h3>Edit Profile</h3><p class="settings-muted">Your name, username, bio, and profile picture.</p>
+<h3>Edit Profile</h3>
 <div class="settings-avatar-row"><div class="settings-avatar" id="settings-avatar">?</div><div><button class="settings-action" id="settings-photo" type="button">Change profile picture</button><p class="settings-muted">JPG, PNG or WebP • up to 2 MB</p></div></div>
 <form id="settings-profile-form">
 <label class="settings-field">Display name<input autocomplete="nickname" id="settings-display-name" maxlength="60" placeholder="Your name" required=""/></label>
@@ -2701,15 +2701,15 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
 <p aria-live="polite" class="settings-muted" id="settings-install-status" role="status"></p>
 </div>
         </div>
-        <div><div class="settings-panel" id="sq-notification-preferences"><h3>Notification preferences</h3><p class="settings-muted">Choose which alerts appear in your notification center and which push alerts you receive. Preferences sync across devices.</p><label class="sq-preference"><input type="checkbox" data-sq-pref="expenses" checked>New expenses</label><label class="sq-preference"><input type="checkbox" data-sq-pref="payments" checked>Payments and confirmations</label><label class="sq-preference"><input type="checkbox" data-sq-pref="messages" checked>Group chat messages</label><label class="sq-preference"><input type="checkbox" data-sq-pref="mentions" checked>Mentions in group chat</label><label class="sq-preference"><input type="checkbox" data-sq-pref="reminders" checked>Due-date reminders</label><p class="settings-muted" id="sq-pref-status" role="status"></p></div></div>
+        <div><div class="settings-panel" id="sq-notification-preferences"><h3>Notification preferences</h3><p class="settings-muted">Preferences sync across devices.</p><label class="sq-preference"><input type="checkbox" data-sq-pref="expenses" checked>New expenses</label><label class="sq-preference"><input type="checkbox" data-sq-pref="payments" checked>Payments and confirmations</label><label class="sq-preference"><input type="checkbox" data-sq-pref="messages" checked>Group chat messages</label><label class="sq-preference"><input type="checkbox" data-sq-pref="mentions" checked>Mentions in group chat</label><label class="sq-preference"><input type="checkbox" data-sq-pref="reminders" checked>Due-date reminders</label><p class="settings-muted" id="sq-pref-status" role="status"></p></div></div>
       </div>
     </div>
     <div id="settings-content-account" class="settings-tab-content" role="tabpanel" aria-labelledby="settings-tab-account" hidden>
       <div class="settings-tab-grid">
         <div><div class="settings-panel"><h3>Account</h3><div class="settings-actions"><button class="settings-action" id="settings-password" type="button">Change password</button><button class="settings-action" id="settings-signout" type="button">Log out</button></div></div></div>
-        <div><div class="settings-panel" id="settings-language-panel"><h3 data-dw-language-title>Language</h3><p class="settings-muted">Change the language used throughout DoWeo.</p><div class="dw-language-preference" data-dw-language-scope><label data-dw-language-title for="settings-language-preference">Language</label><select id="settings-language-preference" data-dw-language-select><option value="auto">Automatic (browser language)</option><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="he">עברית</option><option value="zh-Hans">简体中文</option><option value="pt">Português</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="ja">日本語</option><option value="ar">العربية</option><option value="ko">한국어</option><option value="hi">हिन्दी</option></select><p data-dw-language-hint>Choose a language. More translations are coming soon.</p></div></div></div>
+        <div><div class="settings-panel" id="settings-language-panel"><h3 data-dw-language-title>Language</h3><div class="dw-language-preference" data-dw-language-scope><label data-dw-language-title for="settings-language-preference">Language</label><select id="settings-language-preference" data-dw-language-select><option value="auto">Automatic (browser language)</option><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="he">עברית</option><option value="zh-Hans">简体中文</option><option value="pt">Português</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="ja">日本語</option><option value="ar">العربية</option><option value="ko">한국어</option><option value="hi">हिन्दी</option></select><p data-dw-language-hint>Choose a language. More translations are coming soon.</p></div></div></div>
         <div><div class="settings-panel" id="settings-accessibility-panel">
-<h3>Accessibility</h3><p class="settings-muted">Customize how DoWeo looks and responds. Changes apply immediately on this device.</p>
+<h3>Accessibility</h3><p class="settings-muted">Changes apply on this device.</p>
 <div class="dw-a11y-controls">
 <label class="dw-a11y-setting"><span><strong>Larger text</strong><small>Make labels, descriptions and form text easier to read</small></span><input type="checkbox" id="dw-a11y-large-text"></label>
 <label class="dw-a11y-setting"><span><strong>High contrast</strong><small>Strengthen text, borders and focus indicators</small></span><input type="checkbox" id="dw-a11y-contrast"></label>
@@ -2757,7 +2757,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
 </section>
 
 <section id="trackers-page" aria-label="Your trackers">
-  <div class="trackers-header"><div><div class="eyebrow">YOUR DOWEO HOME</div><h2>My <span style="color:#60edaf">Trackers</span></h2><p>Your shared financial spaces. Choose a tracker to review balances, take action, or see recent activity.</p></div></div>
+  <div class="trackers-header"><div><h2>My <span style="color:#60edaf">Trackers</span></h2></div></div>
   <h2 class="sq-mobile-trackers-title">Trackers</h2><section id="sq-bills-directory" class="sq-bills-directory" hidden aria-hidden="true" style="display:none!important">
   <button type="button" id="sq-bills-open" hidden tabindex="-1" aria-hidden="true">Open bills</button>
 </section>
@@ -2769,7 +2769,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
   <button type="button" data-sq-bills-tab="members" role="tab" aria-selected="false">Members</button>
 </nav>
   <button type="button" id="sq-bills-back" class="sq-bills-back">← Back to Home</button>
-  <div class="sq-bills-title"><div><span class="sq-bills-kicker">DOWEO · BILL MANAGER</span><h2>Subscriptions & Bills</h2><p>Organize recurring payments by tracker, see upcoming due dates, and remove bills you no longer need.</p></div><div class="sq-bills-tracker-compact"><label for="sq-bills-tracker">Select a tracker</label><select id="sq-bills-tracker"><option value="">Loading trackers…</option></select></div></div>
+  <div class="sq-bills-title"><div><h2>Subscriptions & Bills</h2></div><div class="sq-bills-tracker-compact"><label for="sq-bills-tracker">Select a tracker</label><select id="sq-bills-tracker"><option value="">Loading trackers…</option></select></div></div>
   <section class="sq-premium-overview" aria-label="Bills overview"><div class="sq-premium-metrics"><article><span>Estimated monthly recurring</span><strong id="sq-premium-monthly">$0.00</strong><small>Based on saved schedules</small></article><article><span>Active subscriptions</span><strong id="sq-premium-active">0</strong><small>In selected tracker</small></article><span id="sq-premium-upcoming" hidden aria-hidden="true">0</span></div><div class="sq-premium-calendar"><div class="sq-premium-calhead"><h3>Billing calendar</h3><div><button type="button" id="sq-premium-prev" aria-label="Previous month">‹</button><strong id="sq-premium-month"></strong><button type="button" id="sq-premium-next" aria-label="Next month">›</button></div></div><div class="sq-premium-days" id="sq-premium-days"></div><div id="sq-premium-selected" class="sq-premium-selected" aria-live="polite">Select a date to view scheduled bills.</div></div>  <div class="sq-bills-card sq-bill-create-card"><div class="sq-bill-create-heading"><div><h3>Add a bill or subscription</h3><p class="sq-bills-help">Set up a recurring expense for your tracker.</p></div><button type="button" id="sq-bill-mobile-toggle" class="sq-bill-mobile-toggle" aria-controls="sq-bills-create" aria-expanded="false" aria-label="Expand add a bill or subscription"><span aria-hidden="true">+</span></button></div>
 <form id="sq-bills-create" class="sq-bills-form">
 <div class="sq-bill-type-tabs" role="group" aria-label="Choose bill or subscription"><button type="button" class="sq-bill-type-tab" data-kind="subscription" aria-pressed="true">Subscription</button><button type="button" class="sq-bill-type-tab" data-kind="bill" aria-pressed="false">Bill</button></div>
@@ -2790,7 +2790,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
 <div id="trackers-gallery" class="trackers-grid" aria-live="polite"><div class="sq-create-tracker-row"><button type="button" id="tracker-gallery-new" class="tracker-create">＋ Create new tracker</button><span>Choose from 7 templates or start with a blank tracker.</span></div></div>
 </section>
 <section id="friends-page" aria-label="Friends">
- <div class="sq-friends-layout"><div class="sq-feature-head"><div><div class="eyebrow">YOUR CIRCLE</div><h2>Friends <span style="color:#60edaf">System</span></h2><p>Find friends by username and manage friend requests.</p></div><button type="button" id="sq-friends-refresh" class="sq-feature-btn">↻ Refresh</button></div>
+ <div class="sq-friends-layout"><div class="sq-feature-head"><div><h2>Friends <span style="color:#60edaf">System</span></h2></div><button type="button" id="sq-friends-refresh" class="sq-feature-btn">↻ Refresh</button></div>
  <div class="card"><label for="sq-friend-query">Search for DoWeo users</label><input id="sq-friend-query" class="sq-friend-search" maxlength="24" placeholder="Enter at least 3 username characters" autocomplete="off"/><div class="sq-friend-tabs"><button type="button" data-friends-tab="friends" aria-selected="true">My Friends</button><button type="button" data-friends-tab="pending" aria-selected="false">Pending Requests</button><button type="button" data-friends-tab="find" aria-selected="false">Find Friends</button></div><p id="sq-friends-status" class="sq-feature-status" role="status"></p><div id="sq-friends-results" class="sq-friend-list"></div></div></div>
 </section>
 <section id="about-page" aria-label="About DoWeo">
@@ -2990,7 +2990,7 @@ html body .tracker-tile-menu-panel .tracker-settings-view:not([hidden]) .tracker
     <form id="new-form"><div class="sq-template-tabs"><button type="button" id="sq-template-tab" aria-selected="true">Start from a template</button> <button type="button" id="sq-blank-tab" aria-selected="false">Blank tracker</button></div><div id="sq-template-grid" class="sq-template-grid"></div><div id="sq-template-detail" class="sq-template-tags"></div>
       <label class="feature-field">Main currency <select id="new-currency" class="sq-currency-select"></select></label><input id="new-name" placeholder="Name (e.g. Roommates, Ski trip)" maxlength="80" required autocomplete="off">
       <label class="check" id="new-import-row" hidden><input type="checkbox" id="new-import" checked> <span id="new-import-label"></span></label>
-      <p class="hint">After creating it, tap <b>Share tracker</b> to invite friends. Everyone in a tracker can add, settle and delete entries.</p>
+      
       <div class="msg" id="new-msg"></div>
       <button class="primary" type="submit" id="new-submit">Create tracker</button>
     </form>
