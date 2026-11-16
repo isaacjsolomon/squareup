@@ -21,7 +21,7 @@ jobs:
       - name: Prepare Pages static assets
         run: |
           mkdir -p .pages-output
-          cp index.html doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs .pages-output/
+          cp index.html doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs doweo-bills-mobile-dashboard.js doweo-bills-mobile-dashboard.css doweo-finance-planning.js doweo-trips-activity.js doweo-paylinks-currency.js .pages-output/
           cp -R icons images beta privacy terms .pages-output/
           cp robots.txt sitemap.xml .pages-output/
           mkdir -p .pages-output/.well-known
@@ -35,6 +35,7 @@ jobs:
           test -s .pages-output/terms/index.html
           test -s functions/api/beta-signup.js
           cp beta/index.html .pages-output/beta.html
+          node scripts/verify-pages-assets.mjs .pages-output
 
       # Run Wrangler from the repository root so it discovers ./functions.
       # Uploading through the dashboard would not compile Pages Functions.
@@ -44,3 +45,23 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy .pages-output --project-name=doweo --branch=main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install production verification browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.65.0
+          npx playwright install --with-deps chromium
+      - name: Verify published Bills assets and actual production rendering
+        env:
+          BILLS_BASE_URL: https://doweo.app
+        run: |
+          node scripts/verify-live-bills.mjs
+          node --test test/bills-full-app.test.mjs
+      - name: Upload production Bills screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bills-production-screenshots
+          path: test-results/bills/

@@ -32,6 +32,8 @@ jobs:
           node --check weo-mascot.js
           node --check functions/api/ai-chat.js
           node --check weo-actions.js
+      - name: Verify all published app assets
+        run: node --test test/pages-assets.test.mjs
       - name: Verify every production translation module is packaged
         run: node --test test/doweo-production-locale-bundle.test.mjs
       - name: Test complete localization integration and Weo response language
@@ -96,6 +98,14 @@ jobs:
         run: node --test test/mobile-viewport-foundation.test.mjs
       - name: Test bill and subscription editing
         run: node --test test/edit-bills-subscriptions.test.mjs
+      - name: Test complete Bills app at iPhone widths
+        run: node --test test/bills-full-app.test.mjs
+      - name: Upload full app Bills screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bills-full-app-screenshots
+          path: test-results/bills/
       - name: Check compact Bills mobile dashboard and calendar behavior
         run: node --check doweo-bills-mobile-dashboard.js && node --test test/mobile-bills-dashboard.test.mjs
       - name: Check new Finance Hub tools on mobile
@@ -106,4 +116,5 @@ jobs:
         run: node --test test/mobile-trackers-banner-loading.test.mjs
       - name: Check mobile Overview visibility, overflow and desktop preservation
         run: node --test test/mobile-tracker-overview.test.mjs
+
 

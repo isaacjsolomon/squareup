@@ -2035,7 +2035,7 @@ body.trackers-view #trackers-gallery > .sq-create-tracker-row > span{display:inl
 @media(max-width:520px){.sq-bill-saved-dialog{padding:20px;border-radius:18px}}
 </style>
 
-/* DoWeo premium design system — Nov 2026. Scoped to existing app, no data changes. */
+<!-- DoWeo premium design system — Nov 2026. Scoped to existing app, no data changes. -->
 <style id="sq-premium-2026-foundation">
 :root{--sq-pro-bg:#071522;--sq-pro-panel:#0d2535;--sq-pro-panel-2:#102d40;--sq-pro-border:rgba(129,188,207,.20);--sq-pro-teal:#22d6bd;--sq-pro-ink:#f2f8fb;--sq-pro-muted:#a9c0ce;--sq-pro-radius:18px}
 html{scroll-behavior:smooth}
@@ -2690,45 +2690,7 @@ html body #sq-payment-dispute-overlay textarea{
 <link rel="stylesheet" href="/weo-mascot.css">
 <link rel="stylesheet" href="/weo-actions.css">
 
-<style id="dw-mobile-bills-refresh-v1">
-/* Mobile-only Bills & Subscriptions layout; existing forms, data and actions unchanged. */
-@media (max-width:760px){
- #sq-bills-page{box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;padding:12px 12px 90px!important;overflow-x:clip!important}
- #sq-bills-page *{box-sizing:border-box}
- #sq-bills-page .sq-bills-workspace-tabs{width:100%!important;max-width:100%!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important;padding:5px!important;border-radius:16px!important;overflow:visible!important}
- #sq-bills-page .sq-bills-workspace-tabs button{min-width:0!important;width:100%!important;padding:11px 3px!important;font-size:clamp(10px,2.8vw,13px)!important;white-space:nowrap!important;border-radius:11px!important}
- #sq-bills-page .sq-bills-back{margin:10px 0 12px!important;min-height:40px!important}
- #sq-bills-page .sq-bills-title{display:block!important;margin:0 0 12px!important;padding:16px!important;border:1px solid #376a7c!important;border-radius:19px!important;background:linear-gradient(135deg,#0b2a3c,#123b50)!important;min-width:0!important}
- #sq-bills-page .sq-bills-title h2{font-size:clamp(19px,5vw,25px)!important;line-height:1.2!important;margin:0 0 13px!important}
- #sq-bills-page .sq-bills-tracker-compact{width:100%!important;max-width:none!important;min-width:0!important;display:block!important}
- #sq-bills-page .sq-bills-tracker-compact label{font-size:12px!important;margin-bottom:7px!important}
- #sq-bills-page #sq-bills-tracker{width:100%!important;max-width:100%!important;min-height:46px!important;font-size:14px!important}
- #sq-bills-page .sq-premium-overview{display:flex!important;flex-direction:column!important;gap:12px!important;grid-template-columns:none!important;grid-template-rows:none!important;min-width:0!important;width:100%!important}
- #sq-bills-page .sq-premium-overview>.sq-bill-create-card{order:0!important;width:100%!important;min-width:0!important;min-height:0!important;height:auto!important;margin:0!important;padding:16px!important;border:1px solid #3b7081!important;border-radius:19px!important;background:linear-gradient(135deg,#0b2b3d,#113c50)!important}
- #sq-bills-page .sq-bill-create-card:not(.sq-bill-modal-open) .sq-bill-create-heading{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;min-height:66px!important;margin:0!important}
- #sq-bills-page .sq-bill-create-heading>div{flex:1 1 auto!important;min-width:0!important}
- #sq-bills-page .sq-bill-create-heading h3{font-size:16px!important;line-height:1.3!important;margin:0 0 5px!important}
- #sq-bills-page .sq-bill-create-heading .sq-bills-help{font-size:12px!important;line-height:1.4!important;margin:0!important}
- #sq-bills-page .sq-bill-create-card:not(.sq-bill-modal-open) #sq-bill-mobile-toggle{flex:0 0 46px!important;width:46px!important;height:46px!important;min-width:46px!important;min-height:46px!important;border-radius:13px!important;background:#092439!important;border:1px solid #427185!important;color:#fff!important;display:grid!important;place-items:center!important;font-size:28px!important;cursor:pointer!important}
- #sq-bills-page .sq-premium-metrics{order:1!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;width:100%!important;min-width:0!important;margin:0!important}
- #sq-bills-page .sq-premium-metrics article{min-width:0!important;min-height:108px!important;margin:0!important;padding:15px!important;border:1px solid #376b7d!important;border-radius:18px!important;background:linear-gradient(145deg,#0c2d40,#143c52)!important}
- #sq-bills-page .sq-premium-metrics article span{display:block!important;font-size:11px!important;line-height:1.35!important;overflow-wrap:anywhere!important}
- #sq-bills-page .sq-premium-metrics article strong{display:block!important;font-size:clamp(19px,5vw,26px)!important;line-height:1.25!important;margin:7px 0 4px!important;overflow-wrap:anywhere!important}
- #sq-bills-page .sq-premium-metrics article small{font-size:10px!important;line-height:1.35!important}
- #sq-bills-page .sq-premium-calendar{order:2!important;min-width:0!important;width:100%!important;margin:0!important;padding:15px!important;border-radius:18px!important;overflow:hidden!important}
- #sq-bills-page .sq-bills-columns{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important;margin-top:12px!important;width:100%!important;min-width:0!important}
- #sq-bills-page .sq-bills-columns>.sq-bills-card{min-width:0!important;width:100%!important;margin:0!important;padding:16px!important;border-radius:18px!important}
- #sq-bills-page .sq-bills-row{min-width:0!important;gap:9px!important;flex-wrap:wrap!important}
- #sq-bills-page .sq-bills-row>*{min-width:0!important}
- #sq-bills-page .sq-bills-row strong,#sq-bills-page .sq-bills-row small{overflow-wrap:anywhere!important}
- #sq-bills-page .sq-bills-row button{min-height:40px!important}
- #sq-bills-page .sq-premium-overview>.sq-bill-create-card.sq-bill-modal-open{order:initial!important}
- #sq-bills-page .sq-bill-modal-portal>.sq-bill-create-card{max-width:100%!important}
-}
-@media(max-width:360px){
- #sq-bills-page .sq-premium-metrics{grid-template-columns:minmax(0,1fr)!important}
-}
-</style>
+
 
 </head>
 <body>
@@ -15575,8 +15537,8 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
 <script src="/doweo-finance-planning.js" defer></script>
 <script src="/doweo-trips-activity.js" defer></script>
 <script src="/doweo-paylinks-currency.js" defer></script>
-<link rel="stylesheet" href="/doweo-bills-mobile-dashboard.css?v=20261116-mobile-shell-rebuild-v1">
-<script src="/doweo-bills-mobile-dashboard.js?v=20261116-mobile-shell-rebuild-v1" defer></script>
+<link rel="stylesheet" href="/doweo-bills-mobile-dashboard.css?v=20261116-bills-production-v2">
+<script src="/doweo-bills-mobile-dashboard.js?v=20261116-bills-production-v2" defer></script>
 <style id="dw-flat-sidebar-and-bill-editor-20261116">
 @media(min-width:901px){
  .sidebar .squareup-nav{gap:6px!important}
@@ -15594,9 +15556,6 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  .sq-bill-edit-overlay .sq-bill-edit-form > *{min-width:0!important;grid-column:1!important}
  .sq-bill-edit-overlay .sq-bill-edit-form input,.sq-bill-edit-overlay .sq-bill-edit-form select{width:100%!important;max-width:100%!important;min-height:44px!important;box-sizing:border-box!important}
  .sq-bill-edit-overlay .sq-bill-edit-form button{min-height:44px!important}
- #sq-bills-page.dw-bills-compact .sq-bills-columns .sq-bills-row{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important}
- #sq-bills-page.dw-bills-compact .sq-bills-columns .sq-bills-row .sq-bill-info{grid-column:1!important}
- #sq-bills-page.dw-bills-compact .sq-bills-columns .sq-bills-row button{margin:0!important}
 }
 </style>
 </body>
