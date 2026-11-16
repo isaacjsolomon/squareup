@@ -120,3 +120,23 @@
  #sq-bills-page.dw-bills-compact #sq-bills-message{margin:0!important;font-size:12px!important;line-height:1.5!important}
  #sq-bills-page.dw-bills-compact #sq-bills-message:empty{display:none!important}
 }
+/* Overview, Expenses and Members use the original tracker bar. */
+@media(max-width:900px){
+ html body #tracker-dashboard.dw-mobile-tabs-ready{
+  transform:none!important;filter:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  contain:none!important;isolation:auto!important;
+ }
+ html body #tracker-dashboard.dw-mobile-tabs-ready > .sq-workspace-tabs{
+  position:fixed!important;inset:auto!important;
+  top:var(--dw-tracker-tabs-top,80px)!important;left:var(--dw-tracker-tabs-left,13px)!important;
+  width:var(--dw-tracker-tabs-width,calc(100% - 26px))!important;max-width:none!important;min-width:0!important;
+  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  box-sizing:border-box!important;gap:4px!important;margin:0!important;padding:5px!important;
+  z-index:1000!important;transform:none!important;overflow:hidden!important;
+ }
+ html body #tracker-dashboard.dw-mobile-tabs-ready > .sq-workspace-tabs button[data-sq-tab]{
+  display:flex!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important;
+  width:100%!important;min-width:0!important;min-height:42px!important;height:auto!important;margin:0!important;padding:10px 2px!important;
+  font-size:clamp(11px,3vw,14px)!important;line-height:1.2!important;white-space:nowrap!important;
+ }
+}

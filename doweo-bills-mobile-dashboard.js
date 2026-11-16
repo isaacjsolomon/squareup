@@ -80,3 +80,45 @@
  apply();
 })();
 
+// The other tracker views share a separate bar. Keep its original DOM parent
+// and handlers; only reserve its height and align it with the fixed header.
+(function(){
+ 'use strict';
+ const dashboard=document.getElementById('tracker-dashboard');
+ const tabs=dashboard?.querySelector('.sq-workspace-tabs');
+ const header=document.querySelector('.sq-mobile-top');
+ if(!dashboard||!tabs||!header)return;
+ const media=window.matchMedia('(max-width:900px)');
+ const originalPadding={value:dashboard.style.getPropertyValue('padding-top'),priority:dashboard.style.getPropertyPriority('padding-top')};
+ let frame=0;
+ function restore(){
+  if(dashboard.classList.contains('dw-mobile-tabs-ready'))dashboard.classList.remove('dw-mobile-tabs-ready');
+  if(originalPadding.value)dashboard.style.setProperty('padding-top',originalPadding.value,originalPadding.priority);
+  else dashboard.style.removeProperty('padding-top');
+ }
+ function measure(){
+  frame=0;
+  if(!media.matches){restore();return;}
+  if(!dashboard.getClientRects().length||!header.getClientRects().length||document.body.classList.contains('sq-bills-open'))return;
+  if(!dashboard.classList.contains('dw-mobile-tabs-ready'))dashboard.classList.add('dw-mobile-tabs-ready');
+  const edge=header.getBoundingClientRect();
+  const top=Math.ceil(edge.bottom)+10;
+  dashboard.style.setProperty('--dw-tracker-tabs-top',top+'px');
+  dashboard.style.setProperty('--dw-tracker-tabs-left',edge.left+'px');
+  dashboard.style.setProperty('--dw-tracker-tabs-width',edge.width+'px');
+  const documentTop=dashboard.getBoundingClientRect().top+window.scrollY;
+  dashboard.style.setProperty('padding-top',Math.max(0,Math.ceil(top+tabs.getBoundingClientRect().height+14-documentTop))+'px','important');
+ }
+ function schedule(){if(!frame)frame=requestAnimationFrame(measure)}
+ const observer=new MutationObserver(schedule);
+ observer.observe(document.body,{attributes:true,attributeFilter:['class']});
+ observer.observe(dashboard,{attributes:true,attributeFilter:['class','hidden']});
+ if(typeof ResizeObserver!=='undefined'){
+  const resize=new ResizeObserver(schedule);resize.observe(header);resize.observe(tabs);
+ }
+ window.addEventListener('resize',schedule,{passive:true});
+ window.addEventListener('pageshow',schedule);
+ window.visualViewport?.addEventListener('resize',schedule,{passive:true});
+ if(media.addEventListener)media.addEventListener('change',schedule);else media.addListener(schedule);
+ schedule();
+})();
