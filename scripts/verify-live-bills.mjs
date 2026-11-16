@@ -2,7 +2,8 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 const origin=process.env.BILLS_BASE_URL||'https://doweo.app';
 const hash=s=>createHash('sha256').update(s).digest('hex');
-const localIndex=readFileSync('index.html','utf8');
+// Verify against the deployed HTML, whose asset URLs are cache-busted at build time.
+const localIndex=readFileSync('.pages-output/index.html','utf8');
 for(let attempt=0;attempt<12;attempt++){
  try{
   const index=await fetch(origin+'/',{cache:'no-store'}).then(r=>r.text());
