@@ -30,54 +30,56 @@
  }
  // Find the visible top bar by its actual rendered controls rather than a guessed CSS class.
  function findDesktopHeader(){
-  const candidates=[...document.querySelectorAll('button,a,[role="button"]')]
-    .filter(n=>/ask\s+weo/i.test(n.textContent||'')&&n.getClientRects().length);
-  const ask=candidates.find(n=>/ask\s+weo/i.test(n.textContent||''));
+  // The old lookup required the literal word "Search" in textContent, which
+  // fails for placeholder-only search fields. Inspect rendered structure instead.
+  const ask=[...document.querySelectorAll('button,a,[role="button"]')]
+   .find(n=>/ask\s+weo/i.test(n.textContent||'')&&n.getClientRects().length);
   if(!ask)return null;
-  let best=null;
-  for(let p=ask.parentElement,depth=0;p&&depth<10;p=p.parentElement,depth++){
-   const rect=p.getBoundingClientRect();
-   if(rect.width<500||rect.height<45||rect.height>230)continue;
-   const title=p.textContent||'';
-   if(!/doweo/i.test(title)||!/search/i.test(title))continue;
-   best=p;break;
+  for(let node=ask.parentElement,depth=0;node&&depth<10;node=node.parentElement,depth++){
+   const bounds=node.getBoundingClientRect();
+   if(bounds.width<450||bounds.height<45||bounds.height>230)continue;
+   const hasBrand=/doweo/i.test(node.textContent||'');
+   const hasSearch=Boolean(node.querySelector('input[type="search"],input[placeholder*="earch"],[role="search"],[role="searchbox"],[class*="search"],[id*="search"]'));
+   if(hasBrand&&hasSearch){
+    node.classList.add('dw-tracker-desktop-header');
+    return node;
+   }
   }
-  if(best)best.classList.add('dw-tracker-desktop-header');
-  return best;
+  return null;
  }
  function insertSelectorInHeader(header){
-  const children=[...header.children];
-  // Insert directly before the search region in the existing header flex row.
-  const searchChild=children.find(n=>/search/i.test(n.textContent||'')||
-    n.matches?.('[role="search"],[class*="search"]')||
-    n.querySelector?.('input[placeholder*="earch"],[role="searchbox"]'));
-  if(searchChild&&searchChild!==context)header.insertBefore(context,searchChild);
+  // Insert before the search element's direct child within the header.
+  const search=header.querySelector('input[type="search"],input[placeholder*="earch"],[role="searchbox"],[role="search"],[class*="search"]');
+  let child=search;
+  while(child&&child.parentElement!==header)child=child.parentElement;
+  if(child&&child!==context)header.insertBefore(context,child);
   else {
-   const askChild=children.find(n=>/ask\s+weo/i.test(n.textContent||''));
-   header.insertBefore(context,askChild||null);
+   const ask=[...header.children].find(n=>/ask\s+weo/i.test(n.textContent||''));
+   header.insertBefore(context,ask||null);
   }
  }
- // Apply layout to the five rendered tracker controls, even when legacy CSS
- // selectors refer to a different wrapper or a button has been moved.
  function fixTrackerTabs(){
-  const wanted=['overview','expenses','bills','members','chat'];
-  const candidates=[...document.querySelectorAll('[data-sq-tab]')];
-  const buttons=wanted.map(name=>candidates.find(el=>
-    el.getClientRects().length && !el.closest('#dw-legacy-navigation') &&
-    (String(el.dataset.sqTab||'').toLowerCase()===name ||
-     String(el.textContent||'').trim().toLowerCase()===name)));
-  if(buttons.some(b=>!b))return;
-  const bar=buttons[0].closest('.sq-workspace-tabs')||buttons[0].parentElement;
-  if(!bar||!bar.getClientRects().length)return;
-  bar.classList.add('dw-tracker-tabs-row');
-  for(const button of buttons){
-   if(button.parentElement!==bar)bar.append(button);
-   button.classList.add('dw-tracker-tab-item');
+  // Use the actual five visible controls inside the tracker navigation.
+  // Data attributes may differ between page versions, so do not depend on them.
+  if(!isTracker())return;
+  const expected=['overview','expenses','bills','members','chat'];
+  // The tab bar is often a sibling ABOVE #tracker-dashboard; look across
+  // the rendered page rather than assuming it lives inside that section.
+  const bars=[...document.querySelectorAll('.sq-workspace-tabs,.sq-bills-workspace-tabs,[role="tablist"]')]
+   .filter(el=>el.getClientRects().length&&!el.closest('#dw-legacy-navigation'));
+  for(const bar of bars){
+   const controls=[...bar.querySelectorAll('button,[role="tab"]')]
+    .filter(el=>el.getClientRects().length);
+   const tabFor=label=>controls.find(el=>
+    (el.textContent||'').trim().toLowerCase()===label ||
+    (el.dataset.sqTab||'').toLowerCase()===label);
+   const tabs=expected.map(tabFor);
+   if(tabs.some(tab=>!tab))continue;
+   // Use native nodes: existing listeners, selected states and ARIA survive.
+   tabs.forEach((tab,i)=>{if(tab.parentElement!==bar)bar.appendChild(tab);tab.classList.add('dw-tracker-tab-item');tab.dataset.dwTrackerTab=expected[i];});
+   bar.classList.add('dw-tracker-tabs-row');
+   return;
   }
-  // Explicit layout guarantees Chat never becomes an orphaned second row.
-  bar.style.setProperty('display','grid','important');
-  bar.style.setProperty('grid-template-columns','repeat(5,minmax(0,1fr))','important');
-  bar.style.setProperty('grid-auto-flow','row','important');
  }
  function trackerContextBottom(){
   const shown=isTracker();context.hidden=!shown;if(body.classList.contains('dw-tracker-context-visible')!==shown)body.classList.toggle('dw-tracker-context-visible',shown);
