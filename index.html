@@ -2301,6 +2301,15 @@ body.sq-auth-guest #auth-close,html.sq-auth-loading #auth-close{display:none!imp
  }
 }
 </style>
+<style id="dw-tracker-main-menu-icons">
+.tracker-tile-menu-panel .tracker-menu-main .tracker-menu-svg-icon {
+  width:27px!important; min-width:27px!important; height:27px!important;
+  display:inline-flex!important; align-items:center!important; justify-content:center!important;
+  font-size:inherit!important; background:none!important;
+}
+.tracker-tile-menu-panel .tracker-menu-main .tracker-menu-svg-icon svg {display:block;width:23px;height:23px;color:#9ef5e6}
+.tracker-tile-menu-panel .tracker-menu-main .danger .tracker-menu-svg-icon svg {color:#ffabbc}
+</style>
 <style id="dw-tracker-settings-icons">
 .tracker-tile-menu-panel .sq-tracker-settings-action .tracker-menu-glyph svg{
   display:block;width:21px;height:21px;stroke:#a8fff0;flex:none;
@@ -4845,6 +4854,17 @@ async function renderTrackerGallery(){
       function makeMenuButton(icon,label,cls,fn,subtitle){
         var btn=document.createElement('button');btn.type='button';btn.className='tracker-menu-action '+(cls||'');
         var glyph=document.createElement('span');glyph.className='tracker-menu-glyph';glyph.textContent=icon;
+        // Share/delete/leave icons are real SVGs, not platform-dependent Unicode.
+        var actionIcon={
+          'Share tracker':'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 13.5 6.6 4m6.6-11-6.6 4"/>',
+          'Delete tracker':'<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="m19 6-1 14H6L5 6"/><path d="M10 10v6m4-6v6"/>',
+          'Leave tracker':'<path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/>'
+        }[label];
+        if(actionIcon){
+          glyph.textContent='';
+          glyph.innerHTML='<svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+actionIcon+'</svg>';
+          glyph.classList.add('tracker-menu-svg-icon');
+        }
         var words=document.createElement('span');words.className='tracker-menu-words';
         var heading=document.createElement('span');heading.textContent=label;words.append(heading);
         if(subtitle){var hint=document.createElement('small');hint.textContent=subtitle;words.append(hint);}
