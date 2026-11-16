@@ -14994,66 +14994,29 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
 <script id="doweo-grouped-navigation-init-20261108">
 (function(){
  'use strict';
- // Preserve each actual sidebar button, ID, listener, and route.
  const nav=document.querySelector('.sidebar .squareup-nav');
- if(nav&&!nav.querySelector('.dw-nav-group')){
-  const groups=[
-   {name:'Groups',icon:'groups',ids:['nav-trackers','sqev-nav']},
-   {name:'Finance',icon:'finance',ids:['sq-finance-nav','nav-analytics']},
-   {name:'Social',icon:'social',ids:['nav-chat','nav-friends']},
-   {name:'More',icon:'more',ids:['nav-profile','nav-help-center','nav-about','nav-privacy-terms']}
-  ];
-  const iconPaths={
-   groups:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
-   finance:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18M7 15h4"/>',
-   social:'<path d="M20 11.5a8 8 0 0 1-8 8 8 8 0 0 1-3.5-.8L4 20l1.3-4.5A8 8 0 1 1 20 11.5Z"/><path d="M8 11h8M8 14h5"/>',
-   more:'<circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>'
-  };
-  // Make the existing Friends route accessible within Social on desktop.
-  const friendsNav=nav.querySelector('#nav-friends');
-  if(friendsNav){friendsNav.hidden=false;friendsNav.removeAttribute('aria-hidden');friendsNav.removeAttribute('tabindex');}
-  const groupFor=new Map();
-  const orderedGroups=[];
-  for(const item of groups){
-   const buttons=item.ids.map(id=>nav.querySelector('#'+id)).filter(Boolean);
-   if(!buttons.length)continue;
-   const container=document.createElement('details');
-   container.className='dw-nav-group';
-   container.open=false;
-   container.dataset.dwNavGroup=item.icon;
-   const summary=document.createElement('summary');
-   const ico=document.createElement('span');ico.className='dw-nav-group-icon';ico.setAttribute('aria-hidden','true');
-   ico.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+iconPaths[item.icon]+'</svg>';
-   const label=document.createElement('span');label.className='dw-nav-group-name';label.textContent=item.name;
-   const caret=document.createElement('span');caret.className='dw-nav-group-caret';caret.textContent='›';caret.setAttribute('aria-hidden','true');
-   summary.append(ico,label,caret);container.append(summary);
-   nav.insertBefore(container,buttons[0]);
-   for(const button of buttons){container.append(button);groupFor.set(button.id,container);}
-   orderedGroups.push(container);
-  }
-  const homeButton=nav.querySelector('#nav-home');
-  if(homeButton)nav.prepend(homeButton);
-  orderedGroups.forEach(group=>nav.append(group));
-  // Keep Beta Feedback as a standalone sidebar item after More.
-  const betaLauncher=nav.querySelector('#dw-beta-launch');
-  if(betaLauncher)nav.append(betaLauncher);
-  document.addEventListener('click',function(event){
-   const button=event.target.closest('.sidebar .sq-nav-link');
-   if(!button)return;
-   const group=groupFor.get(button.id);
-   if(group)group.open=true;
-  },true);
-  // Keep the selected destination visible if navigation changes programmatically.
-  const observer=new MutationObserver(function(){
-   for(const [id,group] of groupFor){
-    const button=document.getElementById(id);
-    if(button?.classList.contains('active')&&!group.open){group.open=true;}
-   }
-  });
-  observer.observe(nav,{attributes:true,attributeFilter:['class'],subtree:true});
+ if(nav){
+  // Keep existing buttons (and their event listeners) rather than creating proxy links.
+  const order=['nav-home','nav-trackers','sqev-nav','sq-finance-nav','nav-analytics','nav-chat','nav-friends'];
+  const friends=nav.querySelector('#nav-friends');
+  if(friends){friends.hidden=false;friends.removeAttribute('aria-hidden');friends.removeAttribute('tabindex');}
+  // This is the only expandable sidebar section; Settings, About and legal stay inside it.
+  const moreIds=['nav-profile','nav-help-center','nav-about','nav-privacy-terms'];
+  const more=document.createElement('details');more.className='dw-nav-group';more.dataset.dwNavGroup='more';
+  const summary=document.createElement('summary');
+  summary.innerHTML='<span class="dw-nav-group-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></span><span class="dw-nav-group-name">More</span><span class="dw-nav-group-caret" aria-hidden="true">›</span>';
+  more.append(summary);
+  for(const id of order){const button=nav.querySelector('#'+id);if(button)nav.append(button);}
+  for(const id of moreIds){const button=nav.querySelector('#'+id);if(button)more.append(button);}
+  nav.append(more);
+  const beta=nav.querySelector('#dw-beta-launch');if(beta)nav.append(beta);
+  // Reveal selected More destinations, including on programmatic route changes.
+  const sync=()=>{if(more.querySelector('.sq-nav-link.active'))more.open=true;};
+  nav.addEventListener('click',event=>{if(event.target.closest('.dw-nav-group .sq-nav-link'))more.open=true;});
+  new MutationObserver(sync).observe(more,{attributes:true,attributeFilter:['class'],subtree:true});
+  sync();
  }
- // Keep mobile More as one uninterrupted two-column button grid.
- // Move the existing elements, preserving their destinations, handlers and translations.
+ // Keep mobile More in its original two-column sheet, not as a nested menu.
  const moreGrid=document.querySelector('#sq-mobile-more-sheet .sq-balanced-more-grid');
  if(moreGrid){
   const destinations=['sqev-nav','sq-finance-nav','nav-analytics','sq-mobile-notifications','nav-profile','nav-about','nav-privacy-terms'];
@@ -15061,7 +15024,6 @@ body.sq-bills-open #sq-bills-page > .sq-bills-workspace-tabs {
    const button=moreGrid.querySelector('[data-sq-destination="'+destination+'"]');
    if(button)moreGrid.appendChild(button);
   }
-  // Flatten any previously inserted grouped wrappers without duplicating buttons.
   moreGrid.querySelectorAll('.dw-more-group').forEach(group=>group.remove());
  }
 })();
@@ -15615,6 +15577,28 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
 <script src="/doweo-paylinks-currency.js" defer></script>
 <link rel="stylesheet" href="/doweo-bills-mobile-dashboard.css?v=20261116-structural">
 <script src="/doweo-bills-mobile-dashboard.js?v=20261116-structural" defer></script>
+<style id="dw-flat-sidebar-and-bill-editor-20261116">
+@media(min-width:901px){
+ .sidebar .squareup-nav{gap:6px!important}
+ .sidebar .squareup-nav > button.sq-nav-link:not([hidden]){order:0!important;width:100%!important;margin:0!important;min-height:43px!important}
+ .sidebar .squareup-nav > #nav-home{order:-1!important;margin-bottom:7px!important}
+ .sidebar .squareup-nav > .dw-nav-group[data-dw-nav-group="more"]{order:2!important;margin-top:8px!important}
+ .sidebar .squareup-nav > #dw-beta-launch{order:3!important}
+ .sidebar .squareup-nav > #nav-friends:not([hidden]){display:flex!important}
+ body.side-collapsed .sidebar .squareup-nav > button.sq-nav-link{justify-content:center!important}
+}
+@media(max-width:760px){
+ .sq-bill-edit-overlay{padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px))!important;align-items:center!important}
+ .sq-bill-edit-overlay .sq-premium-dialog{width:100%!important;max-width:480px!important;max-height:calc(100dvh - 35px - env(safe-area-inset-bottom,0px))!important;box-sizing:border-box!important;overflow-y:auto!important;border-radius:18px!important;padding:20px 16px!important}
+ .sq-bill-edit-overlay .sq-bill-edit-form{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important}
+ .sq-bill-edit-overlay .sq-bill-edit-form > *{min-width:0!important;grid-column:1!important}
+ .sq-bill-edit-overlay .sq-bill-edit-form input,.sq-bill-edit-overlay .sq-bill-edit-form select{width:100%!important;max-width:100%!important;min-height:44px!important;box-sizing:border-box!important}
+ .sq-bill-edit-overlay .sq-bill-edit-form button{min-height:44px!important}
+ #sq-bills-page.dw-bills-compact .sq-bills-columns .sq-bills-row{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important}
+ #sq-bills-page.dw-bills-compact .sq-bills-columns .sq-bills-row .sq-bill-info{grid-column:1!important}
+ #sq-bills-page.dw-bills-compact .sq-bills-columns .sq-bills-row button{margin:0!important}
+}
+</style>
 </body>
 </html>
 
