@@ -11,7 +11,7 @@
  }
  tidy();new MutationObserver(tidy).observe(document.querySelector('.squareup-nav'),{childList:true});
  const analytics=$('analytics-page'),anchor=document.createComment('tracker analytics home');analytics?.before(anchor);
- const home=document.createElement('section');home.id='dw-account-home';home.hidden=true;home.setAttribute('aria-label','Account overview');body.append(home);
+ const home=document.createElement('section');home.id='dw-account-home';home.hidden=true;home.setAttribute('aria-label','Account overview');$('tracker-dashboard').before(home);
  const context=document.createElement('div');context.id='dw-tracker-context';context.hidden=true;
  context.innerHTML='<label for="dw-tracker-picker">Tracker</label><select id="dw-tracker-picker" aria-label="Current tracker"></select>';
  body.append(context);
