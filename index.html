@@ -15471,7 +15471,7 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
 #notifications-page .small-btn:not(.accent):not(.danger):not(.primary),
 #friends-page .sq-feature-btn,
 #friends-page .sq-friend-tabs button,
-#friends-page .sq-friend-actions button:not(.danger),
+#friends-page .sq-friend-actions button:not(.danger):not([data-friend-action='remove']):not([data-friend-action='decline']),
 #settings-page .settings-action:not(.primary):not(.danger):not(#settings-signout):not(#settings-delete-account),
 #analytics-page .small-btn:not(.accent):not(.danger):not(.primary),
 #split-page .small-btn:not(.accent):not(.danger):not(.primary),
@@ -15500,7 +15500,7 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
 #notifications-page .small-btn:not(.accent):not(.danger):not(.primary):hover,
 #friends-page .sq-feature-btn:hover,
 #friends-page .sq-friend-tabs button:hover:not([aria-selected="true"]),
-#friends-page .sq-friend-actions button:not(.danger):hover,
+#friends-page .sq-friend-actions button:not(.danger):not([data-friend-action='remove']):not([data-friend-action='decline']):hover,
 #settings-page .settings-action:not(.primary):not(.danger):not(#settings-signout):not(#settings-delete-account):hover,
 #analytics-page .small-btn:not(.accent):not(.danger):not(.primary):hover,
 #split-page .small-btn:not(.accent):not(.danger):not(.primary):hover,
@@ -15522,10 +15522,13 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
   outline-offset:2px;
 }
 :is(#notifications-page,#friends-page,#settings-page,#analytics-page,#split-page,#sq-bills-page,#tracker-dashboard)
-  button:disabled{cursor:not-allowed;opacity:.6}
+  :is(.small-btn,.sq-feature-btn,.sq-friend-tabs button,.sq-friend-actions button,.settings-action,.sq-approval-actions button):disabled{
+  cursor:not-allowed;
+  opacity:.6;
+}
 @media(max-width:600px){
   #friends-page .sq-friend-tabs button,
-  #friends-page .sq-friend-actions button:not(.danger),
+  #friends-page .sq-friend-actions button:not(.danger):not([data-friend-action='remove']):not([data-friend-action='decline']),
   #settings-page .settings-action:not(#settings-signout):not(#settings-delete-account),
   #notifications-page .small-btn:not(.danger):not(.accent){
     min-height:44px;
