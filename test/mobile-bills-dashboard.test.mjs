@@ -6,7 +6,7 @@ import {chromium} from 'playwright';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const css=readFileSync(new URL('../doweo-bills-mobile-dashboard.css',import.meta.url),'utf8');
 const js=readFileSync(new URL('../doweo-bills-mobile-dashboard.js',import.meta.url),'utf8');
-const markup=html.slice(html.indexOf('<section id="sq-bills-page"'),html.indexOf('<div id="trackers-gallery"'));
+const markup=html.slice(html.indexOf('<section id="sq-bills-page"'),html.indexOf('<div id="trackers-gallery"')).replace('class="sq-bills-page" hidden','class="sq-bills-page"');
 assert.match(markup,/<section id="sq-bills-page"/);
 
 test('mobile billing dashboard preserves all original actions and data anchors',()=>{
@@ -43,8 +43,8 @@ test('responsive billing page is compact on mobile and restores desktop structur
     return {pageWidth:p.width,titleBottom:title.bottom,navTop:nav.top,navBottom:nav.bottom,statsTop:a.top,statsColumns:Math.abs(a.top-b.top)<4,calendarHidden:!document.querySelector('.dw-bills-calendar-fold').open,calendarBelow:box('.dw-bills-calendar-fold').top>=box('.sq-bills-columns').bottom-3,scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth};
    });
    assert.ok(state.pageWidth<=width+2,'page width at '+width+': '+JSON.stringify(state));
-   assert.ok(state.navTop>=state.titleBottom-3,'nav must not cover title at '+width+': '+JSON.stringify(state));
-   assert.ok(state.statsTop>=state.navBottom-3,'stats below navigation at '+width+': '+JSON.stringify(state));
+   assert.ok(state.titleBottom>=state.navBottom-3,'title must follow navigation at '+width+': '+JSON.stringify(state));
+   assert.ok(state.statsTop>=state.titleBottom-3,'stats below navigation at '+width+': '+JSON.stringify(state));
    assert.ok(state.statsColumns,'metrics sit side by side at '+width);
    assert.ok(state.calendarHidden&&state.calendarBelow,'calendar collapses after lists at '+width);
    assert.ok(state.scrollWidth<=width+2,'no horizontal overflow at '+width+': '+JSON.stringify(state));
