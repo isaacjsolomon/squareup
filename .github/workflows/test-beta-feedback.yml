@@ -54,6 +54,8 @@ jobs:
         run: node --test test/doweo-entry-notification-resilience.test.mjs
       - name: Test personal budgets and shared savings goals
         run: node --check 'functions/api/finance-plus/[[path]].js' && node --check doweo-finance-planning.js && node --test test/doweo-finance-planning.test.mjs
+      - name: Test permission-aware financial activity timeline
+        run: node --test test/doweo-financial-activity-history.test.mjs
       - name: Verify expense and payment forms wait for save confirmation
         run: node --test test/doweo-save-confirmation.test.mjs
       - name: Verify guided expense details layout and retained actions
