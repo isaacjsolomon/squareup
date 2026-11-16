@@ -20,8 +20,8 @@
  }
  #sq-bills-page.dw-bills-compact .dw-bills-mobile-shell > .sq-bills-workspace-tabs{
   display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important;
-  position:sticky!important;inset:auto!important;top:var(--dw-bills-header-bottom,0px)!important;z-index:1000!important;
-  width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;
+  position:fixed!important;inset:auto!important;top:var(--dw-bills-header-bottom,0px)!important;left:var(--dw-bills-tabs-left,12px)!important;z-index:1000!important;
+  width:var(--dw-bills-tabs-width,calc(100% - 24px))!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;
   margin:0!important;padding:5px!important;border:1px solid #345064!important;border-radius:16px!important;
   background:#10283a!important;box-shadow:0 6px 18px #00101f33!important;transform:none!important;overflow:hidden!important;
  }

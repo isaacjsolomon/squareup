@@ -56,9 +56,12 @@
   const header=document.querySelector('.sq-mobile-top');
   if(!header||!header.getClientRects().length)return;
   const bottom=Math.ceil(header.getBoundingClientRect().bottom)+10;
-  const documentTop=page.getBoundingClientRect().top+window.scrollY;
+  const pageBox=page.getBoundingClientRect();
+  const documentTop=pageBox.top+window.scrollY;
   shell.style.setProperty('--dw-bills-header-bottom',bottom+'px');
-  shell.style.setProperty('--dw-bills-start-inset',Math.max(8,Math.ceil(bottom-documentTop))+'px');
+  shell.style.setProperty('--dw-bills-tabs-left',pageBox.left+'px');
+  shell.style.setProperty('--dw-bills-tabs-width',pageBox.width+'px');
+  shell.style.setProperty('--dw-bills-start-inset',Math.max(8,Math.ceil(bottom+tabs.getBoundingClientRect().height+14-documentTop))+'px');
  }
  function scheduleMeasure(){if(!measureFrame)measureFrame=requestAnimationFrame(measureHeader)}
  const header=document.querySelector('.sq-mobile-top');
