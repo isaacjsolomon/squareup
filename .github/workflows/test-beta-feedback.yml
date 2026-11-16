@@ -48,6 +48,8 @@ jobs:
         run: node --test test/beta-feedback.test.mjs
       - name: Test expense recurrence validation before financial writes
         run: node --test test/doweo-recurring-expense-validation.test.mjs
+      - name: Verify push notification URL safety and window reuse
+        run: node --check sw.js && node --test test/doweo-push-navigation.test.mjs
       - name: Ensure saved entries succeed when notification delivery fails
         run: node --test test/doweo-entry-notification-resilience.test.mjs
       - name: Verify expense and payment forms wait for save confirmation
