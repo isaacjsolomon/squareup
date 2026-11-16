@@ -110,6 +110,15 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
    assert.ok(clear,'safe-area header never covers sticky tabs at '+width);
    await page.screenshot({path:resolve(root,`test-results/bills/iphone-safe-area-scrolled-${width}.png`)});
   }
+  // Match the reported page: no bills and one saved subscription.
+  const allBills=bills;bills=bills.filter(item=>item.kind==='subscription');
+  await page.setViewportSize({width:390,height:844});
+  await page.locator('#sq-bills-tracker').selectOption(tracker);
+  await page.waitForFunction(()=>document.getElementById('sq-bills-bill-list').textContent==='No bills yet.');
+  await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+  await page.screenshot({path:resolve(root,'test-results/bills/iphone-subscriptions-only-390.png')});
+  bills=allBills;await page.locator('#sq-bills-tracker').selectOption(tracker);
+  await page.locator('#sq-bills-bill-list .sq-bills-row').waitFor();
   await safeAreaStyle.evaluate(el=>el.remove());
   await page.locator('.dw-bills-calendar-fold > summary').click();
   assert.ok(await page.locator('#sq-premium-next').isVisible());
