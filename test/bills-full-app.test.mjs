@@ -97,10 +97,12 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   }
   // Model the standalone iPhone status safe area and a taller header. This only
   // changes the environment around the real page; Bills markup/styles stay intact.
-  const safeAreaStyle=await page.addStyleTag({content:'html body .wrap > .sq-mobile-top{top:59px!important;min-height:76px!important;height:76px!important}'});
+  const safeAreaStyle=await page.addStyleTag({content:'html body.sq-bills-open .wrap > .sq-mobile-top{top:59px!important;min-height:76px!important;height:76px!important}'});
   for(const width of [320,375,390,430]){
    await page.setViewportSize({width,height:844});
    await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+   const safeHeader=await page.locator('.sq-mobile-top').boundingBox();
+   assert.ok(Math.abs(safeHeader.y-59)<1&&safeHeader.height>=76,'test must apply the simulated iPhone safe area');
    await page.waitForFunction(()=>{const h=document.querySelector('.sq-mobile-top').getBoundingClientRect(),t=document.querySelector('.sq-bills-workspace-tabs').getBoundingClientRect();return t.top>=h.bottom+8&&Math.abs(t.width-document.getElementById('sq-bills-page').getBoundingClientRect().width)<1});
    await page.screenshot({path:resolve(root,`test-results/bills/iphone-safe-area-${width}.png`)});
    await page.locator('.dw-bills-calendar-fold').scrollIntoViewIfNeeded();
