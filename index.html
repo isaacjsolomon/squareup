@@ -17082,7 +17082,8 @@ html body #split-page .split-panel{padding:17px!important;margin:0!important;bac
  function go(n){step=n;page.dataset.splitStep=String(n);error.textContent='';bar.querySelectorAll('span').forEach((e,i)=>{if(i===n-1)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');});if(mobile.matches)window.scrollTo({top:0,behavior:'instant'});}
  footer.querySelector('#dw-split-step-back').onclick=()=>go(Math.max(1,step-1));footer.querySelector('#dw-split-step-next').onclick=()=>{
   if(step===1){const total=document.getElementById('split-total'),payer=document.querySelector('#split-payers input:checked');if(!Number.isFinite(Number(total.value))||Number(total.value)<=0||!total.checkValidity()||!payer){error.textContent='Enter a valid bill total and choose who paid.';return;}}
-  if(step===2&&document.getElementById('split-save').disabled){error.textContent='Choose who is splitting the bill and make sure the shares match the total.';return;}
+  if(step===1||step===2){const description=document.getElementById('split-description');if(!description.value.trim()){description.value='Shared bill';description.dispatchEvent(new Event('input',{bubbles:true}));}}
+  if(step===2){if(typeof renderSplitSummary==='function')renderSplitSummary();const result=typeof splitCalc==='function'?splitCalc():null;if(result?!result.valid:document.getElementById('split-save').disabled){error.textContent=!document.querySelector('#split-participants input[type=checkbox]:checked')?'Choose at least one person to split the bill.':'The assigned amounts must match the bill total. Percentages must add up to 100%.';return;}}
   go(Math.min(3,step+1));
  };
  function responsive(){if(mobile.matches)footer.append(save);else marker.after(save);}mobile.addEventListener('change',responsive);responsive();
@@ -17121,6 +17122,7 @@ html body #receipt-card #receipt-add-item{font-size:13px!important;padding:9px 1
 }
 </style></body>
 </html>
+
 
 
 

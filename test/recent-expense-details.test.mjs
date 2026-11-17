@@ -172,6 +172,11 @@ await page.locator('#receipt-items input[type=checkbox]').first().check();assert
   assert.ok(await page.locator('#split-total').isVisible(),'mobile split form opens');
   assert.equal(await page.locator('#split-page').getAttribute('data-split-step'),'1');
   await page.locator('#dw-split-step-next').click();assert.ok(await page.locator('#dw-split-step-error').isVisible(),'empty total blocks Continue');
+  await page.locator('#split-total').fill('115');
+  await page.locator('#dw-split-step-next').click();assert.equal(await page.locator('#split-description').inputValue(),'Shared bill','blank description receives a safe default');
+  await page.locator('#dw-split-step-next').click();assert.equal(await page.locator('#split-page').getAttribute('data-split-step'),'3','115 equal split continues to Review');
+  assert.ok((await page.locator('#split-summary').textContent()).includes('$57.50'),'equal halves retain cents');
+  await page.locator('#dw-split-step-back').click();await page.locator('#dw-split-step-back').click();
   await page.locator('#split-total').fill('20');await page.locator('#split-description').fill('Lunch split');
   await page.locator('#dw-split-step-next').click();assert.equal(await page.locator('#split-page').getAttribute('data-split-step'),'2');
   await page.locator('#split-percent').click();await page.getByLabel('Alex percentage',{exact:true}).fill('25');
