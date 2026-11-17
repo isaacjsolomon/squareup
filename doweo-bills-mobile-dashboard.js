@@ -139,7 +139,7 @@
  if(!tabbar)return;
  const picker=document.createElement('div');
  picker.id='dw-inline-tracker-picker';
- picker.innerHTML='<span class="dw-inline-tracker-symbol" aria-hidden="true">▱</span><label for="dw-inline-tracker-select">Tracker</label><select id="dw-inline-tracker-select" aria-label="Switch tracker"></select>';
+ picker.innerHTML='<span class="dw-inline-tracker-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 7 2 2 3-4"/><path d="M12 7h9"/><circle cx="6" cy="17" r="2"/><path d="M12 17h9"/></svg></span><label for="dw-inline-tracker-select">Tracker</label><select id="dw-inline-tracker-select" aria-label="Switch tracker"></select>';
  const select=picker.querySelector('select');
  const chat=document.createElement('button');
  chat.type='button';
