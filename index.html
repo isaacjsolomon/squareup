@@ -17011,7 +17011,43 @@ html body #sq-receipt-dialog .sq-action-modal-inner{width:calc(100vw - 20px)!imp
  function summary(){document.getElementById('dw-receipt-total').textContent=card.querySelector('.sq-receipt-grand strong')?.textContent||'$0.00';const tax=Number(document.getElementById('receipt-tax').value)||0,tip=Number(document.getElementById('receipt-tip').value)||0;document.getElementById('dw-receipt-extra-summary').textContent='Tax $'+tax.toFixed(2)+' · Tip $'+tip.toFixed(2)+' · '+(document.getElementById('receipt-tip-mode').value==='one'?'Tip paid by one person':'Tip split equally');}
  new MutationObserver(summary).observe(document.getElementById('receipt-preview'),{childList:true});summary();
 })();
-</script><style>#dw-receipt-photo #receipt-file{display:none!important}</style></body>
+</script><style>#dw-receipt-photo #receipt-file{display:none!important}</style>
+<style id="dw-receipt-guided-style">
+#dw-receipt-steps,#dw-receipt-back,#dw-receipt-next,#dw-receipt-manual,#dw-receipt-step-error{display:none}
+@media(max-width:700px){
+#receipt-card.dw-receipt-compact #dw-receipt-steps{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 20px 0;color:#b9d5e1}
+#dw-receipt-steps span{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;font-size:12px;border-bottom:2px solid #31576c;padding-bottom:12px}#dw-receipt-steps i{display:grid;place-items:center;width:25px;height:25px;border:1px solid #4b7c91;border-radius:50%;font-style:normal;font-size:12px}
+#dw-receipt-steps [aria-current=step]{color:#39e2bd;border-color:#39e2bd;font-weight:750}#dw-receipt-steps [aria-current=step] i{background:#23d2b0;color:#052e38;border-color:#23d2b0}
+#receipt-card.dw-receipt-compact #dw-receipt-body{display:block!important;padding:18px!important}
+#receipt-card.dw-receipt-compact #dw-receipt-photo{border:0!important;padding:0!important}
+#receipt-card[data-receipt-step="1"] #dw-receipt-fields{display:none!important}
+#receipt-card:not([data-receipt-step="1"]) #dw-receipt-photo{display:none!important}
+#receipt-card[data-receipt-step="2"] #dw-receipt-fields>.sq-receipt-section:last-child{display:none!important}
+#receipt-card[data-receipt-step="3"] #dw-receipt-fields>.sq-receipt-section:not(:last-child){display:none!important}
+#receipt-card #dw-receipt-manual{display:block;margin-top:4px;min-height:40px;padding:10px 12px;border:1px solid #3c6b7c;border-radius:10px;background:#173f50;color:#d4f2fc;font-size:13px}
+#receipt-card #dw-receipt-next,#receipt-card #dw-receipt-back{display:block;min-height:42px;padding:10px 17px;border:1px solid #3f6b7d;border-radius:10px;background:#163d50;color:#e1f5ff;font-weight:700;font-size:13px}
+#receipt-card #dw-receipt-next{background:#29d9b8;color:#042b35;border:0}
+#receipt-card[data-receipt-step="1"] #dw-receipt-back,#receipt-card[data-receipt-step="3"] #dw-receipt-next,#receipt-card:not([data-receipt-step="3"]) #receipt-save{display:none!important}
+#receipt-card #dw-receipt-footer{display:grid!important;grid-template-columns:auto 1fr auto!important;gap:9px!important}
+#receipt-card #dw-receipt-footer>div{grid-column:1/-1;justify-content:space-between;gap:10px;padding-bottom:3px;font-size:13px}
+#receipt-card #dw-receipt-back{grid-column:1}#receipt-card #dw-receipt-next,#receipt-card #receipt-save{grid-column:3}
+#receipt-card #dw-receipt-step-error:not(:empty){display:block;color:#ffd0bf;font-size:12px;margin:0;padding:0 18px 12px}
+}
+</style>
+<script id="dw-receipt-guided-script">(function(){
+ const card=document.getElementById('receipt-card'),body=document.getElementById('dw-receipt-body');if(!body)return;const mobile=matchMedia('(max-width:700px)');let step=1;
+ const bar=document.createElement('nav');bar.id='dw-receipt-steps';bar.setAttribute('aria-label','Receipt steps');bar.innerHTML=['Photo','Assign','Review'].map((name,i)=>'<span><i aria-hidden="true">'+(i+1)+'</i>'+name+'</span>').join('');body.before(bar);
+ const error=document.createElement('p');error.id='dw-receipt-step-error';error.setAttribute('role','alert');body.after(error);
+ const footer=document.getElementById('dw-receipt-footer'),back=document.createElement('button'),next=document.createElement('button'),manual=document.createElement('button');back.type=next.type=manual.type='button';back.id='dw-receipt-back';back.textContent='Back';next.id='dw-receipt-next';next.textContent='Continue';manual.id='dw-receipt-manual';manual.textContent='Enter items manually';document.getElementById('dw-receipt-photo').append(manual);footer.append(back,next);
+ function go(n){step=n;card.dataset.receiptStep=String(step);error.textContent='';bar.querySelectorAll('span').forEach((el,i)=>{if(i===step-1)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});card.querySelector('.sq-receipt-heading h2').textContent=mobile.matches?['Add a receipt','Assign items','Review receipt'][step-1]:'Review receipt';if(mobile.matches)document.querySelector('#sq-receipt-dialog .sq-action-modal-inner')?.scrollTo({top:0,behavior:'instant'});}
+ function advance(){if(step===2){const items=[...document.querySelectorAll('#receipt-items .sq-receipt-item')];const valid=items.length&&items.every(el=>{const name=el.querySelector('[data-item-name]'),price=el.querySelector('[data-item-price]');return name.value.trim()&&Number(price.value)>0&&el.querySelector('input[type=checkbox]:checked');})&&document.getElementById('receipt-payer').value;if(!valid){error.textContent='Give each item a name, price, and at least one person.';return;}}go(Math.min(3,step+1));}
+ next.onclick=advance;back.onclick=()=>go(Math.max(1,step-1));manual.onclick=()=>go(2);
+ document.getElementById('receipt-file').addEventListener('change',()=>{if(mobile.matches)go(1);});
+ new MutationObserver(()=>{if(mobile.matches&&step===1&&document.querySelector('#receipt-items .sq-receipt-item'))go(2);}).observe(document.getElementById('receipt-items'),{childList:true});
+ new MutationObserver(()=>{if(!document.getElementById('sq-receipt-dialog').hidden&&mobile.matches)go(document.querySelector('#receipt-items .sq-receipt-item')?2:1);}).observe(document.getElementById('sq-receipt-dialog'),{attributes:true,attributeFilter:['hidden']});
+ document.getElementById('receipt-clear').addEventListener('click',()=>go(1));mobile.addEventListener('change',()=>go(step));go(1);
+})();</script>
+</body>
 </html>
 
 

@@ -141,9 +141,14 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   await page.waitForFunction(()=>document.getElementById('receipt-status').textContent.includes('Recognized'));
   assert.equal(await page.locator('#receipt-items').getByLabel('Item 1 name',{exact:true}).inputValue(),'Pizza','captured receipt reaches item review');
   const mobileReceipt=await page.evaluate(()=>({photo:document.getElementById('dw-receipt-photo').getBoundingClientRect().bottom,fields:document.getElementById('dw-receipt-fields').getBoundingClientRect().top,overflow:document.documentElement.scrollWidth>innerWidth+1}));
-  assert.ok(mobileReceipt.photo<mobileReceipt.fields,'receipt stacks above fields on phones');assert.equal(mobileReceipt.overflow,false);
+  assert.equal(await page.locator('#receipt-card').getAttribute('data-receipt-step'),'2','recognized photo advances to Assign');assert.equal(await page.locator('#dw-receipt-photo').isVisible(),false,'Photo step hidden while assigning');assert.equal(mobileReceipt.overflow,false);
+  await page.locator('#dw-receipt-next').click();assert.ok(await page.locator('#dw-receipt-step-error').isVisible(),'unassigned items block Continue');
   await page.screenshot({path:resolve(root,'test-results/bills/receipt-mobile-stacked.png'),fullPage:true});
 await page.locator('#receipt-items input[type=checkbox]').first().check();assert.ok((await page.locator('#receipt-preview').textContent()).includes('10.00'),'receipt assignment updates the review');
+  await page.locator('#dw-receipt-next').click();assert.equal(await page.locator('#receipt-card').getAttribute('data-receipt-step'),'3');
+  assert.ok(await page.locator('#receipt-save').isVisible(),'Save only shown at Review');assert.equal(await page.locator('#receipt-items').isVisible(),false);
+  await page.locator('#dw-receipt-back').click();assert.equal(await page.locator('#receipt-card').getAttribute('data-receipt-step'),'2');assert.equal(await page.locator('#receipt-items input[type=checkbox]').first().isChecked(),true,'Back keeps assignments');
+
   await page.locator('#sq-receipt-x').click();
   await mobileAdd.locator('summary').click();
   await mobileAdd.getByRole('button',{name:'Split bill',exact:true}).click();
