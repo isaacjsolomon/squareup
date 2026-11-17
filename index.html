@@ -17004,7 +17004,7 @@ html body #sq-receipt-dialog .sq-action-modal-inner{width:calc(100vw - 20px)!imp
  extra.append(extras,last.querySelector('.sq-receipt-money-grid'),document.getElementById('receipt-clear'));
  shares.querySelector('.sq-receipt-section-title')?.remove();right.append(payer,items,extra,shares);body.append(left,right);
  const footer=document.createElement('div');footer.id='dw-receipt-footer';footer.innerHTML='<div><span>Total</span><strong id="dw-receipt-total">$0.00</strong></div>';footer.append(document.getElementById('receipt-save'));
- card.append(body,footer);photo.remove();last.remove();
+ const close=document.getElementById('receipt-close');close.hidden=true;footer.append(close);card.append(body,footer);photo.remove();last.remove();
  let url=null;function display(file){if(!file||!file.type.startsWith('image/'))return;if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(file);image.src=url;image.hidden=false;placeholder.hidden=true;}
  input.addEventListener('change',()=>display(input.files?.[0]));document.getElementById('split-receipt-file')?.addEventListener('change',e=>display(e.target.files?.[0]));
  document.getElementById('receipt-clear').addEventListener('click',()=>{if(url)URL.revokeObjectURL(url);url=null;image.removeAttribute('src');image.hidden=true;placeholder.hidden=false;extra.open=false;});
@@ -17047,7 +17047,7 @@ html body #sq-receipt-dialog .sq-action-modal-inner{width:calc(100vw - 20px)!imp
  new MutationObserver(()=>{if(!document.getElementById('sq-receipt-dialog').hidden&&mobile.matches)go(document.querySelector('#receipt-items .sq-receipt-item')?2:1);}).observe(document.getElementById('sq-receipt-dialog'),{attributes:true,attributeFilter:['hidden']});
  document.getElementById('receipt-clear').addEventListener('click',()=>go(1));mobile.addEventListener('change',()=>go(step));go(1);
 })();</script>
-</body>
+<style>#receipt-card.dw-receipt-compact #receipt-close{display:none!important}</style></body>
 </html>
 
 
