@@ -111,7 +111,7 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   assert.equal(await page.locator('#receipt-file').getAttribute('capture'),'environment','camera capture requests rear phone camera');
   await chooser.setFiles({name:'receipt.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j5n8AAAAASUVORK5CYII=','base64')});
   await page.waitForFunction(()=>document.getElementById('receipt-status').textContent.includes('Recognized'));
-  assert.ok(await page.locator('#receipt-items').getByText('Pizza',{exact:false}).isVisible(),'captured receipt reaches item review');
+  assert.equal(await page.locator('#receipt-items').getByLabel('Item 1 name',{exact:true}).inputValue(),'Pizza','captured receipt reaches item review');await page.locator('#receipt-items input[type=checkbox]').first().check();assert.ok((await page.locator('#receipt-preview').textContent()).includes('10.00'),'receipt assignment updates the review');
   await page.locator('#sq-receipt-x').click();
   await mobileAdd.locator('summary').click();
   await mobileAdd.getByRole('button',{name:'Split bill',exact:true}).click();
