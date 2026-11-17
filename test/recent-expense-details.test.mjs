@@ -55,21 +55,41 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   await page.locator('#trackers-gallery .tile-open').first().click();
   const row=page.locator('#sq-return-activity [data-expense-id="88888888-8888-4888-8888-888888888888"]');
   await row.waitFor();
-  for(const width of [1024,1440]){
+  for(const width of [1024,1440,1920]){
    await page.setViewportSize({width,height:1000});
-   await page.waitForFunction(()=>{
-    const activity=document.getElementById('sq-return-activity').closest('.sq-return-panel').getBoundingClientRect();
-    const balance=document.getElementById('sq-clean-balance').getBoundingClientRect();
-    const people=document.getElementById('sq-return-members').closest('.sq-return-panel').getBoundingClientRect();
-    return Math.abs(activity.left-balance.left)<2&&Math.abs(activity.right-people.right)<2&&Math.abs(balance.bottom-people.bottom)<2&&activity.top>balance.bottom;
+   await page.locator('#dw-home-bill-list .dw-home-bill-row').waitFor();
+   const state=await page.evaluate(()=>{
+    const box=e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width}};
+    return {
+     left:box(document.getElementById('dw-home-left')),right:box(document.getElementById('dw-home-schedules')),
+     summary:box(document.getElementById('sq-return-summary')),
+     activity:box(document.getElementById('sq-return-activity').closest('.sq-return-panel')),
+     bills:box(document.querySelector('[aria-label="Home bills"]')),subs:box(document.querySelector('[aria-label="Home subscriptions"]')),
+     smart:getComputedStyle(document.querySelector('.sq-return-smart-panel')).display,
+     balances:getComputedStyle(document.getElementById('sq-return-balances').closest('.sq-return-panel')).display,
+     overflow:document.documentElement.scrollWidth>innerWidth+1
+    };
    });
-   const state=await page.evaluate(()=>({
-    smart:getComputedStyle(document.querySelector('.sq-return-smart-panel')).display,
-    balances:getComputedStyle(document.getElementById('sq-return-balances').closest('.sq-return-panel')).display,
-    overflow:document.documentElement.scrollWidth>innerWidth+1
-   }));
-   assert.equal(state.smart,'none');assert.equal(state.balances,'none');assert.equal(state.overflow,false);
+   assert.ok(Math.abs(state.left.width-state.right.width)<2,'equal Home halves at '+width);
+   assert.ok(state.left.right<state.right.left,'columns separated');
+   assert.ok(Math.abs(state.summary.width-state.left.width)<2,'summary fits left half');
+   assert.ok(state.activity.left>=state.left.left-1&&state.activity.right<=state.left.right+1,'activity fits summary');
+   assert.ok(state.bills.bottom<state.subs.top,'Bills above Subscriptions');
+   assert.equal(state.smart,'none');assert.equal(state.balances,'none');assert.equal(state.overflow,false,'no overflow at '+width);
   }
+  await page.setViewportSize({width:1440,height:1000});
+  const billRow=page.locator('#dw-home-bill-list .dw-home-bill-row').filter({hasText:'Electricity'});
+  await billRow.getByRole('button',{name:'Details',exact:true}).click();
+  await page.locator('.sq-premium-dialog h2').filter({hasText:'Electricity'}).waitFor();
+  await page.locator('.sq-premium-dialog').getByRole('button',{name:'Close',exact:true}).click();
+  const subscription=page.locator('#dw-home-subscription-list .dw-home-bill-row').filter({hasText:'Netflix'});
+  await subscription.getByRole('button',{name:'Edit',exact:true}).click();
+  const billEditor=page.getByRole('dialog',{name:'Edit bill or subscription'});
+  await billEditor.getByLabel('Name',{exact:true}).fill('Netflix updated');
+  await billEditor.getByRole('button',{name:'Save changes',exact:true}).click();
+  await page.locator('#dw-home-subscription-list').getByText('Netflix updated',{exact:true}).waitFor();
+  assert.ok(await page.locator('#sq-return-summary').isVisible(),'editing bills stays on Home');
+  writes.length=0;
   mkdirSync(resolve(root,'test-results/bills'),{recursive:true});
   await page.screenshot({path:resolve(root,'test-results/bills/home-full-width-activity.png'),fullPage:true});
   await row.focus();await row.press('Enter');
@@ -103,5 +123,7 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   await page.getByRole('button',{name:'Close expense details',exact:true}).click();
   await page.setViewportSize({width:390,height:844});
   assert.equal(await page.locator('#dw-expense-editor').isVisible(),false);
+  assert.equal(await page.locator('#dw-home-columns').count(),0,'mobile summary restored to original parent');
+  assert.equal(await page.locator('#sq-return-summary').evaluate(e=>e.parentElement.id),'tracker-dashboard');
  }finally{await browser.close();await new Promise(done=>server.close(done));}
 });

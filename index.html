@@ -10649,6 +10649,7 @@ function kindStorageKey(tracker,id){return 'squareup-bill-kind:'+tracker+':'+id;
 function inferredKind(item){const n=String(item.name||'').toLowerCase();return /netflix|disney|hulu|spotify|youtube|chat ?gpt|openai|claude|prime|apple ?tv|dropbox|google drive|subscription|membership|max/.test(n)?'subscription':'bill';}
 function getKind(tracker,item){if(['bill','subscription'].includes(item.kind))return item.kind;try{return localStorage.getItem(kindStorageKey(tracker,item.id))||inferredKind(item)}catch(_){return inferredKind(item)}}
 function iconStorageKey(tracker,id){return 'squareup-bill-icon:'+tracker+':'+id;}
+window.sqBillPresentation={getKind,iconNode,inferIcon,iconStorageKey};
 function setIcon(key){chosenIcon=key;$('sq-icon-current').replaceChildren(iconNode(key));iconTrigger.setAttribute('aria-label','Icon: '+(services.find(x=>x[0]===key)?.[1]||'Other'));iconPicker.hidden=true;iconTrigger.setAttribute('aria-expanded','false');}
 function renderIcons(){iconTabs.replaceChildren();['Popular','Streaming','Apps & AI','Utilities','Other'].forEach(category=>{const b=document.createElement('button');b.type='button';b.textContent=category;b.classList.toggle('active',category===currentCategory);b.addEventListener('click',()=>{currentCategory=category;renderIcons()});iconTabs.append(b)});iconGrid.replaceChildren();services.filter(x=>currentCategory==='Popular'||x[3]===currentCategory).forEach(spec=>{const b=document.createElement('button');b.type='button';b.title=spec[1];b.setAttribute('aria-label',spec[1]);b.classList.toggle('selected',chosenIcon===spec[0]);b.append(iconNode(spec[0]));b.addEventListener('click',()=>setIcon(spec[0]));iconGrid.append(b)})}
 iconTrigger.addEventListener('click',()=>{iconPicker.hidden=!iconPicker.hidden;iconTrigger.setAttribute('aria-expanded',String(!iconPicker.hidden));if(!iconPicker.hidden)renderIcons()});
@@ -11171,7 +11172,7 @@ const money=n=>'$'+Number(n||0).toFixed(2);
 function schedule(item,year,mon){if(item.active===false||item.recurring_enabled===false)return [];const raw=String(item.due||'').slice(0,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(raw))return [];const [y,m,d]=raw.split('-').map(Number);let first=new Date(y,m-1,d),end=new Date(year,mon+1,0);if(first>end)return [];let dates=[];let cursor=new Date(first);for(let i=0;i<1500&&cursor<=end;i++){if(cursor.getFullYear()===year&&cursor.getMonth()===mon)dates.push(cursor.getDate());const before=cursor.getTime();if(item.frequency==='weekly')cursor.setDate(cursor.getDate()+7);else if(item.frequency==='yearly'){const target=cursor.getFullYear()+1;cursor=new Date(target,m-1,Math.min(d,new Date(target,m,0).getDate()))}else{const nextMonth=cursor.getMonth()+1;cursor=new Date(cursor.getFullYear(),nextMonth,Math.min(d,new Date(cursor.getFullYear(),nextMonth+1,0).getDate()))}if(cursor.getTime()<=before)break;}return dates;}
 function render(){const days=el('sq-premium-days');if(!days)return;const items=window.sqPremiumBills||[];el('sq-premium-monthly').textContent=money(items.filter(x=>x.active!==false).reduce((s,x)=>s+Number(x.amount||0)*(x.frequency==='weekly'?52/12:x.frequency==='yearly'?1/12:1),0));el('sq-premium-active').textContent=items.filter(x=>x.active!==false&&(/subscription/i.test(x.kind||'')||/netflix|spotify|disney|hulu|youtube|claude|chatgpt|prime|apple tv/i.test(x.name||''))).length;const now=new Date(),future=new Date(now);future.setDate(now.getDate()+30);let upcoming=0;for(let t=new Date(now.getFullYear(),now.getMonth(),1);t<=future;t.setMonth(t.getMonth()+1)){for(const x of items)for(const day of schedule(x,t.getFullYear(),t.getMonth())){const date=new Date(t.getFullYear(),t.getMonth(),day);if(date>=new Date(now.getFullYear(),now.getMonth(),now.getDate())&&date<=future)upcoming++;}}el('sq-premium-upcoming').textContent=upcoming;el('sq-premium-month').textContent=month.toLocaleDateString(undefined,{month:'long',year:'numeric'});days.replaceChildren();['M','T','W','T','F','S','S'].forEach(x=>{const a=document.createElement('span');a.textContent=x;days.append(a)});const first=(new Date(month.getFullYear(),month.getMonth(),1).getDay()+6)%7;for(let i=0;i<first;i++){const a=document.createElement('span');days.append(a)}const count=new Date(month.getFullYear(),month.getMonth()+1,0).getDate();for(let d=1;d<=count;d++){const hits=items.filter(x=>schedule(x,month.getFullYear(),month.getMonth()).includes(d));const b=document.createElement('button');b.type='button';b.textContent=d;if(hits.length){b.classList.add('has-bill');const dot=document.createElement('i');b.append(dot)}if(chosen===d)b.classList.add('chosen');b.addEventListener('click',()=>{chosen=d;render()});days.append(b)}const out=el('sq-premium-selected');out.replaceChildren();if(!chosen){out.textContent='Select a day to see scheduled bills and subscriptions.';return}const hits=items.filter(x=>schedule(x,month.getFullYear(),month.getMonth()).includes(chosen));const title=document.createElement('strong');title.textContent=new Date(month.getFullYear(),month.getMonth(),chosen).toLocaleDateString(undefined,{month:'long',day:'numeric'})+' · '+hits.length+' scheduled';out.append(title);if(!hits.length){const p=document.createElement('p');p.textContent='No scheduled charges for this day.';out.append(p)}hits.forEach(x=>{const line=document.createElement('div'),name=document.createElement('span'),amount=document.createElement('strong');name.textContent=x.name||'Bill';amount.textContent=money(x.amount);line.append(name,amount);out.append(line)})}
 window.sqPremiumRender=render;el('sq-premium-prev')?.addEventListener('click',()=>{month.setMonth(month.getMonth()-1);chosen=null;render()});el('sq-premium-next')?.addEventListener('click',()=>{month.setMonth(month.getMonth()+1);chosen=null;render()});
-window.sqPremiumDetails=function(item){document.querySelector('.sq-premium-modal')?.remove();const overlay=document.createElement('div');overlay.className='sq-premium-modal';const card=document.createElement('section');card.className='sq-premium-dialog';card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');const h=document.createElement('h2');h.textContent=item.name||'Recurring bill';const price=document.createElement('div');price.className='sq-premium-price';price.textContent=money(item.amount);const dl=document.createElement('dl');[['Frequency',item.frequency||'Monthly'],['Next due',item.due||'Not scheduled'],['Status',item.active===false?'Inactive':'Scheduled'],['Payment','Not charged automatically']].forEach(([a,b])=>{const wrap=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=a;dd.textContent=b;wrap.append(dt,dd);dl.append(wrap)});const note=document.createElement('p');note.textContent='DoWeo records scheduled shared expenses. This is not a payment or bank transaction.';const close=document.createElement('button');close.classList.add('doweo-close-control');close.textContent='Close';const dismiss=()=>{overlay.remove();document.removeEventListener('keydown',esc)};const esc=e=>{if(e.key==='Escape')dismiss()};close.addEventListener('click',dismiss);overlay.addEventListener('click',e=>{if(e.target===overlay)dismiss()});document.addEventListener('keydown',esc);const edit=document.createElement('button');edit.type='button';edit.textContent=item.kind==='subscription'?'Edit subscription':'Edit bill';edit.addEventListener('click',()=>{dismiss();window.sqPremiumEdit?.(item,window.sqPremiumTracker)});card.append(h,price,dl,note,edit,close);overlay.append(card);document.body.append(overlay);close.focus()};
+window.sqPremiumDetails=function(item,trackerId){document.querySelector('.sq-premium-modal')?.remove();const overlay=document.createElement('div');overlay.className='sq-premium-modal';const card=document.createElement('section');card.className='sq-premium-dialog';card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');const h=document.createElement('h2');h.textContent=item.name||'Recurring bill';const price=document.createElement('div');price.className='sq-premium-price';price.textContent=money(item.amount);const dl=document.createElement('dl');[['Frequency',item.frequency||'Monthly'],['Next due',item.due||'Not scheduled'],['Status',item.active===false?'Inactive':'Scheduled'],['Payment','Not charged automatically']].forEach(([a,b])=>{const wrap=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=a;dd.textContent=b;wrap.append(dt,dd);dl.append(wrap)});const note=document.createElement('p');note.textContent='DoWeo records scheduled shared expenses. This is not a payment or bank transaction.';const close=document.createElement('button');close.classList.add('doweo-close-control');close.textContent='Close';const dismiss=()=>{overlay.remove();document.removeEventListener('keydown',esc)};const esc=e=>{if(e.key==='Escape')dismiss()};close.addEventListener('click',dismiss);overlay.addEventListener('click',e=>{if(e.target===overlay)dismiss()});document.addEventListener('keydown',esc);const edit=document.createElement('button');edit.type='button';edit.textContent=item.kind==='subscription'?'Edit subscription':'Edit bill';edit.addEventListener('click',()=>{dismiss();window.sqPremiumEdit?.(item,trackerId||window.sqPremiumTracker)});card.append(h,price,dl,note,edit,close);overlay.append(card);document.body.append(overlay);close.focus()};
 window.sqPremiumEdit=function(item,trackerId){
  const previous=document.querySelector('.sq-bill-edit-overlay');previous?.remove();
  const overlay=document.createElement('div');overlay.className='sq-premium-modal sq-bill-edit-overlay';
@@ -11200,7 +11201,7 @@ window.sqPremiumEdit=function(item,trackerId){
   try{
    if(typeof window.squareUpApi!=='function')throw Error('Sign in to edit this bill.');
    await window.squareUpApi('trackers/'+trackerId+'/bills/'+item.id,'PATCH',{name:name.value.trim(),amount:Number(amount.value),due:due.value,frequency:frequency.value,kind:kind.value});
-   dismiss();document.getElementById('sq-bills-tracker')?.dispatchEvent(new Event('change')); 
+   dismiss();window.dispatchEvent(new CustomEvent('squareup:bills-changed',{detail:{trackerId}}));document.getElementById('sq-bills-tracker')?.dispatchEvent(new Event('change')); 
   }catch(err){message.textContent=err.message||'Could not update this bill.';save.disabled=false}
  };
  card.append(title,form);overlay.append(card);document.body.append(overlay);name.focus();
@@ -16384,6 +16385,120 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-settle-panel,
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-balances-panel{display:none!important}
 }</style>
+<style id="dw-home-two-halves-style">@media(min-width:901px){
+ #dw-home-columns{display:none}
+ html body #tracker-dashboard.sq-tab-overview #dw-home-columns{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:20px;grid-column:1/-1;min-width:0;width:100%;margin:0}
+ #dw-home-left{min-width:0;container-type:inline-size}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary){width:100%!important;max-width:100%!important;margin:0!important;padding:20px!important;box-sizing:border-box!important;gap:16px!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-welcome h2{font-size:clamp(20px,2vw,30px)!important;min-width:0;overflow-wrap:anywhere}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-welcome{gap:12px!important;min-width:0}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #dw-desktop-add{margin-right:0!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-balance{padding:20px!important;min-width:0!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-net{font-size:clamp(30px,3.8vw,52px)!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel,html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-activity-panel{padding:16px!important;min-width:0!important;box-sizing:border-box!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-clean-balance-actions{flex-wrap:wrap!important;width:100%;min-width:0}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-clean-balance-actions button{min-width:0!important;flex:1 1 120px!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-copy{min-width:0;overflow-wrap:anywhere}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-amount{flex:none}
+ #dw-home-schedules{display:flex;flex-direction:column;gap:20px;min-width:0}
+ .dw-home-schedule-card{min-width:0;padding:24px;border:1px solid #315b70;border-radius:20px;background:linear-gradient(145deg,#0b263b,#123548);color:#edf8ff;box-sizing:border-box}
+ .dw-home-schedule-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid #31556a}
+ .dw-home-schedule-head h2{margin:0;font-size:21px}.dw-home-schedule-head>span{padding:6px 10px;border:1px solid #286779;border-radius:20px;background:#123e4d;color:#abcbd7;font-size:12px;white-space:nowrap}
+ .dw-home-schedule-list{display:grid;gap:14px;min-height:100px;color:#b6cfdc;font-size:13px}
+ .dw-home-bill-row{min-width:0;padding:12px 0;border-bottom:1px solid #294f63}.dw-home-bill-row:last-child{border-bottom:0}
+ .dw-home-bill-info{display:flex;align-items:center;gap:12px;min-width:0}.dw-home-bill-info>div:last-child{flex:1;min-width:0}.dw-home-bill-info .sq-service-icon{flex:none}
+ .dw-home-bill-title{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}.dw-home-bill-title strong{color:#edf8ff;overflow-wrap:anywhere}.dw-home-bill-title>span{font-weight:700;color:#b1efdb;white-space:nowrap}
+ .dw-home-bill-info small{display:block;color:#acc8d6;line-height:1.5;margin-top:5px}
+ .dw-home-bill-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+ .dw-home-bill-actions button{border:1px solid #508092;border-radius:10px;background:#103448;color:#d9edf6;padding:9px 12px;cursor:pointer;font:inherit;font-size:12px}
+ .dw-home-bill-actions button:hover{background:#1d4a5e}.dw-home-bill-actions button:disabled{opacity:.5;cursor:wait}
+ .dw-home-schedule-status{font-size:12px;color:#f0bac3;margin:10px 0 0}.dw-home-schedule-status:empty{display:none}
+ @container(max-width:620px){
+  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary){grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto auto auto!important}
+  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel{grid-column:1!important;grid-row:3!important}
+  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>#sq-desktop-balance-layout>.sq-overview-activity-panel{grid-row:4!important}
+ }
+}
+@media(max-width:900px){#dw-home-columns{display:none!important}}</style>
+<script id="dw-home-two-halves-script">(function(){
+ 'use strict';
+ const dashboard=document.getElementById('tracker-dashboard'),summary=document.getElementById('sq-return-summary'),tabs=dashboard?.querySelector('.sq-workspace-tabs');
+ if(!dashboard||!summary||!tabs)return;
+ const desktop=window.matchMedia('(min-width:901px)'),marker=document.createComment('Home summary original location');summary.before(marker);
+ const shell=document.createElement('div');shell.id='dw-home-columns';
+ const left=document.createElement('div');left.id='dw-home-left';
+ const right=document.createElement('aside');right.id='dw-home-schedules';right.setAttribute('aria-label','Tracker bills and subscriptions');
+ shell.append(left,right);
+ const hosts={};
+ for(const [kind,title] of [['bill','Bills'],['subscription','Subscriptions']]){
+  const card=document.createElement('section');card.className='dw-home-schedule-card';card.setAttribute('aria-label','Home '+title.toLowerCase());
+  const header=document.createElement('div');header.className='dw-home-schedule-head';
+  const heading=document.createElement('h2');heading.textContent=title;
+  const count=document.createElement('span');count.textContent='0 saved';
+  header.append(heading,count);
+  const list=document.createElement('div');list.className='dw-home-schedule-list';list.id='dw-home-'+kind+'-list';
+  const status=document.createElement('p');status.className='dw-home-schedule-status';status.setAttribute('role','status');
+  card.append(header,list,status);right.append(card);hosts[kind]={card,count,list,status};
+ }
+ let lastTracker=null,seq=0,loading=false;
+ const active=()=>window.sqLastOpenedTrackerDetail;
+ const visible=()=>desktop.matches&&dashboard.classList.contains('sq-tab-overview')&&!!dashboard.getClientRects().length&&!document.body.classList.contains('dw-polls-open');
+ function message(text){for(const host of Object.values(hosts)){host.count.textContent='0 saved';host.list.textContent=text;host.status.textContent='';}}
+ function layout(){
+  if(desktop.matches){if(shell.parentElement!==dashboard)marker.before(shell);if(summary.parentElement!==left)left.append(summary);load();}
+  else{seq++;lastTracker=null;loading=false;if(marker.parentNode&&summary.parentNode!==marker.parentNode)marker.after(summary);shell.remove();}
+ }
+ function row(item,id){
+  const presentation=window.sqBillPresentation;
+  const el=document.createElement('article');el.className='dw-home-bill-row';el.dataset.billId=item.id;
+  const info=document.createElement('div');info.className='dw-home-bill-info';
+  const name=document.createElement('strong');name.textContent=item.name||'Bill';
+  const amount=document.createElement('span');amount.textContent=new Intl.NumberFormat(undefined,{style:'currency',currency:active()?.currency||'USD'}).format(Number(item.amount)||0);
+  const title=document.createElement('div');title.className='dw-home-bill-title';title.append(name,amount);
+  const detail=document.createElement('small');detail.textContent=(item.frequency||'Recurring')+' · Next due '+(item.due||'not set')+(item.recurring_enabled?' · '+(item.active===false?'Paused':'Automatic'):'');
+  const copy=document.createElement('div');copy.append(title,detail);
+  if(presentation){let saved;try{saved=localStorage.getItem(presentation.iconStorageKey(id,item.id))}catch(_){}info.append(presentation.iconNode(item.icon&&item.icon!=='other'?item.icon:(saved||presentation.inferIcon(item.name))));}
+  info.append(copy);
+  const actions=document.createElement('div');actions.className='dw-home-bill-actions';
+  for(const label of ['Details','Edit','Remove']){
+   const button=document.createElement('button');button.type='button';button.textContent=label;actions.append(button);
+   button.addEventListener('click',async()=>{
+    if(active()?.id!==id)return;
+    if(label==='Details'){window.sqPremiumDetails?.(item,id);return;}
+    if(label==='Edit'){window.sqPremiumEdit?.(item,id);return;}
+    if(!confirm('Remove this '+(item.kind==='subscription'?'subscription':'bill')+'?'))return;
+    button.disabled=true;
+    try{await window.squareUpApi('trackers/'+encodeURIComponent(id)+'/bills/'+encodeURIComponent(item.id),'DELETE');await load(true);}
+    catch(error){hosts[presentation?.getKind(id,item)||'bill'].status.textContent=error.message;button.disabled=false;}
+   });
+  }
+  el.append(info,actions);return el;
+ }
+ async function load(force=false){
+  if(!visible())return;
+  const tracker=active();
+  if(!tracker?.id||tracker.id==='local'){lastTracker=null;message('Choose a shared tracker to see saved records.');return;}
+  if(lastTracker===tracker.id&&!force)return;
+  const id=tracker.id,token=++seq;lastTracker=id;loading=true;message('Loading…');
+  try{
+   const data=await window.squareUpApi('trackers/'+encodeURIComponent(id)+'/bills');
+   if(token!==seq||!desktop.matches||active()?.id!==id)return;
+   const items=Array.isArray(data)?data:[];
+   for(const [kind,host] of Object.entries(hosts)){
+    const selected=items.filter(item=>(window.sqBillPresentation?.getKind(id,item)||item.kind||'bill')===kind);
+    host.count.textContent=selected.length+' saved';host.list.replaceChildren();host.status.textContent='';
+    if(!selected.length)host.list.textContent=kind==='bill'?'No bills yet.':'No subscriptions yet.';
+    selected.forEach(item=>host.list.append(row(item,id)));
+   }
+  }catch(error){if(token===seq){lastTracker=null;message('Unable to load saved records.');for(const host of Object.values(hosts))host.status.textContent=error.message;}}
+  finally{if(token===seq)loading=false;}
+ }
+ window.addEventListener('squareup:tracker-detail',()=>load(true));
+ window.addEventListener('squareup:bills-changed',event=>{if(event.detail?.trackerId===active()?.id)load(true);});
+ document.getElementById('nav-home')?.addEventListener('click',()=>requestAnimationFrame(()=>load(true)));
+ new MutationObserver(()=>{if(!loading)load();}).observe(dashboard,{attributes:true,attributeFilter:['class','hidden']});
+ desktop.addEventListener('change',layout);layout();
+})();</script>
 </body>
 </html>
 

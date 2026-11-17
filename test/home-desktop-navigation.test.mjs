@@ -68,7 +68,7 @@ test('desktop Home remains full width after navigation and shows only four track
    assert.equal(state.badContainer,false,'toolbar classes belong only on the header');
    assert.notEqual(state.display,'flex','page wrapper must keep vertical layout');
    assert.ok(state.dashboard.width>state.viewport*.45,'Home must not collapse into a narrow column');
-   assert.ok(state.summary.width>state.viewport*.45,'dashboard cards retain their normal width');
+   assert.ok(state.summary.width>state.dashboard.width*.4 && state.summary.width<state.dashboard.width*.55,'summary occupies the left half of Home');
    assert.ok(state.dashboard.right<=state.viewport+1,'Home stays inside viewport');
    assert.deepEqual(state.labels,['Overview','Expenses','Bills','Members']);
    await page.screenshot({path:resolve(root,'test-results/bills/home-'+label+'.png'),fullPage:true});
