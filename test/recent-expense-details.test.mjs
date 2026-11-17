@@ -99,6 +99,21 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   await desktopChooser.setFiles({name:'desktop-receipt.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j5n8AAAAASUVORK5CYII=','base64')});
   await page.waitForFunction(()=>document.getElementById('receipt-status').textContent.includes('Recognized'));
   assert.equal(await page.locator('#receipt-items').getByLabel('Item 1 name',{exact:true}).inputValue(),'Pizza','desktop Tools opens receipt review');
+  assert.ok(await page.locator('#dw-receipt-image').isVisible(),'uploaded receipt preview visible');
+  const receiptLayout=await page.evaluate(()=>({photo:document.getElementById('dw-receipt-photo').getBoundingClientRect().right,fields:document.getElementById('dw-receipt-fields').getBoundingClientRect().left}));
+  assert.ok(receiptLayout.photo<receiptLayout.fields,'receipt alongside editable items on desktop');
+  assert.equal(await page.locator('#dw-receipt-extras').getAttribute('open'),null,'Extras collapsed initially');
+  await page.locator('#dw-receipt-extras>summary').click();
+  await page.locator('#receipt-tax').fill('2');await page.locator('#receipt-tip').fill('3');
+  await page.locator('#receipt-items input[type=checkbox]').first().check();
+  assert.equal(await page.locator('#dw-receipt-total').textContent(),'$15.00');
+  assert.equal(await page.locator('#receipt-save').isDisabled(),true,'mismatched receipt total blocks saving');
+  await page.locator('#receipt-total').fill('15');
+  assert.equal(await page.locator('#receipt-save').isEnabled(),true,'reviewed matching total enables Save');
+  await page.locator('#receipt-tax').fill('0');await page.locator('#receipt-tip').fill('0');await page.locator('#receipt-total').fill('10');
+  await page.screenshot({path:resolve(root,'test-results/bills/receipt-side-by-side.png'),fullPage:true});
+  await page.locator('#dw-receipt-extras>summary').click();
+
   await page.locator('#sq-receipt-x').click();
   await page.locator('#dw-expense-tools [data-sq-quick="quick-split"]').click();
   await page.locator('#split-page').waitFor();
@@ -124,7 +139,11 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   assert.equal(await page.locator('#receipt-file').getAttribute('capture'),'environment','camera capture requests rear phone camera');
   await chooser.setFiles({name:'receipt.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j5n8AAAAASUVORK5CYII=','base64')});
   await page.waitForFunction(()=>document.getElementById('receipt-status').textContent.includes('Recognized'));
-  assert.equal(await page.locator('#receipt-items').getByLabel('Item 1 name',{exact:true}).inputValue(),'Pizza','captured receipt reaches item review');await page.locator('#receipt-items input[type=checkbox]').first().check();assert.ok((await page.locator('#receipt-preview').textContent()).includes('10.00'),'receipt assignment updates the review');
+  assert.equal(await page.locator('#receipt-items').getByLabel('Item 1 name',{exact:true}).inputValue(),'Pizza','captured receipt reaches item review');
+  const mobileReceipt=await page.evaluate(()=>({photo:document.getElementById('dw-receipt-photo').getBoundingClientRect().bottom,fields:document.getElementById('dw-receipt-fields').getBoundingClientRect().top,overflow:document.documentElement.scrollWidth>innerWidth+1}));
+  assert.ok(mobileReceipt.photo<mobileReceipt.fields,'receipt stacks above fields on phones');assert.equal(mobileReceipt.overflow,false);
+  await page.screenshot({path:resolve(root,'test-results/bills/receipt-mobile-stacked.png'),fullPage:true});
+await page.locator('#receipt-items input[type=checkbox]').first().check();assert.ok((await page.locator('#receipt-preview').textContent()).includes('10.00'),'receipt assignment updates the review');
   await page.locator('#sq-receipt-x').click();
   await mobileAdd.locator('summary').click();
   await mobileAdd.getByRole('button',{name:'Split bill',exact:true}).click();
