@@ -73,7 +73,8 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
    assert.ok(Math.abs(state.left.width-state.right.width)<2,'equal Home halves at '+width);
    assert.ok(state.left.right<state.right.left,'columns separated');
    assert.ok(Math.abs(state.summary.width-state.left.width)<2,'summary fits left half');
-   assert.ok(state.activity.left>=state.left.left-1&&state.activity.right<=state.left.right+1,'activity fits summary');
+   assert.ok(Math.abs(state.activity.left-state.left.left)<2&&Math.abs(state.activity.right-state.right.right)<2,'activity spans both columns');
+   assert.ok(state.activity.top>=state.bills.top&&state.activity.top>=state.subs.bottom,'activity is below both upper columns');
    assert.ok(state.bills.bottom<state.subs.top,'Bills above Subscriptions');
    assert.equal(state.smart,'none');assert.equal(state.balances,'none');assert.equal(state.overflow,false,'no overflow at '+width);
   }

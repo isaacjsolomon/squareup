@@ -16427,6 +16427,7 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  const desktop=window.matchMedia('(min-width:901px)'),marker=document.createComment('Home summary original location');summary.before(marker);
  const shell=document.createElement('div');shell.id='dw-home-columns';
  const left=document.createElement('div');left.id='dw-home-left';
+ const activity=document.getElementById('sq-return-activity')?.closest('.sq-return-panel');
  const right=document.createElement('aside');right.id='dw-home-schedules';right.setAttribute('aria-label','Tracker bills and subscriptions');
  shell.append(left,right);
  const hosts={};
@@ -16445,8 +16446,8 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  const visible=()=>desktop.matches&&dashboard.classList.contains('sq-tab-overview')&&!!dashboard.getClientRects().length&&!document.body.classList.contains('dw-polls-open');
  function message(text){for(const host of Object.values(hosts)){host.count.textContent='0 saved';host.list.textContent=text;host.status.textContent='';}}
  function layout(){
-  if(desktop.matches){if(shell.parentElement!==dashboard)marker.before(shell);if(summary.parentElement!==left)left.append(summary);load();}
-  else{seq++;lastTracker=null;loading=false;if(marker.parentNode&&summary.parentNode!==marker.parentNode)marker.after(summary);shell.remove();}
+  if(desktop.matches){if(shell.parentElement!==dashboard)marker.before(shell);if(summary.parentElement!==left)left.append(summary);if(activity&&activity.parentElement!==shell)shell.append(activity);load();}
+  else{seq++;lastTracker=null;loading=false;const originalGrid=summary.querySelector('.sq-return-grid');if(activity&&originalGrid&&activity.parentElement!==originalGrid)originalGrid.prepend(activity);if(marker.parentNode&&summary.parentNode!==marker.parentNode)marker.after(summary);shell.remove();}
  }
  function row(item,id){
   const presentation=window.sqBillPresentation;
@@ -16499,6 +16500,18 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  new MutationObserver(()=>{if(!loading)load();}).observe(dashboard,{attributes:true,attributeFilter:['class','hidden']});
  desktop.addEventListener('change',layout);layout();
 })();</script>
+<style id="dw-home-activity-across-columns">@media(min-width:901px){
+ html body #tracker-dashboard.sq-tab-overview #dw-home-columns{align-items:stretch!important}
+ #dw-home-left{grid-column:1;grid-row:1;display:flex;flex-direction:column}
+ #dw-home-schedules{grid-column:2;grid-row:1;align-self:stretch}
+ #dw-home-schedules>.dw-home-schedule-card{flex:1}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary){height:100%!important;grid-template-rows:auto minmax(0,1fr)!important}
+ html body #tracker-dashboard.sq-tab-overview #dw-home-columns>.sq-overview-activity-panel{grid-column:1/-1!important;grid-row:2!important;width:100%!important;max-width:none!important;min-width:0!important;margin:0!important;padding:22px!important;box-sizing:border-box!important}
+ #dw-home-columns>.sq-overview-activity-panel #sq-return-activity{display:grid;gap:10px}
+ #dw-home-columns>.sq-overview-activity-panel .sq-return-row{background:#0d2d45!important;box-sizing:border-box}
+ #dw-home-columns>.sq-overview-activity-panel.sq-panel-collapsed>:not(.sq-return-head){display:none!important}
+ @container(max-width:620px){html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary){grid-template-rows:auto auto auto!important}}
+}</style>
 </body>
 </html>
 
