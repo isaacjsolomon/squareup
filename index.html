@@ -15680,7 +15680,7 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  const makePanel=(id,ids)=>{
    const panel=document.createElement('div');panel.id=id;panel.className='dw-desktop-side-flyout';
    panel.hidden=true;panel.setAttribute('role','group');panel.setAttribute('aria-label',id==='dw-social-flyout'?'Social navigation':'More navigation');
-   for(const name of ids){const item=document.getElementById(name);if(item)panel.appendChild(item);}
+   for(const name of ids){const item=document.getElementById(name);if(item){if(name==='nav-friends'){item.hidden=false;item.removeAttribute('aria-hidden');item.removeAttribute('tabindex');}panel.appendChild(item);}}
    document.body.appendChild(panel);return panel;
  };
  const socialPanel=makePanel('dw-social-flyout',['nav-chat','nav-friends']);
@@ -16035,6 +16035,15 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  html body.dw-desktop-tracker-tools #dw-inline-tracker-picker:hover{
   background:rgba(20,22,38,.27)!important;
  }
+}
+</style>
+<style id="dw-desktop-social-friends-four-tabs">
+@media(min-width:901px){
+ html body #dw-social-flyout #nav-friends{display:flex!important}
+ html body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-five-tabs{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ }
+ html body #tracker-dashboard>.sq-workspace-tabs>.dw-inline-chat-tab{display:none!important}
 }
 </style>
 </body>
