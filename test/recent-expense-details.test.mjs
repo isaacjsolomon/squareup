@@ -82,6 +82,17 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
    assert.equal(state.smart,'none');assert.equal(state.balances,'none');assert.equal(state.overflow,false,'no overflow at '+width);
   }
   await page.setViewportSize({width:1440,height:1000});
+  const typography=await page.evaluate(()=>{
+   const style=e=>{const s=getComputedStyle(e);return {size:s.fontSize,family:s.fontFamily,weight:s.fontWeight,spacing:s.letterSpacing,line:s.lineHeight}};
+   const headings=[document.querySelector('.sq-clean-eyebrow'),document.getElementById('dw-upcoming-title'),document.querySelector('.sq-overview-people-panel h3')].map(style);
+   const icons=[...document.querySelectorAll('#dw-compact-upcoming .sq-service-icon')].map(e=>({width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height}));
+   return {headings,icons,base:style(document.getElementById('dw-compact-balance')),prefix:style(document.querySelector('.dw-balance-prefix')),amount:style(document.querySelector('.dw-balance-amount'))};
+  });
+  assert.deepEqual(typography.headings[0],typography.headings[1],'Balance and Upcoming titles match');
+  assert.deepEqual(typography.headings[1],typography.headings[2],'Upcoming and Members titles match');
+  assert.ok(typography.icons.length>=2);assert.ok(typography.icons.every(i=>i.width===36&&i.height===36),'consistent compact service icons');
+  assert.ok(parseFloat(typography.prefix.size)<parseFloat(typography.amount.size),'You owe label is smaller');
+  assert.equal(typography.amount.size,typography.base.size,'amount keeps its original font size');
   const billRow=page.locator('#dw-home-bill-list .dw-home-bill-row').filter({hasText:'Electricity'});
   await billRow.getByRole('button',{name:'View Electricity details',exact:true}).click();
   await page.locator('.sq-premium-dialog h2').filter({hasText:'Electricity'}).waitFor();

@@ -16608,7 +16608,10 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  headline.after(mirror);
  function amount(){
   const raw=headline.textContent.trim(),number=raw.replace(/[^0-9]/g,'');
-  mirror.textContent=!number?'Your balance':Number(number)===0?'All settled up':(/^[-−]/.test(raw)?'You owe ':'You are owed ')+raw.replace(/^[-−+]/,'');
+  if(!number||Number(number)===0){mirror.textContent=!number?'Your balance':'All settled up';return;}
+  const prefix=document.createElement('span');prefix.className='dw-balance-prefix';prefix.textContent=/^[-−]/.test(raw)?'You owe ':'You are owed ';
+  const amount=document.createElement('span');amount.className='dw-balance-amount';amount.textContent=raw.replace(/^[-−+]/,'');
+  mirror.replaceChildren(prefix,amount);
  }
  new MutationObserver(amount).observe(headline,{childList:true,subtree:true,characterData:true});amount();
  function scheduleRows(){
@@ -16636,6 +16639,22 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  }
  if(!init()){const observer=new MutationObserver(()=>{if(init())observer.disconnect();});observer.observe(document.body,{childList:true,subtree:true});}
 })();</script>
+<style id="dw-overview-consistent-type">@media(min-width:901px){
+ html body #tracker-dashboard #dw-home-columns .sq-clean-eyebrow,
+ html body #tracker-dashboard #dw-home-columns #dw-upcoming-title,
+ html body #tracker-dashboard #dw-home-columns .sq-overview-people-panel h3{
+  font-family:inherit!important;font-size:12px!important;font-weight:750!important;line-height:1.3!important;letter-spacing:.15em!important;text-transform:uppercase!important;color:#9ed9e9!important;
+ }
+ #dw-compact-balance .dw-balance-prefix{font-family:inherit;font-size:.55em;font-weight:650;letter-spacing:-.015em}
+ #dw-compact-balance .dw-balance-amount{font-family:inherit;font-size:inherit;font-weight:inherit;letter-spacing:inherit}
+ html body #dw-compact-upcoming .dw-home-bill-info{align-items:center!important;gap:12px!important;min-width:0!important}
+ html body #dw-compact-upcoming .sq-service-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 36px!important;width:36px!important;height:36px!important;min-width:36px!important;max-width:36px!important;min-height:36px!important;max-height:36px!important;box-sizing:border-box!important;overflow:hidden!important;border-radius:9px!important;font-size:23px!important;line-height:1!important}
+ html body #dw-compact-upcoming .sq-service-icon img,
+ html body #dw-compact-upcoming .sq-service-icon svg{display:block!important;flex:none!important;width:26px!important;height:26px!important;min-width:0!important;max-width:26px!important;min-height:0!important;max-height:26px!important;object-fit:contain!important;margin:0!important}
+ html body #dw-compact-upcoming .dw-home-bill-title strong,
+ html body #dw-compact-upcoming .dw-home-bill-title>span{font-family:inherit!important;font-size:16px!important;font-weight:700!important;line-height:1.35!important}
+ html body #dw-compact-upcoming .dw-home-bill-info small{font-family:inherit!important;font-size:12px!important;font-weight:400!important;line-height:1.5!important}
+}</style>
 </body>
 </html>
 
