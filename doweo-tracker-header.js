@@ -11,19 +11,8 @@
    const tabs=[...document.querySelectorAll('.sq-workspace-tabs')].find(el=>
     [...el.querySelectorAll('[data-sq-tab]')].some(b=>b.dataset.sqTab==='overview'));
    if(!tabs)return;
-   const keys=['overview','expenses','bills','members','chat'];
-   const existing=[...tabs.querySelectorAll('button[data-sq-tab]')];
-   const buttons=keys.map(key=>existing.find(b=>b.dataset.sqTab===key));
-   if(!buttons[4]){
-    const chat=document.createElement('button');
-    chat.type='button';chat.dataset.sqTab='chat';chat.setAttribute('role','tab');chat.setAttribute('aria-selected','false');
-    chat.textContent='Chat';chat.className='dw-added-chat-tab';
-    chat.addEventListener('click',()=>{
-     const target=$('nav-chat')||document.querySelector('[data-sq-destination="nav-chat"]');
-     if(target)target.click();
-    });
-    tabs.append(chat);
-   }
+   // Chat is not a tracker navigation tab on desktop. The original Chat
+   // destination elsewhere in the app remains untouched.
    tabs.classList.add('dw-integrated-tabs');
    const source=$('tracker-select');
    if(!source)return;
