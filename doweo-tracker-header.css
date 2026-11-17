@@ -47,3 +47,17 @@
   display:none!important;
  }
 }
+
+/* Ensure the real tracker tablist remains four equal columns even if its
+   markup differs from the legacy workspace class. Desktop only. */
+@media (min-width:901px){
+ .dw-four-tracker-tabs{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:clamp(4px,.7vw,12px)!important;
+ }
+ .dw-four-tracker-tabs > button,
+ .dw-four-tracker-tabs > [role="tab"]{
+  min-width:0!important;
+ }
+}
