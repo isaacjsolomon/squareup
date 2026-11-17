@@ -123,6 +123,7 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   await page.getByRole('button',{name:'Close expense details',exact:true}).click();
   await page.setViewportSize({width:390,height:844});
   assert.equal(await page.locator('#dw-expense-editor').isVisible(),false);
+  await page.waitForFunction(()=>!document.getElementById('dw-home-columns')&&document.getElementById('sq-return-summary').parentElement.id==='tracker-dashboard');
   assert.equal(await page.locator('#dw-home-columns').count(),0,'mobile summary restored to original parent');
   assert.equal(await page.locator('#sq-return-summary').evaluate(e=>e.parentElement.id),'tracker-dashboard');
  }finally{await browser.close();await new Promise(done=>server.close(done));}
