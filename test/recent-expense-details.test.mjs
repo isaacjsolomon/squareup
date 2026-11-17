@@ -82,6 +82,9 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
    assert.equal(state.smart,'none');assert.equal(state.balances,'none');assert.equal(state.overflow,false,'no overflow at '+width);
   }
   await page.setViewportSize({width:1440,height:1000});
+  const logos=await page.locator('#dw-compact-upcoming .sq-brand-logo').evaluateAll(images=>images.map(image=>({src:image.getAttribute('src'),radius:getComputedStyle(image).borderRadius,local:image.dataset.localVector})));
+  assert.ok(logos.length>0);assert.ok(logos.every(image=>image.local==='true'&&image.src.startsWith('/images/service-logos/')),'desktop uses crisp local SVG logos');
+  assert.ok(logos.every(image=>parseFloat(image.radius)>0),'logo backgrounds have rounded corners');
   const typography=await page.evaluate(()=>{
    const style=e=>{const s=getComputedStyle(e);return {size:s.fontSize,family:s.fontFamily,weight:s.fontWeight,spacing:s.letterSpacing,line:s.lineHeight}};
    const headings=[document.querySelector('.sq-clean-eyebrow'),document.getElementById('dw-upcoming-title'),document.querySelector('.sq-overview-people-panel h3')].map(style);

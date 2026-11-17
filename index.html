@@ -10646,7 +10646,9 @@ function iconNode(key){
    // Use full-size recognizable service favicons for these brands instead.
    const favicon='https://www.google.com/s2/favicons?domain='+encodeURIComponent(brandDomains[spec[0]])+'&sz=128';
    const useFavicon=['disney','max','chatgpt','drive'].includes(spec[0]);
-   img.src=useFavicon?favicon:'https://cdn.simpleicons.org/'+art[0]+'/'+art[1];
+   const desktopAsset=window.matchMedia('(min-width:901px)').matches&&["netflix","max","prime","apple","spotify","youtube","dropbox","chatgpt","drive","claude"].includes(spec[0]);
+   img.src=desktopAsset?'/images/service-logos/'+spec[0]+'.svg?v=1':(useFavicon?favicon:'https://cdn.simpleicons.org/'+art[0]+'/'+art[1]);
+   if(desktopAsset)img.dataset.localVector='true';
    img.onerror=()=>{
      if(!useFavicon && !img.dataset.fallback){img.dataset.fallback='1';img.src=favicon;return;}
      img.remove();span.textContent=spec[2];
@@ -16654,6 +16656,12 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  html body #dw-compact-upcoming .dw-home-bill-title strong,
  html body #dw-compact-upcoming .dw-home-bill-title>span{font-family:inherit!important;font-size:16px!important;font-weight:700!important;line-height:1.35!important}
  html body #dw-compact-upcoming .dw-home-bill-info small{font-family:inherit!important;font-size:12px!important;font-weight:400!important;line-height:1.5!important}
+}</style>
+<style id="dw-crisp-rounded-service-logos">@media(min-width:901px){
+ html body .sq-service-icon{overflow:hidden!important;border-radius:9px!important}
+ html body .sq-service-icon .sq-brand-logo{object-fit:contain!important;display:block!important;max-width:100%!important;max-height:100%!important;border-radius:6px!important;filter:none!important}
+ html body .sq-service-icon.chatgpt .sq-brand-logo{background:#fff!important;border-radius:7px!important;padding:3px!important;box-sizing:border-box!important}
+ html body .sq-service-icon .sq-brand-logo[data-local-vector]{image-rendering:auto}
 }</style>
 </body>
 </html>
