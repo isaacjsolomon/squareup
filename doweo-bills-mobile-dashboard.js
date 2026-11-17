@@ -188,7 +188,7 @@
    !document.body.classList.contains('settings-view') &&
    !document.body.classList.contains('trackers-view');
   const onOverview=visible && dashboard.classList.contains('sq-tab-overview') &&
-   !document.body.classList.contains('sq-bills-open') &&
+   !document.body.matches('.sq-finance-open,.sqev-page-open,.sq-bills-open,.notifications-view,.friends-view,.analytics-view,.settings-view,.trackers-view,.about-view,.split-view,.sq-help-view') &&
    document.getElementById('nav-home')?.classList.contains('active');
   document.body.classList.toggle('dw-home-overview-picker',Boolean(onOverview));
   if(!onOverview)picker.remove();
