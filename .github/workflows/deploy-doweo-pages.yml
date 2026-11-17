@@ -23,14 +23,14 @@ jobs:
           mkdir -p .pages-output
           cp index.html doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs doweo-bills-mobile-dashboard.js doweo-bills-mobile-dashboard.css doweo-finance-planning.js doweo-trips-activity.js doweo-paylinks-currency.js .pages-output/
           # Bump these URLs in the published HTML to invalidate old browser-cached UI assets.
-          sed -E -i 's#(doweo-bills-mobile-dashboard\.(css|js))\?v=[^\"]+#\1?v=20261116-inline-header-v1#g' .pages-output/index.html
+          sed -E -i 's#(doweo-bills-mobile-dashboard\.(css|js))\?v=[^\"]+#\1?v=20261116-home-route-v8#g' .pages-output/index.html
           cp doweo-tracker-header.css doweo-tracker-header.js .pages-output/
           python3 - <<'PY'
           from pathlib import Path
           page = Path('.pages-output/index.html')
           html = page.read_text()
-          css = '<link rel="stylesheet" href="/doweo-tracker-header.css?v=20261116-four-tabs-actual-v6">'
-          js = '<script defer src="/doweo-tracker-header.js?v=20261116-four-tabs-actual-v6"></script>'
+          css = '<link rel="stylesheet" href="/doweo-tracker-header.css?v=20261116-home-route-v8">'
+          js = '<script defer src="/doweo-tracker-header.js?v=20261116-home-route-v8"></script>'
           assert '</head>' in html and '</body>' in html
           html = html.replace('</head>', css + '</head>', 1).replace('</body>', js + '</body>', 1)
           page.write_text(html)
@@ -71,6 +71,7 @@ jobs:
           BILLS_BASE_URL: https://doweo.app
         run: |
           node scripts/verify-live-bills.mjs
+          node --test test/home-desktop-navigation.test.mjs
           node --test test/bills-full-app.test.mjs
       - name: Upload production Bills screenshots
         if: always()

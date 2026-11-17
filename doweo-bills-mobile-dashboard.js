@@ -141,35 +141,18 @@
  picker.id='dw-inline-tracker-picker';
  picker.innerHTML='<span class="dw-inline-tracker-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 7 2 2 3-4"/><path d="M12 7h9"/><circle cx="6" cy="17" r="2"/><path d="M12 17h9"/></svg></span><label for="dw-inline-tracker-select">Tracker</label><select id="dw-inline-tracker-select" aria-label="Switch tracker"></select>';
  const select=picker.querySelector('select');
- const chat=document.createElement('button');
- chat.type='button';
- chat.className='dw-inline-chat-tab';
- chat.textContent='Chat';
- chat.setAttribute('aria-label','Open chat');
- chat.setAttribute('role','tab');
- chat.setAttribute('aria-selected','false');
- chat.addEventListener('click',()=>{
-  const original=document.getElementById('nav-chat');
-  if(original&&original!==chat){original.click();return;}
-  const mobileChat=document.getElementById('sq-mobile-chat-top');
-  const action=mobileChat?.querySelector('button,a');
-  if(action)action.click();
- });
  let frame=0;
  function findHeader(){
-  const visible=node=>Boolean(node&&node.getClientRects().length);
-  const asks=[...document.querySelectorAll('button,a,[role="button"]')]
-    .filter(node=>visible(node)&&/ask\s*weo/i.test(node.textContent||''));
-  for(const ask of asks){
-   for(let node=ask.parentElement,depth=0;node&&depth<10;node=node.parentElement,depth++){
-    const rect=node.getBoundingClientRect();
-    if(rect.width<400||rect.height<40||rect.height>220)continue;
-    if(!/doweo/i.test(node.textContent||''))continue;
-    const search=node.querySelector('input[type="search"],input[placeholder*="earch" i],[role="search"],[role="searchbox"],[class*="search"],[id*="search"]');
-    if(search||/search/i.test(node.textContent||''))return node;
-   }
-  }
-  return null;
+  // Route transitions can hide the real header. Never walk up to .wrap/body:
+  // applying the toolbar flex layout there squeezes the entire dashboard.
+  const header=document.querySelector('body > .wrap > header.tracker-heading');
+  return header&&header.getClientRects().length?header:null;
+ }
+ function cleanToolbarContainers(){
+  const header=document.querySelector('body > .wrap > header.tracker-heading');
+  document.querySelectorAll('.dw-inline-tracker-header,.dw-integrated-header').forEach(node=>{
+   if(node!==header)node.classList.remove('dw-inline-tracker-header','dw-integrated-header');
+  });
  }
  function syncOptions(){
   const options=[...source.options].filter(option=>option.value&&option.value!=='manage'&&!option.value.startsWith('─'));
@@ -193,6 +176,8 @@
  });
  function apply(){
   frame=0;
+  cleanToolbarContainers();
+  if(desktop.matches)tabbar.querySelectorAll('.dw-inline-chat-tab,[data-sq-tab="chat"]').forEach(node=>node.remove());
   if(!desktop.matches){
    document.body.classList.remove('dw-desktop-tracker-tools');
    return;
@@ -219,8 +204,8 @@
   }
   header.classList.add('dw-inline-tracker-header');
   const tabs=[...tabbar.querySelectorAll('button[data-sq-tab]')];
-  if(tabbar.contains(chat))chat.remove();
-  tabbar.classList.add('dw-inline-five-tabs');
+  tabbar.classList.remove('dw-inline-five-tabs');
+  tabbar.classList.add('dw-inline-four-tabs');
  }
  function schedule(){if(!frame)frame=requestAnimationFrame(apply)}
  const observer=new MutationObserver(schedule);

@@ -47,13 +47,8 @@
    if(!source)return;
    const ask=[...document.querySelectorAll('button,a')].find(el=>visible(el)&&/ask\s+weo/i.test(el.textContent||''));
    if(!ask)return;
-   let header=null,search=null;
-   for(let el=ask.parentElement,depth=0;el&&depth<8;el=el.parentElement,depth++){
-    const rect=el.getBoundingClientRect();
-    if(rect.height<40||rect.height>240||rect.width<550)continue;
-    const field=el.querySelector('input[type="search"],input[placeholder*="earch"],[role="searchbox"]');
-    if(field&&/doweo/i.test(el.textContent||'')){header=el;search=field;break;}
-   }
+   const header=document.querySelector('body > .wrap > header.tracker-heading');
+   const search=header?.querySelector('input[type="search"],input[placeholder*="earch"],[role="searchbox"]');
    if(!header||!search)return;
    header.classList.add('dw-integrated-header');
    let searchRoot=search;
