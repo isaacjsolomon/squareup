@@ -4,24 +4,30 @@
  const $=id=>document.getElementById(id);
  let busy=false,queued=false;
  const detachedChatTabs=new Map();
- // Keep the real Chat tab and its event listeners intact for mobile, but remove
- // it from desktop tracker navigation instead of merely hiding an injected copy.
+ // Remove the actual Chat control, irrespective of which app renderer created
+ // it or whether it carries data-sq-tab. Preserve the node for mobile.
  function syncTrackerChatTab(){
-  const desktopNow=desktop.matches;
-  if(desktopNow){
-   document.querySelectorAll('.sq-workspace-tabs [data-sq-tab="chat"], .sq-bills-workspace-tabs [data-sq-bills-tab="chat"]').forEach(tab=>{
-    if(detachedChatTabs.has(tab))return;
-    const marker=document.createComment('Original Chat tab restored on mobile');
-    tab.parentNode.insertBefore(marker,tab);
-    detachedChatTabs.set(tab,marker);
-    tab.remove();
-   });
-  }else{
+  if(!desktop.matches){
    for(const [tab,marker] of detachedChatTabs){
     if(marker.parentNode)marker.parentNode.insertBefore(tab,marker);
     marker.remove();
    }
    detachedChatTabs.clear();
+   return;
+  }
+  const bars=[...document.querySelectorAll('.sq-workspace-tabs,.sq-bills-workspace-tabs,[role="tablist"]')];
+  for(const bar of bars){
+   const controls=[...bar.querySelectorAll('button,[role="tab"],a')];
+   const label=el=>(el.textContent||'').trim().toLowerCase();
+   if(!controls.some(el=>label(el)==='overview')||!controls.some(el=>label(el)==='expenses'))continue;
+   bar.classList.add('dw-four-tracker-tabs');
+   for(const tab of controls){
+    if(label(tab)!=='chat'||detachedChatTabs.has(tab))continue;
+    const marker=document.createComment('Chat is not in desktop tracker tabs');
+    tab.parentNode.insertBefore(marker,tab);
+    detachedChatTabs.set(tab,marker);
+    tab.remove();
+   }
   }
  }
  function visible(el){return !!el&&!!el.getClientRects().length;}
