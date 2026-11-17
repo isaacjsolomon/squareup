@@ -912,7 +912,8 @@ const resolvedRole = memberRow => {
       paymentStatus: e.payment_status || 'confirmed',
       createdBy: memberMap.get(e.created_by)?.name || '',
       pinned: !!e.is_pinned,
-      recurringId: e.recurring_id || null
+      recurringId: e.recurring_id || null,
+      canEdit: e.type==='debt' && (String(t.owner_id).toLowerCase()===String(me.id).toLowerCase() || (!t.owner_id&&membership.role==='owner') || (permissionMap.get(String(me.id).toLowerCase())?.edit_all_expenses===true) || (String(e.created_by).toLowerCase()===String(me.id).toLowerCase() && (permissionMap.get(String(me.id).toLowerCase())?.edit_own_expenses ?? (resolvedRole(membership)!=='viewer'))))
     }))
   };
 }
@@ -4656,6 +4657,30 @@ if (
     }
 
    
+
+    // Edit an existing expense; never recreate it or change its participants.
+    if(sub==='entries'&&parts.length===4&&uuid.test(parts[3])&&method==='PATCH'){
+      const entry=(await db('tracker_entries',{filters:{tracker_id:'eq.'+id,id:'eq.'+parts[3]},limit:1}))[0];
+      if(!entry||entry.type!=='debt')return fail('Expense not found.',404);
+      if(!can('edit_all_expenses')&&!(can('edit_own_expenses')&&String(entry.created_by).toLowerCase()===String(me.id).toLowerCase()))return fail('You cannot edit this expense.',403);
+      const amount=Number(body.amount);
+      if(!Number.isFinite(amount)||amount<=0||amount>99999999)return fail('Enter a valid positive amount.',400);
+      const rounded=Math.round(amount*100)/100;
+      if(rounded<=0)return fail('Amount must be at least 0.01.',400);
+      const due=body.dueDate||null;
+      if(due&&(!/^\d{4}-\d{2}-\d{2}$/.test(due)||!Number.isFinite(Date.parse(due))||new Date(due).toISOString().slice(0,10)!==due))return fail('Enter a valid due date.',400);
+      const changes={amount:rounded,note:clean(body.note,500),date_label:clean(body.date,40),due_date:due};
+      if(rounded!==Number(entry.amount)){
+        changes.original_amount=rounded;changes.original_currency=trackerOwnerRecord.currency||'USD';changes.exchange_rate=1;
+      }
+      if(await requiresExpenseApproval()){
+        const people=await db('tracker_members',{filters:{tracker_id:'eq.'+id}});
+        const debtor=people.find(p=>String(p.name).toLowerCase()===String(entry.from_name).toLowerCase());
+        if(debtor&&String(debtor.user_id).toLowerCase()!==String(me.id).toLowerCase())changes.payment_status='pending';
+      }
+      await db('tracker_entries',{method:'PATCH',filters:{tracker_id:'eq.'+id,id:'eq.'+entry.id},body:changes});
+      return json(await detail(id));
+    }
 
     // ADD OR DELETE EXPENSES
     if (sub === 'entries') {

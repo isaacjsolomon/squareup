@@ -6406,6 +6406,7 @@ document.getElementById('receipt-save').onclick=async function(){
  }finally{receiptSaving=false;receiptPreview();}
 };
 
+window.squareUpApplyTrackerDetail=function(detail){if(current&&detail&&String(current.id)===String(detail.id))applyDetail(detail);};
 window.squareUpPinExpense=async function(id){if(!current)return;var e=current.entries.find(x=>String(x.id)===String(id));if(!e)return;try{applyDetail(await api('trackers/'+current.id+'/entries/'+encodeURIComponent(id)+'/pin','PATCH',{pinned:!e.pinned}));}catch(err){alert(err.message);}};
 function sqRenderBudget(){var el=document.getElementById('sq-budget-display');if(!el)return;if(!current){el.textContent='Open a tracker to set a goal.';return;}var budget=Number(current.budget),spent=(current.entries||[]).filter(e=>e.type==='debt').reduce((sum,e)=>sum+Number(e.amount||0),0);document.getElementById('sq-budget-amount').value=budget>0?budget:'';if(!budget){el.textContent='No budget set yet. Set a goal below.';return;}var pct=spent/budget*100;el.innerHTML='<strong>'+sqFormat(spent)+' of '+sqFormat(budget)+'</strong><div class="sq-budget-progress'+(pct>100?' over':'')+'"><div style="width:'+Math.min(100,pct)+'%"></div></div><small>'+pct.toFixed(1)+'% used'+(pct>100?' · '+sqFormat(spent-budget)+' over budget':'')+'</small>';}
 document.getElementById('sq-budget-form').addEventListener('submit',async e=>{e.preventDefault();if(!current)return alert('Open a tracker first.');try{applyDetail(await api('trackers/'+current.id+'/budget','PATCH',{amount:Number(document.getElementById('sq-budget-amount').value)}));}catch(err){alert(err.message);}});
@@ -7179,6 +7180,10 @@ function show(entry, justSaved){
  window.dispatchEvent(new CustomEvent('squareup:details-open',{detail:{entry:entry}}));
  document.getElementById('sq-details-close').focus();
 }
+window.squareUpOpenExpenseDetails=function(id){
+ const tracker=window.sqLastOpenedTrackerDetail,entry=tracker?.entries?.find(e=>String(e.id)===String(id));
+ if(entry)show({...entry,currency:tracker.currency||'USD'});
+};
 // Show the saved expense in the existing Details dialog after the server confirms it.
 window.addEventListener('squareup:expense-saved',function(event){
  var payload=event.detail||{}, wanted=payload.entry||{}, tracker=payload.tracker||{};
@@ -7592,7 +7597,16 @@ input.addEventListener('input',draw);
   if(name)try{sessionStorage.setItem('sq-last-display-name',name.split(' ')[0]);}catch(_){}
   const display=n=>{const found=members.find(m=>[m.name,m.email,m.username,m.displayName].some(v=>str(v).toLowerCase()===str(n).toLowerCase()));return found?.name||found?.displayName||str(n);};
   const date=e=>{const d=new Date(e.date||e.dateLabel||e.created_at||e.createdAt||0);return Number.isFinite(d.getTime())?d.getTime():0;};
-  fill('sq-return-activity',all.slice().sort((a,b)=>date(b)-date(a)).slice(0,4).map(e=>makeRow(e.type==='payment'?'↗':'▤',str(e.note||(e.type==='payment'?'Payment':'Expense')),display(e.from)+' → '+display(e.to),e.amount)),'No recent activity in this tracker');
+  fill('sq-return-activity',all.slice().sort((a,b)=>date(b)-date(a)).slice(0,4).map(e=>{
+ const row=makeRow(e.type==='payment'?'↗':'▤',str(e.note||(e.type==='payment'?'Payment':'Expense')),display(e.from)+' → '+display(e.to),e.amount);
+ if(e.type==='debt'){
+  row.dataset.expenseId=e.id;row.dataset.trackerId=tracker.id;
+  if(window.matchMedia('(min-width:901px)').matches){row.setAttribute('role','button');row.tabIndex=0;row.setAttribute('aria-label','View expense details: '+str(e.note||'Expense'));}
+  const open=()=>{if(window.matchMedia('(min-width:901px)').matches&&window.sqLastOpenedTrackerDetail?.id===tracker.id)window.squareUpOpenExpenseDetails?.(e.id);};
+  row.addEventListener('click',open);row.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open();}});
+ }
+ return row;
+}),'No recent activity in this tracker');
   fill('sq-return-members',members.slice(0,5).map(m=>{
    const row=makeRow('♙',str(m.name||m.displayName||m.email||'Member'),m.isYou?'You':'Tracker member',null);
    const glyph=row.querySelector('.sq-return-icon');
@@ -16299,6 +16313,64 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  document.getElementById('nav-group-polls')?.addEventListener('click',sync);
  source.addEventListener('change',()=>requestAnimationFrame(sync));
  sync();
+})();</script>
+<style id="dw-recent-expense-details-style">@media(min-width:901px){
+ #sq-return-activity [data-expense-id]{cursor:pointer}
+ #sq-return-activity [data-expense-id]:focus-visible{outline:2px solid #66efd1;outline-offset:3px}
+ #dw-expense-edit{width:100%;margin-top:12px;min-height:46px}
+ #dw-expense-edit[hidden]{display:none!important}
+ #dw-expense-editor{width:min(480px,calc(100vw - 40px));box-sizing:border-box;max-height:85vh;overflow:auto;padding:25px;border:1px solid #507d91;border-radius:20px;background:#0c283e;color:#f2faff}
+ #dw-expense-editor::backdrop{background:#021523b8}
+ #dw-expense-editor h2{margin:0 0 20px;font-size:23px}
+ #dw-expense-editor label{display:grid;gap:7px;margin:14px 0;color:#c7dfea;font-size:13px}
+ #dw-expense-editor input{width:100%;box-sizing:border-box;min-height:44px;padding:10px 12px;background:#071f31;color:#fff;border:1px solid #416b80;border-radius:10px;font:inherit;color-scheme:dark}
+ #dw-expense-editor form>div{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+ #dw-expense-editor button{padding:12px 17px;border:1px solid #436d81;border-radius:11px;background:#173c51;color:#edfaff;cursor:pointer}
+ #dw-expense-editor [type=submit]{background:#43dfb3;color:#062d38;border:0;font-weight:750}
+ #dw-expense-editor button:disabled{opacity:.5;cursor:wait}
+ #dw-expense-edit-error{color:#ffbac4;font-size:13px}
+}
+@media(max-width:900px){#dw-expense-edit,#dw-expense-editor{display:none!important}}</style>
+<script id="dw-recent-expense-details-script">(function(){
+ const desktop=window.matchMedia('(min-width:901px)'),overlay=document.getElementById('sq-details-overlay');
+ if(!overlay)return;
+ let selected=null,trackerId=null,returnId=null;
+ const edit=document.createElement('button');edit.type='button';edit.id='dw-expense-edit';edit.textContent='Edit expense';edit.hidden=true;edit.className='settings-action primary';
+ document.getElementById('sq-details-close').before(edit);
+ const dialog=document.createElement('dialog');dialog.id='dw-expense-editor';dialog.setAttribute('aria-labelledby','dw-expense-editor-title');
+ dialog.innerHTML='<form><h2 id="dw-expense-editor-title">Edit expense</h2><label id="dw-expense-amount-label">Amount<input name="amount" type="number" min="0.01" max="99999999" step="0.01" required></label><label>Description<input name="description" maxlength="450"></label><label>Date<input name="date" maxlength="40"></label><label>Due date<input name="dueDate" type="date"></label><p id="dw-expense-edit-error" role="alert"></p><div><button type="button" id="dw-expense-edit-cancel">Cancel</button><button type="submit">Save changes</button></div></form>';
+ document.body.append(dialog);const form=dialog.querySelector('form');
+ window.addEventListener('squareup:details-open',event=>{
+  selected=event.detail?.entry;trackerId=window.sqLastOpenedTrackerDetail?.id;
+  edit.hidden=!desktop.matches||selected?.type!=='debt'||selected.canEdit!==true;
+ });
+ edit.addEventListener('click',()=>{
+  const tracker=window.sqLastOpenedTrackerDetail;
+  if(!desktop.matches||tracker?.id!==trackerId)return;
+  const fresh=tracker.entries.find(e=>String(e.id)===String(selected?.id));if(!fresh?.canEdit)return;
+  selected=fresh;returnId=fresh.id;form.reset();
+  form.elements.amount.value=fresh.amount;
+  form.elements.description.value=String(fresh.note||'').replace(/^\[Category: [^\]]+\]\s*/,'');
+  form.elements.date.value=fresh.date||'';form.elements.dueDate.value=fresh.dueDate||'';
+  form.elements.amount.setAttribute('aria-label','Amount ('+(tracker.currency||'USD')+')');
+  dialog.querySelector('#dw-expense-edit-error').textContent='';
+  document.getElementById('sq-details-x').click();dialog.showModal();form.elements.amount.focus();
+ });
+ function cancel(){dialog.close();if(window.sqLastOpenedTrackerDetail?.id===trackerId)window.squareUpOpenExpenseDetails?.(returnId);}
+ document.getElementById('dw-expense-edit-cancel').addEventListener('click',cancel);
+ dialog.addEventListener('cancel',event=>{event.preventDefault();cancel();});
+ form.addEventListener('submit',async event=>{
+  event.preventDefault();const button=form.querySelector('[type="submit"]'),id=trackerId,entryId=selected?.id;
+  if(window.sqLastOpenedTrackerDetail?.id!==id){dialog.close();return;}
+  button.disabled=true;
+  const prefix=String(selected.note||'').match(/^\[Category: [^\]]+\]\s*/)?.[0]||'';
+  try{
+   const detail=await window.squareUpApi('trackers/'+encodeURIComponent(id)+'/entries/'+encodeURIComponent(entryId),'PATCH',{amount:Number(form.elements.amount.value),note:prefix+form.elements.description.value.trim(),date:form.elements.date.value,dueDate:form.elements.dueDate.value||null});
+   if(window.sqLastOpenedTrackerDetail?.id!==id){dialog.close();return;}
+   window.squareUpApplyTrackerDetail(detail);dialog.close();window.squareUpOpenExpenseDetails(entryId);
+  }catch(error){dialog.querySelector('#dw-expense-edit-error').textContent=error.message||'Could not save expense.';}finally{button.disabled=false;}
+ });
+ desktop.addEventListener('change',()=>{if(!desktop.matches){edit.hidden=true;dialog.close();}});
 })();</script>
 </body>
 </html>
