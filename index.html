@@ -16600,7 +16600,7 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  const view=members.querySelector('[data-return-tab="members"]'),originalView=view?.textContent;
  const memberHeading=members.querySelector('h3'),originalHeading=memberHeading?.textContent;
  const upcoming=document.createElement('section');upcoming.id='dw-compact-upcoming';upcoming.setAttribute('aria-labelledby','dw-upcoming-title');
- const heading=document.createElement('h2');heading.id='dw-upcoming-title';heading.textContent='Upcoming';upcoming.append(heading);
+ const heading=document.createElement('h2');heading.id='dw-upcoming-title';heading.textContent='Upcoming Bills';upcoming.append(heading);
  for(const kind of ['subscription','bill']){const list=document.getElementById('dw-home-'+kind+'-list');if(list)upcoming.append(list);}
  shell.append(upcoming);
  const columns=document.createElement('div');columns.className='dw-activity-columns';columns.setAttribute('aria-hidden','true');
@@ -16662,6 +16662,14 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  html body .sq-service-icon .sq-brand-logo{object-fit:contain!important;display:block!important;max-width:100%!important;max-height:100%!important;border-radius:6px!important;filter:none!important}
  html body .sq-service-icon.chatgpt .sq-brand-logo{background:#fff!important;border-radius:7px!important;padding:3px!important;box-sizing:border-box!important}
  html body .sq-service-icon .sq-brand-logo[data-local-vector]{image-rendering:auto}
+}</style>
+<style id="dw-home-heading-alignment">@media(min-width:901px){
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-clean-balance-copy{margin:0!important;padding:0!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-clean-eyebrow{display:block!important;margin:0!important;padding:0!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel .sq-return-head{align-items:flex-start!important;min-height:0!important;height:auto!important;margin-top:0!important;padding-top:0!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel .sq-return-head h3{margin:0!important;padding:0!important;line-height:1.3!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel .sq-return-head>[data-return-tab]{min-height:0!important;height:auto!important;margin:0 0 0 auto!important;padding:0!important;line-height:1.3!important;align-self:flex-start!important}
+ html body #dw-compact-upcoming #dw-upcoming-title{margin-top:0!important;padding-top:0!important;line-height:1.3!important}
 }</style>
 </body>
 </html>

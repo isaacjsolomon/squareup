@@ -89,8 +89,10 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
    const style=e=>{const s=getComputedStyle(e);return {size:s.fontSize,family:s.fontFamily,weight:s.fontWeight,spacing:s.letterSpacing,line:s.lineHeight}};
    const headings=[document.querySelector('.sq-clean-eyebrow'),document.getElementById('dw-upcoming-title'),document.querySelector('.sq-overview-people-panel h3')].map(style);
    const icons=[...document.querySelectorAll('#dw-compact-upcoming .sq-service-icon')].map(e=>({width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height}));
-   return {headings,icons,base:style(document.getElementById('dw-compact-balance')),prefix:style(document.querySelector('.dw-balance-prefix')),amount:style(document.querySelector('.dw-balance-amount'))};
+   return {headings,icons,tops:[document.querySelector('.sq-clean-eyebrow'),document.getElementById('dw-upcoming-title'),document.querySelector('.sq-overview-people-panel h3')].map(e=>e.getBoundingClientRect().top),base:style(document.getElementById('dw-compact-balance')),prefix:style(document.querySelector('.dw-balance-prefix')),amount:style(document.querySelector('.dw-balance-amount'))};
   });
+  assert.ok(Math.max(...typography.tops)-Math.min(...typography.tops)<1,'all three card headings line up');
+  assert.equal(await page.locator('#dw-upcoming-title').textContent(),'Upcoming Bills');
   assert.deepEqual(typography.headings[0],typography.headings[1],'Balance and Upcoming titles match');
   assert.deepEqual(typography.headings[1],typography.headings[2],'Upcoming and Members titles match');
   assert.ok(typography.icons.length>=2);assert.ok(typography.icons.every(i=>i.width===36&&i.height===36),'consistent compact service icons');
