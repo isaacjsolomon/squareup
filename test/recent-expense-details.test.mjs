@@ -61,6 +61,9 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   assert.equal(await page.locator('[data-sq-tab="expenses"]').getAttribute('aria-selected'),'true','See all opens all Expenses');
 
   await page.locator('#dw-expense-workspace').waitFor();
+  assert.equal(await page.locator('#sq-expense-status').isVisible(),false,'standalone Status dropdown removed on desktop');
+  const filterPosition=await page.evaluate(()=>{const f=document.getElementById('dw-expense-filter-panel').getBoundingClientRect(),e=document.getElementById('sq-export-expenses').getBoundingClientRect(),s=document.querySelector('.sq-expense-extra').getBoundingClientRect();return {filter:f.left,export:e.left,left:s.left};});
+  assert.ok(Math.abs(filterPosition.filter-filterPosition.left)<2&&filterPosition.filter<filterPosition.export,'Filters replaces Status on the left');
   detail.entries.push(...Array.from({length:24},(_,i)=>({...detail.entries[0],id:'fixture-'+i,note:'[Category: Food & Dining] Test expense '+i,paymentStatus:i%2?'pending':'confirmed'})));
   await page.evaluate(()=>window.sqRefreshTrackerNow());
   await page.locator('[data-sq-tab="expenses"]').click();

@@ -16815,7 +16815,7 @@ html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-side
    const sideMark=document.createComment('side-home');side.before(sideMark);homes.set(side,sideMark);
    if(!workspace)build();
    d.querySelector('.sq-workspace-tabs').after(workspace);move(activity,workspace);workspace.append(sidebar);move(balance,sidebar);sidebar.append(tools);tools.append(side);move(filters,filterPanel);move(filterPanel,activity.querySelector('.sq-expense-extra'));activity.prepend(heading);activity.querySelector('.sq-activity-filters>div').append(tabs);history.setAttribute('tabindex','0');history.setAttribute('aria-label','Expense history, scroll for more');history.setAttribute('role','region');
-   side.append(exportTool);side.querySelector('[data-sq-quick="quick-receipt"] .sq-side-icon').innerHTML=icon('<path d="M5 3h14v19l-3-2-4 2-4-2-3 2V3Zm4 5h6m-6 4h6m-6 4h4"/>');side.querySelector('[data-sq-quick="quick-split"] .sq-side-icon').innerHTML=icon('<path d="M12 21V4m-4 4 4-4 4 4M12 15H5V9m7 6h7V9"/>');d.classList.add('dw-expenses-redesign');side.querySelectorAll('[data-dw-original-hidden]').forEach(x=>x.hidden=true);document.getElementById('dw-expense-pay').hidden=false;decorate();size();
+   document.getElementById('sq-expense-status').value='all';side.append(exportTool);side.querySelector('[data-sq-quick="quick-receipt"] .sq-side-icon').innerHTML=icon('<path d="M5 3h14v19l-3-2-4 2-4-2-3 2V3Zm4 5h6m-6 4h6m-6 4h4"/>');side.querySelector('[data-sq-quick="quick-split"] .sq-side-icon').innerHTML=icon('<path d="M12 21V4m-4 4 4-4 4 4M12 15H5V9m7 6h7V9"/>');d.classList.add('dw-expenses-redesign');side.querySelectorAll('[data-dw-original-hidden]').forEach(x=>x.hidden=true);document.getElementById('dw-expense-pay').hidden=false;decorate();size();
   }else if(!on&&workspace?.isConnected){
    d.classList.remove('dw-expenses-redesign');closeMenu();heading.remove();tabs.remove();
    for(const [node,mark]of homes){if(mark.isConnected){mark.replaceWith(node);}}homes.clear();filterPanel.remove();workspace.remove();side.querySelectorAll('[data-dw-original-hidden]').forEach(x=>x.hidden=x.dataset.dwOriginalHidden==='true');exportTool.remove();side.querySelectorAll('[data-dw-original-icon]').forEach(x=>{x.innerHTML=x.dataset.dwOriginalIcon;});history.removeAttribute('tabindex');history.removeAttribute('role');history.removeAttribute('aria-label');history.querySelectorAll('.dw-expense-icon,.dw-expense-copy,.dw-expense-money,.dw-expense-more,.dw-expense-day').forEach(x=>x.remove());history.querySelectorAll('.entry').forEach(x=>x.classList.remove('dw-type-hidden'));document.getElementById('dw-expense-pay').hidden=true;
@@ -16831,7 +16831,11 @@ html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-side
  const restoreObserver=new MutationObserver(()=>{if(workspace?.isConnected)size();});restoreObserver.observe(side,{childList:true});
  sync();
 })();
-</script></body>
+</script><style id="dw-expenses-filter-position">@media(min-width:901px){
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-expense-extra>label{display:none!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-filter-panel{order:-1!important;margin-right:auto!important}
+html body #tracker-dashboard.dw-expenses-redesign #sq-export-expenses{margin-left:0!important}
+}</style></body>
 </html>
 
 
