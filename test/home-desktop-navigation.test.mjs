@@ -58,7 +58,7 @@ test('desktop Home remains full width after navigation and shows only four track
     const box=node=>{const r=node.getBoundingClientRect();return {left:r.left,right:r.right,width:r.width}};
     const wrap=document.querySelector('body > .wrap'),dashboard=document.getElementById('tracker-dashboard');
     const bar=dashboard.querySelector('.sq-workspace-tabs'),summary=document.getElementById('sq-return-summary');
-    return {viewport:innerWidth,wrap:box(wrap),dashboard:box(dashboard),summary:box(summary),
+    return {viewport:innerWidth,wrap:box(wrap),dashboard:box(dashboard),summary:box(document.getElementById('dw-home-columns')),
      display:getComputedStyle(wrap).display,
      toolbarContainers:[...document.querySelectorAll('.dw-inline-tracker-header,.dw-integrated-header')].map(n=>n.tagName+'.'+n.className),
      labels:[...bar.querySelectorAll('button')].filter(b=>b.getClientRects().length&&getComputedStyle(b).display!=='none').map(b=>b.textContent.trim()),
@@ -68,7 +68,7 @@ test('desktop Home remains full width after navigation and shows only four track
    assert.equal(state.badContainer,false,'toolbar classes belong only on the header');
    assert.notEqual(state.display,'flex','page wrapper must keep vertical layout');
    assert.ok(state.dashboard.width>state.viewport*.45,'Home must not collapse into a narrow column');
-   assert.ok(state.summary.width>state.dashboard.width*.4 && state.summary.width<state.dashboard.width*.55,'summary occupies the left half of Home');
+   assert.ok(state.summary.width>state.dashboard.width*.9,'compact overview spans Home');
    assert.ok(state.dashboard.right<=state.viewport+1,'Home stays inside viewport');
    assert.deepEqual(state.labels,['Overview','Expenses','Bills','Members']);
    await page.screenshot({path:resolve(root,'test-results/bills/home-'+label+'.png'),fullPage:true});

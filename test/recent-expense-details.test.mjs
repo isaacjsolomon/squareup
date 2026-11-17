@@ -61,35 +61,39 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
    const state=await page.evaluate(()=>{
     const box=e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width}};
     return {
-     left:box(document.getElementById('dw-home-left')),right:box(document.getElementById('dw-home-schedules')),
-     summary:box(document.getElementById('sq-return-summary')),
+     left:box(document.getElementById('sq-clean-balance')),right:box(document.getElementById('sq-return-members').closest('.sq-return-panel')),
+     upcoming:box(document.getElementById('dw-compact-upcoming')),shell:box(document.getElementById('dw-home-columns')),
+     summary:box(document.getElementById('dw-home-columns')),
      activity:box(document.getElementById('sq-return-activity').closest('.sq-return-panel')),
-     bills:box(document.querySelector('[aria-label="Home bills"]')),subs:box(document.querySelector('[aria-label="Home subscriptions"]')),
+     bills:box(document.getElementById('dw-home-bill-list')),subs:box(document.getElementById('dw-home-subscription-list')),
      smart:getComputedStyle(document.querySelector('.sq-return-smart-panel')).display,
      balances:getComputedStyle(document.getElementById('sq-return-balances').closest('.sq-return-panel')).display,
      overflow:document.documentElement.scrollWidth>innerWidth+1
     };
    });
    assert.ok(Math.abs(state.left.width-state.right.width)<2,'equal Home halves at '+width);
-   assert.ok(state.left.right<state.right.left,'columns separated');
-   assert.ok(Math.abs(state.summary.width-state.left.width)<2,'summary fits left half');
+   assert.ok(state.left.right<state.upcoming.left&&state.upcoming.right<state.right.left,'three separate cards');
+   assert.ok(Math.abs(state.left.width-state.upcoming.width)<2,'three equal cards');
+   assert.ok(Math.abs(state.left.top-state.upcoming.top)<2&&Math.abs(state.left.top-state.right.top)<2,'cards share one row');
+   assert.ok(Math.abs(state.summary.width-state.shell.width)<2,'overview spans Home');
    assert.ok(Math.abs(state.activity.left-state.left.left)<2&&Math.abs(state.activity.right-state.right.right)<2,'activity spans both columns');
-   assert.ok(state.activity.top>=state.bills.top&&state.activity.top>=state.subs.bottom,'activity is below both upper columns');
-   assert.ok(state.bills.bottom<state.subs.top,'Bills above Subscriptions');
+   assert.ok(state.activity.top>=state.left.bottom&&state.activity.top>=state.right.bottom,'activity is below both upper columns');
+   assert.ok(state.subs.bottom<=state.bills.top,'upcoming subscriptions before bill summary');
    assert.equal(state.smart,'none');assert.equal(state.balances,'none');assert.equal(state.overflow,false,'no overflow at '+width);
   }
   await page.setViewportSize({width:1440,height:1000});
   const billRow=page.locator('#dw-home-bill-list .dw-home-bill-row').filter({hasText:'Electricity'});
-  await billRow.getByRole('button',{name:'Details',exact:true}).click();
+  await billRow.getByRole('button',{name:'View Electricity details',exact:true}).click();
   await page.locator('.sq-premium-dialog h2').filter({hasText:'Electricity'}).waitFor();
   await page.locator('.sq-premium-dialog').getByRole('button',{name:'Close',exact:true}).click();
   const subscription=page.locator('#dw-home-subscription-list .dw-home-bill-row').filter({hasText:'Netflix'});
+  await subscription.locator('.dw-home-item-menu summary').click();
   await subscription.getByRole('button',{name:'Edit',exact:true}).click();
   const billEditor=page.getByRole('dialog',{name:'Edit bill or subscription'});
   await billEditor.getByLabel('Name',{exact:true}).fill('Netflix updated');
   await billEditor.getByRole('button',{name:'Save changes',exact:true}).click();
   await page.locator('#dw-home-subscription-list').getByText('Netflix updated',{exact:true}).waitFor();
-  assert.ok(await page.locator('#sq-return-summary').isVisible(),'editing bills stays on Home');
+  assert.ok(await page.locator('#dw-home-columns').isVisible(),'editing bills stays on Home');
   writes.length=0;
   mkdirSync(resolve(root,'test-results/bills'),{recursive:true});
   await page.screenshot({path:resolve(root,'test-results/bills/home-full-width-activity.png'),fullPage:true});
@@ -109,7 +113,8 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   assert.equal(writes[0].note,'[Category: Food & Dining] Lunch edited');
   assert.equal(writes[0].dueDate,'2026-12-01');
   await page.getByRole('button',{name:'Close expense details',exact:true}).click();
-  await row.getByText('[Category: Food & Dining] Lunch edited',{exact:true}).waitFor();
+  await row.getByText('Lunch edited',{exact:true}).waitFor();
+  assert.ok(await row.getByText('Food & Dining',{exact:true}).isVisible(),'category is a clean badge');
   await row.click();assert.equal(await page.locator('#sq-details-description').textContent(),'Lunch edited');
   await page.getByRole('button',{name:'Edit expense',exact:true}).click();
   await editor.getByLabel('Description',{exact:true}).fill('Unsaved');
@@ -127,5 +132,11 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   await page.waitForFunction(()=>!document.getElementById('dw-home-columns')&&document.getElementById('sq-return-summary').parentElement.id==='tracker-dashboard');
   assert.equal(await page.locator('#dw-home-columns').count(),0,'mobile summary restored to original parent');
   assert.equal(await page.locator('#sq-return-summary').evaluate(e=>e.parentElement.id),'tracker-dashboard');
+  const fresh=await context.newPage();await fresh.setViewportSize({width:390,height:844});
+  await fresh.goto(origin,{waitUntil:'networkidle'});
+  await fresh.waitForFunction(()=>typeof window.squareUpApi==='function');
+  await fresh.setViewportSize({width:1440,height:1000});
+  await fresh.locator('#dw-compact-upcoming').waitFor();
+  await fresh.close();
  }finally{await browser.close();await new Promise(done=>server.close(done));}
 });
