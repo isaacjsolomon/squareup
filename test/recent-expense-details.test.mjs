@@ -91,6 +91,19 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   mkdirSync(resolve(root,'test-results/bills'),{recursive:true});
   await page.screenshot({path:resolve(root,'test-results/bills/expenses-redesigned-scroll.png'),fullPage:true});
 
+
+  await page.evaluate(()=>{window.Tesseract={recognize:async()=>({data:{text:'Pizza 10.00\nTOTAL 10.00'}})};});
+  const desktopChooserPromise=page.waitForEvent('filechooser');
+  await page.locator('#dw-expense-tools [data-sq-quick="quick-receipt"]').click();
+  const desktopChooser=await desktopChooserPromise;
+  await desktopChooser.setFiles({name:'desktop-receipt.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j5n8AAAAASUVORK5CYII=','base64')});
+  await page.waitForFunction(()=>document.getElementById('receipt-status').textContent.includes('Recognized'));
+  assert.equal(await page.locator('#receipt-items').getByLabel('Item 1 name',{exact:true}).inputValue(),'Pizza','desktop Tools opens receipt review');
+  await page.locator('#sq-receipt-x').click();
+  await page.locator('#dw-expense-tools [data-sq-quick="quick-split"]').click();
+  await page.locator('#split-page').waitFor();
+  assert.equal(await page.locator('#tracker-dashboard').isVisible(),false,'desktop Split bill replaces Expenses');
+  assert.ok(await page.locator('#split-total').isVisible());await page.locator('#split-back').click();
   for(const width of [390,430]){
    await page.setViewportSize({width,height:932});
    await page.locator('#dw-mobile-expense-add').waitFor();

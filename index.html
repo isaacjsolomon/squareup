@@ -6868,7 +6868,7 @@ import('./squareup-events.js').then(module => module.initEvents({api, getTracker
  if(!dashboard||!history||!search)return;
  document.querySelectorAll('[data-sq-quick]').forEach(button=>button.addEventListener('click',()=>{
    const target=document.getElementById(button.dataset.sqQuick);
-   if(target)target.click();
+   if(window.dwOpenExpenseTool)window.dwOpenExpenseTool(button.dataset.sqQuick);else if(target)target.click();
  }));
  function refresh(){
   const rows=[...history.querySelectorAll(':scope > .entry')];
@@ -16774,19 +16774,20 @@ html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-side
  function action(label,fn,cls){const b=document.createElement('button');b.type='button';b.textContent=label;if(cls)b.className=cls;b.onclick=fn;return b;}
  const quick=id=>{
   const button=document.getElementById(id);
-  if(!mq.matches&&id==='quick-receipt'){
+  if(id==='quick-receipt'){
    const card=document.getElementById('receipt-card'),modal=document.getElementById('sq-receipt-dialog'),file=document.getElementById('receipt-file');
    if(typeof button?.onclick==='function')button.onclick.call(button);
    if(card.hidden)return;
    if(modal){modal.hidden=false;document.body.classList.add('sq-action-dialog-open');}
-   file.value='';file.setAttribute('accept','image/*');file.setAttribute('capture','environment');file.click();return;
+   file.value='';file.setAttribute('accept','image/*');if(!mq.matches)file.setAttribute('capture','environment');else file.removeAttribute('capture');file.click();return;
   }
-  if(!mq.matches&&id==='quick-split'){
+  if(id==='quick-split'){
    document.body.classList.remove('settings-view','about-view','trackers-view','analytics-view','friends-view','notifications-view','sq-help-view');
    if(typeof openSplitPage==='function')openSplitPage();else button?.click();return;
   }
   button?.click();
  };
+ window.dwOpenExpenseTool=quick;
  function closeMenu(){menu?.remove();menu=null;}
  document.addEventListener('click',e=>{if(menu&&!menu.contains(e.target)&&!e.target.closest('.dw-expense-more'))closeMenu();});history.addEventListener('scroll',closeMenu);
  function build(){
@@ -16932,8 +16933,9 @@ html body #tracker-dashboard.dw-expenses-redesign #dw-mobile-expense-add button{
 html body.split-view #tracker-dashboard.dw-expenses-redesign{display:none!important}
 html body.split-view #split-page{display:block!important}
 }
-</style></body>
+</style><style id="dw-desktop-tools-routing">html body.split-view #tracker-dashboard.dw-expenses-redesign{display:none!important}html body.split-view #split-page{display:block!important}</style></body>
 </html>
+
 
 
 
