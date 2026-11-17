@@ -106,6 +106,15 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   await page.evaluate(()=>window.sqRefreshTrackerNow());
   await page.waitForFunction(()=>document.getElementById('dw-compact-balance').textContent==='−$12.00');
   assert.equal(typography.amount.size,typography.base.size,'amount keeps its original font size');
+  const formatting=await page.evaluate(()=>({
+   frequencies:['yearly','monthly','weekly','daily'].map(window.dwBillFrequency),
+   date:window.dwBillDueDate('2027-11-04')
+  }));
+  assert.deepEqual(formatting.frequencies,['Yearly','Monthly','Weekly','Daily']);
+  assert.equal(formatting.date,'November 4, 2027');
+  assert.ok(await page.locator('#dw-compact-upcoming .dw-upcoming-section[data-kind="subscription"]>h3').getByText('Subscriptions',{exact:true}).isVisible());
+  assert.ok(await page.locator('#dw-compact-upcoming .dw-upcoming-section[data-kind="bill"]>h3').getByText('Bills',{exact:true}).isVisible());
+  assert.ok((await page.locator('#dw-home-bill-list').textContent()).includes('Monthly · Next due December 1, 2026'));
   const billRow=page.locator('#dw-home-bill-list .dw-home-bill-row').filter({hasText:'Electricity'});
   await billRow.getByRole('button',{name:'View Electricity details',exact:true}).click();
   await page.locator('.sq-premium-dialog h2').filter({hasText:'Electricity'}).waitFor();
