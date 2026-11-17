@@ -97,7 +97,7 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
    await page.waitForTimeout(150);
    assert.equal(await page.locator('#dw-expense-tools').isVisible(),false,'mobile has no separate tools row');
    const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,search:document.getElementById('sq-expense-search').getBoundingClientRect().top,filter:document.getElementById('dw-expense-filter-panel').getBoundingClientRect().top}));
-   assert.equal(layout.overflow,false,'no mobile overflow '+width);assert.ok(Math.abs(layout.search-layout.filter)<2,'mobile search and filter share a row');
+   assert.equal(layout.overflow,false,'no mobile overflow '+width);assert.ok(Math.abs(layout.search-layout.filter)<2,'mobile search and filter share a row '+JSON.stringify(layout));
   }
   const mobileAdd=page.locator('#dw-mobile-expense-add');await mobileAdd.locator('summary').click();
   assert.ok(await mobileAdd.getByRole('button',{name:'Scan receipt',exact:true}).isVisible());
