@@ -90,6 +90,35 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   await page.getByRole('button',{name:'Close expense details',exact:true}).click();
   mkdirSync(resolve(root,'test-results/bills'),{recursive:true});
   await page.screenshot({path:resolve(root,'test-results/bills/expenses-redesigned-scroll.png'),fullPage:true});
+
+  for(const width of [390,430]){
+   await page.setViewportSize({width,height:932});
+   await page.locator('#dw-mobile-expense-add').waitFor();
+   await page.waitForTimeout(150);
+   assert.equal(await page.locator('#dw-expense-tools').isVisible(),false,'mobile has no separate tools row');
+   const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,search:document.getElementById('sq-expense-search').getBoundingClientRect().top,filter:document.getElementById('dw-expense-filter-panel').getBoundingClientRect().top}));
+   assert.equal(layout.overflow,false,'no mobile overflow '+width);assert.ok(Math.abs(layout.search-layout.filter)<2,'mobile search and filter share a row');
+  }
+  const mobileAdd=page.locator('#dw-mobile-expense-add');await mobileAdd.locator('summary').click();
+  assert.ok(await mobileAdd.getByRole('button',{name:'Scan receipt',exact:true}).isVisible());
+  assert.ok(await mobileAdd.getByRole('button',{name:'Split bill',exact:true}).isVisible());
+  await mobileAdd.locator('summary').click();
+  await page.locator('#dw-expense-filter-panel>summary').click();
+  assert.ok(await page.locator('#sq-expense-category').isVisible());assert.ok(await page.locator('#sq-expense-member').isVisible());assert.ok(await page.locator('#sq-expense-time').isVisible());
+  await page.locator('#dw-expense-filter-panel>summary').click();
+  await page.locator('#history .dw-expense-more>button').first().click();
+  await page.locator('.dw-expense-menu').getByRole('button',{name:'Edit',exact:true}).click();
+  await page.locator('#dw-expense-editor[open]').waitFor();
+  await page.locator('#dw-expense-editor').getByRole('button',{name:'Cancel',exact:true}).click();
+  await page.getByRole('button',{name:'Close expense details',exact:true}).click();
+  await page.screenshot({path:resolve(root,'test-results/bills/mobile-expenses-compact.png'),fullPage:true});
+  await page.setViewportSize({width:1440,height:1000});
+  await page.waitForTimeout(150);
+  await page.locator('#history .dw-expense-more>button').first().click();
+  await page.locator('.dw-expense-menu').getByRole('button',{name:'Edit',exact:true}).click();
+  await page.locator('#dw-expense-editor[open]').waitFor();
+  await page.locator('#dw-expense-editor').getByRole('button',{name:'Cancel',exact:true}).click();
+  await page.getByRole('button',{name:'Close expense details',exact:true}).click();
   detail.entries.splice(1);
   await page.evaluate(()=>window.sqRefreshTrackerNow());
   await page.locator('#nav-home').click();await row.waitFor();
