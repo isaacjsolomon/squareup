@@ -104,7 +104,7 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   assert.ok(await mobileAdd.getByRole('button',{name:'Split bill',exact:true}).isVisible());
   const menuIcons=await mobileAdd.locator('button .dw-mobile-option-icon svg').count();assert.equal(menuIcons,3,'all mobile Add options have icons');
   const centered=await mobileAdd.locator('summary').evaluate(el=>{const a=el.getBoundingClientRect(),b=el.querySelector('.dw-add-chevron').getBoundingClientRect();return Math.abs((a.top+a.bottom)/2-(b.top+b.bottom)/2)<1;});assert.ok(centered,'Add arrow centered vertically');
-  await page.evaluate(()=>{window.Tesseract={recognize:async()=>({data:{text:'Pizza 10.00\\nTOTAL 10.00'}})};});
+  await page.evaluate(()=>{window.Tesseract={recognize:async()=>({data:{text:'Pizza 10.00\nTOTAL 10.00'}})};});
   const chooserPromise=page.waitForEvent('filechooser');
   await mobileAdd.getByRole('button',{name:'Scan receipt',exact:true}).click();
   const chooser=await chooserPromise;
