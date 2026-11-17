@@ -61,6 +61,8 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   assert.equal(await page.locator('[data-sq-tab="expenses"]').getAttribute('aria-selected'),'true','See all opens all Expenses');
 
   await page.locator('#dw-expense-workspace').waitFor();
+  assert.equal(await page.locator('.dw-expenses-heading h2').textContent(),'Expense History');
+  assert.ok((await page.locator('#sq-export-expenses').textContent()).includes('Export Log'));
   assert.equal(await page.locator('#sq-expense-status').isVisible(),false,'standalone Status dropdown removed on desktop');
   const filterPosition=await page.evaluate(()=>{const f=document.getElementById('dw-expense-filter-panel').getBoundingClientRect(),e=document.getElementById('sq-export-expenses').getBoundingClientRect(),s=document.querySelector('.sq-expense-extra').getBoundingClientRect();return {filter:f.left,export:e.left,left:s.left};});
   assert.ok(Math.abs(filterPosition.filter-filterPosition.left)<2&&filterPosition.filter<filterPosition.export,'Filters replaces Status on the left');
@@ -154,6 +156,18 @@ await page.locator('#receipt-items input[type=checkbox]').first().check();assert
   await mobileAdd.getByRole('button',{name:'Split bill',exact:true}).click();
   await page.locator('#split-page').waitFor();assert.equal(await page.locator('#tracker-dashboard').isVisible(),false,'split page replaces Expenses');
   assert.ok(await page.locator('#split-total').isVisible(),'mobile split form opens');
+  assert.equal(await page.locator('#split-page').getAttribute('data-split-step'),'1');
+  await page.locator('#dw-split-step-next').click();assert.ok(await page.locator('#dw-split-step-error').isVisible(),'empty total blocks Continue');
+  await page.locator('#split-total').fill('20');await page.locator('#split-description').fill('Lunch split');
+  await page.locator('#dw-split-step-next').click();assert.equal(await page.locator('#split-page').getAttribute('data-split-step'),'2');
+  await page.locator('#split-percent').click();await page.getByLabel('Alex percentage',{exact:true}).fill('25');
+  await page.locator('#dw-split-step-next').click();assert.ok(await page.locator('#dw-split-step-error').isVisible(),'incorrect percentages block Review');
+  await page.getByLabel('Jordan percentage',{exact:true}).fill('75');await page.locator('#dw-split-step-next').click();
+  assert.equal(await page.locator('#split-page').getAttribute('data-split-step'),'3');assert.ok(await page.locator('#split-save').isVisible());
+  assert.ok((await page.locator('#split-summary').textContent()).includes('$15.00'));assert.equal(await page.locator('#split-total').isVisible(),false);
+  await page.screenshot({path:resolve(root,'test-results/bills/mobile-split-bill-review.png'),fullPage:true});
+  await page.locator('#dw-split-step-back').click();assert.equal(await page.getByLabel('Alex percentage',{exact:true}).inputValue(),'25','Back retains split amounts');
+
   await page.locator('#split-back').click();await mobileAdd.waitFor();
   await page.locator('#dw-expense-filter-panel>summary').click();
   assert.ok(await page.locator('#sq-expense-category').isVisible());assert.ok(await page.locator('#sq-expense-member').isVisible());assert.ok(await page.locator('#sq-expense-time').isVisible());

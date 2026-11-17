@@ -2919,7 +2919,7 @@ window.dwBillDueDate=function(value){
     <button type="button" id="sq-activity-toggle" class="sq-activity-toggle" aria-expanded="false" aria-controls="sq-activity-content"><span><strong>Recent activity</strong><small>Expenses and payments in this tracker</small></span><svg class="sq-activity-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
     <div id="sq-activity-content" hidden>
       <div class="sq-expense-activity-top sq-activity-filters"><div style="display:flex;gap:9px;flex-wrap:wrap"><input class="sq-expense-search" id="sq-expense-search" type="search" placeholder="Search expenses..." aria-label="Search expenses"><select id="sq-expense-time" class="sq-expense-time" aria-label="Filter by time"><option value="all">All time</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last year</option></select></div></div>
-      <div class="sq-expense-extra"><label>Status <select id="sq-expense-status"><option value="all">All statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="disputed">Disputed</option></select></label><button type="button" id="sq-export-expenses" class="small-btn">↓ Export CSV</button></div><div id="history"></div><div class="sq-expense-count" id="sq-expense-count" aria-live="polite"></div>
+      <div class="sq-expense-extra"><label>Status <select id="sq-expense-status"><option value="all">All statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="disputed">Disputed</option></select></label><button type="button" id="sq-export-expenses" class="small-btn">↓ Export Log</button></div><div id="history"></div><div class="sq-expense-count" id="sq-expense-count" aria-live="polite"></div>
       <div class="sq-clean-activity-heading" style="justify-content:flex-end;margin-top:12px"><button type="button" id="sq-activity-all" class="small-btn">View all expenses →</button></div>
     </div>
   </div>
@@ -16794,7 +16794,7 @@ html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-side
   workspace=document.createElement('section');workspace.id='dw-expense-workspace';workspace.setAttribute('aria-label','Expenses workspace');
   sidebar=document.createElement('aside');sidebar.id='dw-expense-sidebar';sidebar.setAttribute('aria-label','Balances and tools');new ResizeObserver(size).observe(sidebar);
   tools=document.createElement('section');tools.id='dw-expense-tools';tools.innerHTML='<h2>Tools</h2>';
-  heading=document.createElement('div');heading.className='dw-expenses-heading';heading.innerHTML='<div><h2>Expenses</h2><p>Track and manage shared expenses and payments.</p></div>';heading.append(action('＋ Add expense',()=>quick('quick-expense')));
+  heading=document.createElement('div');heading.className='dw-expenses-heading';heading.innerHTML='<div><h2>Expense History</h2><p>Track and manage shared expenses and payments.</p></div>';heading.append(action('＋ Add expense',()=>quick('quick-expense')));
   const add=document.createElement('details');add.id='dw-mobile-expense-add';add.innerHTML='<summary><span>＋ Add expense</span><svg class="dw-add-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div></div>';
   [['Add expense','quick-expense','<path d="M12 5v14M5 12h14"/>'],['Scan receipt','quick-receipt','<path d="M4 6h4l2-3h4l2 3h4v15H4V6Z"/><circle cx="12" cy="13" r="4"/>'],['Split bill','quick-split','<path d="M5 19 19 5"/><circle cx="6.5" cy="6.5" r="3"/><circle cx="17.5" cy="17.5" r="3"/>']].forEach(([label,id,path])=>{const option=action('',()=>{add.open=false;quick(id);});option.innerHTML='<span class="dw-mobile-option-icon" aria-hidden="true">'+icon(path)+'</span><span>'+label+'</span>';add.lastChild.append(option);});heading.append(add);
   const moreBalance=action('More balances ⌄',()=>{const expanded=balance.classList.toggle('dw-show-all-balances');moreBalance.setAttribute('aria-expanded',String(expanded));moreBalance.textContent=expanded?'Fewer balances ⌃':'More balances ⌄';});moreBalance.id='dw-mobile-more-balances';moreBalance.setAttribute('aria-expanded','false');balance.append(moreBalance);
@@ -16805,7 +16805,7 @@ html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-side
   side.querySelectorAll('.sq-side-icon').forEach(x=>{x.dataset.dwOriginalIcon=x.innerHTML;});
   const exp=side.querySelector('[data-sq-quick="quick-expense"]'),paybutton=side.querySelector('[data-sq-quick="quick-pay-now"]');
   [exp,paybutton].forEach(x=>{if(x){x.dataset.dwOriginalHidden=String(x.hidden);x.hidden=true;}});
-  tools.append(side);exportTool=action('',()=>document.getElementById('sq-export-expenses').click(),'sq-side-action');exportTool.innerHTML='<span class="sq-side-icon">'+icon('<path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/>')+'</span><span class="sq-side-copy"><strong>Export CSV</strong><small>Download expense data</small></span><span>›</span>';side.append(exportTool);exportTool.dataset.dwExtra='1';
+  tools.append(side);exportTool=action('',()=>document.getElementById('sq-export-expenses').click(),'sq-side-action');exportTool.innerHTML='<span class="sq-side-icon">'+icon('<path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/>')+'</span><span class="sq-side-copy"><strong>Export Log</strong><small>Download expense data</small></span><span>›</span>';side.append(exportTool);exportTool.dataset.dwExtra='1';
   side.querySelector('[data-sq-quick="quick-receipt"] .sq-side-icon').innerHTML=icon('<path d="M5 3h14v19l-3-2-4 2-4-2-3 2V3Zm4 5h6m-6 4h6m-6 4h4"/>');side.querySelector('[data-sq-quick="quick-split"] .sq-side-icon').innerHTML=icon('<path d="M5 19 19 5"/><circle cx="6.5" cy="6.5" r="3"/><circle cx="17.5" cy="17.5" r="3"/>');
   const p=action('➤ Pay now',()=>quick('quick-pay-now'));p.id='dw-expense-pay';balance.append(p);
  }
@@ -17047,8 +17047,47 @@ html body #sq-receipt-dialog .sq-action-modal-inner{width:calc(100vw - 20px)!imp
  new MutationObserver(()=>{if(!document.getElementById('sq-receipt-dialog').hidden&&mobile.matches)go(document.querySelector('#receipt-items .sq-receipt-item')?2:1);}).observe(document.getElementById('sq-receipt-dialog'),{attributes:true,attributeFilter:['hidden']});
  document.getElementById('receipt-clear').addEventListener('click',()=>go(1));mobile.addEventListener('change',()=>go(step));go(1);
 })();</script>
-<style>#receipt-card.dw-receipt-compact #receipt-close{display:none!important}</style></body>
+<style>#receipt-card.dw-receipt-compact #receipt-close{display:none!important}</style>
+<style id="dw-split-guided-style">
+#dw-split-steps,#dw-split-step-footer,#dw-split-step-error,#dw-split-scan{display:none}
+@media(max-width:700px){
+html body.split-view #split-page{padding-bottom:90px!important}
+#split-page #dw-split-steps{display:flex;gap:10px;padding:14px 0 20px;margin-bottom:12px}#dw-split-steps span{display:flex;flex:1;flex-direction:column;align-items:center;gap:6px;border-bottom:2px solid #31576c;padding-bottom:12px;color:#afcedd;font-size:12px}#dw-split-steps i{font-style:normal;display:grid;place-items:center;width:25px;height:25px;border:1px solid #4b7c91;border-radius:50%}#dw-split-steps [aria-current=step]{color:#39e2bd;border-color:#39e2bd;font-weight:750}#dw-split-steps [aria-current=step] i{background:#23d2b0;color:#052e38;border-color:#23d2b0}
+html body #split-page .split-layout{display:block!important}#split-page .dw-split-secondary-column{display:contents!important}
+html body #split-page[data-split-step="1"] [data-split-stage]:not([data-split-stage="1"]),html body #split-page[data-split-step="2"] [data-split-stage]:not([data-split-stage="2"]),html body #split-page[data-split-step="3"] [data-split-stage]:not([data-split-stage="3"]){display:none!important}
+html body #split-page .split-panel{padding:17px!important;margin:0!important;background:#0c2c3e!important;border:1px solid #355f74!important;border-radius:14px!important}
+#split-page #dw-split-scan{display:block;border:1px solid #3b6a7d;border-radius:10px;padding:11px 14px;background:#163f50;color:#ceeff7;min-height:42px;font-size:13px;margin-bottom:17px}
+#split-page:not(.dw-show-split-scan) .receipt-scan-box{display:none!important}#split-page .receipt-scan-box{margin-bottom:15px}#split-page .receipt-scan-box>p{display:none}
+#split-page #dw-split-step-footer{display:grid;grid-template-columns:auto 1fr auto;gap:10px;position:sticky;bottom:0;background:#0b293b;border:1px solid #31576c;border-radius:12px;padding:13px 15px;margin-top:16px;z-index:3}
+#dw-split-step-footer>div{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#c9e1ec}#dw-split-total{font-size:22px;color:#f0fbff}
+#dw-split-step-footer button{min-height:43px;padding:11px 17px;border:1px solid #3e6d7d;border-radius:10px;background:#163e50;color:#e1f4fc;font-size:13px;font-weight:700}
+#dw-split-step-back{grid-column:1}#dw-split-step-next,#dw-split-step-footer #split-save{grid-column:3;background:#28d9b8!important;color:#052d36!important;border:0!important;width:auto!important;margin:0!important}
+#split-page[data-split-step="1"] #dw-split-step-back,#split-page[data-split-step="3"] #dw-split-step-next,#split-page:not([data-split-step="3"]) #split-save{display:none!important}
+#split-page [data-split-stage="3"]>.split-summary-line.total{display:none}
+#split-page #dw-split-step-error:not(:empty){display:block;color:#ffcfbc;font-size:13px;margin:12px 0}
+}
+</style>
+<script id="dw-split-guided-script">(function(){
+ const page=document.getElementById('split-page'),layout=page?.querySelector('.split-layout');if(!layout)return;const mobile=matchMedia('(max-width:700px)');let step=1;
+ const first=layout.children[0],column=layout.children[1],panels=column.querySelectorAll(':scope>.split-panel');first.dataset.splitStage='1';panels[0].dataset.splitStage='2';panels[1].dataset.splitStage='3';column.classList.add('dw-split-secondary-column');
+ const bar=document.createElement('nav');bar.id='dw-split-steps';bar.setAttribute('aria-label','Split bill steps');bar.innerHTML=['Details','Split','Review'].map((name,i)=>'<span><i aria-hidden="true">'+(i+1)+'</i>'+name+'</span>').join('');layout.before(bar);
+ const error=document.createElement('p');error.id='dw-split-step-error';error.setAttribute('role','alert');layout.after(error);
+ const footer=document.createElement('div');footer.id='dw-split-step-footer';footer.innerHTML='<div><span>Total</span><strong id="dw-split-total">$0.00</strong></div><button type="button" id="dw-split-step-back">Back</button><button type="button" id="dw-split-step-next">Continue</button>';page.append(footer);
+ const save=document.getElementById('split-save'),marker=document.createComment('split-save-original');save.before(marker);
+ const scan=document.createElement('button');scan.id='dw-split-scan';scan.type='button';scan.textContent='Scan a receipt instead';first.prepend(scan);scan.onclick=()=>{page.classList.add('dw-show-split-scan');document.getElementById('split-receipt-file').click();};
+ function go(n){step=n;page.dataset.splitStep=String(n);error.textContent='';bar.querySelectorAll('span').forEach((e,i)=>{if(i===n-1)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');});if(mobile.matches)window.scrollTo({top:0,behavior:'instant'});}
+ footer.querySelector('#dw-split-step-back').onclick=()=>go(Math.max(1,step-1));footer.querySelector('#dw-split-step-next').onclick=()=>{
+  if(step===1){const total=document.getElementById('split-total'),payer=document.querySelector('#split-payers input:checked');if(!Number.isFinite(Number(total.value))||Number(total.value)<=0||!total.checkValidity()||!payer){error.textContent='Enter a valid bill total and choose who paid.';return;}}
+  if(step===2&&document.getElementById('split-save').disabled){error.textContent='Choose who is splitting the bill and make sure the shares match the total.';return;}
+  go(Math.min(3,step+1));
+ };
+ function responsive(){if(mobile.matches)footer.append(save);else marker.after(save);}mobile.addEventListener('change',responsive);responsive();
+ let wasOpen=document.body.classList.contains('split-view');new MutationObserver(()=>{const opened=document.body.classList.contains('split-view');if(opened&&!wasOpen){page.classList.remove('dw-show-split-scan');go(1);}wasOpen=opened;}).observe(document.body,{attributes:true,attributeFilter:['class']});
+ new MutationObserver(()=>{document.getElementById('dw-split-total').textContent=document.getElementById('split-summary-total').textContent;}).observe(document.getElementById('split-summary-total'),{childList:true});go(1);
+})();</script>
+</body>
 </html>
+
 
 
 
