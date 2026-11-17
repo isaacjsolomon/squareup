@@ -16254,6 +16254,52 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  setInterval(()=>{if(media.matches&&!page.hidden&&!dialog.open&&!workspace.querySelector('.dw-poll-menu[open]'))render();},30000);
 })();
 </script>
+<style id="dw-polls-tracker-picker-style">@media(min-width:901px){
+ #dw-polls-page>.dw-polls-heading{display:grid;grid-template-columns:minmax(0,1fr) minmax(210px,300px) minmax(0,1fr);align-items:center;gap:24px}
+ #dw-polls-page #dw-poll-new{justify-self:end}
+ #dw-polls-tracker-picker{position:relative;display:flex;align-items:center;width:100%;height:48px;border:1px solid #467082;border-radius:14px;background:rgba(20,22,38,.27);box-shadow:0 2px 6px #00132126;box-sizing:border-box;overflow:hidden}
+ #dw-polls-tracker-picker:hover{border-color:#76cbbc}
+ #dw-polls-tracker-picker:focus-within{outline:2px solid #76e6d3;outline-offset:3px}
+ #dw-polls-tracker-picker label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ #dw-polls-tracker-picker .dw-inline-tracker-symbol{position:absolute;left:14px;top:50%;transform:translateY(-50%);display:flex;color:#76e6d3;pointer-events:none}
+ #dw-polls-tracker-picker svg{width:22px;height:22px}
+ #dw-polls-tracker-select{appearance:none;-webkit-appearance:none;box-sizing:border-box;width:100%;min-width:0;height:100%;padding:0 38px 0 48px;border:0;outline:0;border-radius:13px;color:#f1fbff;font-family:inherit;font-size:16px;font-weight:650;cursor:pointer;text-overflow:ellipsis;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c7e7ed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E") no-repeat right 12px center/18px 18px}
+ #dw-polls-tracker-select option{background:#10283c;color:#f4fbff}
+}
+@media(max-width:900px){#dw-polls-tracker-picker{display:none!important}}</style>
+<script id="dw-polls-tracker-picker-script">(function(){
+ 'use strict';
+ const page=document.getElementById('dw-polls-page'),source=document.getElementById('tracker-select'),heading=page?.querySelector('.dw-polls-heading');
+ if(!heading||!source)return;
+ const picker=document.createElement('div');picker.id='dw-polls-tracker-picker';
+ const icon=document.createElement('span');icon.className='dw-inline-tracker-symbol';icon.setAttribute('aria-hidden','true');
+ const original=document.querySelector('#nav-trackers .sq-nav-icon svg');if(original)icon.append(original.cloneNode(true));
+ const label=document.createElement('label');label.htmlFor='dw-polls-tracker-select';label.textContent='Switch tracker';
+ const select=document.createElement('select');select.id='dw-polls-tracker-select';select.setAttribute('aria-label','Switch polls tracker');
+ picker.append(icon,label,select);heading.insertBefore(picker,document.getElementById('dw-poll-new'));
+ function sync(){
+  const options=[...source.options].filter(o=>o.value&&o.value!=='manage'&&o.value!=='local'&&!o.disabled&&!o.value.startsWith('─'));
+  const signature=JSON.stringify(options.map(o=>[o.value,o.text]));
+  if(select.dataset.options!==signature){select.replaceChildren(...options.map(o=>new Option(o.text,o.value)));select.dataset.options=signature;}
+  const active=window.sqLastOpenedTrackerDetail;
+  select.value=active?.id||source.value;
+  select.disabled=!options.length;
+  const create=document.getElementById('dw-poll-new');if(create)create.disabled=!active?.id||active.id==='local';
+ }
+ select.addEventListener('change',()=>{
+  if(!select.value)return;
+  document.getElementById('dw-poll-editor')?.close();
+  const create=document.getElementById('dw-poll-new');if(create)create.disabled=true;
+  const cards=document.getElementById('dw-poll-cards');if(cards)cards.textContent='Loading polls…';
+  source.value=select.value;
+  source.dispatchEvent(new Event('change',{bubbles:true}));
+ });
+ new MutationObserver(sync).observe(source,{childList:true,subtree:true});
+ window.addEventListener('squareup:tracker-detail',sync);
+ document.getElementById('nav-group-polls')?.addEventListener('click',sync);
+ source.addEventListener('change',()=>requestAnimationFrame(sync));
+ sync();
+})();</script>
 </body>
 </html>
 

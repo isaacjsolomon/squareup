@@ -22,6 +22,9 @@ test('desktop Group polls moves out of Chat into Social and preserves create/vot
  const tracker='11111111-1111-4111-8111-111111111111',user='22222222-2222-4222-8222-222222222222',friend='33333333-3333-4333-8333-333333333333';
  const detail={id:tracker,name:'Weekend apartment',role:'owner',members:[{id:user,name:'Alex',isYou:true},{id:friend,name:'Jordan'}],entries:[],currency:'USD'};
  let bills=[{id:'44444444-4444-4444-8444-444444444444',name:'Electricity',amount:68,due:'2026-12-01',frequency:'monthly',kind:'bill',active:true,recurring_enabled:true},{id:'55555555-5555-4555-8555-555555555555',name:'Netflix',amount:20,due:'2026-12-05',frequency:'monthly',kind:'subscription',active:true,recurring_enabled:true}];
+ const tracker2='77777777-7777-4777-8777-777777777777';
+ const detail2={...detail,id:tracker2,name:'Second group'};
+ const otherPoll={id:'other-poll',question:'A different group decision',options:[{id:'a',label:'Yes',votes:0},{id:'b',label:'No',votes:0}],totalVotes:0,totalMembers:2,closed:false,canManage:true};
  let polls=[];
  const writes=[],errors=[];
  try{
@@ -31,7 +34,9 @@ test('desktop Group polls moves out of Chat into Social and preserves create/vot
   await context.route('https://esm.sh/**',route=>route.fulfill({contentType:'text/javascript',body:`export function createClient(){const user={id:'${user}',email:'alex@example.test',email_confirmed_at:'2025-01-01',created_at:'2025-01-01',user_metadata:{full_name:'Alex'},app_metadata:{provider:'email'}};return {auth:{getUser:async()=>({data:{user}}),getSession:async()=>({data:{session:{user,access_token:'test-only'}}}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},rpc:async()=>({data:[]})}}`}));
   await context.route(origin+'/api/**',async route=>{
    const req=route.request(),path=new URL(req.url()).pathname.slice(5),method=req.method();let data=[];
-   if(path==='trackers')data=[detail];
+   if(path==='trackers')data=[detail,detail2];
+   else if(path==='trackers/'+tracker2)data=detail2;
+   else if(path==='trackers/'+tracker2+'/polls')data=[otherPoll];
    else if(path==='trackers/'+tracker)data=detail;
    else if(path==='trackers/'+tracker+'/polls'){
     if(method==='POST'){
@@ -121,6 +126,26 @@ test('desktop Group polls moves out of Chat into Social and preserves create/vot
   assert.ok(await expired.locator('[data-option="option-0"]').isDisabled(),'expired poll disables voting without a reload');
   mkdirSync(resolve(root,'test-results/bills'),{recursive:true});
   await page.screenshot({path:resolve(root,'test-results/bills/group-polls-upgraded.png'),fullPage:true});
+  const selector=page.getByRole('combobox',{name:'Switch polls tracker',exact:true});
+  assert.ok(await selector.isVisible());
+  await selector.selectOption(tracker2);
+  await page.waitForFunction(()=>document.getElementById('dw-polls-tracker').textContent==='Second group');
+  await page.locator('#dw-poll-cards [data-poll-card-id="other-poll"]').waitFor();
+  assert.equal(await first.count(),0,'previous tracker polls cleared');
+  assert.ok(await page.locator('#dw-polls-page').isVisible(),'switch keeps polls page open');
+  assert.equal(await page.locator('#dw-inline-tracker-picker').isVisible(),false,'top header remains unchanged');
+  await selector.selectOption(tracker);
+  await first.waitFor();
+  assert.equal(await page.locator('#dw-poll-cards [data-poll-card-id="other-poll"]').count(),0);
+  assert.equal(await page.locator('#dw-polls-tracker').textContent(),'Weekend apartment');
+  const placement=await selector.evaluate(select=>{
+   const box=e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom}};
+   return {picker:box(select),title:box(document.querySelector('.dw-polls-heading>div:first-child')),create:box(document.getElementById('dw-poll-new'))};
+  });
+  assert.ok(placement.picker.left>=placement.title.right,'switcher is centered after title');
+  assert.ok(placement.picker.right<=placement.create.left,'switcher does not overlap New poll');
+  await page.screenshot({path:resolve(root,'test-results/bills/group-polls-tracker-switcher.png'),fullPage:true});
+
   await page.locator('.dw-nav-social-trigger').click();
   await page.locator('#nav-chat').click();
   assert.equal(await page.locator('#dw-polls-page').isVisible(),false,'Chat closes polls page');
