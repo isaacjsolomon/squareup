@@ -96,7 +96,15 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   assert.deepEqual(typography.headings[0],typography.headings[1],'Balance and Upcoming titles match');
   assert.deepEqual(typography.headings[1],typography.headings[2],'Upcoming and Members titles match');
   assert.ok(typography.icons.length>=2);assert.ok(typography.icons.every(i=>i.width===36&&i.height===36),'consistent compact service icons');
-  assert.ok(parseFloat(typography.prefix.size)<parseFloat(typography.amount.size),'You owe label is smaller');
+  assert.equal(typography.prefix.size,typography.amount.size,'sign matches the amount size');
+  assert.equal(await page.locator('#dw-compact-balance').textContent(),'−$12.00');
+  detail.entries[0].from='Jordan';detail.entries[0].to='Alex';
+  await page.evaluate(()=>window.sqRefreshTrackerNow());
+  await page.waitForFunction(()=>document.getElementById('dw-compact-balance').textContent==='+$12.00');
+  assert.ok((await page.locator('#sq-clean-explanation').textContent()).includes('owes'),'who owes whom caption retained');
+  detail.entries[0].from='Alex';detail.entries[0].to='Jordan';
+  await page.evaluate(()=>window.sqRefreshTrackerNow());
+  await page.waitForFunction(()=>document.getElementById('dw-compact-balance').textContent==='−$12.00');
   assert.equal(typography.amount.size,typography.base.size,'amount keeps its original font size');
   const billRow=page.locator('#dw-home-bill-list .dw-home-bill-row').filter({hasText:'Electricity'});
   await billRow.getByRole('button',{name:'View Electricity details',exact:true}).click();
