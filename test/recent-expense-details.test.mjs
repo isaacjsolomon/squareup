@@ -112,8 +112,8 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   }));
   assert.deepEqual(formatting.frequencies,['Yearly','Monthly','Weekly','Daily']);
   assert.equal(formatting.date,'November 4, 2027');
-  assert.ok(await page.locator('#dw-compact-upcoming .dw-upcoming-section[data-kind="subscription"]>h3').getByText('Subscriptions',{exact:true}).isVisible());
-  assert.ok(await page.locator('#dw-compact-upcoming .dw-upcoming-section[data-kind="bill"]>h3').getByText('Bills',{exact:true}).isVisible());
+  assert.equal(await page.locator('#dw-compact-upcoming .dw-upcoming-section[data-kind="subscription"]>h3').textContent(),'Subscriptions');
+  assert.equal(await page.locator('#dw-compact-upcoming .dw-upcoming-section[data-kind="bill"]>h3').textContent(),'Bills');
   assert.ok((await page.locator('#dw-home-bill-list').textContent()).includes('Monthly · Next due December 1, 2026'));
   const billRow=page.locator('#dw-home-bill-list .dw-home-bill-row').filter({hasText:'Electricity'});
   await billRow.getByRole('button',{name:'View Electricity details',exact:true}).click();
