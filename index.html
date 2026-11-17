@@ -16719,7 +16719,7 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
 #tracker-dashboard.dw-expenses-redesign{display:block!important}
 html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace{display:grid;grid-template-columns:minmax(0,2.65fr) minmax(280px,1fr);gap:18px;align-items:start;margin-top:18px}
 html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #sq-activity-card,html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #balances-card,#dw-expense-tools{background:linear-gradient(135deg,#103447,#092536)!important;border:1px solid #345c70!important;border-radius:18px!important;box-shadow:none!important;backdrop-filter:none!important;margin:0!important;padding:20px!important;min-width:0!important}
-html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #sq-activity-card{height:var(--dw-expense-height,650px)!important;min-height:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #sq-activity-card{grid-column:1!important;grid-row:1!important;height:var(--dw-expense-height,650px)!important;min-height:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
 html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #sq-activity-toggle{display:none!important}
 html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #sq-activity-content{display:flex!important;flex:1;flex-direction:column;min-height:0;overflow:hidden}
 .dw-expenses-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid #34576b}
@@ -16749,7 +16749,7 @@ html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #history
 .dw-expense-day{background:#1a4258;color:#e8f5fc;border-radius:9px;padding:10px 12px;margin:4px 0;font-size:14px;font-weight:750}
 html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #sq-expense-count{flex:none;margin:8px 0 0!important;font-size:11px!important}
 html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-clean-activity-heading{display:none!important}
-#dw-expense-sidebar{display:flex;flex-direction:column;gap:16px;min-width:0}
+#dw-expense-sidebar{grid-column:2!important;grid-row:1!important;display:flex;flex-direction:column;gap:16px;min-width:0}
 html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #balances-card h2,#dw-expense-tools h2{font-size:20px!important;margin:0 0 14px!important}
 html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #nets{gap:8px!important;max-height:310px;overflow:auto;scrollbar-width:thin}
 html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #nets .net{padding:10px!important;gap:8px!important;flex-wrap:nowrap!important;border:1px solid #365e73!important;border-radius:12px!important;background:#193b4e!important;min-height:56px}
@@ -16783,6 +16783,7 @@ html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-side
   tabs=document.createElement('div');tabs.className='dw-expense-tabs';tabs.setAttribute('aria-label','Activity type');
   ['All','Expenses','Payments','Pending'].forEach(name=>{const b=action(name,()=>{type=name.toLowerCase();tabs.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));applyType();});b.setAttribute('aria-pressed',String(name==='All'));tabs.append(b);});
   filterPanel=document.createElement('details');filterPanel.id='dw-expense-filter-panel';filterPanel.innerHTML='<summary>☷ Filters</summary>';
+  side.querySelectorAll('.sq-side-icon').forEach(x=>{x.dataset.dwOriginalIcon=x.innerHTML;});
   const exp=side.querySelector('[data-sq-quick="quick-expense"]'),paybutton=side.querySelector('[data-sq-quick="quick-pay-now"]');
   [exp,paybutton].forEach(x=>{if(x){x.dataset.dwOriginalHidden=String(x.hidden);x.hidden=true;}});
   tools.append(side);exportTool=action('',()=>document.getElementById('sq-export-expenses').click(),'sq-side-action');exportTool.innerHTML='<span class="sq-side-icon">'+icon('<path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/>')+'</span><span class="sq-side-copy"><strong>Export CSV</strong><small>Download expense data</small></span><span>›</span>';side.append(exportTool);exportTool.dataset.dwExtra='1';
@@ -16806,6 +16807,7 @@ html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-side
  function applyType(){if(!workspace?.isConnected)return;
   history.querySelectorAll('.dw-expense-day').forEach(e=>e.remove());let last='';
   history.querySelectorAll(':scope > .entry').forEach(row=>{const matches=type==='all'||type===row.dataset.dwType||(type==='pending'&&row.dataset.dwStatus==='pending');row.classList.toggle('dw-type-hidden',!matches);if(!row.hidden&&matches){const date=row.dataset.dwDate||'';if(date!==last){last=date;const h=document.createElement('div');h.className='dw-expense-day';const parsed=new Date(date);h.textContent=isNaN(parsed)?date:parsed.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});row.before(h);}}});
+  const rows=[...history.querySelectorAll(':scope > .entry')];document.getElementById('sq-expense-count').textContent=rows.filter(r=>!r.hidden&&!r.classList.contains('dw-type-hidden')).length+' of '+rows.length+' activities shown';
  }
  function size(){if(!workspace?.isConnected)return;const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style.setProperty('--dw-expense-height',h+'px');}
  function sync(){frame=0;const on=mq.matches&&d.classList.contains('sq-tab-expenses')&&!d.classList.contains('dw-template-original');
@@ -16813,10 +16815,10 @@ html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-side
    const sideMark=document.createComment('side-home');side.before(sideMark);homes.set(side,sideMark);
    if(!workspace)build();
    d.querySelector('.sq-workspace-tabs').after(workspace);move(activity,workspace);workspace.append(sidebar);move(balance,sidebar);sidebar.append(tools);tools.append(side);move(filters,filterPanel);move(filterPanel,activity.querySelector('.sq-expense-extra'));activity.prepend(heading);activity.querySelector('.sq-activity-filters>div').append(tabs);history.setAttribute('tabindex','0');history.setAttribute('aria-label','Expense history, scroll for more');history.setAttribute('role','region');
-   side.append(exportTool);d.classList.add('dw-expenses-redesign');side.querySelectorAll('[data-dw-original-hidden]').forEach(x=>x.hidden=true);document.getElementById('dw-expense-pay').hidden=false;decorate();size();
+   side.append(exportTool);side.querySelector('[data-sq-quick="quick-receipt"] .sq-side-icon').innerHTML=icon('<path d="M5 3h14v19l-3-2-4 2-4-2-3 2V3Zm4 5h6m-6 4h6m-6 4h4"/>');side.querySelector('[data-sq-quick="quick-split"] .sq-side-icon').innerHTML=icon('<path d="M12 21V4m-4 4 4-4 4 4M12 15H5V9m7 6h7V9"/>');d.classList.add('dw-expenses-redesign');side.querySelectorAll('[data-dw-original-hidden]').forEach(x=>x.hidden=true);document.getElementById('dw-expense-pay').hidden=false;decorate();size();
   }else if(!on&&workspace?.isConnected){
    d.classList.remove('dw-expenses-redesign');closeMenu();heading.remove();tabs.remove();
-   for(const [node,mark]of homes){if(mark.isConnected){mark.replaceWith(node);}}homes.clear();filterPanel.remove();workspace.remove();side.querySelectorAll('[data-dw-original-hidden]').forEach(x=>x.hidden=x.dataset.dwOriginalHidden==='true');exportTool.remove();history.removeAttribute('tabindex');history.removeAttribute('role');history.removeAttribute('aria-label');history.querySelectorAll('.dw-expense-icon,.dw-expense-copy,.dw-expense-money,.dw-expense-more,.dw-expense-day').forEach(x=>x.remove());history.querySelectorAll('.entry').forEach(x=>x.classList.remove('dw-type-hidden'));document.getElementById('dw-expense-pay').hidden=true;
+   for(const [node,mark]of homes){if(mark.isConnected){mark.replaceWith(node);}}homes.clear();filterPanel.remove();workspace.remove();side.querySelectorAll('[data-dw-original-hidden]').forEach(x=>x.hidden=x.dataset.dwOriginalHidden==='true');exportTool.remove();side.querySelectorAll('[data-dw-original-icon]').forEach(x=>{x.innerHTML=x.dataset.dwOriginalIcon;});history.removeAttribute('tabindex');history.removeAttribute('role');history.removeAttribute('aria-label');history.querySelectorAll('.dw-expense-icon,.dw-expense-copy,.dw-expense-money,.dw-expense-more,.dw-expense-day').forEach(x=>x.remove());history.querySelectorAll('.entry').forEach(x=>x.classList.remove('dw-type-hidden'));document.getElementById('dw-expense-pay').hidden=true;
   }else if(on){decorate();size();}
  }
  new ResizeObserver(size).observe(sidebar||side);

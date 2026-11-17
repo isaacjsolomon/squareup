@@ -72,7 +72,7 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
     const a=document.getElementById('sq-activity-card').getBoundingClientRect(),t=document.getElementById('dw-expense-tools').getBoundingClientRect(),h=document.getElementById('history');
     return {bottom:a.bottom,toolsBottom:t.bottom,scrolls:h.scrollHeight>h.clientHeight,overflow:document.documentElement.scrollWidth>innerWidth+1};
    });
-   assert.ok(Math.abs(layout.bottom-layout.toolsBottom)<2,'history bottom aligns with Tools at '+width);
+   assert.ok(Math.abs(layout.bottom-layout.toolsBottom)<2,'history bottom aligns with Tools at '+width+' '+JSON.stringify(layout));
    assert.ok(layout.scrolls,'history scrolls internally at '+width);assert.equal(layout.overflow,false);
   }
   await page.setViewportSize({width:1440,height:1000});
