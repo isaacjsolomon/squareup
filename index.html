@@ -16613,6 +16613,7 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  summary.querySelector('.sq-return-welcome').append(add);
  const view=members.querySelector('[data-return-tab="members"]'),originalView=view?.textContent;
  const memberHeading=members.querySelector('h3'),originalHeading=memberHeading?.textContent;
+ const seeAll=activity.querySelector('[data-return-tab="expenses"]'),originalSeeAll=seeAll?.textContent;
  const upcoming=document.createElement('section');upcoming.id='dw-compact-upcoming';upcoming.setAttribute('aria-labelledby','dw-upcoming-title');
  const heading=document.createElement('h2');heading.id='dw-upcoming-title';heading.textContent='Upcoming Bills';upcoming.append(heading);
  for(const kind of ['subscription','bill']){const list=document.getElementById('dw-home-'+kind+'-list');if(list){const section=document.createElement('section');section.className='dw-upcoming-section';section.dataset.kind=kind;const title=document.createElement('h3');title.textContent=kind==='subscription'?'Subscriptions':'Bills';section.append(title,list);upcoming.append(section);}}
@@ -16647,8 +16648,8 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  }
  new MutationObserver(scheduleRows).observe(upcoming,{childList:true,subtree:true});scheduleRows();
  function place(){
-  if(media.matches&&!document.getElementById('tracker-dashboard')?.classList.contains('dw-template-original')){members.append(remind);if(view)view.textContent='View members →';if(memberHeading)memberHeading.textContent='Members';}
-  else{if(remindMarker.parentNode)remindMarker.after(remind);if(view)view.textContent=originalView;if(memberHeading)memberHeading.textContent=originalHeading;}
+  if(media.matches&&!document.getElementById('tracker-dashboard')?.classList.contains('dw-template-original')){members.append(remind);if(seeAll)seeAll.textContent='See all';if(view)view.textContent='View members →';if(memberHeading)memberHeading.textContent='Members';}
+  else{if(remindMarker.parentNode)remindMarker.after(remind);if(seeAll)seeAll.textContent=originalSeeAll;if(view)view.textContent=originalView;if(memberHeading)memberHeading.textContent=originalHeading;}
   window.sqRefreshRestoredSummary?.();
  }
  media.addEventListener('change',place);window.addEventListener('squareup:tracker-detail',place);place();return true;
@@ -16704,6 +16705,13 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  #dw-compact-upcoming .dw-upcoming-section>h3{font-family:inherit;margin:0 0 12px;color:#d9edf7;font-size:13px;font-weight:700;line-height:1.4}
  #dw-compact-upcoming .dw-upcoming-section[data-kind="bill"]{border-top:1px solid #365f72;margin-top:16px;padding-top:16px}
  #dw-compact-upcoming .dw-upcoming-section #dw-home-bill-list{border-top:0;margin-top:0;padding-top:0}
+}
+</style>
+<style id="dw-recent-activity-see-all">
+@media(min-width:901px){
+ #dw-home-columns>.sq-overview-activity-panel .sq-return-head button[data-return-tab="expenses"]{display:inline-flex!important;align-items:center!important;justify-content:center!important;margin-left:auto!important;padding:8px 14px!important;min-height:36px!important;border:1px solid #467c90!important;border-radius:10px!important;background:transparent!important;color:#a7d9e9!important;font-family:inherit!important;font-size:13px!important;font-weight:650!important;line-height:1.3!important;cursor:pointer}
+ #dw-home-columns>.sq-overview-activity-panel .sq-return-head button[data-return-tab="expenses"]:hover{background:#174458!important}
+ #dw-home-columns>.sq-overview-activity-panel .sq-return-head button[data-return-tab="expenses"]:focus-visible{outline:2px solid #6af0d2;outline-offset:3px}
 }
 </style>
 </body>

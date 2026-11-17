@@ -55,6 +55,12 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   await page.locator('#trackers-gallery .tile-open').first().click();
   const row=page.locator('#sq-return-activity [data-expense-id="88888888-8888-4888-8888-888888888888"]');
   await row.waitFor();
+  const seeAll=page.locator('#dw-home-columns>.sq-overview-activity-panel').getByRole('button',{name:'See all',exact:true});
+  await seeAll.click();
+  await page.waitForFunction(()=>document.getElementById('tracker-dashboard').classList.contains('sq-tab-expenses'));
+  assert.equal(await page.locator('[data-sq-tab="expenses"]').getAttribute('aria-selected'),'true','See all opens all Expenses');
+  await page.locator('#nav-home').click();await row.waitFor();
+  assert.ok(await seeAll.isVisible(),'See all is visible again on return Home');
   for(const width of [1024,1440,1920]){
    await page.setViewportSize({width,height:1000});
    await page.locator('#dw-home-bill-list .dw-home-bill-row').waitFor();
