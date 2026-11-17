@@ -71,6 +71,7 @@ jobs:
           BILLS_BASE_URL: https://doweo.app
         run: |
           node scripts/verify-live-bills.mjs
+          node --test test/polls-desktop-page.test.mjs
           node --test test/home-desktop-navigation.test.mjs
           node --test test/bills-full-app.test.mjs
       - name: Upload production Bills screenshots
