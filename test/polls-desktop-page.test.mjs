@@ -55,7 +55,9 @@ test('desktop Group polls moves out of Chat into Social and preserves create/vot
   await page.locator('#auth-modal.open').waitFor({state:'hidden'});
 
 
-  await page.evaluate(id=>window.openTracker(id),tracker);
+  await page.evaluate(()=>document.getElementById('nav-trackers').click());
+  await page.locator('#trackers-gallery .tile-open').first().click();
+  await page.waitForFunction(()=>Boolean(window.sqLastOpenedTrackerDetail?.id));
   await page.locator('.dw-nav-social-trigger').click();
   await page.locator('#nav-group-polls').click();
   await page.locator('#dw-polls-page').waitFor();
