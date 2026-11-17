@@ -92,6 +92,28 @@ test('desktop Home remains full width after navigation and shows only four track
     await verifyHome(destination+'-'+attempt);
    }
   }
+  const templateNames=['ROOMMATES','VACATION','SCHOOL TRIP','WEEKEND GETAWAY','SHARED HOUSEHOLD','CAMPING TRIP','FOOD & DINING'];
+  for(let index=0;index<templateNames.length;index++){
+   await page.evaluate(({id,index})=>{
+    localStorage.setItem('sq_tracker_template_'+id,String(index));
+    const selector=document.getElementById('tracker-select');selector.value=id;selector.dispatchEvent(new Event('change',{bubbles:true}));
+   },{id:tracker,index});
+   await page.waitForFunction(()=>document.getElementById('tracker-dashboard').classList.contains('dw-template-original')&&!document.getElementById('sq-template-dashboard').hidden);
+   await page.locator('#sq-template-dashboard .sq-td-kicker').filter({hasText:templateNames[index]}).waitFor();
+   assert.equal(await page.locator('#dw-home-columns').count(),0,'redesigned Home excluded from template '+index);
+   assert.equal(await page.locator('#sq-return-summary').evaluate(e=>e.parentElement.id),'tracker-dashboard','original summary placement');
+   assert.ok(await page.locator('#sq-clean-net').isVisible(),'original balance shown');
+   assert.equal(await page.locator('#dw-compact-balance').isVisible(),false,'compact balance hidden');
+   assert.equal(await page.locator('#sq-clean-remind').evaluate(e=>e.parentElement.className),'sq-clean-balance-actions','original reminder placement');
+   assert.ok(await page.locator('#sq-template-dashboard [data-sq-template-action]').count()>0,'template actions retained');
+  }
+  await page.evaluate(id=>{
+   localStorage.removeItem('sq_tracker_template_'+id);
+   const selector=document.getElementById('tracker-select');selector.value=id;selector.dispatchEvent(new Event('change',{bubbles:true}));
+  },tracker);
+  await page.waitForFunction(()=>!document.getElementById('tracker-dashboard').classList.contains('dw-template-original')&&document.getElementById('sq-template-dashboard').hidden);
+  await page.locator('#dw-compact-upcoming').waitFor();
+  await verifyHome('regular-after-all-templates');
   console.log('HOME_NAVIGATION_ERRORS',JSON.stringify(errors));
  }finally{await browser.close();await new Promise(done=>server.close(done));}
 });
