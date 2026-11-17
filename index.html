@@ -16016,6 +16016,19 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
 }
 
 </style>
+<script>
+/* Refresh the desktop icon even when an older toolbar script remains cached. */
+(function(){
+ function refresh(){
+  if(!window.matchMedia('(min-width:901px)').matches)return;
+  var symbol=document.querySelector('#dw-inline-tracker-picker .dw-inline-tracker-symbol');
+  var icon=document.querySelector('#nav-trackers .sq-nav-icon svg');
+  if(symbol&&icon&&!symbol.querySelector('svg'))symbol.replaceChildren(icon.cloneNode(true));
+ }
+ new MutationObserver(refresh).observe(document.body,{childList:true,subtree:true});
+ window.addEventListener('resize',refresh,{passive:true});refresh();
+})();
+</script>
 </body>
 </html>
 
