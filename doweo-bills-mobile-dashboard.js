@@ -219,7 +219,7 @@
   }
   header.classList.add('dw-inline-tracker-header');
   const tabs=[...tabbar.querySelectorAll('button[data-sq-tab]')];
-  if(tabs.length>=4&&!tabbar.contains(chat))tabbar.append(chat);
+  if(tabbar.contains(chat))chat.remove();
   tabbar.classList.add('dw-inline-five-tabs');
  }
  function schedule(){if(!frame)frame=requestAnimationFrame(apply)}
