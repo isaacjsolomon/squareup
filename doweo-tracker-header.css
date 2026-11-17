@@ -23,11 +23,11 @@
  .dw-integrated-picker:focus-within .dw-picker-chevron{transform:rotate(180deg)}
  .dw-integrated-header .dw-integrated-search{flex:1 1 260px!important;min-width:120px!important}
  .dw-original-picker-hidden{display:none!important}
- .dw-integrated-tabs{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;grid-template-rows:auto!important;gap:clamp(4px,.7vw,12px)!important;align-items:stretch!important;min-width:0!important;box-sizing:border-box}
+ .dw-integrated-tabs{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:auto!important;gap:clamp(4px,.7vw,12px)!important;align-items:stretch!important;min-width:0!important;box-sizing:border-box}
  .dw-integrated-tabs>[data-sq-tab]{display:flex!important;align-items:center;justify-content:center;min-width:0!important;width:100%!important;max-width:none!important;margin:0!important;padding:13px 5px!important;white-space:nowrap!important;grid-row:1!important}
  .dw-integrated-tabs>[data-sq-tab="overview"]{grid-column:1!important}
  .dw-integrated-tabs>[data-sq-tab="expenses"]{grid-column:2!important}
  .dw-integrated-tabs>[data-sq-tab="bills"]{grid-column:3!important}
  .dw-integrated-tabs>[data-sq-tab="members"]{grid-column:4!important}
- .dw-integrated-tabs>[data-sq-tab="chat"]{grid-column:5!important}
+ .dw-integrated-tabs>[data-sq-tab="chat"]{display:none!important}
 }
