@@ -74,10 +74,20 @@ test('desktop Home remains full width after navigation and shows only four track
    await page.screenshot({path:resolve(root,'test-results/bills/home-'+label+'.png'),fullPage:true});
   }
   await verifyHome('startup');
+  assert.ok(await page.locator('#dw-inline-tracker-picker').isVisible(),'switcher visible on Home Overview');
+  for(const section of ['expenses','members','bills']){
+   await page.evaluate(section=>document.querySelector('#tracker-dashboard [data-sq-tab="'+section+'"]').click(),section);
+   await page.waitForTimeout(300);
+   assert.equal(await page.locator('#dw-inline-tracker-picker').isVisible(),false,'switcher hidden on '+section);
+   await page.evaluate(()=>document.getElementById('nav-home').click());
+   await verifyHome('return-'+section);
+   assert.ok(await page.locator('#dw-inline-tracker-picker').isVisible(),'switcher restored on Overview');
+  }
   for(const destination of ['nav-trackers','nav-analytics','sq-finance-nav','sqev-nav']){
    for(let attempt=0;attempt<2;attempt++){
     await page.evaluate(id=>document.getElementById(id).click(),destination);
     await page.waitForTimeout(300);
+    assert.equal(await page.locator('#dw-inline-tracker-picker').isVisible(),false,'switcher hidden on '+destination);
     await page.evaluate(()=>document.getElementById('nav-home').click());
     await verifyHome(destination+'-'+attempt);
    }

@@ -179,6 +179,7 @@
   cleanToolbarContainers();
   if(desktop.matches)tabbar.querySelectorAll('.dw-inline-chat-tab,[data-sq-tab="chat"]').forEach(node=>node.remove());
   if(!desktop.matches){
+   document.body.classList.remove('dw-home-overview-picker');
    document.body.classList.remove('dw-desktop-tracker-tools');
    return;
   }
@@ -186,13 +187,18 @@
    !document.body.classList.contains('sq-auth-guest') &&
    !document.body.classList.contains('settings-view') &&
    !document.body.classList.contains('trackers-view');
+  const onOverview=visible && dashboard.classList.contains('sq-tab-overview') &&
+   !document.body.classList.contains('sq-bills-open') &&
+   document.getElementById('nav-home')?.classList.contains('active');
+  document.body.classList.toggle('dw-home-overview-picker',Boolean(onOverview));
+  if(!onOverview)picker.remove();
   const header=visible?findHeader():null;
   const shouldShow=Boolean(visible&&header);
   document.body.classList.toggle('dw-desktop-tracker-tools',shouldShow);
   if(!shouldShow)return;
   syncOptions();
   // Insert alongside the existing search control; preserve search and Weo.
-  if(picker.parentElement!==header){
+  if(onOverview&&picker.parentElement!==header){
    const search=header.querySelector('input[type="search"],input[placeholder*="earch" i],[role="searchbox"],[role="search"],[class*="search"]');
    let region=search;
    while(region&&region.parentElement!==header)region=region.parentElement;

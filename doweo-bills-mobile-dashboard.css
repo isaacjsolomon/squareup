@@ -158,7 +158,7 @@
 
 /* Desktop-only tracker header and navigation. Dashboard/cards unchanged. */
 @media (min-width:901px){
- body.dw-desktop-tracker-tools > .wrap > header.tracker-heading.dw-inline-tracker-header{
+ body.dw-desktop-tracker-tools .dw-inline-tracker-header{
   display:flex!important;
   flex-wrap:nowrap!important;
   align-items:center!important;
@@ -215,9 +215,9 @@
   cursor:pointer;
  }
  body.dw-desktop-tracker-tools #dw-inline-tracker-select option{background:#10283c;color:#f4fbff}
- body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-four-tabs{
+ body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-five-tabs{
   display:grid!important;
-  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
   grid-template-rows:auto!important;
   grid-auto-flow:row!important;
   gap:clamp(3px,.75vw,12px)!important;
@@ -228,7 +228,7 @@
   padding:8px!important;
   overflow:hidden!important;
  }
- body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-four-tabs>button{
+ body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-five-tabs>button{
   box-sizing:border-box!important;
   grid-row:1!important;
   display:flex!important;
@@ -246,11 +246,11 @@
   text-overflow:ellipsis!important;
   overflow:hidden!important;
  }
- body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-four-tabs>button[data-sq-tab="overview"]{grid-column:1!important}
- body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-four-tabs>button[data-sq-tab="expenses"]{grid-column:2!important}
- body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-four-tabs>button[data-sq-tab="bills"]{grid-column:3!important}
- body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-four-tabs>button[data-sq-tab="members"]{grid-column:4!important}
- body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-four-tabs>.dw-inline-chat-tab{grid-column:5!important}
+ body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-five-tabs>button[data-sq-tab="overview"]{grid-column:1!important}
+ body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-five-tabs>button[data-sq-tab="expenses"]{grid-column:2!important}
+ body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-five-tabs>button[data-sq-tab="bills"]{grid-column:3!important}
+ body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-five-tabs>button[data-sq-tab="members"]{grid-column:4!important}
+ body.dw-desktop-tracker-tools #tracker-dashboard>.sq-workspace-tabs.dw-inline-five-tabs>.dw-inline-chat-tab{grid-column:5!important}
  body.dw-desktop-tracker-tools .dw-inline-chat-tab{
   color:#f2fbff!important;
   background:transparent!important;
@@ -293,4 +293,12 @@
  }
  html body.dw-desktop-tracker-tools #dw-inline-tracker-picker:hover{border-color:#76cbbc!important;background:#1a4358!important}
  html body.dw-desktop-tracker-tools #dw-inline-tracker-picker:focus-within{outline:2px solid #76e6d3!important;outline-offset:3px!important}
+}
+
+/* The top-header tracker switcher belongs only to Home > Overview. */
+@media(min-width:901px){
+ html body:not(.dw-home-overview-picker) #dw-inline-tracker-picker,
+ html body:not(.dw-home-overview-picker) #dw-integrated-picker{
+  display:none!important;
+ }
 }
