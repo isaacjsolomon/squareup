@@ -141,20 +141,6 @@
  picker.id='dw-inline-tracker-picker';
  picker.innerHTML='<span class="dw-inline-tracker-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 7 2 2 3-4"/><path d="M12 7h9"/><circle cx="6" cy="17" r="2"/><path d="M12 17h9"/></svg></span><label for="dw-inline-tracker-select">Tracker</label><select id="dw-inline-tracker-select" aria-label="Switch tracker"></select>';
  const select=picker.querySelector('select');
- const chat=document.createElement('button');
- chat.type='button';
- chat.className='dw-inline-chat-tab';
- chat.textContent='Chat';
- chat.setAttribute('aria-label','Open chat');
- chat.setAttribute('role','tab');
- chat.setAttribute('aria-selected','false');
- chat.addEventListener('click',()=>{
-  const original=document.getElementById('nav-chat');
-  if(original&&original!==chat){original.click();return;}
-  const mobileChat=document.getElementById('sq-mobile-chat-top');
-  const action=mobileChat?.querySelector('button,a');
-  if(action)action.click();
- });
  let frame=0;
  function findHeader(){
   const visible=node=>Boolean(node&&node.getClientRects().length);
@@ -219,7 +205,8 @@
   }
   header.classList.add('dw-inline-tracker-header');
   const tabs=[...tabbar.querySelectorAll('button[data-sq-tab]')];
-  if(tabbar.contains(chat))chat.remove();
+  // Remove stale injected controls left by a previously loaded toolbar.
+  tabbar.querySelectorAll('.dw-inline-chat-tab,[data-sq-tab="chat"]').forEach(node=>node.remove());
   tabbar.classList.add('dw-inline-five-tabs');
  }
  function schedule(){if(!frame)frame=requestAnimationFrame(apply)}
