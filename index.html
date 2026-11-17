@@ -6447,7 +6447,7 @@ document.getElementById('tracker-chat-messages')?.addEventListener('click',async
  const id=link.dataset.sqLinkedId;
  if(link.dataset.sqLinked==='poll'){
   if(window.matchMedia('(min-width:901px)').matches)window.dwOpenPollsPage?.();
-  const section=document.getElementById('sq-chat-polls');
+  const section=window.matchMedia('(min-width:901px)').matches?document.getElementById('dw-poll-workspace'):document.getElementById('sq-chat-polls');
   const expand=document.getElementById('sq-polls-expand');
   if(expand?.getAttribute('aria-expanded')!=='true')expand?.click();
   if(typeof window.sqLoadChatPolls==='function')await window.sqLoadChatPolls();
@@ -16127,6 +16127,133 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  });
  move();
 })();</script>
+<style id="dw-poll-workspace-style">@media(min-width:901px){
+ #dw-polls-page>.dw-polls-heading{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:22px}
+ #dw-polls-page>.dw-polls-heading p{margin-bottom:0}
+ #dw-polls-page>#sq-chat-polls{display:none!important}
+ #dw-polls-page .dw-poll-primary,#dw-poll-editor .dw-poll-primary{border:0;background:#43dfb3;color:#062c38;font-weight:750;border-radius:12px;padding:12px 18px;cursor:pointer;white-space:nowrap}
+ .dw-poll-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px;color:#adc8d6;font-size:13px}
+ .dw-poll-filters{display:flex;gap:5px;padding:5px;background:#082337;border:1px solid #31586b;border-radius:12px}
+ .dw-poll-filters button{padding:9px 15px;border:0;border-radius:8px;background:transparent;color:#c2d9e4;cursor:pointer;font:inherit}
+ .dw-poll-filters button[aria-pressed=true]{background:#205953;color:#b0ffe6}
+ #dw-poll-feedback:empty{display:none}
+ #dw-poll-feedback{color:#f0c4c7}
+ #dw-poll-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,390px),1fr));gap:18px;align-items:start}
+ .dw-poll-card{min-width:0;padding:22px;border:1px solid #365e70;border-radius:18px;background:#0b293c;color:#f0f8ff}
+ .dw-poll-card-head{display:flex;justify-content:space-between;align-items:start;gap:14px}
+ .dw-poll-card h3{font-size:19px;line-height:1.35;margin:10px 0 6px;overflow-wrap:anywhere}
+ .dw-poll-muted{color:#a5c1cf;font-size:12px;line-height:1.5}
+ .dw-poll-badge{display:inline-block;padding:4px 9px;border-radius:8px;background:#1c514f;color:#91edcf;font-size:11px;font-weight:750}
+ .dw-poll-options{display:grid;gap:10px;margin-top:17px}
+ .dw-poll-option{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;min-height:54px;padding:12px 14px;border:1px solid #3d7181;border-radius:11px;background:#11394b;color:#eefaff;text-align:left;cursor:pointer;font:inherit;font-size:14px}
+ .dw-poll-option[aria-pressed=true]{border-color:#57e5c1;box-shadow:0 0 0 1px #57e5c1}
+ .dw-poll-option:disabled{cursor:default;opacity:1}
+ .dw-poll-fill{position:absolute;inset:0 auto 0 0;background:#286b62;z-index:-1;transition:width .2s}
+ .dw-poll-option-text{min-width:0;overflow-wrap:anywhere}
+ .dw-poll-tally{flex:none;color:#d5f1ef;font-size:12px;font-variant-numeric:tabular-nums}
+ .dw-poll-your-vote{display:block;font-size:10px;color:#a4f4d8;margin-top:3px}
+ .dw-poll-participation{display:flex;flex-wrap:wrap;align-items:start;justify-content:space-between;gap:10px;margin-top:17px;font-size:12px;color:#b6d0dc}
+ .dw-poll-pending summary{cursor:pointer;color:#8ee2d1}.dw-poll-pending span{display:block;max-width:210px;line-height:1.5;margin-top:7px}
+ .dw-poll-deadline{font-size:12px;color:#b4cdd9;margin:12px 0 0}
+ .dw-poll-result{margin:15px 0 0;padding-top:12px;border-top:1px solid #355868;color:#9bf2d5;font-size:13px;font-weight:700;overflow-wrap:anywhere}
+ .dw-poll-menu{position:relative;flex:none}.dw-poll-menu summary{display:grid;place-items:center;list-style:none;border:1px solid #3c6275;border-radius:9px;width:35px;height:32px;color:#c4dde8;cursor:pointer}.dw-poll-menu summary::-webkit-details-marker{display:none}
+ .dw-poll-menu>div{position:absolute;right:0;top:39px;z-index:5;min-width:170px;padding:6px;border:1px solid #466a7a;border-radius:11px;background:#092435;box-shadow:0 8px 28px #0007}
+ .dw-poll-menu button{display:block;width:100%;text-align:left;padding:10px;border:0;border-radius:7px;background:transparent;color:#e8f6ff;font:inherit;font-size:12px;cursor:pointer}.dw-poll-menu button:hover{background:#21495a}.dw-poll-menu button:disabled{opacity:.4;cursor:default}
+ .dw-poll-empty{grid-column:1/-1;text-align:center;padding:35px 15px;border:1px dashed #3c6778;border-radius:15px;color:#aac8d8}.dw-poll-empty h3{color:#e6f4fd;margin:0 0 10px;font-size:18px}
+ #dw-poll-editor{box-sizing:border-box;width:min(560px,calc(100vw - 40px));max-height:85vh;overflow:auto;padding:25px;border:1px solid #588296;border-radius:20px;background:#0b293c;color:#f0f8ff;box-shadow:0 20px 70px #0008}
+ #dw-poll-editor::backdrop{background:#021320b8}
+ .dw-poll-editor-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:20px}.dw-poll-editor-head h2{margin:0;font-size:23px}.dw-poll-editor-head button{font-size:23px;padding:2px 9px}
+ #dw-poll-editor label{display:grid;gap:7px;font-size:13px;color:#c5dce7;margin:12px 0}
+ #dw-poll-editor input{box-sizing:border-box;width:100%;min-width:0;padding:11px 12px;border:1px solid #416c7e;border-radius:10px;background:#061e30;color:#fff;font:inherit;color-scheme:dark}
+ #dw-poll-editor fieldset{border:0;margin:20px 0;padding:0}#dw-poll-editor legend{font-size:13px;font-weight:700}
+ #dw-poll-editor button:not(.dw-poll-primary){border:1px solid #42697d;border-radius:10px;background:#163a4e;color:#def0f9;padding:10px 15px;cursor:pointer}
+ #dw-poll-editor-error{color:#ffbac1;font-size:13px}.dw-poll-editor-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+ #dw-poll-editor button:disabled{opacity:.5;cursor:wait}
+ #dw-polls-page button:focus-visible,#dw-poll-editor input:focus-visible,#dw-poll-editor button:focus-visible,.dw-poll-menu summary:focus-visible{outline:2px solid #6ff1d2;outline-offset:3px}
+}
+@media(max-width:900px){#dw-poll-workspace,#dw-poll-new,#dw-poll-editor{display:none!important}}
+</style>
+<script id="dw-poll-workspace-script">(function(){
+ 'use strict';
+ const page=document.getElementById('dw-polls-page');
+ if(!page)return;
+ const media=window.matchMedia('(min-width:901px)'),legacy=window.sqLoadChatPolls;
+ const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const workspace=document.createElement('div');workspace.id='dw-poll-workspace';
+ workspace.innerHTML='<div class="dw-poll-toolbar"><div class="dw-poll-filters" role="group" aria-label="Filter polls">'+['all','open','closed','archived'].map((key,i)=>'<button type="button" data-poll-filter="'+key+'" aria-pressed="'+(i===0)+'">'+key[0].toUpperCase()+key.slice(1)+'</button>').join('')+'</div><span id="dw-poll-count" aria-live="polite"></span></div><p id="dw-poll-feedback" role="status"></p><div id="dw-poll-cards"></div>';
+ page.append(workspace);
+ const create=document.createElement('button');create.id='dw-poll-new';create.type='button';create.textContent='+ New poll';create.className='dw-poll-primary';page.querySelector('.dw-polls-heading').append(create);
+ const dialog=document.createElement('dialog');dialog.id='dw-poll-editor';dialog.setAttribute('aria-labelledby','dw-poll-editor-title');
+ dialog.innerHTML='<form id="dw-poll-form"><div class="dw-poll-editor-head"><h2 id="dw-poll-editor-title">New poll</h2><button type="button" data-editor-close aria-label="Close poll editor">×</button></div><label>Question<input name="question" maxlength="160" required></label><fieldset><legend>Options</legend>'+[1,2,3,4].map(n=>'<label>Option '+n+(n>2?' (optional)':'')+'<input name="option'+n+'" maxlength="100" '+(n<3?'required':'')+'></label>').join('')+'</fieldset><label>Voting deadline (optional)<input name="deadline" type="datetime-local"></label><p class="dw-poll-muted">Deadline uses your local time. Voting closes automatically.</p><p id="dw-poll-editor-error" role="alert"></p><div class="dw-poll-editor-actions"><button type="button" data-editor-close>Cancel</button><button type="submit" class="dw-poll-primary">Create poll</button></div></form>';
+ document.body.append(dialog);
+ const cards=workspace.querySelector('#dw-poll-cards'),feedback=workspace.querySelector('#dw-poll-feedback'),form=dialog.querySelector('form');
+ let rows=[],filter='all',requestId=0,editing=null,loadedTracker=null;
+ const active=()=>window.sqLastOpenedTrackerDetail;
+ const api=(suffix='',method='GET',body)=>{const tracker=active();if(!tracker?.id||tracker.id==='local')throw Error('Open a shared tracker from Home first.');return window.squareUpApi('trackers/'+encodeURIComponent(tracker.id)+'/polls'+suffix,method,body);};
+ const isClosed=p=>Boolean(p.closed||(p.endsAt&&Date.parse(p.endsAt)<=Date.now()));
+ const date=value=>new Date(value).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+ function deadlineText(p){if(!p.endsAt)return '';const ms=Date.parse(p.endsAt)-Date.now();if(ms<=0)return 'Deadline reached · '+date(p.endsAt);const minutes=Math.ceil(ms/60000);return (minutes<60?'Ends in '+minutes+' min':minutes<1440?'Ends in '+Math.ceil(minutes/60)+' hr':'Ends '+date(p.endsAt));}
+ function render(){
+  const shown=rows.filter(p=>filter==='archived'?p.archived:!p.archived&&(filter==='all'||(filter==='closed'?isClosed(p):!isClosed(p))));
+  workspace.querySelector('#dw-poll-count').textContent=shown.length+' poll'+(shown.length===1?'':'s');
+  cards.innerHTML=shown.map(p=>{
+   const closed=isClosed(p),total=Number(p.totalVotes)||0,maximum=Math.max(0,...p.options.map(o=>Number(o.votes)||0));
+   const winners=p.options.filter(o=>Number(o.votes)===maximum&&maximum>0);
+   const result=closed?(total===0?'No votes cast':winners.length>1?'Tie: '+winners.map(o=>o.label).join(' / '):'Winner: '+winners[0].label):'';
+   const manageable=p.canManage??p.canClose;
+   const menu=manageable?'<details class="dw-poll-menu"><summary aria-label="Manage poll: '+escape(p.question)+'">•••</summary><div role="group" aria-label="Poll actions">'+(!p.archived?'<button type="button" data-manage="'+(closed?'reopen':'close')+'" data-id="'+escape(p.id)+'">'+(closed?'Reopen':'Close')+' poll</button><button type="button" data-manage="edit" data-id="'+escape(p.id)+'" '+(total||closed?'disabled title="Duplicate this poll to change it after voting"':'')+'>Edit poll</button>':'')+'<button type="button" data-manage="duplicate" data-id="'+escape(p.id)+'">Duplicate poll</button><button type="button" data-manage="'+(p.archived?'restore':'archive')+'" data-id="'+escape(p.id)+'">'+(p.archived?'Restore':'Archive')+' poll</button></div></details>':'';
+   const eligible=Number(p.totalMembers)||0,voted=Number(p.votedMembers??total);
+   const progress=eligible?'<span>'+voted+' of '+eligible+' members voted</span>':'<span>'+total+' vote'+(total===1?'':'s')+'</span>';
+   const pending=p.pendingNames?.length?'<details class="dw-poll-pending"><summary>Waiting for '+p.pendingNames.length+'</summary><span>'+p.pendingNames.map(escape).join(', ')+'</span></details>':'';
+   return '<article class="dw-poll-card" data-poll-card-id="'+escape(p.id)+'"><div class="dw-poll-card-head"><div><span class="dw-poll-badge">'+(p.archived?'Archived':closed?'Closed':'Open')+'</span><h3>'+escape(p.question)+'</h3><p class="dw-poll-muted">'+escape(p.creatorName||'Member')+(p.createdAt?' · '+escape(date(p.createdAt)):'')+'</p></div>'+menu+'</div><div class="dw-poll-options">'+p.options.map(o=>{
+    const percent=total?Math.round(Number(o.votes||0)/total*100):0;
+    return '<button type="button" class="dw-poll-option" data-vote="'+escape(p.id)+'" data-option="'+escape(o.id)+'" aria-pressed="'+Boolean(o.mine)+'" '+(closed||p.archived?'disabled':'')+'><span class="dw-poll-fill" style="width:'+percent+'%" aria-hidden="true"></span><span class="dw-poll-option-text">'+escape(o.label)+(o.mine?'<span class="dw-poll-your-vote">Your vote</span>':'')+'</span><span class="dw-poll-tally">'+percent+'% · '+Number(o.votes||0)+' vote'+(Number(o.votes)===1?'':'s')+'</span></button>';
+   }).join('')+'</div><div class="dw-poll-participation">'+progress+pending+'</div>'+(p.endsAt?'<p class="dw-poll-deadline">'+escape(deadlineText(p))+'</p>':'')+(result?'<p class="dw-poll-result">'+escape(result)+'</p>':'')+'</article>';
+  }).join('')||'<div class="dw-poll-empty"><h3>'+(!active()?.id?'Choose a tracker to get started':'No '+(filter==='all'?'':filter+' ')+'polls yet')+'</h3><p>'+(!active()?.id?'Open a shared tracker from Home to create and vote on group polls.':filter==='all'?'Create a poll to make your next group decision.':'Try another filter or start a new poll.')+'</p></div>';
+ }
+ async function load(){
+  const tracker=active();const seq=++requestId;
+  if(!tracker?.id||tracker.id==='local'){rows=[];loadedTracker=null;render();return;}
+  if(loadedTracker!==tracker.id){rows=[];cards.textContent='Loading polls…';}
+  try{const data=await api('?includeArchived=1');if(seq!==requestId||active()?.id!==tracker.id)return;rows=Array.isArray(data)?data:[];loadedTracker=tracker.id;feedback.textContent='';render();}
+  catch(error){if(seq===requestId){feedback.textContent=error.message;cards.textContent='Could not load polls. Reopen Group polls to retry.';}}
+ }
+ window.sqLoadChatPolls=function(){return media.matches&&!page.hidden?load():legacy?.();};
+ function localDate(value){const d=new Date(value);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);}
+ function edit(p=null,duplicate=false){
+  form.reset();editing=duplicate?null:p;
+  dialog.querySelector('#dw-poll-editor-title').textContent=p?(duplicate?'Duplicate poll':'Edit poll'):'New poll';
+  form.elements.question.value=p?.question||'';[1,2,3,4].forEach((n,i)=>{form.elements['option'+n].value=p?.options[i]?.label||'';});
+  if(p?.endsAt&&!duplicate)form.elements.deadline.value=localDate(p.endsAt);
+  form.elements.deadline.min=localDate(Date.now()+60000);
+  form.querySelector('[type="submit"]').textContent=editing?'Save changes':'Create poll';
+  dialog.querySelector('#dw-poll-editor-error').textContent='';dialog.showModal();form.elements.question.focus();
+ }
+ create.addEventListener('click',()=>edit());dialog.querySelectorAll('[data-editor-close]').forEach(b=>b.addEventListener('click',()=>dialog.close()));
+ form.addEventListener('submit',async event=>{
+  event.preventDefault();const submit=form.querySelector('[type="submit"]'),trackerId=active()?.id;
+  const payload={question:form.elements.question.value.trim(),options:[1,2,3,4].map(n=>form.elements['option'+n].value.trim()).filter(Boolean),endsAt:form.elements.deadline.value?new Date(form.elements.deadline.value).toISOString():null};
+  if(payload.endsAt&&Date.parse(payload.endsAt)<=Date.now()){dialog.querySelector('#dw-poll-editor-error').textContent='Choose a future deadline.';return;}
+  if(payload.options.length<2){dialog.querySelector('#dw-poll-editor-error').textContent='Enter at least two options.';return;}
+  submit.disabled=true;
+  try{await api(editing?'/'+encodeURIComponent(editing.id):'',editing?'PATCH':'POST',editing?{action:'edit',...payload}:payload);if(active()?.id!==trackerId)return;dialog.close();await load();}
+  catch(error){dialog.querySelector('#dw-poll-editor-error').textContent=error.message;}finally{submit.disabled=false;}
+ });
+ workspace.addEventListener('click',async event=>{
+  const f=event.target.closest('[data-poll-filter]');if(f){filter=f.dataset.pollFilter;workspace.querySelectorAll('[data-poll-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b===f)));render();return;}
+  const button=event.target.closest('[data-vote],[data-manage]');if(!button)return;
+  const id=button.dataset.vote||button.dataset.id,p=rows.find(p=>p.id===id);if(!p)return;
+  const action=button.dataset.manage||'vote';
+  if(action==='edit'||action==='duplicate'){button.closest('details')?.removeAttribute('open');edit(p,action==='duplicate');return;}
+  button.disabled=true;
+  try{await api('/'+encodeURIComponent(id),'PATCH',{action,...(action==='vote'?{optionId:button.dataset.option}:{})});await load();}
+  catch(error){feedback.textContent=error.message;button.disabled=false;}
+ });
+ document.addEventListener('click',event=>{if(event.target.closest('.sq-nav-link')&&!event.target.closest('#nav-group-polls'))dialog.close();},true);
+ media.addEventListener('change',()=>{if(!media.matches)dialog.close();});
+ setInterval(()=>{if(media.matches&&!page.hidden&&!dialog.open&&!workspace.querySelector('.dw-poll-menu[open]'))render();},30000);
+})();
+</script>
 </body>
 </html>
 

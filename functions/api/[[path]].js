@@ -2425,9 +2425,9 @@ if (sub === 'wishlist') {
 if (sub === 'polls') {
   if (parts.length === 3 && method === 'GET') {
     const polls = await db('squareup_polls', {
-      filters: { tracker_id: 'eq.' + id },
+      filters: { tracker_id: 'eq.' + id, ...(new URL(request.url).searchParams.get('includeArchived')==='1'?{}:{archived_at:'is.null'}) },
       order: 'created_at.desc',
-      limit: 30
+      limit: 100
     });
 
     if (!polls.length) return json([]);
@@ -2443,13 +2443,21 @@ if (sub === 'polls') {
       filters: { poll_id: 'in.(' + pollIds + ')' }
     });
 
+    const members=await db('tracker_members',{filters:{tracker_id:'eq.'+id},select:'user_id,name'});
+    const eligible=new Map(members.filter(row=>uuid.test(String(row.user_id||''))).map(row=>[String(row.user_id).toLowerCase(),row.name||'Member']));
+    if(uuid.test(String(trackerOwnerRecord?.owner_id||''))&&!eligible.has(String(trackerOwnerRecord.owner_id).toLowerCase()))eligible.set(String(trackerOwnerRecord.owner_id).toLowerCase(),'Tracker owner');
     return json(polls.map(p => {
       const pollVotes = votes.filter(v => v.poll_id === p.id);
+      const voters=new Set(pollVotes.map(v=>String(v.user_id).toLowerCase()));
 
       return {
         id: p.id,
         question: p.question,
-        closed: p.closed,
+        closed: p.closed || Boolean(p.ends_at && Date.parse(p.ends_at)<=Date.now()),
+        endsAt:p.ends_at||null,createdAt:p.created_at,creatorName:eligible.get(String(p.created_by).toLowerCase())||'Member',
+        archived:Boolean(p.archived_at),totalMembers:eligible.size,votedMembers:[...voters].filter(id=>eligible.has(id)).length,
+        pendingNames:[...eligible].filter(([id])=>!voters.has(id)).map(([,name])=>name),
+        canManage:owner||p.created_by===me.id,
         totalVotes: pollVotes.length,
         canClose: owner || p.created_by === me.id,
         options: options
@@ -2476,12 +2484,15 @@ if (sub === 'polls') {
       return fail('Enter a question and 2–4 options.', 400);
     }
 
+    let endsAt=null;
+    if(body?.endsAt){const timestamp=Date.parse(body.endsAt);if(!Number.isFinite(timestamp)||timestamp<=Date.now())return fail('Choose a future deadline.',400);endsAt=new Date(timestamp).toISOString();}
     const created = await db('squareup_polls', {
       method: 'POST',
       body: {
         tracker_id: id,
         question,
-        created_by: me.id
+        created_by: me.id,
+        ends_at:endsAt
       }
     });
 
@@ -2508,81 +2519,15 @@ if (sub === 'polls') {
   }
 
   if (parts.length === 4 && method === 'PATCH') {
-    const pollId = parts[3];
-
-    const poll = (await db('squareup_polls', {
-      filters: {
-        id: 'eq.' + pollId,
-        tracker_id: 'eq.' + id
-      },
-      limit: 1
-    }))[0];
-
-    if (!poll) return fail('Poll not found.', 404);
-
-    if (body?.action === 'close') {
-      if (!owner && poll.created_by !== me.id) {
-        return fail('Only the creator or owner can close the poll.', 403);
-      }
-
-      await db('squareup_polls', {
-        method: 'PATCH',
-        filters: {
-          id: 'eq.' + pollId,
-          tracker_id: 'eq.' + id
-        },
-        body: { closed: true }
-      });
-
-      return json({ success: true });
-    }
-
-    if (body?.action === 'vote') {
-      if (poll.closed) return fail('This poll is closed.', 400);
-
-      const option = (await db('squareup_poll_options', {
-        filters: {
-          id: 'eq.' + String(body.optionId || ''),
-          poll_id: 'eq.' + pollId
-        },
-        limit: 1
-      }))[0];
-
-      if (!option) return fail('Invalid poll option.', 400);
-
-      // One vote per member per poll.
-      const existing = await db('squareup_poll_votes', {
-        filters: {
-          poll_id: 'eq.' + pollId,
-          user_id: 'eq.' + me.id
-        },
-        limit: 1
-      });
-
-      if (existing.length) {
-        await db('squareup_poll_votes', {
-          method: 'PATCH',
-          filters: {
-            poll_id: 'eq.' + pollId,
-            user_id: 'eq.' + me.id
-          },
-          body: { option_id: option.id }
-        });
-      } else {
-        await db('squareup_poll_votes', {
-          method: 'POST',
-          body: {
-            poll_id: pollId,
-            user_id: me.id,
-            option_id: option.id
-          }
-        });
-      }
-
-      return json({ success: true });
-    }
-
-    return fail('Invalid poll action.', 400);
+    if(!uuid.test(parts[3]))return fail('Invalid poll.',400);
+    const result=await fetch(URL_BASE+'/rest/v1/rpc/doweo_manage_poll',{
+      method:'POST',headers:{...baseHeaders,'Content-Type':'application/json'},
+      body:JSON.stringify({p_tracker_id:id,p_poll_id:parts[3],p_actor_id:me.id,p_action:String(body?.action||''),p_payload:body||{}})
+    });
+    const payload=await result.json().catch(()=>null);
+    if(!result.ok)return fail('Could not update this poll.',409);
+    if(payload?.error)return fail(payload.error,payload.status||400);
+    return json(payload);
   }
 
   return fail('Method not allowed.', 405);

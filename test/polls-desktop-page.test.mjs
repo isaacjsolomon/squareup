@@ -34,11 +34,19 @@ test('desktop Group polls moves out of Chat into Social and preserves create/vot
    if(path==='trackers')data=[detail];
    else if(path==='trackers/'+tracker)data=detail;
    else if(path==='trackers/'+tracker+'/polls'){
-    if(method==='POST'){const body=req.postDataJSON();writes.push({method,body});polls=[{id:'poll-test',question:body.question,options:body.options.map((label,i)=>({id:'option-'+i,label,votes:0,mine:false})),totalVotes:0,canClose:true,closed:false}];data=polls[0];}else data=polls;
-   }else if(path==='trackers/'+tracker+'/polls/poll-test'&&method==='PATCH'){
-    const body=req.postDataJSON();writes.push({method,body});
-    if(body.action==='vote'){polls[0].options.forEach(o=>{o.mine=o.id===body.optionId;o.votes=o.mine?1:0});polls[0].totalVotes=1;}
-    if(body.action==='close')polls[0].closed=true;data=polls[0];
+    if(method==='POST'){
+     const body=req.postDataJSON();writes.push({method,body});
+     const item={id:'poll-'+(polls.length+1),question:body.question,endsAt:body.endsAt,createdAt:new Date().toISOString(),creatorName:'Alex',options:body.options.map((label,i)=>({id:'option-'+i,label,votes:0,mine:false})),totalVotes:0,totalMembers:2,votedMembers:0,pendingNames:['Alex','Jordan'],canClose:true,canManage:true,closed:false,archived:false};polls.push(item);data=item;
+    }else data=polls;
+   }else if(path.startsWith('trackers/'+tracker+'/polls/')&&method==='PATCH'){
+    const body=req.postDataJSON(),item=polls.find(p=>p.id===path.split('/').at(-1));writes.push({method,body});
+    if(body.action==='vote'){item.options.forEach(o=>{o.mine=o.id===body.optionId;o.votes=o.mine?1:0});item.totalVotes=1;item.votedMembers=1;item.pendingNames=['Jordan'];}
+    if(body.action==='close')item.closed=true;
+    if(body.action==='reopen')item.closed=false;
+    if(body.action==='archive')item.archived=true;
+    if(body.action==='restore')item.archived=false;
+    if(body.action==='edit'){item.question=body.question;item.endsAt=body.endsAt;item.options=body.options.map((label,i)=>({id:'option-'+i,label,votes:0,mine:false}));}
+    data={success:true};
    }
    else if(path==='profile')data={id:user,username:'alex_test',displayName:'Alex'};
    else if(path==='trackers/'+tracker+'/bills'){
@@ -64,20 +72,55 @@ test('desktop Group polls moves out of Chat into Social and preserves create/vot
   assert.equal(await page.locator('#chat-card #sq-chat-polls').count(),0,'polls removed from desktop Chat');
   assert.equal(await page.locator('#dw-polls-page #sq-chat-polls').count(),1,'original controls moved to own page');
   assert.equal(await page.locator('#tracker-dashboard').isVisible(),false,'polls is a separate page');
-  await page.locator('#sq-poll-toggle').click();
-  await page.getByLabel('Poll question',{exact:true}).fill('Where should we eat?');
-  await page.getByLabel('First option',{exact:true}).fill('Pizza');
-  await page.getByLabel('Second option',{exact:true}).fill('Sushi');
-  await page.getByRole('button',{name:'Create poll',exact:true}).click();
-  await page.locator('[data-poll-card-id="poll-test"]').waitFor();
-  await page.locator('[data-option="option-0"]').click();
-  await page.waitForFunction(()=>document.querySelector('[data-option="option-0"]').getAttribute('aria-pressed')==='true');
-  assert.equal(writes.filter(w=>w.method==='POST').length,1);
-  assert.ok(writes.some(w=>w.body.action==='vote'),'original vote handler saves');
+  await page.locator('#dw-poll-new').click();
+  const editor=page.locator('#dw-poll-editor');
+  await editor.getByLabel('Question',{exact:true}).fill('Where should we eat?');
+  await editor.getByLabel('Option 1',{exact:true}).fill('Pizza');
+  await editor.getByLabel('Option 2',{exact:true}).fill('Sushi');
+  const future=new Date(Date.now()+86400000);const local=new Date(future.getTime()-future.getTimezoneOffset()*60000).toISOString().slice(0,16);
+  await editor.getByLabel('Voting deadline (optional)',{exact:true}).fill(local);
+  await editor.getByRole('button',{name:'Create poll',exact:true}).click();
+  const first=page.locator('#dw-poll-cards [data-poll-card-id="poll-1"]');
+  await first.waitFor();assert.ok(await first.getByText('0 of 2 members voted',{exact:true}).isVisible());
+  assert.ok(writes[0].body.endsAt,'deadline sent to backend');
+  await first.locator('.dw-poll-menu summary').click();
+  await first.getByRole('button',{name:'Edit poll',exact:true}).click();
+  await editor.getByLabel('Question',{exact:true}).fill('Where should we eat tonight?');
+  await editor.getByRole('button',{name:'Save changes',exact:true}).click();
+  await first.getByText('Where should we eat tonight?',{exact:true}).waitFor();
+  await first.locator('[data-option="option-0"]').click();
+  await page.waitForFunction(()=>document.querySelector('#dw-poll-cards [data-option="option-0"]').getAttribute('aria-pressed')==='true');
+  assert.ok(await first.getByText('1 of 2 members voted',{exact:true}).isVisible());
+  assert.ok(await first.getByText('100% · 1 vote',{exact:true}).isVisible());
+  await first.locator('.dw-poll-pending summary').click();assert.ok(await first.getByText('Jordan',{exact:true}).isVisible());
+  await first.locator('.dw-poll-menu summary').click();
+  assert.ok(await first.getByRole('button',{name:'Edit poll',exact:true}).isDisabled());
+  await first.getByRole('button',{name:'Close poll',exact:true}).click();
+  await first.getByText('Winner: Pizza',{exact:true}).waitFor();
+  assert.ok(await first.locator('[data-option="option-0"]').isDisabled());
+  await page.locator('[data-poll-filter="open"]').click();assert.equal(await first.count(),0);
+  await page.locator('[data-poll-filter="closed"]').click();await first.waitFor();
+  await first.locator('.dw-poll-menu summary').click();
+  await first.getByRole('button',{name:'Reopen poll',exact:true}).click();
+  await page.locator('[data-poll-filter="all"]').click();await first.waitFor();
+  await first.locator('.dw-poll-menu summary').click();
+  await first.getByRole('button',{name:'Duplicate poll',exact:true}).click();
+  assert.equal(await editor.getByLabel('Question',{exact:true}).inputValue(),'Where should we eat tonight?');
+  await editor.getByLabel('Question',{exact:true}).fill('Next meal?');
+  await editor.getByRole('button',{name:'Create poll',exact:true}).click();
+  await page.locator('#dw-poll-cards [data-poll-card-id="poll-2"]').waitFor();
+  await first.locator('.dw-poll-menu summary').click();
+  await first.getByRole('button',{name:'Archive poll',exact:true}).click();
+  await first.waitFor({state:'detached'});
+  await page.locator('[data-poll-filter="archived"]').click();await first.waitFor();
+  await first.locator('.dw-poll-menu summary').click();await first.getByRole('button',{name:'Restore poll',exact:true}).click();
+  await first.waitFor({state:'detached'});await page.locator('[data-poll-filter="all"]').click();
+  polls[1].endsAt='2020-01-01T00:00:00Z';
+  await page.evaluate(()=>window.sqLoadChatPolls());
+  const expired=page.locator('#dw-poll-cards [data-poll-card-id="poll-2"]');
+  assert.ok(await expired.locator('[data-option="option-0"]').isDisabled(),'expired poll disables voting without a reload');
   mkdirSync(resolve(root,'test-results/bills'),{recursive:true});
-  await page.screenshot({path:resolve(root,'test-results/bills/group-polls-page.png'),fullPage:true});
-  await page.getByRole('button',{name:'Close poll',exact:true}).click();
-  await page.waitForFunction(()=>document.getElementById('sq-poll-list').textContent.includes('Closed'));
+  await page.screenshot({path:resolve(root,'test-results/bills/group-polls-upgraded.png'),fullPage:true});
   await page.locator('.dw-nav-social-trigger').click();
   await page.locator('#nav-chat').click();
   assert.equal(await page.locator('#dw-polls-page').isVisible(),false,'Chat closes polls page');
