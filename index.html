@@ -16372,6 +16372,18 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  });
  desktop.addEventListener('change',()=>{if(!desktop.matches){edit.hidden=true;dialog.close();}});
 })();</script>
+<style id="dw-home-full-width-activity">@media(min-width:901px){
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary){display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)!important;grid-template-rows:auto auto auto!important;align-items:stretch!important;gap:20px!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>.sq-return-welcome{grid-column:1/-1!important;grid-row:1!important;margin-bottom:0!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>#sq-desktop-balance-layout,
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>.sq-return-grid{display:contents!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-balance{grid-column:1!important;grid-row:2!important;align-self:stretch!important;min-width:0!important;margin:0!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel{grid-column:2!important;grid-row:2!important;align-self:stretch!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>#sq-desktop-balance-layout>.sq-overview-activity-panel{display:block!important;grid-column:1/-1!important;grid-row:3!important;align-self:stretch!important;width:100%!important;min-width:0!important;max-width:none!important;margin:0!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-smart-panel,
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-settle-panel,
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-balances-panel{display:none!important}
+}</style>
 </body>
 </html>
 

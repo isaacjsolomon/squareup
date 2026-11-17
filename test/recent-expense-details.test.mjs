@@ -54,7 +54,25 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   await page.evaluate(()=>document.getElementById('nav-trackers').click());
   await page.locator('#trackers-gallery .tile-open').first().click();
   const row=page.locator('#sq-return-activity [data-expense-id="88888888-8888-4888-8888-888888888888"]');
-  await row.waitFor();await row.focus();await row.press('Enter');
+  await row.waitFor();
+  for(const width of [1024,1440]){
+   await page.setViewportSize({width,height:1000});
+   await page.waitForFunction(()=>{
+    const activity=document.getElementById('sq-return-activity').closest('.sq-return-panel').getBoundingClientRect();
+    const balance=document.getElementById('sq-clean-balance').getBoundingClientRect();
+    const people=document.getElementById('sq-return-members').closest('.sq-return-panel').getBoundingClientRect();
+    return Math.abs(activity.left-balance.left)<2&&Math.abs(activity.right-people.right)<2&&Math.abs(balance.bottom-people.bottom)<2&&activity.top>balance.bottom;
+   });
+   const state=await page.evaluate(()=>({
+    smart:getComputedStyle(document.querySelector('.sq-return-smart-panel')).display,
+    balances:getComputedStyle(document.getElementById('sq-return-balances').closest('.sq-return-panel')).display,
+    overflow:document.documentElement.scrollWidth>innerWidth+1
+   }));
+   assert.equal(state.smart,'none');assert.equal(state.balances,'none');assert.equal(state.overflow,false);
+  }
+  mkdirSync(resolve(root,'test-results/bills'),{recursive:true});
+  await page.screenshot({path:resolve(root,'test-results/bills/home-full-width-activity.png'),fullPage:true});
+  await row.focus();await row.press('Enter');
   const popup=page.locator('#sq-details-overlay');
   await page.waitForFunction(()=>document.getElementById('sq-details-overlay').classList.contains('open'));
   assert.equal(await page.locator('#sq-details-description').textContent(),'Lunch');
