@@ -149,6 +149,20 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
 await page.locator('#receipt-items input[type=checkbox]').first().check();assert.ok((await page.locator('#receipt-preview').textContent()).includes('10.00'),'receipt assignment updates the review');
   await page.locator('#dw-receipt-next').click();assert.equal(await page.locator('#receipt-card').getAttribute('data-receipt-step'),'3');
   assert.ok(await page.locator('#receipt-save').isVisible(),'Save only shown at Review');assert.equal(await page.locator('#receipt-items').isVisible(),false);
+  assert.equal(await page.locator('#dw-receipt-extras').isVisible(),false,'Review shows summary instead of expanded settings');
+  assert.ok(await page.locator('#dw-mobile-receipt-review').isVisible());
+  for(const width of [390,430]){
+   await page.setViewportSize({width,height:932});
+   const clean=await page.evaluate(()=>{const back=document.getElementById('dw-receipt-back').getBoundingClientRect(),save=document.getElementById('receipt-save').getBoundingClientRect(),modal=document.querySelector('#sq-receipt-dialog .sq-action-modal-inner');return {aligned:Math.abs(back.top-save.top)<1,overflow:modal.scrollWidth>modal.clientWidth+1};});
+   assert.ok(clean.aligned,'Back and Save align on one row '+width);assert.equal(clean.overflow,false,'no horizontal modal overflow '+width);
+  }
+  await page.getByRole('button',{name:'Edit tax, tip or options',exact:true}).click();
+  assert.equal(await page.locator('#receipt-card').getAttribute('data-receipt-step'),'2');assert.notEqual(await page.locator('#dw-receipt-extras').getAttribute('open'),null);
+  await page.locator('#receipt-due').fill('2026-12-01');
+  const fits=await page.locator('#receipt-due').evaluate(el=>el.getBoundingClientRect().right<=document.getElementById('dw-receipt-extras').getBoundingClientRect().right);assert.ok(fits,'date input stays within settings');
+  await page.locator('#dw-receipt-next').click();assert.equal(await page.locator('#dw-receipt-extras').getAttribute('open'),null,'Extras collapses between steps');assert.equal(await page.locator('#receipt-due').inputValue(),'2026-12-01');
+  await page.screenshot({path:resolve(root,'test-results/bills/mobile-receipt-clean-review.png'),fullPage:true});
+
   await page.locator('#dw-receipt-back').click();assert.equal(await page.locator('#receipt-card').getAttribute('data-receipt-step'),'2');assert.equal(await page.locator('#receipt-items input[type=checkbox]').first().isChecked(),true,'Back keeps assignments');
 
   await page.locator('#sq-receipt-x').click();
