@@ -29,8 +29,8 @@ jobs:
           from pathlib import Path
           page = Path('.pages-output/index.html')
           html = page.read_text()
-          css = '<link rel="stylesheet" href="/doweo-tracker-header.css?v=20261116-remove-real-chat-tab-v5">'
-          js = '<script defer src="/doweo-tracker-header.js?v=20261116-remove-real-chat-tab-v5"></script>'
+          css = '<link rel="stylesheet" href="/doweo-tracker-header.css?v=20261116-four-tabs-actual-v6">'
+          js = '<script defer src="/doweo-tracker-header.js?v=20261116-four-tabs-actual-v6"></script>'
           assert '</head>' in html and '</body>' in html
           html = html.replace('</head>', css + '</head>', 1).replace('</body>', js + '</body>', 1)
           page.write_text(html)
