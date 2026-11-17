@@ -59,6 +59,36 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   await seeAll.click();
   await page.waitForFunction(()=>document.getElementById('tracker-dashboard').classList.contains('sq-tab-expenses'));
   assert.equal(await page.locator('[data-sq-tab="expenses"]').getAttribute('aria-selected'),'true','See all opens all Expenses');
+
+  await page.locator('#dw-expense-workspace').waitFor();
+  detail.entries.push(...Array.from({length:24},(_,i)=>({...detail.entries[0],id:'fixture-'+i,note:'[Category: Food & Dining] Test expense '+i,paymentStatus:i%2?'pending':'confirmed'})));
+  await page.evaluate(()=>window.sqRefreshTrackerNow());
+  await page.locator('[data-sq-tab="expenses"]').click();
+  await page.waitForFunction(()=>document.querySelectorAll('#history .dw-expense-copy').length===25);
+  for(const width of [1024,1440,1920]){
+   await page.setViewportSize({width,height:1000});
+   await page.waitForTimeout(150);
+   const layout=await page.evaluate(()=>{
+    const a=document.getElementById('sq-activity-card').getBoundingClientRect(),t=document.getElementById('dw-expense-tools').getBoundingClientRect(),h=document.getElementById('history');
+    return {bottom:a.bottom,toolsBottom:t.bottom,scrolls:h.scrollHeight>h.clientHeight,overflow:document.documentElement.scrollWidth>innerWidth+1};
+   });
+   assert.ok(Math.abs(layout.bottom-layout.toolsBottom)<2,'history bottom aligns with Tools at '+width);
+   assert.ok(layout.scrolls,'history scrolls internally at '+width);assert.equal(layout.overflow,false);
+  }
+  await page.setViewportSize({width:1440,height:1000});
+  await page.locator('.dw-expense-tabs').getByRole('button',{name:'Pending',exact:true}).click();
+  assert.equal(await page.locator('#history>.entry:not([hidden]):not(.dw-type-hidden)').count(),12);
+  await page.locator('.dw-expense-tabs').getByRole('button',{name:'All',exact:true}).click();
+  await page.locator('#sq-expense-search').fill('Test expense 23');
+  await page.waitForFunction(()=>document.querySelectorAll('#history>.entry:not([hidden]):not(.dw-type-hidden)').length===1);
+  await page.locator('#sq-expense-search').fill('');
+  await page.locator('#history .dw-expense-copy').first().click();
+  await page.waitForFunction(()=>document.getElementById('sq-details-overlay').classList.contains('open'));
+  await page.getByRole('button',{name:'Close expense details',exact:true}).click();
+  mkdirSync(resolve(root,'test-results/bills'),{recursive:true});
+  await page.screenshot({path:resolve(root,'test-results/bills/expenses-redesigned-scroll.png'),fullPage:true});
+  detail.entries.splice(1);
+  await page.evaluate(()=>window.sqRefreshTrackerNow());
   await page.locator('#nav-home').click();await row.waitFor();
   assert.ok(await seeAll.isVisible(),'See all is visible again on return Home');
   for(const width of [1024,1440,1920]){
@@ -179,3 +209,4 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   await fresh.close();
  }finally{await browser.close();await new Promise(done=>server.close(done));}
 });
+

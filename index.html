@@ -6895,7 +6895,7 @@ import('./squareup-events.js').then(module => module.initEvents({api, getTracker
   count.textContent=shown+' of '+rows.length+' activities shown';
  }
  [search,time,category,member,status].filter(Boolean).forEach(el=>el.addEventListener(el===search?'input':'change',refresh));
- new MutationObserver(()=>queueMicrotask(refresh)).observe(history,{childList:true});
+ new MutationObserver(records=>{if(records.some(r=>[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&n.classList.contains('entry'))))queueMicrotask(refresh);}).observe(history,{childList:true});
  refresh();
 })();
 </script><script>
@@ -16715,6 +16715,121 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
 }
 </style>
 <style id="dw-upcoming-logo-corner-safeguard">@media(min-width:901px){html body #dw-compact-upcoming img.sq-brand-logo{border-radius:7px!important}}</style>
-</body>
+<style id="dw-expenses-workspace-style">@media(min-width:901px){
+#tracker-dashboard.dw-expenses-redesign{display:block!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace{display:grid;grid-template-columns:minmax(0,2.65fr) minmax(280px,1fr);gap:18px;align-items:start;margin-top:18px}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #sq-activity-card,html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #balances-card,#dw-expense-tools{background:linear-gradient(135deg,#103447,#092536)!important;border:1px solid #345c70!important;border-radius:18px!important;box-shadow:none!important;backdrop-filter:none!important;margin:0!important;padding:20px!important;min-width:0!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #sq-activity-card{height:var(--dw-expense-height,650px)!important;min-height:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #sq-activity-toggle{display:none!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #sq-activity-content{display:flex!important;flex:1;flex-direction:column;min-height:0;overflow:hidden}
+.dw-expenses-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid #34576b}
+.dw-expenses-heading h2{font-size:28px!important;line-height:1.2;margin:0!important}.dw-expenses-heading p{font-size:14px;color:#abc9dc;margin:5px 0 0}
+.dw-expenses-heading button,#dw-expense-pay{background:#28d9b8!important;color:#032734!important;border:0!important;border-radius:12px!important;padding:12px 20px!important;font-size:15px!important;font-weight:750!important;white-space:nowrap}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-activity-filters{margin:0 0 10px!important;flex:none}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-activity-filters>div{display:flex!important;flex-wrap:wrap!important;gap:8px!important;width:100%!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #sq-expense-search{flex:1 1 170px;width:180px!important;height:38px!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #sq-expense-time{height:38px!important;max-width:145px!important;font-size:12px!important}
+.dw-expense-tabs{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.dw-expense-tabs button{padding:8px 12px!important;min-height:34px!important;border:1px solid #3b6072!important;border-radius:20px!important;background:#163a4e!important;color:#d9edf7!important;font-size:12px!important}.dw-expense-tabs button[aria-pressed=true]{background:#29dbb8!important;color:#082a36!important;border-color:#29dbb8!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-expense-extra{gap:8px!important;justify-content:flex-start!important;margin:0 0 12px!important;flex:none}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-expense-extra label{font-size:12px!important}html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-expense-extra select{height:34px!important;max-width:130px}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #sq-export-expenses{margin-left:auto;font-size:12px!important;padding:8px 10px!important}
+#dw-expense-filter-panel{position:relative}#dw-expense-filter-panel summary{cursor:pointer;border:1px solid #3b6072;border-radius:9px;padding:8px 11px;font-size:12px;list-style:none}
+#dw-expense-filter-panel .sq-expense-filters{position:absolute;top:100%;left:0;z-index:10;width:240px;background:#0c2b3c!important;border:1px solid #3c677c!important;box-shadow:0 12px 30px #0008!important;padding:14px!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #history{display:block!important;flex:1 1 0;min-height:0;overflow-y:auto!important;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#427286 #0a293a;padding-right:6px;outline-offset:-2px}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #history>.entry{display:grid!important;grid-template-columns:38px minmax(0,1fr) auto 34px 34px!important;grid-template-rows:auto!important;gap:10px!important;align-items:center!important;min-height:76px!important;padding:10px 0!important;border:0!important;border-bottom:1px solid #315467!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;margin:0!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #history>.entry[hidden]{display:none!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #history>.entry>.text,html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #history>.entry>.tag,html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #history>.entry>.sq-detail-btn{display:none!important}
+.dw-expense-icon{grid-column:1;grid-row:1;display:grid;place-items:center;width:36px;height:38px;border-radius:10px;background:#184b59;color:#42e7cc}.dw-expense-icon svg{width:21px;height:21px}
+.dw-expense-copy{grid-column:2;grid-row:1;min-width:0;cursor:pointer}.dw-expense-copy strong{display:block;font-size:17px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dw-expense-copy small{display:block;color:#b0cede;font-size:12px;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dw-expense-money{grid-column:3;grid-row:1;text-align:right;white-space:nowrap}.dw-expense-money strong{display:block;font-size:18px;line-height:1.3}.dw-expense-status{display:inline-block;margin-top:4px;border:1px solid #398a71;border-radius:20px;padding:1px 8px;font-size:11px;color:#a9f1ce;background:#154a3d}.dw-expense-status[data-status=pending]{color:#ffe5a3;background:#594319;border-color:#b58c2d}.dw-expense-status[data-status=disputed]{color:#ffd0c8;background:#603b37;border-color:#a06959}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #history>.entry>.entry-pin-btn{grid-column:4!important;grid-row:1!important;width:32px!important;height:32px!important;margin:0!important;padding:6px!important;border-radius:9px!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #history>.entry>[data-del]{display:none!important}
+.dw-expense-more{grid-column:5;grid-row:1;position:relative}.dw-expense-more>button{width:32px;height:32px;padding:0!important;border:1px solid #416578!important;border-radius:9px!important;background:#163c4f!important;color:#d2ecf7!important;font-size:20px!important}
+.dw-expense-menu{position:fixed;z-index:10000;padding:6px;border:1px solid #426c80;border-radius:10px;background:#102f42;box-shadow:0 8px 30px #0007;min-width:130px}.dw-expense-menu button{display:block;width:100%;text-align:left;background:transparent;color:white;border:0;padding:10px;border-radius:6px}.dw-expense-menu button:hover{background:#215064}
+.dw-expense-day{background:#1a4258;color:#e8f5fc;border-radius:9px;padding:10px 12px;margin:4px 0;font-size:14px;font-weight:750}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #sq-expense-count{flex:none;margin:8px 0 0!important;font-size:11px!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-clean-activity-heading{display:none!important}
+#dw-expense-sidebar{display:flex;flex-direction:column;gap:16px;min-width:0}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #balances-card h2,#dw-expense-tools h2{font-size:20px!important;margin:0 0 14px!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #nets{gap:8px!important;max-height:310px;overflow:auto;scrollbar-width:thin}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #nets .net{padding:10px!important;gap:8px!important;flex-wrap:nowrap!important;border:1px solid #365e73!important;border-radius:12px!important;background:#193b4e!important;min-height:56px}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #nets .net .text{flex:1 1 0!important;font-size:12px!important;min-width:0;line-height:1.4!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #nets .net .amount{font-size:18px!important;color:#f2faff!important;white-space:nowrap}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #nets .net button{display:none!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #nets .avatar{width:30px!important;height:30px!important;flex:none;font-size:12px!important}
+#dw-expense-pay{width:100%;margin-top:16px}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-expense-side{display:flex!important;gap:10px!important;grid-column:auto!important;grid-row:auto!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-side-action{min-height:64px!important;padding:10px!important;gap:10px!important;border:1px solid #345b70!important;border-radius:12px!important;background:#12374b!important;box-shadow:none!important;backdrop-filter:none!important;transform:none!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-side-icon{width:36px!important;height:38px!important;border-radius:10px!important;font-size:23px!important;background:#18525c!important}.sq-side-icon svg{width:22px;height:22px}
+html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-side-copy strong{font-size:14px!important}html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .sq-side-copy small{font-size:11px!important}
+.dw-expenses-redesign .sq-clean-matrix-card{display:none!important}
+@media(min-width:901px) and (max-width:1180px){html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace{grid-template-columns:minmax(0,1.7fr) minmax(260px,1fr);gap:12px}html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #sq-activity-card,html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #balances-card,#dw-expense-tools{padding:15px!important}.dw-expenses-heading{flex-wrap:wrap}.dw-expense-copy strong{font-size:15px}.dw-expense-copy small{font-size:11px}}
+}@media(min-width:901px){html body #tracker-dashboard.dw-expenses-redesign #history>.entry.dw-type-hidden{display:none!important}html body #tracker-dashboard.dw-expenses-redesign .sq-expense-side>[hidden]{display:none!important}}</style><script id="dw-expenses-workspace-script">
+(function(){
+ const d=document.getElementById('tracker-dashboard'),activity=document.getElementById('sq-activity-card'),balance=document.getElementById('balances-card'),side=d?.querySelector('.sq-expense-side'),history=document.getElementById('history'),filters=side?.querySelector('.sq-expense-filters');if(!d||!activity||!balance||!side)return;
+ const mq=matchMedia('(min-width:901px)'),homes=new Map();let workspace,sidebar,tools,filterPanel,heading,tabs,exportTool,type='all',frame=0,menu;
+ const icon=(path)=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+path+'</svg>';
+ const food=icon('<path d="M5 3v6m3-6v6m-6-6v6c0 3 6 3 6 0M5 12v9M18 3c-4 4-4 9 0 9V3Zm0 9v9"/>'),pay=icon('<path d="M3 7h17m-4-4 4 4-4 4M21 17H4m4-4-4 4 4 4"/>');
+ function move(node,parent){if(!homes.has(node)){const mark=document.createComment('expense-original-position');node.before(mark);homes.set(node,mark);}parent.append(node);}
+ function action(label,fn,cls){const b=document.createElement('button');b.type='button';b.textContent=label;if(cls)b.className=cls;b.onclick=fn;return b;}
+ const quick=id=>document.getElementById(id)?.click();
+ function closeMenu(){menu?.remove();menu=null;}
+ document.addEventListener('click',e=>{if(menu&&!menu.contains(e.target)&&!e.target.closest('.dw-expense-more'))closeMenu();});history.addEventListener('scroll',closeMenu);
+ function build(){
+  workspace=document.createElement('section');workspace.id='dw-expense-workspace';workspace.setAttribute('aria-label','Expenses workspace');
+  sidebar=document.createElement('aside');sidebar.id='dw-expense-sidebar';sidebar.setAttribute('aria-label','Balances and tools');new ResizeObserver(size).observe(sidebar);
+  tools=document.createElement('section');tools.id='dw-expense-tools';tools.innerHTML='<h2>Tools</h2>';
+  heading=document.createElement('div');heading.className='dw-expenses-heading';heading.innerHTML='<div><h2>Expenses</h2><p>Track and manage shared expenses and payments.</p></div>';heading.append(action('＋ Add expense',()=>quick('quick-expense')));
+  tabs=document.createElement('div');tabs.className='dw-expense-tabs';tabs.setAttribute('aria-label','Activity type');
+  ['All','Expenses','Payments','Pending'].forEach(name=>{const b=action(name,()=>{type=name.toLowerCase();tabs.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));applyType();});b.setAttribute('aria-pressed',String(name==='All'));tabs.append(b);});
+  filterPanel=document.createElement('details');filterPanel.id='dw-expense-filter-panel';filterPanel.innerHTML='<summary>☷ Filters</summary>';
+  const exp=side.querySelector('[data-sq-quick="quick-expense"]'),paybutton=side.querySelector('[data-sq-quick="quick-pay-now"]');
+  [exp,paybutton].forEach(x=>{if(x){x.dataset.dwOriginalHidden=String(x.hidden);x.hidden=true;}});
+  tools.append(side);exportTool=action('',()=>document.getElementById('sq-export-expenses').click(),'sq-side-action');exportTool.innerHTML='<span class="sq-side-icon">'+icon('<path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/>')+'</span><span class="sq-side-copy"><strong>Export CSV</strong><small>Download expense data</small></span><span>›</span>';side.append(exportTool);exportTool.dataset.dwExtra='1';
+  side.querySelector('[data-sq-quick="quick-receipt"] .sq-side-icon').innerHTML=icon('<path d="M5 3h14v19l-3-2-4 2-4-2-3 2V3Zm4 5h6m-6 4h6m-6 4h4"/>');side.querySelector('[data-sq-quick="quick-split"] .sq-side-icon').innerHTML=icon('<path d="M12 21V4m-4 4 4-4 4 4M12 15H5V9m7 6h7V9"/>');
+  const p=action('➤ Pay now',()=>quick('quick-pay-now'));p.id='dw-expense-pay';balance.append(p);
+ }
+ function data(){return typeof entries!=='undefined'&&Array.isArray(entries)?entries:[];}
+ function decorate(){if(!workspace?.isConnected)return;
+  for(const row of history.querySelectorAll(':scope > .entry')){
+   if(row.querySelector('.dw-expense-copy'))continue;
+   const id=row.querySelector('[data-del]')?.dataset.del,e=data().find(e=>String(e.id)===String(id));if(!e)continue;
+   row.dataset.dwType=e.type==='debt'?'expenses':'payments';row.dataset.dwStatus=e.paymentStatus||'confirmed';row.dataset.dwDate=e.date||'';
+   const parsed=String(e.note||'').match(/^\[Category:\s*([^\]]+)\]\s*(.*)$/s),category=parsed?.[1]|| (e.type==='debt'?'Other':'Payment'),title=e.type==='debt'?(parsed?.[2]||e.note||'Expense'):'Payment';
+   const i=document.createElement('span');i.className='dw-expense-icon';i.innerHTML=e.type==='debt'?food:pay;
+   const copy=document.createElement('div');copy.className='dw-expense-copy';const strong=document.createElement('strong');strong.textContent=title;const small=document.createElement('small');small.textContent=(e.from||'')+' → '+(e.to||'')+' · '+category;copy.append(strong,small);copy.tabIndex=0;copy.setAttribute('role','button');copy.setAttribute('aria-label','View '+title+' details');
+   const open=()=>{const detail=row.querySelector('.sq-detail-btn');if(detail)detail.click();else window.squareUpOpenExpenseDetails?.(id);};copy.onclick=open;copy.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();open();}};
+   const money=document.createElement('div');money.className='dw-expense-money';const amount=document.createElement('strong');amount.textContent=new Intl.NumberFormat('en-US',{style:'currency',currency:e.currency||'USD'}).format(e.amount);const badge=document.createElement('span');badge.className='dw-expense-status';badge.dataset.status=row.dataset.dwStatus;badge.textContent=row.dataset.dwStatus.charAt(0).toUpperCase()+row.dataset.dwStatus.slice(1);money.append(amount,badge);
+   const more=document.createElement('div');more.className='dw-expense-more';more.append(action('⋯',ev=>{const btn=ev.currentTarget;closeMenu();menu=document.createElement('div');menu.className='dw-expense-menu';menu.setAttribute('role','group');menu.setAttribute('aria-label','Expense actions');menu.append(action('Details',()=>{closeMenu();open();}),action('Delete',()=>{closeMenu();row.querySelector('[data-del]').click();}));document.body.append(menu);const r=btn.getBoundingClientRect();menu.style.left=Math.min(innerWidth-150,r.right-130)+'px';menu.style.top=Math.min(innerHeight-menu.offsetHeight-8,r.bottom+4)+'px';}));more.firstChild.setAttribute('aria-label','More actions for '+title);row.append(i,copy,money,more);
+  }applyType();
+ }
+ function applyType(){if(!workspace?.isConnected)return;
+  history.querySelectorAll('.dw-expense-day').forEach(e=>e.remove());let last='';
+  history.querySelectorAll(':scope > .entry').forEach(row=>{const matches=type==='all'||type===row.dataset.dwType||(type==='pending'&&row.dataset.dwStatus==='pending');row.classList.toggle('dw-type-hidden',!matches);if(!row.hidden&&matches){const date=row.dataset.dwDate||'';if(date!==last){last=date;const h=document.createElement('div');h.className='dw-expense-day';const parsed=new Date(date);h.textContent=isNaN(parsed)?date:parsed.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});row.before(h);}}});
+ }
+ function size(){if(!workspace?.isConnected)return;const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style.setProperty('--dw-expense-height',h+'px');}
+ function sync(){frame=0;const on=mq.matches&&d.classList.contains('sq-tab-expenses')&&!d.classList.contains('dw-template-original');
+  if(on&&!workspace?.isConnected){
+   const sideMark=document.createComment('side-home');side.before(sideMark);homes.set(side,sideMark);
+   if(!workspace)build();
+   d.querySelector('.sq-workspace-tabs').after(workspace);move(activity,workspace);workspace.append(sidebar);move(balance,sidebar);sidebar.append(tools);tools.append(side);move(filters,filterPanel);move(filterPanel,activity.querySelector('.sq-expense-extra'));activity.prepend(heading);activity.querySelector('.sq-activity-filters>div').append(tabs);history.setAttribute('tabindex','0');history.setAttribute('aria-label','Expense history, scroll for more');history.setAttribute('role','region');
+   side.append(exportTool);d.classList.add('dw-expenses-redesign');side.querySelectorAll('[data-dw-original-hidden]').forEach(x=>x.hidden=true);document.getElementById('dw-expense-pay').hidden=false;decorate();size();
+  }else if(!on&&workspace?.isConnected){
+   d.classList.remove('dw-expenses-redesign');closeMenu();heading.remove();tabs.remove();
+   for(const [node,mark]of homes){if(mark.isConnected){mark.replaceWith(node);}}homes.clear();filterPanel.remove();workspace.remove();side.querySelectorAll('[data-dw-original-hidden]').forEach(x=>x.hidden=x.dataset.dwOriginalHidden==='true');exportTool.remove();history.removeAttribute('tabindex');history.removeAttribute('role');history.removeAttribute('aria-label');history.querySelectorAll('.dw-expense-icon,.dw-expense-copy,.dw-expense-money,.dw-expense-more,.dw-expense-day').forEach(x=>x.remove());history.querySelectorAll('.entry').forEach(x=>x.classList.remove('dw-type-hidden'));document.getElementById('dw-expense-pay').hidden=true;
+  }else if(on){decorate();size();}
+ }
+ new ResizeObserver(size).observe(sidebar||side);
+ new MutationObserver(()=>{if(!frame)frame=requestAnimationFrame(sync);}).observe(d,{attributes:true,attributeFilter:['class']});
+ new MutationObserver(records=>{if(workspace?.isConnected&&records.some(r=>[...r.addedNodes].some(n=>n.nodeType===1&&n.classList.contains('entry')))){decorate();size();}}).observe(history,{childList:true});
+ // Existing filters own visibility; type tabs layer on top and keep date groups in sync.
+ new MutationObserver(records=>{if(workspace?.isConnected&&records.some(r=>r.target.classList.contains('entry')&&r.oldValue!==r.target.getAttribute('hidden')))applyType();}).observe(history,{subtree:true,attributes:true,attributeFilter:['hidden'],attributeOldValue:true});
+ document.querySelectorAll('#sq-expense-search,#sq-expense-time,#sq-expense-status,#sq-expense-category,#sq-expense-member').forEach(e=>e.addEventListener(e.id==='sq-expense-search'?'input':'change',()=>queueMicrotask(applyType)));
+ mq.addEventListener('change',sync);window.addEventListener('resize',size);new MutationObserver(size).observe(balance,{childList:true,subtree:true});
+ const restoreObserver=new MutationObserver(()=>{if(workspace?.isConnected)size();});restoreObserver.observe(side,{childList:true});
+ sync();
+})();
+</script></body>
 </html>
+
 
