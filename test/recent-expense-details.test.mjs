@@ -338,10 +338,10 @@ await page.locator('#receipt-items input[type=checkbox]').first().check();assert
   await page.locator('#sq-expense-dialog').waitFor();assert.ok(await page.locator('#mode-payment').evaluate(e=>e.classList.contains('active')),'Log payment opens payment mode');
   await page.locator('#sq-entry-x').click();
   await page.locator('#dw-mh-members').click();await page.waitForFunction(()=>document.getElementById('tracker-dashboard').classList.contains('sq-tab-members'));
-  await page.locator('#nav-home').click();await mobileHome.waitFor();
+  await page.locator('.sq-mobile-nav [data-target="nav-home"]').click();await mobileHome.waitFor();
   await mobileHome.locator('.dw-mh-see-all').click();await page.waitForFunction(()=>document.getElementById('tracker-dashboard').classList.contains('sq-tab-expenses'));
   assert.equal(await mobileHome.count(),0,'Home view removed on Expenses');
-  await page.locator('#nav-home').click();await mobileHome.waitFor();
+  await page.locator('.sq-mobile-nav [data-target="nav-home"]').click();await mobileHome.waitFor();
   await mobileHome.locator('.dw-mh-entry').first().click();await page.waitForFunction(()=>document.getElementById('sq-details-overlay').classList.contains('open'));await page.getByRole('button',{name:'Close expense details',exact:true}).click();
   await page.screenshot({path:resolve(root,'test-results/bills/mobile-home-layered-trial.png'),fullPage:true});
   await page.setViewportSize({width:1440,height:1000});await page.waitForFunction(()=>!document.getElementById('dw-mobile-home-layered'));
