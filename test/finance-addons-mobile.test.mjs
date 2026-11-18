@@ -112,3 +112,28 @@ test('desktop section bars route to the existing views and exclude retired pages
   assert.equal(await page.locator('body').getAttribute('data-billing'),'opened');
  }finally{await browser.close()}
 });
+
+test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',async()=>{
+ const browser=await chromium.launch();
+ try{
+  const page=await browser.newPage({viewport:{width:390,height:844}});
+  await page.route('**/*',route=>route.abort());
+  await page.setContent(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,''));
+  const init=html.slice(html.indexOf('function initMobileChatInbox(){'),html.indexOf('initMobileChatInbox();')+'initMobileChatInbox();'.length);
+  await page.addScriptTag({content:`
+   const currentUser={id:'a'},current={id:'t'},sqMentionIds=new Set();
+   let squareUpReplyTo=null,sqPhotoFile=null,squareUpChatRows=[];
+   const esc=s=>String(s),api=async path=>path==='trackers'?[{id:'t',name:'Test group'}]:[{senderName:'Sam',senderId:'b',message:'Dinner?',createdAt:'2026-11-18T12:00:00Z'}];
+   async function loadTrackerChat(){document.getElementById('tracker-chat-messages').textContent='Dinner?'}
+  `+init});
+  await page.locator('#dw-chat-nav').evaluate(b=>b.click());
+  await page.locator('#dw-chat-rows button').waitFor({state:'attached'});
+  assert.match(await page.locator('#dw-chat-rows').textContent(),/Test group.*Dinner/);
+  await page.locator('#dw-chat-rows button').evaluate(b=>b.click());
+  assert.equal(await page.locator('#dw-chat-name').textContent(),'Test group');
+  assert.equal(await page.locator('#dw-chat-host #tracker-chat-form').count(),1);
+  await page.locator('#dw-chat-back').evaluate(b=>b.click());
+  assert.equal(await page.locator('#dw-chat-list').evaluate(el=>el.hidden),false);
+  assert.equal(await page.locator('#dw-chat-host #chat-card').count(),0);
+ }finally{await browser.close()}
+});
