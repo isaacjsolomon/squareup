@@ -6456,6 +6456,88 @@ async function loadTrackerChat(){var box=document.getElementById('tracker-chat-m
  squareUpApplyChatSearch();await squareUpRefreshPin();
  box.querySelectorAll('img[data-photo]').forEach(async img=>{try{var response=await fetch('/api/trackers/'+encodeURIComponent(id)+'/chat-photo/'+encodeURIComponent(img.dataset.photo),{headers:await authHeaders()});if(!response.ok)return;var blob=await response.blob();var url=URL.createObjectURL(blob);img.src=url;img.closest('a').href=url;img.onload=()=>setTimeout(()=>URL.revokeObjectURL(url),60000);}catch(e){}});
  }catch(err){box.textContent='Chat unavailable: '+err.message;}}
+
+function initMobileChatInbox(){
+ const pane=document.getElementById('dw-chats'),nav=document.getElementById('dw-chat-nav'),card=document.getElementById('chat-card');
+ if(!pane||!nav||!card)return;
+ const list=document.getElementById('dw-chat-list'),thread=document.getElementById('dw-chat-thread'),host=document.getElementById('dw-chat-host'),rows=document.getElementById('dw-chat-rows'),query=document.getElementById('dw-chat-query');
+ const media=matchMedia('(max-width:900px)'),marker=document.createComment('tracker chat');
+ card.before(marker);
+ let items=[],unreadOnly=false,version=0,threadId=null,busy=false;
+ function seenKey(id){return 'dw-chat-seen:'+currentUser?.id+':'+id}
+ function paint(){
+  rows.replaceChildren();
+  const visible=items.filter(x=>(!unreadOnly||x.unread)&&x.name.toLowerCase().includes(query.value.trim().toLowerCase()));
+  for(const x of visible){
+   const b=document.createElement('button');b.type='button';b.disabled=busy;
+   b.innerHTML='<i>'+esc(x.name.split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase())+'</i><span><b>'+esc(x.name)+'</b><small>'+esc(x.preview)+'</small></span><small>'+esc(x.date?new Date(x.date).toLocaleDateString([], {month:'short',day:'numeric'}):'')+(x.unread?'<em>'+x.unread+'</em>':'')+'</small>';
+   b.onclick=()=>enter(x);rows.append(b);
+  }
+  if(!visible.length)rows.textContent=unreadOnly?'No unread chats.':query.value?'No matching chats.':'Your tracker conversations will appear here.';
+ }
+ function fit(){
+  const bottom=document.querySelector('.sq-mobile-nav')?.getBoundingClientRect(),top=document.querySelector('.wrap > .sq-mobile-top')?.getBoundingClientRect();
+  if(top?.height)pane.style.setProperty('--dw-chat-top',top.bottom+'px');
+  if(bottom?.height)pane.style.setProperty('--dw-chat-bottom',(innerHeight-bottom.top+18)+'px');
+ }
+ function restore(){
+  if(card.parentElement===host)marker.after(card);
+  host.classList.remove('searching');thread.hidden=true;list.hidden=false;threadId=null;
+ }
+ function dismiss(){version++;restore();pane.hidden=true;document.body.classList.remove('dw-chats-open');nav.removeAttribute('aria-current')}
+ async function menu(){
+  const seq=++version;restore();pane.hidden=false;document.body.classList.add('dw-chats-open');nav.setAttribute('aria-current','page');fit();
+  rows.textContent='Loading chats…';items=[];
+  try{
+   const groups=await api('trackers');if(seq!==version)return;
+   items=groups.map(t=>({id:t.id,name:t.name||'Tracker',preview:'Loading messages…',unread:0}));paint();
+   await Promise.all(items.map(async x=>{
+    try{const messages=await api('trackers/'+encodeURIComponent(x.id)+'/chat');const last=messages[messages.length-1];x.date=last?.createdAt;x.preview=last?(last.senderName||'Member')+': '+(last.message||'Photo').replace(/ \((Poll|Expense) ID: [^)]+\)/g,''):'Start a conversation';
+    const read=Number(localStorage.getItem(seenKey(x.id))||0);x.unread=messages.filter(m=>String(m.senderId)!==String(currentUser?.id)&&Date.parse(m.createdAt)>read).length;
+    }catch{x.preview='Message preview unavailable'}
+   }));if(seq===version){items.sort((a,b)=>(Date.parse(b.date)||0)-(Date.parse(a.date)||0));paint()}
+  }catch{if(seq===version)rows.textContent='Could not load chats. Tap Chat to retry.'}
+ }
+ async function enter(x){
+  if(busy)return;busy=true;const seq=++version;paint();
+  try{
+   if(current?.id!==x.id)await openTracker(x.id);
+   if(seq!==version)return;
+   if(current?.id!==x.id)throw Error('Could not open this tracker.');
+   const input=document.getElementById('tracker-chat-input');
+   if(input.dataset.dwTracker!==x.id){
+    input.value='';squareUpReplyTo=null;sqPhotoFile=null;sqMentionIds.clear();document.getElementById('sq-chat-photo-input').value='';
+    document.getElementById('sq-photo-preview').hidden=true;document.getElementById('chat-reply-target').hidden=true;
+   }
+   input.dataset.dwTracker=x.id;input.placeholder='Message '+x.name;
+   list.hidden=true;thread.hidden=false;threadId=x.id;host.append(card);card.open=true;
+   document.getElementById('dw-chat-name').textContent=x.name;document.getElementById('sq-chat-search').value='';
+   document.querySelector('#sq-chat-mode-switch [data-mode="chat"]')?.click();
+   const box=document.getElementById('tracker-chat-messages');box.textContent='Loading messages…';
+   await loadTrackerChat();if(seq!==version)return;
+   const newest=squareUpChatRows.at(-1);if(newest?.createdAt&&box.querySelector('[data-chat-id]'))localStorage.setItem(seenKey(x.id),String(Date.parse(newest.createdAt)));
+   requestAnimationFrame(()=>box.scrollTop=box.scrollHeight);
+  }catch(err){if(seq===version){restore();rows.textContent=err.message}}
+  finally{busy=false;if(!pane.hidden&&!list.hidden&&seq!==version)paint()}
+ }
+ query.oninput=paint;
+ document.querySelectorAll('.dw-chat-filters button').forEach((button,i)=>button.onclick=()=>{
+  unreadOnly=!!i;for(const b of button.parentElement.children)b.setAttribute('aria-pressed',String(b===button));paint();
+ });
+ document.getElementById('dw-chat-compose').onclick=()=>{unreadOnly=false;document.querySelector('.dw-chat-filters button').click();query.value='';paint();query.focus()};
+ document.getElementById('dw-chat-back').onclick=menu;
+ document.getElementById('dw-chat-find').onclick=()=>{host.classList.toggle('searching');if(host.classList.contains('searching'))document.getElementById('sq-chat-search').focus()};
+ document.addEventListener('click',e=>{
+  if(!media.matches)return;
+  if(e.target.closest('#dw-chat-nav,#nav-chat,#sq-mobile-chat-top')){e.preventDefault();e.stopImmediatePropagation();menu();return}
+  if(!pane.hidden&&e.target.closest('.sq-mobile-nav button,.sq-nav-link,[data-sq-linked="expense"]'))dismiss();
+  if(threadId&&e.target.closest('[data-sq-linked="poll"]'))document.querySelector('#sq-chat-mode-switch [data-mode="polls"]')?.click();
+ },true);
+ media.addEventListener('change',()=>{if(!media.matches)dismiss()});window.addEventListener('resize',fit);
+ const observer=new ResizeObserver(fit);for(const el of document.querySelectorAll('.wrap > .sq-mobile-top,.sq-mobile-nav'))observer.observe(el);
+}
+initMobileChatInbox();
+
 document.getElementById('tracker-chat-messages')?.addEventListener('click',async e=>{
  const link=e.target.closest('[data-sq-linked]');if(!link)return;
  e.preventDefault();e.stopPropagation();
@@ -6734,7 +6816,7 @@ sqDrawTemplates();
 import('./squareup-events.js').then(module => module.initEvents({api, getTrackers: () => trackers, getUser: () => currentUser})).catch(error => console.error('Events unavailable',error));
 
 </script>
-<nav aria-label="Mobile navigation" class="sq-mobile-nav"><button class="active" data-target="nav-home" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path><path d="M7 10v-1m10 1V9"></path></svg></span>Home</button><button data-target="nav-trackers" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="m4 7 2 2 3-4"></path><path d="M12 7h9"></path><circle cx="6" cy="17" r="2"></circle><path d="M12 17h9"></path></svg></span>Trackers</button><button class="sq-add" data-target="quick-expense" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2" viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></span>Add</button><button id="sq-mobile-finance" data-target="sq-finance-nav" type="button" aria-label="Open Finance Hub"><span class="sq-m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7 16v-4m5 4V8m5 8v-6"/></svg></span>Finance Hub</button><button id="sqev-mobile-nav" type="button" aria-label="Open Events"><span class="sq-m-icon" aria-hidden="true">◈</span>Events</button><button id="sq-mobile-more" type="button" aria-haspopup="dialog" aria-controls="sq-mobile-more-sheet"><span class="sq-m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>More</button><button data-target="nav-profile" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>Account</button></nav>
+<nav aria-label="Mobile navigation" class="sq-mobile-nav"><button class="active" data-target="nav-home" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path><path d="M7 10v-1m10 1V9"></path></svg></span>Home</button><button data-target="nav-trackers" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="m4 7 2 2 3-4"></path><path d="M12 7h9"></path><circle cx="6" cy="17" r="2"></circle><path d="M12 17h9"></path></svg></span>Trackers</button><button class="sq-add" data-target="quick-expense" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2" viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></span>Add</button><button id="dw-chat-nav" type="button" aria-label="Open chats"><span class="sq-m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-8l-6 4v-4H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z"/><path d="M7 10h2m2 0h2m2 0h2"/></svg></span>Chat</button><button id="sqev-mobile-nav" type="button" aria-label="Open Events"><span class="sq-m-icon" aria-hidden="true">◈</span>Events</button><button id="sq-mobile-more" type="button" aria-haspopup="dialog" aria-controls="sq-mobile-more-sheet"><span class="sq-m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>More</button><button data-target="nav-profile" type="button"><span class="sq-m-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>Account</button></nav>
 <script>
 (function(){
  const tabs=document.querySelectorAll('[data-sq-tab]');
@@ -17440,7 +17522,43 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  new ResizeObserver(align).observe(sidebar);
  window.addEventListener('resize',align);align();
 })();
-</script></body>
+</script><section id="dw-chats" aria-label="Chats" hidden>
+ <div id="dw-chat-list"><header><h2>Chats</h2><button id="dw-chat-compose" aria-label="Choose a conversation" title="Choose a conversation">✎</button></header>
+ <input type="search" id="dw-chat-query" placeholder="Search chats" aria-label="Search chats">
+ <div class="dw-chat-filters"><button aria-pressed="true">All</button><button aria-pressed="false">Unread</button></div>
+ <div id="dw-chat-rows" aria-live="polite"></div></div>
+ <div id="dw-chat-thread" hidden><header><button id="dw-chat-back" aria-label="Back to chats">‹ Chats</button><div><strong id="dw-chat-name"></strong><small>Tracker chat</small></div><button id="dw-chat-find" aria-label="Search messages">⌕</button></header><div id="dw-chat-host"></div></div></section>
+<style>
+#dw-chats{display:none}
+@media(max-width:900px){
+ html body.dw-chats-open #dw-chats{display:block;position:fixed;inset:var(--dw-chat-top,85px) 0 var(--dw-chat-bottom,96px);z-index:2147481000;overflow:auto;background:#061b29;color:#f2f8fa;padding:12px 14px;box-sizing:border-box}
+ body.dw-chats-open #sq-finance-nav,body.dw-chats-open .sq-workspace-tabs,html body #sq-finance-nav{display:none!important}
+ #dw-chats [hidden]{display:none!important}
+ #dw-chats header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+ #dw-chats h2{font-size:30px;margin:0}
+ #dw-chats button,#dw-chats input{font-family:inherit}
+ #dw-chat-compose,#dw-chat-back,#dw-chat-find,.dw-chat-filters button{padding:9px 13px;border:1px solid #355967;border-radius:12px;background:#143345;color:#edf8fc;font-weight:700}
+ #dw-chat-compose,.dw-chat-filters button[aria-pressed=true]{background:#35dfba;color:#082b34}
+ #dw-chat-query{box-sizing:border-box;width:100%;padding:12px;border:1px solid #36566a;border-radius:12px;background:#163345;color:#fff}
+ .dw-chat-filters{display:flex;gap:8px;margin:12px 0}
+ #dw-chat-rows>button{width:100%;display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:10px;padding:14px 10px;margin-bottom:8px;text-align:left;background:#0b2535;color:#effaff;border:1px solid #345264;border-radius:14px}
+ #dw-chat-rows i{display:grid;place-items:center;height:44px;background:#235269;border-radius:12px;font-weight:700;font-style:normal}
+ #dw-chat-rows small,#dw-chat-thread header small{display:block;color:#a5bfce}
+ #dw-chat-rows small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ #dw-chat-rows em{display:block;margin:4px 0 0 auto;width:fit-content;border-radius:12px;padding:2px 7px;background:#35dfba;color:#092736;font-style:normal}
+ #dw-chat-thread:not([hidden]),#dw-chat-host,#dw-chat-host #chat-card,#dw-chat-host .tracker-collapsible-body{display:flex!important;flex-direction:column;min-height:0;flex:1}
+ #dw-chat-thread{height:100%}
+ #dw-chat-thread header{flex:none;margin:0 0 8px}
+ #dw-chat-host #chat-card{position:static!important;padding:0!important;margin:0!important;border:0!important;background:transparent!important;box-shadow:none!important}
+ #dw-chat-host #chat-card>summary,#dw-chat-host .tracker-collapsible-body>p:first-child,#dw-chat-host #sq-chat-mode-switch{display:none!important}
+ #dw-chat-host #tracker-chat-messages{flex:1;overflow-y:auto!important;height:auto!important;max-height:none!important;min-height:0!important;background:transparent!important;border:0!important}
+ #dw-chat-host .chat-line.mine .chat-bubble{background:#35dcb4!important;color:#062b35!important}
+ #dw-chat-host .chat-line.theirs .chat-bubble{background:#203e50!important;color:#f4faff!important}
+ #dw-chat-host #tracker-chat-form{position:relative!important;inset:auto!important;margin:6px 0 0!important;flex:none}
+ #dw-chat-host:not(.searching) .sq-chat-tools{display:none!important}
+ body.dw-chats-open .sq-mobile-nav #dw-chat-nav{color:#36dfbb!important}
+}
+</style></body>
 </html>
 
 
