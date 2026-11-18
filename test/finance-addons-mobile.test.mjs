@@ -117,6 +117,8 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
  const browser=await chromium.launch();
  try{
   const page=await browser.newPage({viewport:{width:390,height:844}});
+  await page.route('https://chat.test/',route=>route.fulfill({contentType:'text/html',body:'<html></html>'}));
+  await page.goto('https://chat.test/');
   await page.route('**/*',route=>route.abort());
   await page.setContent(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,''));
   const init=html.slice(html.indexOf('function initMobileChatInbox(){'),html.indexOf('initMobileChatInbox();')+'initMobileChatInbox();'.length);
