@@ -71,3 +71,39 @@ test('desktop cash flow metrics and transaction action fit the workspace',async(
   }
  }finally{await browser.close()}
 });
+
+test('desktop section bars route to the existing views and exclude retired pages',async()=>{
+ const browser=await chromium.launch();
+ try{
+  const page=await browser.newPage({viewport:{width:1440,height:900}});
+  await page.route('**/*',route=>route.abort());
+  await page.setContent(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,''));
+  const code=await page.evaluate(source=>{
+   const parsed=new DOMParser().parseFromString(source,'text/html');
+   return [...parsed.scripts].find(s=>s.textContent.includes('window.squareUpOpenFinanceHub=open')).textContent;
+  },html);
+  await page.evaluate(()=>{window.squareUpApi=async()=>[]});
+  await page.addScriptTag({content:code});
+  for(const [parent,keys,labels] of [
+   ['#analytics-page',['analytics','finance','insights'],['Analytics','Cash Flow','Insights']],
+   ['#trackers-page',['trackers','trip','home'],['All Trackers','Trips','Households']]
+  ]){
+   const buttons=page.locator(parent+' .dw-section-tabs button');
+   assert.deepEqual(await buttons.allTextContents(),labels);
+   for(const key of keys.slice(1)){
+    await page.locator(parent+' [data-dw-section="'+key+'"]').evaluate(b=>b.click());
+    const active=page.locator('#sq-nextgen .dw-section-tabs[data-current-group]');
+    assert.deepEqual(await active.locator('button').allTextContents(),labels);
+    assert.equal(await active.locator('[aria-current=page]').getAttribute('data-dw-section'),key);
+    await active.locator('button').first().evaluate(b=>b.click());
+    assert.equal(await page.locator('#sq-nextgen').evaluate(el=>el.hidden),true);
+   }
+  }
+  for(const key of ['wallet','currencies']){
+   await page.evaluate(key=>window.squareUpOpenFinanceHub(key),key);
+   assert.equal(await page.locator('#sq-nextgen').evaluate(el=>el.hidden),true);
+  }
+  await page.evaluate(()=>{document.querySelector('#sq-bills-open').onclick=()=>document.body.dataset.billing='opened';window.squareUpOpenFinanceHub('subscriptions')});
+  assert.equal(await page.locator('body').getAttribute('data-billing'),'opened');
+ }finally{await browser.close()}
+});
