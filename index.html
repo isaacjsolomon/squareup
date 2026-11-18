@@ -17342,7 +17342,7 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  #sq-nextgen .dw-income-key{color:#75d5f3}#sq-nextgen .dw-spending-key{color:#83e8c9}
  html body.sq-finance-open #sq-nextgen #sq-ng-content:has(>.dw-web-trend), html body.sq-finance-open #sq-nextgen #sq-ng-content:has(>.sq-ng-trip-hero),html body.sq-finance-open #sq-nextgen .sq-wallet-compact-layout{display:grid!important;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important;gap:16px!important;align-items:start!important}
  #sq-nextgen #sq-ng-content:has(>.dw-web-trend)>:is(.sq-ng-finance-overview,p),#sq-nextgen #sq-ng-content:has(>.sq-ng-trip-hero)>:is(.sq-ng-tracker-toolbar,.sq-ng-grid,#sq-ng-trip-plan-editor,.sq-ng-workspace-detail-head),#sq-nextgen .sq-wallet-compact-layout>:is(.sq-wallet-stats,#sq-wallet-activity){grid-column:1/-1}
- html body.sq-finance-open #sq-nextgen .sq-ng-finance-overview{display:flex!important;align-items:stretch;gap:12px}
+ html body.sq-finance-open #sq-nextgen .sq-ng-finance-overview{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center;gap:16px;margin:0!important}
  html body.sq-finance-open #sq-nextgen .sq-ng-summary-stack{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;flex:1;gap:12px!important}
  html body.sq-finance-open #sq-nextgen :is(.dw-web-trend,.dw-web-comparison){display:block!important;padding:20px}
  #sq-nextgen .dw-web-comparison table{width:100%;border-collapse:collapse}
@@ -17353,6 +17353,30 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  html body.sq-finance-open #sq-nextgen .sq-fx-two-column,html body.sq-finance-open #sq-nextgen .dw-analytics-layout{display:grid!important;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)!important;gap:16px!important}
  html body.sq-finance-open #sq-nextgen .sq-fx-result{background:#174443!important;color:#b2f4de!important}
  html body #sq-bills-page .sq-premium-monthly,html body #sq-bills-page #sq-premium-monthly{color:#83e8c9!important}
+}
+
+@media(min-width:901px){
+ html body.sq-finance-open #sq-nextgen .sq-ng-shell{width:100%!important;max-width:none!important;margin:0!important;padding:28px clamp(20px,2.5vw,48px) 64px!important}
+ html body.sq-finance-open #sq-nextgen #sq-ng-open-transaction{width:auto!important;height:auto!important;min-height:40px!important;align-self:center!important;display:inline-flex!important;flex-direction:row!important;gap:8px;padding:10px 14px;border-radius:10px;background:#83e8c9;color:#102836}
+ #sq-nextgen #sq-ng-open-transaction .sq-ng-add-action-icon{width:auto;height:auto;font-size:20px;background:transparent}
+ #sq-nextgen #sq-ng-open-transaction strong{font-size:15px}
+ #sq-nextgen #sq-ng-open-transaction .sq-ng-add-action-hint{display:none}
+ html body.sq-finance-open #sq-nextgen .sq-wallet-compact-layout{grid-template-columns:minmax(0,1fr)!important}
+ html body.sq-finance-open #sq-nextgen .sq-wallet-compact-layout>section{grid-column:1/-1!important;margin:0!important}
+ html body.sq-finance-open #sq-nextgen .sq-wallet-compact-layout .sq-wallet-currency{display:flex!important;flex-wrap:wrap;align-items:center;gap:16px!important}
+ #sq-nextgen .sq-wallet-currency>b{flex:0 0 auto}
+ html body.sq-finance-open #sq-nextgen .sq-wallet-currency>span{display:grid!important;align-content:start;justify-items:start;gap:4px;flex:1 1 135px}
+ html body.sq-finance-open #sq-nextgen .sq-wallet-currency>span>strong{white-space:nowrap!important;overflow-wrap:normal!important;font-size:clamp(18px,1.65vw,26px)!important;font-variant-numeric:tabular-nums}
+ #sq-nextgen .sq-ng-workspace-directory-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+ #sq-nextgen .sq-ng-workspace-directory-card{display:flex;align-items:stretch}
+ #sq-nextgen .sq-ng-workspace-cover{width:78px;min-width:78px;height:auto;align-items:center;justify-content:center;padding:10px}
+ #sq-nextgen .sq-ng-workspace-cover small{display:none}
+ #sq-nextgen .sq-ng-workspace-card-body{flex:1;min-width:0}
+ #sq-nextgen .sq-ng-workspace-directory-head{gap:16px;flex-wrap:wrap}
+ html body.sq-finance-open #sq-nextgen .dw-web-comparison{margin-top:18px}
+ html body.sq-finance-open #sq-nextgen .dw-analytics-category strong{font-size:20px!important}
+ html body.sq-finance-open #sq-nextgen .dw-analytics-bars{height:clamp(150px,14vw,240px)}
+ @media(max-width:1180px){html body.sq-finance-open #sq-nextgen .sq-ng-finance-overview{grid-template-columns:minmax(0,1fr)!important}#sq-nextgen #sq-ng-open-transaction{justify-self:start}}
 }
 </style></body>
 </html>
