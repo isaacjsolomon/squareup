@@ -12050,7 +12050,12 @@ function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce(
  const chart=months.map(m=>`<div class="dw-analytics-month"><div class="dw-analytics-bars"><span class="dw-analytics-bar income" style="height:${Math.max(2,m.income/max*100)}%" title="Income ${esc(money(m.income))}"></span><span class="dw-analytics-bar expense" style="height:${Math.max(2,m.expense/max*100)}%" title="Spending ${esc(money(m.expense))}"></span></div><small>${esc(m.label)}</small></div>`).join('');
  const breakdown=Object.entries(categories).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([name,amount])=>`<div class="dw-analytics-category"><span>${esc(name)}</span><strong>${esc(money(amount))}</strong><div class="dw-analytics-track"><span style="width:${current.expense?Math.min(100,100*amount/current.expense):0}%"></span></div></div>`).join('');
  if(tab==='insights'){
- content.innerHTML=`<div class="sq-ng-grid">${card('This month income',money(current.income),true)}${card('This month spending',money(current.expense))}${card('Monthly cash flow',money(current.income-current.expense))}</div><div class="dw-analytics-layout"><section class="sq-ng-card"><h2>Last six months</h2><p class="sq-ng-note"><span class="dw-income-key">Income</span> · <span class="dw-spending-key">Spending</span></p><div class="dw-analytics-months" role="img" aria-label="Six-month income and spending chart">${chart}</div></section><section class="sq-ng-card"><h2>This month's spending categories</h2>${breakdown||'<p>No expenses recorded this month.</p>'}<p class="sq-ng-note">Previous month spending: ${esc(money(previous.expense))}</p></section></div><p class="sq-ng-note">Calculated from your private personal transactions in USD; shared tracker debts are excluded.</p>`;
+ const comparisonRows=[
+   ['Income',previous.income,current.income],
+   ['Spending',previous.expense,current.expense],
+   ['Net cash flow',previous.income-previous.expense,current.income-current.expense]
+ ].map(([label,before,after])=>`<tr><th scope="row">${esc(label)}</th><td>${esc(money(before))}</td><td>${esc(money(after))}</td><td>${esc(money(after-before))}</td></tr>`).join('');
+ content.innerHTML=`<div class="sq-ng-grid">${card('This month income',money(current.income),true)}${card('This month spending',money(current.expense))}${card('Monthly cash flow',money(current.income-current.expense))}</div><div class="dw-analytics-layout"><section class="sq-ng-card"><h2>Last six months</h2><p class="sq-ng-note"><span class="dw-income-key">Income</span> · <span class="dw-spending-key">Spending</span></p><div class="dw-analytics-months" role="img" aria-label="Six-month income and spending chart">${chart}</div></section><section class="sq-ng-card"><h2>This month's spending categories</h2>${breakdown||'<p>No expenses recorded this month.</p>'}<p class="sq-ng-note">Previous month spending: ${esc(money(previous.expense))}</p></section></div><section class="sq-ng-card dw-web-comparison"><h2>Month comparison</h2><table><thead><tr><th scope="col">Category</th><th scope="col">${esc(previous.label)}</th><th scope="col">${esc(current.label)}</th><th scope="col">Change</th></tr></thead><tbody>${comparisonRows}</tbody></table></section><p class="sq-ng-note">Calculated from your private personal transactions in USD; shared tracker debts are excluded.</p>`;
  return;
 }
 const trendCard=`<section class="sq-ng-card dw-web-trend"><h2>Cash Flow Trend</h2><p class="sq-ng-note"><span class="dw-income-key">Income</span> · <span class="dw-spending-key">Spending</span></p><div class="dw-analytics-months" role="img" aria-label="Six-month income and spending chart">${chart}</div></section>`;
@@ -17322,7 +17327,8 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  window.addEventListener('load',queue);queue();
 })();
 </script><style id="dw-desktop-financial-hub">
-.dw-web-trend,.dw-wallet-net{display:none}
+#sq-nextgen :is(.dw-web-trend,.dw-wallet-net,.dw-web-comparison){display:none!important}
+#sq-nextgen .dw-income-key{color:#2ed8bc}#sq-nextgen .dw-spending-key{color:#8daaf2}
 @media(min-width:901px){
  html body.sq-finance-open #sq-nextgen{background:#0a1627!important;color:#edf5fc}
  html body.sq-finance-open #sq-nextgen .sq-ng-shell{background:transparent!important}
@@ -17338,8 +17344,11 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  #sq-nextgen #sq-ng-content:has(>.dw-web-trend)>:is(.sq-ng-finance-overview,p),#sq-nextgen #sq-ng-content:has(>.sq-ng-trip-hero)>:is(.sq-ng-tracker-toolbar,.sq-ng-grid,#sq-ng-trip-plan-editor,.sq-ng-workspace-detail-head),#sq-nextgen .sq-wallet-compact-layout>:is(.sq-wallet-stats,#sq-wallet-activity){grid-column:1/-1}
  html body.sq-finance-open #sq-nextgen .sq-ng-finance-overview{display:flex!important;align-items:stretch;gap:12px}
  html body.sq-finance-open #sq-nextgen .sq-ng-summary-stack{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;flex:1;gap:12px!important}
- html body.sq-finance-open #sq-nextgen .dw-web-trend{display:block;padding:20px}
- html body.sq-finance-open #sq-nextgen .dw-wallet-net{display:grid;color:#83e8c9}
+ html body.sq-finance-open #sq-nextgen :is(.dw-web-trend,.dw-web-comparison){display:block!important;padding:20px}
+ #sq-nextgen .dw-web-comparison table{width:100%;border-collapse:collapse}
+ #sq-nextgen .dw-web-comparison :is(th,td){padding:12px 6px;text-align:end;border-bottom:1px solid #30465c}
+ #sq-nextgen .dw-web-comparison th:first-child{text-align:start}
+ html body.sq-finance-open #sq-nextgen .dw-wallet-net{display:grid!important;color:#83e8c9}
  html body.sq-finance-open #sq-nextgen .sq-wallet-currency{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(95px,1fr))!important}
  html body.sq-finance-open #sq-nextgen .sq-fx-two-column,html body.sq-finance-open #sq-nextgen .dw-analytics-layout{display:grid!important;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)!important;gap:16px!important}
  html body.sq-finance-open #sq-nextgen .sq-fx-result{background:#174443!important;color:#b2f4de!important}
