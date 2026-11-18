@@ -133,7 +133,11 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
    const esc=s=>String(s),api=async path=>path==='trackers'?[{id:'t',name:'Test group'}]:[{senderName:'Sam',senderId:'b',message:'Dinner?',createdAt:'2026-11-18T12:00:00Z'}];
    async function loadTrackerChat(){document.getElementById('tracker-chat-messages').textContent='Dinner?'}
   `+init});
+  await page.addScriptTag({content:readFileSync(new URL('../doweo-mobile-chat-mockup.js',import.meta.url),'utf8')});
   await page.locator('#dw-chat-nav').evaluate(b=>b.click());
+  await page.waitForFunction(()=>{const b=document.querySelector('#dw-chat-rows>button');return b&&getComputedStyle(b).backgroundColor==='rgb(255, 255, 255)'});
+  assert.equal(await page.locator('#dw-chats').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(7, 27, 50)');
+  assert.notEqual(await page.locator('#dw-chats > .sq-mobile-nav').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 255, 255)');
   await page.locator('#dw-chat-rows button').waitFor({state:'attached'});
   assert.match(await page.locator('#dw-chat-rows').textContent(),/Test group.*Dinner/);
   await page.locator('#dw-chat-rows button').evaluate(b=>b.click());
@@ -155,6 +159,8 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
   const dock=page.locator('#dw-chats > .sq-mobile-nav');
   assert.ok(await dock.evaluate(el=>Math.abs(el.getBoundingClientRect().bottom-innerHeight)<2));
   await page.locator('#dw-chat-compose').evaluate(b=>b.click());
+  await page.locator('.dw-people-switch button').first().waitFor();
+  assert.equal(await page.locator('.dw-people-switch button').count(),3);
   await page.locator('#dw-chat-rows button').filter({hasText:'Sam'}).evaluate(b=>b.click());
   await page.locator('#dw-dm-input').fill('Private hello');
   await page.locator('#dw-dm-form button').evaluate(b=>b.click());
