@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {chromium} from 'playwright';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const scripts=['doweo-finance-planning.js','doweo-trips-activity.js','doweo-paylinks-currency.js'].map(name=>readFileSync(new URL('../'+name,import.meta.url),'utf8'));
-test('mobile Finance Hub keeps original tabs and shows a compact separate tools row',async()=>{
+test('mobile Finance Hub keeps original tabs and keeps the retired launcher row hidden',async()=>{
  const browser=await chromium.launch({headless:true});
  try{
   const page=await browser.newPage({viewport:{width:390,height:844}});
@@ -32,14 +32,14 @@ test('mobile Finance Hub keeps original tabs and shows a compact separate tools 
   assert.equal(await page.locator('#sq-nextgen .sq-ng-tabs > button').count(),originalTabs,'existing mobile Finance tabs unchanged');
   assert.equal(await page.locator('#dw-finance-extras > button').count(),3,'all three launchers grouped');
   assert.equal(await page.locator('#dw-weo-financial-context').isChecked(),false,'Weo financial context must default off');
-  const host=await page.locator('#dw-finance-extras').boundingBox();
-  assert.ok(host&&host.width<=390,'tools host should not exceed viewport');
-  await page.locator('#dw-planning-launch').click();
+  assert.equal(await page.locator('#dw-finance-extras').isVisible(),false,'retired launchers stay hidden');
+  // Exercise the existing handlers independently of launcher visibility.
+  await page.locator('#dw-planning-launch').evaluate(button=>button.click());
   assert.equal(await page.locator('#dw-planning-pane').isVisible(),true);
-  await page.locator('#dw-trip-plus-launch').click();
+  await page.locator('#dw-trip-plus-launch').evaluate(button=>button.click());
   assert.equal(await page.locator('#dw-trip-plus').isVisible(),true);
   assert.equal(await page.locator('#dw-planning-pane').isVisible(),false);
-  await page.locator('#dw-paylink-launch').click();
+  await page.locator('#dw-paylink-launch').evaluate(button=>button.click());
   assert.equal(await page.locator('#dw-paylink-pane').isVisible(),true);
   assert.equal(await page.locator('#dw-trip-plus').isVisible(),false);
  }finally{await browser.close()}
