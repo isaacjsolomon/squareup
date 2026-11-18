@@ -134,6 +134,16 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
   await page.locator('#dw-chat-rows button').evaluate(b=>b.click());
   assert.equal(await page.locator('#dw-chat-name').textContent(),'Test group');
   assert.equal(await page.locator('#dw-chat-host #tracker-chat-form').count(),1);
+  assert.equal(await page.locator('#tracker-chat-input').evaluate(el=>el===document.activeElement),true);
+  await page.locator('#tracker-chat-messages').evaluate(el=>{el.innerHTML='<p>Older message</p>'.repeat(100)});
+  for(const height of [844,520]){
+   await page.setViewportSize({width:390,height});
+   const layout=await page.evaluate(()=>{
+    const rect=s=>document.querySelector(s).getBoundingClientRect();
+    return {title:rect('#dw-chat-name').top,top:rect('#dw-chats').top,composer:rect('#tracker-chat-form').bottom,bottom:rect('#dw-chats').bottom,scroll:document.querySelector('#tracker-chat-messages').scrollHeight>rect('#tracker-chat-messages').height};
+   });
+   assert.ok(layout.title>=layout.top&&layout.composer<=layout.bottom+1&&layout.scroll,JSON.stringify(layout));
+  }
   await page.locator('#dw-chat-back').evaluate(b=>b.click());
   assert.equal(await page.locator('#dw-chat-list').evaluate(el=>el.hidden),false);
   assert.equal(await page.locator('#dw-chat-host #chat-card').count(),0);
