@@ -85,7 +85,12 @@ test('mobile Overview hides extras and scrolls only when its content overflows',
   await page.evaluate(()=>document.getElementById('tracker-dashboard').className='sq-tab-overview');
   await page.setViewportSize({width:1280,height:900});
   await page.evaluate(()=>document.getElementById('sq-return-smart-host').append(document.getElementById('smart-settle-card')));
-  assert.equal(await visible('#smart-settle-card'),true,'desktop Smart Settle-Up');
+  // The current desktop home layout intentionally hides the former settle-up panel.
+  assert.equal(await visible('#smart-settle-card'),false,'legacy desktop overview panel');
+  await page.evaluate(()=>document.getElementById('tracker-dashboard').className='sq-tab-members');
+  await page.evaluate(()=>document.getElementById('tracker-dashboard').append(document.getElementById('smart-settle-card')));
+  assert.equal(await visible('#smart-settle-card'),true,'desktop settle-up remains available outside the home layout');
+  await page.evaluate(()=>document.getElementById('tracker-dashboard').className='sq-tab-overview');
   assert.equal(await visible('#clear'),true,'desktop clear');
   await page.setViewportSize({width:390,height:844});
   assert.equal(await visible('#smart-settle-card'),false,'resizing back to mobile');
