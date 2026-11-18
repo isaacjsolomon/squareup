@@ -139,3 +139,33 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
   assert.equal(await page.locator('#dw-chat-host #chat-card').count(),0);
  }finally{await browser.close()}
 });
+
+test('desktop report tabs clear the visible toolbar on Analytics and Cash Flow',async()=>{
+ const browser=await chromium.launch();
+ try{
+  const page=await browser.newPage();
+  await page.route('**/*',route=>route.abort());
+  await page.setContent(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,''));
+  const alignment=await page.evaluate(source=>[...new DOMParser().parseFromString(source,'text/html').scripts].find(s=>s.textContent.includes("style.setProperty('--dw-report-top'")).textContent,html);
+  await page.addScriptTag({content:alignment});
+  for(const width of [1024,1440,2048]){
+   await page.setViewportSize({width,height:900});
+   for(const section of ['analytics','finance']){
+    await page.evaluate(section=>{
+     const cash=section==='finance',root=document.querySelector('#sq-nextgen');
+     document.body.classList.toggle('analytics-view',!cash);
+     document.body.classList.toggle('sq-finance-open',cash);
+     root.hidden=!cash;root.dataset.section='finance';
+     root.querySelector('[aria-label="Analytics sections"]').toggleAttribute('data-current-group',cash);
+    },section);
+    await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+    const rects=await page.evaluate(section=>{
+     const header=document.querySelector('.wrap>header.tracker-heading').getBoundingClientRect();
+     const tabs=document.querySelector((section==='finance'?'#sq-nextgen':'#analytics-page')+' .dw-section-tabs').getBoundingClientRect();
+     return [header.bottom,tabs.top,tabs.height];
+    },section);
+    assert.ok(rects[0]>0&&rects[1]>=rects[0]&&rects[2]>0,section+' '+width+' '+rects);
+   }
+  }
+ }finally{await browser.close()}
+});
