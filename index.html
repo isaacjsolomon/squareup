@@ -6476,6 +6476,7 @@ function initMobileChatInbox(){
   if(!visible.length)rows.textContent=unreadOnly?'No unread chats.':query.value?'No matching chats.':'Your tracker conversations will appear here.';
  }
  function fit(){
+  if(pane.hidden)return;
   const bottom=document.querySelector('.sq-mobile-nav')?.getBoundingClientRect(),top=document.querySelector('.wrap > .sq-mobile-top')?.getBoundingClientRect();
   if(top?.height)pane.style.setProperty('--dw-chat-top',top.bottom+'px');
   const viewport=window.visualViewport;
@@ -6491,8 +6492,10 @@ function initMobileChatInbox(){
   if(card.parentElement===host)marker.after(card);
   host.classList.remove('searching');thread.hidden=true;list.hidden=false;threadId=null;
  }
- function dismiss(){version++;restore();pane.hidden=true;document.body.classList.remove('dw-chats-open');nav.removeAttribute('aria-current')}
+ let pageY=0;
+ function dismiss(){if(pane.hidden)return;version++;restore();pane.hidden=true;document.body.classList.remove('dw-chats-open');window.scrollTo({top:pageY,behavior:'instant'});nav.removeAttribute('aria-current')}
  async function menu(){
+  if(pane.hidden)pageY=window.scrollY;
   const seq=++version;restore();pane.hidden=false;document.body.classList.add('dw-chats-open');nav.setAttribute('aria-current','page');fit();
   rows.textContent='Loading chats…';items=[];
   try{
@@ -17605,8 +17608,13 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
 @media(max-width:900px){
  body.dw-chats-open::after{content:"";position:fixed;inset:0;background:#061b29;z-index:1000;pointer-events:none}
  html body.dw-chats-open .wrap>.sq-mobile-top{z-index:2147481001!important}
- html body.dw-chats-open #dw-chats{overflow:hidden;padding:8px 12px max(18px,env(safe-area-inset-bottom))}
- html body.dw-chats-open:not(.dw-chat-keyboard) #dw-chats{padding-bottom:26px}
+ html:has(>body.dw-chats-open),html body.dw-chats-open{overflow:hidden!important;overscroll-behavior:none!important}
+ html body.dw-chats-open{position:fixed!important;inset:0!important;margin:0!important}
+ html body.dw-chats-open #dw-chats{bottom:0;overflow:hidden;padding:8px 12px calc(var(--dw-chat-bottom,0px) + 6px)}
+ html body.dw-chats-open .sq-mobile-nav{z-index:2147481002!important}
+ #dw-chat-rows,#dw-chat-host #tracker-chat-messages{overscroll-behavior-y:none!important}
+ #dw-chat-host{overflow:hidden}
+ #dw-chat-thread header,#dw-chat-list>header,#dw-chat-list>input,.dw-chat-filters{flex-shrink:0}
  #dw-chat-list{height:100%;display:flex;flex-direction:column;min-height:0}
  #dw-chat-rows{overflow-y:auto;min-height:0;overscroll-behavior:contain}
  #dw-chat-thread:not([hidden]){height:100%;overflow:hidden;box-sizing:border-box}
