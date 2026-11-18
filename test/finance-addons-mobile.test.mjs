@@ -85,7 +85,7 @@ test('desktop section bars route to the existing views and exclude retired pages
   await page.evaluate(()=>{window.squareUpApi=async()=>[]});
   await page.addScriptTag({content:code});
   for(const [parent,keys,labels] of [
-   ['#analytics-page',['analytics','finance','insights'],['Analytics','Cash Flow','Insights']],
+   ['#analytics-page',['analytics','finance'],['Analytics','Cash Flow']],
    ['#trackers-page',['trackers','trip','home'],['All Trackers','Trips','Households']]
   ]){
    const buttons=page.locator(parent+' .dw-section-tabs button');
@@ -99,6 +99,11 @@ test('desktop section bars route to the existing views and exclude retired pages
     assert.equal(await page.locator('#sq-nextgen').evaluate(el=>el.hidden),true);
    }
   }
+  await page.evaluate(()=>window.squareUpOpenFinanceHub('insights'));
+  assert.equal(await page.locator('#sq-ng-title').textContent(),'Cash Flow');
+  assert.equal(await page.locator('#sq-ng-content .dw-analytics-months').count(),1);
+  assert.equal(await page.locator('#sq-ng-content .dw-web-comparison').count(),1);
+  assert.equal(await page.locator('#sq-ng-content h2').allTextContents().then(t=>t.includes("This month's spending categories")),true);
   for(const key of ['wallet','currencies']){
    await page.evaluate(key=>window.squareUpOpenFinanceHub(key),key);
    assert.equal(await page.locator('#sq-nextgen').evaluate(el=>el.hidden),true);

@@ -2942,7 +2942,7 @@ window.dwBillDueDate=function(value){
   </div><!-- /tracker-dashboard -->
 
   <section id="analytics-page" aria-label="Spending analytics">
-    <div class="sq-analytics-shell"><nav class="dw-section-tabs" aria-label="Analytics sections"><button type="button" data-dw-section="analytics" aria-current="page">Analytics</button><button type="button" data-dw-section="finance">Cash Flow</button><button type="button" data-dw-section="insights">Insights</button></nav>
+    <div class="sq-analytics-shell"><nav class="dw-section-tabs" aria-label="Analytics sections"><button type="button" data-dw-section="analytics" aria-current="page">Analytics</button><button type="button" data-dw-section="finance">Cash Flow</button></nav>
       <div class="sq-analytics-header dw-page-header">
         <div><h2>Spending Analytics</h2><p id="analytics-tracker-title">Select a tracker to see its spending.</p></div>
         <label class="sq-analytics-filter">Time range <select id="analytics-range" aria-label="Analytics time range"><option value="6">Last 6 months</option><option value="12">Last 12 months</option><option value="all">All time</option></select></label>
@@ -7503,7 +7503,7 @@ const features=[
  ['Events','Group plans, upcoming events',()=>document.getElementById('sqev-nav')?.click()],
  ...(matchMedia('(min-width:901px)').matches?[
  ['Cash Flow','Personal income and spending',()=>window.squareUpOpenFinanceHub('finance')],
- ['Insights','Monthly spending comparisons',()=>window.squareUpOpenFinanceHub('insights')],
+
  ['Subscriptions & Bills','Recurring payments',()=>window.squareUpOpenFinanceHub('subscriptions')],
  ['Trips','Travel trackers',()=>window.squareUpOpenFinanceHub('trip')],
  ['Households','Household trackers',()=>window.squareUpOpenFinanceHub('home')]
@@ -11876,7 +11876,7 @@ header p{color:#b1c7d5!important}
 </style>
 <section id="sq-nextgen" hidden aria-label="DoWeo Finance Workspace">
  <div class="sq-ng-shell">
-  <nav class="dw-section-tabs" aria-label="Analytics sections"><button type="button" data-dw-section="analytics">Analytics</button><button type="button" data-dw-section="finance">Cash Flow</button><button type="button" data-dw-section="insights">Insights</button></nav><nav class="dw-section-tabs" aria-label="Tracker sections"><button type="button" data-dw-section="trackers">All Trackers</button><button type="button" data-dw-section="trip">Trips</button><button type="button" data-dw-section="home">Households</button></nav><header class="sq-ng-header"><div class="sq-ng-heading"><button type="button" id="sq-ng-back" aria-label="Back to Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Home</span></button><span class="sq-ng-kicker">DOWEO / YOUR MONEY</span><h1 id="sq-ng-title">Finance Hub</h1><p id="sq-ng-subtitle">A clearer picture of your finances.</p></div>
+  <nav class="dw-section-tabs" aria-label="Analytics sections"><button type="button" data-dw-section="analytics">Analytics</button><button type="button" data-dw-section="finance">Cash Flow</button></nav><nav class="dw-section-tabs" aria-label="Tracker sections"><button type="button" data-dw-section="trackers">All Trackers</button><button type="button" data-dw-section="trip">Trips</button><button type="button" data-dw-section="home">Households</button></nav><header class="sq-ng-header"><div class="sq-ng-heading"><button type="button" id="sq-ng-back" aria-label="Back to Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Home</span></button><span class="sq-ng-kicker">DOWEO / YOUR MONEY</span><h1 id="sq-ng-title">Finance Hub</h1><p id="sq-ng-subtitle">A clearer picture of your finances.</p></div>
   <div class="sq-ng-mobile-picker" style="display:none!important" aria-hidden="true"><label for="sq-ng-mobile-select">Finance Hub section</label><div class="sq-ng-mobile-select-wrap"><select id="sq-ng-mobile-select" aria-label="Choose Finance Hub section"><option value="finance">Personal Finance</option><option value="wallet">Wallet &amp; Settlements</option><option value="trip">Trips</option><option value="home">Household</option><option value="subscriptions">Subscriptions</option><option value="currencies">Currencies</option><option value="insights">Smart Insights</option></select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
   <nav id="sq-finance-mobile-tiles" aria-label="Finance Hub sections">
 <button id="sq-ng-prev-tabs" type="button" aria-label="Show previous Finance Hub sections" title="Show previous sections"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
@@ -12042,6 +12042,7 @@ let previousFinanceTabs=[];const openedWorkspaces={trip:null,household:null};fun
 const desktopSections=matchMedia('(min-width:901px)');
 function desktopDestination(which){
  if(!desktopSections.matches)return false;
+ if(which==='insights'){open('finance');return true}
  if(which==='subscriptions'){close();document.getElementById('sq-bills-open')?.click();return true}
  if(['analytics','trackers','wallet','currencies'].includes(which)){
   close();document.getElementById(which==='trackers'?'nav-trackers':'nav-analytics')?.click();return true;
@@ -12081,17 +12082,19 @@ function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce(
  const max=Math.max(1,...months.flatMap(m=>[m.income,m.expense]));
  const chart=months.map(m=>`<div class="dw-analytics-month"><div class="dw-analytics-bars"><span class="dw-analytics-bar income" style="height:${Math.max(2,m.income/max*100)}%" title="Income ${esc(money(m.income))}"></span><span class="dw-analytics-bar expense" style="height:${Math.max(2,m.expense/max*100)}%" title="Spending ${esc(money(m.expense))}"></span></div><small>${esc(m.label)}</small></div>`).join('');
  const breakdown=Object.entries(categories).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([name,amount])=>`<div class="dw-analytics-category"><span>${esc(name)}</span><strong>${esc(money(amount))}</strong><div class="dw-analytics-track"><span style="width:${current.expense?Math.min(100,100*amount/current.expense):0}%"></span></div></div>`).join('');
- if(tab==='insights'){
  const comparisonRows=[
    ['Income',previous.income,current.income],
    ['Spending',previous.expense,current.expense],
    ['Net cash flow',previous.income-previous.expense,current.income-current.expense]
  ].map(([label,before,after])=>`<tr><th scope="row">${esc(label)}</th><td>${esc(money(before))}</td><td>${esc(money(after))}</td><td>${esc(money(after-before))}</td></tr>`).join('');
- content.innerHTML=`<div class="sq-ng-grid">${card('This month income',money(current.income),true)}${card('This month spending',money(current.expense))}${card('Monthly cash flow',money(current.income-current.expense))}</div><div class="dw-analytics-layout"><section class="sq-ng-card"><h2>Last six months</h2><p class="sq-ng-note"><span class="dw-income-key">Income</span> · <span class="dw-spending-key">Spending</span></p><div class="dw-analytics-months" role="img" aria-label="Six-month income and spending chart">${chart}</div></section><section class="sq-ng-card"><h2>This month's spending categories</h2>${breakdown||'<p>No expenses recorded this month.</p>'}<p class="sq-ng-note">Previous month spending: ${esc(money(previous.expense))}</p></section></div><section class="sq-ng-card dw-web-comparison"><h2>Month comparison</h2><table><thead><tr><th scope="col">Category</th><th scope="col">${esc(previous.label)}</th><th scope="col">${esc(current.label)}</th><th scope="col">Change</th></tr></thead><tbody>${comparisonRows}</tbody></table></section><p class="sq-ng-note">Calculated from your private personal transactions in USD; shared tracker debts are excluded.</p>`;
+ const categoryCard=`<section class="sq-ng-card"><h2>This month's spending categories</h2>${breakdown||'<p>No expenses recorded this month.</p>'}<p class="sq-ng-note">Previous month spending: ${esc(money(previous.expense))}</p></section>`;
+ const comparisonCard=`<section class="sq-ng-card dw-web-comparison"><h2>Month comparison</h2><table><thead><tr><th scope="col">Category</th><th scope="col">${esc(previous.label)}</th><th scope="col">${esc(current.label)}</th><th scope="col">Change</th></tr></thead><tbody>${comparisonRows}</tbody></table></section>`;
+ if(tab==='insights'){
+ content.innerHTML=`<div class="sq-ng-grid">${card('This month income',money(current.income),true)}${card('This month spending',money(current.expense))}${card('Monthly cash flow',money(current.income-current.expense))}</div><div class="dw-analytics-layout"><section class="sq-ng-card"><h2>Last six months</h2><p class="sq-ng-note"><span class="dw-income-key">Income</span> · <span class="dw-spending-key">Spending</span></p><div class="dw-analytics-months" role="img" aria-label="Six-month income and spending chart">${chart}</div></section>${categoryCard}</div>${comparisonCard}<p class="sq-ng-note">Calculated from your private personal transactions in USD; shared tracker debts are excluded.</p>`;
  return;
 }
 const trendCard=`<section class="sq-ng-card dw-web-trend"><h2>Cash Flow Trend</h2><p class="sq-ng-note"><span class="dw-income-key">Income</span> · <span class="dw-spending-key">Spending</span></p><div class="dw-analytics-months" role="img" aria-label="Six-month income and spending chart">${chart}</div></section>`;
-content.innerHTML=`<div class="sq-ng-finance-overview"><div class="sq-ng-grid sq-ng-summary-stack">${card('Personal cash flow',money(income-spent),true)}${card('Total income',money(income))}${card('Total spending',money(spent))}</div><button type="button" class="sq-ng-add-action" id="sq-ng-open-transaction" aria-haspopup="dialog" aria-controls="sq-ng-txn-overlay"><span class="sq-ng-add-action-icon" aria-hidden="true">+</span><strong>Add Expense</strong><span class="sq-ng-add-action-hint">Or record income</span></button></div>${trendCard}<section class="sq-ng-card sq-ng-section"><h2>Recent personal activity</h2><div class="sq-ng-list">${finance.length?finance.map(x=>`<div class="sq-ng-item"><div><b>${esc(x.description)}</b><small>${esc(x.category)} · ${esc(x.kind)} · ${esc(x.occurred_on)}</small></div><div><b>${x.kind==='expense'?'-':'+'}${esc(money(x.amount))}</b> <button type="button" data-delete="${esc(x.id)}">Delete</button></div></div>`).join(''):'<div class="sq-ng-empty">No personal transactions yet. Add your first one above.</div>'}</div></section><p class="sq-ng-note">Personal records are private and never change shared tracker balances.</p>`;
+content.innerHTML=`<div class="sq-ng-finance-overview"><div class="sq-ng-grid sq-ng-summary-stack">${card('Personal cash flow',money(income-spent),true)}${card('Total income',money(income))}${card('Total spending',money(spent))}</div><button type="button" class="sq-ng-add-action" id="sq-ng-open-transaction" aria-haspopup="dialog" aria-controls="sq-ng-txn-overlay"><span class="sq-ng-add-action-icon" aria-hidden="true">+</span><strong>Add Expense</strong><span class="sq-ng-add-action-hint">Or record income</span></button></div>${trendCard}<section class="sq-ng-card sq-ng-section"><h2>Recent personal activity</h2><div class="sq-ng-list">${finance.length?finance.map(x=>`<div class="sq-ng-item"><div><b>${esc(x.description)}</b><small>${esc(x.category)} · ${esc(x.kind)} · ${esc(x.occurred_on)}</small></div><div><b>${x.kind==='expense'?'-':'+'}${esc(money(x.amount))}</b> <button type="button" data-delete="${esc(x.id)}">Delete</button></div></div>`).join(''):'<div class="sq-ng-empty">No personal transactions yet. Add your first one above.</div>'}</div></section>${desktopSections.matches ? categoryCard+comparisonCard : ''}<p class="sq-ng-note">Personal records are private and never change shared tracker balances.</p>`;
 }
 const modalHtml = `<div id="sq-ng-txn-overlay" class="sq-ng-txn-overlay" hidden>
  <section class="sq-ng-txn-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-ng-txn-title">
@@ -17419,7 +17422,25 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  .dw-section-tabs button[aria-current="page"]{background:#183b47;color:#a4f4d9;box-shadow:inset 0 -3px #83e8c9}
  .dw-section-tabs button:focus-visible{outline:2px solid #83e8c9;outline-offset:-2px}
 }
-</style></body>
+</style><style id="dw-analytics-shared-layout">
+@media(min-width:901px){
+ html body.analytics-view #analytics-page{position:fixed!important;inset:0 0 0 var(--dw-analytics-left,260px)!important;width:auto!important;max-width:none!important;margin:0!important;padding:0!important;overflow:auto!important;background:#0a1627!important;color:#edf5fc;z-index:100}
+ html body.analytics-view #analytics-page .sq-analytics-shell{width:100%;max-width:none;box-sizing:border-box;padding:28px clamp(20px,2.5vw,48px) 64px}
+ html body.analytics-view #analytics-page :is(.sq-analytics-panel,.analytics-stat,.sq-recap-stat){background:#14293c!important;border:1px solid #334d62!important;border-radius:13px!important;box-shadow:none!important;color:#eff7fc}
+ #analytics-page .sq-analytics-header h2{font-size:clamp(30px,3.4vw,48px);letter-spacing:-.055em}
+ html body.sq-finance-open #sq-nextgen .sq-ng-tabs,html body.sq-finance-open #sq-nextgen #sq-finance-mobile-tiles{display:none!important;visibility:hidden!important;position:absolute!important;clip-path:inset(100%)!important;height:0!important;overflow:hidden!important;pointer-events:none!important}
+ html body.sq-finance-open #sq-nextgen #sq-ng-content:has(>.dw-web-trend)>.dw-web-comparison{margin-top:0}
+}
+</style>
+<script>
+(()=>{
+ const sidebar=document.querySelector('.sidebar');
+ if(!sidebar)return;
+ function align(){document.documentElement.style.setProperty('--dw-analytics-left',Math.max(0,sidebar.getBoundingClientRect().right)+'px')}
+ new ResizeObserver(align).observe(sidebar);
+ window.addEventListener('resize',align);align();
+})();
+</script></body>
 </html>
 
 
