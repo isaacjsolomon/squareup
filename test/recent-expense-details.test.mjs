@@ -23,6 +23,7 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
  const detail={id:tracker,name:'Weekend apartment',role:'owner',members:[{id:user,name:'Alex',isYou:true},{id:friend,name:'Jordan'}],entries:[],currency:'USD'};
  let bills=[{id:'44444444-4444-4444-8444-444444444444',name:'Electricity',amount:68,due:'2026-12-01',frequency:'monthly',kind:'bill',active:true,recurring_enabled:true},{id:'55555555-5555-4555-8555-555555555555',name:'Netflix',amount:20,due:'2026-12-05',frequency:'monthly',kind:'subscription',active:true,recurring_enabled:true}];
  detail.entries=[{id:'88888888-8888-4888-8888-888888888888',type:'debt',from:'Alex',to:'Jordan',amount:12,note:'[Category: Food & Dining] Lunch',date:'2026-11-17',paymentStatus:'confirmed',createdBy:'Alex',canEdit:true}];
+ let galleryTrackers=[detail];
  const writes=[],errors=[];
  try{
   const context=await browser.newContext({viewport:{width:1440,height:1000}});
@@ -31,8 +32,8 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   await context.route('https://esm.sh/**',route=>route.fulfill({contentType:'text/javascript',body:`export function createClient(){const user={id:'${user}',email:'alex@example.test',email_confirmed_at:'2025-01-01',created_at:'2025-01-01',user_metadata:{full_name:'Alex'},app_metadata:{provider:'email'}};return {auth:{getUser:async()=>({data:{user}}),getSession:async()=>({data:{session:{user,access_token:'test-only'}}}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},rpc:async()=>({data:[]})}}`}));
   await context.route(origin+'/api/**',async route=>{
    const req=route.request(),path=new URL(req.url()).pathname.slice(5),method=req.method();let data=[];
-   if(path==='trackers')data=[detail];
-   else if(path==='trackers/'+tracker)data=detail;
+   if(path==='trackers')data=galleryTrackers;
+   else if(galleryTrackers.some(t=>path==='trackers/'+t.id))data=galleryTrackers.find(t=>path==='trackers/'+t.id);
    else if(path==='trackers/'+tracker+'/entries/88888888-8888-4888-8888-888888888888'&&method==='PATCH'){
     const body=req.postDataJSON();writes.push(body);Object.assign(detail.entries[0],body);data=detail;
    }
@@ -340,6 +341,26 @@ await page.locator('#receipt-items input[type=checkbox]').first().check();assert
   await page.locator('.sq-mobile-nav [data-target="nav-home"]').click();await mobileHome.waitFor();
   await mobileHome.locator('.dw-mh-entry').first().click();await page.waitForFunction(()=>document.getElementById('sq-details-overlay').classList.contains('open'));await page.getByRole('button',{name:'Close expense details',exact:true}).click();
   await page.screenshot({path:resolve(root,'test-results/bills/mobile-home-layered-trial.png'),fullPage:true});
+
+  galleryTrackers=[detail,...['Weekend trip','Roommates','School project'].map((name,i)=>({...detail,id:'77777777-7777-4777-8777-77777777777'+i,name,entries:[]}))];
+  await page.locator('.sq-mobile-nav [data-target="nav-trackers"]').click();
+  await page.waitForFunction(()=>document.querySelectorAll('#trackers-gallery>.tracker-tile').length===4);
+  for(const width of [375,390,430]){
+   await page.setViewportSize({width,height:932});
+   await page.waitForFunction(()=>document.querySelector('#trackers-gallery>.dw-featured-tracker'));
+   const state=await page.evaluate(()=>{const cards=[...document.querySelectorAll('#trackers-gallery>.tracker-tile')],feature=cards.find(c=>c.classList.contains('dw-featured-tracker')).getBoundingClientRect(),small=cards.filter(c=>!c.classList.contains('dw-featured-tracker')).map(c=>c.getBoundingClientRect());return {wide:feature.width>small[0].width*1.8,twoColumns:Math.abs(small[0].top-small[1].top)<1&&small[0].right<small[1].left,overflow:document.documentElement.scrollWidth>innerWidth+1};});
+   assert.ok(state.wide,'featured tracker spans both columns '+width);assert.ok(state.twoColumns,'collection uses two columns '+width);assert.equal(state.overflow,false);
+  }
+  const room=page.locator('#trackers-gallery>.tracker-tile').filter({hasText:'Roommates'});
+  await room.locator('.sq-favorite-toggle').click();await page.waitForFunction(()=>document.querySelector('#trackers-gallery>.dw-featured-tracker h3')?.textContent==='Roommates');
+  await page.locator('.dw-trackers-collection-heading').getByRole('button',{name:'Favorites',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelectorAll('#trackers-gallery>.tracker-tile:not(.dw-trackers-hidden)').length===1);
+  await page.locator('#dw-trackers-search').fill('not-a-tracker');await page.locator('.dw-trackers-empty:not([hidden])').waitFor();
+  await page.locator('#dw-trackers-search').fill('');await page.locator('.dw-trackers-collection-heading').getByRole('button',{name:'All',exact:true}).click();
+  await room.locator('.tracker-tile-menu>summary').click();await page.locator('body>.tracker-tile-menu-panel').waitFor();await page.keyboard.press('Escape');
+  await page.locator('#dw-trackers-new').click();await page.locator('#new-modal.open').waitFor();await page.locator('#new-modal [data-close]').click();
+  await page.screenshot({path:resolve(root,'test-results/bills/mobile-trackers-featured-grid.png'),fullPage:true});
+  await page.locator('#trackers-gallery>.dw-featured-tracker .tile-open').click();await mobileHome.waitFor();
   await page.setViewportSize({width:1440,height:1000});await page.waitForFunction(()=>!document.getElementById('dw-mobile-home-layered'));
   const fresh=await context.newPage();await fresh.setViewportSize({width:390,height:844});
   await fresh.goto(origin,{waitUntil:'networkidle'});
@@ -349,6 +370,7 @@ await page.locator('#receipt-items input[type=checkbox]').first().check();assert
   await fresh.close();
  }finally{await browser.close();await new Promise(done=>server.close(done));}
 });
+
 
 
 
