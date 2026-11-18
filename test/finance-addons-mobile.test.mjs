@@ -44,3 +44,30 @@ test('mobile Finance Hub keeps original tabs and keeps the retired launcher row 
   assert.equal(await page.locator('#dw-trip-plus').isVisible(),false);
  }finally{await browser.close()}
 });
+
+test('desktop cash flow metrics and transaction action fit the workspace',async()=>{
+ const browser=await chromium.launch();
+ try{
+  const page=await browser.newPage();
+  await page.route('**/*',route=>route.abort());
+  await page.setContent(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,''));
+  await page.evaluate(()=>{
+   document.body.classList.add('sq-finance-open');
+   document.querySelector('#sq-nextgen').hidden=false;
+   document.querySelector('#sq-ng-content').innerHTML='<div class="sq-ng-finance-overview"><div class="sq-ng-grid sq-ng-summary-stack">'+['Net cash flow','Income','Spending'].map(x=>'<article class="sq-ng-card">'+x+'</article>').join('')+'</div><button class="sq-ng-add-action" id="sq-ng-open-transaction">Add Expense</button></div><section class="dw-web-trend"></section>';
+  });
+  for(const width of [1024,1440,2048]){
+   await page.setViewportSize({width,height:900});
+   const sizes=await page.evaluate(()=>{
+    const rect=s=>document.querySelector(s).getBoundingClientRect();
+    return [rect('#sq-ng-open-transaction').height,rect('.sq-ng-summary-stack .sq-ng-card').width,rect('.sq-ng-shell').width,rect('#sq-nextgen').width];
+   });
+   assert.ok(sizes[0]>0&&sizes[0]<=64&&sizes[1]>90&&sizes[2]>=sizes[3]-18,JSON.stringify(sizes));
+  }
+  await page.evaluate(()=>document.querySelector('#sq-ng-content').innerHTML='<div class="sq-wallet-compact-layout"><section class="sq-ng-card"><div class="sq-wallet-currency"><b>USD</b>'+['Net shared balance','Owed to you','You owe'].map(label=>'<span><small>'+label+'</small><strong>-$310.76</strong></span>').join('')+'</div></section></div>');
+  await page.setViewportSize({width:1024,height:900});
+  for(const amount of await page.locator('.sq-wallet-currency strong').all()){
+   assert.equal(await amount.evaluate(el=>{const r=document.createRange();r.selectNodeContents(el);return r.getClientRects().length}),1);
+  }
+ }finally{await browser.close()}
+});
