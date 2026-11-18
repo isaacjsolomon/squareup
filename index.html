@@ -12136,6 +12136,7 @@ document.addEventListener('click',event=>{
  if(button&&desktopSections.matches)open(button.dataset.dwSection);
 },false);
 function syncSectionTabs(){
+ root.dataset.section=tab;
  const group=['trip','home'].includes(tab)?'Tracker sections':'Analytics sections';
  for(const nav of root.querySelectorAll('.dw-section-tabs')){
   nav.toggleAttribute('data-current-group',nav.getAttribute('aria-label')===group);
@@ -12169,7 +12170,7 @@ function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce(
    ['Spending',previous.expense,current.expense],
    ['Net cash flow',previous.income-previous.expense,current.income-current.expense]
  ].map(([label,before,after])=>`<tr><th scope="row">${esc(label)}</th><td>${esc(money(before))}</td><td>${esc(money(after))}</td><td>${esc(money(after-before))}</td></tr>`).join('');
- const categoryCard=`<section class="sq-ng-card"><h2>This month's spending categories</h2>${breakdown||'<p>No expenses recorded this month.</p>'}<p class="sq-ng-note">Previous month spending: ${esc(money(previous.expense))}</p></section>`;
+ const categoryCard=`<section class="sq-ng-card dw-spending-categories"><h2>This month's spending categories</h2>${breakdown||'<p>No expenses recorded this month.</p>'}<p class="sq-ng-note">Previous month spending: ${esc(money(previous.expense))}</p></section>`;
  const comparisonCard=`<section class="sq-ng-card dw-web-comparison"><h2>Month comparison</h2><table><thead><tr><th scope="col">Category</th><th scope="col">${esc(previous.label)}</th><th scope="col">${esc(current.label)}</th><th scope="col">Change</th></tr></thead><tbody>${comparisonRows}</tbody></table></section>`;
  if(tab==='insights'){
  content.innerHTML=`<div class="sq-ng-grid">${card('This month income',money(current.income),true)}${card('This month spending',money(current.expense))}${card('Monthly cash flow',money(current.income-current.expense))}</div><div class="dw-analytics-layout"><section class="sq-ng-card"><h2>Last six months</h2><p class="sq-ng-note"><span class="dw-income-key">Income</span> · <span class="dw-spending-key">Spending</span></p><div class="dw-analytics-months" role="img" aria-label="Six-month income and spending chart">${chart}</div></section>${categoryCard}</div>${comparisonCard}<p class="sq-ng-note">Calculated from your private personal transactions in USD; shared tracker debts are excluded.</p>`;
@@ -17506,7 +17507,7 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
 }
 </style><style id="dw-analytics-shared-layout">
 @media(min-width:901px){
- html body.analytics-view #analytics-page{position:fixed!important;inset:0 0 0 var(--dw-analytics-left,260px)!important;width:auto!important;max-width:none!important;margin:0!important;padding:0!important;overflow:auto!important;background:#0a1627!important;color:#edf5fc;z-index:100}
+ html body.analytics-view #analytics-page{position:fixed!important;inset:var(--dw-report-top,0px) 0 0 var(--dw-analytics-left,260px)!important;width:auto!important;max-width:none!important;margin:0!important;padding:0!important;overflow:auto!important;background:#0a1627!important;color:#edf5fc;z-index:100}
  html body.analytics-view #analytics-page .sq-analytics-shell{width:100%;max-width:none;box-sizing:border-box;padding:28px clamp(20px,2.5vw,48px) 64px}
  html body.analytics-view #analytics-page :is(.sq-analytics-panel,.analytics-stat,.sq-recap-stat){background:#14293c!important;border:1px solid #334d62!important;border-radius:13px!important;box-shadow:none!important;color:#eff7fc}
  #analytics-page .sq-analytics-header h2{font-size:clamp(30px,3.4vw,48px);letter-spacing:-.055em}
@@ -17518,9 +17519,19 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
 (()=>{
  const sidebar=document.querySelector('.sidebar');
  if(!sidebar)return;
- function align(){document.documentElement.style.setProperty('--dw-analytics-left',Math.max(0,sidebar.getBoundingClientRect().right)+'px')}
- new ResizeObserver(align).observe(sidebar);
- window.addEventListener('resize',align);align();
+ const toolbar=document.querySelector('.wrap>header.tracker-heading');
+ function align(){
+  const style=document.documentElement.style;
+  style.setProperty('--dw-analytics-left',Math.max(0,sidebar.getBoundingClientRect().right)+'px');
+  const rect=toolbar?.getBoundingClientRect();
+  style.setProperty('--dw-report-top',Math.ceil(rect?.height?Math.max(0,rect.bottom):0)+'px');
+ }
+ const observer=new ResizeObserver(align);
+ observer.observe(sidebar);
+ if(toolbar)observer.observe(toolbar);
+ new MutationObserver(align).observe(document.body,{attributes:true,attributeFilter:['class']});
+ window.addEventListener('resize',align);
+ window.addEventListener('scroll',align,{passive:true});align();
 })();
 </script><section id="dw-chats" aria-label="Chats" hidden>
  <div id="dw-chat-list"><header><h2>Chats</h2><button id="dw-chat-compose" aria-label="Choose a conversation" title="Choose a conversation">✎</button></header>
@@ -17557,6 +17568,24 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  #dw-chat-host #tracker-chat-form{position:relative!important;inset:auto!important;margin:6px 0 0!important;flex:none}
  #dw-chat-host:not(.searching) .sq-chat-tools{display:none!important}
  body.dw-chats-open .sq-mobile-nav #dw-chat-nav{color:#36dfbb!important}
+}
+</style><style id="dw-desktop-report-spacing">
+@media(min-width:901px){
+ html body.sq-finance-open #sq-nextgen[data-section="finance"]{top:var(--dw-report-top,0px)!important;background:#0a1627!important}
+ html body.analytics-view #analytics-page .sq-analytics-shell,html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-shell{padding:16px clamp(20px,2.5vw,48px) 48px!important}
+ html body #sq-nextgen[data-section="finance"] :is(#sq-ng-back,.sq-ng-kicker){display:none!important}
+ html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-shell>.sq-ng-header{margin:0 0 18px!important;padding:0 0 16px!important;border-bottom:1px solid #334d62}
+ html body #sq-nextgen[data-section="finance"] #sq-ng-title{margin:0 0 6px!important;font-size:clamp(30px,3.4vw,48px)!important}
+ html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content:has(>.dw-web-trend){align-items:stretch!important;grid-template-areas:"summary summary" "trend categories" "activity comparison" "note note";grid-template-columns:minmax(0,1.12fr) minmax(0,1fr)!important}
+ #sq-nextgen[data-section="finance"] .sq-ng-finance-overview{grid-area:summary}
+ #sq-nextgen[data-section="finance"] .dw-web-trend{grid-area:trend}
+ #sq-nextgen[data-section="finance"] .dw-spending-categories{grid-area:categories}
+ #sq-nextgen[data-section="finance"] #sq-ng-content>.sq-ng-section{grid-area:activity;margin:0!important}
+ #sq-nextgen[data-section="finance"] .dw-web-comparison{grid-area:comparison;overflow-x:auto}
+ #sq-nextgen[data-section="finance"] #sq-ng-content>p{grid-area:note}
+ html body #sq-nextgen[data-section="finance"] .dw-analytics-bars{height:150px}
+ html body #sq-nextgen[data-section="finance"] .sq-ng-summary-stack strong{color:#83e8c9}
+ @media(max-width:1150px){html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content:has(>.dw-web-trend){grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"summary" "trend" "categories" "activity" "comparison" "note"}}
 }
 </style></body>
 </html>
