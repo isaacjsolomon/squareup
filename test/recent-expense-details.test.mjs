@@ -102,7 +102,7 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   await desktopChooser.setFiles({name:'desktop-receipt.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j5n8AAAAASUVORK5CYII=','base64')});
   await page.waitForFunction(()=>document.getElementById('receipt-status').textContent.includes('Recognized'));
   assert.equal(await page.locator('#receipt-items').getByLabel('Item 1 name',{exact:true}).inputValue(),'Pizza','desktop Tools opens receipt review');
-  assert.ok(await page.locator('#dw-receipt-image').isVisible(),'uploaded receipt preview visible');
+  await page.locator('#dw-receipt-image').waitFor({state:'visible'});assert.ok(await page.locator('#dw-receipt-image').isVisible(),'uploaded receipt preview visible');
   const receiptLayout=await page.evaluate(()=>({photo:document.getElementById('dw-receipt-photo').getBoundingClientRect().right,fields:document.getElementById('dw-receipt-fields').getBoundingClientRect().left}));
   assert.ok(receiptLayout.photo<receiptLayout.fields,'receipt alongside editable items on desktop');
   assert.equal(await page.locator('#dw-receipt-extras').getAttribute('open'),null,'Extras collapsed initially');
