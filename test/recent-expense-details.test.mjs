@@ -348,8 +348,8 @@ await page.locator('#receipt-items input[type=checkbox]').first().check();assert
   for(const width of [375,390,430]){
    await page.setViewportSize({width,height:932});
    await page.waitForFunction(()=>document.querySelector('#trackers-gallery>.dw-featured-tracker'));
-   const state=await page.evaluate(()=>{const cards=[...document.querySelectorAll('#trackers-gallery>.tracker-tile')],feature=cards.find(c=>c.classList.contains('dw-featured-tracker')).getBoundingClientRect(),small=cards.filter(c=>!c.classList.contains('dw-featured-tracker')).map(c=>c.getBoundingClientRect());return {wide:feature.width>small[0].width*1.8,twoColumns:Math.abs(small[0].top-small[1].top)<1&&small[0].right<small[1].left,overflow:document.documentElement.scrollWidth>innerWidth+1};});
-   assert.ok(state.wide,'featured tracker spans both columns '+width);assert.ok(state.twoColumns,'collection uses two columns '+width);assert.equal(state.overflow,false);
+   const state=await page.evaluate(()=>{const cards=[...document.querySelectorAll('#trackers-gallery>.tracker-tile')],feature=cards.find(c=>c.classList.contains('dw-featured-tracker')).getBoundingClientRect(),small=cards.filter(c=>!c.classList.contains('dw-featured-tracker')).map(c=>c.getBoundingClientRect());return {featureWidth:feature.width,smallWidths:small.map(r=>r.width),display:getComputedStyle(document.getElementById('trackers-gallery')).display,wide:feature.width>small[0].width*1.8,twoColumns:Math.abs(small[0].top-small[1].top)<1&&small[0].right<small[1].left,overflow:document.documentElement.scrollWidth>innerWidth+1};});
+   assert.ok(state.wide,'featured tracker spans both columns '+width+' '+JSON.stringify(state));assert.ok(state.twoColumns,'collection uses two columns '+width);assert.equal(state.overflow,false);
   }
   const room=page.locator('#trackers-gallery>.tracker-tile').filter({hasText:'Roommates'});
   await room.locator('.sq-favorite-toggle').click();await page.waitForFunction(()=>document.querySelector('#trackers-gallery>.dw-featured-tracker h3')?.textContent==='Roommates');
