@@ -323,6 +323,28 @@ await page.locator('#receipt-items input[type=checkbox]').first().check();assert
   await page.waitForFunction(()=>!document.getElementById('dw-home-columns')&&document.getElementById('sq-return-summary').parentElement.id==='tracker-dashboard');
   assert.equal(await page.locator('#dw-home-columns').count(),0,'mobile summary restored to original parent');
   assert.equal(await page.locator('#sq-return-summary').evaluate(e=>e.parentElement.id),'tracker-dashboard');
+
+  const mobileHome=page.locator('#dw-mobile-home-layered');await mobileHome.waitFor();
+  for(const width of [390,430]){
+   await page.setViewportSize({width,height:932});await mobileHome.waitFor();
+   const layout=await page.evaluate(()=>{const buttons=[...document.querySelectorAll('#dw-mobile-home-layered .dw-mh-actions button')].map(e=>e.getBoundingClientRect());return {overflow:document.documentElement.scrollWidth>innerWidth+1,aligned:Math.max(...buttons.map(r=>r.top))-Math.min(...buttons.map(r=>r.top))<1,font:getComputedStyle(document.getElementById('dw-mobile-home-layered')).fontFamily,base:getComputedStyle(document.body).fontFamily};});
+   assert.equal(layout.overflow,false,'mobile Home has no horizontal overflow '+width);assert.ok(layout.aligned,'all three payment actions share one row');assert.equal(layout.font,layout.base,'current site font retained');
+  }
+  assert.equal(await page.locator('#dw-mh-amount').textContent(),'$18.50');
+  assert.ok((await page.locator('#dw-mh-caption').textContent()).includes('owes'));
+  assert.equal(await mobileHome.locator('select').count(),0,'no tracker switcher above amount');
+  await page.locator('#dw-mh-upcoming-name').filter({hasText:'Electricity'}).waitFor();
+  await mobileHome.getByRole('button',{name:'Log payment',exact:true}).click();
+  await page.locator('#sq-expense-dialog').waitFor();assert.ok(await page.locator('#mode-payment').evaluate(e=>e.classList.contains('active')),'Log payment opens payment mode');
+  await page.locator('#sq-entry-x').click();
+  await page.locator('#dw-mh-members').click();await page.waitForFunction(()=>document.getElementById('tracker-dashboard').classList.contains('sq-tab-members'));
+  await page.locator('#nav-home').click();await mobileHome.waitFor();
+  await mobileHome.locator('.dw-mh-see-all').click();await page.waitForFunction(()=>document.getElementById('tracker-dashboard').classList.contains('sq-tab-expenses'));
+  assert.equal(await mobileHome.count(),0,'Home view removed on Expenses');
+  await page.locator('#nav-home').click();await mobileHome.waitFor();
+  await mobileHome.locator('.dw-mh-entry').first().click();await page.waitForFunction(()=>document.getElementById('sq-details-overlay').classList.contains('open'));await page.getByRole('button',{name:'Close expense details',exact:true}).click();
+  await page.screenshot({path:resolve(root,'test-results/bills/mobile-home-layered-trial.png'),fullPage:true});
+  await page.setViewportSize({width:1440,height:1000});await page.waitForFunction(()=>!document.getElementById('dw-mobile-home-layered'));
   const fresh=await context.newPage();await fresh.setViewportSize({width:390,height:844});
   await fresh.goto(origin,{waitUntil:'networkidle'});
   await fresh.waitForFunction(()=>typeof window.squareUpApi==='function');
@@ -331,5 +353,6 @@ await page.locator('#receipt-items input[type=checkbox]').first().check();assert
   await fresh.close();
  }finally{await browser.close();await new Promise(done=>server.close(done));}
 });
+
 
 
