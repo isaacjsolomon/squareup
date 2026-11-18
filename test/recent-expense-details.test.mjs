@@ -129,6 +129,11 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
    const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,search:document.getElementById('sq-expense-search').getBoundingClientRect().top,filter:document.getElementById('dw-expense-filter-panel').getBoundingClientRect().top}));
    assert.equal(layout.overflow,false,'no mobile overflow '+width);assert.ok(Math.abs(layout.search-layout.filter)<2,'mobile search and filter share a row '+JSON.stringify(layout));
   }
+  const balancesDropdown=page.locator('#dw-mobile-balances-dropdown');
+  assert.ok(await balancesDropdown.isVisible(),'mobile balances uses a dropdown');assert.equal(await balancesDropdown.getAttribute('open'),null,'balances starts closed');assert.equal(await page.locator('#nets').isVisible(),false);
+  await balancesDropdown.locator('summary').click();assert.ok(await page.locator('#nets .net').first().isVisible());
+  const signs=await page.locator('#nets .amount').evaluateAll(items=>items.map(el=>({text:el.textContent,before:getComputedStyle(el,'::before').content})));assert.ok(signs.every(x=>!/^[-+−]/.test(x.text)&&x.before==='none'),'amounts show no positive or negative sign');
+  await balancesDropdown.locator('summary').click();assert.equal(await page.locator('#nets').isVisible(),false,'balances collapses again');
   const mobileAdd=page.locator('#dw-mobile-expense-add');await mobileAdd.locator('summary').click();
   assert.ok(await mobileAdd.getByRole('button',{name:'Scan receipt',exact:true}).isVisible());
   assert.ok(await mobileAdd.getByRole('button',{name:'Split bill',exact:true}).isVisible());
@@ -326,4 +331,5 @@ await page.locator('#receipt-items input[type=checkbox]').first().check();assert
   await fresh.close();
  }finally{await browser.close();await new Promise(done=>server.close(done));}
 });
+
 

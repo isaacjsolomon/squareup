@@ -17120,8 +17120,32 @@ html body #receipt-card #dw-receipt-footer button{width:100%!important;min-width
 html body #receipt-card .sq-receipt-shares>div{padding:11px 0!important;font-size:14px!important;gap:14px}html body #receipt-card .sq-receipt-shares strong{font-size:15px!important;white-space:nowrap}
 html body #receipt-card #receipt-add-item{font-size:13px!important;padding:9px 12px!important;min-height:40px!important}
 }
-</style></body>
+</style>
+<style id="dw-mobile-balances-dropdown-style">
+#dw-mobile-balances-dropdown{display:none}
+@media(max-width:900px){
+html body #tracker-dashboard.dw-expenses-redesign #dw-mobile-balances-dropdown{display:block!important;width:100%}
+html body #tracker-dashboard.dw-expenses-redesign #dw-mobile-balances-dropdown>summary{display:flex;align-items:center;gap:10px;min-height:36px;list-style:none;cursor:pointer;color:#e6f5fc;font-size:14px;font-weight:700}
+#dw-mobile-balances-dropdown>summary::-webkit-details-marker{display:none}
+#dw-mobile-balances-dropdown>summary small{margin-left:auto;color:#a7ccdb;font-weight:500;font-size:12px}
+#dw-mobile-balances-dropdown>summary svg{width:17px;height:17px;flex:none;color:#5ddfc9;transition:transform .15s}
+#dw-mobile-balances-dropdown[open]>summary svg{transform:rotate(180deg)}
+html body #tracker-dashboard.dw-expenses-redesign #dw-mobile-balances-dropdown #nets{padding-top:12px!important;gap:12px!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-mobile-balances-dropdown:not([open])>#nets{display:none!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-mobile-balances-dropdown[open] #nets .net{display:grid!important;min-height:72px!important;padding:9px 0!important;margin:0!important;border-top:1px solid #31576c!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-mobile-balances-dropdown #nets .net .amount::before{content:none!important;display:none!important}
+html body #tracker-dashboard.dw-expenses-redesign #dw-mobile-more-balances{display:none!important}
+}
+</style>
+<script id="dw-mobile-balances-dropdown-script">(function(){
+ const card=document.getElementById('balances-card'),nets=document.getElementById('nets'),dashboard=document.getElementById('tracker-dashboard');if(!card||!nets)return;
+ const media=matchMedia('(max-width:900px)'),dropdown=document.createElement('details');dropdown.id='dw-mobile-balances-dropdown';dropdown.innerHTML='<summary><span>Current balances</span><small></small><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>';let active=false;
+ function sync(){const show=media.matches&&dashboard.classList.contains('dw-expenses-redesign');if(show){if(!active)dropdown.open=false;if(dropdown.parentElement!==card)card.append(dropdown);if(nets.parentElement!==dropdown)dropdown.append(nets);const count=nets.querySelectorAll('.net').length;dropdown.querySelector('small').textContent=count+' balance'+(count===1?'':'s');}else{if(nets.parentElement===dropdown)card.querySelector('h2').after(nets);dropdown.remove();}active=show;}
+ media.addEventListener('change',sync);new MutationObserver(sync).observe(dashboard,{attributes:true,attributeFilter:['class']});new MutationObserver(sync).observe(nets,{childList:true});sync();
+})();</script>
+</body>
 </html>
+
 
 
 
