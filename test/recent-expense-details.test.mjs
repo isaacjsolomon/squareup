@@ -345,12 +345,17 @@ await page.locator('#receipt-items input[type=checkbox]').first().check();assert
   galleryTrackers=[detail,...['Weekend trip','Roommates','School project'].map((name,i)=>({...detail,id:'77777777-7777-4777-8777-77777777777'+i,name,entries:[]}))];
   await page.locator('.sq-mobile-nav [data-target="nav-trackers"]').click();
   await page.waitForFunction(()=>document.querySelectorAll('#trackers-gallery>.tracker-tile').length===4);
-  for(const width of [375,390,430]){
+  const headingSafeArea=await page.addStyleTag({content:'html body .wrap > .sq-mobile-top{top:59px!important;min-height:76px!important;height:76px!important}'});
+  for(const width of [320,375,390,430]){
    await page.setViewportSize({width,height:932});
+   await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+   await page.waitForFunction(()=>document.querySelector('#dw-trackers-toolbar h2').getBoundingClientRect().top>=document.querySelector('.sq-mobile-top').getBoundingClientRect().bottom+8);
+   assert.equal(await page.locator('#dw-trackers-toolbar h2').isVisible(),true,'Trackers heading is visible below the mobile header');
    await page.waitForFunction(()=>document.querySelector('#trackers-gallery>.dw-featured-tracker'));
    const state=await page.evaluate(()=>{const cards=[...document.querySelectorAll('#trackers-gallery>.tracker-tile')],feature=cards.find(c=>c.classList.contains('dw-featured-tracker')).getBoundingClientRect(),small=cards.filter(c=>!c.classList.contains('dw-featured-tracker')).map(c=>c.getBoundingClientRect());return {featureWidth:feature.width,smallWidths:small.map(r=>r.width),display:getComputedStyle(document.getElementById('trackers-gallery')).display,wide:feature.width>small[0].width*1.8,twoColumns:Math.abs(small[0].top-small[1].top)<1&&small[0].right<small[1].left,overflow:document.documentElement.scrollWidth>innerWidth+1};});
    assert.ok(state.wide,'featured tracker spans both columns '+width+' '+JSON.stringify(state));assert.ok(state.twoColumns,'collection uses two columns '+width);assert.equal(state.overflow,false);
   }
+  await headingSafeArea.evaluate(el=>el.remove());
   const room=page.locator('#trackers-gallery>.tracker-tile').filter({hasText:'Roommates'});
   await room.locator('.sq-favorite-toggle').click();await page.waitForFunction(()=>document.querySelector('#trackers-gallery>.dw-featured-tracker .tracker-tile-head h3')?.textContent==='Roommates');
   await page.locator('.dw-trackers-collection-heading').getByRole('button',{name:'Favorites',exact:true}).click();

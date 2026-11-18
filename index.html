@@ -17204,7 +17204,7 @@ html body #dw-mobile-home-layered .dw-mh-entry{display:grid!important;grid-templ
  function queue(){if(!queued){queued=true;requestAnimationFrame(render);}}
  media.addEventListener('change',queue);window.addEventListener('squareup:tracker-detail',()=>{billTracker=null;queue();});new MutationObserver(queue).observe(d,{attributes:true,attributeFilter:['class']});for(const id of ['sq-clean-net','sq-clean-explanation','sq-return-greeting']){const el=by(id);if(el)new MutationObserver(queue).observe(el,{childList:true,subtree:true,characterData:true});}queue();
 })();</script>
-<style id="dw-mobile-expense-hide-balances">@media(max-width:900px){html body #tracker-dashboard.sq-tab-expenses.dw-expenses-redesign #dw-expense-workspace #balances-card{display:none!important}}</style><style id="dw-finance-remove-extra-launchers">@media(min-width:901px){html body #dw-finance-extras{display:none!important}}</style>
+<style id="dw-mobile-expense-hide-balances">@media(max-width:900px){html body #tracker-dashboard.sq-tab-expenses.dw-expenses-redesign #dw-expense-workspace #balances-card{display:none!important}}</style><style id="dw-finance-remove-extra-launchers">html body #dw-finance-extras{display:none!important}</style>
 <style id="dw-mobile-trackers-collection-style">
 #dw-trackers-toolbar,.dw-trackers-collection-heading,.dw-trackers-icon,.dw-trackers-meta,.dw-trackers-empty{display:none}
 @media(max-width:900px){
@@ -17285,7 +17285,40 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  }
  function queue(){if(!queued){queued=true;requestAnimationFrame(render);}}new MutationObserver(queue).observe(gallery,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});media.addEventListener('change',queue);queue();
 })();</script>
-<style>@media(max-width:900px){html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile .tracker-tile-banner::after{display:none!important}html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile .tracker-tile-body{display:block!important;gap:0!important}}</style></body>
+<style>@media(max-width:900px){html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile .tracker-tile-banner::after{display:none!important}html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile .tracker-tile-body{display:block!important;gap:0!important}}</style>
+<style id="dw-mobile-page-heading-clearance">
+@media(max-width:900px){
+ html body,html body.side-collapsed,html body:not(.side-collapsed){
+  padding-top:var(--dw-mobile-content-top,calc(max(10px,env(safe-area-inset-top,0px)) + 88px))!important;
+ }
+ html body.sq-finance-open #sq-nextgen .sq-ng-shell{
+  padding-top:var(--dw-mobile-content-top,calc(max(10px,env(safe-area-inset-top,0px)) + 88px))!important;
+ }
+ html body #dw-trackers-toolbar h2{display:block!important;visibility:visible!important;height:auto!important;overflow:visible!important}
+ html body :is(h1,h2,[role="heading"]){scroll-margin-top:var(--dw-mobile-content-top,100px)}
+}
+</style>
+<script id="dw-mobile-page-heading-clearance-script">
+(()=>{'use strict';
+ const media=matchMedia('(max-width:900px)'),header=document.querySelector('.wrap > .sq-mobile-top');
+ if(!header)return;
+ let queued=false;
+ function measure(){
+  queued=false;
+  if(!media.matches){document.documentElement.style.removeProperty('--dw-mobile-content-top');return;}
+  const rect=header.getBoundingClientRect();
+  if(!rect.height)return;
+  const value=Math.ceil(rect.bottom+16)+'px';
+  if(document.documentElement.style.getPropertyValue('--dw-mobile-content-top')!==value)document.documentElement.style.setProperty('--dw-mobile-content-top',value);
+ }
+ function queue(){if(!queued){queued=true;requestAnimationFrame(measure);}}
+ new ResizeObserver(queue).observe(header);
+ new MutationObserver(queue).observe(document.body,{attributes:true,attributeFilter:['class']});
+ window.addEventListener('resize',queue);window.addEventListener('orientationchange',queue);
+ window.visualViewport?.addEventListener('resize',queue);media.addEventListener('change',queue);
+ window.addEventListener('load',queue);queue();
+})();
+</script></body>
 </html>
 
 
