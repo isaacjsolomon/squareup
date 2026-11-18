@@ -124,6 +124,11 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
   const init=html.slice(html.indexOf('function initMobileChatInbox(){'),html.indexOf('initMobileChatInbox();')+'initMobileChatInbox();'.length);
   await page.addScriptTag({content:`
    const currentUser={id:'a'},current={id:'t'},sqMentionIds=new Set();
+   const messages=[];
+   const supabase={rpc:async()=>({data:[{peer:'b',name:'Sam',eligible:true}]}),from:()=>({
+    select(){return this},or(){return this},order(){return this},limit:async()=>({data:messages.slice()}),
+    insert:async row=>{messages.push({...row,id:'dm1',sender_id:'a',created_at:new Date().toISOString()});return {error:null}}
+   })};
    let squareUpReplyTo=null,sqPhotoFile=null,squareUpChatRows=[];
    const esc=s=>String(s),api=async path=>path==='trackers'?[{id:'t',name:'Test group'}]:[{senderName:'Sam',senderId:'b',message:'Dinner?',createdAt:'2026-11-18T12:00:00Z'}];
    async function loadTrackerChat(){document.getElementById('tracker-chat-messages').textContent='Dinner?'}
@@ -147,6 +152,14 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
   await page.locator('#dw-chat-back').evaluate(b=>b.click());
   assert.equal(await page.locator('#dw-chat-list').evaluate(el=>el.hidden),false);
   assert.equal(await page.locator('#dw-chat-host #chat-card').count(),0);
+  const dock=page.locator('#dw-chats > .sq-mobile-nav');
+  assert.ok(await dock.evaluate(el=>Math.abs(el.getBoundingClientRect().bottom-innerHeight)<2));
+  await page.locator('#dw-chat-compose').evaluate(b=>b.click());
+  await page.locator('#dw-chat-rows button').filter({hasText:'Sam'}).evaluate(b=>b.click());
+  await page.locator('#dw-dm-input').fill('Private hello');
+  await page.locator('#dw-dm-form button').evaluate(b=>b.click());
+  await page.locator('#dw-dm-messages p').filter({hasText:'Private hello'}).waitFor();
+  assert.equal(await dock.isVisible(),false);
  }finally{await browser.close()}
 });
 
