@@ -17204,7 +17204,7 @@ html body #dw-mobile-home-layered .dw-mh-entry{display:grid!important;grid-templ
  function queue(){if(!queued){queued=true;requestAnimationFrame(render);}}
  media.addEventListener('change',queue);window.addEventListener('squareup:tracker-detail',()=>{billTracker=null;queue();});new MutationObserver(queue).observe(d,{attributes:true,attributeFilter:['class']});for(const id of ['sq-clean-net','sq-clean-explanation','sq-return-greeting']){const el=by(id);if(el)new MutationObserver(queue).observe(el,{childList:true,subtree:true,characterData:true});}queue();
 })();</script>
-<style id="dw-mobile-expense-hide-balances">@media(max-width:900px){html body #tracker-dashboard.sq-tab-expenses.dw-expenses-redesign #dw-expense-workspace #balances-card{display:none!important}}</style></body>
+<style id="dw-mobile-expense-hide-balances">@media(max-width:900px){html body #tracker-dashboard.sq-tab-expenses.dw-expenses-redesign #dw-expense-workspace #balances-card{display:none!important}}</style><style id="dw-finance-remove-extra-launchers">@media(min-width:901px){html body #dw-finance-extras{display:none!important}}</style></body>
 </html>
 
 
