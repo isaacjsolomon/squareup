@@ -519,3 +519,6 @@
  if(root.document.readyState==='loading')root.document.addEventListener('DOMContentLoaded',()=>{void init();},{once:true});
  else void init();
 })(typeof globalThis!=='undefined'?globalThis:null);
+
+// Keep the PWA installer independent of translation catalog availability.
+import('/doweo-pwa-install.js').catch(error => console.warn('DoWeo installation menu unavailable:', error));
