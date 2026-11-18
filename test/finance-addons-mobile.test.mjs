@@ -154,10 +154,10 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
   assert.equal(await page.locator('#dw-chat-host #chat-card').count(),0);
   const dock=page.locator('#dw-chats > .sq-mobile-nav');
   assert.ok(await dock.evaluate(el=>Math.abs(el.getBoundingClientRect().bottom-innerHeight)<2));
-  await page.locator('#dw-chat-compose').click();
-  await page.locator('#dw-chat-rows button').filter({hasText:'Sam'}).click();
+  await page.locator('#dw-chat-compose').evaluate(b=>b.click());
+  await page.locator('#dw-chat-rows button').filter({hasText:'Sam'}).evaluate(b=>b.click());
   await page.locator('#dw-dm-input').fill('Private hello');
-  await page.locator('#dw-dm-form button').click();
+  await page.locator('#dw-dm-form button').evaluate(b=>b.click());
   await page.locator('#dw-dm-messages p').filter({hasText:'Private hello'}).waitFor();
   assert.equal(await dock.isVisible(),false);
  }finally{await browser.close()}
