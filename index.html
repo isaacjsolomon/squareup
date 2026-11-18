@@ -6477,13 +6477,12 @@ function initMobileChatInbox(){
  }
  function fit(){
   if(pane.hidden)return;
-  const bottom=document.querySelector('.sq-mobile-nav')?.getBoundingClientRect(),top=document.querySelector('.wrap > .sq-mobile-top')?.getBoundingClientRect();
-  if(top?.height)pane.style.setProperty('--dw-chat-top',top.bottom+'px');
+  const bottom=document.querySelector('.sq-mobile-nav')?.getBoundingClientRect();
   const viewport=window.visualViewport;
   const keyboard=viewport?Math.max(0,innerHeight-viewport.height-viewport.offsetTop):0;
   const typing=!!threadId&&keyboard>100;
   document.body.classList.toggle('dw-chat-keyboard',typing);
-  pane.style.setProperty('--dw-chat-bottom',(typing?keyboard:Math.max(0,bottom?.height?innerHeight-bottom.top:0))+'px');
+  pane.style.setProperty('--dw-chat-bottom',(threadId?keyboard:Math.max(keyboard,bottom?.height||0))+'px');
  }
  function restore(){
   document.body.classList.remove('dw-chat-keyboard');
@@ -9977,6 +9976,7 @@ window.sqLoadChatPolls=loadPolls;document.getElementById('nav-chat')?.addEventLi
 #sq-chat-connect-panel .sq-connect-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
 #sq-chat-connect-panel .sq-connect-head button{border:0;background:#25485c;color:white;border-radius:9px;padding:6px 10px;cursor:pointer}
 #sq-chat-connect-panel .sq-connect-choice{width:100%;text-align:left;background:#193c50;color:#e9f8fb;border:1px solid #356378;border-radius:11px;padding:11px;margin:5px 0;cursor:pointer;overflow-wrap:anywhere}
+#sq-chat-plus-menu [role="menuitem"] svg{width:20px;height:20px;vertical-align:middle;margin-inline-end:8px;color:#68e6cd}
 #sq-chat-connect-panel .sq-connect-choice:hover{border-color:#54e0b6}
 #sq-chat-connect-panel .sq-connect-choice small{display:block;color:#a4c5d4;margin-top:4px}
 @media(max-width:600px){#sq-chat-plus-button{width:40px;height:40px;font-size:27px}#sq-chat-connect-panel{max-height:45vh}}
@@ -9985,7 +9985,7 @@ window.sqLoadChatPolls=loadPolls;document.getElementById('nav-chat')?.addEventLi
 (()=>{
 const form=document.getElementById('tracker-chat-form');const photo=document.getElementById('sq-chat-photo-input');if(!form||!photo)return;
 const wrap=document.createElement('div');wrap.id='sq-chat-plus-wrap';
-wrap.innerHTML='<button type="button" id="sq-chat-plus-button" aria-label="Add to chat" aria-haspopup="menu" aria-expanded="false">+</button><div id="sq-chat-plus-menu" role="menu" hidden><button type="button" data-connect="attachment" role="menuitem">📎 Add attachment</button><button type="button" data-connect="poll" role="menuitem">▤ Connect group poll</button><button type="button" data-connect="expense" role="menuitem">▣ Connect expense</button></div><div id="sq-chat-connect-panel" hidden></div>';
+wrap.innerHTML='<button type="button" id="sq-chat-plus-button" aria-label="Add to chat" aria-haspopup="menu" aria-expanded="false">+</button><div id="sq-chat-plus-menu" role="menu" hidden><button type="button" data-connect="attachment" role="menuitem"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 13 7-7a3 3 0 0 1 4 4l-9 9a5 5 0 0 1-7-7l10-10"/></svg> Add attachment</button><button type="button" data-connect="poll" role="menuitem"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h17M8 16v-5m5 5V6m5 10v-8"/></svg> Connect group poll</button><button type="button" data-connect="expense" role="menuitem"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l2 1 2-1 3 1 3-1 2 1 2-1v18l-2-1-2 1-3-1-3 1-2-1-2 1zM9 8h6m-6 4h6m-6 4h3"/></svg> Connect expense</button></div><div id="sq-chat-connect-panel" hidden></div>';
 form.insertBefore(wrap,form.firstChild);
 const toggle=wrap.querySelector('#sq-chat-plus-button'),menu=wrap.querySelector('#sq-chat-plus-menu'),panel=wrap.querySelector('#sq-chat-connect-panel');
 const close=()=>{menu.hidden=true;panel.hidden=true;toggle.setAttribute('aria-expanded','false')};
@@ -17551,11 +17551,11 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  window.addEventListener('scroll',align,{passive:true});align();
 })();
 </script><section id="dw-chats" aria-label="Chats" hidden>
- <div id="dw-chat-list"><header><h2>Chats</h2><button id="dw-chat-compose" aria-label="Choose a conversation" title="Choose a conversation">✎</button></header>
+ <div id="dw-chat-list"><header><h2>Chats</h2><button id="dw-chat-compose" aria-label="Choose a conversation" title="Choose a conversation"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 5H6a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-7M10 14l1-4 8-8 3 3-8 8-4 1z"/></svg></button></header>
  <input type="search" id="dw-chat-query" placeholder="Search chats" aria-label="Search chats">
  <div class="dw-chat-filters"><button aria-pressed="true">All</button><button aria-pressed="false">Unread</button></div>
  <div id="dw-chat-rows" aria-live="polite"></div></div>
- <div id="dw-chat-thread" hidden><header><button id="dw-chat-back" aria-label="Back to chats">‹ Chats</button><div><strong id="dw-chat-name"></strong><small>Tracker chat</small></div><button id="dw-chat-find" aria-label="Search messages">⌕</button></header><div id="dw-chat-host"></div></div></section>
+ <div id="dw-chat-thread" hidden><header><button id="dw-chat-back" aria-label="Back to chats">‹ Chats</button><div><strong id="dw-chat-name"></strong><small>Tracker chat</small></div><button id="dw-chat-find" aria-label="Search messages"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button></header><div id="dw-chat-host"></div></div></section>
 <style>
 #dw-chats{display:none}
 @media(max-width:900px){
@@ -17630,6 +17630,14 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  html body.dw-chat-keyboard .sq-mobile-nav{visibility:hidden!important}
  html body.dw-chats-open .sq-mobile-nav button.active:not(#dw-chat-nav){color:#b7cddd!important}
  #dw-chat-host .mine .chat-reply-preview{background:#12494d;color:#effffa}
+ html body.dw-chats-open .wrap>.sq-mobile-top,
+ html body.dw-chats-open:has(#dw-chat-thread:not([hidden])) .sq-mobile-nav{display:none!important}
+ html body.dw-chats-open #dw-chats{inset:0;padding-top:calc(env(safe-area-inset-top,0px) + 8px)}
+ html body.dw-chats-open:has(#dw-chat-thread:not([hidden])) #dw-chats{padding-bottom:calc(max(env(safe-area-inset-bottom,0px),var(--dw-chat-bottom,0px)) + 4px)}
+ html body.dw-chats-open .sq-mobile-nav{position:fixed!important;inset:auto 0 0!important;margin:0!important;transform:none!important;height:auto!important;min-height:0!important;padding:7px 5px max(4px,env(safe-area-inset-bottom))!important}
+ #dw-chats :is(#dw-chat-compose,#dw-chat-find){display:grid;place-items:center;width:44px;height:44px;padding:0}
+ #dw-chats :is(#dw-chat-compose,#dw-chat-find) svg{width:24px;height:24px}
+
 }
 </style></body>
 </html>
