@@ -352,7 +352,7 @@ await page.locator('#receipt-items input[type=checkbox]').first().check();assert
    assert.ok(state.wide,'featured tracker spans both columns '+width+' '+JSON.stringify(state));assert.ok(state.twoColumns,'collection uses two columns '+width);assert.equal(state.overflow,false);
   }
   const room=page.locator('#trackers-gallery>.tracker-tile').filter({hasText:'Roommates'});
-  await room.locator('.sq-favorite-toggle').click();await page.waitForFunction(()=>document.querySelector('#trackers-gallery>.dw-featured-tracker h3')?.textContent==='Roommates');
+  await room.locator('.sq-favorite-toggle').click();await page.waitForFunction(()=>document.querySelector('#trackers-gallery>.dw-featured-tracker .tracker-tile-head h3')?.textContent==='Roommates');
   await page.locator('.dw-trackers-collection-heading').getByRole('button',{name:'Favorites',exact:true}).click();
   await page.waitForFunction(()=>document.querySelectorAll('#trackers-gallery>.tracker-tile:not(.dw-trackers-hidden)').length===1);
   await page.locator('#dw-trackers-search').fill('not-a-tracker');await page.locator('.dw-trackers-empty:not([hidden])').waitFor();
