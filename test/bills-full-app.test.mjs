@@ -175,7 +175,7 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
     const state=await page.evaluate(section=>{
      const bar=document.querySelector('#tracker-dashboard > .sq-workspace-tabs'),header=document.querySelector('.sq-mobile-top').getBoundingClientRect();
      const rect=bar.getBoundingClientRect();
-     const content=document.querySelector(section==='overview'?'#dw-mobile-home-layered':section==='expenses'?'#balances-card':'#sq-tracker-profiles-card').getBoundingClientRect();
+     const content=document.querySelector(section==='overview'?'#dw-mobile-home-layered':section==='expenses'?'.dw-expenses-heading':'#sq-tracker-profiles-card').getBoundingClientRect();
      return {selected:bar.querySelector('[data-sq-tab="'+section+'"]').getAttribute('aria-selected'),top:rect.top,bottom:rect.bottom,left:rect.left,right:rect.right,headerTop:header.top,headerHeight:header.height,contentTop:content.top,overflow:document.documentElement.scrollWidth,
       clickable:[...bar.querySelectorAll('button')].every(b=>{const r=b.getBoundingClientRect();return b.contains(document.elementFromPoint(r.left+r.width/2,r.top+r.height/2))})};
     },section);
