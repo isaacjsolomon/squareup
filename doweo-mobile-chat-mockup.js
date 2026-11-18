@@ -54,7 +54,7 @@
   const style=document.createElement('style');style.id='dw-mobile-chat-white-cards';style.textContent=css;document.head.appendChild(style);
   const iconGroup='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2c0-3 2-5 6-5s6 2 6 5v2H3Z"/><path d="M17 5a3 3 0 0 1 0 6M17 14c3 0 4 2 4 4v2h-4"/></svg>';
   const iconPerson='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2c0-4 3-6 8-6s8 2 8 6v2"/></svg>';
-  let contacts=[],groups=[],friends=null,filter='all',peopleTab='all',observer=null,queued=false,loading=false;
+  let contacts=[],groups=[],friends=null,filter='all',peopleTab='all',observer=null,queued=false,loading=false,rawButtons=[],generation=0,renderKey='';
   const el=id=>document.getElementById(id);
   const nameOf=b=>b.querySelector('span>b')?.textContent?.trim()||'';
   const normal=s=>(s||'').trim().toLocaleLowerCase();
@@ -109,7 +109,13 @@
     loading=true;
     try{
       const choosing=list.classList.contains('choosing');
-      const buttons=[...rows.children].filter(el=>el.tagName==='BUTTON');
+      const liveButtons=[...rows.children].filter(el=>el.tagName==='BUTTON');
+      if(!liveButtons.length&&!rows.querySelector('.dw-chat-section-label,.dw-people-section-label')){rawButtons=[];renderKey='';return}
+      if(liveButtons.some(b=>!b.dataset.dwKind)){rawButtons=liveButtons;generation++}
+      const buttons=rawButtons.length?rawButtons:liveButtons;
+      const nextKey=[generation,choosing,filter,peopleTab,contacts.length,groups.length,friends?.size??'unknown'].join(':');
+      if(renderKey===nextKey)return;
+      renderKey=nextKey;
       const types=typesFor(buttons,choosing);
       chooseControls(list);
       if(!choosing){
@@ -117,7 +123,7 @@
         if(tabs&&!tabs.querySelector('[data-dw-chat-filter]')){
           for(const [key,label] of [['group','Groups'],['direct','Direct']]){
             const b=document.createElement('button');b.type='button';b.dataset.dwChatFilter=key;b.textContent=label;
-            b.addEventListener('click',()=>{filter=filter===key?'all':key;tabs.querySelector('button')?.click();paint();});
+            b.addEventListener('click',()=>{const next=filter===key?'all':key;tabs.querySelector('button')?.click();filter=next;paint();});
             tabs.append(b);
           }
           tabs.querySelectorAll('button:not([data-dw-chat-filter])').forEach(b=>b.addEventListener('click',()=>{filter='all';schedule();}));
@@ -159,7 +165,7 @@
   function start(){
     const list=el('dw-chat-list'),rows=el('dw-chat-rows');
     if(!list||!rows)return;
-    observer=new MutationObserver(()=>schedule());
+    observer=new MutationObserver(mutations=>{if(mutations.some(m=>[...m.addedNodes].some(n=>n.nodeType===1&&n.matches?.('button:not([data-dw-kind])'))))schedule();});
     observer.observe(rows,{childList:true});
     observer.observe(list,{attributes:true,attributeFilter:['class']});
     media.addEventListener?.('change',schedule);
