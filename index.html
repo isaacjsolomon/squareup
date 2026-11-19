@@ -17716,10 +17716,11 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  #dw-dm-messages .mine{margin-left:auto;background:#35dcb4;color:#062b35}
  #dw-dm-form{display:flex;gap:8px}#dw-dm-input{min-width:0;flex:1;font-size:16px;padding:10px;border-radius:12px}
  #dw-dm-form button{background:#35dcb4;color:#062b35;border-radius:12px;padding:0 16px}
- html body.dw-chats-open #dw-chats>.sq-mobile-nav{position:absolute!important;bottom:0!important;inset-inline:0!important;padding:6px 4px env(safe-area-inset-bottom,0px)!important;box-shadow:none!important;border-radius:0!important}
+ html body.dw-chats-open #dw-chats>.sq-mobile-nav{position:absolute!important;bottom:0!important;inset-inline:0!important;padding:6px 4px max(4px,calc(env(safe-area-inset-bottom,0px) - 12px))!important;box-shadow:none!important;border-radius:0!important}
  html body.dw-chats-open #dw-chats>.sq-mobile-nav button,html body.dw-chats-open #dw-chats>.sq-mobile-nav button span{transform:none!important;top:auto!important;margin-block:0!important}
 
  #dw-chat-list svg{width:19px;height:19px;vertical-align:middle;flex:none}
+ #dw-chat-list:not(.choosing) #dw-chat-rows>button>span>b{display:block;font-size:18px;line-height:1.25;overflow-wrap:anywhere}
  #dw-chat-list header h2{flex:1}#dw-chat-list .dw-chat-mark svg{width:30px;height:30px;color:#35dfba}
  #dw-chat-list.choosing header{display:grid;grid-template-columns:1fr auto 1fr;margin-bottom:2px}
  #dw-chat-list.choosing header h2{font-size:22px;text-align:center}
