@@ -6545,12 +6545,13 @@ function initMobileChatInbox(){
  }
  function fit(){
   if(pane.hidden)return;
-  const bottom=document.querySelector('.sq-mobile-nav')?.getBoundingClientRect();
   const viewport=window.visualViewport;
+  pane.style.setProperty('--dw-inbox-height',(viewport?.height||innerHeight)+'px');
+  pane.style.setProperty('--dw-inbox-top',(viewport?.offsetTop||0)+'px');
   const keyboard=viewport?Math.max(0,innerHeight-viewport.height-viewport.offsetTop):0;
   const typing=!!threadId&&keyboard>100;
   document.body.classList.toggle('dw-chat-keyboard',typing);
-  pane.style.setProperty('--dw-chat-bottom',(threadId?keyboard:Math.max(keyboard,bottom?.height||0))+'px');
+  pane.style.setProperty('--dw-chat-bottom',(threadId?keyboard:0)+'px');
  }
  function restore(){
   clearInterval(dmTimer);dmPanel.hidden=true;thread.classList.remove('direct');thread.querySelector('header small').textContent='Tracker chat';if(choosing)query.value='';choosing=false;list.classList.remove('choosing');list.querySelector('h2').textContent='Chats';query.placeholder='Search chats, friends, or trackers';
@@ -17716,7 +17717,20 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  #dw-dm-messages .mine{margin-left:auto;background:#35dcb4;color:#062b35}
  #dw-dm-form{display:flex;gap:8px}#dw-dm-input{min-width:0;flex:1;font-size:16px;padding:10px;border-radius:12px}
  #dw-dm-form button{background:#35dcb4;color:#062b35;border-radius:12px;padding:0 16px}
- html body.dw-chats-open #dw-chats>.sq-mobile-nav{position:absolute!important;bottom:0!important;inset-inline:0!important;padding:6px 4px max(4px,calc(env(safe-area-inset-bottom,0px) - 12px))!important;box-shadow:none!important;border-radius:0!important}
+ html body.dw-chats-open #dw-chats:has(>#dw-chat-list:not([hidden])){
+  display:grid;grid-template-rows:minmax(0,1fr) auto;top:var(--dw-inbox-top,0px);bottom:auto;
+  height:var(--dw-inbox-height,100dvh);padding-inline:0;padding-bottom:0;
+ }
+ #dw-chats>#dw-chat-list{height:auto;min-height:0;padding:0 12px;box-sizing:border-box}
+ html body.dw-chats-open #dw-chats>.sq-mobile-nav{
+  position:static!important;grid-row:2;align-self:end;grid-template-rows:auto!important;align-items:end!important;
+  height:auto!important;min-height:0!important;padding:4px 4px max(3px,calc(env(safe-area-inset-bottom,0px) - 22px))!important;
+  box-shadow:none!important;border-radius:0!important;
+ }
+ html body.dw-chats-open #dw-chats>.sq-mobile-nav>button{
+  justify-content:flex-end!important;align-self:end!important;min-height:44px!important;height:auto!important;padding-block:0!important;
+ }
+ html body.dw-chats-open #dw-chats>.sq-mobile-nav>button.sq-add .sq-m-icon{width:42px!important;height:42px!important;line-height:42px!important}
  html body.dw-chats-open #dw-chats>.sq-mobile-nav button,html body.dw-chats-open #dw-chats>.sq-mobile-nav button span{transform:none!important;top:auto!important;margin-block:0!important}
 
  #dw-chat-list svg{width:19px;height:19px;vertical-align:middle;flex:none}

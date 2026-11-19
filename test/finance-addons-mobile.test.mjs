@@ -158,6 +158,14 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
   assert.equal(await page.locator('#dw-chat-host #chat-card').count(),0);
   const dock=page.locator('#dw-chats > .sq-mobile-nav');
   assert.ok(await dock.evaluate(el=>Math.abs(el.getBoundingClientRect().bottom-innerHeight)<2));
+  for(const height of [520,844]){
+   await page.setViewportSize({width:390,height});
+   await page.waitForFunction(()=>Array.from(document.querySelectorAll('#dw-chats>.sq-mobile-nav>button')).filter(b=>b.getClientRects().length).every(b=>{
+    const label=document.createRange();label.selectNodeContents(b.lastChild);
+    const gap=visualViewport.height+visualViewport.offsetTop-label.getBoundingClientRect().bottom;
+    return gap>=0&&gap<=12;
+   }));
+  }
   await page.locator('#dw-chat-compose').evaluate(b=>b.click());
   await page.locator('.dw-contact-tabs button').first().waitFor();
   assert.equal(await page.locator('.dw-contact-tabs button').count(),2);
