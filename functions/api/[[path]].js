@@ -3544,7 +3544,7 @@ for (const x of shares) {
     const amount = Number(body.amount);
     const frequency = String(body.frequency || '');
     const kind = String(body.kind || '');
-    const validDate = /^\\d{4}-\\d{2}-\\d{2}$/.test(due) &&
+    const validDate = /^\d{4}-\d{2}-\d{2}$/.test(due) &&
       !Number.isNaN(Date.parse(due + 'T12:00:00Z')) &&
       new Date(due + 'T12:00:00Z').toISOString().slice(0,10) === due;
     if (!name || !validDate || !Number.isFinite(amount) || amount <= 0 ||
