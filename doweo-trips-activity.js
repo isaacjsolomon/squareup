@@ -40,6 +40,9 @@
  #dw-trip-plus .dw-trip-card strong{font-size:15px}
  #dw-trip-plus .dw-trip-card small{display:block;color:#aecbd6;font-size:12px;margin-top:6px}
  #dw-trip-plus .dw-trip-card a{color:#66e4d4}
+ #dw-trip-budget-summary{background:#153a4e;border:1px solid #365e70;border-radius:12px;padding:12px;margin:12px 0;color:#effaff}
+ #dw-trip-budget-summary p{margin:6px 0}
+ #dw-trip-budget-summary small{color:#aecbd6}
  #dw-trip-plus .dw-trip-status{min-height:22px;color:#b8ecdf;font-size:12px}
  @media(max-width:700px){#dw-trip-plus{padding:13px;margin:12px 0}#dw-trip-plus .dw-trip-row>*{width:100%;flex:1 1 100%}}
  `;document.head.append(style);
@@ -49,6 +52,7 @@
  <div class="dw-trip-row"><label>Tracker<select id="dw-trip-tracker"></select></label><button type="button" id="dw-trip-tab" class="dw-trip-primary">Trip manager</button><button type="button" id="dw-activity-tab">Activity timeline</button></div>
  <section id="dw-trip-panel"><div class="dw-trip-row"><label>Trip<select id="dw-trip-selected"></select></label></div>
  <form id="dw-trip-create"><div class="dw-trip-row"><label>New trip name<input name="name" required maxlength="100" placeholder="Summer trip"></label><label>Start date<input name="date" type="date"></label></div><button type="submit" class="dw-trip-primary">Create trip</button></form>
+ <div id="dw-trip-budget-summary" role="status" aria-live="polite" hidden></div>
  <div class="dw-trip-list" id="dw-trip-items"></div>
  <form id="dw-trip-add-item"><div class="dw-trip-row"><label>Item<input name="title" maxlength="120" required placeholder="Hotel reservation"></label><label>Type<select name="type"><option value="activity">Activity</option><option value="reservation">Reservation</option><option value="lodging">Lodging</option><option value="travel">Travel</option><option value="packing">Packing</option><option value="task">Task</option></select></label><label>Date<input name="date" type="date"></label><label>Estimated cost<input name="estimated_cost" type="number" min=".01" max="99999999" step=".01"></label></div><div class="dw-trip-row"><label>Notes<input name="notes" maxlength="500"></label><label>Reference link (HTTPS)<input name="link_url" type="url" maxlength="350" placeholder="https://"></label></div><button type="submit" class="dw-trip-primary">Add itinerary item</button></form></section>
  <section id="dw-activity-panel" hidden><p>Search saved personal and tracker transactions. This is an activity timeline, not yet a full edit/deletion audit log.</p><label>Search activity<input id="dw-activity-search" placeholder="Description or category"></label><div class="dw-trip-list" id="dw-activity-list"></div></section>
@@ -59,7 +63,20 @@
  const status=text=>{$('dw-trip-status').textContent=text||''};
  const money=(n,c='USD')=>{try{return new Intl.NumberFormat(undefined,{style:'currency',currency:c}).format(Number(n)||0)}catch{return String(n)+' '+c}};
  const box=(name,info)=>{const card=document.createElement('div');card.className='dw-trip-card';const title=document.createElement('strong');title.textContent=name;const meta=document.createElement('small');meta.textContent=info||'';card.append(title,meta);return card};
- let mode='trips',items=[],busy=false;
+ let mode='trips',items=[],busy=false,trackerCurrencies=new Map();
+ function updateTripBudget(rows){
+  const target=$('dw-trip-budget-summary');
+  target.replaceChildren();
+  if(!rows.length){target.hidden=true;return}
+  const priced=rows.filter(x=>x.estimated_cost!=null&&x.estimated_cost!==''&&Number.isFinite(Number(x.estimated_cost))&&Number(x.estimated_cost)>=0);
+  const total=priced.reduce((sum,x)=>sum+Math.round(Number(x.estimated_cost)*100),0)/100;
+  const completed=priced.filter(x=>x.done).reduce((sum,x)=>sum+Math.round(Number(x.estimated_cost)*100),0)/100;
+  const currency=trackerCurrencies.get(activeTracker())||'USD';
+  const heading=document.createElement('strong');heading.textContent='Trip cost estimate';
+  const amount=document.createElement('p');amount.textContent=money(total,currency)+' estimated · '+money(completed,currency)+' in completed items';
+  const detail=document.createElement('small');detail.textContent=priced.length+' of '+rows.length+' items have estimates. These are planned costs, not confirmed spending.';
+  target.append(heading,amount,detail);target.hidden=false;
+ }
  function activeTracker(){return $('dw-trip-tracker').value}
  function activeTrip(){return $('dw-trip-selected').value}
  const toggle=next=>{mode=next;$('dw-trip-panel').hidden=mode!=='trips';$('dw-activity-panel').hidden=mode!=='activity';$('dw-trip-tab').classList.toggle('dw-trip-primary',mode==='trips');$('dw-activity-tab').classList.toggle('dw-trip-primary',mode==='activity');refresh()};
@@ -68,6 +85,7 @@
  tabs.addEventListener('click',event=>{if(event.target!==launch&&event.target.closest('button'))$('dw-trip-close').click()});
  async function loadTrackers(){
   const trackers=await api('trackers');const sel=$('dw-trip-tracker');sel.replaceChildren();
+  trackerCurrencies=new Map((Array.isArray(trackers)?trackers:[]).map(t=>[String(t.id),/^[A-Z]{3}$/.test(String(t.currency||'USD'))?String(t.currency||'USD'):'USD']));
   for(const t of Array.isArray(trackers)?trackers:[]){const opt=document.createElement('option');opt.value=t.id;opt.textContent=t.name;sel.append(opt)}
  }
  async function loadTrips(){
@@ -84,8 +102,9 @@
    if(!activeTracker()){status('Select a tracker.');return}
    if(mode==='trips'){
     await loadTrips();const list=$('dw-trip-items');list.replaceChildren();
-    if(!activeTrip()){list.append(box('No trips yet','Create one above to start planning.'));status('');return}
+    if(!activeTrip()){$('dw-trip-budget-summary').hidden=true;list.append(box('No trips yet','Create one above to start planning.'));status('');return}
     const rows=await api('finance-plus/trips/items?tracker_id='+encodeURIComponent(activeTracker())+'&trip_id='+encodeURIComponent(activeTrip()));
+    updateTripBudget(rows);
     if(!rows.length)list.append(box('No itinerary items','Add an activity, task, reservation or packing item.'));
     for(const item of rows){
      const card=box(item.title,(item.type||'Item')+(item.date?' · '+item.date:'')+(item.estimated_cost?' · '+money(item.estimated_cost):''));
