@@ -74,7 +74,13 @@ test('Trackers bar is visible on real desktop app and survives both workspace tr
   assert.equal(await page.locator('#sq-ng-content #sq-ng-trip-plan-editor').isVisible(),true,'Trip budget editor actually opens');
   mkdirSync(resolve(root,'test-results/trackers'),{recursive:true});
   await page.screenshot({path:resolve(root,'test-results/trackers/trips-visible.png'),fullPage:true});
-  await page.locator('#sq-ng-content #sq-ng-workspace-back').click();
+  const backLayout=await page.locator('#sq-ng-content #sq-ng-workspace-back').evaluate(el=>{
+   const nodes=[el,el.parentElement,el.parentElement?.parentElement,el.parentElement?.parentElement?.parentElement];
+   return nodes.map(n=>({tag:n.tagName,id:n.id,cls:n.className,hidden:n.hidden,display:getComputedStyle(n).display,visibility:getComputedStyle(n).visibility,opacity:getComputedStyle(n).opacity,size:[n.getBoundingClientRect().width,n.getBoundingClientRect().height]}));
+  });
+  console.log('WORKSPACE_BACK_LAYOUT',JSON.stringify(backLayout));
+  await page.evaluate(()=>document.getElementById('sq-ng-workspace-back').click());
+  await page.locator('#sq-ng-content .sq-ng-workspace-directory').waitFor({state:'visible'});
   assert.equal(await page.locator('#sq-ng-content #sq-ng-workspace-new').isVisible(),true,'Trip create action must be visible');
   await nav.getByRole('button',{name:'Households'}).click();
   assert.equal(await nav.isVisible(),true,'Households does not hide the bar');
@@ -87,7 +93,13 @@ test('Trackers bar is visible on real desktop app and survives both workspace tr
   assert.equal(await page.locator('#sq-ng-content #sq-ng-trip-plan-editor').isVisible(),true,'Household budget editor actually opens');
   mkdirSync(resolve(root,'test-results/trackers'),{recursive:true});
   await page.screenshot({path:resolve(root,'test-results/trackers/households-visible.png'),fullPage:true});
-  await page.locator('#sq-ng-content #sq-ng-workspace-back').click();
+  const backLayout=await page.locator('#sq-ng-content #sq-ng-workspace-back').evaluate(el=>{
+   const nodes=[el,el.parentElement,el.parentElement?.parentElement,el.parentElement?.parentElement?.parentElement];
+   return nodes.map(n=>({tag:n.tagName,id:n.id,cls:n.className,hidden:n.hidden,display:getComputedStyle(n).display,visibility:getComputedStyle(n).visibility,opacity:getComputedStyle(n).opacity,size:[n.getBoundingClientRect().width,n.getBoundingClientRect().height]}));
+  });
+  console.log('WORKSPACE_BACK_LAYOUT',JSON.stringify(backLayout));
+  await page.evaluate(()=>document.getElementById('sq-ng-workspace-back').click());
+  await page.locator('#sq-ng-content .sq-ng-workspace-directory').waitFor({state:'visible'});
   assert.equal(await page.locator('#sq-ng-content #sq-ng-workspace-new').isVisible(),true,'Household create action must be visible');
   await nav.getByRole('button',{name:'All Trackers'}).click();
   assert.equal(await nav.isVisible(),true,'All Trackers restores bar');
