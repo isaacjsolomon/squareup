@@ -99,7 +99,8 @@
    const created=await api('finance-plus/payment-requests','POST',{tracker_id:$('dw-pay-tracker').value,amount:Number(this.elements.amount.value),public_note:this.elements.note.value});
    link=created.url;$('dw-pay-created').hidden=false;$('dw-pay-link-url').textContent=link;
    const qr=$('dw-pay-qrcode');qr.replaceChildren();
-   if(window.QRCode)new window.QRCode(qr,{text:link,width:176,height:176,correctLevel:window.QRCode.CorrectLevel.M});
+   const QRCode=window.QRCode || await window.dwLoadQRCode?.().catch(()=>null);
+   if(QRCode)new QRCode(qr,{text:link,width:176,height:176,correctLevel:QRCode.CorrectLevel.M});
    else{const note=document.createElement('p');note.textContent='QR generator unavailable. Copy the link instead.';qr.append(note)}
    this.reset();status('Request generated. Sharing the link reveals its amount and public note.');await refresh();
   }catch(e){status(e.message||'Could not generate request.')}finally{button.disabled=false;busy=false}
