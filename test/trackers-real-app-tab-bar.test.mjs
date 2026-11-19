@@ -12,7 +12,10 @@ test('Trackers bar is visible on real desktop app and survives both workspace tr
   const name=resolve(root,'.'+new URL(req.url,'http://localhost').pathname.replace(/\/$/,'/index.html'));
   if(!name.startsWith(root+'/')||!existsSync(name)){res.writeHead(404);res.end();return}
   res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json'})[extname(name)]||'application/octet-stream');
-  res.end(readFileSync(name));
+  const file=readFileSync(name);
+  if(name.endsWith('/index.html')){
+   res.end(file.toString('utf8').replace('</head>','<link rel="stylesheet" href="/doweo-trackers-tabs.css?v=regression"></head>'));
+  }else res.end(file);
  });
  await new Promise(done=>server.listen(0,'127.0.0.1',done));
  const origin='http://127.0.0.1:'+server.address().port;
