@@ -134,10 +134,24 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
    async function loadTrackerChat(){document.getElementById('tracker-chat-messages').textContent='Dinner?'}
   `+init});
   await page.addScriptTag({content:readFileSync(new URL('../doweo-mobile-chat-mockup.js',import.meta.url),'utf8')});
+  const dock=page.locator('nav.sq-mobile-nav');
+  const geometry=()=>dock.evaluate(el=>{
+   const bounds=node=>{const r=node.getBoundingClientRect();return [r.x,r.y,r.width,r.height]};
+   const buttons=[...el.querySelectorAll('button')].filter(b=>b.getClientRects().length);
+   return [bounds(el),...buttons.flatMap(b=>{
+    const label=document.createRange();label.selectNodeContents(b.lastChild);
+    return [bounds(b.querySelector('.sq-m-icon')),bounds(label)];
+   })];
+  });
+  const reference=new Map();
+  for(const height of [520,844]){
+   await page.setViewportSize({width:390,height});
+   reference.set(height,await geometry());
+  }
   await page.locator('#dw-chat-nav').evaluate(b=>b.click());
   await page.waitForFunction(()=>{const b=document.querySelector('#dw-chat-rows>button');return b&&getComputedStyle(b).backgroundColor==='rgb(11, 37, 53)'});
   assert.equal(await page.locator('#dw-chats').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(6, 27, 41)');
-  assert.notEqual(await page.locator('#dw-chats > .sq-mobile-nav').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 255, 255)');
+  assert.notEqual(await dock.evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 255, 255)');
   await page.locator('#dw-chat-rows button').waitFor({state:'attached'});
   assert.match(await page.locator('#dw-chat-rows').textContent(),/Test group.*Dinner/);
   await page.locator('#dw-chat-rows button').evaluate(b=>b.click());
@@ -156,15 +170,9 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
   await page.locator('#dw-chat-back').evaluate(b=>b.click());
   assert.equal(await page.locator('#dw-chat-list').evaluate(el=>el.hidden),false);
   assert.equal(await page.locator('#dw-chat-host #chat-card').count(),0);
-  const dock=page.locator('#dw-chats > .sq-mobile-nav');
-  assert.ok(await dock.evaluate(el=>Math.abs(el.getBoundingClientRect().bottom-innerHeight)<2));
   for(const height of [520,844]){
    await page.setViewportSize({width:390,height});
-   await page.waitForFunction(()=>Array.from(document.querySelectorAll('#dw-chats>.sq-mobile-nav>button')).filter(b=>b.getClientRects().length).every(b=>{
-    const label=document.createRange();label.selectNodeContents(b.lastChild);
-    const gap=visualViewport.height+visualViewport.offsetTop-label.getBoundingClientRect().bottom;
-    return gap>=0&&gap<=12;
-   }));
+   assert.deepEqual(await geometry(),reference.get(height),'Chats must retain shared bar, icon and label positions');
   }
   await page.locator('#dw-chat-compose').evaluate(b=>b.click());
   await page.locator('.dw-contact-tabs button').first().waitFor();
