@@ -143,6 +143,8 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
     return [bounds(b.querySelector('.sq-m-icon')),bounds(label)];
    })];
   });
+  const bodyLayout=()=>page.evaluate(()=>[getComputedStyle(document.body).position,getComputedStyle(document.body).overflowY,getComputedStyle(document.documentElement).overflowY]);
+  const standardLayout=await bodyLayout();
   const reference=new Map();
   for(const height of [520,844]){
    await page.setViewportSize({width:390,height});
@@ -153,6 +155,8 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
   assert.equal(await page.locator('#dw-chats').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(6, 27, 41)');
   assert.notEqual(await dock.evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 255, 255)');
   await page.locator('#dw-chat-rows button').waitFor({state:'attached'});
+  assert.deepEqual(await bodyLayout(),standardLayout);
+  assert.ok(await page.locator('#dw-chat-list header').evaluate(el=>!el.dispatchEvent(new WheelEvent('wheel',{bubbles:true,cancelable:true,deltaY:100}))));
   assert.match(await page.locator('#dw-chat-rows').textContent(),/Test group.*Dinner/);
   await page.locator('#dw-chat-rows button').evaluate(b=>b.click());
   assert.equal(await page.locator('#dw-chat-name').textContent(),'Test group');
