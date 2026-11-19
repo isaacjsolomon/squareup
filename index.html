@@ -16726,6 +16726,38 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
   }
   el.append(info,actions);return el;
  }
+ function renderUpcoming(items,id){
+  const list=hosts.bill.list;
+  list.replaceChildren();
+  if(!items.length){list.textContent='No upcoming bills.';return;}
+  const entries=items.map(item=>{
+   const key=String(item.due||'').slice(0,10);
+   const date=/^\d{4}-\d{2}-\d{2}$/.test(key)?new Date(key+'T12:00:00Z'):null;
+   const valid=date&&Number.isFinite(date.valueOf())&&date.toISOString().startsWith(key);
+   return {item,key:valid?key:'',date:valid?date:null,frequency:window.dwBillFrequency(item.frequency||'Recurring'),
+    mode:item.recurring_enabled?(item.active===false?'Paused':'Automatic'):'',kind:window.sqBillPresentation?.getKind(id,item)||item.kind};
+  }).sort((a,b)=>(a.key||'z').localeCompare(b.key||'z')||String(a.item.name||'').localeCompare(String(b.item.name||'')));
+  const first=entries[0];
+  const common=field=>entries.every(e=>e[field]===first[field])?first[field]:'';
+  const month=first.key&&entries.every(e=>e.key.slice(0,7)===first.key.slice(0,7))?
+   first.date.toLocaleDateString(undefined,{month:'long',year:'numeric',timeZone:'UTC'}):'';
+  const frequency=common('frequency'),mode=common('mode');
+  const summary=[month,frequency,mode].filter(Boolean).join(' · ');
+  if(summary){const meta=document.createElement('small');meta.textContent=summary;list.append(meta);}
+  let previous=null;
+  for(const e of entries){
+   if(e.key!==previous){
+    const title=document.createElement('h3');title.className='dw-date-group';
+    title.textContent=e.date?e.date.toLocaleDateString(undefined,{month:'short',day:'numeric',year:month?undefined:'numeric',timeZone:'UTC'}):'No due date';
+    list.append(title);previous=e.key;
+   }
+   const el=row(e.item,id),detail=el.querySelector('.dw-home-bill-info small');
+   detail.textContent=[frequency?'':e.frequency,mode?'':e.mode].filter(Boolean).join(' · ');
+   if(e.kind==='subscription'){const badge=document.createElement('span');badge.className='dw-upcoming-badge';badge.textContent='Subscription';detail.prepend(badge);}
+   if(!detail.textContent)detail.remove();
+   list.append(el);
+  }
+ }
  async function load(force=false){
   if(!visible())return;
   const tracker=active();
@@ -16736,6 +16768,7 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
    const data=await window.squareUpApi('trackers/'+encodeURIComponent(id)+'/bills');
    if(token!==seq||!desktop.matches||active()?.id!==id)return;
    const items=Array.isArray(data)?data:[];
+   if(hosts.bill.list.closest('#dw-compact-upcoming')){renderUpcoming(items,id);return;}
    for(const [kind,host] of Object.entries(hosts)){
     const selected=items.filter(item=>(window.sqBillPresentation?.getKind(id,item)||item.kind||'bill')===kind);
     host.count.textContent=selected.length+' saved';host.list.replaceChildren();host.status.textContent='';
@@ -16793,7 +16826,10 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  html body #tracker-dashboard.sq-tab-overview #dw-compact-upcoming{grid-column:2!important;grid-row:2!important;min-width:0;min-height:240px;padding:22px;box-sizing:border-box;border:1px solid #3a6578;border-radius:12px;background:linear-gradient(140deg,#10374b,#0b2a3d);color:#edfaff}
  #dw-upcoming-title{font-size:12px;text-transform:uppercase;letter-spacing:.15em;color:#9ed9e9;margin:0 0 18px}
  #dw-compact-upcoming .dw-home-schedule-list{min-height:0;max-height:none;overflow:visible;gap:12px}
- #dw-compact-upcoming #dw-home-bill-list{border-top:1px solid #365f72;margin-top:16px;padding-top:16px}
+ #dw-compact-upcoming #dw-home-bill-list{margin:0;padding:0;border:0}
+ #dw-compact-upcoming .dw-date-group{margin:8px 0 0;padding-top:10px;border-top:1px solid #365f72;color:#edfaff;font-size:15px}
+ #dw-compact-upcoming .dw-date-group:first-child,#dw-compact-upcoming small+.dw-date-group{border:0;padding-top:0}
+ #dw-compact-upcoming .dw-upcoming-badge{display:inline-block;border-radius:10px;padding:1px 7px;margin-right:5px;background:#183f50;color:#b5e9e3;font-size:11px}
  #dw-compact-upcoming .dw-home-bill-row{position:relative;padding:0 0 8px;border-bottom:0}
  #dw-compact-upcoming .dw-home-bill-info{padding-right:18px;cursor:pointer}
  #dw-compact-upcoming .dw-home-bill-title strong{font-size:16px}
@@ -16840,7 +16876,8 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  const seeAll=activity.querySelector('[data-return-tab="expenses"]'),originalSeeAll=seeAll?.textContent;
  const upcoming=document.createElement('section');upcoming.id='dw-compact-upcoming';upcoming.setAttribute('aria-labelledby','dw-upcoming-title');
  const heading=document.createElement('h2');heading.id='dw-upcoming-title';heading.textContent='Upcoming Bills';upcoming.append(heading);
- for(const kind of ['subscription','bill']){const list=document.getElementById('dw-home-'+kind+'-list');if(list){const section=document.createElement('section');section.className='dw-upcoming-section';section.dataset.kind=kind;const title=document.createElement('h3');title.textContent=kind==='subscription'?'Subscriptions':'Bills';section.append(title,list);upcoming.append(section);}}
+ const schedule=document.getElementById('dw-home-bill-list');
+ if(schedule)upcoming.append(schedule);
  shell.append(upcoming);
  const columns=document.createElement('div');columns.className='dw-activity-columns';columns.setAttribute('aria-hidden','true');
  for(const text of ['Expense','Category','People','Amount','']){const span=document.createElement('span');span.textContent=text;columns.append(span);}
