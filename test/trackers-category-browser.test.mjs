@@ -50,7 +50,7 @@ test('desktop gallery tabs match the tracker tab style and show the correct trac
   });
   assert.equal(layout.display,'grid');
   assert.ok(layout.width>900,'tabs span the tracker page width');
-  assert.ok(layout.buttons.every(b=>b.height>=60&&parseFloat(b.font)>=17),'buttons use large tracker tab typography');
+  assert.ok(layout.buttons.every(b=>b.height>=40&&b.height<=48&&parseFloat(b.font)<=16),'buttons use compact tracker tab typography');
   const cards=page.locator('.tracker-tile');
   assert.equal(await cards.count(),3);
   await page.getByRole('button',{name:'Trips',exact:true}).click();
@@ -60,6 +60,8 @@ test('desktop gallery tabs match the tracker tab style and show the correct trac
   assert.equal(await cards.nth(2).isVisible(),false);
   assert.equal(await cards.nth(1).locator('.tile-open').count(),1,'existing card action remains');
   assert.equal(await page.locator('.sq-create-tracker-row').isVisible(),false);
+  assert.equal(await page.getByRole('button',{name:'+ Create trip'}).isVisible(),true);
+  assert.equal(await page.getByRole('button',{name:'Link existing tracker'}).isVisible(),true);
   await page.getByRole('button',{name:'Households',exact:true}).click();
   await page.waitForFunction(()=>document.getElementById('dw-gallery-category-status')?.textContent.includes('1 household tracker'));
   assert.equal(await cards.nth(0).isVisible(),false);

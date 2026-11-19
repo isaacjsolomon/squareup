@@ -147,31 +147,53 @@
  const gallery=document.getElementById('trackers-gallery');
  if(!page||!nav||!gallery||nav.dataset.gallerySwitcher)return;
  nav.dataset.gallerySwitcher='true';
- let active='all',loaded=false,busy=false,groups={trip:new Set(),household:new Set()},queued=false;
+ let active='all',loaded=false,busy=false,queued=false,version=0;
+ let groups={trip:new Set(),household:new Set()};
  const buttons=[...nav.querySelectorAll('button[data-dw-section]')];
  buttons.forEach(button=>{
   button.dataset.galleryCategory=button.dataset.dwSection==='trackers'?'all':button.dataset.dwSection==='home'?'household':'trip';
-  button.removeAttribute('data-dw-section'); // Avoid legacy Finance Hub navigation.
+  button.removeAttribute('data-dw-section');
  });
  const style=document.createElement('style');style.id='dw-desktop-trackers-switcher';
  style.textContent=[
  '@media(min-width:901px){',
- 'body.trackers-view:not(.sq-bills-open) #trackers-page>.dw-section-tabs[aria-label="Tracker sections"]{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:5!important;gap:10px!important;margin:0 0 22px!important;padding:10px!important;width:100%!important;max-width:none!important;min-height:92px!important;align-items:stretch!important;background:#06283c!important;border:1px solid #195066!important;border-radius:22px!important;box-sizing:border-box!important;box-shadow:0 12px 32px rgba(0,15,29,.22)!important}',
- '#trackers-page>.dw-section-tabs[aria-label="Tracker sections"] button{display:flex!important;align-items:center!important;justify-content:center!important;min-width:0!important;min-height:68px!important;margin:0!important;padding:12px!important;border:2px solid transparent!important;border-radius:15px!important;font:inherit!important;font-size:clamp(17px,1.7vw,26px)!important;font-weight:800!important;line-height:1.2!important;background:transparent!important;color:#eef9ff!important;cursor:pointer!important;box-sizing:border-box!important}',
- '#trackers-page>.dw-section-tabs[aria-label="Tracker sections"] button[aria-pressed="true"]{color:#fff!important;background:linear-gradient(110deg,#0c8388,#1a687e)!important;border-color:#32c9bb!important;box-shadow:inset 0 0 0 1px rgba(127,244,228,.12)!important}',
+ 'body.trackers-view:not(.sq-bills-open) #trackers-page>.dw-section-tabs[aria-label="Tracker sections"]{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:5!important;gap:4px!important;margin:0 0 18px!important;padding:5px!important;width:100%!important;max-width:none!important;min-height:0!important;align-items:stretch!important;background:#06283c!important;border:1px solid #195066!important;border-radius:15px!important;box-sizing:border-box!important;box-shadow:0 8px 18px rgba(0,15,29,.12)!important}',
+ '#trackers-page>.dw-section-tabs[aria-label="Tracker sections"] button{display:flex!important;align-items:center!important;justify-content:center!important;min-width:0!important;min-height:0!important;height:44px!important;margin:0!important;padding:8px 12px!important;border:1px solid transparent!important;border-radius:10px!important;font:inherit!important;font-size:15px!important;font-weight:700!important;line-height:1.2!important;background:transparent!important;color:#eef9ff!important;cursor:pointer!important;box-sizing:border-box!important;outline-offset:2px!important}',
+ '#trackers-page>.dw-section-tabs[aria-label="Tracker sections"] button[aria-pressed="true"]{color:#fff!important;background:linear-gradient(110deg,#0c8388,#1a687e)!important;border-color:#32c9bb!important;box-shadow:none!important;outline:none!important}',
  '#trackers-page>.dw-section-tabs[aria-label="Tracker sections"] button:hover:not([aria-pressed="true"]){background:#16415a!important}',
- '#trackers-page>.dw-section-tabs[aria-label="Tracker sections"] button:focus-visible{outline:3px solid #75f0d5!important;outline-offset:2px!important}',
- '#dw-gallery-category-status{font-size:14px;color:#d3e5ef;margin:0 0 14px}',
- '#dw-gallery-category-status[hidden]{display:none!important}',
+ '#trackers-page>.dw-section-tabs[aria-label="Tracker sections"] button:focus-visible{outline:2px solid #75f0d5!important;outline-offset:2px!important}',
+ '#dw-gallery-category-status{margin:0 0 12px;color:#d3e5ef;font-size:13px}',
+ '#dw-gallery-category-status[hidden],#dw-gallery-category-actions[hidden],#dw-gallery-category-actions [hidden]{display:none!important}',
+ '#dw-gallery-category-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:0 0 17px}',
+ '#dw-gallery-category-actions button{border:1px solid #47788a;border-radius:9px;background:#143a50;color:#f0fcff;padding:9px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}',
+ '#dw-gallery-category-actions button:first-child{background:#23d8ad;color:#062b39;border-color:#23d8ad}',
+ '#dw-gallery-category-actions button:disabled{opacity:.5;cursor:wait}',
+ '#dw-gallery-category-actions select,#dw-gallery-category-actions input{background:#09283e;color:#fff;border:1px solid #47788a;border-radius:9px;padding:9px;font:inherit;font-size:13px}',
+ '#dw-gallery-category-actions form{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%}',
  '}',
- '@media(max-width:900px){#dw-gallery-category-status{display:none!important}#trackers-page>.dw-section-tabs[aria-label="Tracker sections"]{display:none!important}}'
+ '@media(max-width:900px){#dw-gallery-category-status,#dw-gallery-category-actions{display:none!important}#trackers-page>.dw-section-tabs[aria-label="Tracker sections"]{display:none!important}}'
  ].join('\n');
  document.head.append(style);
  const status=document.createElement('p');status.id='dw-gallery-category-status';status.hidden=true;status.setAttribute('role','status');status.setAttribute('aria-live','polite');nav.after(status);
- function ids(rows){return (Array.isArray(rows)?rows:[]).map(row=>String(row?.tracker_id||'')).filter(Boolean)}
+ const actions=document.createElement('div');actions.id='dw-gallery-category-actions';actions.hidden=true;status.after(actions);
+ const create=document.createElement('button');create.type='button';create.textContent='+ Create trip';
+ const link=document.createElement('button');link.type='button';link.textContent='Link existing tracker';
+ const form=document.createElement('form');form.hidden=true;
+ const input=document.createElement('input');input.name='name';input.maxLength=90;input.required=true;input.placeholder='Name your trip';
+ const select=document.createElement('select');select.name='tracker_id';select.required=true;select.hidden=true;
+ const submit=document.createElement('button');submit.type='submit';submit.textContent='Create trip';
+ const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';
+ form.append(input,select,submit,cancel);actions.append(create,link,form);
+ let mode='create';
+ const ids=rows=>(Array.isArray(rows)?rows:[]).map(row=>String(row?.tracker_id||'')).filter(Boolean);
+ function classify(card){
+  const id=card.dataset.trackerId||'',name=card.querySelector('h3')?.textContent||'';
+  let template=-1;try{const raw=localStorage.getItem('sq_tracker_template_'+id);if(raw!==null&&raw!=='')template=Number(raw)}catch(_){}
+  return {trip:groups.trip.has(id)||[1,2,3,5].includes(template),household:groups.household.has(id)||[0,4].includes(template)||/\b(household|roommates?|housemates?|apartment|home bills?|home expenses?|shared living)\b/i.test(name)};
+ }
  async function loadGroups(){
   if(busy||typeof window.squareUpApi!=='function')return;
-  busy=true;status.textContent='Loading categories…';
+  busy=true;const token=++version;status.textContent='Loading '+(active==='trip'?'trips':'households')+'…';
   try{
    const results=await Promise.allSettled([
     window.squareUpApi('finance/workspace-links?type=trip'),
@@ -179,43 +201,71 @@
     window.squareUpApi('finance/workspace?type=trip'),
     window.squareUpApi('finance/workspace?type=household')
    ]);
+   if(token!==version)return;
    const [tripLinks,homeLinks,tripPlans,homePlans]=results.map(result=>result.status==='fulfilled'?result.value:[]);
    groups={trip:new Set([...ids(tripLinks),...ids(tripPlans)]),household:new Set([...ids(homeLinks),...ids(homePlans)])};
    loaded=results.some(result=>result.status==='fulfilled');
-  }catch(error){loaded=false;status.textContent='Categories could not be loaded. All Trackers is still available.'}
+  }catch(error){loaded=false}
   finally{busy=false;apply()}
  }
- function groupFor(card){
-  const id=card.dataset.trackerId||'',name=card.querySelector('h3')?.textContent||'';
-  let template=-1;try{const raw=localStorage.getItem('sq_tracker_template_'+id);if(raw!==null&&raw!=='')template=Number(raw)}catch(_){}
-  return {
-   trip:groups.trip.has(id)||[1,2,3,5].includes(template),
-   household:groups.household.has(id)||[0,4].includes(template)||/\b(household|roommates?|housemates?|apartment|home bills?|home expenses?|shared living)\b/i.test(name)
-  };
+ function updateOptions(){
+  select.replaceChildren(new Option('Choose a tracker',''));
+  for(const card of gallery.querySelectorAll(':scope > .tracker-tile')){
+   const id=card.dataset.trackerId;
+   if(id&&!groups[active].has(id))select.add(new Option(card.querySelector('h3')?.textContent?.trim()||'Untitled tracker',id));
+  }
  }
  function apply(){
   if(!desktop.matches)return;
   buttons.forEach(button=>{const yes=button.dataset.galleryCategory===active;button.setAttribute('aria-pressed',String(yes));if(yes)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current')});
   let count=0;
   for(const card of gallery.querySelectorAll(':scope > .tracker-tile')){
-   const match=active==='all'||groupFor(card)[active];
+   const match=active==='all'||classify(card)[active];
    card.hidden=!match;if(match)card.style.removeProperty('display');else card.style.setProperty('display','none','important');if(match)count++;
   }
-  const create=gallery.querySelector(':scope > .sq-create-tracker-row');
+  const createRow=gallery.querySelector(':scope > .sq-create-tracker-row');
   const archive=gallery.querySelector(':scope > .sq-archive-toggle');
-  if(create){create.hidden=active!=='all';create.style.setProperty('display',active==='all'?'flex':'none','important')}
-  if(archive){archive.hidden=active!=='all';archive.style.setProperty('display',active==='all'?'':'none',active==='all'?'':'important')}
-  if(active!=='all'){const archived=gallery.querySelector(':scope > .sq-archived-wrap');if(archived)archived.hidden=true}
-  status.hidden=active==='all';
-  if(active==='all'){status.textContent='';return}
-  if(!loaded){if(busy)status.textContent='Loading categories…';else status.textContent='Categories unavailable. Choose All Trackers.';return}
-  status.textContent=count?count+' '+(active==='trip'?'trip':'household')+' tracker'+(count===1?'':'s'):'No '+(active==='trip'?'trips':'households')+' yet. Create or link one in the existing workspace tools.';
+  if(createRow){createRow.hidden=active!=='all';createRow.style.setProperty('display',active==='all'?'flex':'none','important')}
+  if(archive){archive.hidden=active!=='all';if(active==='all')archive.style.removeProperty('display');else archive.style.setProperty('display','none','important')}
+  const archived=gallery.querySelector(':scope > .sq-archived-wrap');if(archived&&active!=='all')archived.hidden=true;
+  status.hidden=active==='all';actions.hidden=active==='all';
+  if(active==='all'){status.textContent='';form.hidden=true;return}
+  const label=active==='trip'?'trip':'household';
+  create.textContent='+ Create '+label;link.textContent='Link existing tracker';input.placeholder='Name your '+label;
+  if(!loaded){status.textContent=busy?'Loading '+label+' trackers…':'Unable to load saved '+label+' links. Local tracker templates are still shown.';return}
+  status.textContent=count?count+' '+label+' tracker'+(count===1?'':'s'):'No '+label+' trackers linked yet. Create one or link an existing tracker below.';
  }
  nav.addEventListener('click',event=>{
   const button=event.target.closest('button[data-gallery-category]');
   if(!button||!desktop.matches)return;
-  event.stopPropagation();active=button.dataset.galleryCategory;apply();
-  if(active!=='all'&&!loaded&&!busy)loadGroups();
+  event.stopPropagation();active=button.dataset.galleryCategory;form.hidden=true;apply();
+  if(active!=='all')loadGroups();
+ });
+ create.addEventListener('click',()=>{mode='create';form.hidden=false;input.hidden=false;select.hidden=true;submit.textContent='Create '+(active==='trip'?'trip':'household');input.focus()});
+ link.addEventListener('click',()=>{mode='link';updateOptions();form.hidden=false;input.hidden=true;select.hidden=false;submit.textContent='Link '+(active==='trip'?'trip':'household');select.focus()});
+ cancel.addEventListener('click',()=>{form.hidden=true});
+ form.addEventListener('submit',async event=>{
+  event.preventDefault();if(active==='all')return;
+  const type=active;const id=select.value;const name=input.value.trim();
+  if(mode==='create'&&!name)return;if(mode==='link'&&!id)return;
+  submit.disabled=true;status.textContent=mode==='create'?'Creating tracker…':'Linking tracker…';
+  try{
+   let trackerId=id;
+   if(mode==='create'){
+    const detail=await window.squareUpApi('trackers','POST',{name,currency:document.getElementById('new-currency')?.value||'USD',entries:[]});
+    if(!detail?.id)throw Error('Tracker was created but its ID was not returned. Refresh All Trackers before retrying.');
+    trackerId=String(detail.id);
+    try{localStorage.setItem('sq_tracker_template_'+trackerId,String(type==='trip'?1:4))}catch(_){}
+   }
+   try{await window.squareUpApi('finance/workspace-links','POST',{workspace_type:type,tracker_id:trackerId})}
+   catch(error){if(mode==='create')throw Error('Tracker created, but its '+type+' link failed. Find it in All Trackers and use Link existing tracker.');throw error}
+   groups[type].add(trackerId);loaded=true;form.hidden=true;
+   // Refresh the real gallery through its existing navigation, preserving tracker members and balances.
+   document.getElementById('nav-trackers')?.click();
+   active=type;await loadGroups();
+   status.textContent=(mode==='create'?'Created ':'Linked ')+type+' tracker. '+(status.textContent||'');
+  }catch(error){status.textContent=error.message||'Could not save tracker. Please retry.'}
+  finally{submit.disabled=false}
  });
  new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(()=>{queued=false;apply()})}).observe(gallery,{childList:true});
  desktop.addEventListener('change',()=>{
