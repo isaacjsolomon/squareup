@@ -60,8 +60,8 @@ test('desktop gallery tabs match the tracker tab style and show the correct trac
   assert.equal(await cards.nth(2).isVisible(),false);
   assert.equal(await cards.nth(1).locator('.tile-open').count(),1,'existing card action remains');
   assert.equal(await page.locator('.sq-create-tracker-row').isVisible(),false);
-  assert.equal(await page.getByRole('button',{name:'+"'+ Create trip'"+'}).isVisible(),true);
-  assert.equal(await page.getByRole('button',{name:'+"'Link existing tracker'"+'}).isVisible(),true);
+  assert.equal(await page.getByRole('button',{name:'+ Create trip'}).isVisible(),true);
+  assert.equal(await page.getByRole('button',{name:'Link existing tracker'}).isVisible(),true);
   await page.getByRole('button',{name:'Households',exact:true}).click();
   await page.waitForFunction(()=>document.getElementById('dw-gallery-category-status')?.textContent.includes('1 household tracker'));
   assert.equal(await cards.nth(0).isVisible(),false);
