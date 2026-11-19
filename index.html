@@ -6558,8 +6558,8 @@ function initMobileChatInbox(){
    for(const x of entries){
     const b=document.createElement('button');b.type='button';b.disabled=busy;
     const initial=x.name.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
-    const tags=choosing&&key==='shared'?x.shared.map(n=>'<span class="dw-tracker-tag">'+esc(n)+'</span>').join(''):'';
-    b.innerHTML='<i>'+(x.direct?esc(initial):groupIcon)+'</i><span><b>'+esc(x.name)+'</b><small>'+esc(choosing?(x.username?'@'+x.username:''):x.preview||'')+'</small>'+tags+'</span><small>'+(choosing?chatIcon:esc(x.date?new Date(x.date).toLocaleDateString([],{month:'short',day:'numeric'}):'')+(x.unread?'<em>'+x.unread+'</em>':''))+'</small>';
+    const tags=choosing&&key==='shared'?x.shared.map(n=>'<span class="dw-tracker-tag" data-user-content>'+esc(n)+'</span>').join(''):'';
+    b.innerHTML='<i>'+(x.direct?esc(initial):groupIcon)+'</i><span><b data-user-content>'+esc(x.name)+'</b><small'+(choosing||x.date?' data-user-content':'')+'>'+esc(choosing?(x.username?'@'+x.username:''):x.preview||'')+'</small>'+tags+'</span><small>'+(choosing?chatIcon:esc(x.date?new Date(x.date).toLocaleDateString([],{month:'short',day:'numeric'}):'')+(x.unread?'<em>'+x.unread+'</em>':''))+'</small>';
     if(x.photo){const avatar=b.firstElementChild;avatarUrl(x.id,x.photo).then(url=>{if(url){setAvatarPhoto(avatar,url);avatar.textContent=''}})}
     b.onclick=()=>x.direct?direct(x):enter(x);rows.append(b);
    }
@@ -16776,6 +16776,7 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
   for(const e of entries){
    if(e.key!==previous){
     const title=document.createElement('h3');title.className='dw-date-group';
+    if(e.date){title.dataset.dwBillDate=e.key;if(!month)title.dataset.dwBillYear='true';}
     title.textContent=e.date?e.date.toLocaleDateString(undefined,{month:'short',day:'numeric',year:month?undefined:'numeric',timeZone:'UTC'}):'No due date';
     group=document.createElement('div');group.className='dw-scheduled-day';
     list.append(group);group.append(title);previous=e.key;
@@ -16906,7 +16907,7 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  const schedule=document.getElementById('dw-home-bill-list');
  if(schedule)upcoming.append(schedule);
  shell.append(upcoming);
- const columns=document.createElement('div');columns.className='dw-activity-columns';columns.setAttribute('aria-hidden','true');
+ const columns=document.createElement('div');columns.className='dw-activity-columns';
  for(const text of ['Expense','Category','People','Amount','']){const span=document.createElement('span');span.textContent=text;columns.append(span);}
  document.getElementById('sq-return-activity').before(columns);
  const headline=document.getElementById('sq-clean-net'),mirror=document.createElement('strong');mirror.id='dw-compact-balance';
