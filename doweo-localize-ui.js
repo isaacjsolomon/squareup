@@ -40,6 +40,8 @@
  function translateDynamic(value){
    // Financial totals and record titles contain private amounts/descriptions.
    // Translate fixed phrases only; never send the whole string for translation.
+   const count=/^(\d+) (contacts|people)$/.exec(value);
+   if(count){queueToken(count[2]);return i18n.formatNumber(root,Number(count[1]))+' '+(cache[count[2]]||count[2]);}
    const category=/^\[Category: (Food & Dining|Food|Other)\](.*)$/.exec(value);
    if(category){
      queueToken('Category:');queueToken(category[1]);
@@ -322,6 +324,12 @@
  }
   function render(){
    // Do not hide descriptive copy as a substitute for translating it.
+   root.document.querySelectorAll('[data-dw-bill-date]').forEach(el=>{
+     const date=new Date(el.dataset.dwBillDate+'T12:00:00Z');
+     if(!Number.isFinite(date.getTime()))return;
+     const label=i18n.formatDate(root,date,{month:'short',day:'numeric',year:el.dataset.dwBillYear?'numeric':undefined,timeZone:'UTC'});
+     if(el.textContent!==label)el.textContent=label;
+   });
    fixRtlInputIdentifiers();
    queueCaptions();
    translateCreateActions();
@@ -331,8 +339,9 @@
      const el=node.parentElement;
      if(!isSafe(el)||!visible(el))continue;
      const entry=getOriginal(node),key=entry.source.trim();
+     if(language==='en' && entry.rendered!==entry.source){node.nodeValue=entry.source;entry.rendered=entry.source;continue;}
      if(!eligible(key)&&language==='en')continue;
-     if(!eligible(key)&&!/(\d+ (?:members?|total|saved)|Last activity · |monthly · |Next due |Welcome back, |Hi, |DOWEO GUIDE · |\[Category: [^\]]+\]|\$[\d,.]+ per person$|Total including tip:|^You \(|^Split between \(|Previous month spending:|^(?:Sent|Received|Settlement payment) · |Archived trackers \(\d+\)| owes |^(?:January|February|March|April|May|June|July|August|September|October|November|December) \d{4}$)/i.test(key))continue;
+     if(!eligible(key)&&!/(\d+ (?:members?|total|saved|contacts|people)|Last activity · |monthly · |Next due |Welcome back, |Hi, |DOWEO GUIDE · |\[Category: [^\]]+\]|\$[\d,.]+ per person$|Total including tip:|^You \(|^Split between \(|Previous month spending:|^(?:Sent|Received|Settlement payment) · |Archived trackers \(\d+\)| owes |^(?:January|February|March|April|May|June|July|August|September|October|November|December) \d{4}$)/i.test(key))continue;
      const next=translate(entry.source);
      if(node.nodeValue!==next){node.nodeValue=next;entry.rendered=next;}
      if(eligible(key))queueToken(key);
@@ -467,6 +476,9 @@
      sv:['Ekonomicenter','Betafeedback','Hej,'],
      bn:['অর্থ ব্যবস্থাপনা','বেটা সংস্করণ সম্পর্কে মতামত','স্বাগতম,']
    };
+   const updatedKeys=["You’re owed","Upcoming Bills","Group Chats","Direct Messages","New Message","Shared Trackers","Search people","Search chats, friends, or trackers","Unread","Direct","All Trackers","Month comparison","Tracker chat","Chats"];
+   const updatedLabels={"es":["Te deben","Próximas facturas","Chats de grupo","Mensajes directos","Nuevo mensaje","Grupos compartidos","Buscar personas","Buscar chats, amigos o grupos","Sin leer","Directos","Todos los grupos","Comparación mensual","Chat del grupo","Chats"],"fr":["On vous doit","Factures à venir","Discussions de groupe","Messages privés","Nouveau message","Groupes en commun","Rechercher des personnes","Rechercher des discussions, des amis ou des groupes","Non lus","Privés","Tous les groupes","Comparaison mensuelle","Discussion du groupe","Discussions"],"he":["חייבים לך","חשבונות קרובים","צ׳אטים קבוצתיים","הודעות פרטיות","הודעה חדשה","קבוצות משותפות","חיפוש אנשים","חיפוש צ׳אטים, חברים או קבוצות","לא נקראו","פרטי","כל הקבוצות","השוואה חודשית","צ׳אט קבוצתי","צ׳אטים"],"zh-Hans":["应收金额","即将到期的账单","群聊","私信","新消息","共同群组","搜索用户","搜索聊天、好友或群组","未读","私聊","所有群组","月度对比","群组聊天","聊天"],"pt":["Você tem a receber","Próximas contas","Conversas em grupo","Mensagens diretas","Nova mensagem","Grupos em comum","Buscar pessoas","Buscar conversas, amigos ou grupos","Não lidas","Diretas","Todos os grupos","Comparação mensal","Conversa do grupo","Conversas"],"de":["Du bekommst noch","Anstehende Rechnungen","Gruppenchats","Direktnachrichten","Neue Nachricht","Gemeinsame Gruppen","Personen suchen","Chats, Freunde oder Gruppen suchen","Ungelesen","Direkt","Alle Gruppen","Monatsvergleich","Gruppenchat","Chats"],"it":["Devi ricevere","Prossime bollette","Chat di gruppo","Messaggi diretti","Nuovo messaggio","Gruppi in comune","Cerca persone","Cerca chat, amici o gruppi","Non letti","Diretti","Tutti i gruppi","Confronto mensile","Chat del gruppo","Chat"],"ja":["受取予定額","支払い予定の請求","グループチャット","ダイレクトメッセージ","新規メッセージ","共通のグループ","ユーザーを検索","チャット、友達、グループを検索","未読","個別","すべてのグループ","月別比較","グループチャット","チャット"],"ar":["المبلغ المستحق لك","الفواتير القادمة","محادثات جماعية","رسائل خاصة","رسالة جديدة","مجموعات مشتركة","البحث عن أشخاص","البحث عن محادثات أو أصدقاء أو مجموعات","غير مقروءة","خاصة","كل المجموعات","مقارنة شهرية","محادثة المجموعة","المحادثات"],"ko":["받을 금액","예정된 청구서","그룹 채팅","개인 메시지","새 메시지","공통 그룹","사람 검색","채팅, 친구 또는 그룹 검색","읽지 않음","개인","모든 그룹","월별 비교","그룹 채팅","채팅"],"hi":["आपको मिलने हैं","आगामी बिल","समूह चैट","निजी संदेश","नया संदेश","साझा समूह","लोगों को खोजें","चैट, मित्र या समूह खोजें","अपठित","निजी","सभी समूह","मासिक तुलना","समूह चैट","चैट"],"ru":["Вам должны","Предстоящие счета","Групповые чаты","Личные сообщения","Новое сообщение","Общие группы","Поиск людей","Поиск чатов, друзей или групп","Непрочитанные","Личные","Все группы","Сравнение по месяцам","Чат группы","Чаты"],"tr":["Alacağın tutar","Yaklaşan faturalar","Grup sohbetleri","Özel mesajlar","Yeni mesaj","Ortak gruplar","Kişi ara","Sohbet, arkadaş veya grup ara","Okunmamış","Özel","Tüm gruplar","Aylık karşılaştırma","Grup sohbeti","Sohbetler"],"vi":["Số tiền bạn được nhận","Hóa đơn sắp đến hạn","Trò chuyện nhóm","Tin nhắn riêng","Tin nhắn mới","Nhóm chung","Tìm người","Tìm cuộc trò chuyện, bạn bè hoặc nhóm","Chưa đọc","Riêng tư","Tất cả nhóm","So sánh theo tháng","Trò chuyện nhóm","Trò chuyện"],"nl":["Je krijgt nog","Komende rekeningen","Groepschats","Privéberichten","Nieuw bericht","Gedeelde groepen","Personen zoeken","Chats, vrienden of groepen zoeken","Ongelezen","Privé","Alle groepen","Maandvergelijking","Groepschat","Chats"],"pl":["Kwota do otrzymania","Nadchodzące rachunki","Czaty grupowe","Wiadomości prywatne","Nowa wiadomość","Wspólne grupy","Szukaj osób","Szukaj czatów, znajomych lub grup","Nieprzeczytane","Prywatne","Wszystkie grupy","Porównanie miesięcy","Czat grupowy","Czaty"],"sv":["Du ska få","Kommande räkningar","Gruppchattar","Direktmeddelanden","Nytt meddelande","Gemensamma grupper","Sök personer","Sök chattar, vänner eller grupper","Olästa","Privata","Alla grupper","Månadsjämförelse","Gruppchatt","Chattar"],"bn":["আপনার পাওনা","আসন্ন বিল","গ্রুপ চ্যাট","ব্যক্তিগত বার্তা","নতুন বার্তা","অভিন্ন গ্রুপ","মানুষ খুঁজুন","চ্যাট, বন্ধু বা গ্রুপ খুঁজুন","অপঠিত","ব্যক্তিগত","সব গ্রুপ","মাসিক তুলনা","গ্রুপ চ্যাট","চ্যাট"]};
+   updatedLabels[language]?.forEach((label,index)=>{cache[updatedKeys[index]]=label;});
    const sidebar=navTranslations[language];
    if(sidebar)for(const [index,source] of ['Finance Hub','Beta Feedback','Hi,'].entries())
      if(approved.has(source))cache[source]=sidebar[index];
@@ -488,8 +500,8 @@
    render();
  }
  function schedule(){
-   if(scanTimer)clearTimeout(scanTimer);
-   scanTimer=setTimeout(scan,120);
+   if(scanTimer!==null)return;
+   scanTimer=setTimeout(()=>{scanTimer=null;scan();},120);
  }
  async function init(){
    try{
