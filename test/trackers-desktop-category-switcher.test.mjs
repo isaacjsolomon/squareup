@@ -27,7 +27,7 @@ test('Trip and Household content retain original directory, create/link, plans a
  assert.match(finance,/Trip budget/);
  assert.match(finance,/Household budget/);
  assert.match(js,/id='dw-trip-plus-launch'/);
- assert.match(js,/id='dw-trip-add-item'/);
+ assert.match(js,/id="dw-trip-add-item"/);
 });
 test('original All Trackers actions and mobile navigation are not rewritten',()=>{
  assert.match(js,/@media\(min-width:901px\)/);
