@@ -25,7 +25,7 @@ jobs:
           # Bump these URLs in the published HTML to invalidate old browser-cached UI assets.
           sed -E -i 's#(doweo-bills-mobile-dashboard\.(css|js))\?v=[^\"]+#\1?v=20261116-overview-picker-v10#g' .pages-output/index.html
           # Version the desktop Trackers tab script to bypass old app/WebView caches.
-          sed -i 's#src="/doweo-trips-activity.js"#src="/doweo-trips-activity.js?v=20261119-visible-workspaces-v6"#g' .pages-output/index.html
+          sed -i 's#src="/doweo-trips-activity.js"#src="/doweo-trips-activity.js?v=20261119-structurally-fixed-workspaces-v7"#g' .pages-output/index.html
           cp doweo-tracker-header.css doweo-tracker-header.js .pages-output/
           python3 - <<'PY'
           from pathlib import Path
@@ -70,6 +70,16 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.65.0
           npx playwright install --with-deps chromium
+      - name: Confirm Trips and Households really render on doweo.app
+        env:
+          TRACKERS_BASE_URL: https://doweo.app
+        run: node --test test/trackers-real-app-tab-bar.test.mjs
+      - name: Upload production Trip and Household screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trackers-production-screenshots
+          path: test-results/trackers/
       - name: Verify published Bills assets and actual production rendering
         env:
           BILLS_BASE_URL: https://doweo.app
