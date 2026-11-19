@@ -519,3 +519,13 @@
  if(root.document.readyState==='loading')root.document.addEventListener('DOMContentLoaded',()=>{void init();},{once:true});
  else void init();
 })(typeof globalThis!=='undefined'?globalThis:null);
+
+/* Mobile Chat visual theme — loaded after the existing application markup. */
+(function(){
+  if(typeof document==='undefined'||document.querySelector('script[data-dw-chat-theme]'))return;
+  const s=document.createElement('script');
+  s.src='/doweo-mobile-chat-mockup.js?v=20261118-navy-cards-1';
+  s.defer=true;
+  s.dataset.dwChatTheme='true';
+  document.head.appendChild(s);
+})();
