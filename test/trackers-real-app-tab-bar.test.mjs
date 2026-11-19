@@ -73,12 +73,12 @@ test('Trackers bar is visible on real desktop app and survives both workspace tr
   await page.locator('#sq-ng-content [data-ng-trip-action="budget"]').click();
   assert.equal(await page.locator('#sq-ng-content #sq-ng-trip-plan-editor').isVisible(),true,'Trip budget editor actually opens');
   mkdirSync(resolve(root,'test-results/trackers'),{recursive:true});
-  await page.screenshot({path:resolve(root,'test-results/trackers/trips-visible.png'),fullPage:true});
+  await page.screenshot({path:resolve(root,'test-results/trackers/trips-visible.png'),fullPage:false});
   var backLayout=await page.locator('#sq-ng-content #sq-ng-workspace-back').evaluate(el=>{
    const nodes=[el,el.parentElement,el.parentElement?.parentElement,el.parentElement?.parentElement?.parentElement];
    return nodes.map(n=>({tag:n.tagName,id:n.id,cls:n.className,hidden:n.hidden,display:getComputedStyle(n).display,visibility:getComputedStyle(n).visibility,opacity:getComputedStyle(n).opacity,size:[n.getBoundingClientRect().width,n.getBoundingClientRect().height]}));
   });
-  console.log('WORKSPACE_BACK_LAYOUT',JSON.stringify(backLayout));
+  console.log('WORKSPACE_BACK_LAYOUT',JSON.stringify({nodes:backLayout,workspaceHidden:await page.locator('#sq-nextgen').evaluate(el=>el.hidden),hostHidden:await page.locator('#dw-trackers-workspace-host').evaluate(el=>el.hidden),bodyClass:await page.evaluate(()=>document.body.className)}));
   await page.evaluate(()=>document.getElementById('sq-ng-workspace-back').click());
   await page.locator('#sq-ng-content .sq-ng-workspace-directory').waitFor({state:'visible'});
   assert.equal(await page.locator('#sq-ng-content #sq-ng-workspace-new').isVisible(),true,'Trip create action must be visible');
@@ -92,12 +92,12 @@ test('Trackers bar is visible on real desktop app and survives both workspace tr
   await page.locator('#sq-ng-content [data-ng-trip-action="budget"]').click();
   assert.equal(await page.locator('#sq-ng-content #sq-ng-trip-plan-editor').isVisible(),true,'Household budget editor actually opens');
   mkdirSync(resolve(root,'test-results/trackers'),{recursive:true});
-  await page.screenshot({path:resolve(root,'test-results/trackers/households-visible.png'),fullPage:true});
+  await page.screenshot({path:resolve(root,'test-results/trackers/households-visible.png'),fullPage:false});
   var backLayout=await page.locator('#sq-ng-content #sq-ng-workspace-back').evaluate(el=>{
    const nodes=[el,el.parentElement,el.parentElement?.parentElement,el.parentElement?.parentElement?.parentElement];
    return nodes.map(n=>({tag:n.tagName,id:n.id,cls:n.className,hidden:n.hidden,display:getComputedStyle(n).display,visibility:getComputedStyle(n).visibility,opacity:getComputedStyle(n).opacity,size:[n.getBoundingClientRect().width,n.getBoundingClientRect().height]}));
   });
-  console.log('WORKSPACE_BACK_LAYOUT',JSON.stringify(backLayout));
+  console.log('WORKSPACE_BACK_LAYOUT',JSON.stringify({nodes:backLayout,workspaceHidden:await page.locator('#sq-nextgen').evaluate(el=>el.hidden),hostHidden:await page.locator('#dw-trackers-workspace-host').evaluate(el=>el.hidden),bodyClass:await page.evaluate(()=>document.body.className)}));
   await page.evaluate(()=>document.getElementById('sq-ng-workspace-back').click());
   await page.locator('#sq-ng-content .sq-ng-workspace-directory').waitFor({state:'visible'});
   assert.equal(await page.locator('#sq-ng-content #sq-ng-workspace-new').isVisible(),true,'Household create action must be visible');
