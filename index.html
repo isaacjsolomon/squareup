@@ -6561,6 +6561,16 @@ function initMobileChatInbox(){
   if(card.parentElement===host)marker.after(card);
   host.classList.remove('searching');thread.hidden=true;list.hidden=false;threadId=null;
  }
+ // Block background gestures without changing the body's positioning or scroll container.
+ function containChatGesture(event){
+  if(pane.hidden||!media.matches||event.touches?.length>1)return;
+  if(event.target.closest('[role="dialog"],[aria-modal="true"],dialog[open]'))return;
+  for(let el=event.target;el&&el!==pane&&pane.contains(el);el=el.parentElement){
+   if(el.scrollHeight>el.clientHeight+1&&/^(auto|scroll)$/.test(getComputedStyle(el).overflowY))return;
+  }
+  if(event.cancelable)event.preventDefault();
+ }
+ for(const type of ['touchmove','wheel'])document.addEventListener(type,containChatGesture,{passive:false});
  let pageY=0;
  function dismiss(){if(pane.hidden)return;version++;restore();pane.hidden=true;document.body.classList.remove('dw-chats-open');window.scrollTo({top:pageY,behavior:'instant'});nav.removeAttribute('aria-current')}
  async function menu(){
@@ -17679,8 +17689,8 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
 @media(max-width:900px){
  body.dw-chats-open::after{content:"";position:fixed;inset:0;background:#061b29;z-index:1000;pointer-events:none}
  html body.dw-chats-open .wrap>.sq-mobile-top{z-index:2147481001!important}
- html:has(>body.dw-chats-open),html body.dw-chats-open{overflow:hidden!important;overscroll-behavior:none!important}
- html body.dw-chats-open{position:fixed!important;inset:0!important;margin:0!important}
+ /* Keep the shared navigation in the same viewport as Trackers. */
+ #dw-chat-rows,#dw-dm-messages,#dw-chat-host #tracker-chat-messages,#dw-chat-host #sq-chat-connect-panel{overscroll-behavior-y:contain}
  html body.dw-chats-open #dw-chats{bottom:0;overflow:hidden;padding:8px 12px calc(var(--dw-chat-bottom,0px) + 6px)}
  html body.dw-chats-open .sq-mobile-nav{z-index:2147481002!important}
  #dw-chat-rows,#dw-chat-host #tracker-chat-messages{overscroll-behavior-y:none!important}
