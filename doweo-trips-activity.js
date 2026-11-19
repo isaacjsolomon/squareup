@@ -137,3 +137,88 @@
  $('dw-trip-add-item').onsubmit=function(event){event.preventDefault();submit(this,()=>api('finance-plus/trips/items','POST',{tracker_id:activeTracker(),trip_id:activeTrip(),title:this.elements.title.value,type:this.elements.type.value,date:this.elements.date.value||null,estimated_cost:this.elements.estimated_cost.value||null,notes:this.elements.notes.value,link_url:this.elements.link_url.value}))};
  launch.onclick=async()=>{pane.hidden=!pane.hidden;launch.setAttribute('aria-pressed',String(!pane.hidden));if(pane.hidden)return;try{await loadTrackers();await refresh()}catch(e){status(e.message||'Could not load trackers.')}};
 })();
+
+/* Desktop-only categories for the existing Trackers gallery. */
+(function(){
+ 'use strict';
+ const desktop=window.matchMedia('(min-width:901px)');
+ const page=document.getElementById('trackers-page');
+ const nav=page?.querySelector('.dw-section-tabs[aria-label="Tracker sections"]');
+ const gallery=document.getElementById('trackers-gallery');
+ if(!page||!nav||!gallery||nav.dataset.gallerySwitcher)return;
+ nav.dataset.gallerySwitcher='true';
+ let active='all',loaded=false,busy=false,groups={trip:new Set(),household:new Set()},queued=false;
+ const buttons=[...nav.querySelectorAll('button[data-dw-section]')];
+ buttons.forEach(button=>{
+  button.dataset.galleryCategory=button.dataset.dwSection==='trackers'?'all':button.dataset.dwSection==='home'?'household':'trip';
+  button.removeAttribute('data-dw-section'); // Avoid legacy Finance Hub navigation.
+ });
+ const style=document.createElement('style');style.id='dw-desktop-trackers-switcher';
+ style.textContent=[
+ '@media(min-width:901px){',
+ 'body.trackers-view:not(.sq-bills-open) #trackers-page>.dw-section-tabs[aria-label="Tracker sections"]{display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:5!important;gap:7px!important;margin:0 0 20px!important;padding:6px!important;width:100%!important;background:#10293c!important;border:1px solid #365b6c!important;border-radius:14px!important;box-sizing:border-box!important}',
+ '#trackers-page>.dw-section-tabs[aria-label="Tracker sections"] button{display:block!important;flex:1!important;min-height:46px!important;border:0!important;border-radius:10px!important;font:inherit!important;font-weight:750!important;background:transparent!important;color:#d3e5ef!important;cursor:pointer!important}',
+ '#trackers-page>.dw-section-tabs[aria-label="Tracker sections"] button[aria-pressed="true"]{color:#062d38!important;background:#37ddc1!important;box-shadow:0 3px 12px #002b3a44!important}',
+ '#dw-gallery-category-status{font-size:14px;color:#d3e5ef;margin:0 0 14px}',
+ '#dw-gallery-category-status[hidden]{display:none!important}',
+ '}',
+ '@media(max-width:900px){#dw-gallery-category-status{display:none!important}#trackers-page>.dw-section-tabs[aria-label="Tracker sections"]{display:none!important}}'
+ ].join('\n');
+ document.head.append(style);
+ const status=document.createElement('p');status.id='dw-gallery-category-status';status.hidden=true;status.setAttribute('role','status');status.setAttribute('aria-live','polite');nav.after(status);
+ function ids(rows){return (Array.isArray(rows)?rows:[]).map(row=>String(row?.tracker_id||'')).filter(Boolean)}
+ async function loadGroups(){
+  if(busy||typeof window.squareUpApi!=='function')return;
+  busy=true;status.textContent='Loading categories…';
+  try{
+   const [tripLinks,homeLinks,tripPlans,homePlans]=await Promise.all([
+    window.squareUpApi('finance/workspace-links?type=trip'),
+    window.squareUpApi('finance/workspace-links?type=household'),
+    window.squareUpApi('finance/workspace?type=trip'),
+    window.squareUpApi('finance/workspace?type=household')
+   ]);
+   groups={trip:new Set([...ids(tripLinks),...ids(tripPlans)]),household:new Set([...ids(homeLinks),...ids(homePlans)])};loaded=true;
+  }catch(error){loaded=false;status.textContent='Categories could not be loaded. All Trackers is still available.'}
+  finally{busy=false;apply()}
+ }
+ function groupFor(card){
+  const id=card.dataset.trackerId||'',name=card.querySelector('h3')?.textContent||'';
+  let template=-1;try{const raw=localStorage.getItem('sq_tracker_template_'+id);if(raw!==null&&raw!=='')template=Number(raw)}catch(_){}
+  return {
+   trip:groups.trip.has(id)||[1,2,3,5].includes(template),
+   household:groups.household.has(id)||[0,4].includes(template)||/\b(household|roommates?|housemates?|apartment|home bills?|home expenses?|shared living)\b/i.test(name)
+  };
+ }
+ function apply(){
+  if(!desktop.matches)return;
+  buttons.forEach(button=>{const yes=button.dataset.galleryCategory===active;button.setAttribute('aria-pressed',String(yes));if(yes)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current')});
+  let count=0;
+  for(const card of gallery.querySelectorAll(':scope > .tracker-tile')){
+   const match=active==='all'||groupFor(card)[active];
+   card.hidden=!match;card.style.display=match?'':'none';if(match)count++;
+  }
+  const create=gallery.querySelector(':scope > .sq-create-tracker-row');
+  const archive=gallery.querySelector(':scope > .sq-archive-toggle');
+  if(create){create.hidden=active!=='all';create.style.setProperty('display',active==='all'?'flex':'none','important')}
+  if(archive){archive.hidden=active!=='all';archive.style.setProperty('display',active==='all'?'':'none',active==='all'?'':'important')}
+  if(active!=='all'){const archived=gallery.querySelector(':scope > .sq-archived-wrap');if(archived)archived.hidden=true}
+  status.hidden=active==='all';
+  if(active==='all'){status.textContent='';return}
+  if(!loaded){if(busy)status.textContent='Loading categories…';else status.textContent='Categories unavailable. Choose All Trackers.';return}
+  status.textContent=count?count+' '+(active==='trip'?'trip':'household')+' tracker'+(count===1?'':'s'):'No '+(active==='trip'?'trips':'households')+' yet. Create or link one in the existing workspace tools.';
+ }
+ nav.addEventListener('click',event=>{
+  const button=event.target.closest('button[data-gallery-category]');
+  if(!button||!desktop.matches)return;
+  event.stopPropagation();active=button.dataset.galleryCategory;apply();
+  if(active!=='all'&&!loaded&&!busy)loadGroups();
+ });
+ new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(()=>{queued=false;apply()})}).observe(gallery,{childList:true});
+ desktop.addEventListener('change',()=>{
+  if(desktop.matches){active='all';apply();return}
+  for(const card of gallery.querySelectorAll(':scope > .tracker-tile')){card.hidden=false;card.style.display=''}
+  for(const selector of [':scope > .sq-create-tracker-row',':scope > .sq-archive-toggle'])gallery.querySelector(selector)?.removeAttribute('hidden');
+ });
+ document.getElementById('nav-trackers')?.addEventListener('click',()=>{if(desktop.matches){active='all';loaded=false;apply()}});
+ apply();
+})();
