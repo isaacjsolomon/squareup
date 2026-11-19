@@ -199,8 +199,8 @@
   }
   const create=gallery.querySelector(':scope > .sq-create-tracker-row');
   const archive=gallery.querySelector(':scope > .sq-archive-toggle');
-  if(create)create.hidden=active!=='all';
-  if(archive)archive.hidden=active!=='all';
+  if(create){create.hidden=active!=='all';create.style.setProperty('display',active==='all'?'flex':'none','important')}
+  if(archive){archive.hidden=active!=='all';archive.style.setProperty('display',active==='all'?'':'none',active==='all'?'':'important')}
   if(active!=='all'){const archived=gallery.querySelector(':scope > .sq-archived-wrap');if(archived)archived.hidden=true}
   status.hidden=active==='all';
   if(active==='all'){status.textContent='';return}
