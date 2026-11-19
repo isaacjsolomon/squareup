@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
-import {readFileSync,existsSync} from 'node:fs';
+import {readFileSync,existsSync,mkdirSync} from 'node:fs';
 import {resolve,extname} from 'node:path';
 import {chromium} from 'playwright';
 
@@ -72,6 +72,8 @@ test('Trackers bar is visible on real desktop app and survives both workspace tr
   assert.equal(await page.locator('#sq-ng-content [data-ng-trip-action="budget"]').isVisible(),true,'Trip budget action is visible');
   await page.locator('#sq-ng-content [data-ng-trip-action="budget"]').click();
   assert.equal(await page.locator('#sq-ng-content #sq-ng-trip-plan-editor').isVisible(),true,'Trip budget editor actually opens');
+  mkdirSync(resolve(root,'test-results/trackers'),{recursive:true});
+  await page.screenshot({path:resolve(root,'test-results/trackers/trips-visible.png'),fullPage:true});
   await page.locator('#sq-ng-content #sq-ng-workspace-back').click();
   assert.equal(await page.locator('#sq-ng-content #sq-ng-workspace-new').isVisible(),true,'Trip create action must be visible');
   await nav.getByRole('button',{name:'Households'}).click();
@@ -83,6 +85,8 @@ test('Trackers bar is visible on real desktop app and survives both workspace tr
   assert.equal(await page.locator('#sq-ng-content [data-ng-trip-action="budget"]').isVisible(),true,'Household budget action is visible');
   await page.locator('#sq-ng-content [data-ng-trip-action="budget"]').click();
   assert.equal(await page.locator('#sq-ng-content #sq-ng-trip-plan-editor').isVisible(),true,'Household budget editor actually opens');
+  mkdirSync(resolve(root,'test-results/trackers'),{recursive:true});
+  await page.screenshot({path:resolve(root,'test-results/trackers/households-visible.png'),fullPage:true});
   await page.locator('#sq-ng-content #sq-ng-workspace-back').click();
   assert.equal(await page.locator('#sq-ng-content #sq-ng-workspace-new').isVisible(),true,'Household create action must be visible');
   await nav.getByRole('button',{name:'All Trackers'}).click();
