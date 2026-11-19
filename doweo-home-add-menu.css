@@ -1,0 +1,63 @@
+/* Desktop Home Overview: compact anchored Add expense dropdown. */
+@media(min-width:901px){
+ #dw-compact-add-wrapper{display:inline-flex;flex:0 0 auto;align-items:center;margin-left:auto;position:relative}
+ #dw-compact-add-wrapper #dw-compact-add{display:inline-flex;align-items:center;justify-content:center;gap:11px}
+ #dw-compact-add-wrapper #dw-compact-add .dw-compact-add-caret{display:inline-block;font-size:20px;font-weight:800;line-height:1;margin-top:-4px;transition:transform .16s ease}
+ #dw-compact-add-wrapper #dw-compact-add[aria-expanded="true"] .dw-compact-add-caret{transform:rotate(180deg);margin-top:4px}
+ #dw-compact-add-wrapper #dw-compact-add[aria-expanded="true"]{background:#63e8d2;box-shadow:0 0 0 2px #3edac2}
+}
+#dw-compact-add-menu[hidden]{display:none!important}
+#dw-compact-add-menu{
+ position:fixed;
+ z-index:2147481500;
+ display:flex;
+ flex-direction:column;
+ gap:3px;
+ padding:8px;
+ box-sizing:border-box;
+ max-width:calc(100vw - 24px);
+ overflow-y:auto;
+ background:#0b2b3e;
+ color:#effaff;
+ border:1px solid #49758b;
+ border-radius:15px;
+ box-shadow:0 16px 40px rgba(0,10,25,.52);
+ font-family:inherit;
+}
+#dw-compact-add-menu > button{
+ appearance:none;
+ display:flex;
+ align-items:center;
+ gap:12px;
+ width:100%;
+ min-height:66px;
+ text-align:left;
+ padding:10px 11px;
+ background:transparent;
+ color:#effaff;
+ border:0;
+ border-radius:10px;
+ font:inherit;
+ cursor:pointer;
+}
+#dw-compact-add-menu > button:hover,#dw-compact-add-menu > button:focus-visible{background:#17485a}
+#dw-compact-add-menu > button:focus-visible{outline:2px solid #56eccf;outline-offset:-2px}
+#dw-compact-add-menu > button:disabled{opacity:.45;cursor:not-allowed}
+#dw-compact-add-menu .dw-compact-add-option-icon{
+ flex:0 0 43px;
+ display:grid;
+ place-items:center;
+ height:43px;
+ border-radius:11px;
+ background:#16505a;
+ color:#46e6c9;
+ font-size:27px;
+ font-weight:700;
+ line-height:1;
+}
+#dw-compact-add-menu .dw-compact-add-option-text{display:block;min-width:0}
+#dw-compact-add-menu .dw-compact-add-option-text strong{display:block;color:#f4fbff;font-size:15px;font-weight:750;line-height:1.3}
+#dw-compact-add-menu .dw-compact-add-option-text small{display:block;margin-top:4px;color:#a8c7d7;font-size:12px;line-height:1.35}
+@media(max-width:900px){
+ #dw-compact-add-wrapper,#dw-compact-add-menu{display:none!important}
+}

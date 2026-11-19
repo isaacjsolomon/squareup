@@ -76,8 +76,8 @@ jobs:
         run: node --test test/mobile-wallet-ui.test.mjs test/doweo-mobile-more-flat-grid.test.mjs
       - name: Verify sidebar keeps More as its only dropdown
         run: node --test test/doweo-flat-sidebar.test.mjs
-      - name: Verify desktop tracker gallery tabs and preserve mobile view
-        run: node --check doweo-trips-activity.js && node --test test/trackers-desktop-category-switcher.test.mjs
+      - name: Verify retired tracker category bar and the new Overview action dropdown
+        run: node --check doweo-trips-activity.js && node --check doweo-home-add-menu.js && node --test test/retired-tracker-category-nav.test.mjs
       - name: Check Bills, Households and mobile Finance Hub tab navigation
         run: node --test test/finance-household-tabs.test.mjs
       - name: Check Weo mascot interactions and accessibility
@@ -96,10 +96,8 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.65.0
           npx playwright install --with-deps chromium
-      - name: Browser-test desktop tracker categories and mobile layout preservation
-        run: node --test test/trackers-category-browser.test.mjs
-      - name: Browser-test Tracker tab visibility using the full signed-in DoWeo page
-        run: node --test test/trackers-real-app-tab-bar.test.mjs
+      - name: Browser-test desktop Home Add expense menu, retired tabs, and mobile preservation
+        run: node --test test/home-add-dropdown.test.mjs
       - name: Verify mobile viewport foundation across screen sizes
         run: node --test test/mobile-viewport-foundation.test.mjs
       - name: Test bill and subscription editing
