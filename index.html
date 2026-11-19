@@ -6,6 +6,8 @@
 <link rel="apple-touch-icon" href="/icons/icon-192.png?v=doweo-mobile-brand-v3">
 
 <meta charset="UTF-8">
+<link rel="modulepreload" href="https://esm.sh/@supabase/supabase-js@2" crossorigin>
+<link rel="preconnect" href="https://pajrdqarszbnrlstoyly.supabase.co" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>DoWeo: Split bills and track shared expenses with friends</title>
 <meta name="description" content="DoWeo makes it easy to split bills, track shared expenses and settle up with friends, roommates and groups. Free to use.">
@@ -3413,7 +3415,24 @@ window.dwBillDueDate=function(value){
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+<script>
+(() => {
+  let pending;
+  window.dwLoadQRCode = function () {
+    if (window.QRCode) return Promise.resolve(window.QRCode);
+    if (!pending) {
+      pending = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+        script.onload = () => window.QRCode ? resolve(window.QRCode) : reject(new Error('QR generator unavailable'));
+        script.onerror = () => reject(new Error('QR generator unavailable'));
+        document.head.appendChild(script);
+      }).catch(error => { pending = undefined; throw error; });
+    }
+    return pending;
+  };
+})();
+</script>
 <script>
 // ============ STORAGE (safe: falls back to memory if the browser blocks it) ============
 var KEY = "squareup-entries";
@@ -5965,14 +5984,19 @@ $("new-form").addEventListener("submit", async function (e) {
 });
 
 // QR code generator runs in the browser; the invite token is never sent to a QR API.
-function updateInviteQR() {
+let inviteQRVersion = 0;
+async function updateInviteQR() {
+  const version = ++inviteQRVersion;
   var url = $("invite-link").value;
   var section = $("invite-qr-section");
   var target = $("invite-qr");
   target.textContent = "";
   section.hidden = !/^https:\/\/[^\s]+\?join=/.test(url);
+  $("invite-qr-download").hidden = true;
   if (section.hidden) return;
-  if (typeof QRCode === "undefined") {
+  const QRCode = await window.dwLoadQRCode().catch(() => null);
+  if (version !== inviteQRVersion || $("invite-link").value !== url) return;
+  if (!QRCode) {
     target.textContent = "QR generator unavailable. You can still copy the invitation link.";
     $("invite-qr-download").hidden = true;
     return;
