@@ -135,6 +135,7 @@
       if(choosing){
         if(friends===null){
           const h=heading('People you can message',visible.length,true);h.className='dw-people-section-label';h.replaceChildren('People you can message');const cnt=document.createElement('small');cnt.textContent=visible.length+' contacts';h.append(cnt);content.append(h);
+          for(const x of visible)content.append(x.b);
         }else if(peopleTab==='all'){
           for(const [kind,label] of [['friend','Friends'],['tracker','Shared Trackers']]){
             const subset=visible.filter(x=>x.kind===kind);
