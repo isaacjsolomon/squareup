@@ -74,7 +74,7 @@ test('Trackers bar is visible on real desktop app and survives both workspace tr
   assert.equal(await page.locator('#sq-ng-content #sq-ng-trip-plan-editor').isVisible(),true,'Trip budget editor actually opens');
   mkdirSync(resolve(root,'test-results/trackers'),{recursive:true});
   await page.screenshot({path:resolve(root,'test-results/trackers/trips-visible.png'),fullPage:true});
-  const backLayout=await page.locator('#sq-ng-content #sq-ng-workspace-back').evaluate(el=>{
+  var backLayout=await page.locator('#sq-ng-content #sq-ng-workspace-back').evaluate(el=>{
    const nodes=[el,el.parentElement,el.parentElement?.parentElement,el.parentElement?.parentElement?.parentElement];
    return nodes.map(n=>({tag:n.tagName,id:n.id,cls:n.className,hidden:n.hidden,display:getComputedStyle(n).display,visibility:getComputedStyle(n).visibility,opacity:getComputedStyle(n).opacity,size:[n.getBoundingClientRect().width,n.getBoundingClientRect().height]}));
   });
@@ -93,7 +93,7 @@ test('Trackers bar is visible on real desktop app and survives both workspace tr
   assert.equal(await page.locator('#sq-ng-content #sq-ng-trip-plan-editor').isVisible(),true,'Household budget editor actually opens');
   mkdirSync(resolve(root,'test-results/trackers'),{recursive:true});
   await page.screenshot({path:resolve(root,'test-results/trackers/households-visible.png'),fullPage:true});
-  const backLayout=await page.locator('#sq-ng-content #sq-ng-workspace-back').evaluate(el=>{
+  var backLayout=await page.locator('#sq-ng-content #sq-ng-workspace-back').evaluate(el=>{
    const nodes=[el,el.parentElement,el.parentElement?.parentElement,el.parentElement?.parentElement?.parentElement];
    return nodes.map(n=>({tag:n.tagName,id:n.id,cls:n.className,hidden:n.hidden,display:getComputedStyle(n).display,visibility:getComputedStyle(n).visibility,opacity:getComputedStyle(n).opacity,size:[n.getBoundingClientRect().width,n.getBoundingClientRect().height]}));
   });
