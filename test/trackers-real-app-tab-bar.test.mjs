@@ -59,9 +59,18 @@ test('Trackers bar is visible on real desktop app and survives both workspace tr
   await page.waitForFunction(()=>document.getElementById('sq-nextgen')?.parentElement?.id==='dw-trackers-workspace-host');
   assert.equal(await nav.isVisible(),true,'Trips does not hide the bar');
   await page.waitForFunction(()=>document.getElementById('sq-ng-content')?.textContent?.includes('Your trips'));
+  const tripState=await page.locator('#sq-ng-content').evaluate(el=>{
+    const nodes=[el,el.parentElement,el.parentElement?.parentElement,el.parentElement?.parentElement?.parentElement,document.getElementById('dw-trackers-workspace-host'),document.getElementById('trackers-page')];
+    return nodes.map(n=>n&&({tag:n.tagName,id:n.id,classes:n.className,hidden:n.hidden,display:getComputedStyle(n).display,visibility:getComputedStyle(n).visibility,opacity:getComputedStyle(n).opacity,rect:{width:n.getBoundingClientRect().width,height:n.getBoundingClientRect().height},scrollHeight:n.scrollHeight}));
+  });
+  console.log('TRIP_LAYOUT_VISIBILITY',JSON.stringify(tripState));
+  assert.equal(await page.locator('#sq-ng-content .sq-ng-workspace-directory').isVisible(),true,'Trip workspace directory must actually be visible on-screen');
+  assert.equal(await page.locator('#sq-ng-content #sq-ng-workspace-new').isVisible(),true,'Trip create action must be visible');
   await nav.getByRole('button',{name:'Households'}).click();
   assert.equal(await nav.isVisible(),true,'Households does not hide the bar');
   await page.waitForFunction(()=>document.getElementById('sq-ng-content')?.textContent?.includes('Your households'));
+  assert.equal(await page.locator('#sq-ng-content .sq-ng-workspace-directory').isVisible(),true,'Household workspace directory must actually be visible on-screen');
+  assert.equal(await page.locator('#sq-ng-content #sq-ng-workspace-new').isVisible(),true,'Household create action must be visible');
   await nav.getByRole('button',{name:'All Trackers'}).click();
   assert.equal(await nav.isVisible(),true,'All Trackers restores bar');
   assert.equal(await page.locator('#trackers-gallery').isVisible(),true,'existing cards are available');
