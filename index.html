@@ -16735,7 +16735,7 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
    const date=/^\d{4}-\d{2}-\d{2}$/.test(key)?new Date(key+'T12:00:00Z'):null;
    const valid=date&&Number.isFinite(date.valueOf())&&date.toISOString().startsWith(key);
    return {item,key:valid?key:'',date:valid?date:null,frequency:window.dwBillFrequency(item.frequency||'Recurring'),
-    mode:item.recurring_enabled?(item.active===false?'Paused':'Automatic'):'',kind:window.sqBillPresentation?.getKind(id,item)||item.kind};
+    mode:item.recurring_enabled?(item.active===false?'Paused':'Automatic'):''};
   }).sort((a,b)=>(a.key||'z').localeCompare(b.key||'z')||String(a.item.name||'').localeCompare(String(b.item.name||'')));
   const first=entries[0];
   const common=field=>entries.every(e=>e[field]===first[field])?first[field]:'';
@@ -16753,7 +16753,6 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
    }
    const el=row(e.item,id),detail=el.querySelector('.dw-home-bill-info small');
    detail.textContent=[frequency?'':e.frequency,mode?'':e.mode].filter(Boolean).join(' · ');
-   if(e.kind==='subscription'){const badge=document.createElement('span');badge.className='dw-upcoming-badge';badge.textContent='Subscription';detail.prepend(badge);}
    if(!detail.textContent)detail.remove();
    list.append(el);
   }
@@ -16829,7 +16828,6 @@ html.dw-a11y-targets body :is(input[type=checkbox],input[type=radio]){min-width:
  #dw-compact-upcoming #dw-home-bill-list{margin:0;padding:0;border:0}
  #dw-compact-upcoming .dw-date-group{margin:8px 0 0;padding-top:10px;border-top:1px solid #365f72;color:#edfaff;font-size:15px}
  #dw-compact-upcoming .dw-date-group:first-child,#dw-compact-upcoming small+.dw-date-group{border:0;padding-top:0}
- #dw-compact-upcoming .dw-upcoming-badge{display:inline-block;border-radius:10px;padding:1px 7px;margin-right:5px;background:#183f50;color:#b5e9e3;font-size:11px}
  #dw-compact-upcoming .dw-home-bill-row{position:relative;padding:0 0 8px;border-bottom:0}
  #dw-compact-upcoming .dw-home-bill-info{padding-right:18px;cursor:pointer}
  #dw-compact-upcoming .dw-home-bill-title strong{font-size:16px}
