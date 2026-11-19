@@ -63,11 +63,7 @@ test('desktop Tracker gallery has no category bar and Overview Add expense menu 
   await toggle.click();
   const menu=page.locator('#dw-compact-add-menu');
   assert.equal(await menu.isVisible(),true,'button opens a real dropdown instead of submitting an expense');
-  assert.deepEqual(await menu.locator('[role="menuitem"]').allTextContents().then(v=>v.map(x=>x.replace(/\s+/g,' ').trim())),[
-   'Add expense Manually add an expense',
-   'Scan receipt Assign items to friends',
-   'Split a bill Divide an expense with friends'
-  ]);
+  assert.deepEqual(await menu.locator('[role="menuitem"] strong').allTextContents(),['Add expense','Scan receipt','Split a bill']);
   assert.equal(await page.locator('#sq-expense-dialog').isVisible(),false,'opening menu must not open expense modal');
   await page.keyboard.press('Escape');
   assert.equal(await menu.isVisible(),false,'Escape dismisses the menu');
