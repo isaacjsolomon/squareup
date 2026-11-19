@@ -6466,8 +6466,7 @@ function initMobileChatInbox(){
  let items=[],filterIndex=0,unreadOnly=false,version=0,threadId=null,busy=false;
 
  const dmPanel=document.getElementById('dw-dm-panel'), dmBox=document.getElementById('dw-dm-messages'), dmInput=document.getElementById('dw-dm-input'),dmForm=document.getElementById('dw-dm-form'),dmStatus=document.getElementById('dw-dm-status');
- const dock=nav.closest('.sq-mobile-nav'),dockMarker=document.createComment('mobile navigation');
- dock.before(dockMarker);
+ const dock=nav.closest('.sq-mobile-nav');
  let choosing=false,people=[],dmTimer=0;
  async function directory(){
   const {data,error}=await supabase.rpc('dw_dm_directory_layout');
@@ -6551,7 +6550,8 @@ function initMobileChatInbox(){
   const keyboard=viewport?Math.max(0,innerHeight-viewport.height-viewport.offsetTop):0;
   const typing=!!threadId&&keyboard>100;
   document.body.classList.toggle('dw-chat-keyboard',typing);
-  pane.style.setProperty('--dw-chat-bottom',(threadId?keyboard:0)+'px');
+  const footerTop=dock.querySelector('.sq-add .sq-m-icon')?.getBoundingClientRect().top ?? dock.getBoundingClientRect().top;
+  pane.style.setProperty('--dw-chat-bottom',(threadId?keyboard:Math.max(0,innerHeight-Math.min(footerTop,dock.getBoundingClientRect().top)))+'px');
  }
  function restore(){
   clearInterval(dmTimer);dmPanel.hidden=true;thread.classList.remove('direct');thread.querySelector('header small').textContent='Tracker chat';if(choosing)query.value='';choosing=false;list.classList.remove('choosing');list.querySelector('h2').textContent='Chats';query.placeholder='Search chats, friends, or trackers';
@@ -6562,10 +6562,10 @@ function initMobileChatInbox(){
   host.classList.remove('searching');thread.hidden=true;list.hidden=false;threadId=null;
  }
  let pageY=0;
- function dismiss(){if(pane.hidden)return;version++;restore();pane.hidden=true;dockMarker.after(dock);document.body.classList.remove('dw-chats-open');window.scrollTo({top:pageY,behavior:'instant'});nav.removeAttribute('aria-current')}
+ function dismiss(){if(pane.hidden)return;version++;restore();pane.hidden=true;document.body.classList.remove('dw-chats-open');window.scrollTo({top:pageY,behavior:'instant'});nav.removeAttribute('aria-current')}
  async function menu(){
   if(pane.hidden)pageY=window.scrollY;
-  const seq=++version;restore();pane.hidden=false;pane.append(dock);document.body.classList.add('dw-chats-open');nav.setAttribute('aria-current','page');fit();
+  const seq=++version;restore();pane.hidden=false;document.body.classList.add('dw-chats-open');nav.setAttribute('aria-current','page');fit();
   rows.textContent='Loading chats…';items=[];
   try{
    const groups=await api('trackers');if(seq!==version)return;
@@ -17705,7 +17705,6 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  html body.dw-chats-open:has(#dw-chat-thread:not([hidden])) .sq-mobile-nav{display:none!important}
  html body.dw-chats-open #dw-chats{inset:0;padding-top:calc(env(safe-area-inset-top,0px) + 8px)}
  html body.dw-chats-open:has(#dw-chat-thread:not([hidden])) #dw-chats{padding-bottom:calc(max(env(safe-area-inset-bottom,0px),var(--dw-chat-bottom,0px)) + 4px)}
- html body.dw-chats-open .sq-mobile-nav{position:fixed!important;inset:auto 0 0!important;margin:0!important;transform:none!important;height:auto!important;min-height:0!important;padding:7px 5px max(4px,env(safe-area-inset-bottom))!important}
  #dw-chats :is(#dw-chat-compose,#dw-chat-find){display:grid;place-items:center;width:44px;height:44px;padding:0}
  #dw-chats :is(#dw-chat-compose,#dw-chat-find) svg{width:24px;height:24px}
 
@@ -17718,20 +17717,10 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  #dw-dm-form{display:flex;gap:8px}#dw-dm-input{min-width:0;flex:1;font-size:16px;padding:10px;border-radius:12px}
  #dw-dm-form button{background:#35dcb4;color:#062b35;border-radius:12px;padding:0 16px}
  html body.dw-chats-open #dw-chats:has(>#dw-chat-list:not([hidden])){
-  display:grid;grid-template-rows:minmax(0,1fr) auto;top:var(--dw-inbox-top,0px);bottom:auto;
-  height:var(--dw-inbox-height,100dvh);padding-inline:0;padding-bottom:0;
+  display:grid;grid-template-rows:minmax(0,1fr);top:var(--dw-inbox-top,0px);bottom:auto;
+  height:var(--dw-inbox-height,100dvh);padding-inline:0;padding-bottom:calc(var(--dw-chat-bottom,80px) + 4px);
  }
  #dw-chats>#dw-chat-list{height:auto;min-height:0;padding:0 12px;box-sizing:border-box}
- html body.dw-chats-open #dw-chats>.sq-mobile-nav{
-  position:static!important;grid-row:2;align-self:end;grid-template-rows:auto!important;align-items:end!important;
-  height:auto!important;min-height:0!important;padding:4px 4px max(3px,calc(env(safe-area-inset-bottom,0px) - 22px))!important;
-  box-shadow:none!important;border-radius:0!important;
- }
- html body.dw-chats-open #dw-chats>.sq-mobile-nav>button{
-  justify-content:flex-end!important;align-self:end!important;min-height:44px!important;height:auto!important;padding-block:0!important;
- }
- html body.dw-chats-open #dw-chats>.sq-mobile-nav>button.sq-add .sq-m-icon{width:42px!important;height:42px!important;line-height:42px!important}
- html body.dw-chats-open #dw-chats>.sq-mobile-nav button,html body.dw-chats-open #dw-chats>.sq-mobile-nav button span{transform:none!important;top:auto!important;margin-block:0!important}
 
  #dw-chat-list svg{width:19px;height:19px;vertical-align:middle;flex:none}
  #dw-chat-list:not(.choosing) #dw-chat-rows>button>span>b{display:block;font-size:18px;line-height:1.25;overflow-wrap:anywhere}
