@@ -212,7 +212,7 @@ await page.locator('#receipt-items input[type=checkbox]').first().check();assert
   assert.ok(await seeAll.isVisible(),'See all is visible again on return Home');
   for(const width of [1024,1440,1920]){
    await page.setViewportSize({width,height:1000});
-   await page.locator('#dw-home-bill-list .dw-home-bill-row').waitFor();
+   await page.locator('#dw-home-bill-list .dw-home-bill-row').first().waitFor();
    const state=await page.evaluate(()=>{
     const box=e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width}};
     return {
