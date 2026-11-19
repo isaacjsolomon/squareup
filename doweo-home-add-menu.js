@@ -142,12 +142,20 @@
   installed=true;
   return true;
  }
- if(!install()){
+ function watchUntilInstalled(){
+  if(!desktop.matches||installed)return;
+  if(install())return;
+  if(observer)return;
   observer=new MutationObserver(()=>{
    removeRetiredNav();
-   if(install())observer.disconnect();
+   if(install()){observer.disconnect();observer=null}
   });
   observer.observe(document.body,{childList:true,subtree:true});
-  document.addEventListener('DOMContentLoaded',()=>{if(install())observer.disconnect()},{once:true});
  }
+ watchUntilInstalled();
+ desktop.addEventListener('change',()=>{
+  if(!desktop.matches){observer?.disconnect();observer=null}
+  else watchUntilInstalled();
+ });
+ document.addEventListener('DOMContentLoaded',watchUntilInstalled,{once:true});
 })();
