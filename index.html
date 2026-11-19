@@ -6463,19 +6463,19 @@ function initMobileChatInbox(){
  const list=document.getElementById('dw-chat-list'),thread=document.getElementById('dw-chat-thread'),host=document.getElementById('dw-chat-host'),rows=document.getElementById('dw-chat-rows'),query=document.getElementById('dw-chat-query');
  const media=matchMedia('(max-width:900px)'),marker=document.createComment('tracker chat');
  card.before(marker);
- let items=[],unreadOnly=false,version=0,threadId=null,busy=false;
+ let items=[],filterIndex=0,unreadOnly=false,version=0,threadId=null,busy=false;
 
  const dmPanel=document.getElementById('dw-dm-panel'), dmBox=document.getElementById('dw-dm-messages'), dmInput=document.getElementById('dw-dm-input'),dmForm=document.getElementById('dw-dm-form'),dmStatus=document.getElementById('dw-dm-status');
  const dock=nav.closest('.sq-mobile-nav'),dockMarker=document.createComment('mobile navigation');
  dock.before(dockMarker);
  let choosing=false,people=[],dmTimer=0;
  async function directory(){
-  const {data,error}=await supabase.rpc('dw_dm_directory');
+  const {data,error}=await supabase.rpc('dw_dm_directory_layout');
   if(error)throw error;
-  return data.map(p=>({id:p.peer,name:p.name,username:p.username,eligible:p.eligible,direct:true,preview:p.preview,date:p.last_at,unread:p.incoming&&Date.parse(p.last_at)>Number(localStorage.getItem(seenKey('dm:'+p.peer))||0)?1:0}));
+  return data.map(p=>({id:p.peer,name:p.name,username:p.username,friend:p.is_friend,shared:p.shared_names||[],photo:p.photo,eligible:p.eligible,direct:true,preview:p.preview,date:p.last_at,unread:p.incoming&&Date.parse(p.last_at)>Number(localStorage.getItem(seenKey('dm:'+p.peer))||0)?1:0}));
  }
  async function choose(){
-  const seq=++version;choosing=true;people=[];query.value='';list.querySelector('h2').textContent='New message';query.placeholder='Search people';list.classList.add('choosing');rows.textContent='Loading people…';
+  const seq=++version;choosing=true;people=[];query.value='';list.querySelector('h2').textContent='New Message';query.placeholder='Search people';list.classList.add('choosing');rows.textContent='Loading people…';
   try{const result=await directory();if(seq!==version)return;people=result.filter(x=>x.eligible).sort((a,b)=>a.name.localeCompare(b.name));paint()}catch{if(seq===version)rows.textContent='Could not load people. Go back and try again.'}
  }
  async function direct(x){
@@ -6505,15 +6505,43 @@ function initMobileChatInbox(){
   await refresh();if(seq===version)dmTimer=setInterval(refresh,4500);
  }
  function seenKey(id){return 'dw-chat-seen:'+currentUser?.id+':'+id}
+ const groupIcon='<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3"/><path d="M3 20v-2a7 7 0 0 1 14 0v2zM16 5a3 3 0 0 1 0 6m2 3a6 6 0 0 1 3 5"/></svg>',personIcon='<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M3 21v-1a9 8 0 0 1 18 0v1"/></svg>',chatIcon='<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11a9 8 0 0 1-13 7l-5 2 1-5A9 8 0 1 1 21 11Z"/><path d="M8 11h.1m4 0h.1m4 0h.1"/></svg>';
+ const contactTabs=list.querySelector('.dw-contact-tabs');
+ function selectSection(key){
+  for(const button of contactTabs.children)button.setAttribute('aria-pressed',String(button.dataset.section===key));
+ }
+ for(const button of contactTabs.children)button.onclick=()=>{
+  const heading=rows.querySelector('[data-section="'+button.dataset.section+'"]');
+  if(heading){rows.scrollTop+=heading.getBoundingClientRect().top-rows.getBoundingClientRect().top;selectSection(button.dataset.section)}
+ };
  function paint(){
   rows.replaceChildren();
-  const visible=(choosing?people:items).filter(x=>(choosing||!unreadOnly||x.unread)&&(x.name+' '+(x.username||'')).toLowerCase().includes(query.value.trim().toLowerCase()));
-  for(const x of visible){
-   const b=document.createElement('button');b.type='button';b.disabled=busy;
-   b.innerHTML='<i>'+esc(x.name.split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase())+'</i><span><b>'+esc(x.name)+'</b><small>'+esc(choosing?(x.username?'@'+x.username:'Direct message'):x.preview)+'</small></span><small>'+esc(x.date?new Date(x.date).toLocaleDateString([], {month:'short',day:'numeric'}):'')+(x.unread?'<em>'+x.unread+'</em>':'')+'</small>';
-   b.onclick=()=>x.direct?direct(x):enter(x);rows.append(b);
+  const term=query.value.trim().toLowerCase();
+  const visible=(choosing?people:items).filter(x=>(choosing||!unreadOnly||x.unread)&&
+    [x.name,x.username,...(x.shared||[])].join(' ').toLowerCase().includes(term));
+  const sections=choosing?
+   [['friends','Friends',visible.filter(x=>x.friend)],['shared','Shared Trackers',visible.filter(x=>x.shared.length||!x.friend)]]:
+   [['groups','Group Chats',filterIndex===3?[]:visible.filter(x=>!x.direct)],['direct','Direct Messages',filterIndex===2?[]:visible.filter(x=>x.direct)]];
+  if(choosing){
+   for(const [i,button] of Array.from(contactTabs.children).entries()){
+    button.querySelector('span').textContent='('+sections[i][2].length+')';button.disabled=!sections[i][2].length;
+   }
+   selectSection(sections[0][2].length?'friends':'shared');
   }
-  if(!visible.length)rows.textContent=choosing?'No matching friends or tracker members.':unreadOnly?'No unread chats.':query.value?'No matching chats.':'Your tracker conversations will appear here.';
+  for(const [key,label,entries] of sections){
+   if(!entries.length)continue;
+   const heading=document.createElement('h3');heading.dataset.section=key;
+   heading.innerHTML=(choosing?'':key==='groups'?groupIcon:personIcon)+label+'<small>'+entries.length+(choosing?(key==='friends'?' contacts':' people'):'')+'</small>';rows.append(heading);
+   for(const x of entries){
+    const b=document.createElement('button');b.type='button';b.disabled=busy;
+    const initial=x.name.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    const tags=choosing&&key==='shared'?x.shared.map(n=>'<span class="dw-tracker-tag">'+esc(n)+'</span>').join(''):'';
+    b.innerHTML='<i>'+(x.direct?esc(initial):groupIcon)+'</i><span><b>'+esc(x.name)+'</b><small>'+esc(choosing?(x.username?'@'+x.username:''):x.preview||'')+'</small>'+tags+'</span><small>'+(choosing?chatIcon:esc(x.date?new Date(x.date).toLocaleDateString([],{month:'short',day:'numeric'}):'')+(x.unread?'<em>'+x.unread+'</em>':''))+'</small>';
+    if(x.photo){const avatar=b.firstElementChild;avatarUrl(x.id,x.photo).then(url=>{if(url){setAvatarPhoto(avatar,url);avatar.textContent=''}})}
+    b.onclick=()=>x.direct?direct(x):enter(x);rows.append(b);
+   }
+  }
+  if(!rows.children.length)rows.textContent=choosing?'No matching people.':unreadOnly?'No unread chats.':'No matching chats.';
  }
  function fit(){
   if(pane.hidden)return;
@@ -6525,7 +6553,7 @@ function initMobileChatInbox(){
   pane.style.setProperty('--dw-chat-bottom',(threadId?keyboard:Math.max(keyboard,bottom?.height||0))+'px');
  }
  function restore(){
-  clearInterval(dmTimer);dmPanel.hidden=true;thread.classList.remove('direct');thread.querySelector('header small').textContent='Tracker chat';if(choosing)query.value='';choosing=false;list.classList.remove('choosing');list.querySelector('h2').textContent='Chats';query.placeholder='Search chats';
+  clearInterval(dmTimer);dmPanel.hidden=true;thread.classList.remove('direct');thread.querySelector('header small').textContent='Tracker chat';if(choosing)query.value='';choosing=false;list.classList.remove('choosing');list.querySelector('h2').textContent='Chats';query.placeholder='Search chats, friends, or trackers';
   document.body.classList.remove('dw-chat-keyboard');
   host.removeAttribute('data-opening');
   if(host.contains(document.activeElement))document.activeElement.blur();
@@ -6579,7 +6607,7 @@ function initMobileChatInbox(){
  window.visualViewport?.addEventListener('scroll',fit);
  query.oninput=paint;
  document.querySelectorAll('.dw-chat-filters button').forEach((button,i)=>button.onclick=()=>{
-  unreadOnly=!!i;for(const b of button.parentElement.children)b.setAttribute('aria-pressed',String(b===button));paint();
+  filterIndex=i;unreadOnly=i===1;for(const b of button.parentElement.children)b.setAttribute('aria-pressed',String(b===button));paint();
  });
  document.getElementById('dw-chat-compose').onclick=()=>choosing?menu():choose();
  document.getElementById('dw-chat-back').onclick=menu;
@@ -17593,10 +17621,10 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  window.addEventListener('scroll',align,{passive:true});align();
 })();
 </script><section id="dw-chats" aria-label="Chats" hidden>
- <div id="dw-chat-list"><header><h2>Chats</h2><button id="dw-chat-compose" aria-label="New private message" title="New private message"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 5H6a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-7M10 14l1-4 8-8 3 3-8 8-4 1z"/></svg></button></header>
- <input type="search" id="dw-chat-query" placeholder="Search chats" aria-label="Search chats">
- <div class="dw-chat-filters"><button aria-pressed="true">All</button><button aria-pressed="false">Unread</button></div>
- <button id="dw-people-back" type="button">‹ Chats</button><div id="dw-chat-rows" aria-live="polite"></div></div>
+ <div id="dw-chat-list"><header><button id="dw-people-back" type="button">‹ Chats</button><span class="dw-chat-mark"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11a9 8 0 0 1-13 7l-5 2 1-5A9 8 0 1 1 21 11Z"/><path d="M8 11h.1m4 0h.1m4 0h.1"/></svg></span><h2>Chats</h2><button id="dw-chat-compose" aria-label="New private message" title="New private message"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 5H6a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-7M10 14l1-4 8-8 3 3-8 8-4 1z"/></svg></button></header>
+ <p class="dw-compose-caption">Message a friend or someone from your trackers.</p><label class="dw-chat-search"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg><input type="search" id="dw-chat-query" placeholder="Search chats, friends, or trackers" aria-label="Search"></label>
+ <div class="dw-chat-filters"><button aria-pressed="true">All</button><button aria-pressed="false">Unread</button><button aria-pressed="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3"/><path d="M3 20v-2a7 7 0 0 1 14 0v2zM16 5a3 3 0 0 1 0 6m2 3a6 6 0 0 1 3 5"/></svg> Groups</button><button aria-pressed="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M3 21v-1a9 8 0 0 1 18 0v1"/></svg> Direct</button></div><div class="dw-contact-tabs"><button type="button" data-section="friends"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3"/><path d="M3 20v-2a7 7 0 0 1 14 0v2zM16 5a3 3 0 0 1 0 6m2 3a6 6 0 0 1 3 5"/></svg> Friends <span></span></button><button type="button" data-section="shared"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 8 10-5 10 5-10 5zM2 13l10 5 10-5M4 18l8 4 8-4"/></svg> Shared Trackers <span></span></button></div>
+ <div id="dw-chat-rows" aria-live="polite"></div></div>
  <div id="dw-chat-thread" hidden><header><button id="dw-chat-back" aria-label="Back to chats">‹ Chats</button><div><strong id="dw-chat-name"></strong><small>Tracker chat</small></div><button id="dw-chat-find" aria-label="Search messages"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button></header><div id="dw-chat-host"></div><div id="dw-dm-panel" hidden><div id="dw-dm-messages" aria-label="Private messages"></div><small id="dw-dm-status" role="status"></small><form id="dw-dm-form"><input id="dw-dm-input" aria-label="Private message" maxlength="4000" autocomplete="off"><button type="submit">Send</button></form></div></div></section>
 <style>
 #dw-chats{display:none}
@@ -17690,6 +17718,26 @@ body.sq-bills-open #dw-trackers-toolbar{display:none!important}
  #dw-dm-form button{background:#35dcb4;color:#062b35;border-radius:12px;padding:0 16px}
  html body.dw-chats-open #dw-chats>.sq-mobile-nav{position:absolute!important;bottom:0!important;inset-inline:0!important;padding:6px 4px env(safe-area-inset-bottom,0px)!important;box-shadow:none!important;border-radius:0!important}
  html body.dw-chats-open #dw-chats>.sq-mobile-nav button,html body.dw-chats-open #dw-chats>.sq-mobile-nav button span{transform:none!important;top:auto!important;margin-block:0!important}
+
+ #dw-chat-list svg{width:19px;height:19px;vertical-align:middle;flex:none}
+ #dw-chat-list header h2{flex:1}#dw-chat-list .dw-chat-mark svg{width:30px;height:30px;color:#35dfba}
+ #dw-chat-list.choosing header{display:grid;grid-template-columns:1fr auto 1fr;margin-bottom:2px}
+ #dw-chat-list.choosing header h2{font-size:22px;text-align:center}
+ #dw-chat-list.choosing .dw-chat-mark,#dw-chat-list:not(.choosing) :is(.dw-compose-caption,.dw-contact-tabs){display:none}
+ #dw-people-back{justify-self:start;border:1px solid #355967;border-radius:10px;background:#143345;color:#effaff;padding:8px}
+ .dw-compose-caption{font-size:14px;text-align:center;color:#b5cbd5;margin:3px 0 14px}
+ .dw-chat-search{position:relative}.dw-chat-search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#a5bfce}
+ #dw-chat-list #dw-chat-query{padding-inline-start:42px}
+ .dw-chat-filters button{flex:1;padding:8px 4px;border-radius:24px}.dw-chat-filters svg{width:15px!important}
+ .dw-contact-tabs{display:flex;gap:4px;background:#102c3c;padding:4px;border-radius:12px;margin:12px 0}
+ .dw-contact-tabs button{flex:1;border:0;border-radius:10px;background:transparent;color:#eaf7fa;padding:9px 1px;font:inherit;font-weight:700;font-size:13px}
+ .dw-contact-tabs button[aria-pressed=true]{background:#35dfba;color:#082b34}
+ #dw-chat-rows h3{display:flex;align-items:center;gap:8px;margin:14px 2px 8px;font-size:17px}
+ #dw-chat-rows h3 small{margin-left:auto;font-size:13px;font-weight:500}
+ #dw-chat-rows i{border-radius:50%;background-size:cover;background-position:center}
+ #dw-chat-list.choosing #dw-chat-rows i{border-radius:12px}
+ #dw-chat-list.choosing #dw-chat-rows button>small{padding:7px 10px;border-radius:10px;background:#173d49;color:#5ce4c6}
+ #dw-chat-rows .dw-tracker-tag{display:inline-block;font-size:11px;background:#193d4a;border-radius:6px;padding:2px 5px;margin:3px 3px 0 0}
 
 }
 </style></body>

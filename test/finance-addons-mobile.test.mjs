@@ -125,7 +125,7 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
   await page.addScriptTag({content:`
    const currentUser={id:'a'},current={id:'t'},sqMentionIds=new Set();
    const messages=[];
-   const supabase={rpc:async()=>({data:[{peer:'b',name:'Sam',eligible:true}]}),from:()=>({
+   const supabase={rpc:async()=>({data:[{peer:'b',name:'Sam',eligible:true,is_friend:true,shared_names:['Weekend trip']}]}),from:()=>({
     select(){return this},or(){return this},order(){return this},limit:async()=>({data:messages.slice()}),
     insert:async row=>{messages.push({...row,id:'dm1',sender_id:'a',created_at:new Date().toISOString()});return {error:null}}
    })};
@@ -135,8 +135,8 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
   `+init});
   await page.addScriptTag({content:readFileSync(new URL('../doweo-mobile-chat-mockup.js',import.meta.url),'utf8')});
   await page.locator('#dw-chat-nav').evaluate(b=>b.click());
-  await page.waitForFunction(()=>{const b=document.querySelector('#dw-chat-rows>button');return b&&getComputedStyle(b).backgroundColor==='rgb(255, 255, 255)'});
-  assert.equal(await page.locator('#dw-chats').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(7, 27, 50)');
+  await page.waitForFunction(()=>{const b=document.querySelector('#dw-chat-rows>button');return b&&getComputedStyle(b).backgroundColor==='rgb(11, 37, 53)'});
+  assert.equal(await page.locator('#dw-chats').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(6, 27, 41)');
   assert.notEqual(await page.locator('#dw-chats > .sq-mobile-nav').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 255, 255)');
   await page.locator('#dw-chat-rows button').waitFor({state:'attached'});
   assert.match(await page.locator('#dw-chat-rows').textContent(),/Test group.*Dinner/);
@@ -159,9 +159,10 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
   const dock=page.locator('#dw-chats > .sq-mobile-nav');
   assert.ok(await dock.evaluate(el=>Math.abs(el.getBoundingClientRect().bottom-innerHeight)<2));
   await page.locator('#dw-chat-compose').evaluate(b=>b.click());
-  await page.locator('.dw-people-switch button').first().waitFor();
-  assert.equal(await page.locator('.dw-people-switch button').count(),3);
-  await page.locator('#dw-chat-rows button').filter({hasText:'Sam'}).evaluate(b=>b.click());
+  await page.locator('.dw-contact-tabs button').first().waitFor();
+  assert.equal(await page.locator('.dw-contact-tabs button').count(),2);
+  assert.equal(await page.locator('#dw-chat-rows .dw-tracker-tag').textContent(),'Weekend trip');
+  await page.locator('#dw-chat-rows button').filter({hasText:'Sam'}).first().evaluate(b=>b.click());
   await page.locator('#dw-dm-input').fill('Private hello');
   await page.locator('#dw-dm-form button').evaluate(b=>b.click());
   await page.locator('#dw-dm-messages p').filter({hasText:'Private hello'}).waitFor();
