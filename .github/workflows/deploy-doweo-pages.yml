@@ -25,7 +25,7 @@ jobs:
           # Bump these URLs in the published HTML to invalidate old browser-cached UI assets.
           sed -E -i 's#(doweo-bills-mobile-dashboard\.(css|js))\?v=[^\"]+#\1?v=20261116-overview-picker-v10#g' .pages-output/index.html
           # Version the desktop Trackers tab script to bypass old app/WebView caches.
-          sed -i 's#src="/doweo-trips-activity.js"#src="/doweo-trips-activity.js?v=20261119-three-tabs-v2"#g' .pages-output/index.html
+          sed -i 's#src="/doweo-trips-activity.js"#src="/doweo-trips-activity.js?v=20261119-compact-workspaces-v3"#g' .pages-output/index.html
           cp doweo-tracker-header.css doweo-tracker-header.js .pages-output/
           python3 - <<'PY'
           from pathlib import Path
