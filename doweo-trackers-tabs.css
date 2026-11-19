@@ -1,0 +1,69 @@
+/* Desktop-only, always-loaded Trackers category navigation.
+   This must not depend on Trip/Household API initialization or portal state. */
+@media (min-width:901px) {
+  html body.trackers-view:not(.sq-bills-open) #trackers-page > nav.dw-section-tabs[aria-label="Tracker sections"] {
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+    position:sticky!important;
+    top:12px!important;
+    z-index:800!important;
+    order:-1!important;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    height:auto!important;
+    min-height:0!important;
+    box-sizing:border-box!important;
+    gap:4px!important;
+    margin:0 0 16px!important;
+    padding:5px!important;
+    border:1px solid #195066!important;
+    border-radius:15px!important;
+    background:#06283c!important;
+    box-shadow:0 8px 18px rgba(0,15,29,.12)!important;
+  }
+  html body.trackers-view #trackers-page > nav.dw-section-tabs[aria-label="Tracker sections"] > button {
+    display:flex!important;
+    flex:1 1 0!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-width:0!important;
+    width:auto!important;
+    min-height:0!important;
+    height:44px!important;
+    margin:0!important;
+    padding:8px 12px!important;
+    border:1px solid transparent!important;
+    border-radius:10px!important;
+    background:transparent!important;
+    color:#eef9ff!important;
+    font:inherit!important;
+    font-size:15px!important;
+    font-weight:700!important;
+    line-height:1.2!important;
+    cursor:pointer!important;
+    box-shadow:none!important;
+  }
+  html body.trackers-view #trackers-page > nav.dw-section-tabs[aria-label="Tracker sections"] > button[aria-pressed="true"],
+  html body.trackers-view #trackers-page > nav.dw-section-tabs[aria-label="Tracker sections"] > button[aria-current="page"] {
+    background:linear-gradient(110deg,#0c8388,#1a687e)!important;
+    color:white!important;
+    border-color:#32c9bb!important;
+    box-shadow:none!important;
+  }
+  html body.trackers-view #trackers-page > nav.dw-section-tabs[aria-label="Tracker sections"] > button:focus-visible {
+    outline:2px solid #75f0d5!important;
+    outline-offset:2px!important;
+  }
+  html body.trackers-view #trackers-page > nav.dw-section-tabs[aria-label="Tracker sections"] > button:hover:not([aria-pressed="true"]) {
+    background:#16415a!important;
+  }
+}
+@media (max-width:900px) {
+  html body #trackers-page > nav.dw-section-tabs[aria-label="Tracker sections"] {
+    display:none!important;
+  }
+}
