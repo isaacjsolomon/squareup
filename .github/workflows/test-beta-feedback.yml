@@ -66,6 +66,8 @@ jobs:
         run: node --test test/doweo-guided-expense-details.test.mjs
       - name: Test expense discussion visibility and recovery
         run: node --test test/doweo-expense-discussion-visibility.test.mjs
+      - name: Verify canonical tracker-member names are used for Split Bill savings
+        run: node --check doweo-split-bill-modal.js && node --check 'functions/api/[[path]].js' && node --test test/split-bill-member-modal.test.mjs
       - name: Test payment reminder currency and confirmed balance logic
         run: node --test test/doweo-reminder-currency-safety.test.mjs
       - name: Check Personal Finance summary and transaction dialog
@@ -96,6 +98,8 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.65.0
           npx playwright install --with-deps chromium
+      - name: Browser-test mobile Split Bill popup, member saving, and original steps
+        run: node --test test/split-bill-member-modal.test.mjs
       - name: Browser-test desktop Home Add expense menu, retired tabs, and mobile preservation
         run: node --test test/home-add-dropdown.test.mjs
       - name: Verify mobile viewport foundation across screen sizes
