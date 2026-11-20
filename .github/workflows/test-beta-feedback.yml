@@ -67,7 +67,7 @@ jobs:
       - name: Test expense discussion visibility and recovery
         run: node --test test/doweo-expense-discussion-visibility.test.mjs
       - name: Verify canonical tracker-member names are used for Split Bill savings
-        run: node --check doweo-split-bill-modal.js && node --check 'functions/api/[[path]].js' && node --test test/split-bill-member-modal.test.mjs
+        run: node --check doweo-split-bill-modal.js && node --check 'functions/api/[[path]].js' && node --check test/split-bill-member-modal.test.mjs
       - name: Test payment reminder currency and confirmed balance logic
         run: node --test test/doweo-reminder-currency-safety.test.mjs
       - name: Check Personal Finance summary and transaction dialog
