@@ -99,3 +99,66 @@ test('real Chromium converts PNG, GIF, SVG, TIFF and HEIC fallback to safe JPEG'
   await page.close();
  }finally{await browser.close();await new Promise(done=>server.close(done))}
 });
+
+
+test('existing Backdrop picker converts uploaded GIF to JPEG before saving to the tracker',{timeout:90000},async()=>{
+ const trackerId='11111111-1111-4111-8111-111111111111';
+ const userId='22222222-2222-4222-8222-222222222222';
+ const tracker={id:trackerId,name:'Photo Tracker',role:'owner',currency:'USD',memberCount:1,
+  members:[{id:userId,name:'Alex',ledgerName:'Alex',isYou:true,role:'owner'}],
+  entries:[],backdrop:{preset:'indigo',photo:null}};
+ const writes=[];
+ const server=createServer((req,res)=>{
+  const url=new URL(req.url,'http://local');
+  const path=resolve(root,'.'+url.pathname.replace(/\/$/,'/index.html'));
+  if(!path.startsWith(root+'/')||!existsSync(path)){res.writeHead(404);res.end();return}
+  res.setHeader('Content-Type',({'.html':'text/html','.css':'text/css','.js':'text/javascript','.mjs':'text/javascript'})[extname(path)]||'application/octet-stream');
+  const raw=readFileSync(path);
+  if(path.endsWith('/index.html')){
+   res.end(raw.toString('utf8').replace('</body>','<script defer src="/doweo-backdrop-images.js"></script></body>'));
+  }else res.end(raw);
+ });
+ await new Promise(done=>server.listen(0,'127.0.0.1',done));
+ const origin='http://127.0.0.1:'+server.address().port;
+ const browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{})});
+ try{
+  const context=await browser.newContext({viewport:{width:1440,height:900}});
+  await context.addInitScript(()=>sessionStorage.setItem('squareup_instagram_invite_shown_session_v2','yes'));
+  await context.route('https://esm.sh/**',route=>route.fulfill({contentType:'text/javascript',body:
+   'export function createClient(){const user={id:"'+userId+'",email:"alex@example.test",email_confirmed_at:"2025-01-01",created_at:"2025-01-01",user_metadata:{full_name:"Alex"},app_metadata:{provider:"email"}};return {auth:{getUser:async()=>({data:{user}}),getSession:async()=>({data:{session:{user,access_token:"test"}}}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},rpc:async()=>({data:[]})}}'}));
+  await context.route(origin+'/api/**',async route=>{
+   const request=route.request(),url=new URL(request.url()),path=url.pathname.slice(5);
+   if(request.method()==='PUT'&&path==='trackers/'+trackerId+'/backdrop'){
+    const bytes=await request.body();
+    writes.push({contentType:request.headers()['content-type'],body:bytes});
+    await route.fulfill({json:tracker});return;
+   }
+   let data=[];
+   if(path==='trackers')data=[tracker];
+   else if(path==='trackers/'+trackerId)data=tracker;
+   else if(path==='profile')data={id:userId,displayName:'Alex',username:'alex'};
+   await route.fulfill({json:data});
+  });
+  await context.route('https://**',route=>{
+   const url=new URL(route.request().url());
+   return url.hostname==='esm.sh'||url.origin===origin?route.fallback():route.abort();
+  });
+  const page=await context.newPage();
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(origin,{waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>typeof window.squareUpApi==='function',{timeout:30000});
+  await page.locator('#auth-modal.open').waitFor({state:'hidden',timeout:30000});
+  await page.evaluate(id=>window.sqOpenTrackerForWeo(id),trackerId);
+  await page.evaluate(()=>document.getElementById('btn-backdrop').click());
+  await page.locator('#backdrop-modal.open').waitFor({state:'visible'});
+  const gif=Buffer.from('R0lGODdhAgACAIEAAACA/wAAAAAAAAAAACwAAAAAAgACAAAIBgABCAQQEAA7','base64');
+  await page.locator('#backdrop-file').setInputFiles({name:'favorite.gif',mimeType:'image/gif',buffer:gif});
+  await page.waitForFunction(()=>document.querySelector('#backdrop-msg')?.textContent?.includes('Backdrop updated'),{timeout:30000});
+  assert.equal(writes.length,1,'exactly one upload');
+  assert.equal(writes[0].contentType,'image/jpeg');
+  assert.ok(writes[0].body.length<5*1024*1024);
+  assert.deepEqual([...writes[0].body.subarray(0,3)],[255,216,255],'server receives actual JPEG bytes');
+  assert.ok(!errors.some(e=>/backdrop|photo|decoder/i.test(e)),errors.join('\n'));
+  await page.close();
+ }finally{await browser.close();await new Promise(done=>server.close(done))}
+});
