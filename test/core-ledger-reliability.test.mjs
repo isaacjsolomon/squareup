@@ -52,7 +52,7 @@ function setup({ actor = owner, scheduleFails = false, dueSchedule = false, noti
     } else if (table === 'squareup_recurring_expenses') {
       if (method === 'POST' && scheduleFails)
         return Response.json({ message: 'Simulated recurring schedule outage' }, { status: 503 });
-      rows = method === 'POST' ? [{ id: '77777777-7777-4777-8777-777777777777', ...body }] : dueSchedule ? [{ id: '77777777-7777-4777-8777-777777777777', tracker_id: tracker, created_by: owner, from_name: 'Jordan', to_name: 'Alex', amount: 4, note: 'Weekly fixture', frequency: 'weekly', next_date: '2026-11-19', active: true }] : [];
+      rows = method === 'POST' ? [{ id: '77777777-7777-4777-8777-777777777777', ...body }] : dueSchedule ? [{ id: '77777777-7777-4777-8777-777777777777', tracker_id: tracker, created_by: owner, from_name: 'Jordan', to_name: 'Alex', amount: 4, note: 'Weekly fixture', frequency: 'weekly', next_date: new Date(Date.now() - 86400000).toISOString().slice(0, 10), active: true }] : [];
     } else if (table === 'squareup_notifications') {
       if (method === 'POST' && notificationFails)
         return Response.json({ message: 'Simulated notification outage' }, { status: 503 });
