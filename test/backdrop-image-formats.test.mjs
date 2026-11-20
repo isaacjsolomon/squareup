@@ -58,7 +58,7 @@ test('real Chromium converts PNG, GIF, SVG, TIFF and HEIC fallback to safe JPEG'
    const ctx=photoCanvas.getContext('2d');
    ctx.fillStyle='#00aaff';ctx.fillRect(0,0,32,16);
    const png=await new Promise(done=>photoCanvas.toBlob(done,'image/png'));
-   const gif=Uint8Array.from(atob('R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='),c=>c.charCodeAt(0));
+   const gif=Uint8Array.from(atob('R0lGODdhAgACAIEAAACA/wAAAAAAAAAAACwAAAAAAgACAAAIBgABCAQQEAA7'),c=>c.charCodeAt(0));
    const svg=new Blob(['<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10" fill="red"/></svg>'],{type:'image/svg+xml'});
    const formats=[
     new File([png],'test.png',{type:'image/png'}),
