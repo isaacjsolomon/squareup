@@ -13,7 +13,7 @@ const viewer = '33333333-3333-4333-8333-333333333333';
 const outsider = '44444444-4444-4444-8444-444444444444';
 const tracker = '55555555-5555-4555-8555-555555555555';
 
-function setup({ actor = owner, scheduleFails = false } = {}) {
+function setup({ actor = owner, scheduleFails = false, dueSchedule = false, notificationFails = false } = {}) {
   const members = [
     { tracker_id: tracker, user_id: owner, name: 'Alex', role: 'owner' },
     { tracker_id: tracker, user_id: editor, name: 'Jordan', role: 'editor' },
@@ -52,8 +52,12 @@ function setup({ actor = owner, scheduleFails = false } = {}) {
     } else if (table === 'squareup_recurring_expenses') {
       if (method === 'POST' && scheduleFails)
         return Response.json({ message: 'Simulated recurring schedule outage' }, { status: 503 });
-      rows = method === 'POST' ? [{ id: '77777777-7777-4777-8777-777777777777', ...body }] : [];
-    } else if (table === 'squareup_notifications') rows = method === 'POST' ? [{ id: 'notification-1', ...body }] : [];
+      rows = method === 'POST' ? [{ id: '77777777-7777-4777-8777-777777777777', ...body }] : dueSchedule ? [{ id: '77777777-7777-4777-8777-777777777777', tracker_id: tracker, created_by: owner, from_name: 'Jordan', to_name: 'Alex', amount: 4, note: 'Weekly fixture', frequency: 'weekly', next_date: '2026-11-19', active: true }] : [];
+    } else if (table === 'squareup_notifications') {
+      if (method === 'POST' && notificationFails)
+        return Response.json({ message: 'Simulated notification outage' }, { status: 503 });
+      rows = method === 'POST' ? [{ id: 'notification-1', ...body }] : [];
+    }
     else if (table === 'profiles') rows = [];
     else assert.fail('Unhandled table: ' + table);
     if (table === 'tracker_members') {
@@ -140,5 +144,18 @@ test('normal recurring expense creates both entry and schedule without a warning
     assert.equal(result.warning, undefined);
     assert.equal(h.entries.length, 1);
     assert.equal(h.writes.filter(x => x.table === 'squareup_recurring_expenses' && x.method === 'POST').length, 1);
+  } finally { h.restore(); }
+});
+
+test('recurring entry remains visible when its notification service is down', async () => {
+  const h = setup({ dueSchedule: true, notificationFails: true });
+  try {
+    const response = await h.call(owner);
+    assert.equal(response.status, 200);
+    const result = await response.json();
+    assert.equal(result.entries.length, 1);
+    assert.equal(result.entries[0].amount, 4);
+    assert.equal(h.writes.filter(x => x.table === 'tracker_entries' && x.method === 'POST').length, 1);
+    assert.equal(h.writes.filter(x => x.table === 'squareup_notifications' && x.method === 'POST').length, 1);
   } finally { h.restore(); }
 });
