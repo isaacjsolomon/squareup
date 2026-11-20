@@ -129,7 +129,7 @@ test('existing Backdrop picker converts uploaded GIF to JPEG before saving to th
   await context.route(origin+'/api/**',async route=>{
    const request=route.request(),url=new URL(request.url()),path=url.pathname.slice(5);
    if(request.method()==='PUT'&&path==='trackers/'+trackerId+'/backdrop'){
-    const bytes=await request.body();
+    const bytes=request.postDataBuffer();
     writes.push({contentType:request.headers()['content-type'],body:bytes});
     await route.fulfill({json:tracker});return;
    }
