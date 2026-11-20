@@ -71,7 +71,9 @@
   const pages=utif.decode(bytes);
   if(!pages?.length)throw new Error('No image found in this TIFF.');
   const page=pages[0];
-  const width=Number(page.width),height=Number(page.height);
+  // UTIF populates .width/.height only after decodeImage; the TIFF tags
+  // provide dimensions early so oversized files can be rejected first.
+  const width=Number(page.t256?.[0]),height=Number(page.t257?.[0]);
   if(!(width>0&&height>0&&width*height<=MAX_PIXELS))
    throw new Error('This TIFF is too large to process on this device.');
   utif.decodeImage(bytes,page);
