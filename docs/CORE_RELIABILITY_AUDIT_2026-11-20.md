@@ -34,6 +34,17 @@ Use **test accounts and a separate test backend**, never live user transactions 
 9. Inspect deployed Supabase RLS and service-role access separately with read-only checks; the mock tests cannot prove live authorization.
 10. Check GitHub actions and Cloudflare deployment before approving or merging.
 
+
+## Read-only production Supabase advisory review
+
+The connected Supabase project `pajrdqarszbnrlstoyly` is the DoWeo production project (the separate DoWeo Development project is currently inactive). A read-only scan on November 20 found:
+
+- 45 informational `rls_enabled_no_policy` findings. Enabling RLS without policies normally blocks browser-role access. Because the app's Cloudflare API deliberately uses a server-only service-role key, these may be intentional. **Do not add blanket permissive policies** to silence them.
+- One warning for `public.sq_friend_notify_trigger()`, a `SECURITY DEFINER` trigger function granted execution to anonymous users. Its function body is triggered by database changes and uses `NEW`/`OLD`; direct invocation is unlikely to work, but its unnecessary public EXECUTE grants should be reviewed.
+- Other privileged social/direct-message RPCs have authenticated-role access. Inspected definitions use `auth.uid()` and scoped friendship/shared-tracker queries, so these should be evaluated individually; they are not proven vulnerabilities solely from the advisory.
+
+**No database changes were made.** A security specialist should review the trigger function's EXECUTE grants and all privileged RPCs against the actual intended public API. See the Supabase [security linter explanation](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable).
+
 ## Release precautions
 
 - Do not merge/deploy money-related changes before CI passes and a human reviews them.
