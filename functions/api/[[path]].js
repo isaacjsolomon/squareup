@@ -749,7 +749,8 @@ async function member(id) {
           );
 
           if (recipient && recipient.user_id !== s.created_by) {
-            await db('squareup_notifications', {
+            try {
+              await db('squareup_notifications', {
               method: 'POST',
               body: {
                 recipient_id: recipient.user_id,
@@ -761,7 +762,12 @@ async function member(id) {
                   ' $' + Number(s.amount).toFixed(2) +
                   ' · ' + s.note
               }
-            });
+              });
+            } catch (error) {
+              // The recurring ledger entry was already committed.
+              // A notification outage must not make tracker loading fail.
+              console.error('Recurring entry notification failed:', error);
+            }
           }
         }
 
