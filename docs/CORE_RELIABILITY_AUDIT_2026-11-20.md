@@ -8,6 +8,8 @@ Scope: core authentication, tracker authorization, expense and payment API behav
 
 The patch catches the *post-commit schedule failure* and returns status 201 with the saved tracker detail and a clear `warning` field indicating the recurring schedule was not created. It does not automatically retry or recreate any financial record. A separate interface review should ensure this warning is visible to users; otherwise they may think recurrence was scheduled. A fully transactional solution would require database-level atomicity and an audited migration.
 
+**Recurring catch-up notification failure:** When a tracker loads, the server may materialize a due recurring expense. Previously, if the follow-up notification insert failed, loading could error although the financial entry was already inserted. The patch treats those notifications as best-effort while continuing to return the ledger. A mocked regression covers this outage.
+
 ## New behavior tests (mock backend, no production writes)
 
 - Non-members cannot load a tracker or add entries.
@@ -15,6 +17,7 @@ The patch catches the *post-commit schedule failure* and returns status 201 with
 - Only the payer can report a payment; the recipient confirms; duplicate confirmation returns a conflict.
 - A recurring schedule outage leaves one committed expense and returns a successful saved-entry response with a warning.
 - The normal recurring path saves one entry plus one schedule.
+- Due recurring entries remain visible when their notification write fails.
 - Tests are included in both the pull-request CI workflow and the pre-deploy tests.
 
 Existing tests also cover expense edit permissions (`test/recent-expense-api.test.mjs`), client save-in-flight locking (`test/doweo-save-confirmation.test.mjs`), receipt totals and UI (`test/recent-expense-details.test.mjs`), and split billing with canonical member labels (`test/split-bill-member-modal.test.mjs`).
