@@ -4812,6 +4812,7 @@ exchange_rate: rate,
           }
         }))[0];
 
+        let recurringScheduleWarning = null;
         if (e.type === 'debt' &&
             body.recurring &&
             body.recurring !== 'none') {
@@ -4823,7 +4824,8 @@ exchange_rate: rate,
 
           const next = advanceDate(start, freq);
 
-          await db('squareup_recurring_expenses', {
+          try {
+            await db('squareup_recurring_expenses', {
             method: 'POST',
             body: {
               tracker_id: id,
@@ -4836,7 +4838,13 @@ exchange_rate: rate,
               next_date: next,
               active: true
             }
-          });
+            });
+          } catch (error) {
+            // The first entry was already committed. Never report a total
+            // failure that could make a retry insert the same expense twice.
+            console.error('Recurring schedule creation failed after entry save:', error);
+            recurringScheduleWarning = 'Expense saved, but its recurring schedule was not created. Do not add the expense again; review the recurring schedule.';
+          }
         }
 
        const notify =
@@ -4888,7 +4896,9 @@ if (notify.user_id !== me.id) {
 }
 
 
-        return json(await detail(id), 201);
+        const savedDetail = await detail(id);
+        if (recurringScheduleWarning) savedDetail.warning = recurringScheduleWarning;
+        return json(savedDetail, 201);
       }
 
 if (
