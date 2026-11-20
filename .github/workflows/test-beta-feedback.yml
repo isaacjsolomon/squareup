@@ -32,6 +32,8 @@ jobs:
           node --check weo-mascot.js
           node --check functions/api/ai-chat.js
           node --check weo-actions.js
+      - name: Check image import and local decoders
+        run: node --check doweo-backdrop-images.js && node --check third_party/UTIF.js && node --check third_party/heic2any.min.js && node --check test/backdrop-image-formats.test.mjs
       - name: Verify all published app assets
         run: node --test test/pages-assets.test.mjs
       - name: Verify every production translation module is packaged
@@ -100,6 +102,8 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Browser-test mobile Split Bill popup, member saving, and original steps
         run: node --test test/split-bill-member-modal.test.mjs
+      - name: Browser-test image formats and actual Backdrop file upload
+        run: node --test test/backdrop-image-formats.test.mjs
       - name: Browser-test desktop Home Add expense menu, retired tabs, and mobile preservation
         run: node --test test/home-add-dropdown.test.mjs
       - name: Verify mobile viewport foundation across screen sizes
