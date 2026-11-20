@@ -1,0 +1,104 @@
+/* Full-screen scrim with a centered, independently scrolling Split Bill dialog.
+   No changes to other dialogs, mobile navigation or tracker data. */
+html body #dw-split-modal[hidden]{display:none!important}
+html body #dw-split-modal{
+ position:fixed!important;
+ inset:0!important;
+ z-index:2147483600!important;
+ box-sizing:border-box!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ width:100vw!important;
+ height:100dvh!important;
+ min-height:0!important;
+ margin:0!important;
+ padding:max(14px,env(safe-area-inset-top,14px)) 14px max(14px,env(safe-area-inset-bottom,14px))!important;
+ background:rgba(2,14,30,.84)!important;
+ backdrop-filter:blur(5px);
+ -webkit-backdrop-filter:blur(5px);
+ overflow:hidden!important;
+}
+html body.dw-split-modal-open{overflow:hidden!important}
+html body #dw-split-modal #split-page{
+ display:block!important;
+ position:relative!important;
+ float:none!important;
+ inset:auto!important;
+ transform:none!important;
+ box-sizing:border-box!important;
+ flex:0 1 880px!important;
+ width:min(880px,100%)!important;
+ max-width:100%!important;
+ height:auto!important;
+ max-height:100%!important;
+ min-height:0!important;
+ margin:0 auto!important;
+ padding:20px 22px 25px!important;
+ border:1px solid #4c8295!important;
+ border-radius:22px!important;
+ background:linear-gradient(150deg,#0b2c41,#091d32)!important;
+ box-shadow:0 25px 95px rgba(0,0,0,.6)!important;
+ color:#f1fbff!important;
+ overflow-x:hidden!important;
+ overflow-y:auto!important;
+ overscroll-behavior:contain!important;
+ -webkit-overflow-scrolling:touch;
+}
+html body #dw-split-modal #dw-split-modal-close{
+ position:sticky!important;
+ top:0!important;
+ z-index:10!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ float:right!important;
+ width:40px!important;
+ height:40px!important;
+ margin:0 0 0 10px!important;
+ padding:0!important;
+ border:1px solid #54798b!important;
+ border-radius:11px!important;
+ color:#f4faff!important;
+ background:#183e52!important;
+ font:28px/1 inherit!important;
+ cursor:pointer!important;
+}
+html body #dw-split-modal #dw-split-modal-close:focus-visible{
+ outline:2px solid #48e7c7!important;
+ outline-offset:2px!important;
+}
+html body #dw-split-modal #split-page .split-header{
+ margin:2px 0 18px!important;
+ clear:none!important;
+}
+html body #dw-split-modal #split-page #dw-split-step-footer{
+ bottom:0!important;
+}
+@media(max-width:700px){
+ html body #dw-split-modal{
+  padding:max(9px,env(safe-area-inset-top,9px)) 10px max(9px,env(safe-area-inset-bottom,9px))!important;
+  align-items:center!important;
+ }
+ html body #dw-split-modal #split-page{
+  flex:1 1 auto!important;
+  width:100%!important;
+  max-height:100%!important;
+  padding:13px 15px 16px!important;
+  border-radius:17px!important;
+ }
+ html body.split-view #dw-split-modal #split-page{
+  padding-bottom:16px!important;
+ }
+ html body #dw-split-modal #split-back{font-size:12px!important;padding:8px 0 14px!important}
+ html body #dw-split-modal #dw-split-modal-close{
+  width:35px!important;height:35px!important;font-size:25px!important;
+  border-radius:10px!important;
+ }
+ html body #dw-split-modal #split-page .split-header h2{font-size:23px!important}
+ html body #dw-split-modal #split-page #dw-split-steps{padding:10px 0 12px!important;margin-bottom:12px!important}
+ html body #dw-split-modal #split-page #dw-split-step-footer{
+  margin-top:13px!important;padding:10px 12px!important;
+ }
+ html body #dw-split-modal #split-page .split-panel{padding:14px!important}
+}
