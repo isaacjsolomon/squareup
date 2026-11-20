@@ -6,10 +6,10 @@ import vm from 'node:vm';
 const api = readFileSync(new URL('../functions/api/[[path]].js', import.meta.url), 'utf8');
 const entryRoute = api.indexOf('// ADD OR DELETE EXPENSES');
 const begin = api.indexOf('if (notify.user_id !== me.id) {', entryRoute);
-const end = api.indexOf('return json(await detail(id), 201);', begin);
+const end = api.indexOf('return json(savedDetail, 201);', begin);
 assert.ok(entryRoute >= 0 && begin > entryRoute && end > begin, 'entry notification route exists');
 
-const source = api.slice(begin, end) + 'return json(await detail(id), 201);';
+const source = api.slice(begin, end) + 'return json(savedDetail, 201);';
 
 async function invoke({ type, notificationFails, recipientIsSelf = false }) {
   const calls = [];
@@ -20,6 +20,7 @@ async function invoke({ type, notificationFails, recipientIsSelf = false }) {
     created: { id: 'entry-id' },
     e: { type, from_name: 'Alex', to_name: 'Blair', amount: 12.5 },
     pending: type === 'payment',
+    recurringScheduleWarning: null,
     id: 'tracker-id',
     db: async (table, params) => {
       calls.push({ table, params });
