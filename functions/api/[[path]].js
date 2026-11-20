@@ -880,6 +880,9 @@ const resolvedRole = memberRow => {
         id: m.user_id,
         email: m.email,
         name: p?.display_name || m.name,
+        // The exact immutable-for-this-membership ledger label. Save APIs
+        // validate entries against tracker_members.name, not display_name.
+        ledgerName: m.name,
         role: resolvedRole(m),
         isYou: m.user_id === me.id,
         username: p?.username || '',
