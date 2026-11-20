@@ -26,7 +26,7 @@ test('real mobile Split Bill popup saves a 14-dollar split for members with diff
   }else res.end(file);
  });
  await new Promise(done=>server.listen(0,'127.0.0.1',done));
- const origin='http://127.0.0.1:'+server.address().port;
+ const origin=process.env.SPLIT_BASE_URL||('http://127.0.0.1:'+server.address().port);
  const browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{})});
  const userId='11111111-1111-4111-8111-111111111111',friendId='22222222-2222-4222-8222-222222222222',trackerId='33333333-3333-4333-8333-333333333333';
  const memberNames=['ledger_isaac','ledger_jordan'];
