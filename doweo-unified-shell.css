@@ -581,6 +581,27 @@
    color:#546982!important;
  }
 }
+
+/* Trackers and About are BODY-level siblings of the .wrap, not its children.
+   The former 100vh minimum on .wrap pushed both below an empty screen.
+   Collapse ONLY that empty placeholder on these two routes. */
+@media(min-width:901px){
+ html body.trackers-view.dw-all-secondary-view>.wrap,
+ html body.about-view.dw-all-secondary-view>.wrap{
+   height:0!important;min-height:0!important;max-height:0!important;
+   padding-top:0!important;padding-bottom:0!important;
+   margin-top:0!important;margin-bottom:0!important;
+   overflow:visible!important;
+ }
+ html body.trackers-view.dw-all-secondary-view>#trackers-page,
+ html body.about-view.dw-all-secondary-view>#about-page{
+   position:relative!important;
+   margin-top:112px!important;
+   margin-bottom:48px!important;
+   padding-top:0!important;
+   min-width:0!important;
+ }
+}
 @media(prefers-reduced-motion:reduce){
  html body #dw-ref-home .dw-ref-chart-bar{transition:none!important}
 }
