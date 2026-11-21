@@ -89,7 +89,8 @@ test('DoWeo desktop reference dashboard matches requested composition, real valu
   await page.screenshot({path:resolve(root,'test-results/reference/overview.png'),fullPage:true});
 
   // Buttons open original functioning DoWeo screens, not decorative mock controls.
-  await page.locator('#dw-ref-add').click();
+  assert.ok(await page.locator('#dw-ref-add #dw-compact-add').isVisible(),'the original Add dropdown button is visible in the redesigned header');
+  await page.locator('#dw-ref-add #dw-compact-add').click();
   assert.ok(await page.locator('#dw-compact-add-menu').isVisible(),'Add opens existing real Add dropdown');
   await page.keyboard.press('Escape');
   const activityRow=page.locator('#dw-ref-activity-slot .sq-return-row').first();
