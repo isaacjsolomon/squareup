@@ -101,7 +101,8 @@ test('DoWeo desktop reference dashboard matches requested composition, real valu
    assert.equal(await page.locator('#dw-ref-home').isVisible(),false,'reference home hides in '+section);
   }
   await page.evaluate(()=>document.querySelector('#tracker-dashboard [data-sq-tab="overview"]').click());
-  assert.ok(await page.locator('#dw-ref-home').isVisible());
+  await page.locator('#dw-ref-home').waitFor({state:'visible',timeout:12000});
+  assert.ok(await page.locator('#dw-ref-home').isVisible(),'Overview returns to the redesigned dashboard');
 
   // A mobile width keeps original tabs, bottom bar and More menu intact.
   await page.setViewportSize({width:390,height:844});
