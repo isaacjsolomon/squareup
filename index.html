@@ -13225,7 +13225,7 @@ body.sq-action-dialog-open{overflow:hidden!important}
   <!-- Always present in the real mobile More menu; no user-agent detection or injected JS required. -->
   <button type="button" id="dw-mobile-home-screen-install-native" onclick="document.getElementById('dw-mobile-home-screen-help').showModal()" aria-haspopup="dialog" aria-controls="dw-mobile-home-screen-help">
    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V3m-5 5 5-5 5 5M5 13v7h14v-7"/></svg>
-   <span><strong>Add to Home Screen</strong><small>Put DoWeo on your iPhone</small></span>
+   <span><strong>Add to Home Screen</strong><small>Keep DoWeo one tap away</small></span>
    <span class="dw-mobile-install-caret" aria-hidden="true">›</span>
   </button>
   <div class="sq-balanced-actions sq-balanced-more-grid">
@@ -13255,15 +13255,14 @@ body.sq-action-dialog-open{overflow:hidden!important}
 <!-- Native Safari-friendly installation guide; fully functional without the mobile More extension. -->
 <dialog id="dw-mobile-home-screen-help" aria-labelledby="dw-mobile-install-heading">
  <h2 id="dw-mobile-install-heading">Add DoWeo to Home Screen</h2>
- <p>Safari requires a few taps to add DoWeo as a Home Screen app.</p>
+ <p>Safari needs a few taps to install DoWeo as an app.</p>
  <ol>
-  <li>Open DoWeo in Safari on your iPhone.</li>
-  <li>Tap the <strong>Share</strong> icon (a square with an arrow). It may be inside the page menu.</li>
-  <li>Select <strong>Add to Home Screen</strong>.</li>
-  <li>Keep <strong>Open as Web App</strong> enabled if shown, then tap <strong>Add</strong>.</li>
+  <li>Tap Safari’s Share button. If it is inside the page menu, open that menu and tap Share.</li>
+  <li>Scroll down and select Add to Home Screen.</li>
+  <li>Keep Open as Web App turned on, if shown, then tap Add.</li>
  </ol>
- <p class="dw-mobile-install-note">Apple does not let a website automatically add itself to your Home Screen.</p>
- <form method="dialog"><button type="submit">Done</button></form>
+ <p class="dw-mobile-install-note">Apple requires these steps; websites cannot install themselves automatically.</p>
+ <form method="dialog"><button type="submit">Got it</button></form>
 </dialog>
 <style id="dw-mobile-home-screen-native-style">
 @media(max-width:900px){
