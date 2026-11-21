@@ -161,7 +161,8 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   assert.ok(await page.locator('.sq-mobile-nav').isVisible(),'fixed mobile bottom bar remains usable');
   const bottom=await page.locator('.sq-mobile-nav').evaluate(el=>el.getBoundingClientRect().bottom);
   assert.ok(Math.abs(bottom-844)<3,'mobile bottom navigation remains flush to bottom');
-  assert.deepEqual(writes,[],'visual-only browser test must not create or modify records');
+  assert.deepEqual(writes.filter(entry=>entry.path!=='ui-translate'),[],
+   'no visual or translation action may write financial, tracker or profile records');
   assert.ok(!errors.some(x=>/unified-shell|unified-localize|dw-ref|not a function/i.test(x)),
    'new shell must not emit runtime errors: '+errors.join('; '));
  }finally{
