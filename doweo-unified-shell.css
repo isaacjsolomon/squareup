@@ -749,13 +749,7 @@
   html body.dw-all-secondary-view #notifications-list .dw-inbox-items{grid-template-columns:1fr!important}
 }
 
-/* Match a 75%-scale desktop presentation. Browser zoom itself cannot be set
-   by a website; CSS zoom provides an equivalent initial visual scale. */
-@media(min-width:1200px){
-  html:not(.sq-auth-guest):not(.sq-auth-loading){
-    zoom:75%;
-  }
-}
+/* Browser-level 75% zoom is user-controlled; keep page layout geometry stable. */
 /* Keep actual notification cards and tracker tiles legible, regardless of
    older glassmorphism overrides loaded earlier in index.html. */
 @media(min-width:901px){
@@ -789,4 +783,36 @@
    :is(.sq-bills-card,.sq-bills-column) :is(h2,h3,strong,label){color:#17294b!important}
  html body.dw-all-secondary-view #sq-bills-page
    :is(.sq-bills-card,.sq-bills-column) :is(p,small,span){color:#526783!important}
+}
+/* DoWeo desktop consolidation: the reference header belongs ONLY to Overview.
+   Other screens use the shared #dw-all-topbar and exactly one set of tools. */
+@media(min-width:901px){
+  html body.dw-all-secondary-view #tracker-dashboard #dw-ref-toolbar,
+  html body.dw-all-secondary-view #dw-ref-toolbar,
+  html body.dw-all-secondary-view #sq-friends-workspace-tabs,
+  html body.dw-all-secondary-view #sq-friends-toolbar,
+  html body.dw-all-secondary-view .sq-persistent-workspace-tabs{
+    display:none!important;
+  }
+  html body.dw-all-secondary-view #tracker-dashboard > .sq-workspace-tabs {
+    display:none!important;visibility:hidden!important;pointer-events:none!important;
+  }
+  html body.dw-all-secondary-view #dw-all-topbar{
+    display:flex!important;visibility:visible!important;
+  }
+  html body.dw-all-secondary-view #notifications-page #notifications-list .dw-inbox-group{
+    margin:0!important;padding:0!important;background:transparent!important;border:0!important;
+  }
+  html body.dw-all-secondary-view #tracker-dashboard.sq-tab-expenses
+   :is(.sq-expense-history,.sq-expense-panel,.sq-expense-tools,.sq-expense-sidebar),
+  html body.dw-all-secondary-view #tracker-dashboard.sq-tab-members
+   :is(.sq-members-panel,.sq-members-list){
+    background:#f6f9ff!important;color:#182b4a!important;border-color:#dce6f2!important;
+  }
+  html body.dw-all-secondary-view #tracker-dashboard.sq-tab-expenses
+   :is(.sq-expense-history,.sq-expense-panel,.sq-expense-tools,.sq-expense-sidebar)
+   :is(h2,h3,h4,strong,b,label){color:#17294b!important}
+  html body.dw-all-secondary-view #tracker-dashboard.sq-tab-expenses
+   :is(.sq-expense-history,.sq-expense-panel,.sq-expense-tools,.sq-expense-sidebar)
+   :is(p,small,span:not(.sq-status-badge)){color:#546987!important}
 }
