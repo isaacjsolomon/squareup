@@ -748,3 +748,45 @@
 @media(min-width:901px) and (max-width:1240px){
   html body.dw-all-secondary-view #notifications-list .dw-inbox-items{grid-template-columns:1fr!important}
 }
+
+/* Match a 75%-scale desktop presentation. Browser zoom itself cannot be set
+   by a website; CSS zoom provides an equivalent initial visual scale. */
+@media(min-width:1200px){
+  html:not(.sq-auth-guest):not(.sq-auth-loading){
+    zoom:75%;
+  }
+}
+/* Keep actual notification cards and tracker tiles legible, regardless of
+   older glassmorphism overrides loaded earlier in index.html. */
+@media(min-width:901px){
+ html body.dw-all-secondary-view #trackers-page .tracker-tile{
+   background:#f6f9ff!important;border:1px solid #dbe5f2!important;
+   color:#17294b!important;box-shadow:0 9px 24px #20375816!important;
+ }
+ html body.dw-all-secondary-view #trackers-page .tracker-tile h3,
+ html body.dw-all-secondary-view #trackers-page .tracker-tile :is(strong,b){
+   color:#17294b!important;
+ }
+ html body.dw-all-secondary-view #trackers-page .tracker-tile :is(.tracker-sub,small,p){
+   color:#596e8b!important;
+ }
+ html body.dw-all-secondary-view #analytics-page .sq-analytics-panel,
+ html body.dw-all-secondary-view #analytics-page .analytics-stat,
+ html body.dw-all-secondary-view #analytics-page .sq-analytics-card{
+   background:#f6f9ff!important;border:1px solid #dce6f3!important;color:#182a4c!important;
+ }
+ html body.dw-all-secondary-view #analytics-page
+   :is(.sq-analytics-panel,.analytics-stat,.sq-analytics-card)
+   :is(h3,strong,b){color:#192d50!important}
+ html body.dw-all-secondary-view #analytics-page
+   :is(.sq-analytics-panel,.analytics-stat,.sq-analytics-card)
+   :is(p,small,span:not(.sq-status-badge)){color:#5c708d!important}
+ html body.dw-all-secondary-view #sq-bills-page .sq-bills-card,
+ html body.dw-all-secondary-view #sq-bills-page .sq-bills-column{
+   background:#f6f9ff!important;color:#17294b!important;border:1px solid #dce6f3!important;
+ }
+ html body.dw-all-secondary-view #sq-bills-page
+   :is(.sq-bills-card,.sq-bills-column) :is(h2,h3,strong,label){color:#17294b!important}
+ html body.dw-all-secondary-view #sq-bills-page
+   :is(.sq-bills-card,.sq-bills-column) :is(p,small,span){color:#526783!important}
+}
