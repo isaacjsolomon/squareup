@@ -39,6 +39,8 @@ jobs:
         run: node --check doweo-backdrop-images.js && node --check third_party/UTIF.js && node --check third_party/heic2any.min.js && node --check test/backdrop-image-formats.test.mjs
       - name: Verify all published app assets
         run: node --test test/pages-assets.test.mjs
+      - name: Verify screenshot-matched desktop shell and live ledger wiring
+        run: node --check doweo-reference-home.js && node --test test/doweo-reference-layout.test.mjs
       - name: Verify seven-minute beta invitation and mint dashboard assets
         run: node --check doweo-beta-nudge.js && node --test test/doweo-beta-nudge-theme.test.mjs
       - name: Verify every production translation module is packaged
@@ -117,6 +119,14 @@ jobs:
         run: node --test test/mobile-more-browser-inspect.test.mjs
       - name: Browser-test timed beta invitation on desktop and mobile
         run: node --test test/doweo-beta-nudge-browser.test.mjs
+      - name: Browser-verify full DoWeo screenshot layout, real finance figures, desktop/mobile routes
+        run: node --test test/doweo-reference-layout-browser.test.mjs
+      - name: Upload screenshot of actual desktop DoWeo dashboard
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: doweo-reference-overview
+          path: test-results/reference/
       - name: Browser-verify iPhone Safari Home Screen button is visible and functional
         run: node --test test/mobile-ios-install-guide-browser.test.mjs
       - name: Browser-test mobile Split Bill popup, member saving, and original steps
