@@ -111,7 +111,7 @@
     width:100%!important;padding:8px 9px!important;
     border:0!important;border-radius:999px!important;
     color:#142143!important;background:transparent!important;
-    font:750 clamp(13px,1.25vw,20px)/1.2 inherit!important;
+    font-family:inherit!important;font-size:clamp(13px,1.25vw,20px)!important;font-weight:750!important;line-height:1.2!important;
     letter-spacing:-.02em!important;box-shadow:none!important;
   }
   html body #tracker-dashboard>.sq-workspace-tabs button[data-sq-tab][aria-selected="true"]{
@@ -162,18 +162,18 @@
     gap:18px;margin:0 0 26px;
   }
   html body #dw-ref-home h1{
-    font:850 clamp(29px,3vw,46px)/1.12 inherit!important;
+    font-family:inherit!important;font-size:clamp(29px,3vw,46px)!important;font-weight:850!important;line-height:1.12!important;
     color:#142241!important;letter-spacing:-.045em!important;margin:0 0 7px!important;
   }
   html body #dw-ref-home .dw-ref-greeting p{
-    color:#465a7b!important;margin:0;font:500 clamp(14px,1.35vw,19px)/1.35 inherit;
+    color:#465a7b!important;margin:0;font-family:inherit;font-size:clamp(14px,1.35vw,19px);font-weight:500;line-height:1.35;
   }
   html body #dw-ref-home #dw-ref-add{
     display:inline-flex;align-items:center;justify-content:center;gap:10px;
     min-width:175px;min-height:60px;padding:12px 23px;
     border:0;border-radius:999px;
     background:linear-gradient(120deg,#13294d,#101d3b);
-    color:#84f1d1;font:800 25px/1.2 inherit;cursor:pointer;
+    color:#84f1d1;font-family:inherit;font-size:25px;font-weight:800;line-height:1.2;cursor:pointer;
     box-shadow:0 7px 16px #14264a16;
   }
   html body #dw-ref-home #dw-ref-add span{font-size:34px;font-weight:400;line-height:1}
@@ -241,7 +241,7 @@
   }
   html body #dw-ref-home button.dw-ref-text-link{
     background:transparent;border:0;border-radius:9px;
-    padding:8px;color:#3e5276;font:600 15px/1.2 inherit;cursor:pointer;
+    padding:8px;color:#3e5276;font-family:inherit;font-size:15px;font-weight:600;line-height:1.2;cursor:pointer;
   }
   html body #dw-ref-home button.dw-ref-text-link:hover{
     background:#e5eefa;color:#153356;
@@ -259,7 +259,7 @@
   }
   html body #dw-ref-home .dw-ref-chart-empty button{
     background:#e0f7ed;border:0;border-radius:999px;
-    padding:8px 15px;color:#146a64;font:700 14px/1.2 inherit;cursor:pointer;
+    padding:8px 15px;color:#146a64;font-family:inherit;font-size:14px;font-weight:700;line-height:1.2;cursor:pointer;
   }
   html body #dw-ref-home .dw-ref-chart-plot{
     position:relative;flex:1;min-height:144px;isolation:isolate;
@@ -408,7 +408,7 @@
     min-height:53px;width:100%;display:flex;align-items:center;justify-content:center;
     gap:13px;padding:11px 20px;margin:3px 0 0;
     border:0;border-radius:999px;background:#102140;color:#9bf6db;
-    font:800 18px/1.2 inherit;cursor:pointer;box-shadow:0 4px 12px #13274a18;
+    font-family:inherit;font-size:18px;font-weight:800;line-height:1.2;cursor:pointer;box-shadow:0 4px 12px #13274a18;
   }
   html body #dw-ref-home #dw-ref-settle-action span{font-size:25px}
   /* Maintain the light design on the remaining real pages without altering
@@ -456,6 +456,15 @@
     background:#f8fbff!important;border:1px solid #e0e8f4!important;
     border-radius:23px!important;box-shadow:var(--dw-ref-shadow)!important;
     color:#1a2c4e!important;
+  }
+  html body .sidebar .squareup-nav :is([hidden],[aria-hidden="true"],#sq-finance-nav){
+    display:none!important;
+  }
+  /* The active screenshot-inspired dashboard alone owns the Overview surface.
+     Hidden legacy panels continue updating their original data behind it. */
+  html body #tracker-dashboard.sq-tab-overview:not(.dw-template-original)>#dw-home-columns,
+  html body #tracker-dashboard.sq-tab-overview:not(.dw-template-original)>#sq-return-summary{
+    display:none!important;
   }
   html body #dw-ref-home button:focus-visible,
   html body #dw-ref-toolbar button:focus-visible,
