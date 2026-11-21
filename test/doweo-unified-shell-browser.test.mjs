@@ -144,6 +144,10 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
    const toolsVisible=await page.locator('#dw-all-top-tools button:visible').count();
    assert.equal(toolsVisible,3,'all pages keep the three account shortcuts');
   }
+  const overviewTabs=await page.evaluate(()=>{
+    const el=document.querySelector('#tracker-dashboard>.sq-workspace-tabs');
+    const r=el.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height};
+  });
   await pageOpen('nav-trackers','trackers-view');
   console.log('TRACKERS_GEOMETRY',JSON.stringify(await page.evaluate(()=>{
     const rect=selector=>{
@@ -173,8 +177,29 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   assert.ok(trackersTop>=80&&trackersTop<260,
    'Trackers content must start directly beneath the shared topbar, not after a blank full viewport: '+trackersTop);
   await page.screenshot({path:resolve(root,'test-results/unified/trackers.png'),fullPage:true});
+  await pageOpen('nav-friends','friends-view');
+  const friendsView=await page.locator('#friends-page').evaluate(el=>{
+    const r=el.getBoundingClientRect();
+    return {display:getComputedStyle(el).display,y:r.top,h:r.height,visible:!!r.height,
+      tabs:el.querySelectorAll('[data-friends-tab]').length,
+      search:!!el.querySelector('#sq-friend-query'),
+      results:!!el.querySelector('#sq-friends-results')};
+  });
+  console.log('FRIENDS_VISIBILITY',JSON.stringify(friendsView));
+  assert.ok(friendsView.visible&&friendsView.y>80&&friendsView.y<360,
+    'Friends must display beneath the top navigation, not as an empty page: '+JSON.stringify(friendsView));
+  assert.equal(friendsView.tabs,3,'Friends retains My Friends, Pending and Find Friends');
+  assert.ok(friendsView.search&&friendsView.results,'Friends search and list remain available');
   await pageOpen('nav-analytics','analytics-view');
   await page.screenshot({path:resolve(root,'test-results/unified/analytics.png'),fullPage:true});
+  const secondaryTabs=await page.evaluate(()=>{
+    const el=document.getElementById('dw-all-top-tabs');
+    const r=el.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height};
+  });
+  console.log('MATCHING_TOPBARS',JSON.stringify({overviewTabs,secondaryTabs}));
+  for(const key of ['x','y','w','h'])assert.ok(Math.abs(overviewTabs[key]-secondaryTabs[key])<3,
+    'Overview and secondary topbars must share '+key+': '+JSON.stringify({overviewTabs,secondaryTabs}));
+
   await pageOpen('nav-profile','settings-view');
   await page.screenshot({path:resolve(root,'test-results/unified/settings.png'),fullPage:true});
   await pageOpen('nav-about','about-view');
