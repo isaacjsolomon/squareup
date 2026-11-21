@@ -3,26 +3,33 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {UI_PHRASES} from '../doweo-ui-catalog.mjs';
 
-const script=readFileSync(new URL('../doweo-mobile-more-pages.js',import.meta.url),'utf8');
-const css=readFileSync(new URL('../doweo-mobile-more-pages.css',import.meta.url),'utf8');
-const manifest=JSON.parse(readFileSync(new URL('../manifest.webmanifest',import.meta.url),'utf8'));
+const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const moreScript=readFileSync(new URL('../doweo-mobile-more-pages.js',import.meta.url),'utf8');
 const workflow=readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',import.meta.url),'utf8');
+const manifest=JSON.parse(readFileSync(new URL('../manifest.webmanifest',import.meta.url),'utf8'));
+const sectionStart=html.indexOf('<div class="sq-balanced-overlay" id="sq-mobile-more-sheet"');
+const sectionEnd=html.indexOf('<style id="dw-mobile-social-menu-style">',sectionStart);
+const more=html.slice(sectionStart,sectionEnd);
 
-test('iPhone Safari gets a manual Add to Home Screen button without altering the 4x2 More grid',()=>{
- assert.match(script,/const iosDevice=\(\)=>/);
- assert.match(script,/iPad\|iPhone\|iPod/);
- assert.match(script,/navigator\.maxTouchPoints>1/);
- assert.doesNotMatch(script,/const iosSafari=/,'browser tokens must not hide the action');
- assert.match(script,/installCTA\.hidden=!small\(\)\|\|installed\(\)/);
- assert.match(script,/grid\.before\(installCTA\)/,'install button must appear before the eight destination tiles');
- assert.match(script,/ensureInstallButton\(\)/);
- assert.doesNotMatch(script,/navigator\.share\(/,'the Web Share API cannot expose Safari Add to Home Screen');
+test('the real HTML contains a visible mobile Home Screen action above the actual More grid',()=>{
+ assert.ok(sectionStart>0&&sectionEnd>sectionStart,'find the production More section');
+ assert.equal((html.match(/id="dw-mobile-home-screen-install-native"/g)||[]).length,1,'button occurs exactly once');
+ assert.equal((html.match(/id="dw-mobile-home-screen-help"/g)||[]).length,1,'native dialog occurs exactly once');
+ assert.ok(more.indexOf('id="dw-mobile-home-screen-install-native"')>more.indexOf('All your DoWeo tools in one place.'),'button follows More introduction');
+ assert.ok(more.indexOf('id="dw-mobile-home-screen-install-native"')<more.indexOf('sq-balanced-actions sq-balanced-more-grid'),'button precedes the eight tiles');
+ assert.match(more,/onclick="document.getElementById\('dw-mobile-home-screen-help'\).showModal\(\)"/,'button opens modal directly');
+ assert.match(more,/<form method="dialog"><button type="submit">Got it<\/button><\/form>/,'close works natively');
+ assert.match(more, /@media\(max-width:900px\)/,'mobile styling is present in index itself');
+ assert.match(more, /#sq-mobile-more-sheet #dw-mobile-home-screen-install-native\{/);
+ assert.match(more, /display:flex!important/);
+ assert.match(more, /@media\(min-width:901px\)\{#dw-mobile-home-screen-install-native\{display:none!important\}\}/,'desktop is unaffected');
+ assert.doesNotMatch(moreScript,/ensureInstallButton|iosDevice\(/,'no device detection or runtime injection may hide the button');
  assert.equal(manifest.display,'standalone');
  assert.ok(manifest.icons.some(icon=>icon.sizes==='192x192'));
 });
 
-test('install guide explains Apple-required interaction and can be dismissed',()=>{
- for(const text of [
+test('the Safari guide copy is approved for interface localization and packaged for production',()=>{
+ for(const phrase of [
   'Add to Home Screen',
   'Keep DoWeo one tap away',
   'Add DoWeo to Home Screen',
@@ -33,15 +40,10 @@ test('install guide explains Apple-required interaction and can be dismissed',()
   'Apple requires these steps; websites cannot install themselves automatically.',
   'Got it'
  ]){
-  assert.ok(script.includes(text),'missing UI string: '+text);
-  assert.ok(UI_PHRASES.includes(text),'not approved for interface translation: '+text);
+  assert.ok(html.includes(phrase),'missing copy in the production HTML: '+phrase);
+  assert.ok(UI_PHRASES.includes(phrase),'not approved for translation: '+phrase);
  }
- assert.match(script,/installDone\.addEventListener\('click',closeInstallGuide\)/);
- assert.match(script,/installClose\.addEventListener\('click',closeInstallGuide\)/);
- assert.match(script,/event\.key==='Escape'/);
- assert.match(script,/doweo:uiupdated/);
- assert.match(css,/#dw-ios-install-guide\[hidden\]\{display:none!important\}/);
- assert.match(css,/@media\(min-width:901px\)/);
- assert.match(workflow,/doweo-mobile-more-pages\.js\?v=20261121-ios-install-visible-v2/);
- assert.match(workflow,/doweo-mobile-more-pages\.css\?v=20261121-ios-install-visible-v2/);
+ assert.match(workflow,/cp index.html/);
+ assert.match(workflow,/doweo-mobile-more-pages\.js\?v=20261121-static-install-v3/);
+ assert.match(workflow,/doweo-mobile-more-pages\.css\?v=20261121-static-install-v3/);
 });
