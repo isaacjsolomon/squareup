@@ -44,7 +44,7 @@ jobs:
         run: node --test test/doweo-complete-localization.test.mjs
       - name: Test mixed-language and dynamic translation regressions
         run: node --test test/doweo-localization-coverage.test.mjs test/doweo-translation-reliability.test.mjs test/doweo-screenshot-regressions.test.mjs test/doweo-interface-audit.test.mjs test/doweo-financial-tabs-subtitles.test.mjs test/doweo-weo-about-localization.test.mjs test/doweo-financial-spanish-coverage.test.mjs
-      - name: Inspect mobile More navigation
+      - name: Verify mobile More routing and destination isolation
         run: node --test test/mobile-more-inspect.test.mjs
       - name: Test live translations and settings layout
         run: node --test test/doweo-translations-ui.test.mjs
@@ -106,7 +106,7 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.65.0
           npx playwright install --with-deps chromium
-      - name: Inspect More route page isolation at mobile widths
+      - name: Browser-verify More destinations have independent mobile pages
         run: node --test test/mobile-more-browser-inspect.test.mjs
       - name: Browser-test mobile Split Bill popup, member saving, and original steps
         run: node --test test/split-bill-member-modal.test.mjs
