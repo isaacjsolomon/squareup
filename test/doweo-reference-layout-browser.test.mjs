@@ -92,8 +92,9 @@ test('DoWeo desktop reference dashboard matches requested composition, real valu
   await page.locator('#dw-ref-add').click();
   assert.ok(await page.locator('#dw-compact-add-menu').isVisible(),'Add opens existing real Add dropdown');
   await page.keyboard.press('Escape');
-  await page.locator('#dw-ref-activity-slot .sq-return-row').first().click();
-  assert.ok(await page.locator('#sq-expense-details-overlay').count()>=0,'expense row remains attached to original handler');
+  const activityRow=page.locator('#dw-ref-activity-slot .sq-return-row').first();
+  assert.equal(await activityRow.count(),1,'real ledger activity row is present');
+  assert.equal(await activityRow.getAttribute('role'),'button','expense detail remains a keyboard-accessible action');
   for(const section of ['expenses','bills','members']){
    await page.evaluate(section=>document.querySelector('#tracker-dashboard [data-sq-tab="'+section+'"]').click(),section);
    await page.waitForTimeout(160);
@@ -107,7 +108,7 @@ test('DoWeo desktop reference dashboard matches requested composition, real valu
   await page.waitForTimeout(250);
   assert.equal(await page.locator('#dw-ref-home').isVisible(),false);
   assert.equal(await page.locator('#dw-ref-toolbar').isVisible(),false);
-  assert.equal(await page.locator('#sq-return-activity').evaluate(el=>el.parentElement.id),'sq-return-activity'=== 'x'?'x':(await page.locator('#sq-return-activity').evaluate(el=>el.parentElement.id)));
+  assert.notEqual(await page.locator('#sq-return-activity').evaluate(el=>el.parentElement.id),'dw-ref-activity-slot','mobile retains its original activity placement');
   assert.ok(await page.locator('.sq-mobile-nav').isVisible());
   const barBottom=await page.locator('.sq-mobile-nav').evaluate(el=>el.getBoundingClientRect().bottom);
   assert.ok(Math.abs(barBottom-844)<3,'mobile bottom navigation remains anchored');
