@@ -528,6 +528,59 @@
    bottom:29px!important;
  }
 }
+
+/* Contrast and content readability on the same new light desktop surfaces. */
+@media(min-width:901px){
+ html body.about-view #about-page .about-build-story{
+   background:linear-gradient(150deg,#192f53,#102442)!important;
+   color:#eef8ff!important;border:1px solid #365575!important;
+   border-radius:24px!important;box-shadow:0 11px 28px #172f5219!important;
+ }
+ html body.about-view #about-page .about-build-story
+   :is(.about-build-heading h2,.about-build-heading p,.about-build-step h3,.about-build-step p,.about-build-date){
+   color:#f3f9ff!important;
+ }
+ html body.about-view #about-page .about-build-story .about-kicker{
+   color:#a7d9e9!important;
+ }
+ html body.about-view #about-page .about-build-step{
+   background:#203959!important;border:1px solid #406080!important;
+   box-shadow:none!important;border-radius:16px!important;
+ }
+ html body.about-view #about-page .about-build-step h3{
+   color:#fcffff!important;font-weight:800!important;
+ }
+ html body.about-view #about-page .about-build-step p{
+   color:#c9ddea!important;
+ }
+ html body.about-view #about-page .about-build-date{
+   color:#c5dff0!important;
+ }
+ html body.about-view #about-page .about-feature h3,
+ html body.about-view #about-page .about-mission h2{
+   color:#192c50!important;
+ }
+ html body.about-view #about-page .about-feature p,
+ html body.about-view #about-page .about-mission p,
+ html body.about-view #about-page .about-contact-caption{
+   color:#4f6380!important;
+ }
+ html body.settings-view #settings-page label,
+ html body.settings-view #settings-page .settings-field-label{
+   color:#244067!important;font-weight:650!important;
+ }
+ html body.settings-view #settings-page :is(.settings-tabs button,.settings-tab){
+   color:#345375!important;font-family:inherit!important;font-size:15px!important;
+   font-weight:650!important;
+ }
+ html body.settings-view #settings-page :is(.settings-tabs button[aria-selected="true"],.settings-tab.active){
+   background:#163455!important;color:#a6f8db!important;
+ }
+ html body.dw-all-secondary-view :is(#settings-page,#about-page,#trackers-page,#analytics-page)
+   footer :is(a,small,span,p){
+   color:#546982!important;
+ }
+}
 @media(prefers-reduced-motion:reduce){
  html body #dw-ref-home .dw-ref-chart-bar{transition:none!important}
 }
