@@ -158,7 +158,8 @@
   const g=document.getElementById('sq-return-greeting')?.textContent?.trim()||'Welcome back';
   const match=g.match(/(?:welcome back|hi)[,!]?\s*(.*)/i);
   const first=(match?.[1]||'').replace(/^,?\s*/,'').trim();
-  h1.textContent=first ? 'Hi, '+first+'!' : 'Welcome back!';
+  h1.dataset.dwGreetingName=first;
+  h1.textContent=window.dwUnifiedLocale?.greeting?.(first)||(first ? 'Hi, '+first+'!' : 'Welcome back!');
   const who=document.getElementById('who')?.textContent?.trim()||first||'';
   const initials=who.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x.charAt(0).toUpperCase()).join('')||'ME';
   const avatarLabel=avatar.querySelector('.dw-ref-avatar-label');
@@ -192,6 +193,7 @@
  }
  let lastChartRows=[];
  function showChart(rows){
+  chartBody.removeAttribute('data-dw-shell-key');
   chartBody.replaceChildren();
   lastChartRows=Array.isArray(rows)?rows.slice():[];
   const now=new Date();
@@ -304,7 +306,8 @@
    else throw new Error('Unexpected finance response');
   }catch(_){
    incomeAmount.textContent='—';spendAmount.textContent='—';
-   chartBody.textContent='Cash flow is unavailable right now. You can still open Cash Flow from Analytics.';
+   chartBody.dataset.dwShellKey='chartUnavailable';
+   chartBody.textContent=tr('chartUnavailable','Cash flow is unavailable right now. You can still open Cash Flow from Analytics.');
   }finally{financeBusy=false;}
  }
  // The finance endpoint is read-only. Recheck when records are edited elsewhere.
