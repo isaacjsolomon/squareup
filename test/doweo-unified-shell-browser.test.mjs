@@ -79,6 +79,16 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   mkdirSync(resolve(root,'test-results/unified'),{recursive:true});
   await page.screenshot({path:resolve(root,'test-results/unified/overview.png'),fullPage:true});
 
+  console.log('SHELL_BOOT_STATE',JSON.stringify(await page.evaluate(()=>({
+   hasRuntime:!!window.dwUnifiedShell,hasHeader:!!document.getElementById('dw-all-topbar'),
+   headerVisible:!!document.getElementById('dw-all-topbar')?.getClientRects().length,
+   originalTab:!!document.querySelector('#tracker-dashboard > .sq-workspace-tabs'),
+   loggedIn:document.body.className,
+   navigation:document.querySelector('.sidebar .squareup-nav')?.children.length,
+   firstNavIcon:document.querySelector('#nav-home > .dw-all-nav-icon')?.outerHTML.slice(0,180)||null,
+   scripts:[...document.scripts].filter(s=>s.src.includes('unified')).map(s=>s.src),
+   resources:performance.getEntriesByType('resource').filter(r=>r.name.includes('unified')).map(r=>[r.name,r.responseStatus])
+  }))));
   const sidebar=await page.evaluate(()=>{
    const nav=document.querySelector('.sidebar .squareup-nav');
    return [...nav.querySelectorAll(':scope > button.sq-nav-link,:scope > .dw-nav-social-trigger,:scope > .dw-nav-group > summary')]
