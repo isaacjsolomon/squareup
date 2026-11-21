@@ -816,3 +816,17 @@
    :is(.sq-expense-history,.sq-expense-panel,.sq-expense-tools,.sq-expense-sidebar)
    :is(p,small,span:not(.sq-status-badge)){color:#546987!important}
 }
+
+/* Standalone routes must not leave a hidden prior page in document flow. */
+@media(min-width:901px){
+  html body.about-view #trackers-page,
+  html body.analytics-view #trackers-page,
+  html body.notifications-view #trackers-page,
+  html body.friends-view #trackers-page,
+  html body.settings-view #trackers-page{
+    display:none!important;height:0!important;min-height:0!important;
+  }
+  html body.about-view #about-page{
+    margin-top:112px!important;
+  }
+}
