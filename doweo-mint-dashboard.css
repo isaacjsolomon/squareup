@@ -284,6 +284,31 @@
  html body #dw-beta-modal .dw-submit{
   background:#102143!important;color:#a4f5dc!important;border-radius:999px!important;
  }
+
+ /* Match the higher-specificity legacy Overview rules so the refreshed
+    surfaces win even in the restored two-column layout. */
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary){
+  background:transparent!important;border:0!important;
+  box-shadow:none!important;color:#142747!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)
+ :is(.sq-overview-people-panel,.sq-overview-activity-panel,.sq-return-panel,.sq-stat){
+  background:linear-gradient(145deg,#fbfcff,#f1f6fd)!important;
+  color:#132644!important;border:1px solid #dae6f2!important;
+  border-radius:23px!important;box-shadow:var(--dw-view-shadow)!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)
+ :is(.sq-overview-people-panel h3,.sq-overview-activity-panel h3,.sq-return-head h3){
+  color:#142644!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-balance{
+  background:linear-gradient(130deg,#182e53,#0b1d39)!important;
+  border-color:#334d70!important;box-shadow:var(--dw-view-shadow)!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-balance
+ :is(#sq-clean-net,#dw-compact-balance,.dw-balance-amount){
+  color:#aaf9da!important;
+ }
  /* Keep account destructive actions, notification badges, user photos, and
     all finance/chat interactions unchanged. */
 }
