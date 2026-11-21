@@ -81,8 +81,17 @@
   ) {
     display:none!important;
   }
+  /* Trip and Household directories already provide the visible page title
+     ("Your trips" / "Your households"). Hide the redundant shell heading
+     and its introductory caption, but keep Back to More. */
+  html body.dw-mobile-more-workspace-open #sq-nextgen :is(#sq-ng-title,#sq-ng-subtitle) {
+    display:none!important;
+  }
   html body.dw-mobile-more-workspace-open #sq-nextgen .sq-ng-header {
-    margin:0 0 18px!important;
+    margin:0 0 12px!important;
+  }
+  html body.dw-mobile-more-workspace-open #sq-nextgen .sq-ng-heading {
+    gap:0!important;
   }
   html body.dw-mobile-more-workspace-open #sq-nextgen #sq-ng-back {
     display:inline-flex!important;

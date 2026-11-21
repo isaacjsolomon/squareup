@@ -114,6 +114,24 @@ test('mobile More destinations are isolated full pages with intact navigation',{
         !!hub.querySelector('.sq-ng-workspace-directory');
     },mode,{timeout:12000});
     assert.equal(await page.locator('#sq-ng-title').textContent(),title);
+    assert.equal(await page.locator('#sq-ng-title').isVisible(),false,
+      'duplicate top '+title+' heading should be hidden');
+    assert.equal(await page.locator('#sq-ng-subtitle').isVisible(),false,
+      'redundant introduction should be hidden on '+title);
+    const directoryHeading=page.locator('#sq-ng-content .sq-ng-workspace-directory-head h2');
+    assert.ok(await directoryHeading.isVisible(),
+      'keep the original Your '+title.toLowerCase()+' heading');
+    assert.match((await directoryHeading.textContent()).trim(),
+      new RegExp('Your\\s+'+(mode==='trip'?'trips':'households'),'i'));
+    assert.ok(await page.locator('#sq-ng-back').isVisible(),
+      'Back to More must stay visible on '+title);
+    const verticalSpacing=await page.evaluate(()=>{
+      const back=document.getElementById('sq-ng-back').getBoundingClientRect();
+      const directory=document.querySelector('#sq-ng-content .sq-ng-workspace-directory-head').getBoundingClientRect();
+      return Math.round(directory.top-back.bottom);
+    });
+    assert.ok(verticalSpacing>=0&&verticalSpacing<110,
+      title+' should have a compact gap after Back, not another oversized header: '+verticalSpacing);
     assert.equal(await page.locator('#tracker-dashboard').isVisible(),false,
       title+' must open its own workspace above Home');
     assert.equal(await page.locator('#sq-nextgen .sq-ng-tabs').isVisible(),false,
