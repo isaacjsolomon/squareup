@@ -701,6 +701,7 @@ async function member(id) {
   }
 
   async function materializeRecurring(id) {
+    let createdAny = false;
     const schedules = await db('squareup_recurring_expenses', {
       filters: {
         tracker_id: 'eq.' + id,
@@ -740,6 +741,7 @@ async function member(id) {
               recurring_on: next
             }
           }))[0];
+          createdAny = true;
 
           const recipient = (await db('tracker_members', {
             filters: { tracker_id: 'eq.' + id }
@@ -780,18 +782,18 @@ async function member(id) {
         });
       }
     }
+    return createdAny;
   }
 
  
 async function detail(id) {
   // Load independent database queries in parallel.
- const [trackers, membership, members, entries, permissionRows] =
+ const [trackers, members, entries, permissionRows] =
   await Promise.all([
     db('trackers', {
       filters: { id: 'eq.' + id },
       limit: 1
     }),
-    member(id),
     db('tracker_members', {
       filters: { tracker_id: 'eq.' + id }
     }),
@@ -805,6 +807,13 @@ async function detail(id) {
   ]);
 
   const t = trackers[0];
+  // Membership is already in this response. Avoid a redundant member(id)
+  // lookup, which previously fetched trackers and tracker_members again.
+  const membership = members.find(row =>
+    String(row.user_id).toLowerCase() === String(me.id).toLowerCase()
+  ) || (t && String(t.owner_id).toLowerCase() === String(me.id).toLowerCase()
+    ? { tracker_id: id, user_id: me.id, role: 'owner', name: me.name }
+    : null);
 
   if (!t || !membership) {
     throw Error('Tracker not found');
@@ -2185,15 +2194,16 @@ if (
     // LIST AND CREATE TRACKERS
     if (!id) {
       if (method === 'GET') {
-        const members = await db('tracker_members', {
-          filters: { user_id: 'eq.' + me.id }
-        });
-
-        // Include owner-created trackers even when a legacy
-        // membership lookup does not return the owner's row.
-        const owned = await db('trackers', {
-          filters: { owner_id: 'eq.' + me.id }
-        });
+        // Membership and legacy ownership are independent reads.
+        const [members, owned] = await Promise.all([
+          db('tracker_members', {
+            filters: { user_id: 'eq.' + me.id }
+          }),
+          // Include owner-created trackers without a membership row.
+          db('trackers', {
+            filters: { owner_id: 'eq.' + me.id }
+          })
+        ]);
 
         const ids = [...new Set([
           ...members.map(m => m.tracker_id),
@@ -2202,31 +2212,36 @@ if (
 
         if (!ids.length) return json([]);
 
-        const ts = await db('trackers', {
-          filters: { id: 'in.(' + ids.join(',') + ')' },
-          order: 'created_at.asc'
-        });
+        const [ts, counts] = await Promise.all([
+          db('trackers', {
+            filters: { id: 'in.(' + ids.join(',') + ')' },
+            order: 'created_at.asc'
+          }),
+          db('tracker_members', {
+            filters: { tracker_id: 'in.(' + ids.join(',') + ')' }
+          })
+        ]);
 
-        const counts = await db('tracker_members', {
-          filters: {
-            tracker_id: 'in.(' + ids.join(',') + ')'
-          }
-        });
+        const rolesByTracker = new Map();
+        for (const row of members) {
+          // Preserve the previous first-match behavior for legacy rows.
+          if (!rolesByTracker.has(row.tracker_id))
+            rolesByTracker.set(row.tracker_id, row.role);
+        }
+        const countsByTracker = new Map();
+        for (const row of counts)
+          countsByTracker.set(row.tracker_id,
+            (countsByTracker.get(row.tracker_id) || 0) + 1);
 
         return json(ts.map(t => ({
           id: t.id,
           name: t.name,
           currency: t.currency || 'USD',
-         role:
-  String(t.owner_id).toLowerCase() ===
-  String(me.id).toLowerCase()
-    ? 'owner'
-    : members.find(
-        m => m.tracker_id === t.id
-      )?.role || 'member',
-          memberCount: counts.filter(
-            m => m.tracker_id === t.id
-          ).length
+          role: String(t.owner_id).toLowerCase() ===
+            String(me.id).toLowerCase()
+            ? 'owner'
+            : rolesByTracker.get(t.id) || 'member',
+          memberCount: countsByTracker.get(t.id) || 0
         })));
       }
 
@@ -3940,8 +3955,10 @@ if (entry.type !== 'payment') {
         const result = await detail(id);
 
         try {
-          await materializeRecurring(id);
-          return json(await detail(id));
+          // Only reread the tracker when recurring sync actually added an entry.
+          // An unchanged ledger can reuse the already-authorized response.
+          const insertedEntries = await materializeRecurring(id);
+          return json(insertedEntries ? await detail(id) : result);
         } catch (recurringError) {
           console.error(
             'Recurring sync failed; returning existing tracker data:',
