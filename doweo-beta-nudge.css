@@ -1,0 +1,98 @@
+/* DoWeo seven-minute Beta Feedback invitation, matching the approved navy/mint preview. */
+#dw-beta-nudge[hidden] { display:none!important; }
+#dw-beta-nudge {
+  box-sizing:border-box;position:fixed;inset:0;z-index:2147483550;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px max(14px,env(safe-area-inset-right,0px))
+          calc(20px + env(safe-area-inset-bottom,0px))
+          max(14px,env(safe-area-inset-left,0px));
+  background:rgba(6,20,44,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+  font-family:inherit;
+}
+#dw-beta-nudge, #dw-beta-nudge * { box-sizing:border-box; }
+#dw-beta-nudge .dw-beta-nudge-panel{
+  width:min(100%,470px);max-height:min(90dvh,800px);overflow-y:auto;
+  position:relative;isolation:isolate;
+  padding:29px 35px 36px;text-align:center;
+  border:1px solid rgba(255,255,255,.85);border-radius:29px;
+  background:linear-gradient(155deg,#fff 0%,#f2f7fd 86%);
+  box-shadow:0 30px 80px rgba(5,20,45,.33);
+  color:#102143;
+}
+#dw-beta-nudge .dw-beta-nudge-panel::after{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  left:-10%;right:-10%;bottom:-82px;height:135px;
+  background:linear-gradient(100deg,rgba(115,243,201,.5),rgba(178,251,232,.7),rgba(114,241,209,.48));
+  border-radius:50% 45% 0 0/40% 55% 0 0;
+}
+#dw-beta-nudge .dw-beta-nudge-close{
+  position:absolute;top:12px;right:14px;
+  width:41px;height:41px;display:grid;place-items:center;
+  padding:0;border:0;border-radius:50%;background:transparent;color:#172a4b;
+  font:inherit;font-size:32px;line-height:1;cursor:pointer;
+}
+#dw-beta-nudge .dw-beta-nudge-close:hover{background:rgba(17,40,74,.08)}
+#dw-beta-nudge .dw-beta-nudge-diamond{
+  display:grid;place-items:center;width:94px;height:94px;
+  margin:10px auto 18px;border-radius:26px;
+  color:#122143;background:linear-gradient(140deg,#c9ffed,#adf6db);
+}
+#dw-beta-nudge .dw-beta-nudge-diamond svg{width:63px;height:63px}
+#dw-beta-nudge h2{
+  margin:0 0 11px;color:#102145;
+  font-family:inherit;font-weight:800;line-height:1.13;
+  font-size:clamp(29px,4vw,39px);
+  letter-spacing:-.045em;
+}
+#dw-beta-nudge #dw-beta-nudge-copy{
+  max-width:340px;margin:0 auto 23px;
+  color:#344563;font-size:16px;line-height:1.5;
+}
+#dw-beta-nudge .dw-beta-nudge-topics{display:grid;gap:8px;margin:0 0 22px}
+#dw-beta-nudge .dw-beta-nudge-topics button{
+  min-height:49px;padding:10px 14px;display:flex;align-items:center;gap:13px;
+  border:1px solid transparent;border-radius:14px;
+  background:#e9eef5;color:#122144;
+  font-family:inherit;font-weight:600;font-size:14px;line-height:1.35;text-align:left;cursor:pointer;
+}
+#dw-beta-nudge .dw-beta-nudge-topics button:hover,
+#dw-beta-nudge .dw-beta-nudge-topics button[aria-pressed="true"]{
+  border-color:#91d5c8;background:#e4f6f2;
+}
+#dw-beta-nudge .dw-beta-nudge-topics button>span{
+  display:grid;place-items:center;flex:0 0 28px;
+  font-size:23px;color:#153656;line-height:1;
+}
+#dw-beta-nudge .dw-beta-nudge-give{
+  width:100%;min-height:54px;padding:13px 20px;border:0;border-radius:30px;
+  background:#102143;color:#a7f6df;
+  font-family:inherit;font-weight:800;font-size:18px;line-height:1.2;cursor:pointer;
+  box-shadow:0 9px 22px rgba(11,27,58,.16);
+}
+#dw-beta-nudge .dw-beta-nudge-give>span{margin-left:7px;font-size:24px;vertical-align:-1px}
+#dw-beta-nudge .dw-beta-nudge-give:hover{background:#1b3763}
+#dw-beta-nudge .dw-beta-nudge-later{
+  margin:11px auto 0;border:0;border-radius:10px;
+  padding:10px 16px;background:transparent;
+  color:#495779;font-family:inherit;font-weight:600;font-size:15px;line-height:1.3;cursor:pointer;
+}
+#dw-beta-nudge .dw-beta-nudge-later:hover{color:#102143;background:rgba(14,36,68,.06)}
+#dw-beta-nudge button:focus-visible{outline:3px solid #13bfa7;outline-offset:3px}
+@media(max-width:600px){
+  #dw-beta-nudge{padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px))}
+  #dw-beta-nudge .dw-beta-nudge-panel{padding:22px 22px 29px;border-radius:23px}
+  #dw-beta-nudge .dw-beta-nudge-diamond{width:74px;height:74px;border-radius:19px;margin:8px auto 13px}
+  #dw-beta-nudge .dw-beta-nudge-diamond svg{width:50px;height:50px}
+  #dw-beta-nudge h2{font-size:29px}
+  #dw-beta-nudge #dw-beta-nudge-copy{font-size:14px;margin-bottom:18px}
+  #dw-beta-nudge .dw-beta-nudge-topics{gap:7px;margin-bottom:17px}
+  #dw-beta-nudge .dw-beta-nudge-topics button{min-height:46px;padding:9px 11px;font-size:13px}
+  #dw-beta-nudge .dw-beta-nudge-give{min-height:50px;font-size:16px}
+}
+@media(prefers-reduced-motion:no-preference){
+  #dw-beta-nudge:not([hidden]) .dw-beta-nudge-panel{animation:dw-beta-nudge-enter .2s ease-out both}
+  @keyframes dw-beta-nudge-enter{
+    from{opacity:0;transform:translateY(8px) scale(.985)}
+    to{opacity:1;transform:translateY(0) scale(1)}
+  }
+}
