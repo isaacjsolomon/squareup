@@ -61,7 +61,7 @@ jobs:
           test -s .pages-output/terms/index.html
           test -s functions/api/beta-signup.js
           cp beta/index.html .pages-output/beta.html
-          node --test test/polls-api.test.mjs test/recent-expense-api.test.mjs
+          node --test test/polls-api.test.mjs test/recent-expense-api.test.mjs test/tracker-loading-performance.test.mjs
           node scripts/verify-pages-assets.mjs .pages-output
 
       # Run Wrangler from the repository root so it discovers ./functions.
