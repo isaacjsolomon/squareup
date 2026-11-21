@@ -4,6 +4,7 @@
 (function(){
  'use strict';
  const desktop=window.matchMedia('(min-width: 901px)');
+ if(!desktop.matches)return; // Never initialize onboarding controls on mobile.
  const gallery=document.getElementById('trackers-gallery');
  const trackersPage=document.getElementById('trackers-page');
  const dashboard=document.getElementById('tracker-dashboard');
@@ -160,7 +161,7 @@
    }else if(!dismissed&&!galleryHadTrackers){
      card.hidden=false;
    }
-   homePrompt.hidden=!(!galleryHadTrackers&&card.hidden);
+   homePrompt.hidden=!!(galleryHadTrackers||dismissed);
    updateProgress();
    // Enhance the existing empty-state CTA rather than replace its handlers.
    if(empty&&!empty.querySelector('.dw-first-run-example-link')){
