@@ -56,6 +56,19 @@ test('mobile More destinations are isolated full pages with intact navigation',{
   assert.equal(await page.locator('#sq-mobile-notifications').count(),1,
     'the top notification bell still exists');
   const more=page.locator('#sq-mobile-more');
+  // Test the actual running app: the prior mocked HTML test missed the absent button.
+  await more.click();
+  const installButton=page.locator('#dw-mobile-home-screen-install-native');
+  assert.equal(await installButton.count(),1,'mobile More must contain the static install button');
+  assert.ok(await installButton.isVisible(),'install button must be visible in the real mobile More menu');
+  const installRect=await installButton.boundingBox();
+  const tileRect=await page.locator('#sq-mobile-more-sheet > .sq-balanced-sheet > .sq-balanced-more-grid').boundingBox();
+  assert.ok(installRect && tileRect && installRect.y+installRect.height<=tileRect.y+2,'install button must precede the eight tiles');
+  await installButton.click();
+  assert.equal(await page.locator('#dw-mobile-home-screen-help').evaluate(el=>el.open),true,'Safari installation dialog opens');
+  await page.locator('#dw-mobile-home-screen-help form button').click();
+  assert.equal(await page.locator('#dw-mobile-home-screen-help').evaluate(el=>el.open),false,'dialog closes');
+  await page.locator('#sq-mobile-more-sheet [data-sq-close]').first().click();
   const visit=async(id)=>{
     await page.evaluate(()=>document.getElementById('nav-home')?.click());
     if(id==='sq-mobile-notifications'){
