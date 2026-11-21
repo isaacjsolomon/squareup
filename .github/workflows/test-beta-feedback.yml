@@ -21,6 +21,7 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check doweo-i18n.js
+          node --check doweo-first-run.js
           node --check doweo-translations.js
           node --check doweo-localize-ui.js
           node --check doweo-core-locales.mjs
@@ -108,6 +109,8 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.65.0
           npx playwright install --with-deps chromium
+      - name: Verify read-only desktop onboarding, preview, checklist, and mobile protection
+        run: node --test test/doweo-first-run.test.mjs
       - name: Browser-verify More destinations have independent mobile pages
         run: node --test test/mobile-more-browser-inspect.test.mjs
       - name: Browser-test mobile Split Bill popup, member saving, and original steps
