@@ -152,5 +152,56 @@ test('mobile More destinations are isolated full pages with intact navigation',{
       'Home still works when '+title+' is closed');
   }
 
+  // Language switching must update content created after the localizer starts.
+  // Work offline: no translation-service mock returns translated strings.
+  const setLanguage=code=>page.evaluate(code=>window.DoWeoI18n.set(window,code),code);
+  await setLanguage('es');
+  await more.click();
+  const legalTile=page.locator('#sq-mobile-more-sheet [data-sq-destination="nav-privacy-terms"]');
+  await page.waitForFunction(()=>{
+    const tile=document.querySelector('#sq-mobile-more-sheet [data-sq-destination="nav-privacy-terms"]');
+    return tile?.textContent?.trim()==='Privacidad y condiciones';
+  },null,{timeout:10000});
+  assert.equal(await page.locator('#sq-mobile-more-sheet [data-sq-destination="dw-mobile-trips"] strong').textContent(),'Viajes');
+  assert.equal(await page.locator('#sq-mobile-more-sheet [data-sq-destination="dw-mobile-households"] strong').textContent(),'Hogares');
+  await legalTile.evaluate(el=>el.click());
+  await page.waitForFunction(()=>{
+    const p=document.querySelector('#dw-mobile-legal-page');
+    return p?.querySelector('h1')?.textContent==='Privacidad y condiciones'&&
+      p.querySelector('a[href="/privacy/"]')?.textContent==='Política de privacidad'&&
+      p.querySelector('a[href="/terms/"]')?.textContent==='Términos del servicio';
+  },null,{timeout:10000});
+  await page.locator('#dw-mobile-legal-page .dw-mobile-more-back').click();
+  await page.locator('#sq-mobile-more-sheet [data-sq-destination="dw-mobile-households"]').evaluate(el=>el.click());
+  await page.waitForFunction(()=>{
+    const hub=document.querySelector('#sq-nextgen');
+    const content=hub?.querySelector('#sq-ng-content');
+    return hub?.dataset.dwMobileMoreWorkspace==='home' &&
+      content?.querySelector('.sq-ng-workspace-directory-head h2')?.textContent==='Tus hogares' &&
+      content?.querySelector('.sq-ng-workspace-empty h3')?.textContent==='Aún no hay hogares vinculados';
+  },null,{timeout:12000});
+  await page.locator('#sq-ng-back').click();
+
+  await setLanguage('fr');
+  await legalTile.evaluate(el=>el.click());
+  await page.waitForFunction(()=>
+    document.querySelector('#dw-mobile-legal-page h1')?.textContent==='Confidentialité et conditions d’utilisation',
+    null,{timeout:10000});
+  await page.locator('#dw-mobile-legal-page .dw-mobile-more-back').click();
+
+  await setLanguage('he-script');
+  await legalTile.evaluate(el=>el.click());
+  await page.waitForFunction(()=>
+    document.querySelector('#dw-mobile-legal-page h1')?.textContent==='פרטיות ותנאי שימוש',
+    null,{timeout:10000});
+  await page.locator('#dw-mobile-legal-page .dw-mobile-more-back').click();
+
+  await setLanguage('en');
+  await legalTile.evaluate(el=>el.click());
+  await page.waitForFunction(()=>
+    document.querySelector('#dw-mobile-legal-page h1')?.textContent==='Privacy and Terms' &&
+    document.querySelector('#dw-mobile-legal-page a[href="/privacy/"]')?.textContent==='Privacy Policy',
+    null,{timeout:10000});
+
  }finally{await browser.close();await new Promise(resolve=>server.close(resolve))}
 });
