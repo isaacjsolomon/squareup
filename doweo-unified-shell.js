@@ -196,7 +196,24 @@
   }
 
   // The new header appears on *all* non-Overview signed-in destinations.
+  const trackerGallery=document.getElementById('trackers-page');
+  const galleryOriginalDisplay=trackerGallery?.style.getPropertyValue('display')||'';
+  const galleryOriginalPriority=trackerGallery?.style.getPropertyPriority('display')||'';
+  function isolateStandaloneViews(){
+    if(!desktop.matches||!trackerGallery)return;
+    // Old tracker-gallery rules can override the normal router and keep an
+    // unrelated page in the document flow (seen in the About screenshot).
+    const standalone=['about-view','analytics-view','settings-view','friends-view','notifications-view'];
+    const hide=standalone.some(state=>body.classList.contains(state));
+    if(hide)trackerGallery.style.setProperty('display','none','important');
+    else if(trackerGallery.style.getPropertyValue('display')==='none'&&
+            trackerGallery.style.getPropertyPriority('display')==='important'){
+      if(galleryOriginalDisplay)trackerGallery.style.setProperty('display',galleryOriginalDisplay,galleryOriginalPriority);
+      else trackerGallery.style.removeProperty('display');
+    }
+  }
   function sync(){
+    isolateStandaloneViews();
     const legacyView=pageStates.some(key=>body.classList.contains(key));
     const isOverview=!legacyView && dashboard.classList.contains('sq-tab-overview') &&
       !dashboard.classList.contains('dw-template-original')&&visible('tracker-dashboard');
