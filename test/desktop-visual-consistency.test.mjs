@@ -36,7 +36,8 @@ test('polish targets only existing page elements without new navigation or layou
 });
 
 test('Cloudflare bundles and versions the stylesheet so the polish reaches the site',()=>{
-  assert.ok(workflow.includes('doweo-desktop-polish.css .pages-output/'));
+  const copyAssets=workflow.split('\n').find(line=>line.trim().startsWith('cp index.html '));
+  assert.ok(copyAssets?.includes('doweo-desktop-polish.css'),'stylesheet must be bundled with public assets');
   assert.ok(workflow.includes('/doweo-desktop-polish.css?v=20261120-desktop-consistency-v1'));
   assert.ok(workflow.includes('test -s .pages-output/doweo-desktop-polish.css'));
 });
