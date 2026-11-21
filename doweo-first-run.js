@@ -42,7 +42,7 @@
  copy.append(make('span','dw-first-run-eyebrow','NEW TO DOWEO'),make('h2','','Your first split, made simple'),make('p','','Follow these steps when you are ready. Nothing is saved until you use a real DoWeo action.'));
  const dismiss=make('button','dw-first-run-dismiss','Dismiss');dismiss.type='button';
  top.append(copy,dismiss);
- const progress=make('p','dw-first-run-progress');progress.setAttribute('role','status');
+ const progress=make('p','dw-first-run-progress');progress.id='dw-first-run-progress';progress.setAttribute('role','status');
  const progressCount=make('span','','0');
  const progressLabel=make('span','',' of 4 steps complete');
  progress.append(progressCount,progressLabel);
