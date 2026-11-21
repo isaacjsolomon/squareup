@@ -586,8 +586,8 @@
    The former 100vh minimum on .wrap pushed both below an empty screen.
    Collapse ONLY that empty placeholder on these two routes. */
 @media(min-width:901px){
- html body.trackers-view.dw-all-secondary-view>.wrap,
- html body.about-view.dw-all-secondary-view>.wrap{
+ html body.trackers-view.dw-all-secondary-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open)>.wrap,
+ html body.about-view.dw-all-secondary-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open)>.wrap{
    height:0!important;min-height:0!important;max-height:0!important;
    padding-top:0!important;padding-bottom:0!important;
    margin-top:0!important;margin-bottom:0!important;
