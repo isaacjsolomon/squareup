@@ -52,10 +52,12 @@ function removeFinance(){sheet.querySelectorAll('[data-sq-destination="sq-financ
 
 /* iOS Safari cannot invoke the native Add to Home Screen action from JavaScript.
    Offer the real Safari steps in mobile More without changing the 4x2 tile grid. */
-const iosSafari=()=>{
+// Safari may report a desktop-style user agent on some iPads. Rely on the
+// iOS device, not the browser's exact Version/Safari token sequence.
+const iosDevice=()=>{
  const ua=navigator.userAgent||'';
- const ios=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
- return ios&&/Version\//.test(ua)&&/Safari\//.test(ua)&&!/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo|GSA\//.test(ua);
+ return /iPad|iPhone|iPod/i.test(ua)||
+   ((navigator.platform==='MacIntel'||/Macintosh/.test(ua))&&navigator.maxTouchPoints>1);
 };
 const installed=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 let installCTA=null,installOverlay=null,installClose=null,installDone=null,installReturnFocus=null;
@@ -66,10 +68,10 @@ function closeInstallGuide(){
  installReturnFocus=null;
 }
 function ensureInstallButton(){
- if(!iosSafari())return;
+ if(!iosDevice())return;
  const layout=sheet.querySelector(':scope > .sq-balanced-sheet');
- const logout=layout?.querySelector('#sq-mobile-more-logout');
- if(!layout||!logout)return;
+ const grid=layout?.querySelector(':scope > .sq-balanced-more-grid');
+ if(!layout||!grid)return;
  if(!installCTA){
   installCTA=document.createElement('button');
   installCTA.id='dw-ios-install-trigger';
@@ -87,7 +89,8 @@ function ensureInstallButton(){
   labels.append(title,subtitle);
   const chevron=document.createElement('span');chevron.className='dw-ios-install-chevron';chevron.textContent='›';chevron.setAttribute('aria-hidden','true');
   installCTA.append(icon,labels,chevron);
-  logout.before(installCTA);
+  // Show the install action immediately below the More intro, above all tiles.
+  grid.before(installCTA);
 
   installOverlay=document.createElement('div');
   installOverlay.id='dw-ios-install-guide';
