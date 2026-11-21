@@ -830,3 +830,276 @@
     margin-top:112px!important;
   }
 }
+
+
+/* Desktop refinement 2026-11-21: one header, readable expense surfaces, navy chat.
+   Scoped above 900px. No mobile view or finance data is modified. */
+@media (min-width:901px) {
+  :root { --dw-desktop-ink:#182b50; --dw-desktop-muted:#627593; --dw-desktop-navy:#102442; --dw-desktop-mint:#80efd0; --dw-desktop-surface:#f6f9ff; --dw-desktop-stroke:#dce6f3; }
+  /* The same 760px pill, position, and font metrics for the native Overview and
+     the single secondary-route header, with identical alignment at any width. */
+  html body #tracker-dashboard > .sq-workspace-tabs,
+  html body #dw-all-top-tabs {
+    position:fixed!important;
+    left:calc(50% + 88px)!important;
+    top:37px!important;
+    transform:translateX(-50%)!important;
+    width:min(760px,calc(100vw - 530px))!important;
+    max-width:760px!important;
+    height:67px!important;
+    min-height:67px!important;
+    padding:5px!important;
+    margin:0!important;
+    background:#f1f5fd!important;
+    border:1px solid #dbe4f2!important;
+    border-radius:999px!important;
+    box-shadow:0 3px 12px #142d501a!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    z-index:2147482241!important;
+  }
+  html body #tracker-dashboard > .sq-workspace-tabs button,
+  html body #dw-all-top-tabs button {
+    width:100%!important;min-height:54px!important;height:54px!important;
+    padding:8px!important;font-size:clamp(13px,1.25vw,20px)!important;
+    font-weight:750!important;font-family:inherit!important;line-height:1.2!important;
+    letter-spacing:-.02em!important;border-radius:999px!important;
+  }
+  html body #dw-all-top-tabs button[aria-current="page"],
+  html body #tracker-dashboard > .sq-workspace-tabs button[aria-selected="true"] {
+    background:#142849!important;color:#fff!important;
+  }
+  html body.dw-all-secondary-view #dw-all-topbar {
+    top:37px!important;height:67px!important;
+    left:310px!important;right:26px!important;
+  }
+  html body:not(.dw-all-secondary-view) #tracker-dashboard #dw-ref-toolbar{
+    position:fixed!important;top:40px!important;right:27px!important;
+  }
+  html body.dw-all-secondary-view #dw-all-top-tools{top:4px!important}
+  html body.dw-all-secondary-view #sq-bills-page > .sq-bills-workspace-tabs,
+  html body.dw-all-secondary-view #sq-bills-page .sq-bills-workspace-tabs {
+    display:none!important;visibility:hidden!important;height:0!important;
+    margin:0!important;padding:0!important;pointer-events:none!important;
+  }
+  /* Keep header navigation from covering desktop chat and first section cards. */
+  html body #tracker-dashboard.sq-tab-chat #chat-card{
+    margin-top:110px!important;
+  }
+  html body #tracker-dashboard.sq-tab-expenses #dw-expense-workspace{
+    margin-top:32px!important;
+  }
+
+  /* Expenses: replace dark-on-dark cards with the same white/navy/mint system
+     as Overview. This matches the dynamically generated dw-expense-workspace. */
+  html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace
+    :is(#sq-activity-card,#balances-card,#dw-expense-tools) {
+    background:linear-gradient(150deg,#fbfcff,#f1f5fc)!important;
+    border:1px solid var(--dw-desktop-stroke)!important;
+    box-shadow:0 10px 25px #20345419!important;
+    color:var(--dw-desktop-ink)!important;
+    border-radius:21px!important;
+  }
+  html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace
+    :is(.dw-expenses-heading h2,#balances-card h2,#dw-expense-tools h2,
+        #history .text b,#history .text strong,#nets .net b,#nets .net strong,
+        .sq-side-action strong,.dw-expense-day) {
+    color:var(--dw-desktop-ink)!important;
+  }
+  html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace
+    :is(.dw-expenses-heading p,#history .note,#history small,#nets .net .note,
+        .sq-side-action small,.sq-expense-subtitle,#sq-expense-count) {
+    color:var(--dw-desktop-muted)!important;
+  }
+  html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .dw-expenses-heading {
+    border-color:#dce5f1!important;
+  }
+  html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #history {
+    scrollbar-color:#b5c6db transparent!important;
+  }
+  html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #history>.entry {
+    background:transparent!important;border-bottom:1px solid #dde6f1!important;
+    color:#243656!important;
+  }
+  html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #history>.entry
+    :is(.text,.text b,.amount,.tag,.meta,.note) {
+    color:#243656!important;
+  }
+  html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace #history>.entry .note {
+    color:#6b7d97!important;
+  }
+  html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace .dw-expense-day {
+    background:#e5eff9!important;border:1px solid #d5e4f2!important;
+    color:#213656!important;border-radius:10px!important;
+  }
+  html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace
+    :is(#nets .net,.sq-side-action) {
+    background:#fff!important;border:1px solid #dae5f1!important;
+    color:#1b3053!important;border-radius:14px!important;
+  }
+  html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace
+    :is(#sq-expense-search,#sq-expense-time,select,input:not([type="checkbox"])) {
+    background:#fff!important;color:#192d4e!important;
+    border:1px solid #cbd9ea!important;
+  }
+  html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace
+    .dw-expense-tabs button {
+    background:#eaf1fa!important;color:#274466!important;
+    border-color:#cfdded!important;
+  }
+  html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace
+    .dw-expense-tabs button[aria-pressed="true"] {
+    background:#48dfba!important;color:#10343c!important;
+    border-color:#48dfba!important;
+  }
+  html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace
+    #dw-expense-filter-panel :is(summary,.sq-expense-filters) {
+    background:#f3f7fe!important;border-color:#d2dfef!important;
+    color:#233b5d!important;
+  }
+  html body #tracker-dashboard.dw-expenses-redesign #dw-expense-workspace
+    #dw-expense-pay {
+    color:#07343a!important;background:#3cdeba!important;
+  }
+
+  /* Tracker gallery: a comfortable gutter and true high-contrast white titles. */
+  html body.trackers-view.dw-all-secondary-view #trackers-page:not(.sq-bills-page) {
+    box-sizing:border-box!important;
+    padding-left:clamp(25px,3vw,46px)!important;
+    padding-right:clamp(25px,3vw,46px)!important;
+  }
+  html body.trackers-view.dw-all-secondary-view #trackers-page #trackers-gallery>.tracker-tile{
+    background:linear-gradient(165deg,#103148,#091f37)!important;
+    border:1px solid #87abc3!important;color:#f5fbff!important;
+  }
+  html body.trackers-view.dw-all-secondary-view #trackers-page #trackers-gallery>.tracker-tile
+    :is(h3,.tracker-tile-head h3,.tracker-tile-title,.tracker-tile-body h3) {
+    color:#fff!important;opacity:1!important;
+    text-shadow:0 1px 2px #00121e33!important;
+  }
+  html body.trackers-view.dw-all-secondary-view #trackers-page #trackers-gallery>.tracker-tile
+    :is(.tracker-sub,.tracker-tile-body p,.dw-trackers-meta,small){
+    color:#c1d4e6!important;
+  }
+
+  /* Analytics: keep page canvas airy and make cards consistent with Overview. */
+  html body.analytics-view.dw-all-secondary-view #analytics-page {
+    background:transparent!important;border:0!important;
+    box-shadow:none!important;
+  }
+  html body.analytics-view.dw-all-secondary-view #analytics-page .sq-analytics-shell {
+    background:transparent!important;border:0!important;
+    box-shadow:none!important;padding:20px clamp(20px,2.5vw,42px) 65px!important;
+    max-width:1450px!important;
+  }
+  html body.analytics-view.dw-all-secondary-view #analytics-page .dw-section-tabs {
+    background:#eff4fc!important;border:1px solid #dce5f2!important;
+    border-radius:18px!important;max-width:650px!important;
+    padding:5px!important;gap:5px!important;margin:0 0 26px!important;
+  }
+  html body.analytics-view.dw-all-secondary-view #analytics-page .dw-section-tabs button {
+    background:transparent!important;color:#35496b!important;
+    border-radius:13px!important;min-height:43px!important;font-weight:750!important;
+  }
+  html body.analytics-view.dw-all-secondary-view #analytics-page .dw-section-tabs button[aria-current="page"] {
+    background:#142849!important;color:#a3f6de!important;
+  }
+  html body.analytics-view.dw-all-secondary-view #analytics-page
+    :is(.sq-analytics-panel,.analytics-stat,#sq-recap-summary>*,.sq-recap-breakdown>*,.sq-member-profile) {
+    background:#f7faff!important;
+    border:1px solid #dce5f2!important;border-radius:21px!important;
+    box-shadow:0 8px 22px #1b355516!important;color:#192d50!important;
+  }
+  html body.analytics-view.dw-all-secondary-view #analytics-page
+    :is(h2,h3,h4,strong,.analytics-stat b,.sq-analytics-header h2,.sq-analytics-panel-heading h3) {
+    color:#192d50!important;
+  }
+  html body.analytics-view.dw-all-secondary-view #analytics-page
+    :is(.sq-analytics-filter,.sq-analytics-header p,.sq-analytics-panel-heading p,
+        .analytics-stat small,.analytics-stat span,.sq-recap-note,small,.sq-chart-label){
+    color:#617593!important;
+  }
+  html body.analytics-view.dw-all-secondary-view #analytics-page
+    :is(#sq-recap-summary,#analytics-stats,.sq-analytics-charts) {
+    gap:14px!important;
+  }
+  html body.analytics-view.dw-all-secondary-view #analytics-page
+    :is(select,input,button.small-btn) {
+    border:1px solid #ccdcec!important;border-radius:11px!important;
+  }
+  html body.analytics-view.dw-all-secondary-view #analytics-page #sq-recap-export {
+    background:#173652!important;color:#f8fffd!important;
+  }
+  html body.analytics-view.dw-all-secondary-view #analytics-page
+    :is(.sq-month-chart,.sq-person-chart) {
+    min-height:215px!important;color:#223c60!important;
+  }
+
+  /* Friends remains a real standalone route, with its existing Supabase-backed
+     My Friends / Pending / Find panels visible immediately below the header. */
+  html body:not(.friends-view) #friends-page{display:none!important}
+  html body.friends-view.dw-all-secondary-view #friends-page {
+    display:block!important;position:relative!important;
+    width:calc(100% - 48px)!important;max-width:1180px!important;
+    margin:118px auto 55px!important;padding:0!important;
+    min-height:350px!important;
+    visibility:visible!important;opacity:1!important;
+  }
+  html body.friends-view.dw-all-secondary-view #friends-page .sq-friends-layout {
+    display:block!important;visibility:visible!important;
+    max-width:1120px!important;margin:0 auto!important;
+  }
+  html body.friends-view.dw-all-secondary-view #friends-page .card {
+    background:#f6f9ff!important;color:#1b2f53!important;
+    padding:25px!important;border:1px solid #d9e4f3!important;
+    border-radius:22px!important;
+  }
+  html body.friends-view.dw-all-secondary-view #friends-page
+    :is(.sq-friend-row,.dw-guided-empty) {
+    background:#fff!important;color:#1b3052!important;border:1px solid #dce5f3!important;
+    border-radius:15px!important;
+  }
+
+  /* Chat: navy is dominant; only small bubbles and action highlights use mint. */
+  html body #tracker-dashboard #chat-card.card,
+  html body #tracker-dashboard #chat-card.tracker-collapsible {
+    background:#102643!important;color:#ecf8ff!important;
+    border:1px solid #2d5069!important;border-radius:23px!important;
+    box-shadow:0 10px 26px #10243e27!important;
+  }
+  html body #tracker-dashboard #chat-card>summary,
+  html body #tracker-dashboard #chat-card .tracker-collapsible-body {
+    background:#102643!important;color:#f2fbff!important;
+  }
+  html body #tracker-dashboard #chat-card>summary .tool-heading-label,
+  html body #tracker-dashboard #chat-card>summary .tool-heading-label span {
+    color:#f5fbff!important;
+  }
+  html body #tracker-dashboard #chat-card .tool-heading-icon{color:#7defc7!important}
+  html body #tracker-dashboard #chat-card #tracker-chat-messages {
+    background:#071e34!important;color:#ecf5ff!important;border:1px solid #24475d!important;
+  }
+  html body #tracker-dashboard #chat-card
+    :is(#tracker-chat-form,#sq-chat-pin-toggle,#sq-chat-search,#tracker-chat-input,#sq-chat-search) {
+    background:#102e46!important;color:#f5fbff!important;border-color:#31596d!important;
+  }
+  html body #tracker-dashboard #chat-card
+    :is(#sq-chat-search,#tracker-chat-input)::placeholder {
+    color:#92afc3!important;
+  }
+  html body #tracker-dashboard #chat-card .chat-line.theirs .chat-bubble{
+    background:#28465e!important;color:#f7fcff!important;
+  }
+  html body #tracker-dashboard #chat-card .chat-line.mine .chat-bubble{
+    background:#37ccab!important;color:#092a39!important;
+  }
+  html body #tracker-dashboard #chat-card .chat-compose button.primary {
+    background:#43dfbc!important;color:#082d37!important;
+  }
+}
+@media (min-width:901px) and (max-width:1160px){
+  html body #tracker-dashboard>.sq-workspace-tabs,
+  html body #dw-all-top-tabs{
+    left:calc(50% + 70px)!important;
+    width:min(600px,calc(100vw - 430px))!important;
+  }
+}
