@@ -113,6 +113,8 @@ jobs:
         run: node --test test/doweo-first-run.test.mjs
       - name: Browser-verify More destinations have independent mobile pages
         run: node --test test/mobile-more-browser-inspect.test.mjs
+      - name: Browser-verify iPhone Safari Home Screen button is visible and functional
+        run: node --test test/mobile-ios-install-guide-browser.test.mjs
       - name: Browser-test mobile Split Bill popup, member saving, and original steps
         run: node --test test/split-bill-member-modal.test.mjs
       - name: Browser-test image formats and actual Backdrop file upload
