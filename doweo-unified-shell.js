@@ -115,8 +115,19 @@
     }
     return 'default';
   };
+  const originalSidebarStyles=new Map();
   function repairSidebar(){
-    if(!desktop.matches)return;
+    if(!desktop.matches){
+      // Exact original inline styles return when the site switches to mobile.
+      // The main phone navigation, sheets and More grid never use these icons.
+      for(const [element,previous] of originalSidebarStyles){
+        if(!element.isConnected)continue;
+        if(previous===null)element.removeAttribute('style');
+        else element.setAttribute('style',previous);
+      }
+      originalSidebarStyles.clear();
+      return;
+    }
     // Every direct navigation surface, including independently implemented
     // Social/More controls, gets the exact same icon box and text metrics.
     const entries=[
@@ -137,7 +148,10 @@
       // Historical DoWeo styles include higher-specificity !important icon
       // hiding rules. Important inline presentation wins without replacing the
       // real buttons, click handlers, flyouts, accessible names or labels.
-      const force=(el,key,value)=>el.style.setProperty(key,value,'important');
+      const force=(el,key,value)=>{
+        if(!originalSidebarStyles.has(el))originalSidebarStyles.set(el,el.getAttribute('style'));
+        el.style.setProperty(key,value,'important');
+      };
       for(const [key,value] of Object.entries({
         display:'inline-flex',visibility:'visible',opacity:'1',width:'27px',height:'27px',
         'min-width':'27px','min-height':'27px',flex:'0 0 27px',
