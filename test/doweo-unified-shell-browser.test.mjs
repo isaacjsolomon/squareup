@@ -89,6 +89,12 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
       income:rect('.dw-ref-chart-bar:not(.dw-ref-zero)'),label:rect('.dw-ref-chart-month small'),
       body:rect('#dw-ref-home .dw-ref-chart-body')};
   })));
+  const plotted=await page.locator('#dw-ref-home .dw-ref-chart-bar:not(.dw-ref-zero)').evaluateAll(nodes=>nodes.map(el=>({
+    height:el.getBoundingClientRect().height,
+    parentHeight:el.parentElement.getBoundingClientRect().height
+  })));
+  assert.ok(plotted.length>=2&&plotted.every(row=>row.height>12&&row.parentHeight>100),
+   'cashflow bars must be genuinely visible, not merely assigned nonzero CSS percentages: '+JSON.stringify(plotted));
   const label=await page.locator('#dw-ref-home .dw-ref-chart-summary').textContent();
   assert.match(label,/Net this month/);
   mkdirSync(resolve(root,'test-results/unified'),{recursive:true});
@@ -151,7 +157,14 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
     return {bodyClass:document.body.className,wrap:rect('body>.wrap'),trackers:rect('#trackers-page'),
       firstChild:page?.firstElementChild?.id||page?.firstElementChild?.className,
       children:[...page.children].slice(0,12).map(el=>({id:el.id,cls:el.className,y:Math.round(el.getBoundingClientRect().y),h:Math.round(el.getBoundingClientRect().height)})),
-      topbar:rect('#dw-all-topbar'),gallery:rect('#trackers-gallery'),header:rect('.trackers-header')};
+      topbar:rect('#dw-all-topbar'),gallery:rect('#trackers-gallery'),header:rect('.trackers-header'),
+      precedingSiblings:[...document.querySelector('body>.wrap').children]
+        .slice(0,[...document.querySelector('body>.wrap').children].indexOf(page))
+        .map(el=>{const rr=el.getBoundingClientRect(),cs=getComputedStyle(el);return {
+          id:el.id,cls:typeof el.className==='string'?el.className.slice(0,55):'',
+          h:Math.round(rr.height),y:Math.round(rr.y),display:cs.display,
+          position:cs.position,order:cs.order,marginTop:cs.marginTop,marginBottom:cs.marginBottom
+        }}).filter(x=>x.h>0||x.display!=='none').slice(-22)};
   })));
 
   await page.screenshot({path:resolve(root,'test-results/unified/trackers.png'),fullPage:true});
