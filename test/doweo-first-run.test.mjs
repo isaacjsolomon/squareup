@@ -8,6 +8,7 @@ const fixture=`<!doctype html><html><head><meta charset="utf-8"></head><body>
 <section id="onboarding-page" hidden></section>
 <button id="nav-home">Home</button><button id="nav-trackers">Trackers</button>
 <button id="tb-share">Share tracker</button>
+<select id="tracker-select"></select>
 <button id="quick-expense">Add expense</button><button id="sq-clean-settle">Settle up</button>
 <div id="tracker-dashboard"><section id="sq-return-summary">Overview</section></div>
 <section id="trackers-page">
@@ -33,6 +34,12 @@ test('desktop empty-account guide is actionable, accessible and cannot change sa
   });
   await page.addScriptTag({content:js});
   assert.equal(await page.locator('#dw-first-run').isVisible(),false,'never show before gallery finishes loading');
+  await page.locator('#tracker-select').evaluate(select=>{
+    select.innerHTML='<option value="local">This device</option>';
+  });
+  await page.locator('#dw-first-run-prompt').waitFor({state:'visible'});
+  assert.equal(await page.locator('#dw-first-run').isVisible(),true,
+    'Home onboarding appears from loaded tracker picker before Trackers is visited');
   await page.locator('#trackers-gallery').evaluate(el=>{
    const section=document.createElement('section');
    section.className='dw-guided-empty';
@@ -67,6 +74,9 @@ test('desktop empty-account guide is actionable, accessible and cannot change sa
    el.querySelector('.dw-guided-empty')?.remove();
    const t=document.createElement('article');t.className='tracker-tile';t.textContent='My real tracker';el.append(t);
   });
+  await page.locator('#tracker-select').evaluate(select=>{
+    const real=document.createElement('option');real.value='real-tracker-id';real.textContent='My real tracker';select.append(real);
+  });
   await page.waitForFunction(()=>document.querySelector('#dw-first-run-progress')?.textContent==='1 of 4 steps complete');
   assert.equal(await page.locator('.dw-first-run-step input').first().isChecked(),true,'creation reflects real gallery');
   await page.locator('.dw-first-run-step-action').nth(1).click();
@@ -83,6 +93,24 @@ test('desktop empty-account guide is actionable, accessible and cannot change sa
   await page.locator('#dw-first-run-open').click();
   assert.equal(await page.locator('#dw-first-run').isVisible(),true,'guide can be reopened');
  }finally{await browser.close();}
+});
+
+test('established desktop accounts do not see an intrusive Home prompt',{timeout:30000},async()=>{
+ const browser=await chromium.launch({headless:true});
+ try{
+   const page=await browser.newPage({viewport:{width:1280,height:850}});
+   await page.setContent(fixture);
+   await page.locator('#tracker-select').evaluate(select=>{
+     select.innerHTML='<option value="local">This device</option><option value="saved">Saved tracker</option>';
+   });
+   await page.addStyleTag({content:css});
+   await page.addScriptTag({content:js});
+   assert.equal(await page.locator('#dw-first-run-prompt').isVisible(),false);
+   assert.equal(await page.locator('#dw-first-run').isVisible(),false);
+   await page.locator('#dw-first-run-open').click();
+   assert.equal(await page.locator('#dw-first-run').isVisible(),true,'guide remains available on demand');
+   assert.equal(await page.locator('#dw-first-run-progress').textContent(),'1 of 4 steps complete');
+ }finally{await browser.close()}
 });
 
 test('mobile never initializes or displays desktop first-run guide',{timeout:30000},async()=>{
