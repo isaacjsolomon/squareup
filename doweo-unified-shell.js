@@ -284,7 +284,10 @@
  function restoreFriends(){
    if(!desktop.matches||!document.body.classList.contains('friends-view')||!friends)return;
    if(friends.hidden)friends.hidden=false;if(friends.hasAttribute('aria-hidden'))friends.removeAttribute('aria-hidden');
-   friends.style.setProperty('display','block','important');
+   // Route CSS owns display. Never pin an inline !important here: it made
+   // Friends remain visible after navigating to About or Analytics.
+   if(friends.style.getPropertyValue('display')==='block')
+     friends.style.removeProperty('display');
    const root=friends.closest('.wrap');
    if(root){root.style.setProperty('height','auto');root.style.setProperty('min-height','0');}
    if(typeof window.squareUpLoadFriends==='function')window.squareUpLoadFriends().catch(console.warn);
