@@ -169,6 +169,9 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
         }}).filter(x=>x.h>0||x.display!=='none').slice(-22)};
   })));
 
+  const trackersTop=await page.locator('#trackers-page').evaluate(el=>el.getBoundingClientRect().top);
+  assert.ok(trackersTop>=80&&trackersTop<260,
+   'Trackers content must start directly beneath the shared topbar, not after a blank full viewport: '+trackersTop);
   await page.screenshot({path:resolve(root,'test-results/unified/trackers.png'),fullPage:true});
   await pageOpen('nav-analytics','analytics-view');
   await page.screenshot({path:resolve(root,'test-results/unified/analytics.png'),fullPage:true});
@@ -182,6 +185,9 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
       siblings:[...wrap.children].map(el=>({tag:el.tagName,id:el.id,cls:String(el.className).slice(0,60),...box(el)})).filter(x=>x.h>0).slice(0,15)};
   })));
 
+  const aboutTop=await page.locator('#about-page').evaluate(el=>el.getBoundingClientRect().top);
+  assert.ok(aboutTop>=80&&aboutTop<260,
+   'About content must appear immediately beneath shared navigation: '+aboutTop);
   await page.screenshot({path:resolve(root,'test-results/unified/about.png'),fullPage:true});
   await page.locator('#dw-all-top-tabs [data-dw-all-tab="expenses"]').click();
   await page.waitForFunction(()=>document.querySelector('#tracker-dashboard.sq-tab-expenses')?.getClientRects().length>0);
