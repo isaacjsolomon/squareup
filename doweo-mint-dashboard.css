@@ -260,6 +260,30 @@
  html body.sq-finance-open #sq-nextgen :is(input,select,textarea){
   background:#fff!important;color:#132744!important;border-color:#cfdeeb!important;
  }
+
+ /* The existing feedback submission form follows the new preview palette. */
+ html body #dw-beta-modal .dw-panel{
+  background:linear-gradient(150deg,#fff,#eef5fc)!important;
+  border:1px solid #dbe7f3!important;border-radius:25px!important;
+  color:#142643!important;box-shadow:0 25px 70px rgba(14,33,63,.25)!important;
+ }
+ html body #dw-beta-modal :is(h2,p,label){color:#1c3151!important}
+ html body #dw-beta-modal .dw-close{color:#1c3151!important}
+ html body #dw-beta-modal .dw-types button{
+  background:#eaf0f8!important;color:#183052!important;
+  border-color:#d5e3ed!important;
+ }
+ html body #dw-beta-modal .dw-types button[aria-pressed="true"]{
+  background:#102143!important;color:#b5ffdf!important;
+  border-color:#102143!important;
+ }
+ html body #dw-beta-modal :is(input,textarea){
+  background:#fff!important;color:#132443!important;border-color:#ccd9e9!important;
+ }
+ html body #dw-beta-modal .dw-stars button[aria-pressed="true"]{color:#08a884!important}
+ html body #dw-beta-modal .dw-submit{
+  background:#102143!important;color:#a4f5dc!important;border-radius:999px!important;
+ }
  /* Keep account destructive actions, notification badges, user photos, and
     all finance/chat interactions unchanged. */
 }
