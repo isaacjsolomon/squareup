@@ -1,0 +1,9 @@
+/* Mobile tracker photo backdrops: tint the bright grey areas navy while
+   retaining the user-selected photo, image position and existing card theme.
+   Do not change desktop backgrounds, solid preset gradients or navigation. */
+@media (max-width: 900px) {
+  html body #backdrop.photo::after {
+    content: "";
+    background: rgba(6, 24, 43, .78) !important;
+  }
+}
