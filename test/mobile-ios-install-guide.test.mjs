@@ -42,6 +42,6 @@ test('install guide explains Apple-required interaction and can be dismissed',()
  assert.match(script,/doweo:uiupdated/);
  assert.match(css,/#dw-ios-install-guide\[hidden\]\{display:none!important\}/);
  assert.match(css,/@media\(min-width:901px\)/);
- assert.match(workflow,/doweo-mobile-more-pages\.js\?v=20261121-ios-safari-install-v1/);
- assert.match(workflow,/doweo-mobile-more-pages\.css\?v=20261121-ios-safari-install-v1/);
+ assert.match(workflow,/doweo-mobile-more-pages\.js\?v=20261121-ios-install-visible-v2/);
+ assert.match(workflow,/doweo-mobile-more-pages\.css\?v=20261121-ios-install-visible-v2/);
 });
