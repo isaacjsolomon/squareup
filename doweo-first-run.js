@@ -43,6 +43,9 @@
  const dismiss=make('button','dw-first-run-dismiss','Dismiss');dismiss.type='button';
  top.append(copy,dismiss);
  const progress=make('p','dw-first-run-progress');progress.setAttribute('role','status');
+ const progressCount=make('span','','0');
+ const progressLabel=make('span','',' of 4 steps complete');
+ progress.append(progressCount,progressLabel);
  const list=make('ol','dw-first-run-steps');
  const rowInputs=[];
  const actionButtons=[];
@@ -100,7 +103,7 @@
    rowInputs[0].checked=galleryHadTrackers;
    let n=Number(galleryHadTrackers);
    for(let i=1;i<rowInputs.length;i++)n+=Number(rowInputs[i].checked);
-   progress.textContent=n+' of 4 steps complete';
+   progressCount.textContent=String(n);
    card.classList.toggle('dw-first-run-complete',n===4);
    for(let i=0;i<rowInputs.length;i++)list.children[i].classList.toggle('dw-first-run-done',rowInputs[i].checked);
    actionButtons[1].disabled=!galleryHadTrackers;
