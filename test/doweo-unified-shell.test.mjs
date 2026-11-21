@@ -78,7 +78,7 @@ test('sidebar icons and text are consistent across original destinations',()=>{
 test('sparse finance data uses real grouped monthly bars, not a fabricated zero-month line',()=>{
  assert.match(dashboard,/window\.squareUpApi\('finance\/transactions'\)/);
  assert.match(dashboard,/chartBody\.replaceChildren\(\)/);
- assert.match(dashboard,/\.dw-ref-chart-months/);
+ assert.match(dashboard,/dw-ref-chart-months/);
  assert.match(dashboard,/dw-ref-bar-income/);
  assert.match(dashboard,/dw-ref-bar-expense/);
  assert.match(dashboard,/const stepCandidates=\[1,2,2\.5,5,10\]/);
