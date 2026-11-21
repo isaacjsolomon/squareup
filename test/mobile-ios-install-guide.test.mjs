@@ -9,12 +9,12 @@ const manifest=JSON.parse(readFileSync(new URL('../manifest.webmanifest',import.
 const workflow=readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',import.meta.url),'utf8');
 
 test('iPhone Safari gets a manual Add to Home Screen button without altering the 4x2 More grid',()=>{
- assert.match(script,/const iosSafari=\(\)=>/);
- assert.match(script,/Version\\\//);
- assert.match(script,/Safari\\\//);
- assert.match(script,/CriOS\|FxiOS\|EdgiOS/);
+ assert.match(script,/const iosDevice=\(\)=>/);
+ assert.match(script,/iPad\|iPhone\|iPod/);
+ assert.match(script,/navigator\.maxTouchPoints>1/);
+ assert.doesNotMatch(script,/const iosSafari=/,'browser tokens must not hide the action');
  assert.match(script,/installCTA\.hidden=!small\(\)\|\|installed\(\)/);
- assert.match(script,/logout\.before\(installCTA\)/,'install button must be separate from the eight destination tiles');
+ assert.match(script,/grid\.before\(installCTA\)/,'install button must appear before the eight destination tiles');
  assert.match(script,/ensureInstallButton\(\)/);
  assert.doesNotMatch(script,/navigator\.share\(/,'the Web Share API cannot expose Safari Add to Home Screen');
  assert.equal(manifest.display,'standalone');
