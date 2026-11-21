@@ -98,7 +98,14 @@ function buildMoreGrid(){
 }
 function closeWorkspacePage(){
  document.body.classList.remove('dw-mobile-more-workspace-open');
- document.getElementById('sq-nextgen')?.removeAttribute('data-dw-mobile-more-workspace');
+ const hub=document.getElementById('sq-nextgen');
+ if(!hub)return;
+ hub.removeAttribute('data-dw-mobile-more-workspace');
+ const back=hub.querySelector('#sq-ng-back');
+ if(back){
+  back.setAttribute('aria-label','Back to Home');
+  const label=back.querySelector('span');if(label)label.textContent='Home';
+ }
 }
 function openWorkspacePage(which){
  if(!small())return;
@@ -120,6 +127,11 @@ function openWorkspacePage(which){
  if(title)title.textContent=which==='trip'?'Trips':'Households';
  const kicker=hub.querySelector('.sq-ng-kicker');
  if(kicker)kicker.textContent='DOWEO / TRACKERS';
+ const back=hub.querySelector('#sq-ng-back');
+ if(back){
+  back.setAttribute('aria-label','Back to More');
+  const label=back.querySelector('span');if(label)label.textContent='More';
+ }
  hub.scrollTop=0;
  document.dispatchEvent(new Event('doweo:uiupdated'));
 }
