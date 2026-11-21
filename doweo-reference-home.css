@@ -524,6 +524,23 @@
  html body #dw-ref-home .dw-ref-lower{grid-template-columns:1fr}
  html body #dw-ref-home .dw-ref-settle{min-height:220px}
 }
+/* Keep DoWeo's existing desktop sidebar-collapse behavior. */
+@media(min-width:901px){
+ html body.side-collapsed:not(.sq-auth-guest)>aside.sidebar{
+  width:74px!important;min-width:74px!important;padding:18px 9px!important;
+ }
+ html body.side-collapsed:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open){
+  padding-left:90px!important;
+ }
+ html body.side-collapsed .sidebar .dw-ref-brand,
+ html body.side-collapsed .sidebar .squareup-nav,
+ html body.side-collapsed .sidebar .sq-nav-label{
+  display:none!important;
+ }
+ html body.side-collapsed >.wrap>header.tracker-heading{
+  visibility:hidden!important;pointer-events:none!important;
+ }
+}
 /* Only extend the new colors to mobile: leave all existing mobile layouts,
    the fixed bottom navigation and mobile Bills page positions unchanged. */
 @media(max-width:900px){
