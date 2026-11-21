@@ -49,6 +49,101 @@ for(const [name,id] of [['Friends','nav-friends'],['Chat','nav-chat']]){
 }
 function removeFinance(){sheet.querySelectorAll('[data-sq-destination="sq-finance-nav"]').forEach(el=>el.remove())}
 
+
+/* iOS Safari cannot invoke the native Add to Home Screen action from JavaScript.
+   Offer the real Safari steps in mobile More without changing the 4x2 tile grid. */
+const iosSafari=()=>{
+ const ua=navigator.userAgent||'';
+ const ios=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ return ios&&/Version\//.test(ua)&&/Safari\//.test(ua)&&!/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo|GSA\//.test(ua);
+};
+const installed=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+let installCTA=null,installOverlay=null,installClose=null,installDone=null,installReturnFocus=null;
+function closeInstallGuide(){
+ if(!installOverlay||installOverlay.hidden)return;
+ installOverlay.hidden=true;
+ if(installReturnFocus?.isConnected&&!installReturnFocus.hidden)installReturnFocus.focus({preventScroll:true});
+ installReturnFocus=null;
+}
+function ensureInstallButton(){
+ if(!iosSafari())return;
+ const layout=sheet.querySelector(':scope > .sq-balanced-sheet');
+ const logout=layout?.querySelector('#sq-mobile-more-logout');
+ if(!layout||!logout)return;
+ if(!installCTA){
+  installCTA=document.createElement('button');
+  installCTA.id='dw-ios-install-trigger';
+  installCTA.type='button';
+  installCTA.className='dw-ios-install-trigger';
+  const icon=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  for(const [key,value] of Object.entries({viewBox:'0 0 24 24',fill:'none',stroke:'currentColor','stroke-width':'2','stroke-linecap':'round','stroke-linejoin':'round','aria-hidden':'true'}))icon.setAttribute(key,value);
+  const outline=document.createElementNS('http://www.w3.org/2000/svg','path');
+  outline.setAttribute('d','M12 16V3m-5 5 5-5 5 5M5 13v7h14v-7');
+  icon.append(outline);
+  const labels=document.createElement('span');
+  labels.className='dw-ios-install-labels';
+  const title=document.createElement('strong');title.textContent='Add to Home Screen';
+  const subtitle=document.createElement('small');subtitle.textContent='Keep DoWeo one tap away';
+  labels.append(title,subtitle);
+  const chevron=document.createElement('span');chevron.className='dw-ios-install-chevron';chevron.textContent='›';chevron.setAttribute('aria-hidden','true');
+  installCTA.append(icon,labels,chevron);
+  logout.before(installCTA);
+
+  installOverlay=document.createElement('div');
+  installOverlay.id='dw-ios-install-guide';
+  installOverlay.className='dw-ios-install-overlay';
+  installOverlay.hidden=true;
+  const dialog=document.createElement('section');
+  dialog.className='dw-ios-install-dialog';
+  dialog.setAttribute('role','dialog');
+  dialog.setAttribute('aria-modal','true');
+  dialog.setAttribute('aria-labelledby','dw-ios-install-title');
+  dialog.setAttribute('aria-describedby','dw-ios-install-description');
+  installClose=document.createElement('button');
+  installClose.type='button';
+  installClose.className='dw-ios-install-close';
+  installClose.setAttribute('aria-label','Close guide');
+  installClose.textContent='×';
+  const heading=document.createElement('h2');heading.id='dw-ios-install-title';heading.textContent='Add DoWeo to Home Screen';
+  const description=document.createElement('p');description.id='dw-ios-install-description';description.textContent='Safari needs a few taps to install DoWeo as an app.';
+  const steps=document.createElement('ol');steps.className='dw-ios-install-steps';
+  for(const value of [
+   'Tap Safari’s Share button. If it is inside the page menu, open that menu and tap Share.',
+   'Scroll down and select Add to Home Screen.',
+   'Keep Open as Web App turned on, if shown, then tap Add.'
+  ]){
+   const item=document.createElement('li');item.textContent=value;steps.append(item);
+  }
+  const note=document.createElement('p');note.className='dw-ios-install-note';
+  note.textContent='Apple requires these steps; websites cannot install themselves automatically.';
+  installDone=document.createElement('button');
+  installDone.type='button';installDone.className='dw-ios-install-done';installDone.textContent='Got it';
+  dialog.append(installClose,heading,description,steps,note,installDone);
+  installOverlay.append(dialog);document.body.append(installOverlay);
+  installCTA.addEventListener('click',()=>{
+   if(installCTA.hidden)return;
+   installReturnFocus=document.activeElement;
+   installOverlay.hidden=false;
+   installClose.focus({preventScroll:true});
+   document.dispatchEvent(new Event('doweo:uiupdated'));
+  });
+  installClose.addEventListener('click',closeInstallGuide);
+  installDone.addEventListener('click',closeInstallGuide);
+  installOverlay.addEventListener('click',event=>{if(event.target===installOverlay)closeInstallGuide()});
+  document.addEventListener('keydown',event=>{
+   if(installOverlay.hidden)return;
+   if(event.key==='Escape'){event.preventDefault();closeInstallGuide();return;}
+   if(event.key==='Tab'){
+    if(event.shiftKey&&document.activeElement===installClose){event.preventDefault();installDone.focus()}
+    else if(!event.shiftKey&&document.activeElement===installDone){event.preventDefault();installClose.focus()}
+   }
+  });
+ }
+ installCTA.hidden=!small()||installed();
+ if(installCTA.hidden)closeInstallGuide();
+}
+window.addEventListener('pageshow',ensureInstallButton);
+
 function buildMoreGrid(){
  const grid=sheet.querySelector(':scope .sq-balanced-sheet > .sq-balanced-more-grid');
  if(!grid)return;
@@ -149,6 +244,7 @@ function open(which){
 }
 removeFinance();
 buildMoreGrid();
+ensureInstallButton();
 sheet.addEventListener('click',e=>{
  if(!small())return;
  const target=e.target.closest('[data-sq-destination]');
@@ -171,7 +267,7 @@ document.addEventListener('click',e=>{
    document.getElementById('nav-home')?.click();
   }
   close();
-  if(button.id==='sq-mobile-more'){removeFinance();buildMoreGrid()}
+  if(button.id==='sq-mobile-more'){removeFinance();buildMoreGrid();ensureInstallButton()}
  }
 },true);
 // Return to More, not to the retired Finance Hub, from either workspace.
@@ -184,6 +280,7 @@ document.getElementById('sq-ng-back')?.addEventListener('click',e=>{
 },true);
 matchMedia('(max-width:900px)').addEventListener('change',e=>{
  if(!e.matches){close();closeWorkspacePage()}
+ ensureInstallButton();
  syncVisibility();
 });
 })();

@@ -41,13 +41,13 @@ jobs:
           css += '<link rel="stylesheet" href="/doweo-split-bill-modal.css?v=20261119-split-modal-v1">'
           css += '<link rel="stylesheet" href="/doweo-desktop-polish.css?v=20261120-desktop-consistency-v1">'
           css += '<link rel="stylesheet" href="/doweo-first-run.css?v=20261121-onboarding-v1">'
-          css += '<link rel="stylesheet" href="/doweo-mobile-more-pages.css?v=20261121-workspace-headings-v3">'
+          css += '<link rel="stylesheet" href="/doweo-mobile-more-pages.css?v=20261121-ios-safari-install-v1">'
           css += '<link rel="stylesheet" href="/doweo-mobile-home-navy-cards.css?v=20261121-home-cards-v1">'
           js = '<script defer src="/doweo-tracker-header.js?v=20261116-overview-picker-v10"></script>'
           js += '<script defer src="/doweo-home-add-menu.js?v=20261119-add-dropdown-v1"></script>'
           js += '<script defer src="/doweo-split-bill-modal.js?v=20261119-split-modal-v1"></script>'
           js += '<script defer src="/doweo-backdrop-images.js?v=20261119-image-compat-v1"></script>'
-          js += '<script defer src="/doweo-mobile-more-pages.js?v=20261121-workspace-headings-v3"></script>'
+          js += '<script defer src="/doweo-mobile-more-pages.js?v=20261121-ios-safari-install-v1"></script>'
           js += '<script defer src="/doweo-first-run.js?v=20261121-onboarding-v1"></script>'
           assert '</head>' in html and '</body>' in html
           html = html.replace('</head>', css + '</head>', 1).replace('</body>', js + '</body>', 1)
@@ -76,6 +76,7 @@ jobs:
           test -s functions/api/beta-signup.js
           cp beta/index.html .pages-output/beta.html
           node --test test/polls-api.test.mjs test/recent-expense-api.test.mjs test/tracker-loading-performance.test.mjs
+          node --test test/mobile-ios-install-guide.test.mjs test/mobile-more-inspect.test.mjs test/doweo-mobile-more-flat-grid.test.mjs
           node scripts/verify-pages-assets.mjs .pages-output
 
       # Run Wrangler from the repository root so it discovers ./functions.
