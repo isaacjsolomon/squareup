@@ -74,6 +74,21 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
     bar.filter(b=>!b.classList.contains('dw-ref-zero')).map(b=>parseFloat(b.style.height)));
   assert.equal(activeBars.length,2);
   assert.ok(activeBars[0]>activeBars[1]&&activeBars[1]>0,'income/spending bars scale to actual data');
+  console.log('CHART_GEOMETRY',JSON.stringify(await page.evaluate(()=>{
+    const rect=selector=>{
+      const el=document.querySelector(selector);if(!el)return null;
+      const r=el.getBoundingClientRect(),cs=getComputedStyle(el);
+      return {x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.width),
+       h:Math.round(r.height),display:cs.display,flex:cs.flex,
+       position:cs.position,overflow:cs.overflow,minHeight:cs.minHeight,maxHeight:cs.maxHeight,
+       computedHeight:cs.height,inlineHeight:el.style.height};
+    };
+    return {plot:rect('.dw-ref-month-chart'),grid:rect('.dw-ref-chart-grid'),
+      months:rect('.dw-ref-chart-months'),month:rect('.dw-ref-chart-month'),
+      tracks:rect('.dw-ref-chart-tracks'),track:rect('.dw-ref-chart-track'),
+      income:rect('.dw-ref-chart-bar:not(.dw-ref-zero)'),label:rect('.dw-ref-chart-month small'),
+      body:rect('#dw-ref-home .dw-ref-chart-body')};
+  })));
   const label=await page.locator('#dw-ref-home .dw-ref-chart-summary').textContent();
   assert.match(label,/Net this month/);
   mkdirSync(resolve(root,'test-results/unified'),{recursive:true});
@@ -124,6 +139,21 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
    assert.equal(toolsVisible,3,'all pages keep the three account shortcuts');
   }
   await pageOpen('nav-trackers','trackers-view');
+  console.log('TRACKERS_GEOMETRY',JSON.stringify(await page.evaluate(()=>{
+    const rect=selector=>{
+      const el=document.querySelector(selector);if(!el)return null;
+      const r=el.getBoundingClientRect(),c=getComputedStyle(el);
+      return {x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.width),h:Math.round(r.height),
+        marginTop:c.marginTop,paddingTop:c.paddingTop,position:c.position,display:c.display,
+        flex:c.flex,align:c.alignSelf,minHeight:c.minHeight};
+    };
+    const page=document.getElementById('trackers-page');
+    return {bodyClass:document.body.className,wrap:rect('body>.wrap'),trackers:rect('#trackers-page'),
+      firstChild:page?.firstElementChild?.id||page?.firstElementChild?.className,
+      children:[...page.children].slice(0,12).map(el=>({id:el.id,cls:el.className,y:Math.round(el.getBoundingClientRect().y),h:Math.round(el.getBoundingClientRect().height)})),
+      topbar:rect('#dw-all-topbar'),gallery:rect('#trackers-gallery'),header:rect('.trackers-header')};
+  })));
+
   await page.screenshot({path:resolve(root,'test-results/unified/trackers.png'),fullPage:true});
   await pageOpen('nav-analytics','analytics-view');
   await page.screenshot({path:resolve(root,'test-results/unified/analytics.png'),fullPage:true});
