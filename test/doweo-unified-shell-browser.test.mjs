@@ -158,6 +158,8 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
       firstChild:page?.firstElementChild?.id||page?.firstElementChild?.className,
       children:[...page.children].slice(0,12).map(el=>({id:el.id,cls:el.className,y:Math.round(el.getBoundingClientRect().y),h:Math.round(el.getBoundingClientRect().height)})),
       topbar:rect('#dw-all-topbar'),gallery:rect('#trackers-gallery'),header:rect('.trackers-header'),
+      parentChain:(()=>{const chain=[];for(let el=page;el&&chain.length<9;el=el.parentElement){const r=el.getBoundingClientRect(),c=getComputedStyle(el);chain.push({tag:el.tagName,id:el.id,cls:String(el.className).slice(0,55),y:Math.round(r.y),h:Math.round(r.height),display:c.display,position:c.position,marginTop:c.marginTop,paddingTop:c.paddingTop,minHeight:c.minHeight});}return chain;})(),
+      insideWrap:document.querySelector('body>.wrap').contains(page),
       precedingSiblings:[...document.querySelector('body>.wrap').children]
         .slice(0,[...document.querySelector('body>.wrap').children].indexOf(page))
         .map(el=>{const rr=el.getBoundingClientRect(),cs=getComputedStyle(el);return {
@@ -173,6 +175,13 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   await pageOpen('nav-profile','settings-view');
   await page.screenshot({path:resolve(root,'test-results/unified/settings.png'),fullPage:true});
   await pageOpen('nav-about','about-view');
+  console.log('ABOUT_GEOMETRY',JSON.stringify(await page.evaluate(()=>{
+    const about=document.getElementById('about-page'),wrap=document.querySelector('body>.wrap');
+    const box=el=>{if(!el)return null;const r=el.getBoundingClientRect(),c=getComputedStyle(el);return {y:Math.round(r.y),h:Math.round(r.height),display:c.display,position:c.position,minHeight:c.minHeight,paddingTop:c.paddingTop}};
+    return {about:box(about),wrap:box(wrap),insideWrap:wrap.contains(about),
+      siblings:[...wrap.children].map(el=>({tag:el.tagName,id:el.id,cls:String(el.className).slice(0,60),...box(el)})).filter(x=>x.h>0).slice(0,15)};
+  })));
+
   await page.screenshot({path:resolve(root,'test-results/unified/about.png'),fullPage:true});
   await page.locator('#dw-all-top-tabs [data-dw-all-tab="expenses"]').click();
   await page.waitForFunction(()=>document.querySelector('#tracker-dashboard.sq-tab-expenses')?.getClientRects().length>0);
