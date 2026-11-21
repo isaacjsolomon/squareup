@@ -1,0 +1,607 @@
+/* Shared navy/mint design system across every signed-in desktop view.
+   All page-specific components retain their IDs, content, event listeners and data.
+   Mobile keeps the current fixed bottom navigation and layout. */
+@media(min-width:901px){
+  :root{
+    --dw-shell-sidebar:#152747;
+    --dw-shell-deep:#132445;
+    --dw-shell-mint:#86efd0;
+    --dw-shell-ink:#17284b;
+    --dw-shell-muted:#566985;
+    --dw-shell-surface:#f7faff;
+    --dw-shell-line:#dce6f2;
+    --dw-shell-shadow:0 9px 27px rgba(28,48,91,.105);
+  }
+  #dw-all-topbar{
+    box-sizing:border-box;position:fixed;display:none;
+    left:310px;right:26px;top:15px;height:68px;
+    z-index:2147482250;align-items:center;justify-content:center;
+    pointer-events:none;
+    font-family:inherit;color:#162646;
+  }
+  html body.dw-all-secondary-view:not(.sq-auth-guest):not(.sq-auth-loading) #dw-all-topbar{
+    display:flex!important;
+  }
+  #dw-all-topbar *{box-sizing:border-box}
+  #dw-all-top-tabs{
+    pointer-events:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+    align-items:center;gap:4px;
+    height:64px;width:min(760px,calc(100% - 198px));max-width:760px;min-width:0;
+    margin:0 auto;padding:5px;
+    background:#f0f4fd;border:1px solid #d7e1f1;border-radius:999px;
+    box-shadow:0 2px 11px #26375a1c;
+  }
+  #dw-all-top-tabs button{
+    display:flex;align-items:center;justify-content:center;
+    min-width:0;min-height:52px;height:52px;
+    border:0;border-radius:999px;padding:8px 8px;
+    background:transparent;color:#1a2a50;
+    font-family:inherit;font-size:clamp(13px,1.3vw,19px);
+    font-weight:750;line-height:1.2;letter-spacing:-.02em;
+    cursor:pointer;white-space:nowrap;box-shadow:none;
+  }
+  #dw-all-top-tabs button[aria-current="page"]{
+    background:linear-gradient(120deg,#1b365e,#101e3b);
+    color:#fff;box-shadow:0 4px 12px #142b5024;
+  }
+  #dw-all-top-tabs button:not([aria-current="page"]):hover{background:#e4edfa}
+  #dw-all-top-tools{
+    position:absolute;right:0;top:5px;height:58px;
+    display:flex;align-items:center;gap:10px;
+    pointer-events:auto;
+  }
+  #dw-all-top-tools .dw-all-tool{
+    position:relative;display:grid;place-items:center;
+    width:43px;height:43px;flex:0 0 43px;
+    border:0;border-radius:50%;background:transparent;color:#152847;
+    cursor:pointer;box-shadow:none;padding:8px;
+  }
+  #dw-all-top-tools .dw-all-tool:hover{background:#e0eafa}
+  #dw-all-top-tools .dw-all-tool svg{width:27px;height:27px;stroke:currentColor}
+  #dw-all-top-tools .dw-all-tool[data-dw-all-tool="account"]{
+    background:#142544;color:#fff;width:54px;height:54px;flex-basis:54px;
+    background-size:cover;background-position:center;
+  }
+  #dw-all-top-tools .dw-all-tool .dw-all-avatar-text{
+    font-size:16px;font-weight:750;line-height:1.2;
+  }
+  #dw-all-top-tools .dw-all-has-photo .dw-all-avatar-text{opacity:0}
+  #dw-all-top-tools .dw-all-notification-dot{
+    position:absolute;top:3px;right:7px;width:10px;height:10px;
+    border-radius:50%;background:#3bd7ac;box-shadow:0 0 0 2px #eef3fb;
+  }
+  #dw-all-top-tools .dw-all-notification-dot[hidden]{display:none!important}
+
+  /* A consistent global page frame on Overview, Trackers, Analytics, Members,
+     Bills, Chat, Events, Trips, Households, Account, About, Privacy and More. */
+  html body.dw-all-secondary-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open)>.wrap{
+    padding-top:100px!important;
+    min-height:100vh!important;
+    max-width:none!important;
+    width:auto!important;
+    box-sizing:border-box!important;
+    color:var(--dw-shell-ink)!important;
+  }
+  html body.dw-all-secondary-view:not(.sq-auth-guest):not(.sq-auth-loading){
+    color:var(--dw-shell-ink)!important;
+  }
+  html body.dw-all-secondary-view :is(#trackers-page,#analytics-page,#settings-page,
+    #about-page,#friends-page,#notifications-page,#split-page,#sq-bills-page,#sq-help-page,
+    #dw-polls-page,#onboarding-page){
+    color:var(--dw-shell-ink)!important;
+    box-sizing:border-box;min-width:0;
+    max-width:1400px!important;
+  }
+  html body.dw-all-secondary-view :is(#trackers-page,#analytics-page,#settings-page,#about-page,
+    #friends-page,#notifications-page,#split-page,#sq-bills-page,#sq-help-page,#dw-polls-page)
+    :is(.dw-page-header,.trackers-header,.sq-analytics-header,.sq-notifications-header,
+      .sq-friends-layout>.sq-feature-head,.split-header,.dw-polls-heading){
+    background:transparent!important;border:0!important;box-shadow:none!important;
+    padding:4px 1px 15px!important;color:var(--dw-shell-ink)!important;
+    margin-bottom:14px!important;
+    border-radius:0!important;
+  }
+  html body.dw-all-secondary-view :is(#trackers-page,#analytics-page,#settings-page,#about-page,
+    #friends-page,#notifications-page,#split-page,#sq-bills-page,#sq-help-page,#dw-polls-page)
+    :is(h1,h2,h3,.dw-page-header h2,.trackers-header h2,.sq-analytics-header h2,.sq-feature-head h2){
+    color:var(--dw-shell-ink)!important;
+  }
+  html body.dw-all-secondary-view :is(#trackers-page,#analytics-page,#settings-page,#about-page,
+    #friends-page,#notifications-page,#split-page,#sq-bills-page,#sq-help-page,#dw-polls-page)
+    :is(.dw-page-header p,.trackers-header p,.sq-analytics-header p,.sq-feature-head p){
+    color:var(--dw-shell-muted)!important;
+  }
+  html body.dw-all-secondary-view :is(#trackers-page,#analytics-page,#settings-page,#about-page,
+    #friends-page,#notifications-page,#split-page,#sq-bills-page,#sq-help-page,#dw-polls-page)
+    :is(.card,.tracker-tile,.about-hero,.about-feature,.about-mission,.settings-panel,
+      .settings-card,.sq-bills-card,.sq-analytics-panel,.analytics-stat,
+      .sq-friends-layout>.card,.split-panel,.feature-panel,.sq-bills-panel,
+      .sq-polls-panel,.sq-poll-card,.sq-return-panel,.sq-report-card){
+    border:1px solid var(--dw-shell-line)!important;
+    border-radius:23px!important;
+    background:linear-gradient(145deg,#fbfcff,#f0f5fd)!important;
+    color:var(--dw-shell-ink)!important;
+    box-shadow:var(--dw-shell-shadow)!important;
+  }
+  html body.dw-all-secondary-view #tracker-dashboard:not(.sq-tab-overview)
+    :is(.card,.sq-return-panel,.tracker-collapsible,.sq-feature-card,.sq-bills-card,
+      .tracker-tools-grid .card){
+    border:1px solid var(--dw-shell-line)!important;
+    border-radius:22px!important;
+    background:linear-gradient(140deg,#fbfcff,#f0f5fc)!important;
+    color:var(--dw-shell-ink)!important;box-shadow:var(--dw-shell-shadow)!important;
+  }
+  html body.dw-all-secondary-view #tracker-dashboard:not(.sq-tab-overview)
+    :is(h1,h2,h3,.card-title,.tool-heading-label){color:var(--dw-shell-ink)!important}
+  html body.dw-all-secondary-view #tracker-dashboard:not(.sq-tab-overview)
+    :is(.hint,.muted,.sq-return-copy small,.dashboard-subheading){color:var(--dw-shell-muted)!important}
+
+  /* The finance workspace is a separate fixed-height original screen. Keep its
+     own inner scroll but reveal the same always-present global header above it. */
+  html body.dw-all-secondary-view.sq-finance-open #sq-nextgen{
+    background:linear-gradient(145deg,#edf3fd,#e7eefb)!important;
+    color:var(--dw-shell-ink)!important;
+  }
+  html body.dw-all-secondary-view.sq-finance-open #sq-nextgen .sq-ng-shell{
+    padding-top:112px!important;
+    max-width:1450px!important;
+    color:var(--dw-shell-ink)!important;
+  }
+  html body.dw-all-secondary-view.sq-finance-open #sq-nextgen
+    :is(.sq-ng-card,.sq-ng-trip-hero,.sq-ng-bills-entry,.sq-ng-workspace-directory-card,
+      .dw-web-trend,.dw-web-comparison,.sq-ng-summary-stack > *, .sq-ng-panel){
+    border:1px solid var(--dw-shell-line)!important;border-radius:22px!important;
+    background:linear-gradient(135deg,#fafcff,#eef4fb)!important;
+    color:var(--dw-shell-ink)!important;
+    box-shadow:var(--dw-shell-shadow)!important;
+  }
+  html body.dw-all-secondary-view.sq-finance-open #sq-nextgen
+    :is(.sq-ng-header h1,.sq-ng-header h2,.sq-ng-card h2,.sq-ng-card h3,.sq-ng-summary-stack strong){
+    color:var(--dw-shell-ink)!important;
+  }
+  html body.dw-all-secondary-view.sq-finance-open #sq-nextgen
+    :is(.sq-ng-note,.sq-ng-subtitle,.sq-ng-header p,.sq-ng-card p){
+    color:var(--dw-shell-muted)!important;
+  }
+  html body.dw-all-secondary-view.sq-finance-open #sq-nextgen
+    :is(.sq-ng-tabs,.dw-section-tabs){
+    background:#f1f5fd!important;border:1px solid var(--dw-shell-line)!important;
+    border-radius:18px!important;
+  }
+  html body.dw-all-secondary-view.sq-finance-open #sq-nextgen
+    :is(input,select,textarea){
+    background:#fff!important;color:var(--dw-shell-ink)!important;
+    border-color:#cad9eb!important;border-radius:12px!important;
+  }
+  html body.dw-all-secondary-view.sq-bills-open #sq-bills-page{
+    border:0!important;background:transparent!important;
+    box-shadow:none!important;
+  }
+  html body.dw-all-secondary-view #dw-polls-page{
+    background:#f7faff!important;color:var(--dw-shell-ink)!important;
+    border:1px solid var(--dw-shell-line)!important;
+    border-radius:24px!important;box-shadow:var(--dw-shell-shadow)!important;
+  }
+  html body.dw-all-secondary-view #dw-polls-page :is(h1,h2,p,small){
+    color:var(--dw-shell-ink)!important;
+  }
+  html body.dw-all-secondary-view :is(#analytics-page,#trackers-page,#settings-page,#about-page,
+    #friends-page,#notifications-page,#split-page,#sq-bills-page,#sq-nextgen)
+    :is(input:not([type=checkbox]):not([type=radio]),select,textarea){
+    background:#fff!important;color:var(--dw-shell-ink)!important;
+    border:1px solid #cad9eb!important;border-radius:12px!important;
+  }
+  html body.dw-all-secondary-view :is(#analytics-page,#trackers-page,#settings-page,#about-page,
+    #friends-page,#notifications-page,#split-page,#sq-bills-page,#sq-nextgen)
+    :is(button,a):focus-visible,
+  #dw-all-topbar button:focus-visible,
+  html body .sidebar .squareup-nav :is(button,summary):focus-visible{
+    outline:3px solid #35cda9!important;outline-offset:3px!important;
+  }
+
+  /* Render the existing sidebar buttons as one consistent, icon-led set.
+     The runtime inserts a real SVG icon even when older styles hide originals. */
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav{
+    display:flex!important;flex-direction:column!important;
+    align-items:stretch!important;gap:6px!important;
+    margin-top:10px!important;padding:0!important;
+  }
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>button.sq-nav-link,
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>.dw-nav-social-trigger,
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>.dw-nav-group>summary{
+    box-sizing:border-box!important;
+    width:100%!important;min-width:0!important;max-width:100%!important;
+    height:53px!important;min-height:53px!important;max-height:53px!important;
+    margin:0!important;padding:0 14px!important;
+    border-radius:14px!important;border:1px solid transparent!important;
+    background:transparent!important;color:#f6faff!important;
+    box-shadow:none!important;transform:none!important;
+    font-family:inherit!important;font-size:16px!important;
+    font-weight:625!important;line-height:1.2!important;
+    letter-spacing:normal!important;text-transform:none!important;
+    text-align:start!important;white-space:nowrap!important;
+    align-items:center!important;justify-content:flex-start!important;gap:0!important;
+    overflow:hidden!important;
+  }
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>
+    :is(#nav-home,#nav-trackers,#sqev-nav,#nav-analytics,#dw-ref-nav-notifications){
+    display:flex!important;
+  }
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>.dw-nav-social-trigger,
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>.dw-nav-group>summary{
+    display:flex!important;
+  }
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>button.sq-nav-link:is(:hover,.active,[aria-current="page"]),
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>.dw-nav-social-trigger:hover,
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>.dw-nav-group>summary:hover{
+    background:#415a7e!important;color:#fff!important;
+    border-color:rgba(202,227,255,.17)!important;box-shadow:none!important;
+    transform:none!important;
+  }
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>button.sq-nav-link>.sq-nav-icon,
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>button.sq-nav-link>.dw-ref-static-icon,
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>.dw-nav-social-trigger>svg,
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>.dw-nav-group>summary>.dw-nav-group-icon{
+    display:none!important;
+  }
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav
+    .dw-all-nav-icon{
+    display:inline-flex!important;visibility:visible!important;opacity:1!important;
+    align-items:center!important;justify-content:center!important;
+    width:27px!important;height:27px!important;min-width:27px!important;
+    flex:0 0 27px!important;
+    position:static!important;inset:auto!important;
+    padding:0!important;margin:0 13px 0 0!important;
+    color:#f6faff!important;
+    transform:none!important;clip-path:none!important;pointer-events:none!important;
+  }
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav .dw-all-nav-icon svg{
+    display:block!important;visibility:visible!important;opacity:1!important;
+    width:25px!important;height:25px!important;min-width:25px!important;
+    fill:none!important;stroke:#f6faff!important;stroke-width:1.9!important;
+    stroke-linecap:round!important;stroke-linejoin:round!important;
+  }
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav
+    :is(.sq-nav-label,.dw-nav-group-name,.dw-social-label){
+    display:inline-block!important;visibility:visible!important;opacity:1!important;
+    flex:1 1 auto!important;min-width:0!important;width:auto!important;
+    margin:0!important;padding:0!important;
+    font-family:inherit!important;font-size:16px!important;
+    font-weight:625!important;line-height:1.2!important;
+    letter-spacing:normal!important;text-transform:none!important;
+    color:inherit!important;text-align:start!important;
+    overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+  }
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav
+    :is(.dw-nav-group-caret,.dw-flyout-caret){
+    margin-inline-start:auto!important;flex:0 0 16px!important;
+    font-size:16px!important;color:#edf6ff!important;
+  }
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>button[hidden],
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>button[aria-hidden="true"],
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>#nav-chat,
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>#sq-finance-nav,
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>#nav-help-center{
+    display:none!important;
+  }
+  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav #dw-beta-launch{
+    height:53px!important;min-height:53px!important;max-height:53px!important;
+    font-family:inherit!important;font-size:16px!important;
+    font-weight:650!important;line-height:1.2!important;border-radius:14px!important;
+  }
+  html body:not(.sq-auth-guest)>aside.sidebar .dw-desktop-side-flyout .sq-nav-link{
+    font-family:inherit!important;font-size:15px!important;
+  }
+  html body:not(.sq-auth-guest)>aside.sidebar .side-account .sidebar-top-row{
+    margin:0 0 16px!important;
+  }
+  html body:not(.sq-auth-guest)>aside.sidebar .sq-sidebar-control-row{
+    position:absolute!important;bottom:18px!important;left:18px!important;top:auto!important;
+  }
+
+  /* Repeated footers and details use the same calm canvas; the recorded data,
+     alert states, active menu and validation behavior are deliberately untouched. */
+  html body :is(#dw-beta-modal,#dw-beta-nudge) :is(button,input,textarea,select){
+    font-family:inherit!important;
+  }
+}
+@media(min-width:901px) and (max-width:1220px){
+  #dw-all-topbar{left:255px;right:20px;height:62px}
+  #dw-all-top-tabs{height:60px;width:min(630px,calc(100% - 166px));padding:5px}
+  #dw-all-top-tabs button{min-height:50px;height:50px;font-size:13px}
+  #dw-all-top-tools{gap:3px}
+  #dw-all-top-tools .dw-all-tool{height:38px;width:38px;flex-basis:38px}
+  #dw-all-top-tools .dw-all-tool[data-dw-all-tool="account"]{width:48px;height:48px;flex-basis:48px}
+}
+/* Only language, icons and the new desktop header are added. Never alter the
+   layout or bottom-bar position of the mobile and PWA screens. */
+@media(max-width:900px){
+  #dw-all-topbar{display:none!important}
+  .dw-all-nav-icon{display:none!important}
+}
+
+
+/* New cash-flow chart: grouped six-month income/spending bars with real values.
+   Unlike the previous net-line, months without records do not invent a trend. */
+@media(min-width:901px){
+ html body #dw-ref-home .dw-ref-chart{
+   min-height:322px!important;padding:22px 28px 17px!important;
+ }
+ html body #dw-ref-home .dw-ref-chart-body{
+   min-height:235px!important;
+ }
+ html body #dw-ref-home .dw-ref-chart-summary{
+   display:flex;align-items:center;justify-content:space-between;
+   margin:0 0 9px;padding:0;gap:15px;flex-wrap:wrap;
+   color:#617390;font-size:13px;
+ }
+ html body #dw-ref-home .dw-ref-chart-range{
+   font-weight:650;color:#6a7d99;
+ }
+ html body #dw-ref-home .dw-ref-chart-net{
+   display:inline-flex;gap:10px;align-items:center;
+   padding:5px 10px;border-radius:10px;
+   background:#eaf3fa;color:#526a88;
+   font-size:12px;font-weight:600;
+ }
+ html body #dw-ref-home .dw-ref-chart-net strong{
+   color:#198a70;font-size:14px;font-weight:850;
+ }
+ html body #dw-ref-home .dw-ref-chart-net strong.dw-ref-negative{
+   color:#b2465e;
+ }
+ html body #dw-ref-home .dw-ref-month-chart{
+   position:relative;display:block;flex:1;
+   height:180px;min-height:180px;isolation:isolate;
+   margin:0 0 3px;overflow:visible;
+ }
+ html body #dw-ref-home .dw-ref-chart-grid{
+   position:absolute;z-index:0;
+   top:1px;left:0;right:3px;bottom:28px;
+   display:grid;grid-template-rows:repeat(5,minmax(0,1fr));
+   pointer-events:none;
+ }
+ html body #dw-ref-home .dw-ref-chart-gridline{
+   display:grid;grid-template-columns:49px minmax(0,1fr);
+   gap:10px;align-items:center;min-width:0;
+ }
+ html body #dw-ref-home .dw-ref-chart-gridline span{
+   color:#7889a4;font-size:11px;text-align:right;
+   white-space:nowrap;font-weight:550;
+   font-variant-numeric:tabular-nums;
+ }
+ html body #dw-ref-home .dw-ref-chart-gridline i{
+   display:block;width:100%;height:1px;min-height:1px;
+   border-top:1px dashed #d6e1ee;
+ }
+ html body #dw-ref-home .dw-ref-chart-gridline:last-child i{
+   border-top-style:solid;border-top-color:#bacde0;
+ }
+ html body #dw-ref-home .dw-ref-chart-months{
+   position:relative;z-index:1;
+   width:100%;height:100%;min-height:0;
+   display:grid;grid-template-columns:repeat(6,minmax(0,1fr));
+   gap:10px;align-items:stretch;
+   padding:0 5px 0 59px;box-sizing:border-box;
+ }
+ html body #dw-ref-home .dw-ref-chart-month{
+   position:relative;width:100%;height:100%!important;min-height:0!important;
+   display:flex;flex-direction:column;
+   justify-content:flex-end;align-items:stretch;
+   padding:0!important;margin:0!important;gap:2px!important;
+ }
+ html body #dw-ref-home .dw-ref-chart-tracks{
+   display:flex;align-items:end;justify-content:center;
+   flex:1 1 auto;min-height:0;height:auto;
+   gap:8px;margin:0;padding:0;
+ }
+ html body #dw-ref-home .dw-ref-chart-track{
+   display:flex;flex:0 1 26px;width:26px;max-width:26px;
+   height:calc(100% - 2px);min-width:5px;
+   flex-direction:column;align-items:stretch;justify-content:end;
+ }
+ html body #dw-ref-home .dw-ref-chart-bar{
+   box-sizing:border-box;display:block;
+   flex:0 0 auto!important;width:100%!important;min-width:0!important;
+   max-width:26px;max-height:100%;
+   margin:0!important;padding:0!important;
+   border-radius:8px 8px 3px 3px!important;
+   transition:height .24s ease;
+ }
+ html body #dw-ref-home .dw-ref-chart-bar.dw-ref-bar-income{
+   background:linear-gradient(180deg,#4dcdaa,#9af4d5)!important;
+   border:1px solid #5ed8b6;
+   box-shadow:0 5px 11px rgba(43,172,138,.13);
+ }
+ html body #dw-ref-home .dw-ref-chart-bar.dw-ref-bar-expense{
+   background:linear-gradient(180deg,#6485c4,#a6b9e9)!important;
+   border:1px solid #7295d4;
+   box-shadow:0 5px 11px rgba(51,96,171,.10);
+ }
+ html body #dw-ref-home .dw-ref-chart-bar.dw-ref-zero{
+   height:0!important;min-height:0!important;
+   border:0!important;box-shadow:none!important;
+ }
+ html body #dw-ref-home .dw-ref-chart-month small{
+   display:block;flex:0 0 22px;
+   font-size:12px;font-weight:650;line-height:22px;
+   text-align:center;color:#5c6c8a;white-space:nowrap;
+ }
+ html body #dw-ref-home .dw-ref-empty-month{
+   position:absolute;bottom:23px;left:50%;
+   transform:translateX(-50%);
+   font-size:24px;line-height:1;color:#c5d4e4;
+   pointer-events:none;
+ }
+ html body #dw-ref-home .dw-ref-chart-legend{
+   display:flex;align-items:center;justify-content:flex-end;
+   gap:20px;padding:6px 2px 0;
+   color:#617591;font-size:12px;font-weight:650;
+ }
+ html body #dw-ref-home .dw-ref-chart-legend span{
+   display:inline-flex;align-items:center;gap:7px;
+ }
+ html body #dw-ref-home .dw-ref-chart-legend i{
+   display:block;width:10px;height:10px;min-width:10px;
+   border-radius:3px;
+ }
+ html body #dw-ref-home .dw-ref-chart-legend .dw-ref-legend-income{
+   background:#5bd9b3!important;
+ }
+ html body #dw-ref-home .dw-ref-chart-legend .dw-ref-legend-expense{
+   background:#7396d3!important;
+ }
+ html body #dw-ref-home .dw-ref-chart-empty{
+   border:1px dashed #c8d9ea;border-radius:16px;
+   display:flex;justify-content:center;align-items:center;
+   flex:1;min-height:205px;flex-direction:column;
+   gap:9px;text-align:center;
+   color:#617591;padding:16px;
+ }
+ html body #dw-ref-home .dw-ref-chart-empty strong{
+   color:#24375d;font-size:16px;
+ }
+ html body #dw-ref-home .dw-ref-chart-empty span{
+   font-size:13px;color:#5d7190;
+ }
+ html body #dw-ref-home .dw-ref-chart-empty button{
+   margin-top:4px;padding:9px 16px;
+   background:#dff8ef!important;color:#176b62!important;
+   border:0;border-radius:999px;
+   font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;
+ }
+}
+@media(min-width:901px) and (max-width:1120px){
+ html body #dw-ref-home .dw-ref-chart{padding:20px!important}
+ html body #dw-ref-home .dw-ref-chart-months{gap:4px!important}
+ html body #dw-ref-home .dw-ref-chart-tracks{gap:4px}
+ html body #dw-ref-home .dw-ref-chart-track{max-width:19px}
+}
+
+/* Physical pixel heights: earlier flex/percentage layout collapsed the month grid
+   to just 26px and drew zero-height bars despite correct transaction values. */
+@media(min-width:901px){
+ html body #dw-ref-home .dw-ref-month-chart{
+   display:block!important;position:relative!important;
+   height:198px!important;min-height:198px!important;max-height:198px!important;
+   flex:0 0 198px!important;overflow:visible!important;
+ }
+ html body #dw-ref-home .dw-ref-month-chart>.dw-ref-chart-months{
+   display:grid!important;position:relative!important;
+   width:100%!important;height:198px!important;
+   min-height:198px!important;max-height:198px!important;
+   grid-template-columns:repeat(6,minmax(0,1fr))!important;
+   grid-template-rows:198px!important;align-items:stretch!important;
+   padding:0 5px 0 59px!important;box-sizing:border-box!important;
+ }
+ html body #dw-ref-home .dw-ref-chart-months>.dw-ref-chart-month{
+   display:flex!important;flex-direction:column!important;
+   justify-content:flex-end!important;align-items:stretch!important;
+   height:198px!important;min-height:198px!important;max-height:198px!important;
+   box-sizing:border-box!important;gap:0!important;
+ }
+ html body #dw-ref-home .dw-ref-chart-month .dw-ref-chart-tracks{
+   display:flex!important;align-items:end!important;justify-content:center!important;
+   height:170px!important;min-height:170px!important;max-height:170px!important;
+   flex:0 0 170px!important;
+   gap:8px!important;
+ }
+ html body #dw-ref-home .dw-ref-chart-tracks>.dw-ref-chart-track{
+   height:170px!important;min-height:170px!important;max-height:170px!important;
+   flex:0 1 26px!important;
+   display:flex!important;align-items:stretch!important;justify-content:flex-end!important;
+   flex-direction:column!important;
+ }
+ html body #dw-ref-home .dw-ref-chart-track>.dw-ref-chart-bar:not(.dw-ref-zero){
+   min-height:2px!important;max-height:170px!important;
+   flex:0 0 auto!important;
+ }
+ html body #dw-ref-home .dw-ref-chart-month>small{
+   display:block!important;flex:0 0 26px!important;
+   height:26px!important;line-height:26px!important;
+   font-size:12px!important;margin-top:2px!important;
+ }
+ html body #dw-ref-home .dw-ref-chart-grid{
+   top:0!important;bottom:28px!important;
+ }
+ html body #dw-ref-home .dw-ref-empty-month{
+   bottom:29px!important;
+ }
+}
+
+/* Contrast and content readability on the same new light desktop surfaces. */
+@media(min-width:901px){
+ html body.about-view #about-page .about-build-story{
+   background:linear-gradient(150deg,#192f53,#102442)!important;
+   color:#eef8ff!important;border:1px solid #365575!important;
+   border-radius:24px!important;box-shadow:0 11px 28px #172f5219!important;
+ }
+ html body.about-view #about-page .about-build-story
+   :is(.about-build-heading h2,.about-build-heading p,.about-build-step h3,.about-build-step p,.about-build-date){
+   color:#f3f9ff!important;
+ }
+ html body.about-view #about-page .about-build-story .about-kicker{
+   color:#a7d9e9!important;
+ }
+ html body.about-view #about-page .about-build-step{
+   background:#203959!important;border:1px solid #406080!important;
+   box-shadow:none!important;border-radius:16px!important;
+ }
+ html body.about-view #about-page .about-build-step h3{
+   color:#fcffff!important;font-weight:800!important;
+ }
+ html body.about-view #about-page .about-build-step p{
+   color:#c9ddea!important;
+ }
+ html body.about-view #about-page .about-build-date{
+   color:#c5dff0!important;
+ }
+ html body.about-view #about-page .about-feature h3,
+ html body.about-view #about-page .about-mission h2{
+   color:#192c50!important;
+ }
+ html body.about-view #about-page .about-feature p,
+ html body.about-view #about-page .about-mission p,
+ html body.about-view #about-page .about-contact-caption{
+   color:#4f6380!important;
+ }
+ html body.settings-view #settings-page label,
+ html body.settings-view #settings-page .settings-field-label{
+   color:#244067!important;font-weight:650!important;
+ }
+ html body.settings-view #settings-page :is(.settings-tabs button,.settings-tab){
+   color:#345375!important;font-family:inherit!important;font-size:15px!important;
+   font-weight:650!important;
+ }
+ html body.settings-view #settings-page :is(.settings-tabs button[aria-selected="true"],.settings-tab.active){
+   background:#163455!important;color:#a6f8db!important;
+ }
+ html body.dw-all-secondary-view :is(#settings-page,#about-page,#trackers-page,#analytics-page)
+   footer :is(a,small,span,p){
+   color:#546982!important;
+ }
+}
+
+/* Trackers and About are BODY-level siblings of the .wrap, not its children.
+   The former 100vh minimum on .wrap pushed both below an empty screen.
+   Collapse ONLY that empty placeholder on these two routes. */
+@media(min-width:901px){
+ html body.trackers-view.dw-all-secondary-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open)>.wrap,
+ html body.about-view.dw-all-secondary-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open)>.wrap{
+   height:0!important;min-height:0!important;max-height:0!important;
+   padding-top:0!important;padding-bottom:0!important;
+   margin-top:0!important;margin-bottom:0!important;
+   overflow:visible!important;
+ }
+ html body.trackers-view.dw-all-secondary-view>#trackers-page,
+ html body.about-view.dw-all-secondary-view>#about-page{
+   position:relative!important;
+   margin-top:112px!important;
+   margin-bottom:48px!important;
+   padding-top:0!important;
+   min-width:0!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ html body #dw-ref-home .dw-ref-chart-bar{transition:none!important}
+}

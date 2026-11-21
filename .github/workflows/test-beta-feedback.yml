@@ -41,6 +41,8 @@ jobs:
         run: node --test test/pages-assets.test.mjs
       - name: Verify screenshot-matched desktop shell and live ledger wiring
         run: node --check doweo-reference-home.js && node --test test/doweo-reference-layout.test.mjs
+      - name: Verify 20-language unified navigation, sidebar icons, and sparse cash-flow charts
+        run: node --check doweo-unified-shell.js && node --check doweo-unified-localize.js && node --test test/doweo-unified-shell.test.mjs
       - name: Verify seven-minute beta invitation and mint dashboard assets
         run: node --check doweo-beta-nudge.js && node --test test/doweo-beta-nudge-theme.test.mjs
       - name: Verify every production translation module is packaged
@@ -121,6 +123,14 @@ jobs:
         run: node --test test/doweo-beta-nudge-browser.test.mjs
       - name: Browser-verify full DoWeo screenshot layout, real finance figures, desktop/mobile routes
         run: node --test test/doweo-reference-layout-browser.test.mjs
+      - name: Browser-test every main desktop view, equal sidebar icons, cash flow and locales
+        run: node --test test/doweo-unified-shell-browser.test.mjs
+      - name: Upload unified shell browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: doweo-unified-shell-pages
+          path: test-results/unified/
       - name: Upload screenshot of actual desktop DoWeo dashboard
         if: always()
         uses: actions/upload-artifact@v4

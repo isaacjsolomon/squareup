@@ -8,7 +8,7 @@ const js=readFileSync(new URL('../doweo-reference-home.js',import.meta.url),'utf
 const flow=readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',import.meta.url),'utf8');
 
 test('the screenshot layout ships as a real, connected piece of production HTML',()=>{
- for(const p of ['doweo-reference-home.css?v=20261121-reference-layout-v1','doweo-reference-home.js?v=20261121-reference-layout-v1'])
+ for(const p of ['doweo-reference-home.css?v=20261121-reference-layout-v1','doweo-reference-home.js?v=20261121-reference-layout-v2'])
   assert.ok(html.includes(p),p+' is missing from index.html');
  assert.match(flow,/doweo-reference-home\.css doweo-reference-home\.js/);
  assert.match(flow,/node --check \.pages-output\/doweo-reference-home\.js/);
@@ -20,8 +20,8 @@ test('the reference Overview is built from existing tracker + authenticated pers
  for(const id of ['sq-return-activity','sq-return-smart-host','sq-clean-net','sq-return-greeting','dw-compact-add','dw-ref-add','dw-ref-settle-action'])
   assert.ok(js.includes(id),'missing existing DoWeo data or action: '+id);
  assert.match(js,/window\.squareUpApi\('finance\/transactions'\)/);
- assert.match(js,/x\.occurred_on/);
- assert.match(js,/m\[x\.kind\]\+=Number\(x\.amount\)/);
+ assert.match(js,/row\.occurred_on/);
+ assert.match(js,/month\[row\.kind\]\+=Number\(row\.amount\)/);
  assert.match(js,/originalActivity\.parentNode!==activitySlot/);
  assert.match(js,/originalSmart\.parentNode!==smartSlot/);
  assert.match(js,/originalActivity\.parentNode!==activityHome/);
