@@ -543,6 +543,86 @@
  html body #dw-ref-home .dw-ref-lower{grid-template-columns:1fr}
  html body #dw-ref-home .dw-ref-settle{min-height:220px}
 }
+/* Final screenshot alignment: explicit tab/icon separation and flat icon-led
+   sidebar navigation. These overrides follow old high-specificity app styles. */
+@media(min-width:901px){
+ html body #tracker-dashboard.sq-tab-overview > .sq-workspace-tabs.sq-workspace-tabs,
+ html body #tracker-dashboard:not(.sq-tab-overview) > .sq-workspace-tabs.sq-workspace-tabs{
+   position:absolute!important;
+   top:0!important;left:clamp(18px,10vw,150px)!important;right:auto!important;
+   transform:none!important;
+   width:min(710px,calc(100% - 285px))!important;
+   max-width:710px!important;min-width:0!important;
+   box-sizing:border-box!important;
+ }
+ html body #tracker-dashboard #dw-ref-toolbar{
+   top:5px!important;right:0!important;left:auto!important;
+   width:auto!important;max-width:165px!important;
+   display:flex!important;justify-content:flex-end!important;gap:10px!important;
+ }
+ html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav :is(.sq-nav-link,.dw-nav-group>summary,.dw-nav-social-trigger){
+   justify-content:flex-start!important;
+   text-align:left!important;
+   padding:12px 14px!important;gap:14px!important;
+   background:transparent!important;border:0!important;
+   box-shadow:none!important;border-radius:17px!important;
+   min-height:54px!important;
+   font-size:17px!important;font-weight:600!important;
+ }
+ html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav :is(.sq-nav-link,.dw-nav-group>summary,.dw-nav-social-trigger):hover,
+ html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav .sq-nav-link.active,
+ html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav .sq-nav-link[aria-current="page"]{
+   background:linear-gradient(115deg,#4e6788,#354d6e)!important;
+   color:#fff!important;box-shadow:none!important;border:0!important;
+ }
+ html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav .sq-nav-link :is(.sq-nav-icon,.sq-nav-icon svg),
+ html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav .dw-nav-group>summary svg,
+ html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav .dw-nav-social-trigger svg{
+   display:flex!important;visibility:visible!important;opacity:1!important;
+   position:static!important;float:none!important;
+   clip-path:none!important;transform:none!important;
+   color:#f5fbff!important;stroke:currentColor!important;
+ }
+ html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav .sq-nav-link .sq-nav-icon{
+   flex:0 0 26px!important;width:26px!important;height:26px!important;
+   align-items:center!important;justify-content:center!important;
+   margin:0!important;padding:0!important;
+ }
+ html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav .sq-nav-link .sq-nav-icon svg{
+   flex:none!important;width:25px!important;height:25px!important;
+   fill:none!important;
+ }
+ html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav .sq-nav-link .sq-nav-label{
+   flex:1!important;width:auto!important;min-width:0!important;
+   display:inline!important;visibility:visible!important;opacity:1!important;
+   position:static!important;text-align:left!important;
+   font-size:17px!important;font-weight:600!important;line-height:1.2!important;
+ }
+ html body:not(.sq-auth-guest)>aside.sidebar .me,
+ html body:not(.sq-auth-guest)>aside.sidebar .side-account .me{
+   display:none!important;
+ }
+ html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav{
+   margin-top:31px!important;gap:7px!important;
+ }
+ html body:not(.sq-auth-guest)>aside.sidebar .sidebar-top-row{
+   margin-bottom:13px!important;
+ }
+ html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav .sq-nav-link#dw-ref-nav-notifications{
+   display:flex!important;visibility:visible!important;
+ }
+ html body:not(.sq-auth-guest) footer,
+ html body:not(.sq-auth-guest) footer :is(a,span,p,small){
+   color:#536889!important;
+ }
+}
+@media(min-width:901px) and (max-width:1220px){
+ html body #tracker-dashboard.sq-tab-overview > .sq-workspace-tabs.sq-workspace-tabs,
+ html body #tracker-dashboard:not(.sq-tab-overview) > .sq-workspace-tabs.sq-workspace-tabs{
+   left:18px!important;width:calc(100% - 170px)!important;max-width:none!important;
+ }
+ html body #tracker-dashboard #dw-ref-toolbar{max-width:155px!important;gap:4px!important}
+}
 /* Keep DoWeo's existing desktop sidebar-collapse behavior. */
 @media(min-width:901px){
  html body.side-collapsed:not(.sq-auth-guest)>aside.sidebar{
