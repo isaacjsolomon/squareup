@@ -80,6 +80,14 @@ test('DoWeo desktop reference dashboard matches requested composition, real valu
   });
   assert.ok(rect.sidebar.w>=250&&rect.sidebar.w<=285,'sidebar matches screenshot width');
   assert.ok(rect.tabs.y<rect.greeting.y,'tabs precede greeting');
+  const topbar=await page.evaluate(()=>{
+   const a=document.querySelector('#tracker-dashboard>.sq-workspace-tabs').getBoundingClientRect();
+   const b=document.getElementById('dw-ref-toolbar').getBoundingClientRect();
+   return {tabsRight:a.right,utilitiesLeft:b.left,tabsWidth:a.width};
+  });
+  assert.ok(topbar.tabsRight+4<topbar.utilitiesLeft,
+    'top-right search/bell/profile icons must not overlap Members tab: '+JSON.stringify(topbar));
+
   assert.ok(rect.greeting.b<=rect.stats.y+4,'stats are below greeting');
   assert.ok(rect.stats.b<=rect.chart.y+4,'cash flow follows summary tiles');
   assert.ok(rect.chart.b<=rect.lower.y+4,'activity and settle-up follow cash flow');
