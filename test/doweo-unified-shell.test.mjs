@@ -79,8 +79,9 @@ test('sparse finance data uses real grouped monthly bars, not a fabricated zero-
  assert.match(dashboard,/window\.squareUpApi\('finance\/transactions'\)/);
  assert.match(dashboard,/chartBody\.replaceChildren\(\)/);
  assert.match(dashboard,/dw-ref-chart-months/);
- assert.match(dashboard,/dw-ref-bar-income/);
- assert.match(dashboard,/dw-ref-bar-expense/);
+ assert.match(dashboard,/dw-ref-bar-'\+kind/);
+ assert.match(css,/dw-ref-bar-income/);
+ assert.match(css,/dw-ref-bar-expense/);
  assert.match(dashboard,/const stepCandidates=\[1,2,2\.5,5,10\]/);
  assert.match(dashboard,/m\.count\?\x27\x27: \x27·\x27/);
  assert.doesNotMatch(dashboard,/chartSvg\.append\(svg\('path'/,'old misleading net trend line must be gone');
