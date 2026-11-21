@@ -1,15 +1,23 @@
 import test from 'node:test';
+import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 import {readFileSync,existsSync} from 'node:fs';
 import {resolve,extname} from 'node:path';
 import {chromium} from 'playwright';
-test('inspect More page routing at mobile widths',{timeout:120000},async()=>{
+test('mobile More destinations are isolated full pages with intact navigation',{timeout:120000},async()=>{
  const root=resolve(new URL('..',import.meta.url).pathname);
  const server=createServer((req,res)=>{
   const path=resolve(root,'.'+new URL(req.url,'http://localhost').pathname.replace(/\/$/,'/index.html'));
   if(!path.startsWith(root+'/')||!existsSync(path)){res.writeHead(404);res.end();return}
   const types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.png':'image/png'};
-  res.setHeader('Content-Type',types[extname(path)]||'application/octet-stream');res.end(readFileSync(path));
+  res.setHeader('Content-Type',types[extname(path)]||'application/octet-stream');
+  const bytes=readFileSync(path);
+  if(path.endsWith('/index.html')){
+    const html=bytes.toString('utf8')
+      .replace('</head>','<link rel="stylesheet" href="/doweo-mobile-more-pages.css"></head>')
+      .replace('</body>','<script defer src="/doweo-mobile-more-pages.js"></script></body>');
+    res.end(html);
+  }else res.end(bytes);
  });
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
  const origin='http://127.0.0.1:'+server.address().port;
@@ -35,24 +43,51 @@ test('inspect More page routing at mobile widths',{timeout:120000},async()=>{
   await page.goto(origin,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>typeof window.squareUpApi==='function');
   await page.locator('#auth-modal.open').waitFor({state:'hidden',timeout:30000});
-  const inspect=async(dest)=>{
-   const info=await page.evaluate(()=>{
-    const sel=['#tracker-dashboard','#settings-page','#about-page','#notifications-page','#analytics-page','#friends-page','#sq-nextgen','#sqev-page','#sqev-root','#sq-events-page','#dw-legal-links-dialog','#sq-mobile-more-sheet','#trackers-page','#sq-mobile-top','#dw-mobile-chat-screen','#sq-mobile-chat-page'];
-    return {
-      body:document.body.className,scrollY,hash:location.hash,search:location.search,
-      visible:sel.map(selector=>{const n=document.querySelector(selector);return n?{selector,display:getComputedStyle(n).display,rects:n.getClientRects().length,hidden:n.hidden,top:Math.round(n.getBoundingClientRect().top),parent:n.parentElement?.tagName+'#'+(n.parentElement?.id||'')+'.'+(n.parentElement?.className||'')}:null}).filter(Boolean),
-      mainChildren:[...document.querySelectorAll('.wrap > *')].map(n=>({tag:n.tagName,id:n.id,cls:String(n.className).slice(0,85),display:getComputedStyle(n).display,rects:n.getClientRects().length})).slice(0,25)
-    };
-   });
-   console.log('ROUTE_INSPECT',dest,JSON.stringify(info));
+  await page.waitForFunction(()=>Boolean(document.getElementById('dw-mobile-legal-page')));
+  assert.equal(await page.locator('#sq-mobile-more-sheet [data-sq-destination="sq-finance-nav"]').count(),0,
+    'retired Financial Hub is not a More destination');
+  const more=page.locator('#sq-mobile-more');
+  const visit=async(id)=>{
+    await page.evaluate(()=>document.getElementById('nav-home')?.click());
+    await more.click();
+    await page.locator('#sq-mobile-more-sheet [data-sq-destination="'+id+'"]').evaluate(el=>el.click());
+    await page.waitForTimeout(180);
   };
-  await inspect('initial');
-  const choices=['nav-profile','nav-about','nav-analytics','sq-mobile-notifications','sqev-nav','nav-privacy-terms','nav-friends','nav-chat'];
-  for(const id of choices){
-   await page.evaluate(()=>document.getElementById('nav-home')?.click());
-   await page.locator('#sq-mobile-more').click();
-   const target=page.locator('#sq-mobile-more-sheet [data-sq-destination="'+id+'"]');
-   if(await target.count()){await target.evaluate(el=>el.click());await page.waitForTimeout(200);await inspect(id);}
+  for(const [id,section] of [
+    ['nav-profile','#settings-page'],
+    ['nav-about','#about-page'],
+    ['nav-analytics','#analytics-page'],
+    ['sq-mobile-notifications','#notifications-page'],
+    ['sqev-nav','#sqev-view']
+  ]){
+    await visit(id);
+    assert.equal(await page.locator('#tracker-dashboard').isVisible(),false,id+' must not show Home above the page');
+    assert.ok(await page.locator(section).isVisible(),id+' destination is visible');
+    const top=await page.locator(section).evaluate(el=>el.getBoundingClientRect().top);
+    assert.ok(top>=-2&&top<300,id+' starts as an actual page, not below Home: '+top);
+    const footer=await page.locator('.sq-mobile-nav').evaluate(el=>el.getBoundingClientRect().bottom);
+    assert.ok(Math.abs(footer-844)<2,'mobile bottom bar stays anchored');
   }
+  await visit('nav-privacy-terms');
+  assert.ok(await page.locator('#dw-mobile-legal-page').isVisible(),'Privacy and Terms has its own page');
+  assert.equal(await page.locator('#tracker-dashboard').isVisible(),false,'Privacy and Terms replaces Home');
+  assert.equal(await page.locator('#dw-legal-links-dialog').isVisible(),false,'old overlay is not used');
+  assert.equal(await page.locator('#dw-mobile-legal-page a[href="/privacy/"]').count(),1);
+  assert.equal(await page.locator('#dw-mobile-legal-page a[href="/terms/"]').count(),1);
+  await page.locator('#dw-mobile-legal-page .dw-mobile-more-back').click();
+  assert.ok(await page.locator('#sq-mobile-more-sheet').isVisible(),'Back from Privacy and Terms returns to More');
+  await page.locator('#sq-mobile-more-sheet [data-sq-close]').first().click();
+  await page.evaluate(()=>document.getElementById('nav-home')?.click());
+  await more.click();
+  await page.locator('#sq-mobile-more-sheet [data-sq-social-open]').evaluate(el=>el.click());
+  assert.ok(await page.locator('#dw-mobile-social-page').isVisible(),'Social gets a standalone page');
+  assert.equal(await page.locator('#tracker-dashboard').isVisible(),false,'Social does not reveal Home');
+  assert.ok(await page.locator('#dw-mobile-social-page button').count()>=3,'Social retains Friends and Chat');
+  await page.locator('#dw-mobile-social-page .dw-mobile-more-back').click();
+  assert.ok(await page.locator('#sq-mobile-more-sheet').isVisible(),'Back from Social returns to More');
+  await page.locator('#sq-mobile-more-sheet [data-sq-close]').first().click();
+  await page.evaluate(()=>document.getElementById('nav-home')?.click());
+  assert.equal(await page.locator('#tracker-dashboard').isVisible(),true,'Home still works after leaving More');
+
  }finally{await browser.close();await new Promise(resolve=>server.close(resolve))}
 });
