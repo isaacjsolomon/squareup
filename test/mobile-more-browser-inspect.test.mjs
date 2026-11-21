@@ -46,6 +46,15 @@ test('mobile More destinations are isolated full pages with intact navigation',{
   await page.waitForFunction(()=>Boolean(document.getElementById('dw-mobile-legal-page')));
   assert.equal(await page.locator('#sq-mobile-more-sheet [data-sq-destination="sq-finance-nav"]').count(),0,
     'retired Financial Hub is not a More destination');
+  const labels=await page.locator('#sq-mobile-more-sheet .sq-balanced-sheet > .sq-balanced-more-grid > button')
+    .evaluateAll(buttons=>buttons.map(button=>button.querySelector('strong')?.textContent.trim()));
+  assert.deepEqual(labels,[
+    'Social','Events','Trips','Households','Analytics','Account','About','Privacy and Terms'
+  ],'More must have exactly four rows of two usable destinations');
+  assert.equal(await page.locator('#sq-mobile-more-sheet [data-sq-destination="sq-mobile-notifications"]').count(),0,
+    'Notifications is no longer duplicated in More');
+  assert.equal(await page.locator('#sq-mobile-notifications').count(),1,
+    'the top notification bell still exists');
   const more=page.locator('#sq-mobile-more');
   const visit=async(id)=>{
     await page.evaluate(()=>document.getElementById('nav-home')?.click());
@@ -88,6 +97,37 @@ test('mobile More destinations are isolated full pages with intact navigation',{
   await page.locator('#sq-mobile-more-sheet [data-sq-close]').first().click();
   await page.evaluate(()=>document.getElementById('nav-home')?.click());
   assert.equal(await page.locator('#tracker-dashboard').isVisible(),true,'Home still works after leaving More');
+  for(const [target,mode,title] of [
+    ['dw-mobile-trips','trip','Trips'],
+    ['dw-mobile-households','home','Households']
+  ]){
+    await more.click();
+    await page.locator('#sq-mobile-more-sheet [data-sq-destination="'+target+'"]').evaluate(el=>el.click());
+    await page.waitForFunction(mode=>{
+      const hub=document.getElementById('sq-nextgen');
+      return hub&&!hub.hidden&&hub.dataset.dwMobileMoreWorkspace===mode&&
+        !!hub.querySelector('.sq-ng-workspace-directory');
+    },mode,{timeout:12000});
+    assert.equal(await page.locator('#sq-ng-title').textContent(),title);
+    assert.equal(await page.locator('#tracker-dashboard').isVisible(),false,
+      title+' must open its own workspace above Home');
+    assert.equal(await page.locator('#sq-nextgen .sq-ng-tabs').isVisible(),false,
+      'do not show retired Finance Hub tabs on '+title);
+    assert.equal(await page.locator('#sq-finance-mobile-tiles').isVisible(),false,
+      'do not show retired Finance Hub navigation on '+title);
+    assert.ok(await page.locator('#sq-ng-content .sq-ng-workspace-directory').isVisible(),
+      title+' must display actual existing workspace content, not an empty mock page');
+    const bottom=await page.locator('.sq-mobile-nav').evaluate(el=>el.getBoundingClientRect().bottom);
+    assert.ok(Math.abs(bottom-844)<2,'bottom nav stays anchored on '+title);
+    await page.locator('#sq-ng-back').click();
+    assert.ok(await page.locator('#sq-mobile-more-sheet').isVisible(),
+      'Back from '+title+' returns to More');
+    assert.equal(await page.locator('#sq-nextgen').isVisible(),false,
+      'old workspace must close after leaving '+title);
+    await page.locator('#sq-mobile-more-sheet [data-sq-close]').first().click();
+    assert.equal(await page.locator('#tracker-dashboard').isVisible(),true,
+      'Home still works when '+title+' is closed');
+  }
 
  }finally{await browser.close();await new Promise(resolve=>server.close(resolve))}
 });
