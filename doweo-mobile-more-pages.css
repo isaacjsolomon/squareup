@@ -116,7 +116,7 @@
   #dw-ios-install-guide[hidden]{display:none!important}
   #sq-mobile-more-sheet .dw-ios-install-trigger{
     box-sizing:border-box;display:flex;align-items:center;gap:14px;
-    width:100%;min-height:68px;margin-top:16px;padding:12px 15px;
+    width:100%;min-height:68px;margin:12px 0 16px;padding:12px 15px;
     border:1px solid #41758a;border-radius:15px;
     background:#14394d;color:#effbff;text-align:left;
     font:inherit;cursor:pointer;box-shadow:none;
