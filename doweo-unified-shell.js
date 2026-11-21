@@ -237,3 +237,87 @@
   window.dwUnifiedShell={sync,repairSidebar,topbar:bar};
   schedule();
 })();
+
+/* Desktop navigation clean-up and chronological notification groups.
+   Original notification buttons retain their delegated handlers. */
+(function(){
+ 'use strict';
+ const desktop=window.matchMedia('(min-width:901px)');
+ const list=document.getElementById('notifications-list');
+ const friends=document.getElementById('friends-page');
+ const nativeFriends=document.getElementById('nav-friends');
+ function restoreFriends(){
+   if(!desktop.matches||!document.body.classList.contains('friends-view')||!friends)return;
+   friends.hidden=false;friends.removeAttribute('aria-hidden');
+   friends.style.setProperty('display','block','important');
+   const root=friends.closest('.wrap');
+   if(root){root.style.setProperty('height','auto');root.style.setProperty('min-height','0');}
+   if(typeof window.squareUpLoadFriends==='function')window.squareUpLoadFriends().catch(console.warn);
+ }
+ // Social flyout entries must open the actual page, not the tracker Home overview.
+ document.addEventListener('click',function(event){
+   const link=event.target.closest('[data-sq-destination="nav-friends"]');
+   if(!link||!desktop.matches)return;
+   event.preventDefault();event.stopImmediatePropagation();
+   nativeFriends?.click();
+   requestAnimationFrame(restoreFriends);
+ },true);
+ if(friends){
+   new MutationObserver(()=>{if(desktop.matches&&document.body.classList.contains('friends-view'))requestAnimationFrame(restoreFriends);})
+     .observe(friends,{attributes:true,attributeFilter:['hidden','aria-hidden']});
+ }
+ let grouping=false;
+ function dayOf(entry){
+   const note=entry.querySelector('.note')?.textContent||'';
+   const match=note.match(/\b(\d{1,2}\/\d{1,2}\/\d{4})\b/)||
+     note.match(/\b(\d{4}-\d{2}-\d{2})\b/);
+   if(!match)return null;
+   const date=new Date(match[1]+'T12:00:00');
+   if(Number.isNaN(date.getTime()))return null;
+   return {key:date.toISOString().slice(0,10),label:new Intl.DateTimeFormat(document.documentElement.lang||'en',{weekday:'long',month:'long',day:'numeric',year:'numeric'}).format(date)};
+ }
+ function regroup(){
+   if(!list||grouping||!desktop.matches)return;
+   const items=Array.from(list.children).filter(el=>el.classList.contains('entry'));
+   if(!items.length)return;
+   grouping=true;
+   try{
+     const groups=new Map();
+     for(const entry of items){
+       const d=dayOf(entry)||{key:'undated',label:'Other notifications'};
+       if(!groups.has(d.key))groups.set(d.key,{label:d.label,items:[]});
+       groups.get(d.key).items.push(entry);
+     }
+     const fragment=document.createDocumentFragment();
+     [...groups.entries()].sort((a,b)=>b[0].localeCompare(a[0])).forEach(([key,group])=>{
+       const section=document.createElement('section');section.className='dw-inbox-group';section.dataset.date=key;
+       const heading=document.createElement('h3');heading.className='dw-inbox-date';heading.textContent=group.label;
+       const grid=document.createElement('div');grid.className='dw-inbox-items';
+       group.items.forEach(entry=>grid.append(entry));
+       section.append(heading,grid);fragment.append(section);
+     });
+     const extras=Array.from(list.children).filter(el=>!el.classList.contains('entry')&&!el.classList.contains('dw-inbox-group'));
+     list.replaceChildren(fragment,...extras);
+   }finally{queueMicrotask(()=>{grouping=false});}
+ }
+ if(list){
+   const observer=new MutationObserver(()=>{
+     if(grouping||!desktop.matches)return;
+     if(list.querySelector(':scope > .entry'))requestAnimationFrame(regroup);
+   });
+   observer.observe(list,{childList:true});
+   regroup();
+   desktop.addEventListener('change',()=>{
+     if(desktop.matches){regroup();return;}
+     // Return notifications to the original flat list for the unchanged mobile layout.
+     const all=[...list.querySelectorAll('.dw-inbox-group .entry')];
+     if(all.length)list.replaceChildren(...all);
+   });
+ }
+ document.addEventListener('click',event=>{
+   if(!desktop.matches)return;
+   if(event.target.closest('#nav-friends'))requestAnimationFrame(restoreFriends);
+ });
+ window.addEventListener('hashchange',()=>{if(location.hash==='#friends')requestAnimationFrame(restoreFriends)});
+ if(location.hash==='#friends')requestAnimationFrame(restoreFriends);
+})();
