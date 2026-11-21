@@ -48,6 +48,82 @@ for(const [name,id] of [['Friends','nav-friends'],['Chat','nav-chat']]){
  social.items.append(button);
 }
 function removeFinance(){sheet.querySelectorAll('[data-sq-destination="sq-finance-nav"]').forEach(el=>el.remove())}
+
+function buildMoreGrid(){
+ const grid=sheet.querySelector(':scope .sq-balanced-sheet > .sq-balanced-more-grid');
+ if(!grid)return;
+ // Notifications remain available from the persistent top-right bell.
+ grid.querySelectorAll('[data-sq-destination="sq-mobile-notifications"],[data-sq-destination="sq-finance-nav"]').forEach(el=>el.remove());
+ const svgNS='http://www.w3.org/2000/svg';
+ const makeTile=(id,label,shape)=>{
+  let tile=grid.querySelector('[data-sq-destination="'+id+'"]');
+  if(tile)return tile;
+  tile=document.createElement('button');
+  tile.type='button';tile.dataset.sqDestination=id;
+  const icon=document.createElement('span');icon.className='sq-balanced-icon';
+  const svg=document.createElementNS(svgNS,'svg');
+  for(const [name,value] of Object.entries({viewBox:'0 0 24 24',fill:'none',stroke:'currentColor','stroke-width':'1.9','stroke-linecap':'round','stroke-linejoin':'round','aria-hidden':'true'}))svg.setAttribute(name,value);
+  for(const part of shape){
+   const node=document.createElementNS(svgNS,part[0]);
+   for(const [name,value] of Object.entries(part[1]))node.setAttribute(name,value);
+   svg.append(node);
+  }
+  icon.append(svg);
+  const title=document.createElement('strong');title.textContent=label;
+  tile.append(icon,title);grid.append(tile);
+  return tile;
+ };
+ makeTile('dw-mobile-trips','Trips',[
+   ['rect',{x:'5',y:'6',width:'14',height:'16',rx:'2'}],
+   ['path',{d:'M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M9 10v8m6-8v8M5 14h14'}]
+ ]);
+ makeTile('dw-mobile-households','Households',[
+   ['path',{d:'m3 11 9-8 9 8v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z'}],
+   ['path',{d:'M9 21v-8h6v8'}]
+ ]);
+ // Keep the original two columns and exactly four rows.
+ for(const selector of [
+   '[data-sq-social-open]',
+   '[data-sq-destination="sqev-nav"]',
+   '[data-sq-destination="dw-mobile-trips"]',
+   '[data-sq-destination="dw-mobile-households"]',
+   '[data-sq-destination="nav-analytics"]',
+   '[data-sq-destination="nav-profile"]',
+   '[data-sq-destination="nav-about"]',
+   '[data-sq-destination="nav-privacy-terms"]'
+ ]){
+  const tile=grid.querySelector(':scope > '+selector);
+  if(tile)grid.append(tile);
+ }
+}
+function closeWorkspacePage(){
+ document.body.classList.remove('dw-mobile-more-workspace-open');
+ document.getElementById('sq-nextgen')?.removeAttribute('data-dw-mobile-more-workspace');
+}
+function openWorkspacePage(which){
+ if(!small())return;
+ const openHub=window.squareUpOpenFinanceHub;
+ if(typeof openHub!=='function')return;
+ close();
+ sheet.hidden=true;
+ sheet.querySelector('#sq-mobile-social-options')?.setAttribute('hidden','');
+ const grid=sheet.querySelector(':scope .sq-balanced-sheet > .sq-balanced-more-grid');
+ if(grid)grid.hidden=false;
+ document.body.classList.remove('sq-balanced-sheet-open');
+ // Reuse the actual Trip/Household workspace, records and event handlers.
+ openHub(which);
+ const hub=document.getElementById('sq-nextgen');
+ if(!hub)return;
+ hub.dataset.dwMobileMoreWorkspace=which;
+ document.body.classList.add('dw-mobile-more-workspace-open');
+ const title=hub.querySelector('#sq-ng-title');
+ if(title)title.textContent=which==='trip'?'Trips':'Households';
+ const kicker=hub.querySelector('.sq-ng-kicker');
+ if(kicker)kicker.textContent='DOWEO / TRACKERS';
+ hub.scrollTop=0;
+ document.dispatchEvent(new Event('doweo:uiupdated'));
+}
+
 function close(){legal.el.hidden=true;social.el.hidden=true;document.body.classList.remove('dw-mobile-legal-view','dw-mobile-social-view')}
 function open(which){
  if(!small())return;
@@ -60,9 +136,15 @@ function open(which){
  scrollTo(0,0);requestAnimationFrame(()=>{scrollTo(0,0);page.h.focus({preventScroll:true});document.dispatchEvent(new Event('doweo:uiupdated'))});
 }
 removeFinance();
+buildMoreGrid();
 sheet.addEventListener('click',e=>{
  if(!small())return;
  const target=e.target.closest('[data-sq-destination]');
+ if(target&&['dw-mobile-trips','dw-mobile-households'].includes(target.dataset.sqDestination)){
+  e.preventDefault();e.stopImmediatePropagation();
+  openWorkspacePage(target.dataset.sqDestination==='dw-mobile-trips'?'trip':'home');
+  return;
+ }
  if(target?.dataset.sqDestination==='nav-privacy-terms'||e.target.closest('[data-sq-social-open]')){
   e.preventDefault();e.stopImmediatePropagation();open(target?'legal':'social');return;
  }
@@ -71,7 +153,25 @@ sheet.addEventListener('click',e=>{
 document.addEventListener('click',e=>{
  if(!small())return;
  const button=e.target.closest('.sq-mobile-nav button, #nav-home, #nav-trackers, #nav-profile, #nav-about, #nav-analytics, #sqev-nav, #sq-mobile-notifications, #sq-mobile-more');
- if(button){close();if(button.id==='sq-mobile-more')removeFinance()}
+ if(button){
+  if(document.body.classList.contains('dw-mobile-more-workspace-open')){
+   closeWorkspacePage();
+   document.getElementById('nav-home')?.click();
+  }
+  close();
+  if(button.id==='sq-mobile-more'){removeFinance();buildMoreGrid()}
+ }
 },true);
-matchMedia('(max-width:900px)').addEventListener('change',e=>{if(!e.matches)close();syncVisibility()});
+// Return to More, not to the retired Finance Hub, from either workspace.
+document.getElementById('sq-ng-back')?.addEventListener('click',e=>{
+ if(!small()||!document.body.classList.contains('dw-mobile-more-workspace-open'))return;
+ e.preventDefault();e.stopImmediatePropagation();
+ closeWorkspacePage();
+ document.getElementById('nav-home')?.click();
+ document.getElementById('sq-mobile-more')?.click();
+},true);
+matchMedia('(max-width:900px)').addEventListener('change',e=>{
+ if(!e.matches){close();closeWorkspacePage()}
+ syncVisibility();
+});
 })();
