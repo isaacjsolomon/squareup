@@ -241,9 +241,10 @@
   net.append(netLabel,netValue);summary.append(count,net);
   chartBody.append(summary);
   const maximum=Math.max(...months.map(m=>Math.max(m.income,m.expense)),1);
-  const power=Math.pow(10,Math.floor(Math.log10(maximum)));
+  const approximate=maximum/4;
+  const power=Math.pow(10,Math.floor(Math.log10(approximate)));
   const stepCandidates=[1,2,2.5,5,10].map(n=>n*power);
-  let step=stepCandidates.find(n=>n*4>=maximum);
+  let step=stepCandidates.find(n=>n>=approximate);
   if(!step)step=10*power;
   const scale=step*4;
   const plot=document.createElement('div');plot.className='dw-ref-month-chart';
