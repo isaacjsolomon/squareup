@@ -101,7 +101,17 @@ test('DoWeo desktop reference dashboard matches requested composition, real valu
    assert.equal(await page.locator('#dw-ref-home').isVisible(),false,'reference home hides in '+section);
   }
   await page.evaluate(()=>document.querySelector('#tracker-dashboard [data-sq-tab="overview"]').click());
-  await page.locator('#dw-ref-home').waitFor({state:'visible',timeout:12000});
+  try{
+   await page.locator('#dw-ref-home').waitFor({state:'visible',timeout:12000});
+  }catch(error){
+   console.log('REFERENCE_RETURN_STATE',JSON.stringify(await page.evaluate(()=>{
+    const dash=document.getElementById('tracker-dashboard'),root=document.getElementById('dw-ref-home');
+    return {bodyClass:document.body.className,dashboardClass:dash?.className,rootDisplay:getComputedStyle(root).display,
+      rootVisible:!!root.getClientRects().length,dashboardVisible:!!dash.getClientRects().length,
+      selectedTabs:[...dash.querySelectorAll('[data-sq-tab]')].map(b=>[b.dataset.sqTab,b.getAttribute('aria-selected')])};
+   })));
+   throw error;
+  }
   assert.ok(await page.locator('#dw-ref-home').isVisible(),'Overview returns to the redesigned dashboard');
 
   // A mobile width keeps original tabs, bottom bar and More menu intact.
