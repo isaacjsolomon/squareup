@@ -1,0 +1,60 @@
+/* DoWeo desktop consistency pass.
+   Limited to >=901px so mobile layouts, navigation and modals do not change.
+   Does not override branded/destructive button treatments. */
+@media (min-width: 901px) {
+  /* Page headings share one visual rhythm while retaining page-specific layout. */
+  :is(#notifications-page, #trackers-page, #friends-page, #sq-bills-page, #analytics-page, #split-page)
+    .dw-page-header :is(h1, h2) {
+    line-height: 1.22;
+    letter-spacing: -0.022em;
+  }
+
+  /* Keep keyboard navigation visible across all four tracker destinations. */
+  #tracker-dashboard .sq-workspace-tabs [data-sq-tab]:focus-visible,
+  #tracker-dashboard .dw-four-tracker-tabs [role="tab"]:focus-visible,
+  .dw-integrated-tabs [data-sq-tab]:focus-visible,
+  .dw-integrated-picker select:focus-visible,
+  #dw-compact-add-wrapper #dw-compact-add:focus-visible {
+    outline: 2px solid #54ead4 !important;
+    outline-offset: 3px !important;
+  }
+
+  /* A consistent, unobtrusive hover treatment on the existing tracker tabs. */
+  #tracker-dashboard .sq-workspace-tabs [data-sq-tab]:not([aria-selected="true"]):hover,
+  .dw-integrated-tabs [data-sq-tab]:not([aria-selected="true"]):hover {
+    border-color: rgba(95, 225, 209, .65);
+  }
+
+  /* More compact Add Expense choices; keep all original actions and labels. */
+  #dw-compact-add-menu {
+    gap: 2px;
+    padding: 7px;
+    border-radius: 14px;
+  }
+  #dw-compact-add-menu > button {
+    min-height: 58px;
+    padding: 9px 11px;
+    gap: 11px;
+    border-radius: 10px;
+  }
+  #dw-compact-add-menu .dw-compact-add-option-icon {
+    flex-basis: 39px;
+    width: 39px;
+    height: 39px;
+    font-size: 23px;
+    border-radius: 10px;
+  }
+  #dw-compact-add-menu .dw-compact-add-option-text small {
+    margin-top: 3px;
+  }
+
+  /* Close controls match the rest of the navy/mint dialogs when hovered. */
+  html body #dw-split-modal #dw-split-modal-close:hover {
+    background: #205066 !important;
+    border-color: #5fe3d3 !important;
+  }
+  html body #dw-split-modal #split-page .split-header :is(h1, h2) {
+    letter-spacing: -.022em;
+    line-height: 1.22;
+  }
+}

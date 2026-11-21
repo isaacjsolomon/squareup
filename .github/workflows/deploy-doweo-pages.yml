@@ -21,7 +21,7 @@ jobs:
       - name: Prepare Pages static assets
         run: |
           mkdir -p .pages-output
-          cp index.html doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs doweo-bills-mobile-dashboard.js doweo-bills-mobile-dashboard.css doweo-finance-planning.js doweo-trips-activity.js doweo-paylinks-currency.js doweo-trackers-tabs.css doweo-home-add-menu.js doweo-home-add-menu.css doweo-split-bill-modal.css doweo-split-bill-modal.js doweo-backdrop-images.js .pages-output/
+          cp index.html doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs doweo-bills-mobile-dashboard.js doweo-bills-mobile-dashboard.css doweo-finance-planning.js doweo-trips-activity.js doweo-paylinks-currency.js doweo-trackers-tabs.css doweo-home-add-menu.js doweo-home-add-menu.css doweo-desktop-polish.css doweo-split-bill-modal.css doweo-split-bill-modal.js doweo-backdrop-images.js .pages-output/
           # Bump these URLs in the published HTML to invalidate old browser-cached UI assets.
           sed -E -i 's#(doweo-bills-mobile-dashboard\.(css|js))\?v=[^\"]+#\1?v=20261116-overview-picker-v10#g' .pages-output/index.html
           # Version the cleaned tracker planning script to invalidate old broken navigation code.
@@ -37,6 +37,7 @@ jobs:
           css += '<link rel="stylesheet" href="/doweo-trackers-tabs.css?v=20261119-retired-tabs-v8">'
           css += '<link rel="stylesheet" href="/doweo-home-add-menu.css?v=20261119-add-dropdown-v1">'
           css += '<link rel="stylesheet" href="/doweo-split-bill-modal.css?v=20261119-split-modal-v1">'
+          css += '<link rel="stylesheet" href="/doweo-desktop-polish.css?v=20261120-desktop-consistency-v1">'
           js = '<script defer src="/doweo-tracker-header.js?v=20261116-overview-picker-v10"></script>'
           js += '<script defer src="/doweo-home-add-menu.js?v=20261119-add-dropdown-v1"></script>'
           js += '<script defer src="/doweo-split-bill-modal.js?v=20261119-split-modal-v1"></script>'
@@ -50,6 +51,7 @@ jobs:
           mkdir -p .pages-output/.well-known
           cp .well-known/assetlinks.json .pages-output/.well-known/
           # Prevent green deployments with missing runtime translation modules.
+          test -s .pages-output/doweo-desktop-polish.css
           test -s .pages-output/doweo-backdrop-images.js
           test -s .pages-output/third_party/heic2any.min.js
           test -s .pages-output/third_party/UTIF.js

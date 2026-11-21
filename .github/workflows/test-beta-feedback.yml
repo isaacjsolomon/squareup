@@ -32,6 +32,8 @@ jobs:
           node --check weo-mascot.js
           node --check functions/api/ai-chat.js
           node --check weo-actions.js
+      - name: Verify desktop-only visual consistency and mobile protection
+        run: node --test test/desktop-visual-consistency.test.mjs
       - name: Check image import and local decoders
         run: node --check doweo-backdrop-images.js && node --check third_party/UTIF.js && node --check third_party/heic2any.min.js && node --check test/backdrop-image-formats.test.mjs
       - name: Verify all published app assets

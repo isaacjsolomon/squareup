@@ -14,7 +14,7 @@ test('desktop Tracker gallery has no category bar and Overview Add expense menu 
   res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css'})[extname(name)]||'application/octet-stream');
   const file=readFileSync(name);
   if(name.endsWith('/index.html')){
-   const head='<link rel="stylesheet" href="/doweo-trackers-tabs.css"><link rel="stylesheet" href="/doweo-home-add-menu.css">';
+   const head='<link rel="stylesheet" href="/doweo-trackers-tabs.css"><link rel="stylesheet" href="/doweo-home-add-menu.css"><link rel="stylesheet" href="/doweo-desktop-polish.css">';
    const body='<script defer src="/doweo-home-add-menu.js"></script>';
    res.end(file.toString('utf8').replace('</head>',head+'</head>').replace('</body>',body+'</body>'));
   }else res.end(file);
@@ -63,6 +63,12 @@ test('desktop Tracker gallery has no category bar and Overview Add expense menu 
   await toggle.click();
   const menu=page.locator('#dw-compact-add-menu');
   assert.equal(await menu.isVisible(),true,'button opens a real dropdown instead of submitting an expense');
+  const desktopStyle=await menu.evaluate(el=>{
+    const item=el.querySelector('button');
+    const icon=item.querySelector('.dw-compact-add-option-icon');
+    return {menuRadius:getComputedStyle(el).borderRadius,itemMinHeight:getComputedStyle(item).minHeight,iconHeight:getComputedStyle(icon).height};
+  });
+  assert.deepEqual(desktopStyle,{menuRadius:'14px',itemMinHeight:'58px',iconHeight:'39px'},'desktop polish is applied without replacing menu actions');
   assert.deepEqual(await menu.locator('[role="menuitem"] strong').allTextContents(),['Add expense','Scan receipt','Split a bill']);
   assert.equal(await page.locator('#sq-expense-dialog').isVisible(),false,'opening menu must not open expense modal');
   await page.keyboard.press('Escape');
@@ -94,6 +100,12 @@ test('desktop Tracker gallery has no category bar and Overview Add expense menu 
   await page.setViewportSize({width:390,height:844});
   assert.equal(await page.locator('#dw-compact-add-wrapper').isVisible(),false,'desktop-only control is hidden on mobile');
   assert.equal(await page.locator('#dw-compact-add-menu').isVisible(),false,'desktop-only dropdown is hidden on mobile');
+  const mobileStyle=await menu.evaluate(el=>{
+    const item=el.querySelector('button');
+    const icon=item.querySelector('.dw-compact-add-option-icon');
+    return {itemMinHeight:getComputedStyle(item).minHeight,iconHeight:getComputedStyle(icon).height};
+  });
+  assert.deepEqual(mobileStyle,{itemMinHeight:'66px',iconHeight:'43px'},'desktop-only polish does not change mobile button dimensions');
   assert.equal(await page.locator('#tracker-dashboard').isVisible(),true,'mobile tracker Overview remains visible');
   assert.deepEqual(writes,[],'opening actions does not mutate the backend');
   assert.ok(!errors.some(e=>/compact-add-menu|gallerySwitcher|inlineWorkspaces/.test(e)),errors.join('\n'));
