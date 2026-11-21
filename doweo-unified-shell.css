@@ -1103,3 +1103,15 @@
     width:min(600px,calc(100vw - 430px))!important;
   }
 }
+
+/* The Friends section is a BODY sibling after .wrap. A legacy 100vh .wrap
+   occupies the entire viewport even though all its panels are hidden. */
+@media(min-width:901px){
+ html body.friends-view.dw-all-secondary-view:not(.sq-auth-guest):not(.sq-auth-loading) > .wrap{
+   height:0!important;min-height:0!important;max-height:0!important;
+   padding:0!important;margin:0!important;overflow:visible!important;
+ }
+ html body.friends-view.dw-all-secondary-view > #friends-page{
+   margin-top:118px!important;margin-bottom:50px!important;
+ }
+}
