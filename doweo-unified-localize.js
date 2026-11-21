@@ -73,7 +73,7 @@
      }else settle.prepend(document.createTextNode(label));
    }
    for(const node of document.querySelectorAll('[data-dw-shell-key]')){
-     if(node===add||node.closest('#dw-ref-add #dw-compact-add'))continue;
+     if(node===add||node.hasAttribute('data-dw-all-tool')||node.hasAttribute('data-ref-tool')||node.closest('#dw-ref-add #dw-compact-add'))continue;
      const key=node.dataset.dwShellKey;
      if(!tables.en[key])continue;
      const desired=t(key);
