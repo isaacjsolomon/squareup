@@ -305,6 +305,25 @@
   button.addEventListener('click',()=>{if(!click('#sq-mobile-notifications'))click('#notifications-toggle');});
   analytics.insertAdjacentElement('afterend',button);
  }
+ // Legacy sidebar themes sometimes hide the original icon spans. Provide a
+ // guaranteed visible icon for each original destination without replacing its
+ // button or navigation handler; hide these duplicates outside desktop CSS.
+ const sidebarIcons=[
+  ['#nav-home','<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>'],
+  ['#nav-trackers','<path d="m12 3 9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 16l9 5 9-5"/>'],
+  ['#sqev-nav','<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/>'],
+  ['#nav-analytics','<path d="M3 20V4M7 20v-6m5 6V9m5 11V5"/>'],
+  ['#dw-ref-nav-notifications','<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>'],
+  ['.sidebar .dw-nav-group[data-dw-nav-group="social"]>summary','<circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M19 8v8m-4-4h8"/>'],
+  ['.sidebar .dw-nav-group[data-dw-nav-group="more"]>summary','<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>']
+ ];
+ for(const [selector,parts] of sidebarIcons){
+  const button=document.querySelector(selector);
+  if(!button||button.querySelector(':scope>.dw-ref-static-icon'))continue;
+  const mark=document.createElement('span');mark.className='dw-ref-static-icon';mark.setAttribute('aria-hidden','true');
+  mark.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+parts+'</svg>';
+  button.prepend(mark);
+ }
  const topRow=document.querySelector('.sidebar .sidebar-top-row');
  if(topRow&&!topRow.querySelector('.dw-ref-brand')){
   const brand=document.createElement('span');brand.className='dw-ref-brand';brand.textContent='DoWeo';
