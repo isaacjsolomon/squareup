@@ -26,6 +26,8 @@ jobs:
           sed -E -i 's#(doweo-bills-mobile-dashboard\.(css|js))\?v=[^\"]+#\1?v=20261116-overview-picker-v10#g' .pages-output/index.html
           # Version the cleaned tracker planning script to invalidate old broken navigation code.
           sed -i 's#src="/doweo-trips-activity.js"#src="/doweo-trips-activity.js?v=20261119-removed-category-tabs-v8"#g' .pages-output/index.html
+          # Ensure iOS PWA installations load the refreshed translation catalog and fallbacks.
+          sed -i 's#src="doweo-localize-ui.js"#src="doweo-localize-ui.js?v=20261121-mobile-locales-v1"#g' .pages-output/index.html
           cp doweo-tracker-header.css doweo-tracker-header.js .pages-output/
           mkdir -p .pages-output/third_party
           cp third_party/heic2any.min.js third_party/UTIF.js .pages-output/third_party/
