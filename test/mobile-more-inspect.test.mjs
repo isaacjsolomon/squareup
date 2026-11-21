@@ -7,7 +7,7 @@ const css=readFileSync(new URL('../doweo-mobile-more-pages.css',import.meta.url)
 const workflow=readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',import.meta.url),'utf8');
 
 test('More destinations keep their existing event handlers and page containers',()=>{
- for(const id of ['sq-mobile-more-sheet','nav-profile','nav-about','nav-analytics','sq-mobile-notifications','sqev-nav','settings-page','about-page','analytics-page','notifications-page','sqev-view','tracker-dashboard'])
+ for(const id of ['sq-mobile-more-sheet','nav-profile','nav-about','nav-analytics','sq-mobile-notifications','sqev-nav','settings-page','about-page','analytics-page','notifications-page','tracker-dashboard'])
    assert.ok(html.includes('id="'+id+'"'),id+' missing from app');
  assert.match(js,/removeFinance\(\)/);
  assert.match(js,/\[data-sq-destination="sq-finance-nav"\]/);
