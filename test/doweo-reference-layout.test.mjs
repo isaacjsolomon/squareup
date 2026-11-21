@@ -39,7 +39,7 @@ test('the desktop visual shell does not override mobile navigation geometry',()=
  assert.match(css,/@media\(min-width:901px\)/);
  assert.match(css,/@media\(max-width:900px\)/);
  assert.match(css,/#dw-ref-home,#dw-ref-toolbar,#dw-ref-nav-notifications,.dw-ref-brand\{display:none!important\}/);
- assert.doesNotMatch(css,/position:fixed!important.*\.sq-mobile-nav/s);
+ assert.doesNotMatch(css,/\.sq-mobile-nav\s*\{[^}]*position:\s*fixed/i,'keep the original mobile bottom nav position');
  assert.ok(css.includes('.sidebar'));
  assert.ok(css.includes('.sq-workspace-tabs'));
  assert.ok(css.includes('#analytics-page'));
