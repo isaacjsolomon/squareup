@@ -166,10 +166,15 @@
           stroke:'#f6faff',fill:'none'
         }))force(glyph,key,value);
       }
+      const isActive=entry.classList.contains('active')||entry.getAttribute('aria-current')==='page';
       for(const [key,value] of Object.entries({
         height:'53px','min-height':'53px','max-height':'53px',
         'font-family':'inherit','font-size':'16px','font-weight':'625',
-        'line-height':'1.2','text-align':'start','align-items':'center'
+        'line-height':'1.2','text-align':'start','align-items':'center',
+        'justify-content':'flex-start','border-radius':'15px',
+        background:isActive?'#435b7e':'transparent',
+        border:isActive?'1px solid rgba(195,224,255,.17)':'1px solid transparent',
+        'box-shadow':'none',transform:'none',color:'#f5faff'
       }))force(entry,key,value);
       const label=entry.querySelector('.sq-nav-label,.dw-social-label,.dw-nav-group-name');
       if(label){
