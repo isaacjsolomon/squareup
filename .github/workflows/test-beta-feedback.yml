@@ -106,6 +106,8 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.65.0
           npx playwright install --with-deps chromium
+      - name: Inspect More route page isolation at mobile widths
+        run: node --test test/mobile-more-browser-inspect.test.mjs
       - name: Browser-test mobile Split Bill popup, member saving, and original steps
         run: node --test test/split-bill-member-modal.test.mjs
       - name: Browser-test image formats and actual Backdrop file upload
