@@ -5,7 +5,7 @@ const sheet=document.getElementById('sq-mobile-more-sheet');
 if(!wrap||!sheet)return;
 const small=()=>matchMedia('(max-width:900px)').matches;
 const dashboard=document.getElementById('tracker-dashboard');
-const standaloneViews=['settings-view','about-view','analytics-view','notifications-view','sqev-page-open','friends-view','help-view','sq-help-view','chat-view','dw-mobile-legal-view','dw-mobile-social-view'];
+const standaloneViews=['settings-view','about-view','analytics-view','notifications-view','sqev-page-open','friends-view','help-view','sq-help-view','chat-view','dw-mobile-legal-view','dw-mobile-social-view','dw-mobile-more-workspace-open'];
 let savedDisplay=null;
 function syncVisibility(){
  if(!dashboard)return;
