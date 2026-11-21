@@ -1,0 +1,279 @@
+/* DoWeo mint-and-navy design system. Visual-only: existing data, IDs, navigation,
+   financial operations, selected tracker backgrounds and dialog logic are unchanged.
+   Uses the approved desktop preview as the design direction. */
+:root{
+ --dw-view-navy:#102143;
+ --dw-view-ink:#122143;
+ --dw-view-muted:#526585;
+ --dw-view-mint:#83eccd;
+ --dw-view-mint-soft:#c8fae8;
+ --dw-view-canvas:#eaf0fc;
+ --dw-view-paper:#f7faff;
+ --dw-view-border:#dbe5f3;
+ --dw-view-shadow:0 13px 30px rgba(23,48,97,.10);
+}
+@media(min-width:901px){
+ html:not(.sq-auth-loading){background-color:var(--dw-view-canvas)!important}
+ html body:not(.sq-auth-guest):not(.sq-auth-loading){
+  background:linear-gradient(130deg,#f2f6ff 0%,#e7eefc 56%,#e7effa 100%)!important;
+  color:var(--dw-view-ink)!important;
+ }
+ html body:not(.sq-auth-guest)>.wrap{
+  color:var(--dw-view-ink)!important;
+  min-width:0;max-width:1510px!important;
+ }
+ /* Keep selected photo backgrounds functional in the backdrop editor. */
+ html body:not(:has(#backdrop.photo)) #backdrop{
+  background:linear-gradient(130deg,#f2f6ff,#e7eefc)!important;
+ }
+ /* Navy sidebar uses existing actual brand logo and every original destination. */
+ html body>.sidebar{
+  background:linear-gradient(180deg,#142746 0%,#11213f 65%,#101e38 100%)!important;
+  border-right:1px solid #3c5170!important;
+  box-shadow:4px 0 30px rgba(19,41,79,.12)!important;
+  color:#f8fcff!important;
+ }
+ html body>.sidebar .squareup-nav .sq-nav-link,
+ html body>.sidebar .squareup-nav .dw-nav-group>summary,
+ html body>.sidebar .squareup-nav .dw-nav-social-trigger{
+  color:#f0f7ff!important;
+  background:transparent!important;
+  border:1px solid transparent!important;
+  border-radius:16px!important;
+  font-weight:650!important;
+ }
+ html body>.sidebar .squareup-nav .sq-nav-link.active,
+ html body>.sidebar .squareup-nav .sq-nav-link[aria-current="page"],
+ html body>.sidebar .squareup-nav .dw-nav-group>summary:hover,
+ html body>.sidebar .squareup-nav .sq-nav-link:hover{
+  background:linear-gradient(105deg,#425a7c,#304766)!important;
+  border-color:rgba(198,225,244,.2)!important;
+  box-shadow:none!important;
+  color:white!important;
+ }
+ html body>.sidebar .squareup-nav .sq-nav-link.active::before,
+ html body>.sidebar .squareup-nav .sq-nav-link.active::after{color:var(--dw-view-mint)!important}
+ html body>.sidebar :is(.me,.who,.side-account,.sq-nav-icon){color:#effaff!important}
+ html body>.sidebar #dw-beta-launch{
+  background:#223b69!important;border-color:#415b85!important;
+  color:#d2ffef!important;box-shadow:none!important;
+ }
+ /* A clean top bar and central rounded tab switcher. */
+ html body>.wrap>header.tracker-heading{
+  background:transparent!important;
+  box-shadow:none!important;border:0!important;color:var(--dw-view-ink)!important;
+ }
+ html body>.wrap>header.tracker-heading :is(h1,h2,.tracker-title){color:var(--dw-view-ink)!important}
+ html body #tracker-dashboard>.sq-workspace-tabs{
+  background:rgba(248,250,255,.88)!important;
+  border:1px solid #d5e1f2!important;
+  border-radius:999px!important;
+  box-shadow:var(--dw-view-shadow)!important;
+  max-width:720px!important;
+  margin:0 auto 26px!important;padding:6px!important;
+  backdrop-filter:blur(9px)!important;
+ }
+ html body #tracker-dashboard>.sq-workspace-tabs [data-sq-tab]{
+  color:#152546!important;
+  border-radius:999px!important;
+  font-size:15px!important;font-weight:750!important;
+  background:transparent!important;
+ }
+ html body #tracker-dashboard>.sq-workspace-tabs [data-sq-tab][aria-selected="true"]{
+  background:linear-gradient(110deg,#152747,#0c1a38)!important;
+  border-color:transparent!important;color:#fff!important;
+  box-shadow:0 5px 15px rgba(20,39,76,.18)!important;
+ }
+ html body #tracker-dashboard .sq-return-welcome h2{
+  color:#122143!important;
+  letter-spacing:-.045em!important;
+  font-size:clamp(30px,3.3vw,46px)!important;
+ }
+ html body #tracker-dashboard .sq-return-welcome h2::after{
+  content:"Here’s your financial overview.";
+  display:block;margin-top:9px;
+  font-size:clamp(13px,1.4vw,17px)!important;
+  font-weight:500!important;color:#526585!important;
+  letter-spacing:normal!important;line-height:1.4;
+ }
+ /* Existing Add action retains all menu functionality. */
+ html body #dw-compact-add-wrapper #dw-compact-add,
+ html body #dw-desktop-add,
+ html body #dw-compact-add{
+  background:#102143!important;color:#a5f4da!important;
+  border:1px solid #102143!important;border-radius:999px!important;
+  box-shadow:0 7px 18px rgba(17,35,71,.13)!important;
+  font-weight:800!important;
+ }
+ html body #dw-compact-add-wrapper #dw-compact-add:hover,
+ html body #dw-desktop-add:hover,
+ html body #dw-compact-add:hover{background:#1c3763!important}
+ /* Keep actual balances and amounts; no fabricated sample financial figures. */
+ html body #tracker-dashboard.sq-tab-overview #sq-clean-balance,
+ html body #tracker-dashboard.sq-tab-overview #dw-home-columns #sq-clean-balance{
+  background:linear-gradient(130deg,#172c50,#0d1d3a)!important;
+  color:white!important;border:1px solid #344d74!important;
+  border-radius:25px!important;
+  box-shadow:var(--dw-view-shadow)!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-clean-balance :is(strong,span,#sq-clean-net){
+  color:#b0ffe3!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-clean-balance .sq-clean-eyebrow,
+ html body #tracker-dashboard.sq-tab-overview #sq-clean-balance #sq-clean-explanation{
+  color:#e6f4fc!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-clean-balance .sq-clean-settle{
+  background:#8ff3d3!important;color:#0b2a37!important;
+  border-radius:13px!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #sq-clean-balance .sq-clean-remind{
+  background:#203d60!important;color:#eefaff!important;
+  border-color:#50728d!important;border-radius:13px!important;
+ }
+ /* Light, readable content cards across Overview and tracker sections. */
+ html body :is(#tracker-dashboard,#trackers-page,#friends-page,#notifications-page,#analytics-page,#settings-page,#about-page,#sq-bills-page)
+ :is(.sq-return-panel,.sq-stat,.card,.dw-home-schedule-card,.sq-bills-card,.sq-premium-calendar,.sq-premium-metrics article,.analytics-stat,.sq-analytics-panel,.sq-recap-stat,.tracker-tile,.about-hero,.about-feature,.about-feature-grid,.about-mission,.settings-shell .settings-card,.settings-panel,.dw-compact-upcoming){
+  background:linear-gradient(140deg,#fbfcff,#f0f5fd)!important;
+  color:var(--dw-view-ink)!important;
+  border:1px solid var(--dw-view-border)!important;
+  border-radius:24px!important;
+  box-shadow:var(--dw-view-shadow)!important;
+  backdrop-filter:none!important;
+ }
+ html body #tracker-dashboard .sq-return-panel,
+ html body #tracker-dashboard .sq-stat{padding:21px!important}
+ html body :is(#tracker-dashboard,#trackers-page,#friends-page,#notifications-page,#analytics-page,#settings-page,#about-page,#sq-bills-page)
+ :is(.sq-return-head h3,.sq-return-panel h2,.sq-return-panel h3,.card h2,.card h3,.dw-home-schedule-head h2,.sq-analytics-header h2,.analytics-stat strong,.sq-stat strong,.about-hero h1,.about-hero h2,.dw-home-bill-title strong){
+  color:#132344!important;
+ }
+ html body :is(#tracker-dashboard,#trackers-page,#friends-page,#notifications-page,#analytics-page,#settings-page,#about-page,#sq-bills-page)
+ :is(.sq-return-empty,.sq-return-copy,.sq-return-secondary,.sq-home-note,.dw-home-bill-info small,.dw-home-schedule-list,.sq-stat span,.about-feature p,.about-mission p){
+  color:#4f6380!important;
+ }
+ html body #tracker-dashboard .sq-return-rows :is(.sq-return-row,.sq-return-item){
+  border-color:#dce6f2!important;
+ }
+ html body #tracker-dashboard .sq-return-head button{
+  color:#264c7a!important;border-radius:10px!important;
+ }
+ /* Preserve the current functional Overview arrangement; make its columns and cards
+    visually coherent with the screenshot without removing any finance action. */
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary{
+  border:0!important;box-shadow:none!important;background:transparent!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #dw-home-columns{
+  column-gap:18px!important;row-gap:18px!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #dw-home-columns :is(.dw-home-schedule-card,.sq-overview-activity-panel,.sq-overview-people-panel){
+  background:linear-gradient(145deg,#fbfcff,#eef4fe)!important;
+  color:#132344!important;
+  border-color:var(--dw-view-border)!important;
+  border-radius:24px!important;
+  box-shadow:var(--dw-view-shadow)!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #dw-home-columns :is(.sq-overview-people-panel h3,.sq-return-head h3,#dw-upcoming-title){
+  color:#132344!important;font-size:21px!important;
+  text-transform:none!important;letter-spacing:-.025em!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #dw-home-columns :is(.sq-clean-eyebrow,.dw-balance-prefix){
+  color:#c8fdec!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #dw-home-columns :is(.dw-home-schedule-list,.dw-home-bill-info small,.sq-return-empty){
+  color:#526784!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #dw-home-columns :is(.dw-home-bill-row,.dw-scheduled-day,.dw-home-schedule-head){
+  border-color:#d8e4ef!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #dw-home-columns .dw-home-bill-title :is(strong,span){
+  color:#183154!important;
+ }
+ html body #tracker-dashboard.sq-tab-overview #dw-home-columns .dw-home-schedule-head>span{
+  color:#235474!important;background:#e7f7f3!important;border-color:#b9e7db!important;
+ }
+ html body #tracker-dashboard .sq-overview-stats .sq-stat{
+  background:linear-gradient(145deg,#f9fbff,#ebf2fc)!important;
+ }
+ html body #tracker-dashboard .sq-overview-stats .sq-stat strong{color:#14284c!important}
+ html body #tracker-dashboard .dashboard-actions .dashboard-action{
+  background:#f7faff!important;color:#152749!important;
+  border:1px solid #dce7f3!important;
+  border-radius:18px!important;box-shadow:0 6px 20px rgba(20,47,93,.08)!important;
+ }
+ html body #tracker-dashboard .dashboard-actions .dashboard-action .sq-action-title{color:#152749!important}
+ html body #tracker-dashboard .dashboard-actions .dashboard-action .action-icon{
+  color:#118e7a!important;background:#d9f8ef!important;border-radius:13px!important;
+ }
+ /* Consistent tabs, data surfaces and form controls on secondary desktop pages. */
+ html body :is(#tracker-dashboard,#trackers-page,#friends-page,#analytics-page,#settings-page,#notifications-page,#sq-bills-page)
+ :is(.dw-section-tabs,.sq-ng-tabs,.sq-tabs,.settings-tabs,.sq-analytics-tabs){
+  border:1px solid #dce6f2!important;background:#f5f8fe!important;
+  border-radius:18px!important;box-shadow:none!important;
+ }
+ html body :is(#tracker-dashboard,#trackers-page,#friends-page,#analytics-page,#settings-page,#notifications-page,#sq-bills-page)
+ :is(input:not([type=checkbox]):not([type=radio]),select,textarea){
+  background:#fff!important;color:#142645!important;
+  border-color:#cdd9ea!important;border-radius:12px!important;
+ }
+ html body :is(#tracker-dashboard,#trackers-page,#friends-page,#analytics-page,#settings-page,#notifications-page,#sq-bills-page)
+ :is(input,textarea,select):focus-visible{outline:3px solid #77dfc6!important;outline-offset:1px!important}
+ html body :is(#tracker-dashboard,#trackers-page,#friends-page,#analytics-page,#settings-page,#notifications-page,#sq-bills-page)
+ :is(.sq-return-panel,.card,.dw-home-schedule-card,.sq-bills-card) :is(button,a):focus-visible{
+  outline:3px solid #70d9bf!important;outline-offset:2px!important;
+ }
+ /* Finance/Analytics are full-page workspaces with their own legacy dark overlay. */
+ html body.analytics-view #analytics-page{
+  background:#eaf1fc!important;color:#142543!important;
+ }
+ html body.analytics-view #analytics-page :is(.sq-analytics-panel,.analytics-stat,.sq-recap-stat){
+  background:#f8fbff!important;color:#142543!important;
+  border-color:#dbe5f2!important;border-radius:22px!important;
+  box-shadow:var(--dw-view-shadow)!important;
+ }
+ html body.analytics-view #analytics-page .sq-analytics-shell{
+  background:transparent!important;color:#142543!important;
+ }
+ html body.sq-finance-open #sq-nextgen{
+  background:#eaf1fc!important;color:#132744!important;
+ }
+ html body.sq-finance-open #sq-nextgen .sq-ng-shell{
+  background:transparent!important;color:#132744!important;
+ }
+ html body.sq-finance-open #sq-nextgen :is(.sq-ng-card,.sq-ng-trip-metrics article,.sq-ng-workspace-directory-card,.sq-ng-trip-hero,.sq-ng-bills-entry,.dw-web-trend,.dw-web-comparison){
+  background:#f7faff!important;color:#132744!important;
+  border:1px solid #d6e4ef!important;border-radius:22px!important;
+  box-shadow:var(--dw-view-shadow)!important;
+ }
+ html body.sq-finance-open #sq-nextgen :is(h1,h2,h3,p,.sq-ng-note){
+  color:#183052!important;
+ }
+ html body.sq-finance-open #sq-nextgen .dw-section-tabs{
+  background:#f6f9fe!important;border-color:#d8e5f0!important;
+  border-radius:18px!important;
+ }
+ html body.sq-finance-open #sq-nextgen .dw-section-tabs button{
+  color:#183254!important;
+ }
+ html body.sq-finance-open #sq-nextgen .dw-section-tabs button[aria-current="page"]{
+  background:#14294e!important;color:#c0fbe6!important;border-radius:13px!important;
+ }
+ html body.sq-finance-open #sq-nextgen :is(input,select,textarea){
+  background:#fff!important;color:#132744!important;border-color:#cfdeeb!important;
+ }
+ /* Keep account destructive actions, notification badges, user photos, and
+    all finance/chat interactions unchanged. */
+}
+/* The phone retains its carefully tuned fixed navigation and content geometry.
+   Carry the mint accents and rounded surfaces without rearranging mobile cards. */
+@media(max-width:900px){
+ html body :is(.sq-mobile-top,.sq-mobile-nav,.dw-mobile-more-page-card){
+  border-color:#365d75!important;
+ }
+ html body #sq-mobile-more-sheet .sq-balanced-sheet{
+  border-radius:24px!important;
+  box-shadow:0 22px 52px rgba(0,15,35,.38)!important;
+ }
+ html body #sq-mobile-more-sheet :is(.dw-ios-install-trigger,#dw-mobile-home-screen-install-native){
+  border-radius:15px!important;
+ }
+}
