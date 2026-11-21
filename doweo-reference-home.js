@@ -242,7 +242,18 @@
  desktop.addEventListener('change',()=>{layout();syncBalances();if(desktop.matches)refreshFinance(true);});
  window.addEventListener('squareup:tracker-detail',()=>{layout();syncBalances();refreshFinance(false);});
  document.querySelectorAll('#tracker-dashboard .sq-workspace-tabs [data-sq-tab]').forEach(btn=>{
-  btn.addEventListener('click',()=>{requestAnimationFrame(layout);if(btn.dataset.sqTab==='overview')refreshFinance(false);});
+  btn.addEventListener('click',()=>{
+   requestAnimationFrame(layout);
+   if(btn.dataset.sqTab==='overview'){
+    refreshFinance(false);
+    // Older Members/Bills routing may leave the dashboard on the previous tab.
+    // Fall back to the original Home handler instead of leaving Overview blank.
+    setTimeout(()=>{
+     if(desktop.matches && !dashboard.classList.contains('sq-tab-overview'))
+      document.getElementById('nav-home')?.click();
+    },90);
+   }
+  });
  });
  const classObserver=new MutationObserver(()=>{
   layout();
