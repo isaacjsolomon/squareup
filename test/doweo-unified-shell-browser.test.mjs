@@ -199,10 +199,10 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   await pageOpen('nav-analytics','analytics-view');
   await page.screenshot({path:resolve(root,'test-results/unified/analytics.png'),fullPage:true});
   const analyticsPanel=await page.locator('#analytics-page .sq-analytics-panel').first().evaluate(el=>({
-    background:getComputedStyle(el).backgroundImage,color:getComputedStyle(el).color
+    background:getComputedStyle(el).backgroundColor,color:getComputedStyle(el).color
   }));
   console.log('ANALYTICS_SURFACE',JSON.stringify(analyticsPanel));
-  assert.ok(analyticsPanel.background.includes('rgb(247, 250, 255)'),
+  assert.equal(analyticsPanel.background,'rgb(247, 250, 255)',
     'Analytics cards must use matching light surfaces, not unrelated dark panels');
 
   const secondaryTabs=await page.evaluate(()=>{
