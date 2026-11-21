@@ -126,10 +126,45 @@
       ...sidebarNav.querySelectorAll(':scope > details > summary')
     ];
     for(const entry of new Set(entries)){
-      if(!entry.isConnected||entry.querySelector(':scope > .dw-all-nav-icon'))continue;
-      const mark=document.createElement('span');mark.className='dw-all-nav-icon';
-      mark.setAttribute('aria-hidden','true');mark.innerHTML=svg(icons[nameFor(entry)]||icons.default);
-      entry.prepend(mark);
+      if(!entry.isConnected||entry.hidden||getComputedStyle(entry).display==='none')continue;
+      let mark=entry.querySelector(':scope > .dw-all-nav-icon');
+      if(!mark){
+        mark=document.createElement('span');mark.className='dw-all-nav-icon';
+        mark.setAttribute('aria-hidden','true');
+        mark.innerHTML=svg(icons[nameFor(entry)]||icons.default);
+        entry.prepend(mark);
+      }
+      // Historical DoWeo styles include higher-specificity !important icon
+      // hiding rules. Important inline presentation wins without replacing the
+      // real buttons, click handlers, flyouts, accessible names or labels.
+      const force=(el,key,value)=>el.style.setProperty(key,value,'important');
+      for(const [key,value] of Object.entries({
+        display:'inline-flex',visibility:'visible',opacity:'1',width:'27px',height:'27px',
+        'min-width':'27px','min-height':'27px',flex:'0 0 27px',
+        'align-items':'center','justify-content':'center',
+        margin:'0 13px 0 0',padding:'0',position:'static',transform:'none',
+        'clip-path':'none',color:'#f6faff'
+      }))force(mark,key,value);
+      const glyph=mark.querySelector('svg');
+      if(glyph){
+        for(const [key,value] of Object.entries({
+          display:'block',visibility:'visible',opacity:'1',width:'25px',height:'25px',
+          stroke:'#f6faff',fill:'none'
+        }))force(glyph,key,value);
+      }
+      for(const [key,value] of Object.entries({
+        height:'53px','min-height':'53px','max-height':'53px',
+        'font-family':'inherit','font-size':'16px','font-weight':'625',
+        'line-height':'1.2','text-align':'start','align-items':'center'
+      }))force(entry,key,value);
+      const label=entry.querySelector('.sq-nav-label,.dw-social-label,.dw-nav-group-name');
+      if(label){
+        for(const [key,value] of Object.entries({
+          display:'inline-block',visibility:'visible',opacity:'1',
+          'font-family':'inherit','font-size':'16px','font-weight':'625',
+          'line-height':'1.2','letter-spacing':'normal','text-transform':'none'
+        }))force(label,key,value);
+      }
     }
   }
   let sideScheduled=false;
