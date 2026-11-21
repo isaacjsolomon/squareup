@@ -114,8 +114,8 @@ jobs:
         run: node --test test/backdrop-image-formats.test.mjs
       - name: Browser-test desktop Home Add expense menu, retired tabs, and mobile preservation
         run: node --test test/home-add-dropdown.test.mjs
-      - name: Verify mobile uploaded photo background uses navy, desktop stays untouched
-        run: node --test test/mobile-backdrop-navy.test.mjs
+      - name: Verify mobile Home information cards are navy and photo backdrop unchanged
+        run: node --test test/mobile-home-navy-cards.test.mjs
       - name: Verify mobile viewport foundation across screen sizes
         run: node --test test/mobile-viewport-foundation.test.mjs
       - name: Test bill and subscription editing
