@@ -144,6 +144,10 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
    const toolsVisible=await page.locator('#dw-all-top-tools button:visible').count();
    assert.equal(toolsVisible,3,'all pages keep the three account shortcuts');
   }
+  const overviewTabs=await page.evaluate(()=>{
+    const el=document.querySelector('#tracker-dashboard>.sq-workspace-tabs');
+    const r=el.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height};
+  });
   await pageOpen('nav-trackers','trackers-view');
   console.log('TRACKERS_GEOMETRY',JSON.stringify(await page.evaluate(()=>{
     const rect=selector=>{
@@ -173,8 +177,42 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   assert.ok(trackersTop>=80&&trackersTop<260,
    'Trackers content must start directly beneath the shared topbar, not after a blank full viewport: '+trackersTop);
   await page.screenshot({path:resolve(root,'test-results/unified/trackers.png'),fullPage:true});
+  const trackerTitle=page.locator('#trackers-gallery .tracker-tile h3').first();
+  if(await trackerTitle.count()){
+    const trackerTitleColor=await trackerTitle.evaluate(el=>getComputedStyle(el).color);
+    assert.equal(trackerTitleColor,'rgb(255, 255, 255)','tracker names must be white against navy tiles');
+  }
+
+  await pageOpen('nav-friends','friends-view');
+  const friendsView=await page.locator('#friends-page').evaluate(el=>{
+    const r=el.getBoundingClientRect();
+    return {display:getComputedStyle(el).display,y:r.top,h:r.height,visible:!!r.height,
+      tabs:el.querySelectorAll('[data-friends-tab]').length,
+      search:!!el.querySelector('#sq-friend-query'),
+      results:!!el.querySelector('#sq-friends-results')};
+  });
+  console.log('FRIENDS_VISIBILITY',JSON.stringify(friendsView));
+  assert.ok(friendsView.visible&&friendsView.y>80&&friendsView.y<360,
+    'Friends must display beneath the top navigation, not as an empty page: '+JSON.stringify(friendsView));
+  assert.equal(friendsView.tabs,3,'Friends retains My Friends, Pending and Find Friends');
+  assert.ok(friendsView.search&&friendsView.results,'Friends search and list remain available');
   await pageOpen('nav-analytics','analytics-view');
   await page.screenshot({path:resolve(root,'test-results/unified/analytics.png'),fullPage:true});
+  const analyticsPanel=await page.locator('#analytics-page .sq-analytics-panel').first().evaluate(el=>({
+    background:getComputedStyle(el).backgroundColor,color:getComputedStyle(el).color
+  }));
+  console.log('ANALYTICS_SURFACE',JSON.stringify(analyticsPanel));
+  assert.equal(analyticsPanel.background,'rgb(247, 250, 255)',
+    'Analytics cards must use matching light surfaces, not unrelated dark panels');
+
+  const secondaryTabs=await page.evaluate(()=>{
+    const el=document.getElementById('dw-all-top-tabs');
+    const r=el.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height};
+  });
+  console.log('MATCHING_TOPBARS',JSON.stringify({overviewTabs,secondaryTabs}));
+  for(const key of ['x','y','w','h'])assert.ok(Math.abs(overviewTabs[key]-secondaryTabs[key])<3,
+    'Overview and secondary topbars must share '+key+': '+JSON.stringify({overviewTabs,secondaryTabs}));
+
   await pageOpen('nav-profile','settings-view');
   await page.screenshot({path:resolve(root,'test-results/unified/settings.png'),fullPage:true});
   await pageOpen('nav-about','about-view');
@@ -197,9 +235,23 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   await page.locator('#dw-all-top-tabs [data-dw-all-tab="expenses"]').click();
   await page.waitForFunction(()=>document.querySelector('#tracker-dashboard.sq-tab-expenses')?.getClientRects().length>0);
   assert.ok(await page.locator('#dw-all-topbar').isVisible(),'new header stays present on Expenses');
+  await page.locator('#dw-expense-workspace #sq-activity-card').waitFor({state:'visible',timeout:10000});
+  const expensesVisual=await page.locator('#dw-expense-workspace #sq-activity-card').evaluate(el=>({
+    background:getComputedStyle(el).backgroundImage,
+    heading:getComputedStyle(el.querySelector('.dw-expenses-heading h2')).color
+  }));
+  console.log('EXPENSES_SURFACE',JSON.stringify(expensesVisual));
+  assert.ok(expensesVisual.background.includes('rgb(251, 252, 255)'),
+    'Expenses must inherit the same pale card palette as Overview');
+
   await page.locator('#dw-all-top-tabs [data-dw-all-tab="members"]').click();
   await page.waitForFunction(()=>document.querySelector('#tracker-dashboard.sq-tab-members')?.getClientRects().length>0);
   assert.ok(await page.locator('#dw-all-topbar').isVisible(),'new header stays present on Members');
+  await page.locator('#dw-all-top-tabs [data-dw-all-tab="bills"]').click();
+  await page.locator('#sq-bills-page').waitFor({state:'visible',timeout:10000});
+  assert.equal(await page.locator('#sq-bills-page .sq-bills-workspace-tabs').isVisible(),false,
+    'Bills must not show a second row of tracker tabs');
+
   await page.locator('#dw-all-top-tabs [data-dw-all-tab="overview"]').click();
   await page.locator('#dw-ref-home').waitFor({state:'visible',timeout:10000});
   for(const code of ['es','fr','he','he-script','zh-Hans','ar','bn']){
