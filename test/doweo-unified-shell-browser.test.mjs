@@ -177,6 +177,12 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   assert.ok(trackersTop>=80&&trackersTop<260,
    'Trackers content must start directly beneath the shared topbar, not after a blank full viewport: '+trackersTop);
   await page.screenshot({path:resolve(root,'test-results/unified/trackers.png'),fullPage:true});
+  const trackerTitle=page.locator('#trackers-gallery .tracker-tile h3').first();
+  if(await trackerTitle.count()){
+    const trackerTitleColor=await trackerTitle.evaluate(el=>getComputedStyle(el).color);
+    assert.equal(trackerTitleColor,'rgb(255, 255, 255)','tracker names must be white against navy tiles');
+  }
+
   await pageOpen('nav-friends','friends-view');
   const friendsView=await page.locator('#friends-page').evaluate(el=>{
     const r=el.getBoundingClientRect();
@@ -192,6 +198,13 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   assert.ok(friendsView.search&&friendsView.results,'Friends search and list remain available');
   await pageOpen('nav-analytics','analytics-view');
   await page.screenshot({path:resolve(root,'test-results/unified/analytics.png'),fullPage:true});
+  const analyticsPanel=await page.locator('#analytics-page .sq-analytics-panel').first().evaluate(el=>({
+    background:getComputedStyle(el).backgroundImage,color:getComputedStyle(el).color
+  }));
+  console.log('ANALYTICS_SURFACE',JSON.stringify(analyticsPanel));
+  assert.ok(analyticsPanel.background.includes('rgb(247, 250, 255)'),
+    'Analytics cards must use matching light surfaces, not unrelated dark panels');
+
   const secondaryTabs=await page.evaluate(()=>{
     const el=document.getElementById('dw-all-top-tabs');
     const r=el.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height};
@@ -222,9 +235,23 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   await page.locator('#dw-all-top-tabs [data-dw-all-tab="expenses"]').click();
   await page.waitForFunction(()=>document.querySelector('#tracker-dashboard.sq-tab-expenses')?.getClientRects().length>0);
   assert.ok(await page.locator('#dw-all-topbar').isVisible(),'new header stays present on Expenses');
+  await page.locator('#dw-expense-workspace #sq-activity-card').waitFor({state:'visible',timeout:10000});
+  const expensesVisual=await page.locator('#dw-expense-workspace #sq-activity-card').evaluate(el=>({
+    background:getComputedStyle(el).backgroundImage,
+    heading:getComputedStyle(el.querySelector('.dw-expenses-heading h2')).color
+  }));
+  console.log('EXPENSES_SURFACE',JSON.stringify(expensesVisual));
+  assert.ok(expensesVisual.background.includes('rgb(251, 252, 255)'),
+    'Expenses must inherit the same pale card palette as Overview');
+
   await page.locator('#dw-all-top-tabs [data-dw-all-tab="members"]').click();
   await page.waitForFunction(()=>document.querySelector('#tracker-dashboard.sq-tab-members')?.getClientRects().length>0);
   assert.ok(await page.locator('#dw-all-topbar').isVisible(),'new header stays present on Members');
+  await page.locator('#dw-all-top-tabs [data-dw-all-tab="bills"]').click();
+  await page.locator('#sq-bills-page').waitFor({state:'visible',timeout:10000});
+  assert.equal(await page.locator('#sq-bills-page .sq-bills-workspace-tabs').isVisible(),false,
+    'Bills must not show a second row of tracker tabs');
+
   await page.locator('#dw-all-top-tabs [data-dw-all-tab="overview"]').click();
   await page.locator('#dw-ref-home').waitFor({state:'visible',timeout:10000});
   for(const code of ['es','fr','he','he-script','zh-Hans','ar','bn']){
