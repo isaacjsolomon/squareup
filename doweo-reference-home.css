@@ -197,17 +197,36 @@
   html body #dw-ref-home .dw-ref-greeting p{
     color:#465a7b!important;margin:0;font-family:inherit;font-size:clamp(14px,1.35vw,19px);font-weight:500;line-height:1.35;
   }
+  /* The original #dw-compact-add button now sits in the reference Add host.
+     Keep the native menu/keyboard handlers and give that same button the
+     screenshot's navy + mint pill appearance. */
   html body #dw-ref-home #dw-ref-add{
-    display:inline-flex;align-items:center;justify-content:center;gap:10px;
-    min-width:175px;min-height:60px;padding:12px 23px;
-    border:0;border-radius:999px;
-    background:linear-gradient(120deg,#13294d,#101d3b);
-    color:#84f1d1;font-family:inherit;font-size:25px;font-weight:800;line-height:1.2;cursor:pointer;
-    box-shadow:0 7px 16px #14264a16;
+    display:inline-flex!important;align-items:center;justify-content:center;
+    flex:0 0 auto;min-width:170px;margin:0!important;padding:0!important;
+    background:transparent!important;border:0!important;box-shadow:none!important;
   }
-  html body #dw-ref-home #dw-ref-add span{font-size:34px;font-weight:400;line-height:1}
-  html body #dw-ref-home #dw-ref-add:hover,
-  html body #dw-ref-home #dw-ref-settle-action:hover{background:#203d67}
+  html body #dw-ref-home #dw-ref-add #dw-compact-add-wrapper{
+    display:inline-flex!important;align-items:center;justify-content:center;
+    margin:0!important;padding:0!important;flex:0 0 auto!important;
+  }
+  html body #dw-ref-home #dw-ref-add #dw-compact-add{
+    min-width:170px!important;min-height:59px!important;height:59px!important;
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    gap:10px!important;margin:0!important;padding:11px 24px!important;
+    background:linear-gradient(120deg,#13294d,#101d3b)!important;
+    color:#84f1d1!important;border:0!important;border-radius:999px!important;
+    font-family:inherit!important;font-size:24px!important;font-weight:800!important;
+    line-height:1.2!important;box-shadow:0 7px 16px #14264a16!important;
+  }
+  html body #dw-ref-home #dw-ref-add #dw-compact-add:hover{
+    background:#203d67!important;color:#a6f8e2!important;
+  }
+  html body #dw-ref-home #dw-ref-add #dw-compact-add-caret{
+    color:#84f1d1!important;
+  }
+  html body #dw-ref-home #dw-ref-add #dw-compact-add .dw-compact-add-caret{
+    font-size:20px!important;margin:0!important;transform:none!important;
+  }
   html body #dw-ref-home .dw-ref-stats{
     display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:14px;
     margin:0 0 22px;
