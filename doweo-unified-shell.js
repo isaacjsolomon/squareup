@@ -248,7 +248,7 @@
  const nativeFriends=document.getElementById('nav-friends');
  function restoreFriends(){
    if(!desktop.matches||!document.body.classList.contains('friends-view')||!friends)return;
-   friends.hidden=false;friends.removeAttribute('aria-hidden');
+   if(friends.hidden)friends.hidden=false;if(friends.hasAttribute('aria-hidden'))friends.removeAttribute('aria-hidden');
    friends.style.setProperty('display','block','important');
    const root=friends.closest('.wrap');
    if(root){root.style.setProperty('height','auto');root.style.setProperty('min-height','0');}
@@ -272,7 +272,7 @@
    const match=note.match(/\b(\d{1,2}\/\d{1,2}\/\d{4})\b/)||
      note.match(/\b(\d{4}-\d{2}-\d{2})\b/);
    if(!match)return null;
-   const date=new Date(match[1]+'T12:00:00');
+   const date=new Date(match[1].includes('/')?match[1]:match[1]+'T12:00:00');
    if(Number.isNaN(date.getTime()))return null;
    return {key:date.toISOString().slice(0,10),label:new Intl.DateTimeFormat(document.documentElement.lang||'en',{weekday:'long',month:'long',day:'numeric',year:'numeric'}).format(date)};
  }
