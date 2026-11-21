@@ -46,6 +46,8 @@ jobs:
         run: node --test test/doweo-localization-coverage.test.mjs test/doweo-translation-reliability.test.mjs test/doweo-screenshot-regressions.test.mjs test/doweo-interface-audit.test.mjs test/doweo-financial-tabs-subtitles.test.mjs test/doweo-weo-about-localization.test.mjs test/doweo-financial-spanish-coverage.test.mjs
       - name: Verify mobile More routing and destination isolation
         run: node --test test/mobile-more-inspect.test.mjs
+      - name: Verify complete mobile More offline translations and private text safety
+        run: node --test test/mobile-more-localization.test.mjs
       - name: Test live translations and settings layout
         run: node --test test/doweo-translations-ui.test.mjs
       - name: Test language detection and preference override
