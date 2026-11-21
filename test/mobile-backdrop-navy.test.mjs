@@ -44,3 +44,11 @@ test('navy tint applies only to mobile uploaded-photo backdrops',{timeout:30000}
     assert.equal(preset,'none','non-photo presets get no new overlay');
   }finally{await browser.close();}
 });
+
+test('Cloudflare Pages bundles the mobile navy tint with a fresh asset URL',()=>{
+  const deploy=readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',import.meta.url),'utf8');
+  const copy=deploy.split('\n').find(line=>line.trim().startsWith('cp index.html '));
+  assert.ok(copy?.includes('doweo-mobile-backdrop-navy.css'),'new stylesheet is included in the published site');
+  assert.ok(deploy.includes('/doweo-mobile-backdrop-navy.css?v=20261121-navy-tint-v1'),'new stylesheet has a fresh cache version');
+  assert.ok(deploy.includes('test -s .pages-output/doweo-mobile-backdrop-navy.css'),'deploy fails if stylesheet is absent');
+});
