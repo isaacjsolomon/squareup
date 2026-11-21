@@ -42,13 +42,31 @@
  const h1=document.createElement('h1');h1.id='dw-ref-greeting';h1.textContent='Welcome back';
  const subtitle=document.createElement('p');subtitle.textContent='Here’s your overview for today.';
  greet.append(h1,subtitle);
- const add=document.createElement('button');add.type='button';add.id='dw-ref-add';
- add.innerHTML='<span aria-hidden="true">＋</span> Add';
- add.addEventListener('click',()=>{
-  // The existing compact Add dropdown retains Split Bill, Personal and Expense.
-  if(!click('#dw-compact-add'))click('#quick-expense');
- });
+ // Use the original real Add dropdown button itself, not a proxy control.
+ // This preserves its keyboard menu interactions and all previous app tests.
+ const add=document.createElement('div');add.id='dw-ref-add';
+ add.className='dw-ref-add-host';
  intro.append(greet,add);
+ function mountRealAdd(){
+  const holder=document.getElementById('dw-compact-add-wrapper');
+  if(!holder)return false;
+  if(holder.parentElement!==add)add.append(holder);
+  const button=holder.querySelector('#dw-compact-add');
+  if(button&&!button.dataset.dwRefLabeled){
+   button.dataset.dwRefLabeled='true';
+   const caret=button.querySelector('.dw-compact-add-caret');
+   button.replaceChildren(document.createTextNode('+ Add'));
+   if(caret)button.append(caret);
+   button.setAttribute('aria-label','Add expense, scan receipt or split a bill');
+  }
+  return true;
+ }
+ if(!mountRealAdd()){
+  const watchAdd=new MutationObserver(()=>{
+   if(mountRealAdd())watchAdd.disconnect();
+  });
+  watchAdd.observe(document.body,{childList:true,subtree:true});
+ }
 
  const statGrid=document.createElement('div');statGrid.className='dw-ref-stats';
  function stat(id,title,icon,detail){
