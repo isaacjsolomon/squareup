@@ -1,0 +1,16 @@
+/* Mobile Home information cards: DoWeo navy instead of teal/grey.
+   Preserve the selected tracker photo and all existing card contents. */
+@media (max-width: 900px) {
+  html body #tracker-dashboard.sq-tab-overview.dw-mobile-layered-home:not(.dw-template-original)
+    #dw-mobile-home-layered :is(.dw-mh-hero, .dw-mh-small, .dw-mh-activity) {
+    background: linear-gradient(145deg, #102c43 0%, #0a2034 100%) !important;
+    border-color: #37627a !important;
+  }
+
+  /* Keep the main balance card subtly differentiated, without green/grey. */
+  html body #tracker-dashboard.sq-tab-overview.dw-mobile-layered-home:not(.dw-template-original)
+    #dw-mobile-home-layered .dw-mh-hero {
+    background: radial-gradient(ellipse at 100% 0%, rgba(42, 89, 122, .35), transparent 65%),
+      linear-gradient(135deg, #113750 0%, #0b263a 100%) !important;
+  }
+}
