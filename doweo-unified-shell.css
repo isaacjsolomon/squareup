@@ -630,7 +630,7 @@
   html body.dw-all-secondary-view .sq-global-header-tools{
     display:none!important;
   }
-  html body.dw-all-secondary-view #friends-page{
+  html body.dw-all-secondary-view.friends-view #friends-page{
     display:block!important;visibility:visible!important;
     width:min(100%,1180px)!important;max-width:1180px!important;
     margin:0 auto!important;overflow:visible!important;
