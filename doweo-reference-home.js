@@ -183,60 +183,114 @@
   for(const [k,v] of Object.entries(attrs||{}))el.setAttribute(k,String(v));
   return el;
  }
+ function chartLocale(){
+  const resolved=window.DoWeoI18n?.resolve?.(window)||document.documentElement.lang||'en';
+  return resolved==='he-script'?'he':resolved;
+ }
+ function tr(key,fallback){
+  return window.dwUnifiedLocale?.t?.(key)||fallback;
+ }
+ let lastChartRows=[];
  function showChart(rows){
   chartBody.replaceChildren();
+  lastChartRows=Array.isArray(rows)?rows.slice():[];
   const now=new Date();
+  const monthLocale=chartLocale();
   const months=[];
   for(let n=5;n>=0;n--){
    const d=new Date(now.getFullYear(),now.getMonth()-n,1);
    months.push({key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),
-    label:d.toLocaleDateString(undefined,{month:'short'}),income:0,expense:0});
+     label:d.toLocaleDateString(monthLocale,{month:'short'}),income:0,expense:0,count:0});
   }
-  const valid=rows.filter(x=>x && (x.kind==='income'||x.kind==='expense') &&
+  const valid=lastChartRows.filter(x=>x && ['income','expense'].includes(x.kind) &&
     Number.isFinite(Number(x.amount)) && Number(x.amount)>=0);
-  for(const x of valid){
-   const m=months.find(m=>m.key===String(x.occurred_on||'').slice(0,7));
-   if(m)m[x.kind]+=Number(x.amount);
+  for(const row of valid){
+    const month=months.find(m=>m.key===String(row.occurred_on||'').slice(0,7));
+    if(!month)continue;
+    month[row.kind]+=Number(row.amount);
+    month.count++;
   }
-  incomeAmount.textContent=money(valid.filter(x=>x.kind==='income').reduce((a,x)=>a+Number(x.amount),0));
-  spendAmount.textContent=money(valid.filter(x=>x.kind==='expense').reduce((a,x)=>a+Number(x.amount),0));
-  if(!months.some(m=>m.income>0||m.expense>0)){
-   const empty=document.createElement('div');empty.className='dw-ref-chart-empty';
-   empty.textContent='No personal cash flow recorded in the last six months.';
-   const link=document.createElement('button');link.type='button';link.textContent='Open Cash Flow →';
-   link.addEventListener('click',()=>chartAction.click());empty.append(link);
-   chartBody.append(empty);
-   return;
+  // These totals are all-time private records, exactly as in the existing
+  // Cash Flow workspace. Tracker balances remain independent.
+  incomeAmount.textContent=money(valid.filter(x=>x.kind==='income').reduce((n,x)=>n+Number(x.amount),0));
+  spendAmount.textContent=money(valid.filter(x=>x.kind==='expense').reduce((n,x)=>n+Number(x.amount),0));
+  const active=months.filter(m=>m.count>0);
+  if(active.length===0){
+    const empty=document.createElement('div');empty.className='dw-ref-chart-empty';
+    const headline=document.createElement('strong');headline.dataset.dwShellKey='noRecentCashflow';
+    headline.textContent=tr('noRecentCashflow','No cash flow in the last six months');
+    const detail=document.createElement('span');detail.dataset.dwShellKey='cashflowEmptyHint';
+    detail.textContent=tr('cashflowEmptyHint','Record income or spending to see your monthly trend.');
+    const link=document.createElement('button');link.type='button';link.dataset.dwShellKey='openCashFlow';
+    link.textContent=tr('openCashFlow','Open Cash Flow →');
+    link.addEventListener('click',()=>chartAction.click());
+    empty.append(headline,detail,link);chartBody.append(empty);
+    document.dispatchEvent(new Event('doweo:uiupdated'));
+    return;
   }
-  const max=Math.max(1,...months.flatMap(m=>[m.income,m.expense]));
-  const plot=document.createElement('div');plot.className='dw-ref-chart-plot';
-  plot.setAttribute('role','img');plot.setAttribute('aria-label','Six-month income and spending chart based on recorded personal transactions');
-  const bars=document.createElement('div');bars.className='dw-ref-chart-bars';
+  const current=months[months.length-1];
+  const summary=document.createElement('div');summary.className='dw-ref-chart-summary';
+  const count=document.createElement('span');count.className='dw-ref-chart-range';count.dataset.dwShellKey='lastSixMonths';
+  count.textContent=tr('lastSixMonths','Last 6 months');
+  const net=document.createElement('span');net.className='dw-ref-chart-net';
+  const netLabel=document.createElement('span');netLabel.dataset.dwShellKey='netThisMonth';
+  netLabel.textContent=tr('netThisMonth','Net this month');
+  const netValue=document.createElement('strong');
+  netValue.textContent=money(current.income-current.expense);
+  netValue.className=current.income-current.expense<0?'dw-ref-negative':'dw-ref-positive';
+  net.append(netLabel,netValue);summary.append(count,net);
+  chartBody.append(summary);
+  const maximum=Math.max(...months.map(m=>Math.max(m.income,m.expense)),1);
+  const power=Math.pow(10,Math.floor(Math.log10(maximum)));
+  const stepCandidates=[1,2,2.5,5,10].map(n=>n*power);
+  let step=stepCandidates.find(n=>n*4>=maximum);
+  if(!step)step=10*power;
+  const scale=step*4;
+  const plot=document.createElement('div');plot.className='dw-ref-month-chart';
+  plot.setAttribute('role','img');
+  plot.setAttribute('aria-label',tr('incomeVsSpending','Monthly income and spending')+' — '+tr('lastSixMonths','Last 6 months'));
+  const grid=document.createElement('div');grid.className='dw-ref-chart-grid';
+  const axis=new Intl.NumberFormat(monthLocale,{style:'currency',currency:'USD',notation:'compact',maximumFractionDigits:1});
+  for(let tick=4;tick>=0;tick--){
+    const line=document.createElement('div');line.className='dw-ref-chart-gridline';
+    const label=document.createElement('span');label.textContent=axis.format(step*tick);
+    const rule=document.createElement('i');rule.setAttribute('aria-hidden','true');
+    line.append(label,rule);grid.append(line);
+  }
+  const bars=document.createElement('div');bars.className='dw-ref-chart-months';
   months.forEach(m=>{
-   const group=document.createElement('div');group.className='dw-ref-chart-month';
-   const pair=document.createElement('div');pair.className='dw-ref-chart-pair';
-   for(const kind of ['income','expense']){
-    const bar=document.createElement('span');bar.className='dw-ref-chart-bar dw-ref-'+kind;
-    bar.style.height=Math.max(3,(m[kind]/max)*100)+'%';
-    bar.title=m.label+' '+kind+': '+money(m[kind]);pair.append(bar);
-   }
-   const label=document.createElement('small');label.textContent=m.label;
-   group.append(pair,label);bars.append(group);
+    const group=document.createElement('div');group.className='dw-ref-chart-month';
+    const tracks=document.createElement('div');tracks.className='dw-ref-chart-tracks';
+    for(const kind of ['income','expense']){
+      const track=document.createElement('div');track.className='dw-ref-chart-track';
+      const bar=document.createElement('span');bar.className='dw-ref-chart-bar dw-ref-bar-'+kind;
+      const value=m[kind];
+      const pct=Math.min(100,Math.max(0,value/scale*100));
+      bar.style.height=value?Math.max(1.5,pct)+'%':'0%';
+      if(!value)bar.classList.add('dw-ref-zero');
+      bar.title=m.label+' — '+tr(kind,kind==='income'?'Income':'Spending')+': '+money(value);
+      track.append(bar);tracks.append(track);
+    }
+    const label=document.createElement('small');label.textContent=m.label;
+    const inactive=document.createElement('span');inactive.className='dw-ref-empty-month';
+    inactive.textContent=m.count?'': '·';
+    inactive.setAttribute('aria-hidden','true');
+    group.append(tracks,inactive,label);
+    bars.append(group);
   });
-  const chartSvg=svg('svg',{viewBox:'0 0 600 160',preserveAspectRatio:'none','aria-hidden':'true',class:'dw-ref-net-line'});
-  const values=months.map(m=>m.income-m.expense);
-  const lo=Math.min(0,...values),hi=Math.max(1,...values);
-  const x=i=>46+i*101.6;
-  const y=v=>135-110*(v-lo)/(hi-lo||1);
-  const points=values.map((v,i)=>[x(i),y(v)]);
-  const d=points.map((p,i)=>(i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
-  chartSvg.append(svg('path',{d,fill:'none',stroke:'#4fcba4','stroke-width':'3.4','stroke-linejoin':'round','stroke-linecap':'round'}));
-  points.forEach(([cx,cy])=>chartSvg.append(svg('circle',{cx,cy,r:5.5,fill:'#f4fbff',stroke:'#4fcba4','stroke-width':'3'})));
-  plot.append(bars,chartSvg);
+  plot.append(grid,bars);chartBody.append(plot);
   const legend=document.createElement('div');legend.className='dw-ref-chart-legend';
-  legend.innerHTML='<span><i class="dw-ref-legend-income"></i> Income</span><span><i class="dw-ref-legend-expense"></i> Spending</span><span><i class="dw-ref-legend-net"></i> Net cash flow</span>';
-  chartBody.append(plot,legend);
+  for(const [key,color] of [['income','dw-ref-legend-income'],['expense','dw-ref-legend-expense']]){
+    const part=document.createElement('span');
+    const dot=document.createElement('i');dot.className=color;dot.setAttribute('aria-hidden','true');
+    const text=document.createElement('span');text.dataset.dwShellKey=key;
+    text.textContent=tr(key,key==='income'?'Income':'Spending');
+    part.append(dot,text);legend.append(part);
+  }
+  chartBody.append(legend);
+  document.dispatchEvent(new Event('doweo:uiupdated'));
  }
+
  let financeBusy=false,lastFinanceAt=0,lastProfile='null';
  async function refreshFinance(force){
   if(financeBusy||!desktop.matches||typeof window.squareUpApi!=='function')return;
@@ -286,6 +340,10 @@
  classObserver.observe(dashboard,{attributes:true,attributeFilter:['class']});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&desktop.matches)refreshFinance(false);});
  document.addEventListener('doweo:finance-saved',()=>refreshFinance(true));
+ document.addEventListener('doweo:languagechange',()=>{
+   if(lastChartRows.length)showChart(lastChartRows);
+   else if(chartBody.querySelector('.dw-ref-chart-empty'))showChart([]);
+ });
  // Auth and API are initialized asynchronously; do not freeze the dashboard.
  let attempts=0;
  const bootstrap=setInterval(()=>{
