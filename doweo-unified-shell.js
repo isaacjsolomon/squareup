@@ -212,8 +212,26 @@
       else trackerGallery.style.removeProperty('display');
     }
   }
+  // Capture the actual native Overview pill geometry, then reuse it for
+  // every secondary page. This avoids competing fixed widths and offsets.
+  let measuredHomeBar=null;
+  function keepMatchingTabGeometry(){
+    if(!desktop.matches)return;
+    const rect=existingTabs.getBoundingClientRect();
+    if(rect.width>200&&rect.height>40&&getComputedStyle(existingTabs).display!=='none'){
+      measuredHomeBar={x:rect.x,y:rect.y,w:rect.width,h:rect.height,viewport:innerWidth};
+    }
+    if(!measuredHomeBar)return;
+    const offset=(innerWidth-measuredHomeBar.viewport)/2;
+    for(const [name,val] of Object.entries({
+      position:'fixed',left:(measuredHomeBar.x+offset)+'px',
+      top:measuredHomeBar.y+'px',width:measuredHomeBar.w+'px',
+      height:measuredHomeBar.h+'px',transform:'none'
+    }))tabs.style.setProperty(name,val,'important');
+  }
   function sync(){
     isolateStandaloneViews();
+    keepMatchingTabGeometry();
     const legacyView=pageStates.some(key=>body.classList.contains(key));
     const isOverview=!legacyView && dashboard.classList.contains('sq-tab-overview') &&
       !dashboard.classList.contains('dw-template-original')&&visible('tracker-dashboard');
