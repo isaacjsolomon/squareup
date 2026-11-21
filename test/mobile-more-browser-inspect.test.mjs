@@ -61,6 +61,15 @@ test('mobile More destinations are isolated full pages with intact navigation',{
     ['sqev-nav','#sqev-view']
   ]){
     await visit(id);
+    const debug=await page.locator('#tracker-dashboard').evaluate(el=>({
+      classes:document.body.className,
+      style:el.getAttribute('style'),
+      display:getComputedStyle(el).display,
+      matchingMedia:matchMedia('(max-width:900px)').matches,
+      loaded:[...document.styleSheets].map(s=>s.href).filter(Boolean).filter(x=>x.includes('mobile-more')),
+      cssRules:[...document.styleSheets].filter(s=>s.href?.includes('mobile-more')).flatMap(s=>{try{return [...s.cssRules].map(r=>r.cssText.slice(0,350))}catch{return []}}).slice(0,4)
+    }));
+    console.log('MORE_VISIBILITY_DEBUG',id,JSON.stringify(debug));
     assert.equal(await page.locator('#tracker-dashboard').isVisible(),false,id+' must not show Home above the page');
     assert.ok(await page.locator(section).isVisible(),id+' destination is visible');
     const top=await page.locator(section).evaluate(el=>el.getBoundingClientRect().top);
