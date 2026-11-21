@@ -4,6 +4,31 @@ const wrap=document.querySelector('body > .wrap');
 const sheet=document.getElementById('sq-mobile-more-sheet');
 if(!wrap||!sheet)return;
 const small=()=>matchMedia('(max-width:900px)').matches;
+const dashboard=document.getElementById('tracker-dashboard');
+const standaloneViews=['settings-view','about-view','analytics-view','notifications-view','sqev-page-open','friends-view','help-view','sq-help-view','chat-view','dw-mobile-legal-view','dw-mobile-social-view'];
+let savedDisplay=null;
+function syncVisibility(){
+ if(!dashboard)return;
+ const isolated=small()&&standaloneViews.some(name=>document.body.classList.contains(name));
+ if(isolated){
+  if(!savedDisplay)savedDisplay={value:dashboard.style.getPropertyValue('display'),priority:dashboard.style.getPropertyPriority('display')};
+  if(dashboard.style.getPropertyValue('display')!=='none'||dashboard.style.getPropertyPriority('display')!=='important')
+   dashboard.style.setProperty('display','none','important');
+ }else if(savedDisplay){
+  if(savedDisplay.value)dashboard.style.setProperty('display',savedDisplay.value,savedDisplay.priority);
+  else dashboard.style.removeProperty('display');
+  savedDisplay=null;
+ }
+}
+// Existing Home CSS can force the tracker visible even in unrelated views.
+// This route-aware guard wins over that rule without affecting desktop.
+if(dashboard){
+ const observer=new MutationObserver(syncVisibility);
+ observer.observe(document.body,{attributes:true,attributeFilter:['class']});
+ observer.observe(dashboard,{attributes:true,attributeFilter:['style']});
+ syncVisibility();
+}
+
 function panel(id,title){
  const el=document.createElement('section');el.id=id;el.className='dw-mobile-more-page';el.hidden=true;el.setAttribute('aria-label',title);
  const back=document.createElement('button');back.type='button';back.className='dw-mobile-more-back';back.textContent='← Back';
@@ -48,5 +73,5 @@ document.addEventListener('click',e=>{
  const button=e.target.closest('.sq-mobile-nav button, #nav-home, #nav-trackers, #nav-profile, #nav-about, #nav-analytics, #sqev-nav, #sq-mobile-notifications, #sq-mobile-more');
  if(button){close();if(button.id==='sq-mobile-more')removeFinance()}
 },true);
-matchMedia('(max-width:900px)').addEventListener('change',e=>{if(!e.matches)close()});
+matchMedia('(max-width:900px)').addEventListener('change',e=>{if(!e.matches)close();syncVisibility()});
 })();
