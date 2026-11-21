@@ -6,6 +6,7 @@
  const desktop=window.matchMedia('(min-width: 901px)');
  if(!desktop.matches)return; // Never initialize onboarding controls on mobile.
  const gallery=document.getElementById('trackers-gallery');
+ const trackerPicker=document.getElementById('tracker-select');
  const trackersPage=document.getElementById('trackers-page');
  const dashboard=document.getElementById('tracker-dashboard');
  const header=trackersPage?.querySelector('.trackers-header');
@@ -146,8 +147,17 @@
    }
    back.disabled=step===0;next.textContent=step===data.length-1?'Finish':'Next';
  }
+ function pickerReady(){
+   // The native tracker picker is populated after the authenticated tracker
+   // list loads, even before a user opens the Trackers directory.
+   return Boolean(trackerPicker?.querySelector('option[value="local"]'));
+ }
+ function pickerHasTrackers(){
+   return Boolean(trackerPicker&&[...trackerPicker.options].some(option=>
+     !option.disabled&&option.value&&option.value!=='local'&&option.value!=='manage'));
+ }
  function isReady(){
-   return Boolean(gallery.querySelector('.dw-guided-empty')||gallery.querySelector('.tracker-tile'));
+   return pickerReady()||Boolean(gallery.querySelector('.dw-guided-empty')||gallery.querySelector('.tracker-tile'));
  }
  function sync(){
    const allowed=canShow();
@@ -155,7 +165,7 @@
    if(!allowed){card.hidden=true;homePrompt.hidden=true;if(!overlay.hidden)closeGuide();return;}
    if(!isReady())return;
    const empty=gallery.querySelector('.dw-guided-empty');
-   galleryHadTrackers=Boolean(gallery.querySelector('.tracker-tile'));
+   galleryHadTrackers=pickerReady()?pickerHasTrackers():Boolean(gallery.querySelector('.tracker-tile'));
    if(!initialized){
      initialized=true;
      card.hidden=galleryHadTrackers;
@@ -207,6 +217,7 @@
  });
  const observer=new MutationObserver(()=>{if(!desktop.matches)return;queueMicrotask(sync)});
  observer.observe(gallery,{childList:true,subtree:true});
+ if(trackerPicker)observer.observe(trackerPicker,{childList:true,subtree:true});
  // Recheck on sign-in, when tracker gallery arrives, and on desktop viewport.
  const authObserver=new MutationObserver(sync);
  authObserver.observe(document.body,{attributes:true,attributeFilter:['class']});
