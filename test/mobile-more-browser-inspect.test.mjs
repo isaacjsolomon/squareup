@@ -58,8 +58,13 @@ test('mobile More destinations are isolated full pages with intact navigation',{
   const more=page.locator('#sq-mobile-more');
   const visit=async(id)=>{
     await page.evaluate(()=>document.getElementById('nav-home')?.click());
-    await more.click();
-    await page.locator('#sq-mobile-more-sheet [data-sq-destination="'+id+'"]').evaluate(el=>el.click());
+    if(id==='sq-mobile-notifications'){
+      // Notifications remains accessible from the header bell, not More.
+      await page.locator('#sq-mobile-notifications').evaluate(el=>el.click());
+    }else{
+      await more.click();
+      await page.locator('#sq-mobile-more-sheet [data-sq-destination="'+id+'"]').evaluate(el=>el.click());
+    }
     await page.waitForTimeout(180);
   };
   for(const [id,section] of [
