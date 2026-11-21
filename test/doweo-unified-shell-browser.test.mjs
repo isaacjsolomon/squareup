@@ -185,6 +185,11 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
       siblings:[...wrap.children].map(el=>({tag:el.tagName,id:el.id,cls:String(el.className).slice(0,60),...box(el)})).filter(x=>x.h>0).slice(0,15)};
   })));
 
+  console.log('ABOUT_ROUTE_DEBUG',JSON.stringify(await page.evaluate(()=>{
+    const a=document.getElementById('about-page'),t=document.getElementById('trackers-page');
+    const info=el=>{if(!el)return null;const r=el.getBoundingClientRect(),c=getComputedStyle(el);return {id:el.id,parent:el.parentElement?.id||el.parentElement?.tagName,display:c.display,inline:el.getAttribute('style'),y:r.y,h:r.height,marginTop:c.marginTop}};
+    return {bodyClasses:document.body.className,about:info(a),trackers:info(t),preceding:[...document.body.children].filter(x=>x.getBoundingClientRect().height>0).map(info).slice(0,12)};
+  })));
   const aboutTop=await page.locator('#about-page').evaluate(el=>el.getBoundingClientRect().top);
   assert.ok(aboutTop>=80&&aboutTop<260,
    'About content must appear immediately beneath shared navigation: '+aboutTop);
