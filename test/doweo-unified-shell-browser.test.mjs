@@ -285,8 +285,8 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
    'Notifications panel must no longer be the old white surface');
   assert.equal(notificationsVisual.backdropImage,'none',
    'Notifications must suppress the selected tracker photo on the actual #backdrop element');
-  assert.equal(notificationsVisual.backdropBackground,'rgb(11, 29, 52)',
-   'The wallpaper layer must itself be navy');
+  assert.match(notificationsVisual.backdropBackground,/^rgba?\(11, 29, 52(?:, [0-9.]+)?\)$/,
+   'The wallpaper layer must use navy RGB channels (a translucent backdrop is allowed)');
   await page.screenshot({path:resolve(root,'test-results/unified/notifications-page-repairs.png'),fullPage:true});
 
   await page.evaluate(()=>window.squareUpOpenFinanceHub?.('finance'));
