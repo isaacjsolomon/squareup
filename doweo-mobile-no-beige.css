@@ -1,0 +1,61 @@
+/* DoWeo mobile surface color cleanup, 2026-11-22.
+   Color-only overrides. Preserve layout, navigation, user tracker wallpapers,
+   images, billing states, interactive controls and desktop styles. */
+@media (max-width:900px) {
+  :root {
+    --dw-mobile-surface:#102b43;
+    --dw-mobile-surface-raised:#173750;
+    --dw-mobile-surface-soft:#204158;
+    --dw-mobile-surface-border:#365e76;
+    --dw-mobile-surface-text:#f2f9ff;
+    --dw-mobile-surface-muted:#c4d9e5;
+  }
+  /* Neutral navy surfaces throughout the phone app, never warm cream/beige. */
+  html body :is(
+    .sq-mobile-top,.sq-mobile-nav,
+    .sq-mobile-sheet,.sq-balanced-sheet,.dw-mobile-more-page-card,
+    .sq-ng-card,.sq-ng-panel,.sq-ng-item,
+    .sq-bill-create-card,.sq-bills-card,.sq-bills-column,
+    .sq-premium-calendar,.sq-premium-metrics > article,
+    .sq-bills-row,.sq-bills-list-head,
+    .dw-inbox-item,.notification-panel,.notification-panel-heading,
+    .dw-mh-hero,.dw-mh-small,.dw-mh-activity,
+    .sq-return-panel,.sq-overview-people-panel,.sq-overview-activity-panel,
+    .sq-activity-panel,.sq-stat,
+    .tracker-tile-body,.dw-mobile-more-page-card,
+    .dw-chat-row,.dw-chat-message,.dw-chat-filters
+  ) {
+    background-color:var(--dw-mobile-surface)!important;
+    border-color:var(--dw-mobile-surface-border)!important;
+  }
+  html body :is(
+    .sq-mobile-sheet,.sq-balanced-sheet,.dw-mobile-more-page-card,
+    .sq-ng-card,.sq-ng-panel,
+    .sq-bill-create-card,.sq-bills-card,.sq-bills-column,
+    .sq-premium-calendar,.sq-premium-metrics > article,
+    .dw-inbox-item,.notification-panel,.dw-mh-hero,.dw-mh-small,
+    .dw-mh-activity,.sq-return-panel,.sq-activity-panel,.sq-stat,
+    .tracker-tile-body
+  ) {
+    background-image:none!important;
+  }
+  html body :is(
+    .sq-ng-card,.sq-ng-panel,.sq-bill-create-card,.sq-bills-card,
+    .sq-bills-column,.sq-premium-calendar,.sq-premium-metrics > article,
+    .sq-bills-row,.dw-inbox-item,.notification-panel,
+    .dw-mobile-more-page-card
+  ) {
+    color:var(--dw-mobile-surface-text)!important;
+  }
+  /* Selected and active actions keep their mint identity rather than beige. */
+  html body :is(
+    .sq-mobile-nav,.sq-mobile-top,
+    .sq-ng-card,.sq-bills-card,.sq-bills-column,.dw-mobile-more-page-card
+  ) :is(small,.note,.sq-bills-help,.sq-bills-empty) {
+    color:var(--dw-mobile-surface-muted);
+  }
+  /* Never repaint custom tracker wallpaper surfaces or photos. */
+  html body :is(#backdrop,.tracker-tile-banner,[style*="background-image: url"],[style*="background-image:url"]) {
+    background-image:revert-layer;
+  }
+}
