@@ -7104,8 +7104,12 @@ function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce(
  content.innerHTML=`<div class="sq-ng-grid">${card('This month income',money(current.income),true)}${card('This month spending',money(current.expense))}${card('Monthly cash flow',money(current.income-current.expense))}</div><div class="dw-analytics-layout"><section class="sq-ng-card"><h2>Last six months</h2><p class="sq-ng-note"><span class="dw-income-key">Income</span> · <span class="dw-spending-key">Spending</span></p><div class="dw-analytics-months" role="img" aria-label="Six-month income and spending chart">${chart}</div></section>${categoryCard}</div>${comparisonCard}<p class="sq-ng-note">Calculated from your private personal transactions in USD; shared tracker debts are excluded.</p>`;
  return;
 }
+if(desktopSections.matches && tab==='finance') {
+ window.dwCashFlowAnalyticsRender({content,finance,money,esc,refresh:drawFinance});
+} else {
 const trendCard=`<section class="sq-ng-card dw-web-trend"><h2>Cash Flow Trend</h2><p class="sq-ng-note"><span class="dw-income-key">Income</span> · <span class="dw-spending-key">Spending</span></p><div class="dw-analytics-months" role="img" aria-label="Six-month income and spending chart">${chart}</div></section>`;
 content.innerHTML=`<div class="sq-ng-finance-overview"><div class="sq-ng-grid sq-ng-summary-stack">${card('Personal cash flow',money(income-spent),true)}${card('Total income',money(income))}${card('Total spending',money(spent))}</div><button type="button" class="sq-ng-add-action" id="sq-ng-open-transaction" aria-haspopup="dialog" aria-controls="sq-ng-txn-overlay"><span class="sq-ng-add-action-icon" aria-hidden="true">+</span><strong>Add Expense</strong><span class="sq-ng-add-action-hint">Or record income</span></button></div>${trendCard}<section class="sq-ng-card sq-ng-section"><h2>Recent personal activity</h2><div class="sq-ng-list">${finance.length?finance.map(x=>`<div class="sq-ng-item"><div><b>${esc(x.description)}</b><small>${esc(x.category)} · ${esc(x.kind)} · ${esc(x.occurred_on)}</small></div><div><b>${x.kind==='expense'?'-':'+'}${esc(money(x.amount))}</b> <button type="button" data-delete="${esc(x.id)}">Delete</button></div></div>`).join(''):'<div class="sq-ng-empty">No personal transactions yet. Add your first one above.</div>'}</div></section>${desktopSections.matches ? categoryCard+comparisonCard : ''}<p class="sq-ng-note">Personal records are private and never change shared tracker balances.</p>`;
+}
 }
 const modalHtml = `<div id="sq-ng-txn-overlay" class="sq-ng-txn-overlay" hidden>
  <section class="sq-ng-txn-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-ng-txn-title">
@@ -9576,6 +9580,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   else start();
 })();
 </script>
+<script defer src="/doweo-cashflow-analytics.js?v=20261122-analytics-match-v1"></script>
 <script defer src="/doweo-desktop-standalone.js?v=20261122-wallpaper-mirror-v3"></script>
 <link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261122-cashflow-analytics-v6">
 </body>
