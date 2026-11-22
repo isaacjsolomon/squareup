@@ -266,18 +266,18 @@
 
   /* Preserve the exact chosen wallpaper across tracker-related destinations.
      Body and page shells no longer conceal its photograph/gradient. */
-  html body.notifications-view:not(.sq-auth-guest),
-  html body.friends-view:not(.sq-auth-guest),
-  html body.dw-polls-open:not(.sq-auth-guest),
+  html body.notifications-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open),
+  html body.friends-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open),
+  html body.dw-polls-open:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open),
   html body:has(#tracker-dashboard.sq-tab-chat):not(.sq-auth-guest){
     background-color:#10243d!important;
     background-image:var(--dw-selected-tracker-wallpaper)!important;
     background-position:center center!important;background-size:cover!important;
     background-attachment:fixed!important;background-repeat:no-repeat!important;
   }
-  html body.notifications-view:not(.sq-auth-guest) > #backdrop#backdrop,
-  html body.friends-view:not(.sq-auth-guest) > #backdrop#backdrop,
-  html body.dw-polls-open:not(.sq-auth-guest) > #backdrop#backdrop,
+  html body.notifications-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > #backdrop#backdrop,
+  html body.friends-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > #backdrop#backdrop,
+  html body.dw-polls-open:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > #backdrop#backdrop,
   html body:has(#tracker-dashboard.sq-tab-chat):not(.sq-auth-guest) > #backdrop#backdrop{
     background-image:var(--dw-selected-tracker-wallpaper)!important;
     background-color:transparent!important;
@@ -285,20 +285,20 @@
     background-repeat:no-repeat!important;
     opacity:1!important;visibility:visible!important;filter:none!important;
   }
-  html body.notifications-view:not(.sq-auth-guest) > .wrap,
-  html body.friends-view:not(.sq-auth-guest) > .wrap,
-  html body.dw-polls-open:not(.sq-auth-guest) > .wrap,
+  html body.notifications-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > .wrap,
+  html body.friends-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > .wrap,
+  html body.dw-polls-open:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > .wrap,
   html body:has(#tracker-dashboard.sq-tab-chat):not(.sq-auth-guest) > .wrap,
-  html body.notifications-view:not(.sq-auth-guest) #notifications-page,
-  html body.friends-view:not(.sq-auth-guest) #friends-page,
-  html body.dw-polls-open:not(.sq-auth-guest) #dw-polls-page{
+  html body.notifications-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) #notifications-page,
+  html body.friends-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) #friends-page,
+  html body.dw-polls-open:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) #dw-polls-page{
     background:transparent!important;background-color:transparent!important;
     background-image:none!important;
     box-shadow:none!important;
   }
-  html body.notifications-view:not(.sq-auth-guest) > .wrap::before,
-  html body.friends-view:not(.sq-auth-guest) > .wrap::before,
-  html body.dw-polls-open:not(.sq-auth-guest) > .wrap::before{
+  html body.notifications-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > .wrap::before,
+  html body.friends-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > .wrap::before,
+  html body.dw-polls-open:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > .wrap::before{
     background:transparent!important;background-image:none!important;
   }
   /* Keep content surfaces distinct from the user's wallpaper. */
