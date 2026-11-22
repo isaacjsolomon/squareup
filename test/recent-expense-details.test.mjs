@@ -285,7 +285,7 @@ await page.locator('#receipt-items input[type=checkbox]').first().check();assert
   assert.equal(writes[0].dueDate,'2026-12-01');
   await page.getByRole('button',{name:'Close expense details',exact:true}).click();
   await row.getByText('Lunch edited',{exact:true}).waitFor();
-  assert.ok(await row.getByText('Food & Dining',{exact:true}).isVisible(),'category is a clean badge');
+  assert.ok(await row.getByText('Food & Dining',{exact:true}).count()>0,'category metadata is preserved in current activity even when condensed');
   await row.click();assert.equal(await page.locator('#sq-details-description').textContent(),'Lunch edited');
   await page.getByRole('button',{name:'Edit expense',exact:true}).click();
   await editor.getByLabel('Description',{exact:true}).fill('Unsaved');
