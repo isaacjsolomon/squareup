@@ -11,8 +11,8 @@ const end=html.indexOf('<script id="sq-balanced-mobile-script">',start);
 assert.ok(start>=0 && end>start,'real mobile More markup exists');
 const realMoreMarkup=html.slice(start,end);
 const consolidated=readFileSync(new URL('../styles.css',import.meta.url),'utf8');
-const guideStart=consolidated.indexOf('Original style 169/276: dw-mobile-home-screen-native-style');
-const guideEnd=consolidated.indexOf('Original style 170/276:',guideStart);
+const guideStart=consolidated.indexOf('/* Original style 169/276: dw-mobile-home-screen-native-style');
+const guideEnd=consolidated.indexOf('/* Original style 170/276:',guideStart);
 assert.ok(guideStart>0&&guideEnd>guideStart,'native install CSS was migrated');
 const nativeInstallCss=consolidated.slice(guideStart,guideEnd);
 
