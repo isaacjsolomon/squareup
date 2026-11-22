@@ -44,7 +44,7 @@ jobs:
           css += '<link rel="stylesheet" href="/doweo-mobile-more-pages.css?v=20261121-static-install-v3">'
           css += '<link rel="stylesheet" href="/doweo-mobile-home-navy-cards.css?v=20261121-home-cards-v1">'
           js = '<script defer src="/doweo-tracker-header.js?v=20261116-overview-picker-v10"></script>'
-          js += '<script defer src="/doweo-home-add-menu.js?v=20261119-add-dropdown-v1"></script>'
+          js += '<script defer src="/doweo-home-add-menu.js?v=20261122-add-no-chevron-v2"></script>'
           js += '<script defer src="/doweo-split-bill-modal.js?v=20261119-split-modal-v1"></script>'
           js += '<script defer src="/doweo-backdrop-images.js?v=20261119-image-compat-v1"></script>'
           js += '<script defer src="/doweo-mobile-more-pages.js?v=20261121-static-install-v3"></script>'
