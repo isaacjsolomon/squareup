@@ -13,7 +13,7 @@ test('Account tab uses two-column responsive layout and no three-column override
 });
 test('translation assets ship to Cloudflare',()=>{
   assert.match(html,/<script src="doweo-translations\.js" defer><\/script>/);
-  assert.match(dep,/cp index\.html doweo-i18n\.js doweo-translations\.js manifest\.webmanifest/);
+  assert.ok(dep.includes('cp index.html styles.css doweo-i18n.js doweo-translations.js manifest.webmanifest'));
 });
 test('all nineteen languages have matching translated UI labels',()=>{
   const win={document:{readyState:'loading',addEventListener(){},},DoWeoI18n:{}};
