@@ -101,9 +101,22 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
 
 
   await page.evaluate(()=>{window.Tesseract={recognize:async()=>({data:{text:'Pizza 10.00\nTOTAL 10.00'}})};});
-  const desktopChooserPromise=page.waitForEvent('filechooser');
+  // Observe the real upload path without mocking the native file chooser.
+  await page.evaluate(()=>{
+   window.__dwReceiptPickerClicks=0;
+   document.getElementById('receipt-file').addEventListener('click',()=>{window.__dwReceiptPickerClicks++});
+  });
+  const desktopChooserPromise=page.waitForEvent('filechooser',{timeout:4000}).catch(()=>null);
   await page.locator('#dw-expense-tools [data-sq-quick="quick-receipt"]').click();
   const desktopChooser=await desktopChooserPromise;
+  if(!desktopChooser){
+   const debug=await page.evaluate(()=>{
+    const f=document.getElementById('receipt-file'),card=document.getElementById('receipt-card'),modal=document.getElementById('sq-receipt-dialog'),button=document.getElementById('quick-receipt');
+    return {inputClicks:window.__dwReceiptPickerClicks,cardHidden:card?.hidden,modalHidden:modal?.hidden,modalDisplay:modal&&getComputedStyle(modal).display,inputHidden:f?.hidden,inputDisplay:f&&getComputedStyle(f).display,inputConnected:f?.isConnected,receiptButtonConnected:button?.isConnected,originalButtonHandler:typeof button?.onclick,expenseToolHandler:typeof window.dwOpenExpenseTool,workspaceVisible:!!document.getElementById('dw-expense-workspace')?.getClientRects().length};
+   });
+   console.log('SCAN_RECEIPT_DIAGNOSTIC',JSON.stringify(debug));
+   assert.fail('Scan receipt did not open the native file chooser: '+JSON.stringify(debug));
+  }
   await desktopChooser.setFiles({name:'desktop-receipt.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j5n8AAAAASUVORK5CYII=','base64')});
   await page.waitForFunction(()=>document.getElementById('receipt-status').textContent.includes('Recognized'));
   assert.equal(await page.locator('#receipt-items').getByLabel('Item 1 name',{exact:true}).inputValue(),'Pizza','desktop Tools opens receipt review');
