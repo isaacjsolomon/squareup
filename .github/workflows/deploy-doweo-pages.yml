@@ -186,11 +186,16 @@ jobs:
         env:
           BILLS_BASE_URL: https://doweo.app
         run: |
-          node scripts/verify-live-bills.mjs
-          node --test test/recent-expense-details.test.mjs
-          node --test test/polls-desktop-page.test.mjs
-          node --test test/home-desktop-navigation.test.mjs
-          node --test test/bills-full-app.test.mjs
+          # Execute all independent suites even when one fails, but keep the
+          # deployment red until every required verification succeeds.
+          set +e
+          failures=0
+          node scripts/verify-live-bills.mjs || failures=1
+          node --test test/recent-expense-details.test.mjs || failures=1
+          node --test test/polls-desktop-page.test.mjs || failures=1
+          node --test test/home-desktop-navigation.test.mjs || failures=1
+          node --test test/bills-full-app.test.mjs || failures=1
+          exit "$failures"
       - name: Upload production Bills screenshots
         if: always()
         uses: actions/upload-artifact@v4
