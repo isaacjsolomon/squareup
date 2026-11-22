@@ -18,6 +18,11 @@ const compatibilityIds=[
  'dw-overview-consistent-type',
  'dw-home-heading-alignment'
 ];
+// Recent page repairs retain two separately scoped production-only overrides.
+const scopedRepairIds=[
+ 'doweo-desktop-v5-navy-analytics',
+ 'dw-bills-exact-reference-v9'
+];
 
 test('design system has exactly the requested global theme tokens',()=>{
  const prefix=css.slice(0,1500);
@@ -37,10 +42,11 @@ test('design system has exactly the requested global theme tokens',()=>{
  assert.match(prefix,/--shadow-dialog:\s*0 20px 50px rgba\(0,0,0,\.45\)/);
 });
 
-test('270 inline blocks migrated and six script-addressed template styles retained',()=>{
+test('270 inline blocks migrated, six template styles and two scoped page repairs retained',()=>{
  const styles=[...html.matchAll(/<style\b([^>]*)>([\s\S]*?)<\/style>/gi)];
- assert.equal(styles.length,6);
- assert.deepEqual(styles.map(x=>x[1].match(/\bid="([^"]+)"/)?.[1]).sort(),[...compatibilityIds].sort());
+ const expectedIds=[...compatibilityIds,...scopedRepairIds];
+ assert.equal(styles.length,expectedIds.length);
+ assert.deepEqual(styles.map(x=>x[1].match(/\bid="([^"]+)"/)?.[1]).sort(),expectedIds.sort());
  assert.equal([...css.matchAll(/\/\* Original style \d+\/276:/g)].length,270);
  const guard=html.match(/<script id="dw-template-home-layout-guard">([\s\S]*?)<\/script>/)?.[1];
  assert.ok(guard?.includes("sheet.disabled=template"),'Keep original sheet toggle logic');
@@ -57,7 +63,11 @@ test('HTML links Inter, stylesheet, and all existing application scripts',()=>{
 });
 
 test('Cloudflare copy manifest carries stylesheet, and injects component CSS before it',()=>{
- assert.match(deploy,/\bcp index\.html styles\.css doweo-i18n\.js/);
+ // Check the actual static copy command without relying on neighboring filenames.
+ const copyLine=deploy.split('\n').find(line=>line.trimStart().startsWith('cp index.html styles.css '));
+ assert.ok(copyLine,'Cloudflare must copy index.html and styles.css');
+ for(const file of ['doweo-i18n.js','doweo-page-repairs.css','doweo-reference-home.css','doweo-reference-home.js'])
+  assert.ok(copyLine.split(/\s+/).includes(file),'Missing deploy asset '+file);
  assert.match(deploy,/test -s \.pages-output\/styles\.css/);
  assert.match(deploy,/html = html\.replace\(marker, css \+ marker, 1\)/);
 });
