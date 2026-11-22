@@ -261,16 +261,25 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
    const cal=document.querySelector('#sq-bills-page .sq-premium-calendar');
    return {backTop:back.top,backLeft:back.left,backRight:back.right,tabsBottom:tabs.bottom,
     calendarBg:getComputedStyle(cal).backgroundColor,
-    calendarText:getComputedStyle(cal.querySelector('.sq-premium-days')||cal).color};
+    calendarText:getComputedStyle(cal.querySelector('.sq-premium-days')||cal).color,
+    billCardBackground:getComputedStyle(document.querySelector('#sq-bills-page .sq-bill-create-card')).backgroundColor,
+    billCardText:getComputedStyle(document.querySelector('#sq-bills-page .sq-bill-create-card h3')).color,
+    metricBackground:getComputedStyle(document.querySelector('#sq-bills-page .sq-premium-metrics article')).backgroundColor};
   });
   assert.ok(billsGeometry.backTop>billsGeometry.tabsBottom+8,
    'Bills Back to Home must be below the global tabs: '+JSON.stringify(billsGeometry));
   assert.ok(billsGeometry.backRight<1536&&billsGeometry.backLeft>=0,
    'Bills Back to Home must be fully inside the screen');
-  assert.equal(billsGeometry.calendarBg,'rgb(12, 36, 65)',
+  assert.equal(billsGeometry.calendarBg,'rgb(16, 43, 73)',
    'billing calendar must have a solid navy background, not pale white');
-  assert.equal(billsGeometry.calendarText,'rgb(245, 249, 255)',
+  assert.equal(billsGeometry.calendarText,'rgb(246, 250, 255)',
    'calendar date grid must use readable light text against navy');
+  assert.equal(billsGeometry.billCardBackground,'rgb(16, 43, 73)',
+    'Bill panels must use the actual navy surface, not white');
+  assert.equal(billsGeometry.metricBackground,'rgb(16, 43, 73)',
+    'Monthly totals card should be navy too');
+  assert.equal(billsGeometry.billCardText,'rgb(246, 250, 255)',
+    'Bill card text must be white on navy');
   await page.screenshot({path:resolve(root,'test-results/unified/bills-page-repairs.png'),fullPage:true});
 
   await pageOpen('dw-ref-nav-notifications','notifications-view');
@@ -287,7 +296,7 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
    'Notifications panel must no longer be the old white surface');
   assert.equal(notificationsVisual.backdropImage,'none',
    'Notifications must suppress the selected tracker photo on the actual #backdrop element');
-  assert.match(notificationsVisual.backdropBackground,/^rgba?\(11, 29, 52(?:, [0-9.]+)?\)$/,
+  assert.match(notificationsVisual.backdropBackground,/^rgba?\(10, 31, 56(?:, [0-9.]+)?\)$/,
    'The wallpaper layer must use navy RGB channels (a translucent backdrop is allowed)');
   await page.screenshot({path:resolve(root,'test-results/unified/notifications-page-repairs.png'),fullPage:true});
 
@@ -301,11 +310,20 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
     return {bg:getComputedStyle(view).backgroundColor,
       scroll:getComputedStyle(view).overflowY,backVisible:!!back?.getClientRects().length,
       addVisible:!!document.getElementById('sq-ng-open-transaction')?.getClientRects().length,
-      rows:document.querySelectorAll('#sq-ng-content .sq-ng-item').length};
+      rows:document.querySelectorAll('#sq-ng-content .sq-ng-item').length,
+      contentColumns:getComputedStyle(document.getElementById('sq-ng-content')).gridTemplateColumns,
+      trendSurface:getComputedStyle(document.querySelector('#sq-ng-content .dw-web-trend')).backgroundColor,
+      activityVisible:!!document.querySelector('#sq-ng-content .sq-ng-section')?.getClientRects().length};
   });
   assert.equal(cashFlowVisual.scroll,'auto','Cash Flow must remain scrollable');
   assert.ok(cashFlowVisual.backVisible&&cashFlowVisual.addVisible&&cashFlowVisual.rows===2,
    'Cash Flow must retain navigation, add actions and real transaction rows: '+JSON.stringify(cashFlowVisual));
+  assert.equal(cashFlowVisual.bg,'rgb(234, 241, 252)',
+    'Cash Flow needs same pale analytics canvas');
+  assert.equal(cashFlowVisual.trendSurface,'rgb(247, 250, 255)',
+    'Cash Flow chart must use Analytics panel treatment');
+  assert.ok(cashFlowVisual.activityVisible,
+    'recent personal activity must remain visible after layout change');
   await page.screenshot({path:resolve(root,'test-results/unified/cashflow-page-repairs.png'),fullPage:true});
   await page.locator('#sq-ng-back').click();
   await page.waitForFunction(()=>!document.body.classList.contains('sq-finance-open'),{timeout:10000});

@@ -77,7 +77,7 @@ jobs:
           node --check .pages-output/doweo-reference-home.js
           test -s .pages-output/styles.css
           test -s .pages-output/doweo-page-repairs.css
-          grep -Fq 'doweo-page-repairs.css?v=20261121-bills-navy-v3' .pages-output/index.html
+          grep -Fq 'doweo-page-repairs.css?v=20261121-navy-pages-v4' .pages-output/index.html
           node --test test/doweo-css-consolidation.test.mjs
           test -s .pages-output/doweo-unified-shell.css
           test -s .pages-output/doweo-unified-shell.js
