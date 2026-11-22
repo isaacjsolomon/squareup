@@ -84,4 +84,10 @@
     border:1px solid #3d8f86!important;
     color:#e9fbf6!important;
   }
+  /* Legacy alternating tracker artwork had a peach/orange highlight.
+     Use a cool teal highlight on mobile while leaving desktop intact. */
+  html body.trackers-view #trackers-page .tracker-tile:nth-child(3n+2) .tracker-tile-banner:not([style*="background-image"]) {
+    background:radial-gradient(ellipse at 72% 12%,rgba(79,225,200,.24),transparent 38%),
+      linear-gradient(145deg,#163a50,#10273d 60%,#0b1f35)!important;
+  }
 }
