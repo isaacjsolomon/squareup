@@ -5,10 +5,11 @@ import {UI_PHRASES} from '../doweo-ui-catalog.mjs';
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const moreScript=readFileSync(new URL('../doweo-mobile-more-pages.js',import.meta.url),'utf8');
+const styles=readFileSync(new URL('../styles.css',import.meta.url),'utf8');
 const workflow=readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',import.meta.url),'utf8');
 const manifest=JSON.parse(readFileSync(new URL('../manifest.webmanifest',import.meta.url),'utf8'));
 const sectionStart=html.indexOf('<div class="sq-balanced-overlay" id="sq-mobile-more-sheet"');
-const sectionEnd=html.indexOf('<style id="dw-mobile-social-menu-style">',sectionStart);
+const sectionEnd=html.indexOf('<!-- Native Safari-friendly installation guide;',sectionStart);
 const more=html.slice(sectionStart,sectionEnd);
 
 test('the real HTML contains a visible mobile Home Screen action above the actual More grid',()=>{
@@ -18,11 +19,11 @@ test('the real HTML contains a visible mobile Home Screen action above the actua
  assert.ok(more.indexOf('id="dw-mobile-home-screen-install-native"')>more.indexOf('All your DoWeo tools in one place.'),'button follows More introduction');
  assert.ok(more.indexOf('id="dw-mobile-home-screen-install-native"')<more.indexOf('sq-balanced-actions sq-balanced-more-grid'),'button precedes the eight tiles');
  assert.match(more,/onclick="document.getElementById\('dw-mobile-home-screen-help'\).showModal\(\)"/,'button opens modal directly');
- assert.match(more,/<form method="dialog"><button type="submit">Got it<\/button><\/form>/,'close works natively');
- assert.match(more, /@media\(max-width:900px\)/,'mobile styling is present in index itself');
- assert.match(more, /#sq-mobile-more-sheet #dw-mobile-home-screen-install-native\{/);
- assert.match(more, /display:flex!important/);
- assert.match(more, /@media\(min-width:901px\)\{#dw-mobile-home-screen-install-native\{display:none!important\}\}/,'desktop is unaffected');
+ assert.match(html,/<form method="dialog"><button type="submit">Got it<\/button><\/form>/,'close works natively');
+ assert.match(styles, /@media\(max-width:900px\)/,'mobile styling is retained in the consolidated CSS');
+ assert.match(styles, /#sq-mobile-more-sheet #dw-mobile-home-screen-install-native\{/);
+ assert.match(styles, /display:flex!important/);
+ assert.match(styles, /@media\(min-width:901px\)\{#dw-mobile-home-screen-install-native\{display:none!important\}\}/,'desktop is unaffected');
  assert.doesNotMatch(moreScript,/ensureInstallButton|iosDevice\(/,'no device detection or runtime injection may hide the button');
  assert.equal(manifest.display,'standalone');
  assert.ok(manifest.icons.some(icon=>icon.sizes==='192x192'));
