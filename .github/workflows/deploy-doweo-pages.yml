@@ -23,7 +23,7 @@ jobs:
           mkdir -p .pages-output
           cp index.html styles.css doweo-page-repairs.css doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs doweo-bills-mobile-dashboard.js doweo-bills-mobile-dashboard.css doweo-finance-planning.js doweo-trips-activity.js doweo-paylinks-currency.js doweo-trackers-tabs.css doweo-home-add-menu.js doweo-home-add-menu.css doweo-desktop-polish.css doweo-mobile-more-pages.js doweo-mobile-more-pages.css doweo-mobile-home-navy-cards.css doweo-mint-dashboard.css doweo-reference-home.css doweo-reference-home.js doweo-desktop-standalone.css doweo-desktop-standalone.js doweo-cashflow-analytics.js doweo-polls-dashboard.js doweo-polls-dashboard.css doweo-unified-shell.css doweo-unified-shell.js doweo-unified-localize.js doweo-unified-locales.mjs doweo-beta-nudge.css doweo-beta-nudge.js doweo-first-run.js doweo-first-run.css doweo-split-bill-modal.css doweo-split-bill-modal.js doweo-backdrop-images.js .pages-output/
           # Bump these URLs in the published HTML to invalidate old browser-cached UI assets.
-          sed -E -i 's#(doweo-bills-mobile-dashboard\.(css|js))\?v=[^\"]+#\1?v=20261116-overview-picker-v10#g' .pages-output/index.html
+          sed -E -i 's#(doweo-bills-mobile-dashboard\.(css|js))\?v=[^\"]+#\1?v=20261122-approved-seven-palette-v2#g' .pages-output/index.html
           # Version the cleaned tracker planning script to invalidate old broken navigation code.
           sed -i 's#src="/doweo-trips-activity.js"#src="/doweo-trips-activity.js?v=20261119-removed-category-tabs-v8"#g' .pages-output/index.html
           # Ensure iOS PWA installations load the refreshed translation catalog and fallbacks.
@@ -35,23 +35,25 @@ jobs:
           from pathlib import Path
           page = Path('.pages-output/index.html')
           html = page.read_text()
-          css = '<link rel="stylesheet" href="/doweo-tracker-header.css?v=20261116-overview-picker-v10">'
-          css += '<link rel="stylesheet" href="/doweo-trackers-tabs.css?v=20261119-retired-tabs-v8">'
-          css += '<link rel="stylesheet" href="/doweo-home-add-menu.css?v=20261119-add-dropdown-v1">'
-          css += '<link rel="stylesheet" href="/doweo-split-bill-modal.css?v=20261119-split-modal-v1">'
-          css += '<link rel="stylesheet" href="/doweo-desktop-polish.css?v=20261120-desktop-consistency-v1">'
-          css += '<link rel="stylesheet" href="/doweo-first-run.css?v=20261121-onboarding-v1">'
-          css += '<link rel="stylesheet" href="/doweo-mobile-more-pages.css?v=20261121-static-install-v3">'
-          css += '<link rel="stylesheet" href="/doweo-mobile-home-navy-cards.css?v=20261121-home-cards-v1">'
-          js = '<script defer src="/doweo-tracker-header.js?v=20261116-overview-picker-v10"></script>'
-          js += '<script defer src="/doweo-home-add-menu.js?v=20261122-add-no-chevron-v2"></script>'
-          js += '<script defer src="/doweo-split-bill-modal.js?v=20261119-split-modal-v1"></script>'
-          js += '<script defer src="/doweo-backdrop-images.js?v=20261119-image-compat-v1"></script>'
-          js += '<script defer src="/doweo-mobile-more-pages.js?v=20261121-static-install-v3"></script>'
-          js += '<script defer src="/doweo-first-run.js?v=20261121-onboarding-v1"></script>'
+          css = '<link rel="stylesheet" href="/doweo-tracker-header.css?v=20261122-approved-seven-palette-v2">'
+          css += '<link rel="stylesheet" href="/doweo-trackers-tabs.css?v=20261122-approved-seven-palette-v2">'
+          css += '<link rel="stylesheet" href="/doweo-home-add-menu.css?v=20261122-approved-seven-palette-v2">'
+          css += '<link rel="stylesheet" href="/doweo-split-bill-modal.css?v=20261122-approved-seven-palette-v2">'
+          css += '<link rel="stylesheet" href="/doweo-desktop-polish.css?v=20261122-approved-seven-palette-v2">'
+          css += '<link rel="stylesheet" href="/doweo-first-run.css?v=20261122-approved-seven-palette-v2">'
+          css += '<link rel="stylesheet" href="/doweo-mobile-more-pages.css?v=20261122-approved-seven-palette-v2">'
+          css += '<link rel="stylesheet" href="/doweo-mobile-home-navy-cards.css?v=20261122-approved-seven-palette-v2">'
+          js = '<script defer src="/doweo-tracker-header.js?v=20261122-approved-seven-palette-v2"></script>'
+          js += '<script defer src="/doweo-home-add-menu.js?v=20261122-approved-seven-palette-v2"></script>'
+          js += '<script defer src="/doweo-split-bill-modal.js?v=20261122-approved-seven-palette-v2"></script>'
+          js += '<script defer src="/doweo-backdrop-images.js?v=20261122-approved-seven-palette-v2"></script>'
+          js += '<script defer src="/doweo-mobile-more-pages.js?v=20261122-approved-seven-palette-v2"></script>'
+          js += '<script defer src="/doweo-first-run.js?v=20261122-approved-seven-palette-v2"></script>'
           assert '</head>' in html and '</body>' in html
-          marker = '<link rel="stylesheet" href="/styles.css?v=20261121-unified-v1">'
-          assert marker in html, "Unified design system stylesheet link missing"
+          import re
+          marker_match = re.search(r'<link\\s+rel="stylesheet"\\s+href="/styles\\.css\\?v=[^"]+"[^>]*>', html)
+          assert marker_match, "Unified design system stylesheet link missing"
+          marker = marker_match.group(0)
           # Keep the consolidated sheet after all legacy external component CSS.
           html = html.replace(marker, css + marker, 1).replace('</body>', js + '</body>', 1)
           page.write_text(html)
@@ -83,18 +85,19 @@ jobs:
           test -s .pages-output/doweo-polls-dashboard.js
           node --check .pages-output/doweo-polls-dashboard.js
           test -s .pages-output/doweo-polls-dashboard.css
-          grep -Fq 'doweo-polls-dashboard.js?v=20261122-polls-dashboard-v1' .pages-output/index.html
-          grep -Fq 'doweo-polls-dashboard.css?v=20261122-polls-dashboard-v1' .pages-output/index.html
+          grep -Fq 'doweo-polls-dashboard.js?v=20261122-approved-seven-palette-v2' .pages-output/index.html
+          grep -Fq 'doweo-polls-dashboard.css?v=20261122-approved-seven-palette-v2' .pages-output/index.html
           node --test test/doweo-polls-dashboard.test.mjs
           node --test test/doweo-desktop-standalone.test.mjs
           test -s .pages-output/styles.css
           test -s .pages-output/doweo-page-repairs.css
-          grep -Fq 'doweo-page-repairs.css?v=20261121-production-visible-v5' .pages-output/index.html
+          grep -Fq 'doweo-page-repairs.css?v=20261122-approved-seven-palette-v2' .pages-output/index.html
           grep -Fq 'UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121' .pages-output/index.html
           grep -Fq 'id="dw-route-visual-enforcer-v6"' .pages-output/index.html
-          grep -Fq 'doweo-unified-shell.css?v=20261122-fixed-tabs-v4' .pages-output/index.html
+          grep -Fq 'doweo-unified-shell.css?v=20261122-approved-seven-palette-v2' .pages-output/index.html
           grep -Fq 'id="dw-bills-exact-reference-v9"' .pages-output/index.html
-          grep -Fq 'gradient, not a white' .pages-output/index.html || grep -Fq 'linear-gradient(145deg,#102139 0%,#10223b 52%,#0d2037 100%)' .pages-output/index.html
+          grep -Fq -- '--bg: #0A1B2E' .pages-output/styles.css
+          grep -Fq -- '--accent: #ABC6D7' .pages-output/styles.css
           node --test test/doweo-css-consolidation.test.mjs
           test -s .pages-output/doweo-unified-shell.css
           test -s .pages-output/doweo-unified-shell.js
@@ -120,6 +123,7 @@ jobs:
           node --test test/polls-api.test.mjs test/recent-expense-api.test.mjs test/tracker-loading-performance.test.mjs
           node --test test/mobile-ios-install-guide.test.mjs test/mobile-more-inspect.test.mjs test/doweo-mobile-more-flat-grid.test.mjs
           node scripts/verify-pages-assets.mjs .pages-output
+          node scripts/verify-approved-palette.mjs .pages-output
 
       # Run Wrangler from the repository root so it discovers ./functions.
       # Uploading through the dashboard would not compile Pages Functions.
@@ -130,27 +134,27 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy .pages-output --project-name=doweo --branch=main
 
-      # A passing local test does not establish that doweo.app serves this revision.
-      # Assert the actual public origin supplies the HTML and stylesheet produced above.
-      - name: Verify new navy page release is visible on production
+      # A passing build does not prove the public site serves the new release.
+      # Fetch the production origin and validate the release marker and palette.
+      - name: Verify the approved seven-color release on production
         shell: bash
         run: |
           set -euo pipefail
           for n in {1..15}; do
-            page="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' "https://doweo.app/?release=doweo-desktop-v5-navy-analytics-20261121" || true)"
-            css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' "https://doweo.app/doweo-page-repairs.css?v=20261121-production-visible-v5" || true)"
-            if [[ "$page" == *'UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121'* ]] &&
-               [[ "$page" == *'doweo-desktop-v5-navy-analytics'* ]] &&
-               [[ "$page" == *'id="dw-route-visual-enforcer-v6"'* ]] &&
-               [[ "$page" == *'id="dw-bills-exact-reference-v9"'* ]] &&
-               [[ "$css" == *'Desktop screenshot correction v4'* ]]; then
-              echo "Production HTML and CSS version verified on doweo.app"
+            page="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' "https://doweo.app/?release=20261122-approved-seven-palette-v2" || true)"
+            css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' "https://doweo.app/styles.css?v=20261122-approved-seven-palette-v2" || true)"
+            if [[ "$page" == *'seven-color-source-palette-20261122-v2'* ]] &&
+               [[ "$page" == *'styles.css?v=20261122-approved-seven-palette-v2'* ]] &&
+               [[ "$css" == *'--bg: #0A1B2E'* ]] &&
+               [[ "$css" == *'--accent: #ABC6D7'* ]] &&
+               [[ "$css" == *'--text: #F3F8FC'* ]]; then
+              echo "Production HTML and strict seven-color stylesheet verified on doweo.app"
               exit 0
             fi
-            echo "Production is still serving older HTML/CSS (check $n of 15)"
+            echo "Production does not yet serve the verified seven-color release (check $n of 15)"
             sleep 10
           done
-          echo "::error::Cloudflare did not publish the new HTML and CSS to doweo.app"
+          echo "::error::Cloudflare did not publish the approved seven-color HTML and CSS to doweo.app"
           exit 1
 
       - uses: actions/setup-node@v4
