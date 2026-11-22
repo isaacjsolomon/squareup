@@ -3,12 +3,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const css=fs.readFileSync(new URL('../styles.css',import.meta.url),'utf8');
 const script=fs.readFileSync(new URL('../doweo-translations.js',import.meta.url),'utf8');
 const dep=fs.readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',import.meta.url),'utf8');
 test('Account tab uses two-column responsive layout and no three-column override',()=>{
-  assert.match(html,/#settings-content-account > \.settings-tab-grid\{[\s\S]*?grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
-  assert.match(html,/#settings-content-account > \.settings-tab-grid > div:nth-child\(2\)\{[\s\S]*?grid-column:1/);
-  assert.match(html,/#settings-content-account > \.settings-tab-grid > div:nth-child\(3\)\{[\s\S]*?grid-column:2/);
+  assert.match(css,/#settings-content-account > \.settings-tab-grid\{[\s\S]*?grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(css,/#settings-content-account > \.settings-tab-grid > div:nth-child\(2\)\{[\s\S]*?grid-column:1/);
+  assert.match(css,/#settings-content-account > \.settings-tab-grid > div:nth-child\(3\)\{[\s\S]*?grid-column:2/);
 });
 test('translation assets ship to Cloudflare',()=>{
   assert.match(html,/<script src="doweo-translations\.js" defer><\/script>/);
