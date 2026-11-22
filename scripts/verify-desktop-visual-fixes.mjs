@@ -8,7 +8,7 @@ try{
  await page.goto(base+'/?visual-check=original-instagram-v3',{waitUntil:'domcontentloaded',timeout:45000});
  await page.locator('#sq-instagram-invite').waitFor({state:'attached',timeout:20000});
  await page.waitForFunction(()=>{
-  return !!Array.from(document.styleSheets).find(s=>s.href?.includes('doweo-desktop-standalone.css?v=20261122-cashflow-nav-cool-v5'));
+  return !!Array.from(document.styleSheets).find(s=>s.href?.includes('doweo-desktop-standalone.css?v=20261122-analytics-match-v7'));
  },null,{timeout:25000});
 
  const result=await page.evaluate(async()=>{
@@ -57,10 +57,57 @@ try{
    document.body.classList.add('sq-finance-open');
   }
   prime();
-  const title=document.getElementById('sq-ng-title'),sub=document.getElementById('sq-ng-subtitle');
-  const header=hub.querySelector('.sq-ng-header');
-  const headingStyle=getComputedStyle(header).backgroundColor;
-  const subtitleStyle=getComputedStyle(sub).color;
+  const headingStyle=getComputedStyle(hub.querySelector('.sq-ng-header')).display;
+  if(typeof window.dwCashFlowAnalyticsRender!=='function')throw new Error('Cash Flow Analytics renderer is missing');
+  const today=new Date().toISOString().slice(0,10);
+  const content=hub.querySelector('#sq-ng-content');
+  window.dwCashFlowAnalyticsRender({
+   content,
+   finance:[{id:'test-1',kind:'income',amount:100,description:'Sample income',category:'Work',occurred_on:today},
+            {id:'test-2',kind:'expense',amount:20,description:'Sample expense',category:'Food',occurred_on:today}],
+   money:v=>'
+  const nav=document.createElement('button');nav.type='button';nav.textContent='Navigation regression probe';
+  sidebar.append(nav);
+  nav.click();
+  await new Promise(resolve=>requestAnimationFrame(resolve));
+  const sidebarResult={hidden:hub.hidden,cssDisplay:getComputedStyle(hub).display,openClass:document.body.classList.contains('sq-finance-open')};
+  nav.remove();
+  const top=document.createElement('header');top.id='dw-all-topbar';
+  const tab=document.createElement('button');tab.dataset.dwAllTab='expenses';top.append(tab);
+  document.body.append(top);
+  prime();tab.click();
+  await new Promise(resolve=>requestAnimationFrame(resolve));
+  const topResult={hidden:hub.hidden,cssDisplay:getComputedStyle(hub).display,openClass:document.body.classList.contains('sq-finance-open')};
+  top.remove();
+  return {headingStyle,panelBackground,titleColor,kpiCount,chartCount,sidebarResult,topResult};
+ });
+ console.log('Live Cash Flow navigation:',JSON.stringify(financeNav));
+ for(const [name,part] of Object.entries({sidebar:financeNav.sidebarResult,topTab:financeNav.topResult})){
+  assert.equal(part.hidden,true,name+' navigation must close the Cash Flow DOM');
+  assert.equal(part.cssDisplay,'none',name+' navigation must remove finance overlay from viewport');
+  assert.equal(part.openClass,false,name+' navigation must clear cashflow-open state');
+ }
+ assert.equal(financeNav.headingStyle,'none','Old dark finance heading card must be hidden');
+ assert.equal(financeNav.panelBackground,'rgb(247, 250, 255)','Cash Flow panels must match Spending Analytics white cards');
+ assert.equal(financeNav.titleColor,'rgb(25, 45, 80)','Cash Flow title must match Analytics navy typography');
+ assert.equal(financeNav.kpiCount,4,'Cash Flow must display four analytics-style KPI cards');
+ assert.equal(financeNav.chartCount,2,'Cash Flow must display two analytics-style chart panels');
+
+ await page.setViewportSize({width:390,height:844});
+ await page.waitForTimeout(100);
+ assert.equal(await page.locator('#sq-instagram-invite .sq-ig-x').evaluate(el=>el.classList.contains('doweo-close-control')),true,'Mobile original close control remains unchanged');
+ console.log('Original Instagram desktop popup and wallpaper mirroring verified; mobile close control unchanged');
+}finally{
+ await browser.close();
+}
++Number(v).toFixed(2),
+   esc:v=>String(v).replace(/[&<>"]/g,''),
+   refresh:()=>{}
+  });
+  const panelBackground=getComputedStyle(content.querySelector('.dw-cash-panel')).backgroundColor;
+  const titleColor=getComputedStyle(content.querySelector('.dw-cash-header h2')).color;
+  const kpiCount=content.querySelectorAll('.dw-cash-kpis .analytics-stat').length;
+  const chartCount=content.querySelectorAll('.dw-cash-charts .dw-cash-panel').length;
   const nav=document.createElement('button');nav.type='button';nav.textContent='Navigation regression probe';
   sidebar.append(nav);
   nav.click();
