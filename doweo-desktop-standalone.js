@@ -138,6 +138,15 @@
  const desktop=window.matchMedia('(min-width:901px)');
  const backdrop=document.getElementById('backdrop');
  if(!backdrop)return;
+
+ /* Keep the original shared X button on mobile. Desktop invitation intentionally
+    opts out of the oversized global close-control styling. */
+ function syncInstagramClose(){
+  const close=document.querySelector('#sq-instagram-invite .sq-ig-x');
+  if(close)close.classList.toggle('doweo-close-control',!desktop.matches);
+ }
+ syncInstagramClose();
+ desktop.addEventListener('change',syncInstagramClose);
  const fallback='linear-gradient(135deg,#112b48,#0a1b31)';
  const root=document.documentElement.style;
  function syncWallpaper(){
