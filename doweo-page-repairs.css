@@ -9,7 +9,7 @@
   }
   /* The actual wallpaper is a separate #backdrop BODY sibling (not .wrap).
      Override both uploaded tracker photos and inline gradient backgrounds. */
-  html body.notifications-view:not(.sq-auth-guest) > #backdrop {
+  html body.notifications-view:not(.sq-auth-guest) > #backdrop#backdrop {
     background:#0b1d34!important;
     background-image:none!important;
     background-color:#0b1d34!important;
