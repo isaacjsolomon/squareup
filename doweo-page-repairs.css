@@ -538,3 +538,21 @@
     }
   }
 }
+
+
+/* Specificity guard: the bill creation card is also targeted by legacy
+   selector chains with IDs and :has(). Reset all background layers. */
+@media(min-width:901px){
+ html body.dw-all-secondary-view #sq-bills-page#sq-bills-page .sq-bills-card.sq-bills-card,
+ html body.dw-all-secondary-view #sq-bills-page#sq-bills-page .sq-premium-metrics article,
+ html body.dw-all-secondary-view #sq-bills-page#sq-bills-page .sq-premium-calendar.sq-premium-calendar{
+   background:#102b49!important;
+   background-color:#102b49!important;
+   background-image:none!important;
+   color:#f6faff!important;
+ }
+ html body.dw-all-secondary-view #sq-bills-page#sq-bills-page .sq-bills-card.sq-bills-card
+ :is(h2,h3,h4,strong,b,span,label,small,p) {
+   color:#f6faff!important;
+ }
+}
