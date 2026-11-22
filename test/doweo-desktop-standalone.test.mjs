@@ -135,7 +135,7 @@ test('private Cash Flow controls and month filtering remain functional',()=>{
 });
 
 test('closed expense details overlays never intercept desktop clicks',()=>{
- assert.match(css, /#sq-details-overlay\\.dw-desktop-standalone:not\\(\\.open\\)/);
- assert.match(css, /#sq-details-overlay\\.dw-desktop-standalone\\[aria-hidden="true"\\]/);
+ assert.match(css, /#sq-details-overlay\.dw-desktop-standalone:not\(\.open\)/);
+ assert.match(css, /#sq-details-overlay\.dw-desktop-standalone\[aria-hidden="true"\]/);
  assert.match(css, /pointer-events:none!important/);
 });
