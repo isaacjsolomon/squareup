@@ -3,44 +3,44 @@ export function initBetaFeedback({api,getUser}) {
   if (document.getElementById('dw-beta-launch')) return;
   const style=document.createElement('style');
   style.textContent=`
-  #dw-beta-launch{position:fixed;right:18px;bottom:100px;z-index:8000;display:none;align-items:center;gap:8px;border:1px solid #6a8fb0;border-radius:999px;background:#0b2a52;color:white;padding:11px 17px;box-shadow:0 8px 26px #0005;font:700 13px system-ui;cursor:pointer}
-  #dw-beta-launch:focus-visible,#dw-beta-modal button:focus-visible,#dw-beta-modal input:focus-visible,#dw-beta-modal textarea:focus-visible{outline:3px solid #ffffff;outline-offset:2px}
+  #dw-beta-launch{position:fixed;right:18px;bottom:100px;z-index:8000;display:none;align-items:center;gap:8px;border:1px solid #ABC6D7;border-radius:999px;background:#173750;color:#F3F8FC;padding:11px 17px;box-shadow:0 8px 26px color-mix(in srgb, #0A1B2E 33.3%, transparent);font:700 13px system-ui;cursor:pointer}
+  #dw-beta-launch:focus-visible,#dw-beta-modal button:focus-visible,#dw-beta-modal input:focus-visible,#dw-beta-modal textarea:focus-visible{outline:3px solid #F3F8FC;outline-offset:2px}
   #dw-beta-modal[hidden]{display:none!important}
-  #dw-beta-modal{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;background:#020d23bd;padding:16px;color:#eef5ff;font:14px system-ui}
+  #dw-beta-modal{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;background:color-mix(in srgb, #0A1B2E 74.1%, transparent);padding:16px;color:#F3F8FC;font:14px system-ui}
   #dw-beta-modal *{box-sizing:border-box}
-  #dw-beta-modal .dw-panel{width:min(100%,510px);max-height:min(90dvh,760px);overflow:auto;border:1px solid #40638b;border-radius:22px;background:linear-gradient(150deg,#123561,#091b39);padding:25px;box-shadow:0 24px 70px #0008}
+  #dw-beta-modal .dw-panel{width:min(100%,510px);max-height:min(90dvh,760px);overflow:auto;border:1px solid #355E72;border-radius:22px;background:linear-gradient(150deg,#173750,#0A1B2E);padding:25px;box-shadow:0 24px 70px color-mix(in srgb, #0A1B2E 53.3%, transparent)}
   #dw-beta-modal .dw-top{display:flex;justify-content:space-between;gap:12px;align-items:start}
-  #dw-beta-modal h2{margin:0 0 6px;font-size:23px;color:#fff}
-  #dw-beta-modal p{color:#b7cee7;line-height:1.5}
-  #dw-beta-modal .dw-close{border:0;background:transparent;color:#fff;font-size:26px;cursor:pointer}
+  #dw-beta-modal h2{margin:0 0 6px;font-size:23px;color:#F3F8FC}
+  #dw-beta-modal p{color:#ABC6D7;line-height:1.5}
+  #dw-beta-modal .dw-close{border:0;background:transparent;color:#F3F8FC;font-size:26px;cursor:pointer}
   #dw-beta-modal .dw-types{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:20px 0}
-  #dw-beta-modal .dw-types button{padding:12px 6px;border:1px solid #456a91;border-radius:11px;background:#153a65;color:#f0f6ff;cursor:pointer}
-  #dw-beta-modal .dw-types button[aria-pressed=true]{background:#ffffff;color:#081a32;border-color:#ffffff;font-weight:800}
+  #dw-beta-modal .dw-types button{padding:12px 6px;border:1px solid #355E72;border-radius:11px;background:#204158;color:#F3F8FC;cursor:pointer}
+  #dw-beta-modal .dw-types button[aria-pressed=true]{background:#F3F8FC;color:#0A1B2E;border-color:#F3F8FC;font-weight:800}
   #dw-beta-modal label{display:block;margin:14px 0 6px;font-weight:650}
-  #dw-beta-modal input,#dw-beta-modal textarea{display:block;width:100%;background:#071b35;color:#fff;border:1px solid #58759b;border-radius:10px;padding:12px;font:inherit}
+  #dw-beta-modal input,#dw-beta-modal textarea{display:block;width:100%;background:#0A1B2E;color:#F3F8FC;border:1px solid #355E72;border-radius:10px;padding:12px;font:inherit}
   #dw-beta-modal textarea{resize:vertical;min-height:112px}
   #dw-beta-modal .dw-stars{display:flex;gap:6px;margin:10px 0}
-  #dw-beta-modal .dw-stars button{border:0;background:transparent;color:#8ba7c6;font-size:32px;cursor:pointer;padding:3px}
-  #dw-beta-modal .dw-stars button[aria-pressed=true]{color:#ffffff}
-  #dw-beta-modal .dw-submit{width:100%;padding:13px;border:0;border-radius:11px;background:#ffffff;color:#10213b;font-weight:800;cursor:pointer;margin-top:18px}
+  #dw-beta-modal .dw-stars button{border:0;background:transparent;color:#ABC6D7;font-size:32px;cursor:pointer;padding:3px}
+  #dw-beta-modal .dw-stars button[aria-pressed=true]{color:#F3F8FC}
+  #dw-beta-modal .dw-submit{width:100%;padding:13px;border:0;border-radius:11px;background:#F3F8FC;color:#102B40;font-weight:800;cursor:pointer;margin-top:18px}
   #dw-beta-modal .dw-submit:disabled{opacity:.55;cursor:wait}
   #dw-beta-modal .dw-message{min-height:20px;font-size:13px;margin:10px 0 0}
-  #sq-mobile-more-sheet #dw-beta-more-action{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:60px;margin-top:12px;padding:14px 20px;border:1px solid #bfeaff;border-radius:15px;background:linear-gradient(120deg,#b8e7ff,#88cdf4);color:#092743;font:inherit;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(42,147,210,.16)}
+  #sq-mobile-more-sheet #dw-beta-more-action{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:60px;margin-top:12px;padding:14px 20px;border:1px solid #F3F8FC;border-radius:15px;background:linear-gradient(120deg,#ABC6D7,#ABC6D7);color:#102B40;font:inherit;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px color-mix(in srgb, #355E72 16%, transparent)}
   #sq-mobile-more-sheet #dw-beta-more-action span[aria-hidden="true"]{font-size:40px;line-height:1;display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;transform:translateY(-1px)}
   #sq-mobile-more-sheet #dw-beta-more-action span:not([aria-hidden]){display:inline-flex;align-items:center;line-height:1.2}
-  #sq-mobile-more-sheet #dw-beta-more-action:active{transform:translateY(1px);background:#83c5ec}
-  #sq-mobile-more-sheet #dw-beta-more-action:focus-visible{outline:3px solid #fff;outline-offset:3px}
+  #sq-mobile-more-sheet #dw-beta-more-action:active{transform:translateY(1px);background:#ABC6D7}
+  #sq-mobile-more-sheet #dw-beta-more-action:focus-visible{outline:3px solid #F3F8FC;outline-offset:3px}
   /* Standalone desktop sidebar destination below (not inside) the More dropdown. */
   @media(min-width:901px){
     .sidebar .squareup-nav #dw-beta-launch{
       position:relative;left:auto;right:auto;top:auto;bottom:auto;z-index:auto;
       width:100%;max-width:100%;min-height:47px;box-sizing:border-box;
       margin:3px 0 2px;padding:12px 9px;justify-content:center;
-      border:1px solid #8e8aff66;border-radius:13px;
-      background:linear-gradient(120deg,#182d58,#5940e8);color:white;box-shadow:0 5px 16px #0003;
+      border:1px solid color-mix(in srgb, #ABC6D7 40%, transparent);border-radius:13px;
+      background:linear-gradient(120deg,#173750,#355E72);color:#F3F8FC;box-shadow:0 5px 16px color-mix(in srgb, #0A1B2E 20%, transparent);
       font:700 13px system-ui;line-height:1.25;white-space:normal;
     }
-    .sidebar .squareup-nav #dw-beta-launch:hover{background:linear-gradient(120deg,#182d58,#5940e8);filter:brightness(1.15)}
+    .sidebar .squareup-nav #dw-beta-launch:hover{background:linear-gradient(120deg,#173750,#355E72);filter:brightness(1.15)}
     body.side-collapsed .sidebar .squareup-nav #dw-beta-launch{
       min-height:42px;padding:8px 3px;font-size:0;
     }
