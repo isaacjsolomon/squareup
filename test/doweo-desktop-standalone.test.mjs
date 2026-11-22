@@ -9,7 +9,7 @@ const js=read('doweo-desktop-standalone.js');
 const workflow=read('.github/workflows/deploy-doweo-pages.yml');
 
 test('desktop-only full-page workspace assets deploy and preserve mobile dialogs',()=>{
- assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-polls-teal-v12/);
+ assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-polls-teal-buttons-v13/);
  assert.match(html,/doweo-desktop-standalone\.js\?v=20261122-wallpaper-mirror-v3/);
  assert.match(workflow,/doweo-desktop-standalone\.css doweo-desktop-standalone\.js/);
  assert.match(css,/@media\(min-width:901px\)/);
@@ -74,6 +74,9 @@ test('Notification Center applies the muted slate-blue reference tint only on de
 test('Group polls use a cool teal result highlight on desktop only',()=>{
  assert.match(css,/\.dw-poll-option \.dw-poll-fill\{/);
  assert.match(css,/background:#267a98!important/);
+ assert.match(css,/#dw-polls-page #dw-poll-new/);
+ assert.match(css,/#dw-poll-editor \.dw-poll-primary/);
+ assert.match(css,/background:#2d89aa!important/);
  assert.match(css,/\.dw-poll-option\[aria-pressed="true"\]/);
  assert.match(css,/@media\(min-width:901px\)/);
 });
