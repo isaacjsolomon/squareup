@@ -2975,10 +2975,11 @@ async function applyBackdrop() {
   // old style blocks cannot resurrect the purple/beige canvas.
   const phoneTheme = window.matchMedia("(max-width:900px)").matches;
   const navyCanvas = "linear-gradient(155deg,#0a1b2e 0%,#10283e 52%,#15364b 100%)";
+  // The phone UI uses one consistent navy canvas for all palette presets.
+  // Uploaded tracker photo wallpapers are the one intentional exception.
   const chosenImage = url
     ? 'url("' + url + '")'
-    : (phoneTheme && (!b.preset || b.preset === "indigo")
-       ? navyCanvas : (PRESETS[b.preset] || PRESETS.indigo).css);
+    : (phoneTheme ? navyCanvas : (PRESETS[b.preset] || PRESETS.indigo).css);
   el.style.setProperty("background-image", chosenImage, phoneTheme ? "important" : "");
   if (phoneTheme) el.style.setProperty("background-color", "#0a1b2e", "important");
   else el.style.removeProperty("background-color");
@@ -9599,7 +9600,97 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 <script defer src="/doweo-desktop-standalone.js?v=20261122-wallpaper-mirror-v3"></script>
 <link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261122-polls-teal-buttons-v13">
 <link rel="stylesheet" href="/doweo-polls-dashboard.css?v=20261122-polls-dashboard-v1">
-<link rel="stylesheet" href="/doweo-mobile-no-beige.css?v=20261122-mobile-theme-unlocked-v4">
+<!-- Single authoritative mobile theme: inlined to avoid a stale PWA stylesheet. -->
+<style id="dw-mobile-theme-authoritative-v5">
+/* DoWeo mobile palette — navy + mint; no yellow, beige, cream or purple canvas.
+   This supersedes earlier mobile color-scheme locks. Visual styling only;
+   never touch desktop geometry, navigation, tracker data or user photos. */
+@media screen and (max-width:900px) {
+  :root {
+    --dw-mobile-canvas:#0a1b2e;
+    --dw-mobile-canvas-top:#0a1b2e;
+    --dw-mobile-canvas-bottom:#15364b;
+    --dw-mobile-card:#102b40;
+    --dw-mobile-border:#355e72;
+    --dw-mobile-accent:#60f1ad;
+    --dw-mobile-ink:#f3f8fc;
+    --dw-mobile-muted:#abc6d7;
+    --side-bg:#10283e!important;
+    --side-line:#35566d!important;
+  }
+  html {
+    background-color:var(--dw-mobile-canvas)!important;
+    background-image:none!important;
+  }
+  /* The original indigo/purple page paint is on #backdrop, not the cards.
+     Override every legacy non-photo preset on mobile so no old color remains.
+     Uploaded wallpapers remain user-controlled. */
+  html body #backdrop#backdrop:not(.photo) {
+    background-color:var(--dw-mobile-canvas)!important;
+    background-image:linear-gradient(155deg,#0a1b2e 0%,#10283e 52%,#15364b 100%)!important;
+    background-position:center!important;
+    background-size:cover!important;
+  }
+  /* Prevent browser body/html backgrounds exposing a second purple strip
+     outside the backdrop on mobile and when a dialog is open. */
+  html body:not(.sq-auth-guest):not(.sq-auth-loading) {
+    background-color:transparent!important;
+    background-image:none!important;
+  }
+  /* Every shared top and bottom mobile navigation surface uses navy. */
+  html body :is(.sq-mobile-top,.sq-mobile-nav,.sq-workspace-tabs) {
+    background-color:#0d2439!important;
+    border-color:var(--dw-mobile-border)!important;
+  }
+  /* Standard cards and dialogs use the same navy family; preserve shape,
+     existing positioning, custom wallpapers, photographs and action logic. */
+  html body :is(
+    .dw-mh-small,.dw-mh-activity,.dw-mobile-more-page-card,
+    .sq-ng-card,.sq-ng-panel,.sq-ng-item,
+    .sq-bill-create-card,.sq-bills-card,.sq-bills-column,
+    .sq-premium-calendar,.sq-premium-metrics > article,
+    .sq-bills-row,.sq-bills-list-head,.dw-inbox-item,
+    .notification-panel,.sq-mobile-sheet,.sq-balanced-sheet
+  ) {
+    background-color:var(--dw-mobile-card)!important;
+    border-color:var(--dw-mobile-border)!important;
+  }
+  /* Navy Instagram invitation, including after it opens over any route.
+     This supersedes earlier popup palette restrictions. */
+  html body #sq-instagram-invite .sq-ig-card {
+    background:#102b40!important;
+    background-image:none!important;
+    border:1px solid #467689!important;
+    color:var(--dw-mobile-ink)!important;
+  }
+  html body #sq-instagram-invite :is(#sq-ig-title,.sq-ig-x) {
+    color:var(--dw-mobile-ink)!important;
+  }
+  html body #sq-instagram-invite #sq-ig-description {
+    color:var(--dw-mobile-muted)!important;
+  }
+  html body #sq-instagram-invite .sq-ig-follow {
+    background:var(--dw-mobile-accent)!important;
+    color:#062e36!important;
+  }
+  html body #sq-instagram-invite .sq-ig-later {
+    color:var(--dw-mobile-muted)!important;
+  }
+  /* The first balance action used mint text on a mint fill, making it blank. */
+  html body #tracker-dashboard #dw-mobile-home-layered .dw-mh-actions button:first-child,
+  html body #tracker-dashboard #dw-mobile-home-layered .dw-mh-actions button:first-child :is(span,strong,small,b,svg) {
+    color:#062e36!important;
+    -webkit-text-fill-color:#062e36!important;
+  }
+  /* Receipt warnings previously used a yellow/orange surface. */
+  html body .sq-receipt-alert {
+    background:#15384a!important;
+    border:1px solid #3d8f86!important;
+    color:#e9fbf6!important;
+  }
+}
+</style>
+<meta name="dw-mobile-theme-build" content="mobile-navy-v5-20261122">
 </body>
 </html>
 
