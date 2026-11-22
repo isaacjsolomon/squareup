@@ -54,9 +54,7 @@
   const button=holder.querySelector('#dw-compact-add');
   if(button&&!button.dataset.dwRefLabeled){
    button.dataset.dwRefLabeled='true';
-   const caret=button.querySelector('.dw-compact-add-caret');
    button.replaceChildren(document.createTextNode('+ Add'));
-   if(caret)button.append(caret);
    button.setAttribute('aria-label','Add expense, scan receipt or split a bill');
   }
   return true;
