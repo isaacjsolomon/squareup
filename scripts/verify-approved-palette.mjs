@@ -19,7 +19,7 @@ if(!files.length)throw Error('No Pages interface assets found in '+root);
 let total=0;
 for(const file of files){
  const src=readFileSync(file,'utf8');
- const matches=[...src.matchAll(/#(?:[0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3})(?![0-9a-f])/gi)];
+ const matches=[...src.matchAll(/#(?:[0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3})(?![\w-])/gi)];
  for(const m of matches){
   total++;
   if(!allowed.has(m[0].toUpperCase())){
