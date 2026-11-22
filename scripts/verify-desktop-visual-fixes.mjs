@@ -8,7 +8,7 @@ try{
  await page.goto(base+'/?visual-check=original-instagram-v3',{waitUntil:'domcontentloaded',timeout:45000});
  await page.locator('#sq-instagram-invite').waitFor({state:'attached',timeout:20000});
  await page.waitForFunction(()=>{
-  return !!Array.from(document.styleSheets).find(s=>s.href?.includes('doweo-desktop-standalone.css?v=20261122-wallpaper-instagram-final-v4'));
+  return !!Array.from(document.styleSheets).find(s=>s.href?.includes('doweo-desktop-standalone.css?v=20261122-cashflow-nav-cool-v5'));
  },null,{timeout:25000});
 
  const result=await page.evaluate(async()=>{
@@ -47,6 +47,44 @@ try{
   return document.documentElement.style.getPropertyValue('--dw-selected-tracker-wallpaper');
  });
  assert.ok(mirrored.includes('123deg'),'Tracker wallpaper must propagate to desktop page styles');
+
+ const financeNav=await page.evaluate(async()=>{
+  const hub=document.getElementById('sq-nextgen');
+  const sidebar=document.querySelector('aside.sidebar .squareup-nav')||document.querySelector('aside.sidebar');
+  if(!hub||!sidebar||typeof window.squareUpCloseFinanceHub!=='function')throw new Error('Finance router not ready');
+  function prime(){
+   hub.style.removeProperty('display');hub.hidden=false;hub.dataset.section='finance';
+   document.body.classList.add('sq-finance-open');
+  }
+  prime();
+  const title=document.getElementById('sq-ng-title'),sub=document.getElementById('sq-ng-subtitle');
+  const header=hub.querySelector('.sq-ng-header');
+  const headingStyle=getComputedStyle(header).backgroundColor;
+  const subtitleStyle=getComputedStyle(sub).color;
+  const nav=document.createElement('button');nav.type='button';nav.textContent='Navigation regression probe';
+  sidebar.append(nav);
+  nav.click();
+  await new Promise(resolve=>requestAnimationFrame(resolve));
+  const sidebarResult={hidden:hub.hidden,cssDisplay:getComputedStyle(hub).display,openClass:document.body.classList.contains('sq-finance-open')};
+  nav.remove();
+  const top=document.createElement('header');top.id='dw-all-topbar';
+  const tab=document.createElement('button');tab.dataset.dwAllTab='expenses';top.append(tab);
+  document.body.append(top);
+  prime();tab.click();
+  await new Promise(resolve=>requestAnimationFrame(resolve));
+  const topResult={hidden:hub.hidden,cssDisplay:getComputedStyle(hub).display,openClass:document.body.classList.contains('sq-finance-open')};
+  top.remove();
+  return {headingStyle,subtitleStyle,sidebarResult,topResult};
+ });
+ console.log('Live Cash Flow navigation:',JSON.stringify(financeNav));
+ for(const [name,part] of Object.entries({sidebar:financeNav.sidebarResult,topTab:financeNav.topResult})){
+  assert.equal(part.hidden,true,name+' navigation must close the Cash Flow DOM');
+  assert.equal(part.cssDisplay,'none',name+' navigation must remove finance overlay from viewport');
+  assert.equal(part.openClass,false,name+' navigation must clear cashflow-open state');
+ }
+ assert.notEqual(financeNav.headingStyle,'rgba(0, 0, 0, 0)','Cash Flow title requires an opaque readable surface');
+ assert.ok(/rgb\(2(?:0[0-9]|1[0-9]|2[0-9]),/.test(financeNav.subtitleStyle)||
+  financeNav.subtitleStyle==='rgb(214, 233, 245)','Cash Flow subtitle must be light against the dark header');
 
  await page.setViewportSize({width:390,height:844});
  await page.waitForTimeout(100);
