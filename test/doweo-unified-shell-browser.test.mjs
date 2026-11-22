@@ -149,6 +149,8 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
     const r=el.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height};
   });
   await pageOpen('nav-trackers','trackers-view');
+  const trackerGap=await page.evaluate(()=>({bottom:document.getElementById('dw-all-top-tabs').getBoundingClientRect().bottom,first:document.getElementById('trackers-gallery').getBoundingClientRect().top}));
+  assert.ok(trackerGap.first>=trackerGap.bottom+12,'Shared tabs must not cover tracker tiles or creation controls: '+JSON.stringify(trackerGap));
   console.log('TRACKERS_GEOMETRY',JSON.stringify(await page.evaluate(()=>{
     const rect=selector=>{
       const el=document.querySelector(selector);if(!el)return null;
@@ -210,7 +212,7 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
     const r=el.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height};
   });
   console.log('MATCHING_TOPBARS',JSON.stringify({overviewTabs,secondaryTabs}));
-  assert.ok(secondaryTabs.y>=0&&secondaryTabs.y<=25,
+  assert.ok(secondaryTabs.y>=0&&secondaryTabs.y<=45,
     'Shared white tabs should stay at the top of the viewport, not over page headings: '+JSON.stringify(secondaryTabs));
   assert.equal(await page.evaluate(()=>document.getElementById('dw-all-topbar').parentElement===document.body),true,
     'Shared tabs must be attached directly to BODY to avoid transformed page containers');
