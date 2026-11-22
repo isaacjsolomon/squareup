@@ -56,7 +56,10 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   await page.locator('#trackers-gallery .tile-open').first().click();
   const row=page.locator('#sq-return-activity [data-expense-id="88888888-8888-4888-8888-888888888888"]');
   await row.waitFor();
-  const seeAll=page.locator('#dw-home-columns>.sq-overview-activity-panel').getByRole('button',{name:'See all',exact:true});
+  // The current desktop Overview uses the reference activity panel, whose
+  // View All control routes through the existing Expenses workspace tab.
+  const seeAll=page.locator('#dw-ref-home .dw-ref-activity .dw-ref-text-link');
+  await seeAll.waitFor({state:'visible'});
   await seeAll.click();
   await page.waitForFunction(()=>document.getElementById('tracker-dashboard').classList.contains('sq-tab-expenses'));
   assert.equal(await page.locator('[data-sq-tab="expenses"]').getAttribute('aria-selected'),'true','See all opens all Expenses');
