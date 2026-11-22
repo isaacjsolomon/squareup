@@ -2969,7 +2969,19 @@ async function applyBackdrop() {
   if (run !== backdropRun) return; // a newer change already won
   el.classList.toggle("photo", !!url);
   el.dataset.preset = (b.preset && PRESETS[b.preset]) ? b.preset : "indigo";
-  el.style.backgroundImage = url ? 'url("' + url + '")' : (PRESETS[b.preset] || PRESETS.indigo).css;
+  // Explicit mobile brand override: the original Indigo preset is purple,
+  // and the screenshot shows it still rendering behind mobile cards/modals.
+  // Apply the navy gradient directly to the backdrop, with !important so
+  // old style blocks cannot resurrect the purple/beige canvas.
+  const phoneTheme = window.matchMedia("(max-width:900px)").matches;
+  const navyCanvas = "linear-gradient(155deg,#0a1b2e 0%,#10283e 52%,#15364b 100%)";
+  const chosenImage = url
+    ? 'url("' + url + '")'
+    : (phoneTheme && (!b.preset || b.preset === "indigo")
+       ? navyCanvas : (PRESETS[b.preset] || PRESETS.indigo).css);
+  el.style.setProperty("background-image", chosenImage, phoneTheme ? "important" : "");
+  if (phoneTheme) el.style.setProperty("background-color", "#0a1b2e", "important");
+  else el.style.removeProperty("background-color");
   var tint = url ? await photoTint(url) : null;
   if (run !== backdropRun) return;
   setSideTint(tint || (PRESETS[url ? "indigo" : b.preset] || PRESETS.indigo).side);
