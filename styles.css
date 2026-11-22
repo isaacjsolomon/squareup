@@ -9156,7 +9156,7 @@ html body #receipt-card #dw-receipt-footer>div{grid-column:1/-1!important;grid-r
 html body #receipt-card #dw-receipt-total{font-size:22px!important}
 html body #receipt-card #dw-receipt-back{grid-column:1!important;grid-row:2!important}
 html body #receipt-card #dw-receipt-next,html body #receipt-card #receipt-save{grid-column:2!important;grid-row:2!important}
-html body #receipt-card #dw-receipt-footer button{width:100%!important;min-width:0!important;min-height:44px!important;margin:0!important;padding:10px 12px!important;font-size:14px!important;line-height:1.2!important;border-radius:var(--radius-md)!important}
+html body #receipt-card #dw-receipt-footer button{width:100%!important;min-width:0!important;min-height:44px!important;height:44px!important;max-height:44px!important;align-self:stretch!important;box-sizing:border-box!important;margin:0!important;padding:10px 12px!important;font-size:14px!important;line-height:1.2!important;border-radius:var(--radius-md)!important}
 html body #receipt-card .sq-receipt-shares>div{padding:11px 0!important;font-size:14px!important;gap:14px}html body #receipt-card .sq-receipt-shares strong{font-size:14px!important;white-space:nowrap}
 html body #receipt-card #receipt-add-item{font-size:12px!important;padding:9px 12px!important;min-height:40px!important}
 }
