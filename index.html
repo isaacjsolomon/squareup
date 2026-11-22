@@ -9225,6 +9225,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 <script defer src="/doweo-unified-localize.js?v=20261121-all-locales-v1"></script>
 <!-- This must load last, after the unified-shell and every legacy stylesheet. -->
 <link rel="stylesheet" href="/doweo-page-repairs.css?v=20261121-production-visible-v5">
+<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261122-full-pages-v1">
 
 <!-- UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121. Included in HTML to avoid missing/old CSS asset. -->
 <style id="doweo-desktop-v5-navy-analytics">
@@ -9256,7 +9257,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
     color:#073747!important;background:#bdf4e5!important
   }
   /* Cash Flow uses the same airy canvas, title hierarchy, pill tabs and
-     white analytics panels as Spending Analytics. Preserve renderFinance(). */
+     navy cards and mint accents as the new DoWeo theme. Preserve drawFinance(). */
   html body.sq-finance-open #sq-nextgen[data-section="finance"]{
     background:#eaf1fc!important;color:#142543!important;
     overflow-y:auto!important;overflow-x:hidden!important
@@ -9266,11 +9267,11 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
     padding:20px clamp(20px,2.5vw,42px) 65px!important;margin:0 auto!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs{
-    background:#eff4fc!important;border:1px solid #dce5f2!important;
+    background:#10243d!important;border:1px solid #557a92!important;
     border-radius:18px!important;padding:5px!important;max-width:650px!important
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs button[aria-current="page"]{
-    background:#142849!important;color:#a3f6de!important
+    background:#62eac1!important;color:#10243d!important
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] :is(#sq-ng-title,.sq-ng-card h2){
     color:#17294b!important
@@ -9287,14 +9288,14 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-web-comparison{grid-area:comparison!important}
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content>p{grid-area:note!important}
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card{
-    background:#f7faff!important;background-image:none!important;color:#17294b!important;
-    border:1px solid #dbe5f2!important;border-radius:22px!important;
+    background:#102139!important;background-image:linear-gradient(145deg,#152e49,#102139)!important;color:#f6fbff!important;
+    border:1px solid #587c91!important;border-radius:21px!important;
     box-shadow:0 8px 24px #20375816!important
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card
-    :is(h2,h3,strong,b){color:#17294b!important}
+    :is(h2,h3,strong,b,th,td){color:#f6fbff!important}
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-open-transaction{
-    background:#7aebcf!important;color:#0c3541!important;cursor:pointer!important
+    background:#62eac1!important;color:#10243d!important;cursor:pointer!important
   }
   @media(max-width:1200px){
     html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content{
@@ -9302,6 +9303,28 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
       grid-template-areas:"summary" "trend" "categories" "activity" "comparison" "note"!important
     }
   }
+  /* Keep both the summary cards and month chart legible at all widths. */
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-finance-overview{
+    display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:16px!important;min-width:0!important
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-summary-stack{
+    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card :is(p,small,.sq-ng-note){color:#bdd3e2!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card :is(th,td){border-color:#466781!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-months{
+    display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:10px!important
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.income{background:#62eac1!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.expense{background:#76b5f0!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-track{background:#284963!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-track>span{background:#62eac1!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-web-comparison{overflow-x:auto!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-web-comparison table{min-width:450px!important}
+  @media(max-width:1280px){
+    html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-finance-overview{grid-template-columns:minmax(0,1fr)!important}
+  }
+
 }
 </style>
 
@@ -9486,8 +9509,8 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
       const hub=document.getElementById('sq-nextgen');
       paint(hub,{background:'#eaf1fc','background-image':'none',color:'#142543','overflow-y':'auto'});
       select(hub,'.sq-ng-shell',{background:'transparent','max-width':'1450px',margin:'0 auto',padding:'20px clamp(20px,2.5vw,42px) 65px'});
-      select(hub,'.dw-section-tabs',{background:'#eff4fc',border:'1px solid #dce5f2','border-radius':'18px'});
-      select(hub,'.dw-section-tabs button[aria-current="page"]',{background:'#142849',color:'#a3f6de'});
+      select(hub,'.dw-section-tabs',{background:'#10243d',border:'1px solid #dce5f2','border-radius':'18px'});
+      select(hub,'.dw-section-tabs button[aria-current="page"]',{background:'#62eac1',color:'#a3f6de'});
       paint(document.getElementById('sq-ng-content'),{
         display:'grid','grid-template-columns':'repeat(2,minmax(0,1fr))',
         'grid-template-areas':'"summary summary" "trend categories" "activity comparison" "note note"',
@@ -9499,10 +9522,10 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
           'grid-template-areas':'"summary" "trend" "categories" "activity" "comparison" "note"'
         });
       }
-      select(hub,'.sq-ng-card',{background:'#f7faff','background-image':'none',color:'#17294b',border:'1px solid #dbe5f2','border-radius':'22px'});
-      select(hub,'.sq-ng-card h2,.sq-ng-card h3,.sq-ng-card strong,#sq-ng-title',{color:'#17294b'});
-      select(hub,'.sq-ng-card small,.sq-ng-card p,.sq-ng-note',{color:'#526a87'});
-      select(hub,'#sq-ng-open-transaction',{background:'#7aebcf',color:'#0c3541',cursor:'pointer'});
+      select(hub,'.sq-ng-card',{background:'#102139','background-image':'none',color:'#f6fbff',border:'1px solid #dbe5f2','border-radius':'22px'});
+      select(hub,'.sq-ng-card h2,.sq-ng-card h3,.sq-ng-card strong',{color:'#f6fbff'});select(hub,'#sq-ng-title',{color:'#17294b'});
+      select(hub,'.sq-ng-card small,.sq-ng-card p,.sq-ng-note',{color:'#bdd3e2'});
+      select(hub,'#sq-ng-open-transaction',{background:'#62eac1',color:'#10243d',cursor:'pointer'});
     }
   };
   const schedule=()=>{
@@ -9523,6 +9546,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   else start();
 })();
 </script>
+<script defer src="/doweo-desktop-standalone.js?v=20261122-full-pages-v1"></script>
 </body>
 </html>
 
