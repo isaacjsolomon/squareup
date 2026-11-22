@@ -8,7 +8,7 @@ try{
  await page.goto(base+'/?visual-check=original-instagram-v3',{waitUntil:'domcontentloaded',timeout:45000});
  await page.locator('#sq-instagram-invite').waitFor({state:'attached',timeout:20000});
  await page.waitForFunction(()=>{
-  return !!Array.from(document.styleSheets).find(s=>s.href?.includes('doweo-desktop-standalone.css?v=20261122-topbar-backdrop-fix-v8'));
+  return !!Array.from(document.styleSheets).find(s=>s.href?.includes('doweo-desktop-standalone.css?v=20261122-full-bleed-header-v9'));
  },null,{timeout:25000});
 
  const result=await page.evaluate(async()=>{
@@ -59,6 +59,8 @@ try{
   prime();
   const headingStyle=getComputedStyle(hub.querySelector('.sq-ng-header')).display;
   const headerSurface=getComputedStyle(document.getElementById('dw-all-topbar')).backgroundColor;
+  const financeTop=hub.getBoundingClientRect().top;
+  const financePad=getComputedStyle(hub.querySelector('.sq-ng-shell')).paddingTop;
   if(typeof window.dwCashFlowAnalyticsRender!=='function')throw new Error('Cash Flow Analytics renderer is missing');
   const today=new Date().toISOString().slice(0,10);
   const content=hub.querySelector('#sq-ng-content');
@@ -87,7 +89,7 @@ try{
   await new Promise(resolve=>requestAnimationFrame(resolve));
   const topResult={hidden:hub.hidden,cssDisplay:getComputedStyle(hub).display,openClass:document.body.classList.contains('sq-finance-open')};
   top.remove();
-  return {headingStyle,headerSurface,panelBackground,titleColor,kpiCount,chartCount,sidebarResult,topResult};
+  return {headingStyle,headerSurface,financeTop,financePad,panelBackground,titleColor,kpiCount,chartCount,sidebarResult,topResult};
  });
  console.log('Live Cash Flow navigation:',JSON.stringify(financeNav));
  for(const [name,part] of Object.entries({sidebar:financeNav.sidebarResult,topTab:financeNav.topResult})){
@@ -101,6 +103,8 @@ try{
  assert.equal(financeNav.kpiCount,4,'Cash Flow must display four analytics-style KPI cards');
  assert.equal(financeNav.chartCount,2,'Cash Flow must display two analytics-style chart panels');
  assert.equal(financeNav.headerSurface,'rgba(0, 0, 0, 0)','Cash Flow topbar backdrop must be transparent');
+ assert.ok(Math.abs(financeNav.financeTop)<2,'Cash Flow wallpaper must extend behind fixed top navigation');
+ assert.ok(parseFloat(financeNav.financePad)>100,'Finance content must remain below the fixed navigation');
 
  await page.setViewportSize({width:390,height:844});
  await page.waitForTimeout(100);
