@@ -9,7 +9,7 @@ const js=read('doweo-desktop-standalone.js');
 const workflow=read('.github/workflows/deploy-doweo-pages.yml');
 
 test('desktop-only full-page workspace assets deploy and preserve mobile dialogs',()=>{
- assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-cashflow-nav-cool-v5/);
+ assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-cashflow-analytics-v6/);
  assert.match(html,/doweo-desktop-standalone\.js\?v=20261122-wallpaper-mirror-v3/);
  assert.match(workflow,/doweo-desktop-standalone\.css doweo-desktop-standalone\.js/);
  assert.match(css,/@media\(min-width:901px\)/);
@@ -31,13 +31,15 @@ test('the existing tracker and finance handlers remain attached to full-page scr
  assert.match(css,/\.dw-desktop-standalone\[hidden\]/);
 });
 
-test('Cash Flow uses navy data cards rather than old white boxes in CSS and runtime',()=>{
- assert.match(html,/Cash Flow uses the same airy canvas/);
- assert.match(html,/background:#102139!important;background-image:linear-gradient/);
- assert.match(html,/\.sq-ng-card',\{background:'#102139'/);
- assert.match(html,/\.sq-ng-summary-stack/);
- assert.match(html,/grid-template-areas:"summary summary" "trend categories" "activity comparison"/);
- assert.doesNotMatch(html,/\.sq-ng-card',\{background:'#f7faff'/);
+test('Cash Flow matches Analytics and avoids inline style races',()=>{
+ assert.match(css,/Cash Flow desktop screen shares the Analytics page/);
+ assert.match(css,/\.sq-ng-summary-stack/);
+ assert.match(css,/grid-template-areas:"summary summary" "trend categories" "activity comparison"/);
+ assert.match(css,/\.dw-analytics-bar\.income/);
+ assert.match(css,/\.dw-analytics-bar\.expense/);
+ assert.match(css,/background:linear-gradient\(145deg,#16334f,#10273e\)!important/);
+ assert.doesNotMatch(html,/select\(hub,'\.sq-ng-card'/);
+ assert.doesNotMatch(html,/paint\(hub,/);
 });
 
 test('Instagram invitation uses legacy compact desktop dimensions without changing other modals',()=>{
@@ -64,7 +66,7 @@ test('desktop tracker pages reuse the live saved wallpaper without touching mobi
  }
  assert.match(html,/paint\(page,\{background:'transparent'/);
  assert.doesNotMatch(html,/const navy=\{background:'#0b1f38'/);
- assert.match(html,/background-image':'var\(--dw-selected-tracker-wallpaper\)'/);
+ assert.match(css,/var\(--dw-selected-tracker-wallpaper/);
 });
 test('desktop contrast fixes cover analytics amounts, names and KPI labels',()=>{
  assert.match(css,/sq-person-donut-hole > strong/);
@@ -82,7 +84,14 @@ test('Cash Flow closes on newer desktop navigation and restores normal viewport 
  assert.match(html,/root\.style\.removeProperty\('display'\)/);
  assert.match(css,/html body #sq-nextgen\[hidden\]/);
  assert.match(css,/html body:not\(\.sq-finance-open\) #sq-nextgen/);
- assert.match(css,/Nov 22 Cash Flow navigation & cool-palette repair/);
- assert.match(css,/\.sq-ng-header\{/);
- assert.match(css,/button:not\(\[aria-current="page"\]\)/);
+ assert.match(css,/Cash Flow desktop screen shares the Analytics page/);
+ assert.match(css,/\.sq-ng-header\s*\{/);
+ assert.match(css,/\.dw-section-tabs:not\(\[data-current-group\]\)/);
+ assert.match(html,/const ticket=\+\+renderToken/);
+});
+
+test('Instagram popup renders the recognizable SVG camera logo',()=>{
+ assert.match(html,/class="sq-ig-mark" aria-hidden="true"><svg viewBox="0 0 24 24"/);
+ assert.match(html,/<rect x="2\.5" y="2\.5" width="19" height="19" rx="5\.5"\/>/);
+ assert.match(html,/<circle cx="12" cy="12" r="4\.25"\/>/);
 });
