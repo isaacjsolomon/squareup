@@ -54,8 +54,4 @@
   ) :is(small,.note,.sq-bills-help,.sq-bills-empty) {
     color:var(--dw-mobile-surface-muted);
   }
-  /* Never repaint custom tracker wallpaper surfaces or photos. */
-  html body :is(#backdrop,.tracker-tile-banner,[style*="background-image: url"],[style*="background-image:url"]) {
-    background-image:revert-layer;
-  }
 }
