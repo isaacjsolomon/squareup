@@ -9510,7 +9510,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
       paint(hub,{background:'#eaf1fc','background-image':'none',color:'#142543','overflow-y':'auto'});
       select(hub,'.sq-ng-shell',{background:'transparent','max-width':'1450px',margin:'0 auto',padding:'20px clamp(20px,2.5vw,42px) 65px'});
       select(hub,'.dw-section-tabs',{background:'#10243d',border:'1px solid #dce5f2','border-radius':'18px'});
-      select(hub,'.dw-section-tabs button[aria-current="page"]',{background:'#62eac1',color:'#a3f6de'});
+      select(hub,'.dw-section-tabs button[aria-current="page"]',{background:'#62eac1',color:'#10243d'});
       paint(document.getElementById('sq-ng-content'),{
         display:'grid','grid-template-columns':'repeat(2,minmax(0,1fr))',
         'grid-template-areas':'"summary summary" "trend categories" "activity comparison" "note note"',
@@ -9522,9 +9522,9 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
           'grid-template-areas':'"summary" "trend" "categories" "activity" "comparison" "note"'
         });
       }
-      select(hub,'.sq-ng-card',{background:'#102139','background-image':'none',color:'#f6fbff',border:'1px solid #dbe5f2','border-radius':'22px'});
+      select(hub,'.sq-ng-card',{background:'#102139','background-image':'linear-gradient(145deg,#152e49,#102139)',color:'#f6fbff',border:'1px solid #587c91','border-radius':'21px'});
       select(hub,'.sq-ng-card h2,.sq-ng-card h3,.sq-ng-card strong',{color:'#f6fbff'});select(hub,'#sq-ng-title',{color:'#17294b'});
-      select(hub,'.sq-ng-card small,.sq-ng-card p,.sq-ng-note',{color:'#bdd3e2'});
+      select(hub,'.sq-ng-card small,.sq-ng-card p,.sq-ng-card .sq-ng-note',{color:'#bdd3e2'});
       select(hub,'#sq-ng-open-transaction',{background:'#62eac1',color:'#10243d',cursor:'pointer'});
     }
   };
