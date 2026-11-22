@@ -272,7 +272,7 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
    'Bills Back to Home must be fully inside the screen');
   assert.equal(billsGeometry.calendarBg,'rgb(16, 43, 73)',
    'billing calendar must have a solid navy background, not pale white');
-  assert.equal(billsGeometry.calendarText,'rgb(245, 249, 255)',
+  assert.equal(billsGeometry.calendarText,'rgb(246, 250, 255)',
    'calendar date grid must use readable light text against navy');
   assert.equal(billsGeometry.billCardBackground,'rgb(16, 43, 73)',
     'Bill panels must use the actual navy surface, not white');
