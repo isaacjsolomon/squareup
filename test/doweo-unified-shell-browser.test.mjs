@@ -275,12 +275,18 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   const notificationsVisual=await page.evaluate(()=>({
     bodyBackground:getComputedStyle(document.body).backgroundColor,
     workspaceBackground:getComputedStyle(document.querySelector('body > .wrap')).backgroundColor,
-    panelBackground:getComputedStyle(document.getElementById('notifications-panel')).backgroundColor
+    panelBackground:getComputedStyle(document.getElementById('notifications-panel')).backgroundColor,
+    backdropImage:getComputedStyle(document.getElementById('backdrop')).backgroundImage,
+    backdropBackground:getComputedStyle(document.getElementById('backdrop')).backgroundColor
   }));
   assert.equal(notificationsVisual.workspaceBackground,'rgb(11, 29, 52)',
    'Notifications workspace must be navy: '+JSON.stringify(notificationsVisual));
   assert.equal(notificationsVisual.panelBackground,'rgb(19, 43, 69)',
    'Notifications panel must no longer be the old white surface');
+  assert.equal(notificationsVisual.backdropImage,'none',
+   'Notifications must suppress the selected tracker photo on the actual #backdrop element');
+  assert.match(notificationsVisual.backdropBackground,/^rgba?\(11, 29, 52(?:, [0-9.]+)?\)$/,
+   'The wallpaper layer must use navy RGB channels (a translucent backdrop is allowed)');
   await page.screenshot({path:resolve(root,'test-results/unified/notifications-page-repairs.png'),fullPage:true});
 
   await page.evaluate(()=>window.squareUpOpenFinanceHub?.('finance'));
