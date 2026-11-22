@@ -21,9 +21,9 @@
 <meta name="twitter:card" content="summary">
 
 <!-- DoWeo installable app -->
-<link rel="manifest" href="/manifest.webmanifest?v=doweo-mobile-brand-v3">
-<meta name="theme-color" content="#071827">
-<meta name="dw-mobile-theme-build" content="mobile-navy-v7-photo-and-buttons-20261122">
+<link rel="manifest" href="/manifest.webmanifest?v=20261122-approved-seven-palette-v1">
+<meta name="theme-color" content="#0A1B2E">
+<meta name="dw-mobile-theme-build" content="seven-color-source-palette-20261122-v1">
 <meta name="application-name" content="DoWeo">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -112,8 +112,8 @@
   window.dwNotify=notify;
 })();
 </script>
-<link rel="stylesheet" href="/weo-mascot.css">
-<link rel="stylesheet" href="/weo-actions.css">
+<link rel="stylesheet" href="/weo-mascot.css?v=20261122-approved-seven-palette-v1">
+<link rel="stylesheet" href="/weo-actions.css?v=20261122-approved-seven-palette-v1">
 
 
 
@@ -134,21 +134,21 @@ window.dwBillDueDate=function(value){
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=20261122-mobile-palette-origin-v6">
+<link rel="stylesheet" href="/styles.css?v=20261122-approved-seven-palette-v1">
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
   <div class="sq-startup-content"><svg class="doweo-loading-logo" viewBox="0 0 972 972" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 <defs>
- <linearGradient id="doweo-loader-mint" x1="180" y1="420" x2="425" y2="720" gradientUnits="userSpaceOnUse"><stop stop-color="#92ffb8"/><stop offset="1" stop-color="#00d9bc"/></linearGradient>
- <linearGradient id="doweo-loader-cyan" x1="460" y1="480" x2="725" y2="700" gradientUnits="userSpaceOnUse"><stop stop-color="#28f9f1"/><stop offset="1" stop-color="#00badc"/></linearGradient>
- <linearGradient id="doweo-loader-front" x1="330" y1="700" x2="575" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#00e4e7"/><stop offset="1" stop-color="#46fff1"/></linearGradient>
+ <linearGradient id="doweo-loader-mint" x1="180" y1="420" x2="425" y2="720" gradientUnits="userSpaceOnUse"><stop stop-color="#ABC6D7"/><stop offset="1" stop-color="#355E72"/></linearGradient>
+ <linearGradient id="doweo-loader-cyan" x1="460" y1="480" x2="725" y2="700" gradientUnits="userSpaceOnUse"><stop stop-color="#ABC6D7"/><stop offset="1" stop-color="#355E72"/></linearGradient>
+ <linearGradient id="doweo-loader-front" x1="330" y1="700" x2="575" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#ABC6D7"/><stop offset="1" stop-color="#ABC6D7"/></linearGradient>
 </defs>
 <g fill="none" stroke-linecap="round" stroke-linejoin="round">
  <path class="doweo-logo-trace doweo-logo-left" pathLength="1" d="M248 500 L380 690" stroke="url(#doweo-loader-mint)" stroke-width="176"/>
  <path class="doweo-logo-trace doweo-logo-right" pathLength="1" d="M535 500 L669 688" stroke="url(#doweo-loader-cyan)" stroke-width="176"/>
  <path class="doweo-logo-trace doweo-logo-front" pathLength="1" d="M380 688 L535 500" stroke="url(#doweo-loader-front)" stroke-width="176"/>
- <path class="doweo-logo-trace doweo-logo-d" pathLength="1" d="M128 240 H616 C741 240 830 335 830 450 C830 549 758 652 669 700" stroke="#ffffff" stroke-width="130"/>
+ <path class="doweo-logo-trace doweo-logo-d" pathLength="1" d="M128 240 H616 C741 240 830 335 830 450 C830 549 758 652 669 700" stroke="#F3F8FC" stroke-width="130"/>
 </g></svg></div>
 </div>
 <button type="button" id="guest-auth-button" hidden>Log in or create account</button>
@@ -506,7 +506,7 @@ window.dwBillDueDate=function(value){
 </div><button type="button" class="settings-action" id="dw-a11y-reset">Use device defaults</button>
 <p class="settings-muted" id="dw-a11y-status" role="status" aria-live="polite">Your device's accessibility settings are used by default.</p>
 </div></div>
-        <div><div class="settings-panel" id="delete-account-panel"><h3>Delete account</h3><p class="settings-muted">Permanently delete your DoWeo account, profile, payment usernames, profile photo, and your saved tracker data. Trackers you own will also be deleted for their members. This cannot be undone.</p><button class="settings-action" id="settings-delete-account" style="background:#512334;color:#ffb5c4;border-color:#9e4158" type="button">Delete my account</button><div aria-live="polite" class="settings-notice" id="settings-delete-msg" role="status"></div></div></div>
+        <div><div class="settings-panel" id="delete-account-panel"><h3>Delete account</h3><p class="settings-muted">Permanently delete your DoWeo account, profile, payment usernames, profile photo, and your saved tracker data. Trackers you own will also be deleted for their members. This cannot be undone.</p><button class="settings-action" id="settings-delete-account" style="background:#102B40;color:#ABC6D7;border-color:#355E72" type="button">Delete my account</button><div aria-live="polite" class="settings-notice" id="settings-delete-msg" role="status"></div></div></div>
       </div>
     </div>
   </div>
@@ -545,7 +545,7 @@ window.dwBillDueDate=function(value){
 </section>
 
 <section id="trackers-page" aria-label="Your trackers"><nav class="dw-section-tabs" aria-label="Tracker sections"><button type="button" data-dw-section="trackers" aria-current="page">All Trackers</button><button type="button" data-dw-section="trip">Trips</button><button type="button" data-dw-section="home">Households</button></nav>
-  <div class="trackers-header dw-page-header"><div><h2>My <span style="color:#60edaf">Trackers</span></h2></div></div>
+  <div class="trackers-header dw-page-header"><div><h2>My <span style="color:#ABC6D7">Trackers</span></h2></div></div>
   <h2 class="sq-mobile-trackers-title">Trackers</h2><section id="sq-bills-directory" class="sq-bills-directory" hidden aria-hidden="true" style="display:none!important">
   <button type="button" id="sq-bills-open" hidden tabindex="-1" aria-hidden="true">Open bills</button>
 </section>
@@ -578,7 +578,7 @@ window.dwBillDueDate=function(value){
 <div id="trackers-gallery" class="trackers-grid" aria-live="polite"><div class="sq-create-tracker-row"><button type="button" id="tracker-gallery-new" class="tracker-create">＋ Create new tracker</button><span>Choose from 7 templates or start with a blank tracker.</span></div></div>
 </section>
 <section id="friends-page" aria-label="Friends">
- <div class="sq-friends-layout"><div class="sq-feature-head dw-page-header"><div><h2>Friends <span style="color:#60edaf">System</span></h2></div><button type="button" id="sq-friends-refresh" class="sq-feature-btn">↻ Refresh</button></div>
+ <div class="sq-friends-layout"><div class="sq-feature-head dw-page-header"><div><h2>Friends <span style="color:#ABC6D7">System</span></h2></div><button type="button" id="sq-friends-refresh" class="sq-feature-btn">↻ Refresh</button></div>
  <div class="card"><label for="sq-friend-query">Search for DoWeo users</label><input id="sq-friend-query" class="sq-friend-search" maxlength="24" placeholder="Enter at least 3 username characters" autocomplete="off"/><div class="sq-friend-tabs"><button type="button" data-friends-tab="friends" aria-selected="true">My Friends</button><button type="button" data-friends-tab="pending" aria-selected="false">Pending Requests</button><button type="button" data-friends-tab="find" aria-selected="false">Find Friends</button></div><p id="sq-friends-status" class="sq-feature-status" role="status"></p><div id="sq-friends-results" class="sq-friend-list"></div></div></div>
 </section>
 <section id="about-page" aria-label="About DoWeo">
@@ -588,8 +588,8 @@ window.dwBillDueDate=function(value){
   </div>
   <div class="about-feature-grid">
     <article class="about-feature"><span class="about-icon">♧</span><h3>Track together</h3><p>Keep all your shared expenses in one place.</p></article>
-    <article class="about-feature"><span class="about-icon blue">▦</span><h3>Split automatically</h3><p>See who owes who with up-to-date balances.</p></article>
-    <article class="about-feature"><span class="about-icon purple">▤</span><h3>Scan receipts</h3><p>Upload a receipt and assign items to friends.</p></article>
+    <article class="about-feature"><span class="about-icon #ABC6D7">▦</span><h3>Split automatically</h3><p>See who owes who with up-to-date balances.</p></article>
+    <article class="about-feature"><span class="about-icon #355E72">▤</span><h3>Scan receipts</h3><p>Upload a receipt and assign items to friends.</p></article>
     <article class="about-feature"><span class="about-icon">▣</span><h3>Stay organized</h3><p>Add due dates, get notifications, and settle up easily.</p></article>
   </div>
   <section class="about-build-story" aria-labelledby="about-build-title">
@@ -604,7 +604,7 @@ window.dwBillDueDate=function(value){
     </ol>
   </section>
   <div class="about-mission"><div><div class="about-kicker">OUR MISSION</div><h2>Less confusion. <em>More time together.</em></h2><p>DoWeo was built to make managing shared money effortless, so you can focus on what actually matters — your friends, experiences, and memories.</p><div class="sq-about-actions"><button type="button" id="about-start" class="about-start">Go to your trackers →</button></div></div><div class="about-sunset" aria-hidden="true"><div class="about-sun"></div><div class="about-hills"></div><div class="about-sea"></div></div></div>
-  <p class="about-contact-caption" style="text-align:center;margin:24px 0 10px;color:#a9bfd3;font-size:13px;">Contact: <a href="mailto:help@doweo.app" style="color:inherit;text-decoration:underline;">help@doweo.app</a></p>
+  <p class="about-contact-caption" style="text-align:center;margin:24px 0 10px;color:#ABC6D7;font-size:13px;">Contact: <a href="mailto:help@doweo.app" style="color:inherit;text-decoration:underline;">help@doweo.app</a></p>
 </section>
 
 <div id="sq-tour-overlay" hidden aria-hidden="true">
@@ -619,9 +619,9 @@ window.dwBillDueDate=function(value){
 
 <div id="sq-legal-overlay" hidden>
  <section class="sq-legal-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-legal-title">
-  <div class="sq-legal-top"><span style="font-size:12px;letter-spacing:.13em;color:#88d6d4">DOWEO · LEGAL CENTER</span><button type="button" id="sq-legal-close" class="doweo-close-control sq-legal-close" aria-label="Close legal information">Close ×</button></div>
+  <div class="sq-legal-top"><span style="font-size:12px;letter-spacing:.13em;color:#ABC6D7">DOWEO · LEGAL CENTER</span><button type="button" id="sq-legal-close" class="doweo-close-control sq-legal-close" aria-label="Close legal information">Close ×</button></div>
   <h2 id="sq-legal-title">Privacy Policy</h2>
-  <p style="margin-top:0;font-size:12px;color:#a8bfd0">Effective October 30, 2026 · Draft for review before publication</p>
+  <p style="margin-top:0;font-size:12px;color:#ABC6D7">Effective October 30, 2026 · Draft for review before publication</p>
   <div class="sq-legal-tabs" role="tablist" aria-label="Legal documents"><button type="button" data-legal="privacy" aria-selected="true">Privacy Policy</button><button type="button" data-legal="terms" aria-selected="false">Terms of Service</button><button type="button" data-legal="finance" aria-selected="false">Financial Disclaimer</button></div>
   <div id="sq-legal-content"></div>
   <p class="sq-legal-contact">Questions, privacy requests, or account deletion help: <a href="mailto:help@doweo.app">help@doweo.app</a></p>
@@ -703,7 +703,7 @@ window.dwBillDueDate=function(value){
      <button type="button" id="tab-login" class="active">Sign in</button>
      <button type="button" id="tab-signup">Create account</button>
     </div>
-    <button type="button" id="dw-google-signin" class="dw-google-signin"><svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6C44.4 38.03 46.98 31.88 46.98 24.55z"/><path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.6.27-3.16.76-4.59l-7.98-6.2A23.9 23.9 0 0 0 0 24c0 3.87.93 7.51 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.18 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><span>Continue with Google</span></button>
+    <button type="button" id="dw-google-signin" class="dw-google-signin"><svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#355E72" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#ABC6D7" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6C44.4 38.03 46.98 31.88 46.98 24.55z"/><path fill="#ABC6D7" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.6.27-3.16.76-4.59l-7.98-6.2A23.9 23.9 0 0 0 0 24c0 3.87.93 7.51 2.56 10.78l7.97-6.19z"/><path fill="#355E72" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.18 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><span>Continue with Google</span></button>
     <div class="sq-auth-divider"><span>or continue with email</span></div>
     <form id="auth-form">
      <div class="sq-auth-field" id="sq-auth-name-wrap" hidden><span aria-hidden="true">♙</span><input id="auth-name" aria-label="Your name" placeholder="Your name" autocomplete="name" hidden></div>
@@ -819,7 +819,7 @@ window.dwBillDueDate=function(value){
     </div>
     <div id="invite-qr-section" style="margin-top:16px;text-align:center" hidden>
       <p class="section-label">Scan to join</p>
-      <div id="invite-qr" style="display:inline-flex;background:#fff;padding:12px;border-radius:12px;max-width:100%" aria-label="QR code for tracker invitation"></div>
+      <div id="invite-qr" style="display:inline-flex;background:#F3F8FC;padding:12px;border-radius:12px;max-width:100%" aria-label="QR code for tracker invitation"></div>
       <div style="margin-top:10px"><button type="button" class="small-btn" id="invite-qr-download">Download QR code</button></div>
       <p class="hint">Anyone with this code can open the invitation. Only share it with people you trust.</p>
     </div>
@@ -934,8 +934,8 @@ function computeNet() {
 
 // ============ DRAWING ============
 var COLORS = window.matchMedia("(max-width:900px)").matches
-  ? ["#60f1ad","#39b7dc","#63b8d3","#38a9a3","#326b93","#6bbfcd","#2b8f86","#7db9db"]
-  : ["#6366f1", "#ec4899", "#f59e0b", "#10b981", "#0ea5e9", "#8b5cf6", "#ef4444", "#14b8a6"];
+  ? ["#ABC6D7","#ABC6D7","#ABC6D7","#355E72","#355E72","#ABC6D7","#355E72","#ABC6D7"]
+  : ["#ABC6D7", "#ABC6D7", "#ABC6D7", "#355E72", "#355E72", "#ABC6D7", "#355E72", "#355E72"];
 function avatar(name, idx) {
   return '<div class="avatar" style="background:' + COLORS[idx % COLORS.length] + '">' + esc(name.charAt(0)) + "</div>";
 }
@@ -1939,7 +1939,7 @@ window.sqOpenTrackerForWeo = async function(id) {
 sqFillCurrencies();
 // ============ DEDICATED SETTINGS PAGE ============
 var myProfileSettings = null;
-function settingsMessage(id, message, ok) { var el=$(id); el.textContent=message; el.style.color=ok?'#65f5ac':'#ff9db1'; }
+function settingsMessage(id, message, ok) { var el=$(id); el.textContent=message; el.style.color=ok?'#ABC6D7':'#ABC6D7'; }
 function settingsRoute(page) {
   document.body.classList.remove('sq-help-view');
   document.body.classList.remove('split-view','settings-view','about-view','trackers-view','analytics-view','friends-view','notifications-view');
@@ -2333,22 +2333,22 @@ function renderPicker() {
 // Per-tracker banners: presets + uploaded images, saved locally in IndexedDB.
 // This avoids touching tracker backdrops or requiring a database migration.
 var SQ_BANNER_PRESETS={
- ocean:'linear-gradient(125deg,#034d68,#12a3aa 55%,#05314d)',
- sunset:'linear-gradient(125deg,#51376b,#dc795e 55%,#f4bd80)',
- forest:'linear-gradient(125deg,#073c3d,#27775c 55%,#96ad65)',
- night:'linear-gradient(125deg,#080e30,#334a86 55%,#7c6d99)',
- coral:'linear-gradient(125deg,#004a66,#1e9b9d 48%,#d97884)',
- lavender:'linear-gradient(125deg,#262c64,#856cae 55%,#d4a3c1)'
+ ocean:'linear-gradient(125deg,#204158,#355E72 55%,#102B40)',
+ sunset:'linear-gradient(125deg,#355E72,#ABC6D7 55%,#ABC6D7)',
+ forest:'linear-gradient(125deg,#102B40,#355E72 55%,#ABC6D7)',
+ night:'linear-gradient(125deg,#0A1B2E,#355E72 55%,#355E72)',
+ coral:'linear-gradient(125deg,#204158,#355E72 48%,#ABC6D7)',
+ lavender:'linear-gradient(125deg,#204158,#355E72 55%,#ABC6D7)'
 };
 // Mobile tracker banner palette. Every built-in banner becomes navy/blue/teal
 // on phones; uploaded banner images remain untouched and desktop stays original.
 var SQ_MOBILE_BANNER_PRESETS={
- ocean:'linear-gradient(125deg,#0b2940,#175c7a 55%,#102b40)',
- sunset:'linear-gradient(125deg,#102b40,#26708a 55%,#3a8e96)',
- forest:'linear-gradient(125deg,#0c2b3e,#126155 55%,#174a4c)',
- night:'linear-gradient(125deg,#071827,#1c3953 55%,#102b40)',
- coral:'linear-gradient(125deg,#102b40,#1e9b9d 55%,#56d4d8)',
- lavender:'linear-gradient(125deg,#132a45,#32607d 55%,#6ba0bc)'
+ ocean:'linear-gradient(125deg,#102B40,#355E72 55%,#102B40)',
+ sunset:'linear-gradient(125deg,#102B40,#355E72 55%,#355E72)',
+ forest:'linear-gradient(125deg,#102B40,#204158 55%,#204158)',
+ night:'linear-gradient(125deg,#0A1B2E,#173750 55%,#102B40)',
+ coral:'linear-gradient(125deg,#102B40,#355E72 55%,#ABC6D7)',
+ lavender:'linear-gradient(125deg,#102B40,#355E72 55%,#ABC6D7)'
 };
 function sqBannerPalette(){
  return window.matchMedia("(max-width:900px)").matches ? SQ_MOBILE_BANNER_PRESETS : SQ_BANNER_PRESETS;
@@ -2517,7 +2517,7 @@ async function sqManagePermissions(tracker) {
     const actions = make('div', undefined, 'sq-perm-actions');
     const remove = make('button', 'Remove member', 'sq-perm-close');
     remove.type = 'button';
-    remove.style.color = '#b42342';
+    remove.style.color = '#355E72';
     const save = make('button', 'Save changes', 'sq-perm-save');
     save.type = 'button';
     const setBusy = busy => {
@@ -2919,36 +2919,33 @@ $('tracker-gallery-new').onclick=function(){$('tb-new').click();};
 // the on-device tracker keeps its own in this browser.
 var BACKDROP_KEY = "squareup-backdrop";
 var PRESETS = {
-  indigo: { label: "Indigo", css: "linear-gradient(135deg, #1e1b4b, #312e81)", side: [159, 202, 211] },
-  sunset: { label: "Sunset", css: "linear-gradient(135deg, #7c2d12, #be185d)", side: [253, 164, 175] },
-  ocean:  { label: "Ocean",  css: "linear-gradient(135deg, #0c4a6e, #0e7490)", side: [103, 232, 249] },
-  forest: { label: "Forest", css: "linear-gradient(135deg, #14532d, #115e59)", side: [110, 231, 183] },
-  night:  { label: "Night",  css: "linear-gradient(135deg, #020617, #334155)", side: [148, 163, 184] },
-  berry:  { label: "Berry",  css: "linear-gradient(135deg, #4a044e, #6b21a8)", side: [216, 180, 254] }
+  indigo: { label: "Indigo", css: "linear-gradient(135deg, #102B40, #204158)", side: [159, 202, 211] },
+  sunset: { label: "Sunset", css: "linear-gradient(135deg, #204158, #355E72)", side: [253, 164, 175] },
+  ocean:  { label: "Ocean",  css: "linear-gradient(135deg, #204158, #355E72)", side: [103, 232, 249] },
+  forest: { label: "Forest", css: "linear-gradient(135deg, #102B40, #204158)", side: [110, 231, 183] },
+  night:  { label: "Night",  css: "linear-gradient(135deg, #0A1B2E, #204158)", side: [148, 163, 184] },
+  berry:  { label: "Berry",  css: "linear-gradient(135deg, #102B40, #355E72)", side: [216, 180, 254] }
 };
 // Mobile palette equivalents for the built-in preset picker. User-uploaded
 // wallpaper photos stay untouched; desktop continues to use PRESETS.
 var MOBILE_PRESETS = {
-  indigo: "linear-gradient(155deg,#0a1b2e 0%,#10283e 52%,#15364b 100%)",
-  sunset: "linear-gradient(135deg,#102b40,#176177)",
-  ocean:  "linear-gradient(135deg,#0b2940,#175c7a)",
-  forest: "linear-gradient(135deg,#0c2b3e,#175b56)",
-  night:  "linear-gradient(135deg,#071827,#17354b)",
-  berry:  "linear-gradient(135deg,#142b45,#28536a)"
+  indigo: "linear-gradient(155deg,#0A1B2E 0%,#102B40 52%,#173750 100%)",
+  sunset: "linear-gradient(135deg,#102B40,#355E72)",
+  ocean:  "linear-gradient(135deg,#102B40,#355E72)",
+  forest: "linear-gradient(135deg,#102B40,#204158)",
+  night:  "linear-gradient(135deg,#0A1B2E,#173750)",
+  berry:  "linear-gradient(135deg,#102B40,#355E72)"
 };
 
 // Side panel takes a medium tint of the backdrop: a fixed tint for presets,
 // or the photo's average color mixed toward white.
 function setSideTint(rgb) {
-  // Do not let old palette presets reintroduce cream, pink, purple or beige
-  // into mobile navigation/sidebar surfaces. Desktop keeps its original tint.
-  var phoneTheme = window.matchMedia("(max-width:900px)").matches;
-  var side = phoneTheme ? [16,43,64] : rgb;
-  var border = phoneTheme ? [53,94,114] :
-    rgb.map(function (c) { return Math.round(c * 0.88); });
+  // Never derive interface colors from wallpaper photos or legacy presets.
+  // Photos themselves remain user content, but the surrounding UI is locked
+  // to DoWeo's seven approved color tokens on both desktop and mobile.
   var root = document.documentElement.style;
-  root.setProperty("--side-bg", "rgb(" + side.join(",") + ")");
-  root.setProperty("--side-line", "rgb(" + border.join(",") + ")");
+  root.setProperty("--side-bg", "#102B40");
+  root.setProperty("--side-line", "#355E72");
 }
 function photoTint(url) {
   return new Promise(function (resolve) {
@@ -3007,7 +3004,7 @@ async function applyBackdrop() {
   // Apply the navy gradient directly to the backdrop, with !important so
   // old style blocks cannot resurrect the purple/beige canvas.
   const phoneTheme = window.matchMedia("(max-width:900px)").matches;
-  const navyCanvas = "linear-gradient(155deg,#0a1b2e 0%,#10283e 52%,#15364b 100%)";
+  const navyCanvas = "linear-gradient(155deg,#0A1B2E 0%,#102B40 52%,#173750 100%)";
   // Mobile uses cool navy/blue/teal presets. Uploaded wallpaper photos
   // take precedence. Desktop retains the original preset gradients.
   const chosenImage = url
@@ -3019,7 +3016,7 @@ async function applyBackdrop() {
   // mobile, where the photo's original pale areas can resemble beige panels.
   el.style.setProperty("background-image", chosenImage, phoneTheme ? "important" : "");
   if (phoneTheme) {
-    el.style.setProperty("background-color", url ? "#6d9cb8" : "#0a1b2e", "important");
+    el.style.setProperty("background-color", url ? "#ABC6D7" : "#0A1B2E", "important");
     el.style.setProperty("background-blend-mode", url ? "multiply" : "normal", "important");
   } else {
     el.style.removeProperty("background-color");
@@ -3464,7 +3461,7 @@ async function updateInviteQR() {
   }
   $("invite-qr-download").hidden = false;
   new QRCode(target, { text: url, width: 220, height: 220,
-    colorDark: "#111827", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+    colorDark: "#0A1B2E", colorLight: "#F3F8FC", correctLevel: QRCode.CorrectLevel.M });
 }
 $("invite-qr-download").onclick = function () {
   var qr = $("invite-qr");
@@ -4210,8 +4207,8 @@ function renderSquareUpAnalytics(){
  if(!personRows.length){peopleEl.innerHTML='<p class="sq-analytics-empty">No expenses recorded for this period.</p>';}
  else{
   var colors=window.matchMedia("(max-width:900px)").matches
-    ? ['#60f1ad','#37a9ff','#68c5d9','#419eaa','#58a9db','#70d3bc']
-    : ['#65f5ac','#37a9ff','#f9bb70','#a993ff','#fb85aa','#56d4d8'];
+    ? ['#ABC6D7','#ABC6D7','#ABC6D7','#355E72','#ABC6D7','#ABC6D7']
+    : ['#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7'];
   var angle=0;
   var stops=personRows.map((row,i)=>{var from=angle;angle+=row[1]/total*100;return colors[i%colors.length]+' '+from.toFixed(3)+'% '+angle.toFixed(3)+'%';});
   peopleEl.innerHTML='<div class="sq-person-donut" style="background:conic-gradient('+stops.join(',')+')"><div class="sq-person-donut-hole"><strong>'+squareUpMoney(total)+'</strong><span>Total</span></div></div><div class="sq-person-legend">'+personRows.map((r,i)=>'<div class="sq-person-legend-item"><span class="sq-person-dot" style="background:'+colors[i%colors.length]+'"></span><div><span>'+esc(r[0])+'</span><strong>'+squareUpMoney(r[1])+'</strong><small>'+(r[1]/total*100).toFixed(0)+'% of total</small></div></div>').join('')+'</div>';
@@ -4342,13 +4339,13 @@ $('sq-chat-pin').addEventListener('click',async e=>{if(e.target.id==='sq-unpin-c
 // Template dashboards: all amounts are calculated from actual saved entries.
 // The chosen template is remembered in this browser, without altering tracker records.
 var sqTemplateProfiles=[
- {name:'Roommates',icon:'🏠',accent:'#4de3b8',soft:'#174c48',cats:['Rent','Electricity','Groceries','Utilities'],actions:[['Add a bill','expense','Rent'],['Recurring expenses','recurring'],['Settle up','pay']]},
- {name:'Vacation',icon:'✈️',accent:'#65c9ff',soft:'#204b70',cats:['Flights','Hotels','Food & Dining','Activities'],actions:[['Add travel expense','expense','Flights'],['Scan receipt','receipt'],['Trip budget','budget']]},
- {name:'School Trip',icon:'🎓',accent:'#b5a0ff',soft:'#443e70',cats:['Transportation','Food & Dining','Tickets','Supplies'],actions:[['Add group expense','expense','Transportation'],['Group budget','budget'],['Split a bill','split']]},
- {name:'Weekend Getaway',icon:'🌴',accent:window.matchMedia("(max-width:900px)").matches?'#60f1ad':'#f9cb70',soft:window.matchMedia("(max-width:900px)").matches?'#173c4a':'#62512e',cats:['Lodging','Food & Dining','Activities','Transportation'],actions:[['Quick expense','expense','Lodging'],['Split a bill','split'],['Settle up','pay']]},
- {name:'Shared Household',icon:'👥',accent:'#4de3b8',soft:'#214d52',cats:['Rent','Electricity','Water','Gas','Internet','Groceries','Amenities','Other bills'],actions:[['Add purchase','expense','Rent'],['Scan receipt','receipt'],['Recurring expenses','recurring']]},
- {name:'Camping Trip',icon:'🏕️',accent:'#9ad68e',soft:'#365638',cats:['Campsite','Firewood','Food & Dining','Gear'],actions:[['Add camping expense','expense','Campsite'],['Split a bill','split'],['Trip budget','budget']]},
- {name:'Food & Dining',icon:'🍴',accent:window.matchMedia("(max-width:900px)").matches?'#69bce0':'#f4bb75',soft:window.matchMedia("(max-width:900px)").matches?'#153a54':'#67462c',cats:['Meals','Drinks','Tax + tip','Groceries'],actions:[['Split this bill','split'],['Scan receipt','receipt'],['Add meal','expense','Meals']]}
+ {name:'Roommates',icon:'🏠',accent:'#ABC6D7',soft:'#204158',cats:['Rent','Electricity','Groceries','Utilities'],actions:[['Add a bill','expense','Rent'],['Recurring expenses','recurring'],['Settle up','pay']]},
+ {name:'Vacation',icon:'✈️',accent:'#ABC6D7',soft:'#204158',cats:['Flights','Hotels','Food & Dining','Activities'],actions:[['Add travel expense','expense','Flights'],['Scan receipt','receipt'],['Trip budget','budget']]},
+ {name:'School Trip',icon:'🎓',accent:'#ABC6D7',soft:'#355E72',cats:['Transportation','Food & Dining','Tickets','Supplies'],actions:[['Add group expense','expense','Transportation'],['Group budget','budget'],['Split a bill','split']]},
+ {name:'Weekend Getaway',icon:'🌴',accent:window.matchMedia("(max-width:900px)").matches?'#ABC6D7':'#ABC6D7',soft:window.matchMedia("(max-width:900px)").matches?'#173750':'#204158',cats:['Lodging','Food & Dining','Activities','Transportation'],actions:[['Quick expense','expense','Lodging'],['Split a bill','split'],['Settle up','pay']]},
+ {name:'Shared Household',icon:'👥',accent:'#ABC6D7',soft:'#204158',cats:['Rent','Electricity','Water','Gas','Internet','Groceries','Amenities','Other bills'],actions:[['Add purchase','expense','Rent'],['Scan receipt','receipt'],['Recurring expenses','recurring']]},
+ {name:'Camping Trip',icon:'🏕️',accent:'#ABC6D7',soft:'#204158',cats:['Campsite','Firewood','Food & Dining','Gear'],actions:[['Add camping expense','expense','Campsite'],['Split a bill','split'],['Trip budget','budget']]},
+ {name:'Food & Dining',icon:'🍴',accent:window.matchMedia("(max-width:900px)").matches?'#ABC6D7':'#ABC6D7',soft:window.matchMedia("(max-width:900px)").matches?'#173750':'#204158',cats:['Meals','Drinks','Tax + tip','Groceries'],actions:[['Split this bill','split'],['Scan receipt','receipt'],['Add meal','expense','Meals']]}
 ];
 function sqTemplateIndexForTracker(){
  if(!current||!current.id)return -1;
@@ -5597,8 +5594,8 @@ input.addEventListener('input',draw);
 const root=document.getElementById('budget-card');if(!root)return;
 let type='recurring',view='overview';
 const colors=window.matchMedia("(max-width:900px)").matches
-  ? ['#60f1ad','#3e94c9','#3679bd','#64b3d6','#27d3a7','#9bb6d4','#4b9fa9','#5bbacb']
-  : ['#ff6d7e','#8c6afa','#3679ff','#ffcb57','#27d3a7','#9bb6d4','#f98c53','#5bbacb'];
+  ? ['#ABC6D7','#355E72','#355E72','#ABC6D7','#355E72','#ABC6D7','#355E72','#ABC6D7']
+  : ['#ABC6D7','#ABC6D7','#355E72','#ABC6D7','#355E72','#ABC6D7','#ABC6D7','#ABC6D7'];
 const $=id=>document.getElementById(id);const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>typeof sqFormat==='function'?sqFormat(n):'$'+Number(n||0).toFixed(2);
 const dateISO=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
@@ -5640,7 +5637,7 @@ function render(){if(!current){$('sb-category-list').innerHTML='<p class="sb-emp
 $('sb-period-title').textContent=(current.name||'Group')+' · '+r.label;$('sb-category-period').textContent=r.label;
 $('sq-budget-display').innerHTML=budget>0?'<div class="sb-amount">'+esc(fmt(total))+' <span>of '+esc(fmt(budget))+'</span></div><div class="sq-budget-progress'+(pct>100?' over':'')+'"><div style="width:'+Math.min(100,Math.max(0,pct))+'%"></div></div><strong>'+esc(fmt(Math.abs(budget-total)))+(total>budget?' over budget':' remaining')+'</strong> · '+pct.toFixed(1)+'% used':'<div class="sb-amount">'+esc(fmt(total))+'</div><p class="sb-muted">No budget limit. Showing spending for the selected period.</p>';
 let cats=new Map(),members=new Map();entries.forEach(e=>{let v=Math.max(0,Number(e.amount)||0),cat=category(e),person=String(e.from||'Unknown');cats.set(cat,(cats.get(cat)||0)+v);members.set(person,(members.get(person)||0)+v)});
-let cs=[...cats].sort((a,b)=>b[1]-a[1]),ms=[...members].sort((a,b)=>b[1]-a[1]);let sum=cs.reduce((n,x)=>n+x[1],0),pos=0;let stops=cs.map(([k,v],i)=>{let a=pos;pos+=v/sum*100;return colors[i%colors.length]+' '+a+'% '+pos+'%'});$('sb-donut').style.background=stops.length?'conic-gradient('+stops.join(',')+')':'#183650';$('sb-donut-center').innerHTML=esc(fmt(total))+'<small>Total spent</small>';
+let cs=[...cats].sort((a,b)=>b[1]-a[1]),ms=[...members].sort((a,b)=>b[1]-a[1]);let sum=cs.reduce((n,x)=>n+x[1],0),pos=0;let stops=cs.map(([k,v],i)=>{let a=pos;pos+=v/sum*100;return colors[i%colors.length]+' '+a+'% '+pos+'%'});$('sb-donut').style.background=stops.length?'conic-gradient('+stops.join(',')+')':'#173750';$('sb-donut-center').innerHTML=esc(fmt(total))+'<small>Total spent</small>';
 $('sb-category-list').innerHTML=cs.length?cs.map(([k,v],i)=>'<div class="sb-cat-row"><span class="sb-dot" style="background:'+colors[i%colors.length]+'"></span><span>'+esc(k)+'</span><strong>'+esc(fmt(v))+'</strong><span class="sb-pct">'+(sum?v/sum*100:0).toFixed(1)+'%</span></div>').join(''):'<p class="sb-empty">No expenses in this period.</p>';
 $('sb-member-list').innerHTML=ms.length?ms.map(([k,v],i)=>'<div class="sb-member-row"><span class="sb-member-name" title="'+esc(k)+'">'+esc(k)+'</span><div class="sb-bar"><div style="width:'+(total?v/total*100:0)+'%;background:'+colors[i%colors.length]+'"></div></div><strong>'+esc(fmt(v))+'</strong><span class="sb-pct">'+(total?v/total*100:0).toFixed(0)+'%</span></div>').join(''):'<p class="sb-empty">No member spending in this period.</p>';
 $('sb-recent-body').innerHTML=entries.length?[...entries].sort((a,b)=>(parseDate(b.date||b.created_at||b.createdAt)||0)-(parseDate(a.date||a.created_at||a.createdAt)||0)).slice(0,7).map(e=>'<tr><td>'+esc((parseDate(e.date||e.dateLabel||e.created_at||e.createdAt)||new Date()).toLocaleDateString())+'</td><td>'+esc(e.note||e.description||'Expense')+'</td><td>'+esc(category(e))+'</td><td>'+esc(fmt(e.amount))+'</td><td>'+esc(e.from||'—')+'</td></tr>').join(''):'<tr><td colspan="5" class="sb-empty">No expenses in this period. Try All time.</td></tr>';
@@ -5698,7 +5695,7 @@ window.sqShowPaymentReceipt=function(d){modal('Payment recorded','DoWeo has reco
 document.addEventListener('click',function(event){var trigger=event.target.closest('[data-sq-detail]');if(!trigger)return;var id=trigger.getAttribute('data-sq-detail');var tracker=typeof current!=='undefined'?current:null;var entry=tracker&&Array.isArray(tracker.entries)?tracker.entries.find(function(e){return String(e.id)===id}):null;if(!entry)return;modal(entry.type==='payment'?'Payment details':'Expense details','Information saved in this tracker.',[['Amount','$'+Number(entry.amount||0).toFixed(2)],['From',entry.from||'—'],['To',entry.to||'—'],['Description',entry.note||'No description'],['Date',entry.date||'—'],['Status',entry.paymentStatus||'Confirmed'],['Due date',entry.dueDate||'Not set']],false)});
 })();
 </script>
-<nav class="sq-legal-footer" aria-label="Legal and support links"><span>© 2026 DoWeo</span><button type="button" data-open-legal="privacy">Privacy Policy</button><button type="button" data-open-legal="terms">Terms of Service</button><button type="button" data-open-legal="finance">Financial Disclaimer</button><a href="mailto:help@doweo.app" style="color:#8de0db">Contact</a></nav>
+<nav class="sq-legal-footer" aria-label="Legal and support links"><span>© 2026 DoWeo</span><button type="button" data-open-legal="privacy">Privacy Policy</button><button type="button" data-open-legal="terms">Terms of Service</button><button type="button" data-open-legal="finance">Financial Disclaimer</button><a href="mailto:help@doweo.app" style="color:#ABC6D7">Contact</a></nav>
 <script>
 (function(){
  const overlay=document.getElementById('sq-legal-overlay');const content=document.getElementById('sq-legal-content');const title=document.getElementById('sq-legal-title');let previousFocus;
@@ -6103,7 +6100,7 @@ async function render(){message.textContent='';const t=tracker();if(!t){content.
 if(tab==='wrapped'){const s=summary();content.innerHTML='<p>Explore spending activity in <strong>'+safe(t.name)+'</strong>. Totals include logged expenses, not repayments.</p><div class="sq-social-grid">'+stat('Expenses',s.list.length)+stat('Total logged',money(s.total))+stat('Average expense',money(s.average))+stat('Top description',s.top?s.top[0]:'—')+'</div><p class="sq-social-muted">These totals use the dates recorded on expenses. They are not personal spending totals or settled balances.</p><button id="sq-social-make-card" type="button">Create a Wrapped share card</button>';content.querySelector('#sq-social-make-card').onclick=()=>{tab='share';setTabs();render()};return}
 if(tab==='group'){content.innerHTML='<p class="sq-social-muted">Only the tracker owner can edit the group profile. All members can view it.</p><p>Loading group profile…</p>';try{profile=await window.squareUpApi(endpoint());const owner=t.role==='owner';content.innerHTML='<div class="sq-social-stat"><strong>'+safe(profile.title||t.name)+'</strong><p>'+safe(profile.description||'No group description yet.')+'</p><span>'+safe(profile.emoji||'👥')+'</span></div><h3>Members</h3><div>'+(t.members||[]).map(m=>'<span class="sq-social-member">'+safe(m.name||'Member')+'</span>').join('')+'</div>'+(owner?'<h3>Edit group profile</h3><label>Group title<input id="sq-group-title" maxlength="80" value="'+safe(profile.title||'')+'"></label><label>Group description<textarea id="sq-group-description" maxlength="300" rows="3">'+safe(profile.description||'')+'</textarea></label><label>Group emoji<input id="sq-group-emoji" maxlength="8" value="'+safe(profile.emoji||'👥')+'"></label><button id="sq-group-save" type="button">Save group profile</button>':'');if(owner)content.querySelector('#sq-group-save').onclick=async()=>{const b=content.querySelector('#sq-group-save');b.disabled=true;try{await window.squareUpApi(endpoint(),'PATCH',{title:content.querySelector('#sq-group-title').value,description:content.querySelector('#sq-group-description').value,emoji:content.querySelector('#sq-group-emoji').value});message.textContent='Group profile saved for everyone.';await render()}catch(e){message.textContent='Could not save: '+e.message}finally{b.disabled=false}}}catch(e){content.innerHTML='<p>Could not load group profile. Deploy the backend and run the SQL first.</p>';message.textContent=e.message}return}
 if(tab==='reactions'){content.innerHTML='<h3>Expense reactions</h3><p>Reactions already work in your existing expense details. Open an expense in the Expenses tab and choose a reaction. They are saved in Supabase and visible to group members.</p><p class="sq-social-muted">Available: 👍 🎉 ❤️ 👀 😄</p>';return}
-if(tab==='share'){const s=summary();content.innerHTML='<p>Create a 1080 × 1920 shareable image from your Wrapped statistics. The card excludes member names, payment details and individual expense descriptions.</p><canvas id="sq-social-canvas" width="1080" height="1920" hidden></canvas><img id="sq-social-preview" alt="Preview of Wrapped share card"><button id="sq-social-download" type="button">Save image</button>';const canvas=content.querySelector('canvas'),ctx=canvas.getContext('2d');const gradient=ctx.createLinearGradient(0,0,1080,1920);gradient.addColorStop(0,'#07172e');gradient.addColorStop(.55,'#104c60');gradient.addColorStop(1,'#07352e');ctx.fillStyle=gradient;ctx.fillRect(0,0,1080,1920);ctx.fillStyle='#6cf3d3';ctx.font='bold 74px system-ui';ctx.fillText('DOWEO',85,180);ctx.fillStyle='#fff';ctx.font='bold 94px system-ui';ctx.fillText('WRAPPED',85,325);ctx.font='44px system-ui';ctx.fillStyle='#c4e7e8';ctx.fillText(new Date(new Date().getFullYear(),new Date().getMonth()-1,1).toLocaleDateString('en-US',{month:'long',year:'numeric'}).toUpperCase(),85,420);ctx.fillStyle='#fff';ctx.font='bold 58px system-ui';const title=t.name.length>23?t.name.slice(0,22)+'…':t.name;ctx.fillText(title,85,565);const cards=[['EXPENSES',String(s.list.length)],['TOTAL LOGGED',money(s.total)],['AVERAGE EXPENSE',money(s.average)]];cards.forEach((x,i)=>{let y=665+i*285;ctx.fillStyle='#ffffff19';ctx.beginPath();ctx.roundRect(75,y,930,235,35);ctx.fill();ctx.fillStyle='#b5e8e4';ctx.font='37px system-ui';ctx.fillText(x[0],120,y+70);ctx.fillStyle='#fff';ctx.font='bold 77px system-ui';ctx.fillText(x[1].slice(0,19),120,y+162)});ctx.fillStyle='#c4e7e8';ctx.font='31px system-ui';ctx.fillText('Based on logged group expenses',85,1660);ctx.fillText('Not a record of personal spending',85,1715);ctx.fillStyle='#6cf3d3';ctx.font='bold 44px system-ui';ctx.fillText('DoWeo',85,1810);const img=content.querySelector('#sq-social-preview');img.src=canvas.toDataURL('image/png');content.querySelector('#sq-social-download').onclick=async()=>{
+if(tab==='share'){const s=summary();content.innerHTML='<p>Create a 1080 × 1920 shareable image from your Wrapped statistics. The card excludes member names, payment details and individual expense descriptions.</p><canvas id="sq-social-canvas" width="1080" height="1920" hidden></canvas><img id="sq-social-preview" alt="Preview of Wrapped share card"><button id="sq-social-download" type="button">Save image</button>';const canvas=content.querySelector('canvas'),ctx=canvas.getContext('2d');const gradient=ctx.createLinearGradient(0,0,1080,1920);gradient.addColorStop(0,'#0A1B2E');gradient.addColorStop(.55,'#204158');gradient.addColorStop(1,'#102B40');ctx.fillStyle=gradient;ctx.fillRect(0,0,1080,1920);ctx.fillStyle='#ABC6D7';ctx.font='bold 74px system-ui';ctx.fillText('DOWEO',85,180);ctx.fillStyle='#F3F8FC';ctx.font='bold 94px system-ui';ctx.fillText('WRAPPED',85,325);ctx.font='44px system-ui';ctx.fillStyle='#ABC6D7';ctx.fillText(new Date(new Date().getFullYear(),new Date().getMonth()-1,1).toLocaleDateString('en-US',{month:'long',year:'numeric'}).toUpperCase(),85,420);ctx.fillStyle='#F3F8FC';ctx.font='bold 58px system-ui';const title=t.name.length>23?t.name.slice(0,22)+'…':t.name;ctx.fillText(title,85,565);const cards=[['EXPENSES',String(s.list.length)],['TOTAL LOGGED',money(s.total)],['AVERAGE EXPENSE',money(s.average)]];cards.forEach((x,i)=>{let y=665+i*285;ctx.fillStyle='color-mix(in srgb, #F3F8FC 9.8%, transparent)';ctx.beginPath();ctx.roundRect(75,y,930,235,35);ctx.fill();ctx.fillStyle='#ABC6D7';ctx.font='37px system-ui';ctx.fillText(x[0],120,y+70);ctx.fillStyle='#F3F8FC';ctx.font='bold 77px system-ui';ctx.fillText(x[1].slice(0,19),120,y+162)});ctx.fillStyle='#ABC6D7';ctx.font='31px system-ui';ctx.fillText('Based on logged group expenses',85,1660);ctx.fillText('Not a record of personal spending',85,1715);ctx.fillStyle='#ABC6D7';ctx.font='bold 44px system-ui';ctx.fillText('DoWeo',85,1810);const img=content.querySelector('#sq-social-preview');img.src=canvas.toDataURL('image/png');content.querySelector('#sq-social-download').onclick=async()=>{
   const button=content.querySelector('#sq-social-download');
   if(!button||button.disabled)return;
   button.disabled=true;
@@ -6960,11 +6957,11 @@ window.sqPremiumEdit=function(item,trackerId){
  const card=document.createElement('section');card.className='sq-premium-dialog';card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-label','Edit bill or subscription');
  const title=document.createElement('h2');title.textContent='Edit '+(item.kind==='subscription'?'subscription':'bill');
  const form=document.createElement('form');form.className='sq-bill-edit-form';
- const field=(labelText,type,value)=>{const label=document.createElement('label');label.textContent=labelText;const input=document.createElement('input');input.type=type;input.value=value??'';input.required=true;input.style.cssText='display:block;width:100%;min-height:42px;margin-top:6px;box-sizing:border-box;border-radius:10px;padding:9px;background:#0a2638;color:white;border:1px solid #588397';label.append(input);form.append(label);return input};
+ const field=(labelText,type,value)=>{const label=document.createElement('label');label.textContent=labelText;const input=document.createElement('input');input.type=type;input.value=value??'';input.required=true;input.style.cssText='display:block;width:100%;min-height:42px;margin-top:6px;box-sizing:border-box;border-radius:10px;padding:9px;background:#102B40;color:#F3F8FC;border:1px solid #355E72';label.append(input);form.append(label);return input};
  const name=field('Name','text',item.name);name.maxLength=90;
  const amount=field('Amount','number',item.amount);amount.min='.01';amount.max='1000000000';amount.step='.01';
  const due=field('Next due date','date',item.due);
- const select=(labelText,choices,current)=>{const label=document.createElement('label');label.textContent=labelText;const el=document.createElement('select');el.style.cssText='display:block;width:100%;min-height:42px;margin-top:6px;box-sizing:border-box;border-radius:10px;padding:9px;background:#0a2638;color:white;border:1px solid #588397';for(const [value,text] of choices){const o=document.createElement('option');o.value=value;o.textContent=text;el.append(o)}el.value=current;label.append(el);form.append(label);return el};
+ const select=(labelText,choices,current)=>{const label=document.createElement('label');label.textContent=labelText;const el=document.createElement('select');el.style.cssText='display:block;width:100%;min-height:42px;margin-top:6px;box-sizing:border-box;border-radius:10px;padding:9px;background:#102B40;color:#F3F8FC;border:1px solid #355E72';for(const [value,text] of choices){const o=document.createElement('option');o.value=value;o.textContent=text;el.append(o)}el.value=current;label.append(el);form.append(label);return el};
  const frequency=select('Repeats',[['weekly','Weekly'],['monthly','Monthly'],['yearly','Yearly']],item.frequency||'monthly');
  const kind=select('Type',[['bill','Bill'],['subscription','Subscription']],item.kind||'bill');
  const note=document.createElement('p');note.textContent='Changes apply to future scheduled expenses, not payments already recorded. Changing the amount adjusts existing split proportions.';
@@ -7585,7 +7582,7 @@ window.squareUpOpenFinanceHub=open;
  function sync(){
    const style=getComputedStyle(backdrop);
    const image=backdrop.style.backgroundImage||style.backgroundImage;
-   hub.style.setProperty('--sq-finance-tracker-backdrop',image&&image!=='none'?image:'linear-gradient(135deg,#071522,#102b3d)');
+   hub.style.setProperty('--sq-finance-tracker-backdrop',image&&image!=='none'?image:'linear-gradient(135deg,#0A1B2E,#102B40)');
  }
  new MutationObserver(sync).observe(backdrop,{attributes:true,attributeFilter:['style','class']});
  new MutationObserver(()=>{if(!hub.hidden)sync()}).observe(hub,{attributes:true,attributeFilter:['hidden']});
@@ -8145,8 +8142,8 @@ document.getElementById('ac-log').addEventListener('click',function(){
 </script>
 
 
-<script src="/weo-mascot.js" defer></script>
-<script src="/weo-actions.js" defer></script>
+<script src="/weo-mascot.js?v=20261122-approved-seven-palette-v1" defer></script>
+<script src="/weo-actions.js?v=20261122-approved-seven-palette-v1" defer></script>
 
 
 
@@ -8231,9 +8228,9 @@ document.getElementById('ac-log').addEventListener('click',function(){
 
 
 
-<script src="doweo-i18n.js" defer></script>
-<script src="doweo-translations.js" defer></script>
-<script src="doweo-localize-ui.js" defer></script>
+<script src="doweo-i18n.js?v=20261122-approved-seven-palette-v1" defer></script>
+<script src="doweo-translations.js?v=20261122-approved-seven-palette-v1" defer></script>
+<script src="doweo-localize-ui.js?v=20261122-approved-seven-palette-v1" defer></script>
 
 
 
@@ -8386,11 +8383,11 @@ document.getElementById('ac-log').addEventListener('click',function(){
  dialog.addEventListener('click',function(e){if(e.target===dialog)dialog.close()});
 })();</script>
 
-<script src="/doweo-finance-planning.js" defer></script>
-<script src="/doweo-trips-activity.js" defer></script>
-<script src="/doweo-paylinks-currency.js" defer></script>
-<link rel="stylesheet" href="/doweo-bills-mobile-dashboard.css?v=20261116-tracker-picker-v5">
-<script src="/doweo-bills-mobile-dashboard.js?v=20261116-tracker-picker-v5" defer></script>
+<script src="/doweo-finance-planning.js?v=20261122-approved-seven-palette-v1" defer></script>
+<script src="/doweo-trips-activity.js?v=20261122-approved-seven-palette-v1" defer></script>
+<script src="/doweo-paylinks-currency.js?v=20261122-approved-seven-palette-v1" defer></script>
+<link rel="stylesheet" href="/doweo-bills-mobile-dashboard.css?v=20261122-approved-seven-palette-v1">
+<script src="/doweo-bills-mobile-dashboard.js?v=20261122-approved-seven-palette-v1" defer></script>
 
 
 
@@ -8754,18 +8751,18 @@ document.getElementById('ac-log').addEventListener('click',function(){
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-copy{min-width:0;overflow-wrap:anywhere}
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-amount{flex:none}
  #dw-home-schedules{display:flex;flex-direction:column;gap:20px;min-width:0}
- .dw-home-schedule-card{min-width:0;padding:24px;border:1px solid #315b70;border-radius:20px;background:linear-gradient(145deg,#0b263b,#123548);color:#edf8ff;box-sizing:border-box}
- .dw-home-schedule-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid #31556a}
- .dw-home-schedule-head h2{margin:0;font-size:21px}.dw-home-schedule-head>span{padding:6px 10px;border:1px solid #286779;border-radius:20px;background:#123e4d;color:#abcbd7;font-size:12px;white-space:nowrap}
- .dw-home-schedule-list{display:grid;gap:14px;min-height:100px;color:#b6cfdc;font-size:13px}
- .dw-home-bill-row{min-width:0;padding:12px 0;border-bottom:1px solid #294f63}.dw-home-bill-row:last-child{border-bottom:0}
+ .dw-home-schedule-card{min-width:0;padding:24px;border:1px solid #355E72;border-radius:20px;background:linear-gradient(145deg,#102B40,#173750);color:#F3F8FC;box-sizing:border-box}
+ .dw-home-schedule-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid #355E72}
+ .dw-home-schedule-head h2{margin:0;font-size:21px}.dw-home-schedule-head>span{padding:6px 10px;border:1px solid #355E72;border-radius:20px;background:#173750;color:#ABC6D7;font-size:12px;white-space:nowrap}
+ .dw-home-schedule-list{display:grid;gap:14px;min-height:100px;color:#ABC6D7;font-size:13px}
+ .dw-home-bill-row{min-width:0;padding:12px 0;border-bottom:1px solid #204158}.dw-home-bill-row:last-child{border-bottom:0}
  .dw-home-bill-info{display:flex;align-items:center;gap:12px;min-width:0}.dw-home-bill-info>div:last-child{flex:1;min-width:0}.dw-home-bill-info .sq-service-icon{flex:none}
- .dw-home-bill-title{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}.dw-home-bill-title strong{color:#edf8ff;overflow-wrap:anywhere}.dw-home-bill-title>span{font-weight:700;color:#b1efdb;white-space:nowrap}
- .dw-home-bill-info small{display:block;color:#acc8d6;line-height:1.5;margin-top:5px}
+ .dw-home-bill-title{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}.dw-home-bill-title strong{color:#F3F8FC;overflow-wrap:anywhere}.dw-home-bill-title>span{font-weight:700;color:#ABC6D7;white-space:nowrap}
+ .dw-home-bill-info small{display:block;color:#ABC6D7;line-height:1.5;margin-top:5px}
  .dw-home-bill-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
- .dw-home-bill-actions button{border:1px solid #508092;border-radius:10px;background:#103448;color:#d9edf6;padding:9px 12px;cursor:pointer;font:inherit;font-size:12px}
- .dw-home-bill-actions button:hover{background:#1d4a5e}.dw-home-bill-actions button:disabled{opacity:.5;cursor:wait}
- .dw-home-schedule-status{font-size:12px;color:#f0bac3;margin:10px 0 0}.dw-home-schedule-status:empty{display:none}
+ .dw-home-bill-actions button{border:1px solid #355E72;border-radius:10px;background:#173750;color:#F3F8FC;padding:9px 12px;cursor:pointer;font:inherit;font-size:12px}
+ .dw-home-bill-actions button:hover{background:#204158}.dw-home-bill-actions button:disabled{opacity:.5;cursor:wait}
+ .dw-home-schedule-status{font-size:12px;color:#ABC6D7;margin:10px 0 0}.dw-home-schedule-status:empty{display:none}
  @container(max-width:620px){
   html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary){grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto auto auto!important}
   html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel{grid-column:1!important;grid-row:3!important}
@@ -8899,42 +8896,42 @@ document.getElementById('ac-log').addEventListener('click',function(){
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary){height:100%!important;grid-template-rows:auto minmax(0,1fr)!important}
  html body #tracker-dashboard.sq-tab-overview #dw-home-columns>.sq-overview-activity-panel{grid-column:1/-1!important;grid-row:2!important;width:100%!important;max-width:none!important;min-width:0!important;margin:0!important;padding:22px!important;box-sizing:border-box!important}
  #dw-home-columns>.sq-overview-activity-panel #sq-return-activity{display:grid;gap:10px}
- #dw-home-columns>.sq-overview-activity-panel .sq-return-row{background:#0d2d45!important;box-sizing:border-box}
+ #dw-home-columns>.sq-overview-activity-panel .sq-return-row{background:#102B40!important;box-sizing:border-box}
  #dw-home-columns>.sq-overview-activity-panel.sq-panel-collapsed>:not(.sq-return-head){display:none!important}
  @container(max-width:620px){html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary){grid-template-rows:auto auto auto!important}}
 }</style>
 <style id="dw-compact-overview-style">@media(min-width:901px){
- html body #tracker-dashboard.sq-tab-overview #dw-home-columns{grid-template-columns:minmax(210px, 3fr) minmax(0, 7fr)!important;grid-template-rows:auto auto auto!important;gap:20px!important;padding:22px!important;background:#062131!important;border-radius:18px;box-sizing:border-box}
+ html body #tracker-dashboard.sq-tab-overview #dw-home-columns{grid-template-columns:minmax(210px, 3fr) minmax(0, 7fr)!important;grid-template-rows:auto auto auto!important;gap:20px!important;padding:22px!important;background:#0A1B2E!important;border-radius:18px;box-sizing:border-box}
  html body #tracker-dashboard.sq-tab-overview #dw-home-left,html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary),html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>#sq-desktop-balance-layout,html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>.sq-return-grid{display:contents!important}
  html body #tracker-dashboard.sq-tab-overview #dw-home-schedules{display:none!important}
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary)>.sq-return-welcome{grid-column:1/-1!important;grid-row:1!important;margin:0!important;padding:0 0 8px!important;border:0!important}
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-return-welcome h2{font-size:clamp(23px,2.3vw,34px)!important;margin:0!important}
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #dw-desktop-add{display:none!important}
- #dw-compact-add{background:#25d9b9;color:#062c38;border:0;border-radius:12px;padding:14px 22px;font:inherit;font-size:15px;font-weight:750;cursor:pointer;white-space:nowrap}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-balance{grid-column:1!important;grid-row:2!important;padding:22px!important;min-height:240px!important;justify-content:space-between!important;gap:18px!important;background:linear-gradient(140deg,#10374b,#0b2a3d)!important;border:1px solid #3a6578!important;border-radius:12px!important;box-shadow:none!important}
+ #dw-compact-add{background:#ABC6D7;color:#102B40;border:0;border-radius:12px;padding:14px 22px;font:inherit;font-size:15px;font-weight:750;cursor:pointer;white-space:nowrap}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-balance{grid-column:1!important;grid-row:2!important;padding:22px!important;min-height:240px!important;justify-content:space-between!important;gap:18px!important;background:linear-gradient(140deg,#173750,#102B40)!important;border:1px solid #355E72!important;border-radius:12px!important;box-shadow:none!important}
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-balance:before,html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-balance:after{display:none!important}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-clean-eyebrow{font-size:12px!important;letter-spacing:.15em!important;color:#9ed9e9!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-clean-eyebrow{font-size:12px!important;letter-spacing:.15em!important;color:#ABC6D7!important}
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-net{display:none!important}
- #dw-compact-balance{display:block;font-size:clamp(25px,2.7vw,42px);font-weight:800;line-height:1.2;letter-spacing:-.025em;color:#f2fbff;margin:14px 0 10px}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-explanation{font-size:13px!important;line-height:1.5!important;color:#aacbd9!important}
+ #dw-compact-balance{display:block;font-size:clamp(25px,2.7vw,42px);font-weight:800;line-height:1.2;letter-spacing:-.025em;color:#F3F8FC;margin:14px 0 10px}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-explanation{font-size:13px!important;line-height:1.5!important;color:#ABC6D7!important}
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-clean-balance-actions{margin:0!important;width:auto!important}
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-settle{flex:none!important;min-width:145px!important;min-height:44px!important;padding:11px 20px!important;border-radius:11px!important}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel{grid-column:1!important;grid-row:3!important;display:flex!important;flex-direction:column!important;padding:22px!important;min-height:240px!important;background:linear-gradient(140deg,#10374b,#0b2a3d)!important;border:1px solid #3a6578!important;border-radius:12px!important;box-shadow:none!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel{grid-column:1!important;grid-row:3!important;display:flex!important;flex-direction:column!important;padding:22px!important;min-height:240px!important;background:linear-gradient(140deg,#173750,#102B40)!important;border:1px solid #355E72!important;border-radius:12px!important;box-shadow:none!important}
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel .sq-return-head{border:0!important;margin:0 0 16px!important;padding:0!important;align-items:center!important}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel h3{font-size:12px!important;text-transform:uppercase;letter-spacing:.15em!important;color:#9ed9e9!important}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel .sq-return-head>[data-return-tab]{font-size:12px!important;padding:0!important;background:none!important;border:0!important;color:#a3d5e5!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel h3{font-size:12px!important;text-transform:uppercase;letter-spacing:.15em!important;color:#ABC6D7!important}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel .sq-return-head>[data-return-tab]{font-size:12px!important;padding:0!important;background:none!important;border:0!important;color:#ABC6D7!important}
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel .sq-panel-collapse-toggle{display:none!important}
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-return-members{display:grid!important;gap:12px!important;padding:0!important;margin:0!important;border:0!important}
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-return-members .sq-return-row{padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;gap:11px!important}
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-return-members .sq-return-icon{width:38px!important;height:38px!important;min-width:38px!important;border-radius:50%!important}
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-return-members .sq-return-copy strong{font-size:15px!important}
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-return-members .sq-return-copy small{font-size:12px!important}
- html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel #sq-clean-remind{margin-top:auto!important;align-self:flex-end!important;padding:10px 16px!important;min-height:40px!important;min-width:0!important;border:1px solid #54acae!important;border-radius:10px!important;background:transparent!important;color:#effbff!important;font-size:13px!important}
- html body #tracker-dashboard.sq-tab-overview #dw-compact-upcoming{grid-column:2!important;grid-row:3!important;min-width:0;min-height:240px;padding:22px;box-sizing:border-box;border:1px solid #3a6578;border-radius:12px;background:linear-gradient(140deg,#10374b,#0b2a3d);color:#edfaff}
- #dw-upcoming-title{font-size:12px;text-transform:uppercase;letter-spacing:.15em;color:#9ed9e9;margin:0 0 18px}
+ html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) .sq-overview-people-panel #sq-clean-remind{margin-top:auto!important;align-self:flex-end!important;padding:10px 16px!important;min-height:40px!important;min-width:0!important;border:1px solid #ABC6D7!important;border-radius:10px!important;background:transparent!important;color:#F3F8FC!important;font-size:13px!important}
+ html body #tracker-dashboard.sq-tab-overview #dw-compact-upcoming{grid-column:2!important;grid-row:3!important;min-width:0;min-height:240px;padding:22px;box-sizing:border-box;border:1px solid #355E72;border-radius:12px;background:linear-gradient(140deg,#173750,#102B40);color:#F3F8FC}
+ #dw-upcoming-title{font-size:12px;text-transform:uppercase;letter-spacing:.15em;color:#ABC6D7;margin:0 0 18px}
  #dw-compact-upcoming .dw-home-schedule-list{min-height:0;max-height:none;overflow:visible;gap:12px}
  #dw-compact-upcoming #dw-home-bill-list{margin:0;padding:0;border:0}
- #dw-compact-upcoming .dw-date-group{margin:8px 0 0;padding-top:10px;border-top:1px solid #365f72;color:#edfaff;font-size:15px}
+ #dw-compact-upcoming .dw-date-group{margin:8px 0 0;padding-top:10px;border-top:1px solid #355E72;color:#F3F8FC;font-size:15px}
  #dw-compact-upcoming .dw-date-group:first-child,#dw-compact-upcoming small+.dw-date-group{border:0;padding-top:0}
  #dw-compact-upcoming .dw-home-bill-row{position:relative;padding:0 0 8px;border-bottom:0}
  #dw-compact-upcoming .dw-home-bill-info{padding-right:18px;cursor:pointer}
@@ -8942,28 +8939,28 @@ document.getElementById('ac-log').addEventListener('click',function(){
  #dw-compact-upcoming .dw-home-bill-title>span{font-size:16px}
  #dw-compact-upcoming .dw-home-bill-info small{font-size:12px}
  .dw-home-item-menu{position:absolute;right:-7px;top:0;z-index:3}
- .dw-home-item-menu summary{list-style:none;cursor:pointer;font-weight:800;color:#8bc3d2;font-size:12px;padding:2px}
+ .dw-home-item-menu summary{list-style:none;cursor:pointer;font-weight:800;color:#ABC6D7;font-size:12px;padding:2px}
  .dw-home-item-menu summary::-webkit-details-marker{display:none}
  .dw-home-item-menu[open]{z-index:4}
- .dw-home-item-menu .dw-home-bill-actions{position:absolute;right:0;top:24px;margin:0;display:flex;flex-direction:column;min-width:120px;padding:7px;background:#092538;border:1px solid #426d80;border-radius:10px;box-shadow:0 5px 20px #0008}
+ .dw-home-item-menu .dw-home-bill-actions{position:absolute;right:0;top:24px;margin:0;display:flex;flex-direction:column;min-width:120px;padding:7px;background:#102B40;border:1px solid #355E72;border-radius:10px;box-shadow:0 5px 20px color-mix(in srgb, #0A1B2E 53.3%, transparent)}
  .dw-home-item-menu:not([open]) .dw-home-bill-actions{display:none}
  .dw-home-item-menu .dw-home-bill-actions button{margin:0;text-align:left;background:transparent;border:0}
- html body #tracker-dashboard.sq-tab-overview #dw-home-columns>.sq-overview-activity-panel{grid-row:2!important;grid-column:2!important;padding:22px!important;background:linear-gradient(140deg,#0c2c40,#082637)!important;border:1px solid #3a6578!important;border-radius:12px!important;box-shadow:none!important}
+ html body #tracker-dashboard.sq-tab-overview #dw-home-columns>.sq-overview-activity-panel{grid-row:2!important;grid-column:2!important;padding:22px!important;background:linear-gradient(140deg,#102B40,#102B40)!important;border:1px solid #355E72!important;border-radius:12px!important;box-shadow:none!important}
  #dw-home-columns>.sq-overview-activity-panel .sq-return-head{border:0!important;margin:0 0 12px!important;padding:0!important}
  #dw-home-columns>.sq-overview-activity-panel .sq-return-head h3{font-size:25px!important}
  #dw-home-columns>.sq-overview-activity-panel .sq-return-head button{display:none!important}
  .dw-activity-columns,#dw-home-columns #sq-return-activity>.sq-return-row{display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,1.05fr) minmax(0,1.2fr) minmax(75px,.6fr) 18px!important;align-items:center;gap:16px!important}
- .dw-activity-columns{padding:12px 10px;border-bottom:1px solid #365f72;font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:750;color:#a8d8e8}
+ .dw-activity-columns{padding:12px 10px;border-bottom:1px solid #355E72;font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:750;color:#ABC6D7}
  #dw-home-columns #sq-return-activity{gap:0!important}
- #dw-home-columns #sq-return-activity>.sq-return-row{padding:15px 10px!important;min-height:62px;border:0!important;border-bottom:1px solid #365f72!important;border-radius:0!important;background:transparent!important;margin:0!important}
+ #dw-home-columns #sq-return-activity>.sq-return-row{padding:15px 10px!important;min-height:62px;border:0!important;border-bottom:1px solid #355E72!important;border-radius:0!important;background:transparent!important;margin:0!important}
  #dw-home-columns #sq-return-activity>.sq-return-row:last-child{border-bottom:0!important}
- #dw-home-columns #sq-return-activity>.sq-return-row:hover{transform:none;background:#123c50!important}
+ #dw-home-columns #sq-return-activity>.sq-return-row:hover{transform:none;background:#173750!important}
  .dw-activity-name{font-size:19px;min-width:0;overflow-wrap:anywhere}
- .dw-activity-category{min-width:0}.dw-activity-category>span{display:inline-block;max-width:100%;box-sizing:border-box;padding:5px 10px;border:1px solid #426c7e;border-radius:18px;background:#173e51;color:#d9eef7;font-size:12px;overflow-wrap:anywhere}
- .dw-activity-people{font-size:14px;color:#a9cbdc;overflow-wrap:anywhere}
- .dw-activity-value{font-size:19px;color:#f1faff;white-space:nowrap}
- .dw-activity-chevron{font-size:25px;color:#b9d9e8;text-align:right}
- #dw-compact-add:focus-visible,#dw-compact-upcoming [role=button]:focus-visible{outline:2px solid #6af0d2;outline-offset:3px}
+ .dw-activity-category{min-width:0}.dw-activity-category>span{display:inline-block;max-width:100%;box-sizing:border-box;padding:5px 10px;border:1px solid #355E72;border-radius:18px;background:#173750;color:#F3F8FC;font-size:12px;overflow-wrap:anywhere}
+ .dw-activity-people{font-size:14px;color:#ABC6D7;overflow-wrap:anywhere}
+ .dw-activity-value{font-size:19px;color:#F3F8FC;white-space:nowrap}
+ .dw-activity-chevron{font-size:25px;color:#ABC6D7;text-align:right}
+ #dw-compact-add:focus-visible,#dw-compact-upcoming [role=button]:focus-visible{outline:2px solid #ABC6D7;outline-offset:3px}
 }
 @media(max-width:900px){#dw-compact-upcoming,#dw-compact-add,#dw-compact-balance,.dw-activity-columns{display:none!important}}</style>
 <script id="dw-compact-overview-script">(function(){
@@ -9029,8 +9026,8 @@ document.getElementById('ac-log').addEventListener('click',function(){
  html body #tracker-dashboard.sq-tab-overview #sq-return-summary:is(#sq-return-summary) #sq-clean-explanation{display:none}
  #dw-home-columns :is(#sq-clean-remind,#sq-clean-settle){width:100%!important;max-width:none!important}
  html body #tracker-dashboard #dw-home-columns #dw-upcoming-title{font-size:22px!important;text-transform:none!important;letter-spacing:normal!important;color:inherit!important}
- #dw-compact-upcoming .dw-schedule-columns,#dw-compact-upcoming .dw-scheduled-day{display:grid;grid-template-columns:minmax(64px,.24fr) minmax(0,1fr);align-items:baseline;gap:0 12px;padding:10px 0;border-bottom:1px solid #365f72}
- #dw-compact-upcoming .dw-schedule-columns{grid-template-columns:minmax(64px,.24fr) minmax(0,1fr) auto;text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:700;color:#a8d8e8}
+ #dw-compact-upcoming .dw-schedule-columns,#dw-compact-upcoming .dw-scheduled-day{display:grid;grid-template-columns:minmax(64px,.24fr) minmax(0,1fr);align-items:baseline;gap:0 12px;padding:10px 0;border-bottom:1px solid #355E72}
+ #dw-compact-upcoming .dw-schedule-columns{grid-template-columns:minmax(64px,.24fr) minmax(0,1fr) auto;text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:700;color:#ABC6D7}
  #dw-compact-upcoming .dw-scheduled-day .dw-date-group{grid-column:1;margin:0;padding:0;border:0}
  #dw-compact-upcoming .dw-scheduled-day .dw-home-bill-row{grid-column:2}
  #dw-compact-upcoming .dw-scheduled-day:last-child{border:0}
@@ -9039,7 +9036,7 @@ document.getElementById('ac-log').addEventListener('click',function(){
  html body #tracker-dashboard #dw-home-columns .sq-clean-eyebrow,
  html body #tracker-dashboard #dw-home-columns #dw-upcoming-title,
  html body #tracker-dashboard #dw-home-columns .sq-overview-people-panel h3{
-  font-family:inherit!important;font-size:12px!important;font-weight:750!important;line-height:1.3!important;letter-spacing:.15em!important;text-transform:uppercase!important;color:#9ed9e9!important;
+  font-family:inherit!important;font-size:12px!important;font-weight:750!important;line-height:1.3!important;letter-spacing:.15em!important;text-transform:uppercase!important;color:#ABC6D7!important;
  }
  #dw-compact-balance .dw-balance-prefix{font-family:inherit;font-size:inherit;font-weight:inherit;letter-spacing:inherit}
  #dw-compact-balance .dw-balance-amount{font-family:inherit;font-size:inherit;font-weight:inherit;letter-spacing:inherit}
@@ -9250,7 +9247,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 
 <script id="dw-mobile-home-layered-script">(function(){
  const d=document.getElementById('tracker-dashboard'),source=document.getElementById('sq-return-summary');if(!d||!source)return;const media=matchMedia('(max-width:900px)');let queued=false,billTracker=null,bills=[],billSeq=0;
- const home=document.createElement('section');home.id='dw-mobile-home-layered';home.setAttribute('aria-label','Mobile tracker overview');home.innerHTML='<h2 id="dw-mh-greeting">Welcome back</h2><section class="dw-mh-hero" aria-label="Tracker balance"><strong id="dw-mh-amount">—</strong><span id="dw-mh-caption">Your tracker balance</span><div class="dw-mh-actions"><button type="button" data-mh-action="sq-clean-settle" aria-label="Settle up"><span class="dw-mh-settle-label" style="color:#062e36!important;-webkit-text-fill-color:#062e36!important;font-size:13px!important;font-weight:800!important;opacity:1!important;visibility:visible!important;">Settle up</span></button><button type="button" data-mh-action="quick-pay-now">Pay now</button><button type="button" data-mh-action="quick-payment">Log payment</button></div></section><div class="dw-mh-grid"><button type="button" class="dw-mh-small" id="dw-mh-members"><h3>Members</h3><span id="dw-mh-people" aria-hidden="true"></span><span id="dw-mh-members-count"></span></button><button type="button" class="dw-mh-small" id="dw-mh-upcoming"><h3>Upcoming</h3><span id="dw-mh-upcoming-name">Loading…</span><strong id="dw-mh-upcoming-amount"></strong></button></div><section class="dw-mh-activity" aria-label="Recent activity"><div class="dw-mh-activity-head"><h3>Recent activity</h3><button type="button" class="dw-mh-see-all">See all ›</button></div><div id="dw-mh-activity-list"></div></section>';
+ const home=document.createElement('section');home.id='dw-mobile-home-layered';home.setAttribute('aria-label','Mobile tracker overview');home.innerHTML='<h2 id="dw-mh-greeting">Welcome back</h2><section class="dw-mh-hero" aria-label="Tracker balance"><strong id="dw-mh-amount">—</strong><span id="dw-mh-caption">Your tracker balance</span><div class="dw-mh-actions"><button type="button" data-mh-action="sq-clean-settle" aria-label="Settle up"><span class="dw-mh-settle-label" style="color:#102B40!important;-webkit-text-fill-color:#102B40!important;font-size:13px!important;font-weight:800!important;opacity:1!important;visibility:visible!important;">Settle up</span></button><button type="button" data-mh-action="quick-pay-now">Pay now</button><button type="button" data-mh-action="quick-payment">Log payment</button></div></section><div class="dw-mh-grid"><button type="button" class="dw-mh-small" id="dw-mh-members"><h3>Members</h3><span id="dw-mh-people" aria-hidden="true"></span><span id="dw-mh-members-count"></span></button><button type="button" class="dw-mh-small" id="dw-mh-upcoming"><h3>Upcoming</h3><span id="dw-mh-upcoming-name">Loading…</span><strong id="dw-mh-upcoming-amount"></strong></button></div><section class="dw-mh-activity" aria-label="Recent activity"><div class="dw-mh-activity-head"><h3>Recent activity</h3><button type="button" class="dw-mh-see-all">See all ›</button></div><div id="dw-mh-activity-list"></div></section>';
  const by=id=>document.getElementById(id),tab=name=>d.querySelector('[data-sq-tab="'+name+'"]')?.click(),money=(n,c)=>new Intl.NumberFormat(undefined,{style:'currency',currency:c||'USD'}).format(Number(n)||0);
  home.querySelectorAll('[data-mh-action]').forEach(button=>button.onclick=()=>{const target=by(button.dataset.mhAction);if(!target)return;if(typeof target.onclick==='function')target.onclick.call(target);else target.click();});
  byIdLocal('dw-mh-members').onclick=()=>tab('members');byIdLocal('dw-mh-upcoming').onclick=()=>tab('bills');home.querySelector('.dw-mh-see-all').onclick=()=>tab('expenses');
@@ -9336,54 +9333,54 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
  <div id="dw-chat-rows" aria-live="polite"></div></div>
  <div id="dw-chat-thread" hidden><header><button id="dw-chat-back" aria-label="Back to chats">‹ Chats</button><div><strong id="dw-chat-name"></strong><small>Tracker chat</small></div><button id="dw-chat-find" aria-label="Search messages"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button></header><div id="dw-chat-host"></div><div id="dw-dm-panel" hidden><div id="dw-dm-messages" aria-label="Private messages"></div><small id="dw-dm-status" role="status"></small><form id="dw-dm-form"><input id="dw-dm-input" aria-label="Private message" maxlength="4000" autocomplete="off"><button type="submit">Send</button></form></div></div></section>
 <!-- DoWeo's mint/navy visual refresh and timed beta-feedback invitation. -->
-<link rel="stylesheet" href="/doweo-mint-dashboard.css?v=20261121-mint-v1">
-<link rel="stylesheet" href="/doweo-beta-nudge.css?v=20261121-nudge-v1">
-<script defer src="/doweo-beta-nudge.js?v=20261121-nudge-v1"></script>
+<link rel="stylesheet" href="/doweo-mint-dashboard.css?v=20261122-approved-seven-palette-v1">
+<link rel="stylesheet" href="/doweo-beta-nudge.css?v=20261122-approved-seven-palette-v1">
+<script defer src="/doweo-beta-nudge.js?v=20261122-approved-seven-palette-v1"></script>
 <!-- Screenshot-matched layout, preserving existing DoWeo data and controls. -->
-<link rel="stylesheet" href="/doweo-reference-home.css?v=20261122-mobile-beta-navy-v6">
-<script defer src="/doweo-reference-home.js?v=20261122-add-no-chevron-v2"></script>
+<link rel="stylesheet" href="/doweo-reference-home.css?v=20261122-approved-seven-palette-v1">
+<script defer src="/doweo-reference-home.js?v=20261122-approved-seven-palette-v1"></script>
 
 <!-- Unified desktop shell and reviewed offline labels for every supported language. -->
-<link rel="stylesheet" href="/doweo-unified-shell.css?v=20261122-fixed-tabs-v4">
-<script defer src="/doweo-unified-shell.js?v=20261121-desktop-refinement-v3"></script>
-<script defer src="/doweo-unified-localize.js?v=20261121-all-locales-v1"></script>
+<link rel="stylesheet" href="/doweo-unified-shell.css?v=20261122-approved-seven-palette-v1">
+<script defer src="/doweo-unified-shell.js?v=20261122-approved-seven-palette-v1"></script>
+<script defer src="/doweo-unified-localize.js?v=20261122-approved-seven-palette-v1"></script>
 <!-- This must load last, after the unified-shell and every legacy stylesheet. -->
-<link rel="stylesheet" href="/doweo-page-repairs.css?v=20261121-production-visible-v5">
+<link rel="stylesheet" href="/doweo-page-repairs.css?v=20261122-approved-seven-palette-v1">
 
 
 <!-- UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121. Included in HTML to avoid missing/old CSS asset. -->
 <style id="doweo-desktop-v5-navy-analytics">
 @media (min-width:901px) {
   /* Notification page is a BODY sibling of the main wrap. Remove wallpaper here. */
-  html body.notifications-view {background:#0a1e35!important;background-image:none!important}
-  html body.notifications-view #backdrop#backdrop {background:#0a1e35!important;background-image:none!important}
+  html body.notifications-view {background:#0A1B2E!important;background-image:none!important}
+  html body.notifications-view #ABC6D7kdrop#ABC6D7kdrop {background:#0A1B2E!important;background-image:none!important}
   html body.notifications-view #notifications-page {
-    background:#0a1e35!important;background-image:none!important;
-    min-height:calc(100vh - 130px)!important;color:#f5faff!important;
+    background:#0A1B2E!important;background-image:none!important;
+    min-height:calc(100vh - 130px)!important;color:#F3F8FC!important;
     border:0!important;box-shadow:none!important;
   }
   html body.notifications-view #notifications-page .sq-notifications-header h2,
-  html body.notifications-view #notifications-page .notification-panel-heading {color:#f5faff!important}
+  html body.notifications-view #notifications-page .notification-panel-heading {color:#F3F8FC!important}
   html body.notifications-view #notifications-page #notifications-panel {
-    background:#112c49!important;background-image:none!important;
-    color:#f5faff!important;border:1px solid #365c78!important
+    background:#102B40!important;background-image:none!important;
+    color:#F3F8FC!important;border:1px solid #355E72!important
   }
   html body.notifications-view #notifications-page #notifications-list :is(.entry,.dw-inbox-item,.dw-inbox-card){
-    background:#1c3a56!important;background-image:none!important;color:#f5faff!important;
-    border-color:#466784!important
+    background:#204158!important;background-image:none!important;color:#F3F8FC!important;
+    border-color:#355E72!important
   }
-  html body.notifications-view #notifications-page #notifications-list :is(h3,b,strong){color:#fff!important}
-  html body.notifications-view #notifications-page #notifications-list :is(p,small,.note){color:#c4d7e8!important}
+  html body.notifications-view #notifications-page #notifications-list :is(h3,b,strong){color:#F3F8FC!important}
+  html body.notifications-view #notifications-page #notifications-list :is(p,small,.note){color:#ABC6D7!important}
   html body.notifications-view #notifications-page #sq-notification-filter{
-    color:#102947!important;background:#f5faff!important
+    color:#102B40!important;background:#F3F8FC!important
   }
   html body.notifications-view #notifications-page #notifications-list button{
-    color:#073747!important;background:#bdf4e5!important
+    color:#102B40!important;background:#ABC6D7!important
   }
   /* Cash Flow uses the same airy canvas, title hierarchy, pill tabs and
      navy cards and mint accents as the new DoWeo theme. Preserve drawFinance(). */
   html body.sq-finance-open #sq-nextgen[data-section="finance"]{
-    background:#eaf1fc!important;color:#142543!important;
+    background:#F3F8FC!important;color:#102B40!important;
     overflow-y:auto!important;overflow-x:hidden!important
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-shell{
@@ -9391,14 +9388,14 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
     padding:20px clamp(20px,2.5vw,42px) 65px!important;margin:0 auto!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs{
-    background:#10243d!important;border:1px solid #557a92!important;
+    background:#102B40!important;border:1px solid #355E72!important;
     border-radius:18px!important;padding:5px!important;max-width:650px!important
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs button[aria-current="page"]{
-    background:#62eac1!important;color:#10243d!important
+    background:#ABC6D7!important;color:#102B40!important
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] :is(#sq-ng-title,.sq-ng-card h2){
-    color:#17294b!important
+    color:#102B40!important
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content{
     display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
@@ -9412,14 +9409,14 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-web-comparison{grid-area:comparison!important}
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content>p{grid-area:note!important}
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card{
-    background:#102139!important;background-image:linear-gradient(145deg,#152e49,#102139)!important;color:#f6fbff!important;
-    border:1px solid #587c91!important;border-radius:21px!important;
-    box-shadow:0 8px 24px #20375816!important
+    background:#102B40!important;background-image:linear-gradient(145deg,#102B40,#102B40)!important;color:#F3F8FC!important;
+    border:1px solid #355E72!important;border-radius:21px!important;
+    box-shadow:0 8px 24px color-mix(in srgb, #204158 8.6%, transparent)!important
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card
-    :is(h2,h3,strong,b,th,td){color:#f6fbff!important}
+    :is(h2,h3,strong,b,th,td){color:#F3F8FC!important}
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-open-transaction{
-    background:#62eac1!important;color:#10243d!important;cursor:pointer!important
+    background:#ABC6D7!important;color:#102B40!important;cursor:pointer!important
   }
   @media(max-width:1200px){
     html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content{
@@ -9434,15 +9431,15 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-summary-stack{
     display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important
   }
-  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card :is(p,small,.sq-ng-note){color:#bdd3e2!important}
-  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card :is(th,td){border-color:#466781!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card :is(p,small,.sq-ng-note){color:#ABC6D7!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card :is(th,td){border-color:#355E72!important}
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-months{
     display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:10px!important
   }
-  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.income{background:#62eac1!important}
-  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.expense{background:#76b5f0!important}
-  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-track{background:#284963!important}
-  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-track>span{background:#62eac1!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.income{background:#ABC6D7!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.expense{background:#ABC6D7!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-track{background:#204158!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-track>span{background:#ABC6D7!important}
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-web-comparison{overflow-x:auto!important}
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-web-comparison table{min-width:450px!important}
   @media(max-width:1280px){
@@ -9461,13 +9458,13 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   html body #sq-bills-page#sq-bills-page#sq-bills-page
   :is(.sq-bill-create-card,.sq-premium-calendar,.sq-premium-metrics>article,
       .sq-bills-columns>.sq-bills-column) {
-    background:linear-gradient(145deg,#102139 0%,#10223b 52%,#0d2037 100%)!important;
-    background-color:#102139!important;
-    background-image:linear-gradient(145deg,#102139 0%,#10223b 52%,#0d2037 100%)!important;
-    color:#f7fbff!important;
-    border:1px solid #9acbd5!important;
+    background:linear-gradient(145deg,#102B40 0%,#102B40 52%,#0A1B2E 100%)!important;
+    background-color:#102B40!important;
+    background-image:linear-gradient(145deg,#102B40 0%,#102B40 52%,#0A1B2E 100%)!important;
+    color:#F3F8FC!important;
+    border:1px solid #ABC6D7!important;
     border-radius:21px!important;
-    box-shadow:0 5px 18px rgba(4,18,34,.12)!important;
+    box-shadow:0 5px 18px color-mix(in srgb, #0A1B2E 12%, transparent)!important;
     backdrop-filter:none!important;
     -webkit-backdrop-filter:none!important;
     opacity:1!important;
@@ -9476,7 +9473,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   :is(.sq-bill-create-card,.sq-premium-calendar,.sq-premium-metrics>article,
       .sq-bills-columns>.sq-bills-column)
   :is(h1,h2,h3,h4,h5,p,span,small,strong,b,label,time) {
-    color:#f7fbff!important;
+    color:#F3F8FC!important;
     opacity:1!important;
     text-shadow:none!important;
   }
@@ -9485,82 +9482,82 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   :is(.sq-bills-help,.sq-premium-metrics article>small,
       .sq-bills-row small,.sq-bills-empty,.sq-premium-selected,
       #sq-premium-selected,.sq-bills-row-subtitle) {
-    color:#d4e6f1!important;
+    color:#F3F8FC!important;
     opacity:1!important;
   }
   html body #sq-bills-page#sq-bills-page#sq-bills-page
   .sq-premium-metrics article>span {
-    color:#dceaf3!important;opacity:1!important;
+    color:#F3F8FC!important;opacity:1!important;
   }
   html body #sq-bills-page#sq-bills-page#sq-bills-page #sq-premium-monthly {
-    color:#6df0d0!important;opacity:1!important;
+    color:#ABC6D7!important;opacity:1!important;
   }
   html body #sq-bills-page#sq-bills-page#sq-bills-page #sq-premium-active {
-    color:#ffffff!important;opacity:1!important;
+    color:#F3F8FC!important;opacity:1!important;
   }
   /* Calendar: light weekdays/dates, legible selected day, mint outline. */
   html body #sq-bills-page#sq-bills-page#sq-bills-page .sq-premium-calhead
-  :is(h3,strong) {color:#fff!important}
+  :is(h3,strong) {color:#F3F8FC!important}
   html body #sq-bills-page#sq-bills-page#sq-bills-page
-  .sq-premium-days>span {color:#bed4e3!important;opacity:1!important}
+  .sq-premium-days>span {color:#ABC6D7!important;opacity:1!important}
   html body #sq-bills-page#sq-bills-page#sq-bills-page
   .sq-premium-days button {
-    color:#dceaf5!important;opacity:1!important;
+    color:#F3F8FC!important;opacity:1!important;
     background:transparent!important;text-shadow:none!important;
     border-color:transparent!important;
   }
   html body #sq-bills-page#sq-bills-page#sq-bills-page
-  .sq-premium-days button:disabled {color:#a4bccf!important;opacity:.65!important}
+  .sq-premium-days button:disabled {color:#ABC6D7!important;opacity:.65!important}
   html body #sq-bills-page#sq-bills-page#sq-bills-page
   .sq-premium-days button:where(.chosen,.has-bill) {
-    color:#fff!important;background:#146a6b!important;
-    border:1px solid #58ebd0!important;
+    color:#F3F8FC!important;background:#355E72!important;
+    border:1px solid #ABC6D7!important;
     border-radius:12px!important;opacity:1!important;
   }
   html body #sq-bills-page#sq-bills-page#sq-bills-page .sq-premium-calhead button {
-    background:#123950!important;border:1px solid #62dbca!important;
-    border-radius:11px!important;color:#efffff!important;
+    background:#173750!important;border:1px solid #ABC6D7!important;
+    border-radius:11px!important;color:#F3F8FC!important;
     opacity:1!important;
   }
   html body #sq-bills-page#sq-bills-page#sq-bills-page
-  .sq-premium-selected {border-top-color:#587b94!important}
+  .sq-premium-selected {border-top-color:#355E72!important}
   /* The bottom list panels keep the original layout and all action handlers. */
   html body #sq-bills-page#sq-bills-page#sq-bills-page
   :is(.sq-bills-list-head,.sq-bills-row) {
-    border-color:#365873!important;
+    border-color:#355E72!important;
   }
   html body #sq-bills-page#sq-bills-page#sq-bills-page
   .sq-bills-list-head>span {
-    background:#133a46!important;border:1px solid #72ddc8!important;
-    border-radius:999px!important;color:#dbfff4!important;
+    background:#173750!important;border:1px solid #ABC6D7!important;
+    border-radius:999px!important;color:#F3F8FC!important;
     opacity:1!important;
   }
   html body #sq-bills-page#sq-bills-page#sq-bills-page
   :is(.sq-bills-row button,.sq-bills-actions button) {
-    background:#10253c!important;border:1px solid #6bdac8!important;
-    border-radius:11px!important;color:#a2f5dd!important;
+    background:#102B40!important;border:1px solid #ABC6D7!important;
+    border-radius:11px!important;color:#ABC6D7!important;
     opacity:1!important;box-shadow:none!important;
   }
   html body #sq-bills-page#sq-bills-page#sq-bills-page
   :is(.sq-bills-row button,.sq-bills-actions button):hover {
-    background:#19475c!important;color:#e0fff5!important;
+    background:#204158!important;color:#F3F8FC!important;
   }
   html body #sq-bills-page#sq-bills-page#sq-bills-page
   .sq-bill-mobile-toggle {
-    background:#0c2037!important;color:#b5cddc!important;
-    border:1px solid #68dac9!important;
+    background:#0A1B2E!important;color:#ABC6D7!important;
+    border:1px solid #ABC6D7!important;
     border-radius:16px!important;
     opacity:1!important;
   }
   html body #sq-bills-page#sq-bills-page#sq-bills-page
   :is(.sq-bills-card input,.sq-bills-card select,.sq-bills-tracker-compact select) {
-    color:#14294b!important;background:#fff!important;
+    color:#102B40!important;background:#F3F8FC!important;
   }
   html body #sq-bills-page#sq-bills-page#sq-bills-page
-  .sq-bills-tracker-compact label {color:#e8f3fc!important;opacity:1!important}
+  .sq-bills-tracker-compact label {color:#F3F8FC!important;opacity:1!important}
   /* Headline and outside wallpaper intentionally stay untouched. */
   html body #sq-bills-page#sq-bills-page#sq-bills-page
-  .sq-bills-title h2 {color:#17294b!important}
+  .sq-bills-title h2 {color:#102B40!important}
 }
 </style>
 <!-- Release v6: route-based desktop visual repair. Uses inline important styles to
@@ -9613,14 +9610,14 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
     // Do not paint it with the MutationObserver; that raced the CSS cascade.
     if(notifications){
       const page=document.getElementById('notifications-page');
-      paint(page,{background:'transparent','background-color':'transparent','background-image':'none',color:'#f6faff','min-height':'calc(100dvh - 120px)'});
-      paint(document.getElementById('notifications-panel'),{background:'#132e4b','background-image':'none',color:'#f6faff',border:'1px solid #426581'});
-      select(page,'.sq-notifications-header h2,.notification-panel-heading',{color:'#f6faff'});
-      select(page,'#notifications-list .entry,#notifications-list .dw-inbox-item',{background:'#1d3c59','background-image':'none',color:'#f6faff',border:'1px solid #486983'});
-      select(page,'#notifications-list .entry strong,#notifications-list .entry b',{color:'#fff'});
-      select(page,'#notifications-list .entry small,#notifications-list .entry p,#notifications-list .entry .note',{color:'#c3d5e7'});
-      select(page,'#notifications-list button',{background:'#bdf4e5',color:'#093747'});
-      paint(document.getElementById('sq-notification-filter'),{background:'#f7fbff',color:'#14294b'});
+      paint(page,{background:'transparent','background-color':'transparent','background-image':'none',color:'#F3F8FC','min-height':'calc(100dvh - 120px)'});
+      paint(document.getElementById('notifications-panel'),{background:'#173750','background-image':'none',color:'#F3F8FC',border:'1px solid #355E72'});
+      select(page,'.sq-notifications-header h2,.notification-panel-heading',{color:'#F3F8FC'});
+      select(page,'#notifications-list .entry,#notifications-list .dw-inbox-item',{background:'#204158','background-image':'none',color:'#F3F8FC',border:'1px solid #355E72'});
+      select(page,'#notifications-list .entry strong,#notifications-list .entry b',{color:'#F3F8FC'});
+      select(page,'#notifications-list .entry small,#notifications-list .entry p,#notifications-list .entry .note',{color:'#ABC6D7'});
+      select(page,'#notifications-list button',{background:'#ABC6D7',color:'#102B40'});
+      paint(document.getElementById('sq-notification-filter'),{background:'#F3F8FC',color:'#102B40'});
     }
     // Cash Flow is styled by the final desktop CSS. Avoid racing it with
     // inline !important styles that override the page grid and wallpaper.
@@ -9643,11 +9640,11 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   else start();
 })();
 </script>
-<script defer src="/doweo-polls-dashboard.js?v=20261122-polls-dashboard-v1"></script>
-<script defer src="/doweo-cashflow-analytics.js?v=20261122-mobile-cool-charts-v6"></script>
-<script defer src="/doweo-desktop-standalone.js?v=20261122-wallpaper-mirror-v3"></script>
-<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261122-polls-teal-buttons-v13">
-<link rel="stylesheet" href="/doweo-polls-dashboard.css?v=20261122-polls-dashboard-v1">
+<script defer src="/doweo-polls-dashboard.js?v=20261122-approved-seven-palette-v1"></script>
+<script defer src="/doweo-cashflow-analytics.js?v=20261122-approved-seven-palette-v1"></script>
+<script defer src="/doweo-desktop-standalone.js?v=20261122-approved-seven-palette-v1"></script>
+<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261122-approved-seven-palette-v1">
+<link rel="stylesheet" href="/doweo-polls-dashboard.css?v=20261122-approved-seven-palette-v1">
 <!-- Single authoritative mobile theme: inlined to avoid a stale PWA stylesheet. -->
 <style id="dw-mobile-theme-authoritative-v7">
 /* DoWeo mobile palette — navy + mint; no yellow, beige, cream or purple canvas.
@@ -9655,22 +9652,22 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
    never touch desktop geometry, navigation, tracker data or user photos. */
 @media screen and (max-width:900px) {
   :root {
-    --dw-mobile-canvas:#0a1b2e;
-    --dw-mobile-canvas-top:#0a1b2e;
-    --dw-mobile-canvas-bottom:#15364b;
-    --dw-mobile-card:#102b40;
-    --dw-mobile-border:#355e72;
-    --dw-mobile-accent:#60f1ad;
-    --dw-mobile-ink:#f3f8fc;
-    --dw-mobile-muted:#abc6d7;
-    --side-bg:#10283e;
-    --side-line:#35566d;
-    --dw-receipt-alert-bg:#15384a;
-    --dw-receipt-alert-border:#3d8f86;
-    --dw-tracker-banner-highlight:rgba(79,225,200,.24);
-    --dw-photo-overlay:rgba(7,24,42,.48);
-    --accent:#60f1ad;
-    --on-accent:#062e36;
+    --dw-mobile-canvas:#0A1B2E;
+    --dw-mobile-canvas-top:#0A1B2E;
+    --dw-mobile-canvas-bottom:#173750;
+    --dw-mobile-card:#102B40;
+    --dw-mobile-border:#355E72;
+    --dw-mobile-accent:#ABC6D7;
+    --dw-mobile-ink:#F3F8FC;
+    --dw-mobile-muted:#ABC6D7;
+    --side-bg:#102B40;
+    --side-line:#355E72;
+    --dw-receipt-alert-bg:#173750;
+    --dw-receipt-alert-border:#355E72;
+    --dw-tracker-banner-highlight:color-mix(in srgb, #ABC6D7 24%, transparent);
+    --dw-photo-overlay:color-mix(in srgb, #0A1B2E 48%, transparent);
+    --accent:#ABC6D7;
+    --on-accent:#102B40;
   }
   html {
     background-color:var(--dw-mobile-canvas)!important;
@@ -9678,19 +9675,19 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   }
   /* Uploaded photos stay stored and visible, but are navy color-graded on
      phones so pale/cream areas do not leak into the visual theme. */
-  html body #backdrop#backdrop.photo {
-    background-color:#6d9cb8!important;
+  html body #ABC6D7kdrop#ABC6D7kdrop.photo {
+    background-color:#ABC6D7!important;
     background-blend-mode:multiply!important;
   }
-  html body #backdrop#backdrop.photo::after {
+  html body #ABC6D7kdrop#ABC6D7kdrop.photo::after {
     background:var(--dw-photo-overlay)!important;
     pointer-events:none!important;
   }
   /* Before JS applies the stored mobile preset, display a navy fallback.
      Do NOT override JS-selected presets or uploaded photos. */
-  html body #backdrop#backdrop:not(.photo):not([data-preset]) {
+  html body #ABC6D7kdrop#ABC6D7kdrop:not(.photo):not([data-preset]) {
     background-color:var(--dw-mobile-canvas)!important;
-    background-image:linear-gradient(155deg,#0a1b2e 0%,#10283e 52%,#15364b 100%)!important;
+    background-image:linear-gradient(155deg,#0A1B2E 0%,#102B40 52%,#173750 100%)!important;
     background-position:center!important;
     background-size:cover!important;
   }
@@ -9702,7 +9699,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   }
   /* Every shared top and bottom mobile navigation surface uses navy. */
   html body :is(.sq-mobile-top,.sq-mobile-nav,.sq-workspace-tabs) {
-    background-color:#0d2439!important;
+    background-color:#102B40!important;
     border-color:var(--dw-mobile-border)!important;
   }
   /* Standard cards and dialogs use the same navy family; preserve shape,
@@ -9721,9 +9718,9 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   /* Navy Instagram invitation, including after it opens over any route.
      This supersedes earlier popup palette restrictions. */
   html body #sq-instagram-invite .sq-ig-card {
-    background:#102b40!important;
+    background:#102B40!important;
     background-image:none!important;
-    border:1px solid #467689!important;
+    border:1px solid #355E72!important;
     color:var(--dw-mobile-ink)!important;
   }
   html body #sq-instagram-invite :is(#sq-ig-title,.sq-ig-x) {
@@ -9734,7 +9731,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   }
   html body #sq-instagram-invite .sq-ig-follow {
     background:var(--dw-mobile-accent)!important;
-    color:#062e36!important;
+    color:#102B40!important;
   }
   html body #sq-instagram-invite .sq-ig-later {
     color:var(--dw-mobile-muted)!important;
@@ -9742,15 +9739,15 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   /* First balance action: explicit label, not color inherited from a
      previously locked accent rule (invisible mint-on-mint in iOS Safari). */
   html body #tracker-dashboard #dw-mobile-home-layered .dw-mh-actions button[data-mh-action="sq-clean-settle"] {
-    background:#60f1ad!important;
-    color:#062e36!important;
-    -webkit-text-fill-color:#062e36!important;
+    background:#ABC6D7!important;
+    color:#102B40!important;
+    -webkit-text-fill-color:#102B40!important;
     opacity:1!important;
   }
   html body #tracker-dashboard #dw-mobile-home-layered .dw-mh-actions button[data-mh-action="sq-clean-settle"] .dw-mh-settle-label {
     display:inline-block!important;
-    color:#062e36!important;
-    -webkit-text-fill-color:#062e36!important;
+    color:#102B40!important;
+    -webkit-text-fill-color:#102B40!important;
     font-size:13px!important;
     font-weight:800!important;
     line-height:1.2!important;
@@ -9763,19 +9760,19 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   /* Consistent navy surfaces for standard mobile dialogs. Only visual
      treatment changes; forms, keyboard, inputs, and click handlers remain. */
   html body :is(
-    #backdrop-modal .card.modal,
+    #ABC6D7kdrop-modal .card.modal,
     .dw-standard-dialog-overlay .card.modal,
     #dw-beta-modal .dw-panel,
     #sq-instagram-invite .sq-ig-card
   ) {
-    background-color:#102b40!important;
+    background-color:#102B40!important;
     background-image:none!important;
-    border-color:#355e72!important;
-    color:#f3f8fc!important;
+    border-color:#355E72!important;
+    color:#F3F8FC!important;
   }
-  html body :is(#backdrop-modal .card.modal,#dw-beta-modal .dw-panel)
+  html body :is(#ABC6D7kdrop-modal .card.modal,#dw-beta-modal .dw-panel)
       :is(h1,h2,h3,p,label,small) {
-    color:#f3f8fc!important;
+    color:#F3F8FC!important;
   }
   /* Receipt and tracker banner colors are consumed by the original CSS
      rules through these mobile-scoped semantic variables. */
