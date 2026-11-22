@@ -77,7 +77,8 @@ jobs:
           node --check .pages-output/doweo-reference-home.js
           test -s .pages-output/styles.css
           test -s .pages-output/doweo-page-repairs.css
-          grep -Fq 'doweo-page-repairs.css?v=20261121-navy-pages-v4' .pages-output/index.html
+          grep -Fq 'doweo-page-repairs.css?v=20261121-production-visible-v5' .pages-output/index.html
+          grep -Fq 'UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121' .pages-output/index.html
           node --test test/doweo-css-consolidation.test.mjs
           test -s .pages-output/doweo-unified-shell.css
           test -s .pages-output/doweo-unified-shell.js
@@ -112,6 +113,27 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy .pages-output --project-name=doweo --branch=main
+
+      # A passing local test does not establish that doweo.app serves this revision.
+      # Assert the actual public origin supplies the HTML and stylesheet produced above.
+      - name: Verify new navy page release is visible on production
+        shell: bash
+        run: |
+          set -euo pipefail
+          for n in {1..15}; do
+            page="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' "https://doweo.app/?release=doweo-desktop-v5-navy-analytics-20261121" || true)"
+            css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' "https://doweo.app/doweo-page-repairs.css?v=20261121-production-visible-v5" || true)"
+            if [[ "$page" == *'UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121'* ]] &&
+               [[ "$page" == *'doweo-desktop-v5-navy-analytics'* ]] &&
+               [[ "$css" == *'Desktop screenshot correction v4'* ]]; then
+              echo "Production HTML and CSS version verified on doweo.app"
+              exit 0
+            fi
+            echo "Production is still serving older HTML/CSS (check $n of 15)"
+            sleep 10
+          done
+          echo "::error::Cloudflare did not publish the new HTML and CSS to doweo.app"
+          exit 1
 
       - uses: actions/setup-node@v4
         with:
