@@ -6,7 +6,7 @@ import {Script} from 'node:vm';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const financeScript=html.match(/<script id="sq-nextgen-script">([\s\S]*?)<\/script>/)?.[1];
 const wallet=financeScript?.match(/async function drawWallet\(\)\{([\s\S]*?)\n\}\nasync function drawWorkspace\(\)/)?.[1];
-const mobileCss=html.match(/<style id="sq-wallet-mobile-refresh-20261107">([\s\S]*?)<\/style>/)?.[1];
+const mobileCss=readFileSync(new URL('../styles.css',import.meta.url),'utf8');
 
 test('Finance Hub JavaScript parses after wallet redesign',()=>{
  assert.ok(financeScript);
@@ -53,5 +53,5 @@ test('Existing settlement actions and CSV export remain accessible',()=>{
 test('Mobile-only styles do not replace original desktop wallet layout',()=>{
  assert.match(mobileCss,/#sq-nextgen \.sq-wallet-mobile-head,#sq-nextgen \.sq-wallet-mobile-filters\{display:none\}/);
  assert.match(mobileCss,/@media \(max-width:900px\)/);
- assert.match(html,/<style id="sq-wallet-condensed-2026">/);
+ assert.match(mobileCss,/Original style \d+\/276: sq-wallet-condensed-2026/);
 });
