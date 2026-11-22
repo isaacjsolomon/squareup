@@ -252,6 +252,56 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   assert.equal(await page.locator('#sq-bills-page .sq-bills-workspace-tabs').isVisible(),false,
     'Bills must not show a second row of tracker tabs');
 
+  // Screenshot regressions: verify ACTUAL loaded stylesheet/cascade, not only source CSS.
+  assert.ok(await page.locator('link[href*="doweo-page-repairs.css"]').count(),
+   'the latest page repairs stylesheet must be linked in the real HTML');
+  const billsGeometry=await page.evaluate(()=>{
+   const back=document.getElementById('sq-bills-back').getBoundingClientRect();
+   const tabs=document.getElementById('dw-all-top-tabs').getBoundingClientRect();
+   const cal=document.querySelector('#sq-bills-page .sq-premium-calendar');
+   return {backTop:back.top,backLeft:back.left,backRight:back.right,tabsBottom:tabs.bottom,
+    calendarBg:getComputedStyle(cal).backgroundColor,
+    calendarText:getComputedStyle(cal.querySelector('.sq-premium-days')||cal).color};
+  });
+  assert.ok(billsGeometry.backTop>billsGeometry.tabsBottom+8,
+   'Bills Back to Home must be below the global tabs: '+JSON.stringify(billsGeometry));
+  assert.ok(billsGeometry.backRight<1536&&billsGeometry.backLeft>=0,
+   'Bills Back to Home must be fully inside the screen');
+  assert.equal(billsGeometry.calendarBg,'rgb(16, 41, 68)',
+   'billing calendar must have a solid navy background, not pale white');
+  await page.screenshot({path:resolve(root,'test-results/unified/bills-page-repairs.png'),fullPage:true});
+
+  await pageOpen('nav-notifications','notifications-view');
+  const notificationsVisual=await page.evaluate(()=>({
+    bodyBackground:getComputedStyle(document.body).backgroundColor,
+    workspaceBackground:getComputedStyle(document.querySelector('body > .wrap')).backgroundColor,
+    panelBackground:getComputedStyle(document.getElementById('notifications-panel')).backgroundColor
+  }));
+  assert.equal(notificationsVisual.workspaceBackground,'rgb(11, 29, 52)',
+   'Notifications workspace must be navy: '+JSON.stringify(notificationsVisual));
+  assert.equal(notificationsVisual.panelBackground,'rgb(19, 43, 69)',
+   'Notifications panel must no longer be the old white surface');
+  await page.screenshot({path:resolve(root,'test-results/unified/notifications-page-repairs.png'),fullPage:true});
+
+  await page.evaluate(()=>window.squareUpOpenFinanceHub?.('finance'));
+  await page.waitForFunction(()=>document.body.classList.contains('sq-finance-open')&&
+   document.getElementById('sq-nextgen')?.dataset.section==='finance',{timeout:10000});
+  await page.locator('#sq-ng-open-transaction').waitFor({state:'visible',timeout:10000});
+  const cashFlowVisual=await page.evaluate(()=>{
+    const view=document.getElementById('sq-nextgen');
+    const back=document.getElementById('sq-ng-back');
+    return {bg:getComputedStyle(view).backgroundColor,
+      scroll:getComputedStyle(view).overflowY,backVisible:!!back?.getClientRects().length,
+      addVisible:!!document.getElementById('sq-ng-open-transaction')?.getClientRects().length,
+      rows:document.querySelectorAll('#sq-ng-content .sq-ng-item').length};
+  });
+  assert.equal(cashFlowVisual.scroll,'auto','Cash Flow must remain scrollable');
+  assert.ok(cashFlowVisual.backVisible&&cashFlowVisual.addVisible&&cashFlowVisual.rows===2,
+   'Cash Flow must retain navigation, add actions and real transaction rows: '+JSON.stringify(cashFlowVisual));
+  await page.screenshot({path:resolve(root,'test-results/unified/cashflow-page-repairs.png'),fullPage:true});
+  await page.locator('#sq-ng-back').click();
+  await page.waitForFunction(()=>!document.body.classList.contains('sq-finance-open'),{timeout:10000});
+
   await page.locator('#dw-all-top-tabs [data-dw-all-tab="overview"]').click();
   await page.locator('#dw-ref-home').waitFor({state:'visible',timeout:10000});
   for(const code of ['es','fr','he','he-script','zh-Hans','ar','bn']){
