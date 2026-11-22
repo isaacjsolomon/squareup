@@ -72,7 +72,9 @@ test('Recent Activity opens expense details, saves edits, and respects read-only
   assert.ok(Math.abs(filterPosition.filter-filterPosition.left)<2&&filterPosition.filter<filterPosition.export,'Filters replaces Status on the left');
   detail.entries.push(...Array.from({length:24},(_,i)=>({...detail.entries[0],id:'fixture-'+i,note:'[Category: Food & Dining] Test expense '+i,paymentStatus:i%2?'pending':'confirmed'})));
   await page.evaluate(()=>window.sqRefreshTrackerNow());
-  await page.locator('[data-sq-tab="expenses"]').click();
+  // The canonical tab may be visually hidden behind the new desktop shell
+  // while it remains selected; invoke its original handler to refresh history.
+  await page.evaluate(()=>document.querySelector('#tracker-dashboard .sq-workspace-tabs [data-sq-tab="expenses"]').click());
   await page.waitForFunction(()=>document.querySelectorAll('#history .dw-expense-copy').length===25);
   for(const width of [1024,1440,1920]){
    await page.setViewportSize({width,height:1000});
