@@ -7034,7 +7034,7 @@ function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce(
  const current=months[5],previous=months[4],categories={};
  for(const x of valid.filter(x=>x.kind==='expense'&&String(x.occurred_on||'').slice(0,7)===current.key)){const name=String(x.category||'Uncategorized');categories[name]=(categories[name]||0)+Number(x.amount);}
  const max=Math.max(1,...months.flatMap(m=>[m.income,m.expense]));
- const chart=months.map(m=>`<div class="dw-analytics-month"><div class="dw-analytics-bars"><span class="dw-analytics-bar income" style="height:${Math.max(2,m.income/max*100)}%" title="Income ${esc(money(m.income))}"></span><span class="dw-analytics-bar expense" style="height:${Math.max(2,m.expense/max*100)}%" title="Spending ${esc(money(m.expense))}"></span></div><small>${esc(m.label)}</small></div>`).join('');
+ const chart=months.map(m=>`<div class="dw-analytics-month"><div class="dw-analytics-bars"><span class="dw-analytics-bar income" style="height:${(m.income>0?Math.max(2,m.income/max*100):0)}%" title="Income ${esc(money(m.income))}"></span><span class="dw-analytics-bar expense" style="height:${(m.expense>0?Math.max(2,m.expense/max*100):0)}%" title="Spending ${esc(money(m.expense))}"></span></div><small>${esc(m.label)}</small></div>`).join('');
  const breakdown=Object.entries(categories).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([name,amount])=>`<div class="dw-analytics-category"><span>${esc(name)}</span><strong>${esc(money(amount))}</strong><div class="dw-analytics-track"><span style="width:${current.expense?Math.min(100,100*amount/current.expense):0}%"></span></div></div>`).join('');
  const comparisonRows=[
    ['Income',previous.income,current.income],
