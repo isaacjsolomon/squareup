@@ -224,8 +224,14 @@
   html body #dw-ref-home #dw-ref-add #dw-compact-add-caret{
     color:#84f1d1!important;
   }
-  html body #dw-ref-home #dw-ref-add #dw-compact-add .dw-compact-add-caret{
-    font-size:20px!important;margin:0!important;transform:none!important;
+  /* Keep the + Add action and its dropdown; never show a chevron. */
+  html body #dw-ref-home #dw-ref-add #dw-compact-add .dw-compact-add-caret,
+  html body #dw-ref-home #dw-ref-add #dw-compact-add > [aria-hidden="true"].dw-compact-add-caret{
+    display:none!important;
+  }
+  html body #dw-ref-home #dw-ref-add #dw-compact-add::after{
+    content:none!important;
+    display:none!important;
   }
   html body #dw-ref-home .dw-ref-stats{
     display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:14px;
