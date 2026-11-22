@@ -256,6 +256,12 @@
   color:#bfdae9!important;font-size:11px!important;
  }
  html body.dw-polls-open #dw-poll-workspace .dw-poll-recent-item>span{white-space:nowrap!important}
+ html body.dw-polls-open #dw-poll-workspace .dw-poll-recent-panel{
+  scroll-margin-top:120px!important;
+ }
+ html body.dw-polls-open #dw-poll-workspace .dw-poll-live-panel{
+  scroll-margin-top:120px!important;
+ }
  html body.dw-polls-open #dw-poll-workspace .dw-poll-dashboard-surface[hidden]{display:none!important}
  @media(max-width:1240px){
   html body.dw-polls-open #dw-poll-workspace .dw-poll-dashboard-grid{
