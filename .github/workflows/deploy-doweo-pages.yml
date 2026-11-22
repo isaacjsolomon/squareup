@@ -152,6 +152,10 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.65.0
           npx playwright install --with-deps chromium
+      - name: Verify actual Instagram popup geometry and active tracker wallpaper
+        env:
+          HOME_BASE_URL: https://doweo.app
+        run: node scripts/verify-desktop-visual-fixes.mjs
       - name: Verify production Home Add expense dropdown and retired tracker category tabs
         env:
           HOME_BASE_URL: https://doweo.app
