@@ -267,8 +267,10 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
    'Bills Back to Home must be below the global tabs: '+JSON.stringify(billsGeometry));
   assert.ok(billsGeometry.backRight<1536&&billsGeometry.backLeft>=0,
    'Bills Back to Home must be fully inside the screen');
-  assert.equal(billsGeometry.calendarBg,'rgb(16, 41, 68)',
+  assert.equal(billsGeometry.calendarBg,'rgb(12, 36, 65)',
    'billing calendar must have a solid navy background, not pale white');
+  assert.equal(billsGeometry.calendarText,'rgb(245, 249, 255)',
+   'calendar date grid must use readable light text against navy');
   await page.screenshot({path:resolve(root,'test-results/unified/bills-page-repairs.png'),fullPage:true});
 
   await pageOpen('dw-ref-nav-notifications','notifications-view');
