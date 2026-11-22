@@ -21,7 +21,8 @@ const compatibilityIds=[
 // Recent page repairs retain two separately scoped production-only overrides.
 const scopedRepairIds=[
  'doweo-desktop-v5-navy-analytics',
- 'dw-bills-exact-reference-v9'
+ 'dw-bills-exact-reference-v9',
+ 'dw-mobile-theme-authoritative-v7'
 ];
 
 test('design system has exactly the requested global theme tokens',()=>{
@@ -42,7 +43,7 @@ test('design system has exactly the requested global theme tokens',()=>{
  assert.match(prefix,/--shadow-dialog:\s*0 20px 50px color-mix\(in srgb, #0A1B2E 45%, transparent\)/);
 });
 
-test('270 inline blocks migrated, six template styles and two scoped page repairs retained',()=>{
+test('270 inline blocks migrated, six template styles and three scoped page repairs retained',()=>{
  const styles=[...html.matchAll(/<style\b([^>]*)>([\s\S]*?)<\/style>/gi)];
  const expectedIds=[...compatibilityIds,...scopedRepairIds];
  assert.equal(styles.length,expectedIds.length);
