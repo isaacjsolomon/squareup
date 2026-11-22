@@ -290,9 +290,9 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
     backdropImage:getComputedStyle(document.getElementById('backdrop')).backgroundImage,
     backdropBackground:getComputedStyle(document.getElementById('backdrop')).backgroundColor
   }));
-  assert.equal(notificationsVisual.workspaceBackground,'rgb(10, 31, 56)',
+  assert.equal(notificationsVisual.workspaceBackground,'rgb(11, 29, 52)',
    'Notifications workspace must be navy: '+JSON.stringify(notificationsVisual));
-  assert.equal(notificationsVisual.panelBackground,'rgb(18, 46, 75)',
+  assert.equal(notificationsVisual.panelBackground,'rgb(19, 43, 69)',
    'Notifications panel must no longer be the old white surface');
   assert.equal(notificationsVisual.backdropImage,'none',
    'Notifications must suppress the selected tracker photo on the actual #backdrop element');
