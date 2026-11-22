@@ -11,17 +11,19 @@
     --dw-mobile-accent:#60f1ad;
     --dw-mobile-ink:#f3f8fc;
     --dw-mobile-muted:#abc6d7;
-    --side-bg:#10283e!important;
-    --side-line:#35566d!important;
+    --side-bg:#10283e;
+    --side-line:#35566d;
+    --dw-receipt-alert-bg:#15384a;
+    --dw-receipt-alert-border:#3d8f86;
+    --dw-tracker-banner-highlight:rgba(79,225,200,.24);
   }
   html {
     background-color:var(--dw-mobile-canvas)!important;
     background-image:none!important;
   }
-  /* The original indigo/purple page paint is on #backdrop, not the cards.
-     Override every legacy non-photo preset on mobile so no old color remains.
-     Uploaded wallpapers remain user-controlled. */
-  html body #backdrop#backdrop:not(.photo) {
+  /* Before JS applies the stored mobile preset, display a navy fallback.
+     Do NOT override JS-selected presets or uploaded photos. */
+  html body #backdrop#backdrop:not(.photo):not([data-preset]) {
     background-color:var(--dw-mobile-canvas)!important;
     background-image:linear-gradient(155deg,#0a1b2e 0%,#10283e 52%,#15364b 100%)!important;
     background-position:center!important;
@@ -78,16 +80,6 @@
     color:#062e36!important;
     -webkit-text-fill-color:#062e36!important;
   }
-  /* Receipt warnings previously used a yellow/orange surface. */
-  html body .sq-receipt-alert {
-    background:#15384a!important;
-    border:1px solid #3d8f86!important;
-    color:#e9fbf6!important;
-  }
-  /* Legacy alternating tracker artwork had a peach/orange highlight.
-     Use a cool teal highlight on mobile while leaving desktop intact. */
-  html body.trackers-view #trackers-page .tracker-tile:nth-child(3n+2) .tracker-tile-banner:not([style*="background-image"]) {
-    background:radial-gradient(ellipse at 72% 12%,rgba(79,225,200,.24),transparent 38%),
-      linear-gradient(145deg,#163a50,#10273d 60%,#0b1f35)!important;
-  }
+  /* Mobile receipt and banner colors are now consumed by their original
+     styles.css rules through the scoped variables above. */
 }
