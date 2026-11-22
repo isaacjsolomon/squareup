@@ -5733,7 +5733,7 @@ document.addEventListener('click',function(event){var trigger=event.target.close
 <div id="sq-instagram-invite" hidden>
  <div class="sq-ig-card" role="dialog" aria-modal="true" aria-labelledby="sq-ig-title" aria-describedby="sq-ig-description">
   <button type="button" class="doweo-close-control sq-ig-x" aria-label="Close Instagram invitation">&times;</button>
-  <div class="sq-ig-mark" aria-hidden="true">◎</div>
+  <div class="sq-ig-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.25"/><circle cx="17.6" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></div>
   <h2 id="sq-ig-title">Follow DoWeo on Instagram!</h2>
   <p id="sq-ig-description">Get updates, new features, and tips for splitting expenses. Find us at <strong>@doweo.app</strong>.</p>
   <a class="sq-ig-follow" href="https://www.instagram.com/doweo.app/" target="_blank" rel="noopener noreferrer">Follow on Instagram ↗</a>
@@ -6974,7 +6974,7 @@ render();
 const outsideNavigation=(event)=>{
  const hub=document.getElementById('sq-nextgen');
  if(!hub||hub.hidden||!document.body.classList.contains('sq-finance-open'))return;
- // Keep the original mobile navigation behavior; the broader routing fix is desktop-only.
+ // Do not change the mobile router.
  if(!window.matchMedia('(min-width:901px)').matches){
   const nav=event.target.closest('button[id]');
   if(!nav||!['nav-home','nav-trackers','nav-chat','nav-analytics','nav-profile',
@@ -6983,22 +6983,17 @@ const outsideNavigation=(event)=>{
   document.body.style.removeProperty('--sq-finance-sidebar-offset');
   document.body.style.overflow='';return;
  }
- const target=event.target.closest('button,a,summary,[role="button"]');
- if(!target||hub.contains(target))return;
- if(!target.closest(
-  'aside.sidebar,#dw-all-topbar,#dw-all-top-tabs,.squareup-nav,'+
-  '#dw-social-flyout,#dw-more-flyout,.sq-workspace-tabs,.sq-mobile-nav'
- )&&!target.matches(
-  '[id^="nav-"],[data-sq-destination],[data-dw-all-tab],[data-sq-tab],'+
-  '[data-dw-shell-key],[data-dw-all-tool],#notifications-toggle,#sqev-nav'
- ))return;
+ // Close before any destination handler runs. Some sidebar / header controls
+ // are links, menu rows, or custom buttons rather than button[id].
+ const node=event.target;
+ if(!(node instanceof Element)||hub.contains(node))return;
+ const route='aside.sidebar,#dw-all-topbar,#dw-all-top-tabs,.squareup-nav,'+
+  '#dw-social-flyout,#dw-more-flyout,.sq-workspace-tabs,.sq-mobile-nav,'+
+  '#dw-ref-toolbar,[data-sq-destination],[data-dw-all-tab],[data-sq-tab],'+
+  '[data-dw-shell-key],[data-dw-all-tool],[data-ref-tool],'+
+  '#notifications-toggle,#sqev-nav,[id^="nav-"]';
+ if(!node.closest(route))return;
  window.squareUpCloseFinanceHub?.();
- if(!hub.hidden){
-  hub.hidden=true;
-  document.body.classList.remove('sq-finance-open');
-  document.body.style.removeProperty('--sq-finance-sidebar-offset');
-  document.body.style.overflow='';
- }
 };
 document.addEventListener('click',outsideNavigation,true);
 document.addEventListener('keydown',event=>{
@@ -7015,7 +7010,7 @@ document.addEventListener('keydown',event=>{
 
 <script id="sq-nextgen-script">
 (()=>{
-const root=document.getElementById('sq-nextgen'), content=document.getElementById('sq-ng-content'), status=document.getElementById('sq-ng-status');let tab='finance', finance=[];const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=(v,c='USD')=>{try{return new Intl.NumberFormat(undefined,{style:'currency',currency:c}).format(v)}catch{return String(v)}};const api=(path,method='GET',body)=>window.squareUpApi(path,method,body);
+const root=document.getElementById('sq-nextgen'), content=document.getElementById('sq-ng-content'), status=document.getElementById('sq-ng-status');let tab='finance', finance=[], renderToken=0;const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=(v,c='USD')=>{try{return new Intl.NumberFormat(undefined,{style:'currency',currency:c}).format(v)}catch{return String(v)}};const api=(path,method='GET',body)=>window.squareUpApi(path,method,body);
 const card=(name,val,feature=false)=>`<article class="sq-ng-card ${feature?'feature':''}"><small>${esc(name)}</small><strong>${esc(val)}</strong></article>`;
 let previousFinanceTabs=[];const openedWorkspaces={trip:null,household:null};function syncFinanceSidebar(){const sidebar=document.querySelector('.sidebar');const rect=sidebar?.getBoundingClientRect();const offset=rect&&rect.width&&rect.right>0?Math.ceil(rect.right):0;document.body.style.setProperty('--sq-finance-sidebar-offset',offset+'px');}
 const desktopSections=matchMedia('(min-width:901px)');
@@ -7052,6 +7047,7 @@ function open(which){
  syncFinanceSidebar();document.body.style.overflow='hidden';tab=which;render();
 }
 function close(){
+ renderToken++;
  root.hidden=true;root.setAttribute('aria-hidden','true');
  root.style.setProperty('display','none','important');
  document.body.classList.remove('sq-finance-open');
@@ -7064,7 +7060,29 @@ window.addEventListener('resize',()=>{if(!root.hidden)syncFinanceSidebar()});
 document.getElementById('side-toggle')?.addEventListener('click',()=>{if(!root.hidden)requestAnimationFrame(syncFinanceSidebar)});
 function switchFinanceTab(next){if(desktopDestination(next)||next===tab)return;previousFinanceTabs.push(tab);tab=next;openedWorkspaces.trip=null;openedWorkspaces.household=null;render();}
 document.getElementById('sq-finance-nav').addEventListener('click',()=>open('finance'));document.getElementById('sq-ng-mobile-select').addEventListener('change',e=>switchFinanceTab(e.target.value));root.querySelectorAll('[data-ng-tab]').forEach(b=>b.addEventListener('click',()=>switchFinanceTab(b.dataset.ngTab)));
-async function render(){syncSectionTabs();document.getElementById('sq-ng-mobile-select').value=tab;root.querySelectorAll('[data-ng-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.ngTab===tab));const labels={finance:['Personal Finance Hub','Private spending and income, separate from your shared trackers.'],wallet:['Wallet & Settlements','Your balances across existing trackers, without changing any debts.'],trip:['Trip Mode','Your existing trips stay linked to their trackers.'],home:['Household Mode','Build shared routines around your existing trackers.'],subscriptions:['Subscription Manager','Manage recurring bills in your existing billing center.'],currencies:['Multi-Currency','Understand how currency conversion works in DoWeo.'],insights:['Smart Insights','Useful answers calculated from your saved financial records.']};document.getElementById('sq-ng-title').textContent=(desktopSections.matches&&({finance:'Cash Flow',insights:'Insights',trip:'Trips',home:'Households'})[tab])||labels[tab][0];document.getElementById('sq-ng-subtitle').textContent=labels[tab][1];status.textContent='';content.innerHTML='<p>Loading your workspace…</p>';try{if(tab==='finance'||tab==='insights'){finance=await api('finance/transactions');drawFinance()}else if(tab==='wallet')await drawWallet();else await drawWorkspace()}catch(e){content.innerHTML='<div class="sq-ng-empty">'+esc(e.message||'Could not load this section')+'</div>';}}
+async function render(){
+ const ticket=++renderToken, requestedTab=tab;
+ syncSectionTabs();
+ document.getElementById('sq-ng-mobile-select').value=tab;
+ root.querySelectorAll('[data-ng-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.ngTab===tab));
+ const labels={finance:['Personal Finance Hub','Private spending and income, separate from your shared trackers.'],wallet:['Wallet & Settlements','Your balances across existing trackers, without changing any debts.'],trip:['Trip Mode','Your existing trips stay linked to their trackers.'],home:['Household Mode','Build shared routines around your existing trackers.'],subscriptions:['Subscription Manager','Manage recurring bills in your existing billing center.'],currencies:['Multi-Currency','Understand how currency conversion works in DoWeo.'],insights:['Smart Insights','Useful answers calculated from your saved financial records.']};
+ document.getElementById('sq-ng-title').textContent=(desktopSections.matches&&({finance:'Cash Flow',insights:'Insights',trip:'Trips',home:'Households'})[tab])||labels[tab][0];
+ document.getElementById('sq-ng-subtitle').textContent=labels[tab][1];
+ status.textContent='';content.innerHTML='<p>Loading your workspace…</p>';
+ const stale=()=>desktopSections.matches&&(root.hidden||ticket!==renderToken||tab!==requestedTab);
+ try{
+  if(tab==='finance'||tab==='insights'){
+   const rows=await api('finance/transactions');
+   if(stale())return;
+   finance=rows;
+   drawFinance();
+  }else if(tab==='wallet'){
+   await drawWallet();
+  }else await drawWorkspace();
+ }catch(e){
+  if(!stale())content.innerHTML='<div class="sq-ng-empty">'+esc(e.message||'Could not load this section')+'</div>';
+ }
+}
 function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce((a,x)=>a+Number(x.amount),0),spent=finance.filter(x=>x.kind==='expense').reduce((a,x)=>a+Number(x.amount),0);const byCategory={};finance.filter(x=>x.kind==='expense').forEach(x=>byCategory[x.category]=(byCategory[x.category]||0)+Number(x.amount));{
  const now=new Date(),months=[];
  for(let n=5;n>=0;n--){const d=new Date(now.getFullYear(),now.getMonth()-n,1);months.push({key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleDateString(undefined,{month:'short',year:'2-digit'}),income:0,expense:0});}
@@ -9524,8 +9542,6 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
     const bills=document.getElementById('sq-bills-page');
     const notifications=document.body.classList.contains('notifications-view');
     const billsOpen=!!bills&&!bills.hidden&&getComputedStyle(bills).display!=='none';
-    const cash=document.body.classList.contains('sq-finance-open')&&
-      document.getElementById('sq-nextgen')?.dataset.section==='finance';
     // Bills styling is now fully owned by #dw-bills-exact-reference-v9.
     // Do not paint it with the MutationObserver; that raced the CSS cascade.
     if(notifications){
@@ -9539,28 +9555,8 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
       select(page,'#notifications-list button',{background:'#bdf4e5',color:'#093747'});
       paint(document.getElementById('sq-notification-filter'),{background:'#f7fbff',color:'#14294b'});
     }
-    if(cash){
-      const hub=document.getElementById('sq-nextgen');
-      paint(hub,{'background-color':'#10243d','background-image':'var(--dw-selected-tracker-wallpaper)','background-position':'center','background-size':'cover','background-attachment':'fixed',color:'#f6faff','overflow-y':'auto'});
-      select(hub,'.sq-ng-shell',{background:'transparent','max-width':'1450px',margin:'0 auto',padding:'20px clamp(20px,2.5vw,42px) 65px'});
-      select(hub,'.dw-section-tabs',{background:'#10243d',border:'1px solid #dce5f2','border-radius':'18px'});
-      select(hub,'.dw-section-tabs button[aria-current="page"]',{background:'#62eac1',color:'#10243d'});
-      paint(document.getElementById('sq-ng-content'),{
-        display:'grid','grid-template-columns':'repeat(2,minmax(0,1fr))',
-        'grid-template-areas':'"summary summary" "trend categories" "activity comparison" "note note"',
-        gap:'18px'
-      });
-      if(window.innerWidth<=1200){
-        paint(document.getElementById('sq-ng-content'),{
-          'grid-template-columns':'minmax(0,1fr)',
-          'grid-template-areas':'"summary" "trend" "categories" "activity" "comparison" "note"'
-        });
-      }
-      select(hub,'.sq-ng-card',{background:'#102139','background-image':'linear-gradient(145deg,#152e49,#102139)',color:'#f6fbff',border:'1px solid #587c91','border-radius':'21px'});
-      select(hub,'.sq-ng-card h2,.sq-ng-card h3,.sq-ng-card strong',{color:'#f6fbff'});select(hub,'#sq-ng-title',{color:'#f6fbff'});select(hub,'#sq-ng-subtitle',{color:'#d0e0f0'});
-      select(hub,'.sq-ng-card small,.sq-ng-card p,.sq-ng-card .sq-ng-note',{color:'#bdd3e2'});
-      select(hub,'#sq-ng-open-transaction',{background:'#62eac1',color:'#10243d',cursor:'pointer'});
-    }
+    // Cash Flow is styled by the final desktop CSS. Avoid racing it with
+    // inline !important styles that override the page grid and wallpaper.
   };
   const schedule=()=>{
     if(scheduled)return;
