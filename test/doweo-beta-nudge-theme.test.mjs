@@ -44,7 +44,7 @@ test('approved dashboard style reaches all main desktop app destinations without
 });
 
 test('live HTML and Pages bundle include every new file with cache-busted URLs',()=>{
- for(const asset of ['doweo-mint-dashboard.css?v=20261121-mint-v1','doweo-beta-nudge.css?v=20261121-nudge-v1','doweo-beta-nudge.js?v=20261121-nudge-v1'])
+ for(const asset of ['doweo-mint-dashboard.css?v=20261122-approved-seven-palette-v2','doweo-beta-nudge.css?v=20261122-approved-seven-palette-v2','doweo-beta-nudge.js?v=20261122-approved-seven-palette-v2'])
   assert.ok(html.includes(asset),'index missing '+asset);
  for(const asset of ['doweo-mint-dashboard.css','doweo-beta-nudge.css','doweo-beta-nudge.js'])
   assert.ok(deploy.includes(asset+'.pages-output/') || deploy.includes(asset+' '),'deploy missing '+asset);
