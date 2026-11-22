@@ -2340,6 +2340,19 @@ var SQ_BANNER_PRESETS={
  coral:'linear-gradient(125deg,#004a66,#1e9b9d 48%,#d97884)',
  lavender:'linear-gradient(125deg,#262c64,#856cae 55%,#d4a3c1)'
 };
+// Mobile tracker banner palette. Every built-in banner becomes navy/blue/teal
+// on phones; uploaded banner images remain untouched and desktop stays original.
+var SQ_MOBILE_BANNER_PRESETS={
+ ocean:'linear-gradient(125deg,#0b2940,#175c7a 55%,#102b40)',
+ sunset:'linear-gradient(125deg,#102b40,#26708a 55%,#3a8e96)',
+ forest:'linear-gradient(125deg,#0c2b3e,#126155 55%,#174a4c)',
+ night:'linear-gradient(125deg,#071827,#1c3953 55%,#102b40)',
+ coral:'linear-gradient(125deg,#102b40,#1e9b9d 55%,#56d4d8)',
+ lavender:'linear-gradient(125deg,#132a45,#32607d 55%,#6ba0bc)'
+};
+function sqBannerPalette(){
+ return window.matchMedia("(max-width:900px)").matches ? SQ_MOBILE_BANNER_PRESETS : SQ_BANNER_PRESETS;
+}
 var sqBannerDBPromise=null;
 function sqBannerDB(){
  if(!sqBannerDBPromise)sqBannerDBPromise=new Promise(function(resolve,reject){
@@ -2357,7 +2370,8 @@ async function sqBannerSet(id,value){
 }
 function sqBannerApply(banner,value){
  if(!banner)return;
- banner.style.backgroundImage=value&&value.image?'url('+JSON.stringify(value.image)+')':SQ_BANNER_PRESETS[value&&value.preset]||SQ_BANNER_PRESETS.ocean;
+ var palette=sqBannerPalette();
+ banner.style.backgroundImage=value&&value.image?'url('+JSON.stringify(value.image)+')':palette[value&&value.preset]||palette.ocean;
 }
 async function sqBannerEdit(trackerId,trackerName,banner){
  var existing=document.getElementById('sq-banner-editor');if(existing)existing.remove();
@@ -2366,7 +2380,7 @@ async function sqBannerEdit(trackerId,trackerName,banner){
  var title=document.createElement('h2');title.textContent='Change banner · '+trackerName;
  var hint=document.createElement('p');hint.textContent='Choose a preset or upload a photo. Your choice is saved on this device.';
  var presets=document.createElement('div');presets.className='tracker-banner-presets';
- Object.keys(SQ_BANNER_PRESETS).forEach(function(name){var b=document.createElement('button');b.type='button';b.className='tracker-banner-choice';b.style.background=SQ_BANNER_PRESETS[name];b.textContent=name.charAt(0).toUpperCase()+name.slice(1);b.onclick=async function(){try{var v={preset:name};await sqBannerSet(trackerId,v);sqBannerApply(banner,v);overlay.remove();}catch(e){alert('Could not save banner: '+e.message);}};presets.append(b);});
+ Object.keys(SQ_BANNER_PRESETS).forEach(function(name){var b=document.createElement('button');b.type='button';b.className='tracker-banner-choice';b.style.background=sqBannerPalette()[name];b.textContent=name.charAt(0).toUpperCase()+name.slice(1);b.onclick=async function(){try{var v={preset:name};await sqBannerSet(trackerId,v);sqBannerApply(banner,v);overlay.remove();}catch(e){alert('Could not save banner: '+e.message);}};presets.append(b);});
  var uploadLabel=document.createElement('p');uploadLabel.textContent='Or upload your own image (JPG, PNG, or WebP, max 3 MB):';
  var file=document.createElement('input');file.type='file';file.accept='image/jpeg,image/png,image/webp';
  file.onchange=async function(){var f=file.files&&file.files[0];if(!f)return;if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>3*1024*1024){alert('Choose a JPG, PNG, or WebP image under 3 MB.');file.value='';return;}
