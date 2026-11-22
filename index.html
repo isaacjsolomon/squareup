@@ -9220,7 +9220,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 <script defer src="/doweo-reference-home.js?v=20261121-reference-layout-v2"></script>
 
 <!-- Unified desktop shell and reviewed offline labels for every supported language. -->
-<link rel="stylesheet" href="/doweo-unified-shell.css?v=20261121-desktop-refinement-v3">
+<link rel="stylesheet" href="/doweo-unified-shell.css?v=20261122-fixed-tabs-v4">
 <script defer src="/doweo-unified-shell.js?v=20261121-desktop-refinement-v3"></script>
 <script defer src="/doweo-unified-localize.js?v=20261121-all-locales-v1"></script>
 <!-- This must load last, after the unified-shell and every legacy stylesheet. -->
@@ -9254,51 +9254,6 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   }
   html body.notifications-view #notifications-page #notifications-list button{
     color:#073747!important;background:#bdf4e5!important
-  }
-  /* Bills: every visible card uses a solid navy surface rather than a pale
-     gradient. All information remains readable and buttons keep handlers. */
-  html body #sq-bills-page:not([hidden]){
-    background:#0b2038!important;background-image:none!important;
-    color:#f5faff!important;min-height:calc(100vh - 135px)!important;
-    border-radius:20px!important;
-  }
-  html body #sq-bills-page:not([hidden]) .sq-bills-title h2,
-  html body #sq-bills-page:not([hidden]) .sq-bills-tracker-compact label{color:#f5faff!important}
-  html body #sq-bills-page#sq-bills-page
-    :is(.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article){
-    background:#142f4d!important;background-color:#142f4d!important;
-    background-image:none!important;color:#f5faff!important;
-    border:1px solid #496e88!important;box-shadow:0 8px 20px #051c3233!important;
-    opacity:1!important;backdrop-filter:none!important
-  }
-  html body #sq-bills-page#sq-bills-page
-    :is(.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article)
-    :is(h2,h3,h4,p,span,small,strong,b,label,time){
-    color:#f5faff!important;opacity:1!important
-  }
-  html body #sq-bills-page#sq-bills-page
-    :is(.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article)
-    :is(.sq-bills-help,.sq-premium-metrics article span,.sq-premium-metrics article small,.sq-premium-selected){
-    color:#c2d7e9!important;opacity:1!important
-  }
-  html body #sq-bills-page#sq-bills-page #sq-premium-monthly{color:#77edd0!important}
-  html body #sq-bills-page#sq-bills-page .sq-premium-days>span{color:#c5dceb!important}
-  html body #sq-bills-page#sq-bills-page .sq-premium-days button {
-    color:#f5faff!important;opacity:1!important;text-shadow:none!important
-  }
-  html body #sq-bills-page#sq-bills-page .sq-premium-days button:disabled{
-    color:#b9cee2!important;opacity:.65!important
-  }
-  html body #sq-bills-page#sq-bills-page .sq-premium-days button:where(.chosen,.has-bill){
-    background:#176076!important;color:#fff!important;border-color:#64e6c9!important
-  }
-  html body #sq-bills-page#sq-bills-page .sq-premium-calhead button,
-  html body #sq-bills-page#sq-bills-page :is(.sq-bills-row button,.sq-bill-mobile-toggle){
-    background:#20546d!important;color:#fff!important;
-    border:1px solid #70a2b9!important;opacity:1!important
-  }
-  html body #sq-bills-page#sq-bills-page :is(.sq-bills-card input,.sq-bills-card select,.sq-bills-tracker-compact select){
-    background:#f7fbff!important;color:#14294b!important;border:1px solid #a2bbd0!important
   }
   /* Cash Flow uses the same airy canvas, title hierarchy, pill tabs and
      white analytics panels as Spending Analytics. Preserve renderFinance(). */
@@ -9349,40 +9304,39 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   }
 }
 </style>
-<!-- Desktop Bills visual reference v7: stable fallback if JS loads late. -->
-<style id="dw-bills-reference-v7">
+
+<!-- Restored desktop Bills theme; the shared navigation is intentionally unaffected. -->
+<style id="dw-bills-restored-dark-v8">
 @media(min-width:901px){
-  html body #sq-bills-page:not([hidden]) :is(.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article){
-    background:#10243f!important;background-image:none!important;color:#f5faff!important;
-    border:1px solid #8bb7c7!important;border-radius:21px!important;
-    box-shadow:0 8px 22px rgba(6,24,43,.18)!important;
-    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  html body #sq-bills-page .sq-premium-calendar,
+  html body #sq-bills-page .sq-bills-card,
+  html body #sq-bills-page .sq-premium-metrics article {
+    background:linear-gradient(155deg,#11334a,#081e34)!important;
+    background-color:#0c293d!important;color:#f4faff!important;
+    border:1px solid #315c70!important;
+    box-shadow:0 8px 28px rgba(1,12,24,.17)!important;
+    backdrop-filter:none!important;
   }
-  html body #sq-bills-page:not([hidden]) :is(.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article)
-    :is(h2,h3,h4,p,small,span,strong,b,label,time){
-    color:#f5faff!important;opacity:1!important;
+  html body #sq-bills-page :is(.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article)
+    :is(h2,h3,h4,strong,b,p,span,small,label){
+    color:#f4faff!important;opacity:1!important
   }
-  html body #sq-bills-page:not([hidden]) .sq-premium-days>span{color:#b9d1e3!important}
-  html body #sq-bills-page:not([hidden]) .sq-premium-days button{
-    color:#dfebf7!important;opacity:1!important;
+  html body #sq-bills-page .sq-premium-days>span{color:#b2ccda!important}
+  html body #sq-bills-page .sq-premium-days button{color:#e1f0fb!important;opacity:1!important}
+  html body #sq-bills-page .sq-premium-days button:disabled{opacity:.68!important;color:#c0d5df!important}
+  html body #sq-bills-page .sq-premium-days button:where(.chosen,.has-bill){
+    background:#115668!important;color:#fff!important;border:1px solid #6ee7cd!important
   }
-  html body #sq-bills-page:not([hidden]) .sq-premium-days button:disabled{
-    color:#b9cde1!important;opacity:.75!important;
+  html body #sq-bills-page :is(.sq-premium-calhead button,.sq-bills-row button,.sq-bills-actions button){
+    background:#193e53!important;color:#d5fff1!important;border:1px solid #5b9fa2!important
   }
-  html body #sq-bills-page:not([hidden]) .sq-premium-days button:where(.chosen,.has-bill){
-    background:#126b70!important;color:white!important;border:1px solid #66e8cd!important;
+  html body #sq-bills-page .sq-bills-list-head>span{
+    background:#173d4d!important;color:#b5f9e8!important;border:1px solid #5b9fa2!important
   }
-  html body #sq-bills-page:not([hidden]) .sq-bills-row button{
-    background:#0e2d45!important;color:#a6f6e4!important;border:1px solid #65d8c2!important;
-  }
-  html body #sq-bills-page:not([hidden]) #sq-premium-monthly{color:#76f0d1!important}
-  html body #sq-bills-page:not([hidden]) #sq-premium-active{color:#f5faff!important}
-  html body #sq-bills-page:not([hidden]) .sq-bills-list-head>span{
-    background:#173d4d!important;color:#c6fff1!important;border:1px solid #77dfc5!important;
-  }
-  html body #sq-bills-page:not([hidden]) .sq-bills-title h2{color:#14294b!important}
-  html body #sq-bills-page:not([hidden]) .sq-bills-tracker-compact select{
-    background:#fff!important;color:#14294b!important;
+  html body #sq-bills-page #sq-premium-monthly{color:#69e6c6!important}
+  html body #sq-bills-page #sq-premium-active{color:#fff!important}
+  html body #sq-bills-page .sq-bills-card :is(input,select){
+    background:#f7fbff!important;color:#14294b!important
   }
 }
 </style>
@@ -9440,45 +9394,34 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
       paint(document.getElementById('backdrop'),navy);
     }
     if(billsOpen){
-      // The reference uses navy panels on top of the existing photo-backed
-      // workspace. Do not repaint the document, wallpaper, or entire page.
-      const surface={
-        background:'#10243f','background-color':'#10243f',
-        'background-image':'none',color:'#f5faff',
-        border:'1px solid #8bb7c7','border-radius':'21px',
-        'box-shadow':'0 8px 22px rgba(6,24,43,.18)',
-        'backdrop-filter':'none'
+      /* Restore the original dark Bills workspace instead of the white redesign.
+         Leave the shared tab bar and background wallpaper unchanged. */
+      const darkSurface={
+        background:'linear-gradient(155deg,#11334a,#081e34)',
+        'background-color':'#0c293d',color:'#f4faff',
+        border:'1px solid #315c70','box-shadow':'0 8px 28px rgba(1,12,24,.17)'
       };
-      select(bills,'.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article',surface);
-      const light={color:'#f5faff',opacity:'1'};
-      select(bills,'.sq-premium-calendar h3,.sq-premium-calendar strong,.sq-premium-calendar p,.sq-premium-calendar small,.sq-premium-calendar label,.sq-premium-calendar span,.sq-bills-card h2,.sq-bills-card h3,.sq-bills-card h4,.sq-bills-card p,.sq-bills-card small,.sq-bills-card strong,.sq-bills-card span,.sq-bills-card label,.sq-premium-metrics article span,.sq-premium-metrics article small,.sq-premium-metrics article strong,.sq-bills-list-head h3,.sq-bills-list-head span,.sq-bills-row strong,.sq-bills-row small,.sq-bills-help',light);
-      select(bills,'.sq-premium-days>span',{color:'#b9d1e3',opacity:'1'});
-      select(bills,'.sq-premium-days button',{color:'#dfebf7',background:'transparent',opacity:'1'});
-      select(bills,'.sq-premium-days button:disabled',{color:'#b9cde1',opacity:'.75'});
-      select(bills,'.sq-premium-days button.chosen,.sq-premium-days button.has-bill',{
-        background:'#126b70',color:'#fff',border:'1px solid #66e8cd',opacity:'1'
+      select(bills,'.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article',darkSurface);
+      select(bills,'.sq-premium-calendar :is(h3,strong,p,small,span,label),.sq-bills-card :is(h2,h3,h4,p,small,strong,span,label),.sq-premium-metrics article :is(span,small,strong),.sq-bills-row :is(strong,small)',{
+        color:'#f4faff',opacity:'1'
       });
-      select(bills,'.sq-premium-calhead button',{
-        background:'#153c50',color:'#fff',border:'1px solid #76d8ca',
-        'border-radius':'10px',opacity:'1'
+      select(bills,'.sq-premium-days>span',{color:'#b2ccda',opacity:'1'});
+      select(bills,'.sq-premium-days button',{color:'#e1f0fb',opacity:'1'});
+      select(bills,'.sq-premium-days button:disabled',{color:'#c0d5df',opacity:'.68'});
+      select(bills,'.sq-premium-days button:where(.chosen,.has-bill)',{
+        background:'#115668',color:'#fff',border:'1px solid #6ee7cd'
       });
-      select(bills,'.sq-bills-list-head',{ 'border-color':'#527389' });
-      select(bills,'.sq-bills-row',{ 'border-color':'#42637b' });
+      select(bills,'.sq-premium-calhead button,.sq-bills-row button,.sq-bills-actions button',{
+        background:'#193e53',color:'#d5fff1',border:'1px solid #5b9fa2',opacity:'1'
+      });
       select(bills,'.sq-bills-list-head>span',{
-        background:'#173d4d',color:'#c6fff1',border:'1px solid #77dfc5',opacity:'1'
-      });
-      select(bills,'.sq-bills-row button,.sq-bills-actions button',{
-        background:'#0e2d45',color:'#a6f6e4',border:'1px solid #65d8c2',
-        'border-radius':'11px',opacity:'1'
+        background:'#173d4d',color:'#b5f9e8',border:'1px solid #5b9fa2'
       });
       select(bills,'.sq-bills-card input,.sq-bills-card select',{
         background:'#f7fbff',color:'#14294b'
       });
-      paint(document.getElementById('sq-premium-monthly'),{color:'#76f0d1'});
+      paint(document.getElementById('sq-premium-monthly'),{color:'#69e6c6'});
       paint(document.getElementById('sq-premium-active'),{color:'#fff'});
-      select(bills,'.sq-bill-create-heading button,#sq-bill-mobile-toggle',{
-        background:'#102943',color:'#b9e9f0',border:'1px solid #75dccb'
-      });
     }
     if(notifications){
       const page=document.getElementById('notifications-page');

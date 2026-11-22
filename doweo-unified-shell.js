@@ -53,7 +53,9 @@
   }
   bar.append(tabs,tools);
   // Outside the dashboard, which is display:none on other routes.
-  sidebar.after(bar);
+  // Keep the shared fixed header outside transformed/positioned page containers.
+  // This anchors the tabs to the viewport on every desktop route.
+  document.body.appendChild(bar);
 
   function originalTab(name){return existingTabs.querySelector('[data-sq-tab="'+name+'"]');}
   tabs.addEventListener('click',event=>{

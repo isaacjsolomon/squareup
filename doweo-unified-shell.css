@@ -1115,3 +1115,35 @@
    margin-top:118px!important;margin-bottom:50px!important;
  }
 }
+
+
+/* Stable viewport-level shared navigation. The shared header is now a direct
+   BODY child, so fixed coordinates are never relative to route containers.
+   All desktop pages use the same placement; mobile remains untouched. */
+@media (min-width:901px){
+ html body #dw-all-topbar{
+   position:fixed!important;top:10px!important;
+   left:310px!important;right:26px!important;height:66px!important;
+   margin:0!important;transform:none!important;
+ }
+ html body #dw-all-top-tabs,
+ html body #tracker-dashboard>.sq-workspace-tabs{
+   position:fixed!important;
+   top:10px!important;
+   left:calc(50% + 88px)!important;
+   transform:translateX(-50%)!important;
+   width:min(760px,calc(100vw - 530px))!important;
+   height:65px!important;min-height:65px!important;
+   margin:0!important;z-index:2147482241!important;
+ }
+ html body #dw-all-topbar #dw-all-top-tools{
+   top:4px!important;
+ }
+}
+@media(min-width:901px) and (max-width:1160px){
+ html body #dw-all-top-tabs,
+ html body #tracker-dashboard>.sq-workspace-tabs{
+   left:calc(50% + 70px)!important;
+   width:min(600px,calc(100vw - 430px))!important;
+ }
+}

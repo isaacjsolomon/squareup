@@ -46,7 +46,7 @@ test('every secondary app page uses a shared real desktop header without replaci
  for(const state of states)assert.ok(shell.includes("'"+state+"'"),'missing view '+state);
  for(const section of ['overview','expenses','bills','members'])
   assert.match(shell,new RegExp("'"+section+"'"));
- assert.match(shell,/sidebar\.after\(bar\)/,'global header must live outside hidden dashboard');
+ assert.match(shell,/document\.body\.appendChild\(bar\)/,'global header must be a viewport-fixed BODY child');
  assert.match(shell,/home\?\.click\(\)/,'original navigation remains authoritative');
  assert.match(shell,/originalTab\(section\)\?\.click\(\)/);
  assert.match(shell,/body\.classList\.toggle\('dw-all-secondary-view'/);
@@ -95,7 +95,7 @@ test('production HTML and Cloudflare copy all scripts, CSS and complete locales 
   assert.ok(deploy.includes(filename),'Cloudflare build missing '+filename);
  }
  for(const filename of ['doweo-unified-shell.css','doweo-unified-shell.js','doweo-unified-localize.js'])
-  assert.ok(html.includes('/'+filename+'?v=20261121-'),filename+' not linked in live HTML');
+  assert.match(html,new RegExp('/'+filename.replaceAll('.','\\.')+'\\?v=2026112[12]-'),filename+' not linked in live HTML');
  assert.ok(html.includes('/doweo-reference-home.js?v=20261121-reference-layout-v2'));
  assert.match(lang,/import\('\/doweo-unified-locales\.mjs'\)/);
  assert.match(deploy,/node --check \.pages-output\/doweo-unified-shell\.js/);
