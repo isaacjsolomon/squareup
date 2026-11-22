@@ -9349,6 +9349,135 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   }
 }
 </style>
+<!-- Release v6: route-based desktop visual repair. Uses inline important styles to
+     outrank historic CSS; does not replace route handlers or finance APIs. -->
+<script id="dw-route-visual-enforcer-v6">
+(()=>{
+  'use strict';
+  const desktop=()=>window.matchMedia('(min-width:901px)').matches;
+  const state=new WeakMap();
+  const touched=new Set();
+  let scheduled=false;
+  const keep=(element,property,value)=>{
+    if(!element)return;
+    if(!state.has(element))state.set(element,new Map());
+    const old=state.get(element);
+    if(!old.has(property))old.set(property,[element.style.getPropertyValue(property),element.style.getPropertyPriority(property)]);
+    touched.add(element);
+    if(element.style.getPropertyValue(property)!==value||element.style.getPropertyPriority(property)!=='important'){
+      element.style.setProperty(property,value,'important');
+    }
+  };
+  const paint=(el,properties)=>{
+    if(!el)return;
+    for(const [property,value] of Object.entries(properties))keep(el,property,value);
+  };
+  const select=(root,selector,properties)=>{
+    if(!root)return;
+    root.querySelectorAll(selector).forEach(el=>paint(el,properties));
+  };
+  const reset=()=>{
+    for(const el of touched){
+      const before=state.get(el);
+      if(!before)continue;
+      for(const [prop,[value,priority]] of before){
+        if(value)el.style.setProperty(prop,value,priority);
+        else el.style.removeProperty(prop);
+      }
+      before.clear();
+    }
+    touched.clear();
+  };
+  const change=()=>{
+    scheduled=false;
+    reset();
+    if(!desktop())return;
+    const bills=document.getElementById('sq-bills-page');
+    const notifications=document.body.classList.contains('notifications-view');
+    const billsOpen=!!bills&&!bills.hidden&&getComputedStyle(bills).display!=='none';
+    const cash=document.body.classList.contains('sq-finance-open')&&
+      document.getElementById('sq-nextgen')?.dataset.section==='finance';
+    if(billsOpen||notifications){
+      const navy={background:'#0b1f38','background-color':'#0b1f38','background-image':'none'};
+      paint(document.body,navy);
+      paint(document.getElementById('backdrop'),navy);
+    }
+    if(billsOpen){
+      paint(bills,{background:'#0b1f38','background-image':'none',color:'#f5faff'});
+      select(bills,'.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article',{
+        background:'#142f4d','background-color':'#142f4d','background-image':'none',
+        color:'#f5faff',border:'1px solid #4a708a','backdrop-filter':'none'
+      });
+      select(bills,'.sq-bills-title h2,.sq-bills-tracker-compact label,.sq-bills-card h2,.sq-bills-card h3,.sq-bills-card h4,.sq-bills-card p,.sq-bills-card small,.sq-bills-card strong,.sq-bills-card span,.sq-bills-card label,.sq-premium-metrics article span,.sq-premium-metrics article small,.sq-premium-metrics article strong,.sq-premium-calhead h3,.sq-premium-calhead strong,.sq-premium-selected,.sq-bills-row strong,.sq-bills-row small',{
+        color:'#f5faff',opacity:'1'
+      });
+      select(bills,'.sq-premium-days>span',{color:'#d1e4f1',opacity:'1'});
+      select(bills,'.sq-premium-days button',{color:'#f5faff',opacity:'1'});
+      select(bills,'.sq-premium-days button:disabled',{color:'#c1d5e7',opacity:'.7'});
+      select(bills,'.sq-premium-days button.chosen,.sq-premium-days button.has-bill',{
+        background:'#176076',color:'#fff',border:'1px solid #6fe6cb'
+      });
+      select(bills,'.sq-premium-calhead button,.sq-bills-row button,.sq-bill-mobile-toggle',{
+        background:'#20536e',color:'#fff',opacity:'1',border:'1px solid #77a5b9'
+      });
+      select(bills,'.sq-bills-card input,.sq-bills-card select,.sq-bills-tracker-compact select',{
+        background:'#f7fbff',color:'#14294b'
+      });
+      paint(document.getElementById('sq-premium-monthly'),{color:'#77edd0'});
+      paint(document.getElementById('sq-premium-active'),{color:'#fff'});
+    }
+    if(notifications){
+      const page=document.getElementById('notifications-page');
+      paint(page,{background:'#0b1f38','background-color':'#0b1f38','background-image':'none',color:'#f6faff','min-height':'calc(100dvh - 120px)'});
+      paint(document.getElementById('notifications-panel'),{background:'#132e4b','background-image':'none',color:'#f6faff',border:'1px solid #426581'});
+      select(page,'.sq-notifications-header h2,.notification-panel-heading',{color:'#f6faff'});
+      select(page,'#notifications-list .entry,#notifications-list .dw-inbox-item',{background:'#1d3c59','background-image':'none',color:'#f6faff',border:'1px solid #486983'});
+      select(page,'#notifications-list .entry strong,#notifications-list .entry b',{color:'#fff'});
+      select(page,'#notifications-list .entry small,#notifications-list .entry p,#notifications-list .entry .note',{color:'#c3d5e7'});
+      select(page,'#notifications-list button',{background:'#bdf4e5',color:'#093747'});
+      paint(document.getElementById('sq-notification-filter'),{background:'#f7fbff',color:'#14294b'});
+    }
+    if(cash){
+      const hub=document.getElementById('sq-nextgen');
+      paint(hub,{background:'#eaf1fc','background-image':'none',color:'#142543','overflow-y':'auto'});
+      select(hub,'.sq-ng-shell',{background:'transparent','max-width':'1450px',margin:'0 auto',padding:'20px clamp(20px,2.5vw,42px) 65px'});
+      select(hub,'.dw-section-tabs',{background:'#eff4fc',border:'1px solid #dce5f2','border-radius':'18px'});
+      select(hub,'.dw-section-tabs button[aria-current="page"]',{background:'#142849',color:'#a3f6de'});
+      paint(document.getElementById('sq-ng-content'),{
+        display:'grid','grid-template-columns':'repeat(2,minmax(0,1fr))',
+        'grid-template-areas':'"summary summary" "trend categories" "activity comparison" "note note"',
+        gap:'18px'
+      });
+      if(window.innerWidth<=1200){
+        paint(document.getElementById('sq-ng-content'),{
+          'grid-template-columns':'minmax(0,1fr)',
+          'grid-template-areas':'"summary" "trend" "categories" "activity" "comparison" "note"'
+        });
+      }
+      select(hub,'.sq-ng-card',{background:'#f7faff','background-image':'none',color:'#17294b',border:'1px solid #dbe5f2','border-radius':'22px'});
+      select(hub,'.sq-ng-card h2,.sq-ng-card h3,.sq-ng-card strong,#sq-ng-title',{color:'#17294b'});
+      select(hub,'.sq-ng-card small,.sq-ng-card p,.sq-ng-note',{color:'#526a87'});
+      select(hub,'#sq-ng-open-transaction',{background:'#7aebcf',color:'#0c3541',cursor:'pointer'});
+    }
+  };
+  const schedule=()=>{
+    if(scheduled)return;
+    scheduled=true;
+    requestAnimationFrame(change);
+  };
+  const start=()=>{
+    schedule();
+    new MutationObserver(schedule).observe(document.body,{
+      attributes:true,attributeFilter:['class','hidden','data-section'],
+      childList:true,subtree:true
+    });
+    window.addEventListener('resize',schedule,{passive:true});
+    document.addEventListener('click',schedule,{capture:true,passive:true});
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
+})();
+</script>
 </body>
 </html>
 
