@@ -2476,6 +2476,7 @@ if (sub === 'polls') {
         endsAt:p.ends_at||null,createdAt:p.created_at,creatorName:eligible.get(String(p.created_by).toLowerCase())||'Member',
         archived:Boolean(p.archived_at),totalMembers:eligible.size,votedMembers:[...voters].filter(id=>eligible.has(id)).length,
         pendingNames:[...eligible].filter(([id])=>!voters.has(id)).map(([,name])=>name),
+        votedNames:[...eligible].filter(([id])=>voters.has(id)).map(([,name])=>name),
         canManage:owner||p.created_by===me.id,
         totalVotes: pollVotes.length,
         canClose: owner || p.created_by === me.id,
