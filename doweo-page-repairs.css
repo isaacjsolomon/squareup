@@ -285,3 +285,256 @@
     color:#072e3a!important;
   }
 }
+
+
+/* Desktop screenshot correction v4. Target the existing routes and elements.
+   No markup movement, no Supabase/API edits, and no mobile changes. */
+@media(min-width:901px){
+  /* Notifications has a separate, fixed wallpaper #backdrop under its BODY
+     sibling page. Paint both so the displayed viewport is consistently navy. */
+  html body.notifications-view.dw-all-secondary-view:not(.sq-auth-guest){
+    background:#0a1f38!important;background-image:none!important;
+  }
+  html body.notifications-view.dw-all-secondary-view:not(.sq-auth-guest) #backdrop#backdrop{
+    background:#0a1f38!important;background-image:none!important;
+    background-color:#0a1f38!important;opacity:1!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #backdrop.photo::after{
+    background:none!important;content:none!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-page{
+    background:#0a1f38!important;background-image:none!important;
+    color:#f6faff!important;min-height:calc(100dvh - 134px)!important;
+    padding:26px clamp(20px,3vw,42px) 65px!important;
+    border:0!important;box-shadow:none!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-page
+    :is(.sq-notifications-header h2,.notification-panel-heading){
+    color:#f6faff!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-panel{
+    background:#122e4b!important;background-image:none!important;
+    border:1px solid #385977!important;color:#f7fbff!important;
+    box-shadow:0 14px 30px rgba(0,8,26,.25)!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-list
+    :is(.entry,.dw-inbox-item,.dw-inbox-card){
+    background:#1b3b58!important;border:1px solid #45657f!important;
+    color:#f8fbff!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-page
+    :is(.entry b,.entry strong,.entry h3,.dw-inbox-title){
+    color:#ffffff!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-page
+    :is(.entry p,.entry small,.entry .note,.dw-inbox-subtitle,.sq-notification-tools label){
+    color:#c5d7e9!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-page
+    :is(#sq-notification-filter,.sq-notification-tools select){
+    background:#f6faff!important;color:#142c4c!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-page
+    :is(.entry button,.dw-inbox-item button){
+    color:#092b39!important;background:#b8f4e4!important;
+    border:1px solid #86decb!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-back{
+    color:#f4f9ff!important;background:#1d435f!important;
+    border:1px solid #52748e!important;
+  }
+
+  /* The screenshot showed white-on-white content. All visible Bills SURFACES
+     become navy; text changes to contrasting off-white, not invisible navy-on-navy. */
+  html body.dw-all-secondary-view #sq-bills-page
+    :is(.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article){
+    background:#102b49!important;background-image:none!important;
+    color:#f6faff!important;border:1px solid #42627e!important;
+    box-shadow:0 10px 27px rgba(6,20,39,.22)!important;
+    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page
+    :is(.sq-bills-card,.sq-premium-metrics article)
+    :is(h1,h2,h3,h4,h5,p,span,small,strong,b,label,time){
+    color:#f6faff!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page
+    :is(.sq-bills-card,.sq-premium-metrics article)
+    :is(.sq-bills-help,.sq-bills-empty,.sq-bills-row small,.sq-premium-metrics article span,.sq-premium-metrics article small){
+    color:#bdd4e9!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page #sq-premium-monthly{
+    color:#76ebd0!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page #sq-premium-active{
+    color:#f6faff!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-calendar
+    :is(h3,strong,b,span,p,small,button,.sq-premium-calhead,.sq-premium-selected){
+    color:#f6faff!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-days
+    :is(span,button){
+    color:#e5f1ff!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button:disabled{
+    color:#b5cce3!important;opacity:.8!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button:where(.chosen,.has-bill){
+    background:#176174!important;color:#ffffff!important;
+    border:1px solid #75e8cf!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page #sq-premium-selected{
+    color:#cadff1!important;border-top:1px solid #4c6b84!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-calhead button{
+    color:#fff!important;background:#204864!important;
+    border:1px solid #7093a9!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page
+    :is(.sq-bills-list-head,.sq-bills-row){
+    border-color:#42627e!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page
+    :is(.sq-bills-row button,.sq-bills-actions button,
+        .sq-bill-mobile-toggle,.sq-bills-card button.small-btn){
+    background:#20516b!important;color:#f9fcff!important;
+    border:1px solid #74a2b7!important;
+    opacity:1!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page
+    :is(.sq-bills-row button,.sq-bills-actions button,.sq-bill-mobile-toggle):hover{
+    background:#28637c!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page
+    :is(.sq-bills-card input,.sq-bills-card select,.sq-bills-tracker-compact select){
+    background:#f7fbff!important;color:#172d4c!important;
+    border:1px solid #93b1c8!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page
+    :is(.sq-bills-card input::placeholder){
+    color:#627a95!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-bills-tracker-compact label{
+    color:#e5f1ff!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-bills-tracker-compact{
+    background:#103750!important;border-color:#47677f!important;
+  }
+
+  /* Cash Flow adopts Spending Analytics' canvas, header, panel widths, spacing,
+     two-column charts and card treatment. Original records and form stay intact. */
+  html body.sq-finance-open #sq-nextgen[data-section="finance"]{
+    background:#eaf1fc!important;background-image:none!important;
+    color:#142543!important;
+    top:var(--dw-report-top,0px)!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-shell{
+    background:transparent!important;width:100%!important;
+    max-width:1450px!important;margin:0 auto!important;
+    padding:20px clamp(20px,2.5vw,42px) 65px!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs{
+    background:#eff4fc!important;border:1px solid #dce5f2!important;
+    padding:5px!important;gap:5px!important;border-radius:18px!important;
+    margin:0 0 26px!important;max-width:650px!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs button{
+    background:transparent!important;color:#35496b!important;
+    border-radius:13px!important;min-height:43px!important;font-weight:750!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs button[aria-current="page"]{
+    background:#142849!important;color:#a3f6de!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-header{
+    background:transparent!important;padding:8px 0 18px!important;
+    margin:0 0 24px!important;border-bottom:1px solid #cddbec!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-title{
+    color:#17294b!important;font-size:clamp(29px,3vw,40px)!important;
+    font-weight:800!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-subtitle{
+    color:#556e8b!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-template-areas:"summary summary" "trend categories" "activity comparison" "note note"!important;
+    align-items:stretch!important;gap:18px!important;
+    max-width:100%!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-finance-overview{
+    grid-area:summary!important;display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;
+    gap:16px!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-summary-stack{
+    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:14px!important;min-width:0!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card{
+    background:#f7faff!important;color:#17294b!important;
+    border:1px solid #dbe5f2!important;border-radius:22px!important;
+    box-shadow:0 8px 24px #20375816!important;
+    padding:20px 22px!important;
+    min-width:0!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card
+    :is(h2,h3,h4,strong,b,th){
+    color:#17294b!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card
+    :is(p,small,.sq-ng-note,.sq-ng-item small){
+    color:#526a87!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content
+    .sq-ng-summary-stack .sq-ng-card strong{
+    font-size:clamp(23px,2.3vw,32px)!important;line-height:1.25!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-web-trend{
+    grid-area:trend!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-spending-categories{
+    grid-area:categories!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content>.sq-ng-section{
+    grid-area:activity!important;margin:0!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-web-comparison{
+    grid-area:comparison!important;overflow-x:auto!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content>p{
+    grid-area:note!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bars{
+    height:200px!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.income{
+    background:#48b4de!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.expense{
+    background:#60d9b6!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-open-transaction{
+    background:#7aebcf!important;color:#0c3541!important;
+    border:1px solid #58daba!important;min-height:54px!important;
+    padding:12px 17px!important;border-radius:14px!important;
+    cursor:pointer!important;position:relative!important;z-index:1!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-back{
+    background:#142849!important;color:#f8fcff!important;
+    border:1px solid #4f718e!important;
+  }
+  @media(max-width:1200px){
+    html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content{
+      grid-template-columns:minmax(0,1fr)!important;
+      grid-template-areas:"summary" "trend" "categories" "activity" "comparison" "note"!important;
+    }
+    html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-finance-overview{
+      grid-template-columns:minmax(0,1fr)!important;
+    }
+    html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-summary-stack{
+      grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    }
+  }
+}
