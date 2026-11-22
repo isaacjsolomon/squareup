@@ -255,7 +255,7 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   // Screenshot regressions: verify ACTUAL loaded stylesheet/cascade, not only source CSS.
   assert.ok(await page.locator('link[href*="doweo-page-repairs.css"]').count(),
    'the latest page repairs stylesheet must be linked in the real HTML');
-  await page.waitForFunction(()=>getComputedStyle(document.querySelector('#sq-bills-page .sq-bill-create-card')).backgroundColor==='rgb(20, 47, 77)',{timeout:10000});
+  await page.waitForFunction(()=>getComputedStyle(document.querySelector('#sq-bills-page .sq-bill-create-card')).backgroundColor==='rgb(16, 36, 63)',{timeout:10000});
   const billsGeometry=await page.evaluate(()=>{
    const back=document.getElementById('sq-bills-back').getBoundingClientRect();
    const tabs=document.getElementById('dw-all-top-tabs').getBoundingClientRect();
@@ -265,20 +265,28 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
     calendarText:getComputedStyle(cal.querySelector('.sq-premium-days')||cal).color,
     billCardBackground:getComputedStyle(document.querySelector('#sq-bills-page .sq-bill-create-card')).backgroundColor,
     billCardText:getComputedStyle(document.querySelector('#sq-bills-page .sq-bill-create-card h3')).color,
-    metricBackground:getComputedStyle(document.querySelector('#sq-bills-page .sq-premium-metrics article')).backgroundColor};
+    metricBackground:getComputedStyle(document.querySelector('#sq-bills-page .sq-premium-metrics article')).backgroundColor,
+    secondMetricBackground:getComputedStyle(document.querySelectorAll('#sq-bills-page .sq-premium-metrics article')[1]).backgroundColor,
+    billsListBackground:getComputedStyle(document.querySelector('#sq-bills-page .sq-bills-columns .sq-bills-card')).backgroundColor,
+    subscriptionsBackground:getComputedStyle(document.querySelectorAll('#sq-bills-page .sq-bills-columns .sq-bills-card')[1]).backgroundColor,
+    calendarDayText:getComputedStyle(document.querySelector('#sq-bills-page .sq-premium-days button:not(:disabled)')).color};
   });
   assert.ok(billsGeometry.backTop>billsGeometry.tabsBottom+8,
    'Bills Back to Home must be below the global tabs: '+JSON.stringify(billsGeometry));
   assert.ok(billsGeometry.backRight<1536&&billsGeometry.backLeft>=0,
    'Bills Back to Home must be fully inside the screen');
-  assert.match(billsGeometry.calendarBg,/^rgb\((?:16, 43, 73|20, 47, 77)\)$/, 
+  assert.match(billsGeometry.calendarBg,/^rgb\(16, 36, 63\)$/, 
    'billing calendar must have a solid navy background, not pale white');
-  assert.match(billsGeometry.calendarText,/^rgb\(24[5-9], 2(?:49|50), 255\)$/, 
+  assert.match(billsGeometry.calendarText,/^rgb\(245, 250, 255\)$/, 
    'calendar date grid must use readable light text against navy');
-  assert.match(billsGeometry.billCardBackground,/^rgb\((?:16, 43, 73|20, 47, 77)\)$/, 
+  assert.match(billsGeometry.billCardBackground,/^rgb\(16, 36, 63\)$/, 
     'Bill panels must use the actual navy surface, not white');
-  assert.match(billsGeometry.metricBackground,/^rgb\((?:16, 43, 73|20, 47, 77)\)$/, 
+  assert.match(billsGeometry.metricBackground,/^rgb\(16, 36, 63\)$/, 
     'Monthly totals card should be navy too');
+  for(const [name,value] of Object.entries({secondMetric:billsGeometry.secondMetricBackground,bills:billsGeometry.billsListBackground,subscriptions:billsGeometry.subscriptionsBackground})){
+    assert.equal(value,'rgb(16, 36, 63)',name+' card must match the navy reference');
+  }
+  assert.equal(billsGeometry.calendarDayText,'rgb(223, 235, 247)', 'calendar dates remain readable');
   assert.equal(billsGeometry.billCardText,'rgb(245, 250, 255)',
     'Bill card text must be white on navy');
   await page.screenshot({path:resolve(root,'test-results/unified/bills-page-repairs.png'),fullPage:true});
