@@ -9,7 +9,7 @@ const js=read('doweo-desktop-standalone.js');
 const workflow=read('.github/workflows/deploy-doweo-pages.yml');
 
 test('desktop-only full-page workspace assets deploy and preserve mobile dialogs',()=>{
- assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-cashflow-analytics-v6/);
+ assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-analytics-match-v7/);
  assert.match(html,/doweo-desktop-standalone\.js\?v=20261122-wallpaper-mirror-v3/);
  assert.match(workflow,/doweo-desktop-standalone\.css doweo-desktop-standalone\.js/);
  assert.match(css,/@media\(min-width:901px\)/);
@@ -31,13 +31,15 @@ test('the existing tracker and finance handlers remain attached to full-page scr
  assert.match(css,/\.dw-desktop-standalone\[hidden\]/);
 });
 
-test('Cash Flow matches Analytics and avoids inline style races',()=>{
- assert.match(css,/Cash Flow desktop screen shares the Analytics page/);
- assert.match(css,/\.sq-ng-summary-stack/);
- assert.match(css,/grid-template-areas:"summary summary" "trend categories" "activity comparison"/);
- assert.match(css,/\.dw-analytics-bar\.income/);
- assert.match(css,/\.dw-analytics-bar\.expense/);
- assert.match(css,/background:linear-gradient\(145deg,#16334f,#10273e\)!important/);
+test('Cash Flow matches Spending Analytics white panels, KPIs and visual charts',()=>{
+ assert.match(css,/Desktop Cash Flow exactly reuses the Spending Analytics visual system/);
+ assert.match(css,/\.dw-cash-recap-grid/);
+ assert.match(css,/\.dw-cash-kpis/);
+ assert.match(css,/\.dw-cash-charts/);
+ assert.match(css,/\.dw-cash-donut/);
+ assert.match(css,/\.dw-cash-panel/);
+ assert.match(html,/dwCashFlowAnalyticsRender/);
+ assert.match(html,/doweo-cashflow-analytics\.js\?v=20261122-analytics-match-v1/);
  assert.doesNotMatch(html,/select\(hub,'\.sq-ng-card'/);
  assert.doesNotMatch(html,/paint\(hub,/);
 });
@@ -84,8 +86,8 @@ test('Cash Flow closes on newer desktop navigation and restores normal viewport 
  assert.match(html,/root\.style\.removeProperty\('display'\)/);
  assert.match(css,/html body #sq-nextgen\[hidden\]/);
  assert.match(css,/html body:not\(\.sq-finance-open\) #sq-nextgen/);
- assert.match(css,/Cash Flow desktop screen shares the Analytics page/);
- assert.match(css,/\.sq-ng-header\s*\{/);
+ assert.match(css,/Desktop Cash Flow exactly reuses the Spending Analytics visual system/);
+ assert.match(css,/\.dw-cash-header/);
  assert.match(css,/\.dw-section-tabs:not\(\[data-current-group\]\)/);
  assert.match(html,/const ticket=\+\+renderToken/);
 });
@@ -94,4 +96,17 @@ test('Instagram popup renders the recognizable SVG camera logo',()=>{
  assert.match(html,/class="sq-ig-mark" aria-hidden="true"><svg viewBox="0 0 24 24"/);
  assert.match(html,/<rect x="2\.5" y="2\.5" width="19" height="19" rx="5\.5"\/>/);
  assert.match(html,/<circle cx="12" cy="12" r="4\.25"\/>/);
+});
+
+test('private Cash Flow controls and month filtering remain functional',()=>{
+ const cash=read('doweo-cashflow-analytics.js');
+ assert.match(cash,/window\.dwCashFlowAnalyticsRender=function/);
+ assert.match(cash,/dw-cash-range/);
+ assert.match(cash,/dw-cash-month/);
+ assert.match(cash,/dw-cash-export/);
+ assert.match(cash,/sq-ng-open-transaction/);
+ assert.match(cash,/data-delete/);
+ assert.match(cash,/conic-gradient/);
+ assert.match(workflow,/doweo-cashflow-analytics\.js/);
+ assert.match(workflow,/node --check \.pages-output\/doweo-cashflow-analytics\.js/);
 });
