@@ -159,13 +159,13 @@
         'min-width':'27px','min-height':'27px',flex:'0 0 27px',
         'align-items':'center','justify-content':'center',
         margin:'0 13px 0 0',padding:'0',position:'static',transform:'none',
-        'clip-path':'none',color:'#f6faff'
+        'clip-path':'none',color:'#F3F8FC'
       }))force(mark,key,value);
       const glyph=mark.querySelector('svg');
       if(glyph){
         for(const [key,value] of Object.entries({
           display:'block',visibility:'visible',opacity:'1',width:'25px',height:'25px',
-          stroke:'#f6faff',fill:'none'
+          stroke:'#F3F8FC',fill:'none'
         }))force(glyph,key,value);
       }
       const isActive=entry.classList.contains('active')||entry.getAttribute('aria-current')==='page';
@@ -174,9 +174,9 @@
         'font-family':'inherit','font-size':'16px','font-weight':'625',
         'line-height':'1.2','text-align':'start','align-items':'center',
         'justify-content':'flex-start','border-radius':'15px',
-        background:isActive?'#435b7e':'transparent',
-        border:isActive?'1px solid rgba(195,224,255,.17)':'1px solid transparent',
-        'box-shadow':'none',transform:'none',color:'#f5faff'
+        background:isActive?'#355E72':'transparent',
+        border:isActive?'1px solid color-mix(in srgb, #ABC6D7 17%, transparent)':'1px solid transparent',
+        'box-shadow':'none',transform:'none',color:'#F3F8FC'
       }))force(entry,key,value);
       const label=entry.querySelector('.sq-nav-label,.dw-social-label,.dw-nav-group-name');
       if(label){
