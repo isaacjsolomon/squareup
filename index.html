@@ -5732,7 +5732,7 @@ document.addEventListener('click',function(event){var trigger=event.target.close
 
 <div id="sq-instagram-invite" hidden>
  <div class="sq-ig-card" role="dialog" aria-modal="true" aria-labelledby="sq-ig-title" aria-describedby="sq-ig-description">
-  <button type="button" class="doweo-close-control sq-ig-x" aria-label="Close Instagram invitation">&times;</button>
+  <button type="button" class="sq-ig-x" aria-label="Close Instagram invitation">&times;</button>
   <div class="sq-ig-mark" aria-hidden="true">◎</div>
   <h2 id="sq-ig-title">Follow DoWeo on Instagram!</h2>
   <p id="sq-ig-description">Get updates, new features, and tips for splitting expenses. Find us at <strong>@doweo.app</strong>.</p>
@@ -9225,7 +9225,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 <script defer src="/doweo-unified-localize.js?v=20261121-all-locales-v1"></script>
 <!-- This must load last, after the unified-shell and every legacy stylesheet. -->
 <link rel="stylesheet" href="/doweo-page-repairs.css?v=20261121-production-visible-v5">
-<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261122-restore-original-instagram-v2">
+
 
 <!-- UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121. Included in HTML to avoid missing/old CSS asset. -->
 <style id="doweo-desktop-v5-navy-analytics">
@@ -9487,16 +9487,11 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
     const billsOpen=!!bills&&!bills.hidden&&getComputedStyle(bills).display!=='none';
     const cash=document.body.classList.contains('sq-finance-open')&&
       document.getElementById('sq-nextgen')?.dataset.section==='finance';
-    if(notifications){
-      const navy={background:'#0b1f38','background-color':'#0b1f38','background-image':'none'};
-      paint(document.body,navy);
-      paint(document.getElementById('backdrop'),navy);
-    }
     // Bills styling is now fully owned by #dw-bills-exact-reference-v9.
     // Do not paint it with the MutationObserver; that raced the CSS cascade.
     if(notifications){
       const page=document.getElementById('notifications-page');
-      paint(page,{background:'#0b1f38','background-color':'#0b1f38','background-image':'none',color:'#f6faff','min-height':'calc(100dvh - 120px)'});
+      paint(page,{background:'transparent','background-color':'transparent','background-image':'none',color:'#f6faff','min-height':'calc(100dvh - 120px)'});
       paint(document.getElementById('notifications-panel'),{background:'#132e4b','background-image':'none',color:'#f6faff',border:'1px solid #426581'});
       select(page,'.sq-notifications-header h2,.notification-panel-heading',{color:'#f6faff'});
       select(page,'#notifications-list .entry,#notifications-list .dw-inbox-item',{background:'#1d3c59','background-image':'none',color:'#f6faff',border:'1px solid #486983'});
@@ -9507,7 +9502,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
     }
     if(cash){
       const hub=document.getElementById('sq-nextgen');
-      paint(hub,{background:'#eaf1fc','background-image':'none',color:'#142543','overflow-y':'auto'});
+      paint(hub,{'background-color':'#10243d','background-image':'var(--dw-selected-tracker-wallpaper)','background-position':'center','background-size':'cover','background-attachment':'fixed',color:'#f6faff','overflow-y':'auto'});
       select(hub,'.sq-ng-shell',{background:'transparent','max-width':'1450px',margin:'0 auto',padding:'20px clamp(20px,2.5vw,42px) 65px'});
       select(hub,'.dw-section-tabs',{background:'#10243d',border:'1px solid #dce5f2','border-radius':'18px'});
       select(hub,'.dw-section-tabs button[aria-current="page"]',{background:'#62eac1',color:'#10243d'});
@@ -9523,7 +9518,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
         });
       }
       select(hub,'.sq-ng-card',{background:'#102139','background-image':'linear-gradient(145deg,#152e49,#102139)',color:'#f6fbff',border:'1px solid #587c91','border-radius':'21px'});
-      select(hub,'.sq-ng-card h2,.sq-ng-card h3,.sq-ng-card strong',{color:'#f6fbff'});select(hub,'#sq-ng-title',{color:'#17294b'});
+      select(hub,'.sq-ng-card h2,.sq-ng-card h3,.sq-ng-card strong',{color:'#f6fbff'});select(hub,'#sq-ng-title',{color:'#f6fbff'});select(hub,'#sq-ng-subtitle',{color:'#d0e0f0'});
       select(hub,'.sq-ng-card small,.sq-ng-card p,.sq-ng-card .sq-ng-note',{color:'#bdd3e2'});
       select(hub,'#sq-ng-open-transaction',{background:'#62eac1',color:'#10243d',cursor:'pointer'});
     }
@@ -9546,7 +9541,8 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   else start();
 })();
 </script>
-<script defer src="/doweo-desktop-standalone.js?v=20261122-full-pages-v1"></script>
+<script defer src="/doweo-desktop-standalone.js?v=20261122-wallpaper-mirror-v2"></script>
+<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261122-wallpaper-instagram-final-v3">
 </body>
 </html>
 
