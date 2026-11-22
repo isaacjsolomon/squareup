@@ -9,7 +9,7 @@ const js=read('doweo-desktop-standalone.js');
 const workflow=read('.github/workflows/deploy-doweo-pages.yml');
 
 test('desktop-only full-page workspace assets deploy and preserve mobile dialogs',()=>{
- assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-cashflow-table-white-v10/);
+ assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-notifications-slate-v11/);
  assert.match(html,/doweo-desktop-standalone\.js\?v=20261122-wallpaper-mirror-v3/);
  assert.match(workflow,/doweo-desktop-standalone\.css doweo-desktop-standalone\.js/);
  assert.match(css,/@media\(min-width:901px\)/);
@@ -62,6 +62,13 @@ test('Instagram invitation uses legacy compact desktop dimensions without changi
  assert.match(scoped,/@media\(min-width:901px\)/);
  assert.match(html,/class="doweo-close-control sq-ig-x"/);
  assert.match(js,/classList\.toggle\('doweo-close-control',!desktop\.matches\)/);
+});
+
+test('Notification Center applies the muted slate-blue reference tint only on desktop',()=>{
+ assert.match(css,/#7788a0!important/);
+ assert.match(css,/rgba\(94,114,143,\.78\)/);
+ assert.match(css,/body\.notifications-view:not\(\.sq-auth-guest\)/);
+ assert.match(css,/var\(--dw-selected-tracker-wallpaper\)!important/);
 });
 
 test('desktop tracker pages reuse the live saved wallpaper without touching mobile',()=>{
