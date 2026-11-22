@@ -18,7 +18,7 @@ test('Polls dashboard JS parses and is bundled in production',()=>{
 
 test('Existing poll lifecycle, voting, editing, filters and tracker selection are retained',()=>{
  assert.match(html,/dwPollsDashboard\?\.render\(\{polls:rows,filter\}\)/);
- assert.match(html,/window\.squareUpApi\('trackers\/\+'encodeURIComponent\(tracker\.id\)/);
+ assert.match(html,/const api=\(suffix=/);
  assert.match(html,/data-poll-filter/);
  assert.match(html,/data-vote/);
  assert.match(html,/data-manage/);
@@ -43,7 +43,7 @@ test('Mockup panels are rendered from poll counts and real voter data',()=>{
 test('Quick Actions have functional handlers and prevent surprise reminders',()=>{
  for(const action of ['remind','results','settings','all-results'])assert.ok(js.includes('data-poll-dashboard-action="'+action+'"'));
  assert.match(js,/window\.confirm\(/);
- assert.match(js,/window\.squareUpApi\('trackers\/\+'encodeURIComponent\(tracker\.id\)\+'\/chat'/);
+ assert.ok(js.includes("window.squareUpApi('trackers/'+encodeURIComponent(tracker.id)+'/chat'"));
  assert.match(js,/lastReminder<60000/);
  assert.match(js,/selectFilter\(/);
  assert.match(js,/menu\.open=true/);
