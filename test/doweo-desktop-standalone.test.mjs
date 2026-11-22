@@ -9,8 +9,8 @@ const js=read('doweo-desktop-standalone.js');
 const workflow=read('.github/workflows/deploy-doweo-pages.yml');
 
 test('desktop-only full-page workspace assets deploy and preserve mobile dialogs',()=>{
- assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-restore-original-instagram-v2/);
- assert.match(html,/doweo-desktop-standalone\.js\?v=20261122-full-pages-v1/);
+ assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-wallpaper-instagram-final-v3/);
+ assert.match(html,/doweo-desktop-standalone\.js\?v=20261122-wallpaper-mirror-v2/);
  assert.match(workflow,/doweo-desktop-standalone\.css doweo-desktop-standalone\.js/);
  assert.match(css,/@media\(min-width:901px\)/);
  assert.doesNotMatch(css,/@media\(max-width:900px\)/);
@@ -50,5 +50,26 @@ test('Instagram invitation uses legacy compact desktop dimensions without changi
  assert.match(scoped,/font-size:14px!important/);
  assert.match(scoped,/#sq-instagram-invite\[hidden\]\{display:none!important\}/);
  assert.match(scoped,/@media\(min-width:901px\)/);
- assert.match(html,/class="doweo-close-control sq-ig-x"/);
+ assert.match(html,/class="sq-ig-x"/);
+ assert.doesNotMatch(html,/class="doweo-close-control sq-ig-x"/);
+});
+
+test('desktop tracker pages reuse the live saved wallpaper without touching mobile',()=>{
+ assert.match(js,/Mirror the tracker backdrop selected by DoWeo/);
+ assert.match(js,/backdrop\.style\.backgroundImage/);
+ assert.match(js,/MutationObserver\(syncWallpaper\)/);
+ assert.match(css,/--dw-selected-tracker-wallpaper/);
+ for(const route of ['notifications-view','friends-view','dw-polls-open','sq-finance-open']){
+  assert.ok(css.includes(route),'missing wallpaper support for '+route);
+ }
+ assert.match(html,/paint\(page,\{background:'transparent'/);
+ assert.doesNotMatch(html,/const navy=\{background:'#0b1f38'/);
+ assert.match(html,/background-image':'var\(--dw-selected-tracker-wallpaper\)'/);
+});
+test('desktop contrast fixes cover analytics amounts, names and KPI labels',()=>{
+ assert.match(css,/sq-person-donut-hole > strong/);
+ assert.match(css,/sq-analytics-friends \.friend-card/);
+ assert.match(css,/analytics-stats \.analytics-stat \.sq-stat-label/);
+ assert.match(css,/dw-polls-page \.dw-poll-card/);
+ assert.match(css,/#sq-instagram-invite \.sq-ig-card > button\.sq-ig-x/);
 });
