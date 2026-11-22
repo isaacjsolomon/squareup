@@ -23,7 +23,7 @@
   min-width:0;max-width:1510px!important;
  }
  /* Keep selected photo backgrounds functional in the backdrop editor. */
- html body:not(:has(#ABC6D7kdrop.photo)) #ABC6D7kdrop{
+ html body:not(:has(#backdrop.photo)) #backdrop{
   background:linear-gradient(130deg,#F3F8FC,#F3F8FC)!important;
  }
  /* Navy sidebar uses existing actual brand logo and every original destination. */
