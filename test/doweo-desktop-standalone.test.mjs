@@ -9,7 +9,7 @@ const js=read('doweo-desktop-standalone.js');
 const workflow=read('.github/workflows/deploy-doweo-pages.yml');
 
 test('desktop-only full-page workspace assets deploy and preserve mobile dialogs',()=>{
- assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-full-pages-v1/);
+ assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-restore-original-instagram-v2/);
  assert.match(html,/doweo-desktop-standalone\.js\?v=20261122-full-pages-v1/);
  assert.match(workflow,/doweo-desktop-standalone\.css doweo-desktop-standalone\.js/);
  assert.match(css,/@media\(min-width:901px\)/);
@@ -38,4 +38,17 @@ test('Cash Flow uses navy data cards rather than old white boxes in CSS and runt
  assert.match(html,/\.sq-ng-summary-stack/);
  assert.match(html,/grid-template-areas:"summary summary" "trend categories" "activity comparison"/);
  assert.doesNotMatch(html,/\.sq-ng-card',\{background:'#f7faff'/);
+});
+
+test('Instagram invitation uses legacy compact desktop dimensions without changing other modals',()=>{
+ const scoped=css.slice(css.indexOf('Restore the original compact Instagram invitation'));
+ assert.ok(scoped.length>1000,'legacy Instagram style overrides are included');
+ assert.match(scoped,/width:min\(100%,420px\)!important/);
+ assert.match(scoped,/width:36px!important;height:36px!important/);
+ assert.match(scoped,/border-radius:50%!important/);
+ assert.match(scoped,/font-size:22px!important/);
+ assert.match(scoped,/font-size:14px!important/);
+ assert.match(scoped,/#sq-instagram-invite\[hidden\]\{display:none!important\}/);
+ assert.match(scoped,/@media\(min-width:901px\)/);
+ assert.match(html,/class="doweo-close-control sq-ig-x"/);
 });
