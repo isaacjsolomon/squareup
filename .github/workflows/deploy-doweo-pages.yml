@@ -51,7 +51,7 @@ jobs:
           js += '<script defer src="/doweo-first-run.js?v=20261122-approved-seven-palette-v2"></script>'
           assert '</head>' in html and '</body>' in html
           import re
-          marker_match = re.search(r'<link\\s+rel="stylesheet"\\s+href="/styles\\.css\\?v=[^"]+"[^>]*>', html)
+          marker_match = re.search(r'<link\s+rel="stylesheet"\s+href="/styles\.css\?v=[^"]+"[^>]*>', html)
           assert marker_match, "Unified design system stylesheet link missing"
           marker = marker_match.group(0)
           # Keep the consolidated sheet after all legacy external component CSS.
