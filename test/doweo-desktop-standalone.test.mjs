@@ -9,7 +9,7 @@ const js=read('doweo-desktop-standalone.js');
 const workflow=read('.github/workflows/deploy-doweo-pages.yml');
 
 test('desktop-only full-page workspace assets deploy and preserve mobile dialogs',()=>{
- assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-notifications-slate-v11/);
+ assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-polls-teal-v12/);
  assert.match(html,/doweo-desktop-standalone\.js\?v=20261122-wallpaper-mirror-v3/);
  assert.match(workflow,/doweo-desktop-standalone\.css doweo-desktop-standalone\.js/);
  assert.match(css,/@media\(min-width:901px\)/);
@@ -69,6 +69,13 @@ test('Notification Center applies the muted slate-blue reference tint only on de
  assert.match(css,/rgba\(94,114,143,\.78\)/);
  assert.match(css,/body\.notifications-view:not\(\.sq-auth-guest\)/);
  assert.match(css,/var\(--dw-selected-tracker-wallpaper\)!important/);
+});
+
+test('Group polls use a cool teal result highlight on desktop only',()=>{
+ assert.match(css,/\.dw-poll-option \.dw-poll-fill\{/);
+ assert.match(css,/background:#267a98!important/);
+ assert.match(css,/\.dw-poll-option\[aria-pressed="true"\]/);
+ assert.match(css,/@media\(min-width:901px\)/);
 });
 
 test('desktop tracker pages reuse the live saved wallpaper without touching mobile',()=>{
