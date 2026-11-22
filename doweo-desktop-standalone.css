@@ -184,7 +184,7 @@
 }
 
 /* DoWeo tracker wallpaper and contrast corrections 2026-11-22.
-   Desktop only. Wallpaper is mirrored from the EXISTING tracker #ABC6D7kdrop
+   Desktop only. Wallpaper is mirrored from the EXISTING tracker #backdrop
    (including uploaded photos); there is no second wallpaper setting. */
 @media (min-width:901px){
   /* The original Instagram invite is intentionally exempt from the later
@@ -275,10 +275,10 @@
     background-position:center center!important;background-size:cover!important;
     background-attachment:fixed!important;background-repeat:no-repeat!important;
   }
-  html body.notifications-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > #ABC6D7kdrop#ABC6D7kdrop,
-  html body.friends-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > #ABC6D7kdrop#ABC6D7kdrop,
-  html body.dw-polls-open:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > #ABC6D7kdrop#ABC6D7kdrop,
-  html body:has(#tracker-dashboard.sq-tab-chat):not(.sq-auth-guest) > #ABC6D7kdrop#ABC6D7kdrop{
+  html body.notifications-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > #backdrop#backdrop,
+  html body.friends-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > #backdrop#backdrop,
+  html body.dw-polls-open:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > #backdrop#backdrop,
+  html body:has(#tracker-dashboard.sq-tab-chat):not(.sq-auth-guest) > #backdrop#backdrop{
     background-image:var(--dw-selected-tracker-wallpaper)!important;
     background-color:transparent!important;
     background-position:center center!important;background-size:cover!important;
@@ -725,7 +725,7 @@
     background-color:#355E72!important;
     background-image:none!important;
   }
-  html body.notifications-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > #ABC6D7kdrop#ABC6D7kdrop{
+  html body.notifications-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > #backdrop#backdrop{
     background-color:#355E72!important;
     background-image:
       linear-gradient(color-mix(in srgb, #355E72 78%, transparent),color-mix(in srgb, #355E72 78%, transparent)),
