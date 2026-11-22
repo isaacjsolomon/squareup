@@ -57,7 +57,7 @@ test('270 inline blocks migrated, six template styles and three scoped page repa
 test('HTML links Inter, stylesheet, and all existing application scripts',()=>{
  const head=html.slice(0,html.indexOf('</head>'));
  assert.match(head,/fonts\.googleapis\.com\/css2\?family=Inter:wght@400;500;600;700;800&display=swap/);
- assert.match(head,/rel="stylesheet" href="\/styles\.css\?v=20261122-approved-seven-palette-v2"/);
+ assert.match(head,/rel="stylesheet" href="\/styles\.css\?v=20261122-approved-seven-palette-v3"/);
  assert.match(html,/<script[^>]+(?:doweo-unified-shell\.js|doweo-unified-localize\.js)/);
  assert.match(html,/<section id="friends-page"/);
  assert.match(html,/id="tracker-dashboard"/);
