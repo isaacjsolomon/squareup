@@ -430,7 +430,7 @@
     padding:20px clamp(20px,2.5vw,42px) 90px!important;
     background:transparent!important;
   }
-  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs{
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs[data-current-group]{
     display:flex!important;
     gap:5px!important;
     width:min(650px,100%)!important;
@@ -441,6 +441,7 @@
     border-radius:17px!important;
     background:#0d253d!important;
   }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs:not([data-current-group]){display:none!important;}
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs button{
     min-height:44px!important;
     min-width:0!important;
