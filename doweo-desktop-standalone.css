@@ -373,7 +373,18 @@
     background-repeat:no-repeat!important;
     background-attachment:fixed!important;
   }
-  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-shell{
+  /* The header container must not paint a navy rectangle behind the fixed
+    Overview / Expenses / Bills / Members pill. Leave both controls unchanged. */
+ html body.sq-finance-open #dw-all-topbar{
+  background:transparent!important;background-color:transparent!important;
+  background-image:none!important;border:0!important;box-shadow:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+ }
+ html body.sq-finance-open #dw-all-topbar::before,
+ html body.sq-finance-open #dw-all-topbar::after{
+  content:none!important;display:none!important;
+ }
+ html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-shell{
     background:transparent!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-title{
@@ -398,8 +409,12 @@
   top:var(--dw-report-top,96px)!important;bottom:0!important;height:auto!important;max-height:none!important;
   overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain!important;
   background-color:#dce8f8!important;
-  background-image:var(--dw-selected-tracker-wallpaper,linear-gradient(145deg,#c6d8ed,#eaf0f9))!important;
-  background-size:cover!important;background-position:center!important;background-attachment:fixed!important;
+  /* Match the navy-muted treatment of Spending Analytics, over the exact same
+     live tracker image. Tint only the canvas, not the white page cards. */
+  background-image:linear-gradient(rgba(9,27,48,.35),rgba(9,27,48,.35)),
+    var(--dw-selected-tracker-wallpaper,linear-gradient(145deg,#c6d8ed,#eaf0f9))!important;
+  background-size:cover,cover!important;background-position:center,center!important;
+  background-repeat:no-repeat,no-repeat!important;background-attachment:fixed,fixed!important;
   color:#192d50!important
  }
  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-shell{
