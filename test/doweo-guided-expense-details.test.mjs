@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const css=readFileSync(new URL('../styles.css',import.meta.url),'utf8');
 const start=html.indexOf('<div id="sq-details-overlay"');
 const end=html.indexOf('<script id="sq-four-features-script">',start);
 assert.ok(start>0&&end>start);
@@ -48,8 +49,8 @@ test('existing interactive actions and events remain connected to the saved entr
 });
 
 test('modal stays within mobile viewport and supports reduced detail density',()=>{
- assert.match(markup,/max-height:calc\(100dvh - 20px\)!important/);
- assert.match(markup,/\.sq-details-guidance/);
- assert.match(markup,/\.sq-details-more/);
- assert.match(markup,/\.sq-details-discussion/);
+ assert.match(css,/max-height:calc\(100dvh - 20px\)!important/);
+ assert.match(css,/\.sq-details-guidance/);
+ assert.match(css,/\.sq-details-more/);
+ assert.match(css,/\.sq-details-discussion/);
 });
