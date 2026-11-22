@@ -8543,6 +8543,7 @@ document.getElementById('ac-log').addEventListener('click',function(){
     return '<button type="button" class="dw-poll-option" data-vote="'+escape(p.id)+'" data-option="'+escape(o.id)+'" aria-pressed="'+Boolean(o.mine)+'" '+(closed||p.archived?'disabled':'')+'><span class="dw-poll-fill" style="width:'+percent+'%" aria-hidden="true"></span><span class="dw-poll-option-text">'+escape(o.label)+(o.mine?'<span class="dw-poll-your-vote">Your vote</span>':'')+'</span><span class="dw-poll-tally">'+percent+'% · '+Number(o.votes||0)+' vote'+(Number(o.votes)===1?'':'s')+'</span></button>';
    }).join('')+'</div><div class="dw-poll-participation">'+progress+pending+'</div>'+(p.endsAt?'<p class="dw-poll-deadline">'+escape(deadlineText(p))+'</p>':'')+(result?'<p class="dw-poll-result">'+escape(result)+'</p>':'')+'</article>';
   }).join('')||'<div class="dw-poll-empty"><h3>'+(!active()?.id?'Choose a tracker to get started':'No '+(filter==='all'?'':filter+' ')+'polls yet')+'</h3><p>'+(!active()?.id?'Open a shared tracker from Home to create and vote on group polls.':filter==='all'?'Create a poll to make your next group decision.':'Try another filter or start a new poll.')+'</p></div>';
+  window.dwPollsDashboard?.render({polls:rows,filter});
  }
  async function load(){
   const tracker=active();const seq=++requestId;
@@ -9580,6 +9581,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   else start();
 })();
 </script>
+<script defer src="/doweo-polls-dashboard.js?v=20261122-polls-dashboard-v1"></script>
 <script defer src="/doweo-cashflow-analytics.js?v=20261122-analytics-match-v1"></script>
 <script defer src="/doweo-desktop-standalone.js?v=20261122-wallpaper-mirror-v3"></script>
 <link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261122-polls-teal-buttons-v13">
