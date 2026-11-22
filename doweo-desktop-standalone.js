@@ -17,9 +17,38 @@
   ['sq-ng-txn-overlay','Add personal transaction','Track private income and spending.','.sq-ng-txn-close'],
   ['sq-details-overlay','Expense details','View activity and manage this expense.','#sq-details-close'],
   ['sq-expense-dialog','Add expense','Record a shared expense.','.sq-action-modal-close'],
-  ['sq-receipt-dialog','Scan receipt','Review a receipt and assign purchases.','.sq-action-modal-close']
+  ['sq-receipt-dialog','Scan receipt','Review a receipt and assign purchases.','.sq-action-modal-close'],
+  ['dw-legal-standalone','Privacy and Terms','Review DoWeo policies and account terms.','[data-dw-legal-close]']
  ];
  let current=null,storedUrl=null,storedState=null,syncQueued=false,popping=false;
+ function setupLegalPage(){
+  const trigger=document.getElementById('nav-privacy-terms');
+  if(!trigger||document.getElementById('dw-legal-standalone'))return;
+  const page=document.createElement('section');
+  page.id='dw-legal-standalone';page.hidden=true;
+  page.setAttribute('aria-label','Privacy and Terms');
+  const cards=document.createElement('div');cards.className='dw-legal-document-cards';
+  for(const [name,description,path] of [
+   ['Privacy Policy','How DoWeo handles personal information and account data.','/privacy/'],
+   ['Terms of Service','The rules and responsibilities for using DoWeo.','/terms/']
+  ]){
+    const card=document.createElement('a');card.href=path;
+    const heading=document.createElement('strong');heading.textContent=name;
+    const detail=document.createElement('span');detail.textContent=description;
+    const arrow=document.createElement('span');arrow.textContent='View document →';
+    card.append(heading,detail,arrow);cards.append(card);
+  }
+  const close=document.createElement('button');close.type='button';close.hidden=true;close.dataset.dwLegalClose='';
+  close.addEventListener('click',()=>{page.hidden=true});
+  page.append(cards,close);document.body.append(page);
+  document.addEventListener('click',event=>{
+    if(!desktop.matches)return;
+    if(event.target.closest('#nav-privacy-terms')!==trigger)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    page.hidden=false;requestSync();
+  },true);
+ }
+
  const hasOpen=(el,id)=>{
   if(!el||!desktop.matches)return false;
   if(id==='sq-details-overlay')return el.classList.contains('open');
@@ -90,6 +119,12 @@
  new MutationObserver(requestSync).observe(document.documentElement,{
   subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class','aria-hidden']
  });
- document.addEventListener('DOMContentLoaded',requestSync,{once:true});
+ document.addEventListener('DOMContentLoaded',()=>{setupLegalPage();requestSync()},{once:true});
+ if(document.readyState!=='loading')setupLegalPage();
+ document.addEventListener('click',event=>{
+  if(!desktop.matches||!current)return;
+  const target=event.target.closest('aside.sidebar button.sq-nav-link,aside.sidebar .dw-nav-social-trigger');
+  if(target&&target.id!=='nav-privacy-terms')closeViaOriginal(current.el,current.spec[3]);
+ },true);
  requestSync();
 })();
