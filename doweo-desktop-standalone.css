@@ -332,6 +332,20 @@
   html body.dw-polls-open #dw-polls-page .dw-poll-filters button[aria-pressed="true"]{
     color:#a2f9d8!important;
   }
+  /* Remove the old yellow-green poll result tint; keep the rest of the
+     original poll interface and selected tracker wallpaper unchanged. */
+  html body.dw-polls-open #dw-polls-page .dw-poll-option .dw-poll-fill{
+    background:#267a98!important;
+  }
+  html body.dw-polls-open #dw-polls-page .dw-poll-option[aria-pressed="true"]{
+    border-color:#72c9e3!important;
+    box-shadow:0 0 0 1px #72c9e3!important;
+  }
+  html body.dw-polls-open #dw-polls-page .dw-poll-option[aria-pressed="true"]
+  :is(.dw-poll-option-text,.dw-poll-tally){
+    color:#ffffff!important;
+  }
+
 
   /* Tracker analytics: white donut amount, white names on navy member buttons,
      navy labels on the light summary metric tiles. */
