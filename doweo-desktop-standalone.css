@@ -345,6 +345,20 @@
   :is(.dw-poll-option-text,.dw-poll-tally){
     color:#ffffff!important;
   }
+  /* Match the New Poll action and editor primary action to the teal-blue
+     selected poll result, without changing the voting or modal behavior. */
+  html body.dw-polls-open #dw-polls-page #dw-poll-new,
+  html body.dw-polls-open #dw-poll-editor .dw-poll-primary{
+    background:#267a98!important;
+    color:#ffffff!important;
+    border:1px solid #72c9e3!important;
+    box-shadow:0 8px 20px rgba(38,122,152,.22)!important;
+  }
+  html body.dw-polls-open #dw-polls-page #dw-poll-new:hover,
+  html body.dw-polls-open #dw-poll-editor .dw-poll-primary:hover{
+    background:#2d89aa!important;
+    border-color:#8ad8ee!important;
+  }
 
 
   /* Tracker analytics: white donut amount, white names on navy member buttons,
