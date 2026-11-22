@@ -2940,9 +2940,15 @@ var MOBILE_PRESETS = {
 // Side panel takes a medium tint of the backdrop: a fixed tint for presets,
 // or the photo's average color mixed toward white.
 function setSideTint(rgb) {
+  // Do not let old palette presets reintroduce cream, pink, purple or beige
+  // into mobile navigation/sidebar surfaces. Desktop keeps its original tint.
+  var phoneTheme = window.matchMedia("(max-width:900px)").matches;
+  var side = phoneTheme ? [16,43,64] : rgb;
+  var border = phoneTheme ? [53,94,114] :
+    rgb.map(function (c) { return Math.round(c * 0.88); });
   var root = document.documentElement.style;
-  root.setProperty("--side-bg", "rgb(" + rgb.join(",") + ")");
-  root.setProperty("--side-line", "rgb(" + rgb.map(function (c) { return Math.round(c * 0.88); }).join(",") + ")");
+  root.setProperty("--side-bg", "rgb(" + side.join(",") + ")");
+  root.setProperty("--side-line", "rgb(" + border.join(",") + ")");
 }
 function photoTint(url) {
   return new Promise(function (resolve) {
