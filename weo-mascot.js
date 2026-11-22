@@ -16,18 +16,18 @@
     const gradient = 'weo-color-' + (++iconCount);
     const host = document.createElement('span');
     host.innerHTML = '<svg class="weo-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">'
-      + '<defs><linearGradient id="' + gradient + '" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#9cfff3"/><stop offset="54%" stop-color="#50e8e2"/><stop offset="100%" stop-color="#15acc9"/></linearGradient></defs>'
+      + '<defs><linearGradient id="' + gradient + '" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ABC6D7"/><stop offset="54%" stop-color="#ABC6D7"/><stop offset="100%" stop-color="#355E72"/></linearGradient></defs>'
       + '<path class="weo-diamond" d="M60 5 C66 37 81 53 115 60 C82 67 66 84 60 115 C54 84 38 67 5 60 C38 53 54 37 60 5Z" fill="url(#' + gradient + ')" />'
-      + '<path class="weo-highlight" d="M60 15 C65 41 76 53 101 60 C80 57 70 53 60 42 C51 53 39 57 20 60 C47 52 54 40 60 15Z" fill="#e3fff8" opacity=".35" />'
-      + '<g class="weo-eyes-normal"><ellipse cx="47" cy="65" rx="4" ry="5.5" fill="#0d4158"/><ellipse cx="73" cy="65" rx="4" ry="5.5" fill="#0d4158"/></g>'
-      + '<g class="weo-eyes-thinking"><ellipse cx="47" cy="57" rx="4" ry="5" fill="#0d4158"/><ellipse cx="73" cy="57" rx="4" ry="5" fill="#0d4158"/></g>'
-      + '<g class="weo-eyes-happy" fill="none" stroke="#0d4158" stroke-width="4" stroke-linecap="round"><path d="M41 65 Q47 57 53 65"/><path d="M67 65 Q73 57 79 65"/></g>'
-      + '<path class="weo-mouth-idle" d="M49 80 Q60 91 71 80" fill="none" stroke="#0d4158" stroke-width="4" stroke-linecap="round"/>'
-      + '<path class="weo-mouth-thinking" d="M53 83 H67" fill="none" stroke="#0d4158" stroke-width="3.5" stroke-linecap="round"/>'
-      + '<path class="weo-mouth-happy" d="M45 80 Q60 104 75 80Z" fill="#0d4158"/>'
-      + '<ellipse class="weo-mouth-hello" cx="60" cy="83" rx="7" ry="9" fill="#0d4158"/>'
-      + '<circle class="weo-cheek" cx="36" cy="79" r="5" fill="#c9fff7" opacity=".55"/>'
-      + '<circle class="weo-cheek" cx="84" cy="79" r="5" fill="#c9fff7" opacity=".55"/>'
+      + '<path class="weo-highlight" d="M60 15 C65 41 76 53 101 60 C80 57 70 53 60 42 C51 53 39 57 20 60 C47 52 54 40 60 15Z" fill="#F3F8FC" opacity=".35" />'
+      + '<g class="weo-eyes-normal"><ellipse cx="47" cy="65" rx="4" ry="5.5" fill="#173750"/><ellipse cx="73" cy="65" rx="4" ry="5.5" fill="#173750"/></g>'
+      + '<g class="weo-eyes-thinking"><ellipse cx="47" cy="57" rx="4" ry="5" fill="#173750"/><ellipse cx="73" cy="57" rx="4" ry="5" fill="#173750"/></g>'
+      + '<g class="weo-eyes-happy" fill="none" stroke="#173750" stroke-width="4" stroke-linecap="round"><path d="M41 65 Q47 57 53 65"/><path d="M67 65 Q73 57 79 65"/></g>'
+      + '<path class="weo-mouth-idle" d="M49 80 Q60 91 71 80" fill="none" stroke="#173750" stroke-width="4" stroke-linecap="round"/>'
+      + '<path class="weo-mouth-thinking" d="M53 83 H67" fill="none" stroke="#173750" stroke-width="3.5" stroke-linecap="round"/>'
+      + '<path class="weo-mouth-happy" d="M45 80 Q60 104 75 80Z" fill="#173750"/>'
+      + '<ellipse class="weo-mouth-hello" cx="60" cy="83" rx="7" ry="9" fill="#173750"/>'
+      + '<circle class="weo-cheek" cx="36" cy="79" r="5" fill="#F3F8FC" opacity=".55"/>'
+      + '<circle class="weo-cheek" cx="84" cy="79" r="5" fill="#F3F8FC" opacity=".55"/>'
       + '</svg>';
     return host.firstElementChild;
   }
