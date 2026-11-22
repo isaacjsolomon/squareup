@@ -21,7 +21,7 @@ jobs:
       - name: Prepare Pages static assets
         run: |
           mkdir -p .pages-output
-          cp index.html doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs doweo-bills-mobile-dashboard.js doweo-bills-mobile-dashboard.css doweo-finance-planning.js doweo-trips-activity.js doweo-paylinks-currency.js doweo-trackers-tabs.css doweo-home-add-menu.js doweo-home-add-menu.css doweo-desktop-polish.css doweo-mobile-more-pages.js doweo-mobile-more-pages.css doweo-mobile-home-navy-cards.css doweo-mint-dashboard.css doweo-reference-home.css doweo-reference-home.js doweo-unified-shell.css doweo-unified-shell.js doweo-unified-localize.js doweo-unified-locales.mjs doweo-beta-nudge.css doweo-beta-nudge.js doweo-first-run.js doweo-first-run.css doweo-split-bill-modal.css doweo-split-bill-modal.js doweo-backdrop-images.js .pages-output/
+          cp index.html styles.css doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs doweo-bills-mobile-dashboard.js doweo-bills-mobile-dashboard.css doweo-finance-planning.js doweo-trips-activity.js doweo-paylinks-currency.js doweo-trackers-tabs.css doweo-home-add-menu.js doweo-home-add-menu.css doweo-desktop-polish.css doweo-mobile-more-pages.js doweo-mobile-more-pages.css doweo-mobile-home-navy-cards.css doweo-mint-dashboard.css doweo-reference-home.css doweo-reference-home.js doweo-unified-shell.css doweo-unified-shell.js doweo-unified-localize.js doweo-unified-locales.mjs doweo-beta-nudge.css doweo-beta-nudge.js doweo-first-run.js doweo-first-run.css doweo-split-bill-modal.css doweo-split-bill-modal.js doweo-backdrop-images.js .pages-output/
           # Bump these URLs in the published HTML to invalidate old browser-cached UI assets.
           sed -E -i 's#(doweo-bills-mobile-dashboard\.(css|js))\?v=[^\"]+#\1?v=20261116-overview-picker-v10#g' .pages-output/index.html
           # Version the cleaned tracker planning script to invalidate old broken navigation code.
@@ -50,7 +50,10 @@ jobs:
           js += '<script defer src="/doweo-mobile-more-pages.js?v=20261121-static-install-v3"></script>'
           js += '<script defer src="/doweo-first-run.js?v=20261121-onboarding-v1"></script>'
           assert '</head>' in html and '</body>' in html
-          html = html.replace('</head>', css + '</head>', 1).replace('</body>', js + '</body>', 1)
+          marker = '<link rel="stylesheet" href="/styles.css?v=20261121-unified-v1">'
+          assert marker in html, "Unified design system stylesheet link missing"
+          # Keep the consolidated sheet after all legacy external component CSS.
+          html = html.replace(marker, css + marker, 1).replace('</body>', js + '</body>', 1)
           page.write_text(html)
           PY
           cp -R icons images beta privacy terms .pages-output/
@@ -72,6 +75,8 @@ jobs:
           test -s .pages-output/doweo-reference-home.css
           test -s .pages-output/doweo-reference-home.js
           node --check .pages-output/doweo-reference-home.js
+          test -s .pages-output/styles.css
+          node --test test/doweo-css-consolidation.test.mjs
           test -s .pages-output/doweo-unified-shell.css
           test -s .pages-output/doweo-unified-shell.js
           test -s .pages-output/doweo-unified-localize.js

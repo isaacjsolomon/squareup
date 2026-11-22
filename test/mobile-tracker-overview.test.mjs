@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {chromium} from 'playwright';
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const styles=readFileSync(new URL('../styles.css',import.meta.url),'utf8');
 
 test('mobile Overview hides extras and scrolls only when its content overflows',async()=>{
  const browser=await chromium.launch({headless:true,
@@ -14,6 +15,7 @@ test('mobile Overview hides extras and scrolls only when its content overflows',
   // scripts. Install the same loaded-tracker state and responsive DOM placement.
   await page.route('**/*',route=>route.abort());
   await page.setContent(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,''));
+  await page.addStyleTag({content:styles});
   await page.evaluate(()=>{
    document.documentElement.className='';
    document.body.className='';

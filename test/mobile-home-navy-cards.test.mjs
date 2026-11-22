@@ -5,7 +5,10 @@ import {chromium} from 'playwright';
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const css=readFileSync(new URL('../doweo-mobile-home-navy-cards.css',import.meta.url),'utf8');
-const original=html.match(/<style id="dw-mobile-home-layered-style">([\s\S]*?)<\/style>/)?.[1];
+const unified=readFileSync(new URL('../styles.css',import.meta.url),'utf8');
+const begin=unified.indexOf('/* Original style 265/276: dw-mobile-home-layered-style');
+const end=unified.indexOf('/* Original style 266/276:',begin);
+const original=begin>0&&end>begin?unified.slice(begin,end):null;
 assert.ok(original,'must test the actual existing mobile Home card styles');
 
 test('mobile Home information boxes use navy, preserve backdrop and desktop appearance',{timeout:30000},async()=>{

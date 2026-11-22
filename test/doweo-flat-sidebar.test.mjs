@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const css=readFileSync(new URL('../styles.css',import.meta.url),'utf8');
 const begin=html.indexOf('<script id="doweo-grouped-navigation-init-20261108">');
 const end=html.indexOf('</script>',begin);
 const nav=html.slice(begin,end);
@@ -22,5 +23,5 @@ test('desktop destinations remain their original clickable buttons',()=>{
  for(const id of ['nav-profile','nav-help-center','nav-about','nav-privacy-terms'])
   assert.match(nav,new RegExp("'"+id+"'"));
  assert.match(nav,/more\.append\(button\)/);
- assert.match(html,/#sq-mobile-more-sheet \.sq-balanced-more-grid/);
+ assert.match(css,/#sq-mobile-more-sheet \.sq-balanced-more-grid/);
 });

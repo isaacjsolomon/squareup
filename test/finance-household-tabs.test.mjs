@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {Script} from 'node:vm';
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const css=readFileSync(new URL('../styles.css',import.meta.url),'utf8');
 const api=readFileSync(new URL('../functions/api/[[path]].js',import.meta.url),'utf8');
 const sql=readFileSync(new URL('../supabase/migrations/20261107_finance_workspace_links.sql',import.meta.url),'utf8');
 const finance=html.match(/<script id="sq-nextgen-script">([\s\S]*?)<\/script>/)?.[1];
@@ -30,7 +31,7 @@ test('Mobile navigation has previous and next arrows, both rotate across all 7 t
  assert.match(html,/id="sq-ng-next-tabs"/);
  assert.match(shuffle,/first=\(first-1\+tabs\.length\)%tabs\.length/);
  assert.match(shuffle,/first=\(first\+1\)%tabs\.length/);
- assert.match(html,/grid-template-columns:42px repeat\(3,minmax\(0,1fr\)\) 42px!important/);
+ assert.match(css,/grid-template-columns:42px repeat\(3,minmax\(0,1fr\)\) 42px!important/);
 });
 
 test('Household recognizes local templates, clear names, saved workspace items, and account links',()=>{

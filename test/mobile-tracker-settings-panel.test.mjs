@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const css=readFileSync(new URL('../weo-actions.css',import.meta.url),'utf8');
+const appCss=readFileSync(new URL('../styles.css',import.meta.url),'utf8');
 test('settings uses sidebar-aware position instead of tracker card anchor',()=>{
  assert.match(html,/var sidebar=document\.querySelector\('\.sidebar'\)/);
  assert.match(html,/var available=vw-sidebarEdge/);
@@ -12,9 +13,9 @@ test('settings uses sidebar-aware position instead of tracker card anchor',()=>{
  assert.match(html,/Math\.min\(490,vh-24\)/);
 });
 test('compact drawer removes large cards and keeps all actions',()=>{
- assert.match(html,/id="dw-tracker-settings-redesign"/);
- assert.match(html,/\.sq-tracker-settings-group\{/);
- assert.match(html,/border:0!important;border-radius:0!important;background:none!important/);
+ assert.match(appCss,/Original style 45\/276: dw-tracker-settings-redesign/);
+ assert.match(appCss,/\.sq-tracker-settings-group\{/);
+ assert.match(appCss,/border:0!important;border-radius:0!important;background:none!important/);
  for(const label of ['Change banner','Change tracker backdrop','Rename tracker','Archive tracker','Manage permissions','Expense approval'])
    assert.ok(html.includes("'"+label+"'"),label);
  assert.match(html,/settingsView\.hidden=false;placeTrackerMenu\(\)/);

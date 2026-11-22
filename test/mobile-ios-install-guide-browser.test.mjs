@@ -7,9 +7,14 @@ import {chromium} from 'playwright';
 // stand-in DOM that can pass even when the actual button is missing.
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const start=html.indexOf('<div class="sq-balanced-overlay" id="sq-mobile-more-sheet"');
-const end=html.indexOf('<style id="dw-mobile-social-menu-style">',start);
+const end=html.indexOf('<script id="sq-balanced-mobile-script">',start);
 assert.ok(start>=0 && end>start,'real mobile More markup exists');
 const realMoreMarkup=html.slice(start,end);
+const consolidated=readFileSync(new URL('../styles.css',import.meta.url),'utf8');
+const guideStart=consolidated.indexOf('/* Original style 169/276: dw-mobile-home-screen-native-style');
+const guideEnd=consolidated.indexOf('/* Original style 170/276:',guideStart);
+assert.ok(guideStart>0&&guideEnd>guideStart,'native install CSS was migrated');
+const nativeInstallCss=consolidated.slice(guideStart,guideEnd);
 
 test('mobile More HTML permanently includes a working Home Screen button',{timeout:60000},async()=>{
  const browser=await chromium.launch({headless:true});
@@ -21,7 +26,7 @@ test('mobile More HTML permanently includes a working Home Screen button',{timeo
    const context=await browser.newContext({viewport:{width:390,height:844},userAgent});
    try{
     const page=await context.newPage();
-    await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>'+realMoreMarkup+'</body></html>');
+    await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+nativeInstallCss+'</style></head><body>'+realMoreMarkup+'</body></html>');
     await page.evaluate(()=>document.getElementById('sq-mobile-more-sheet').hidden=false);
     const install=page.locator('#dw-mobile-home-screen-install-native');
     assert.equal(await install.count(),1,name+' native install button exists');
@@ -38,7 +43,7 @@ test('mobile More HTML permanently includes a working Home Screen button',{timeo
   const desktop=await browser.newContext({viewport:{width:1280,height:800}});
   try{
    const page=await desktop.newPage();
-   await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>'+realMoreMarkup+'</body></html>');
+   await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+nativeInstallCss+'</style></head><body>'+realMoreMarkup+'</body></html>');
    await page.evaluate(()=>document.getElementById('sq-mobile-more-sheet').hidden=false);
    assert.equal(await page.locator('#dw-mobile-home-screen-install-native').isVisible(),false,'desktop is untouched');
   }finally{await desktop.close()}
