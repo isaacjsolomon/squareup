@@ -27,19 +27,19 @@ const scopedRepairIds=[
 test('design system has exactly the requested global theme tokens',()=>{
  const prefix=css.slice(0,1500);
  const vars={
-  bg:'#061323','surface-1':'#0e2337','surface-2':'#132f48',
-  'surface-3':'#193851',border:'#29465e','border-strong':'#375570',
-  text:'#f1f7ff','text-muted':'#a4b8ce',accent:'#65f5ac',
-  'accent-hover':'#7af7c0','on-accent':'#071625',danger:'#ff6485',
-  'danger-soft':'#3b2437','success-soft':'#153f39',info:'#67b3ff',
+  bg:'#0A1B2E','surface-1':'#102B40','surface-2':'#173750',
+  'surface-3':'#204158',border:'#355E72','border-strong':'#355E72',
+  text:'#F3F8FC','text-muted':'#ABC6D7',accent:'#ABC6D7',
+  'accent-hover':'#F3F8FC','on-accent':'#0A1B2E',danger:'#ABC6D7',
+  'danger-soft':'#102B40','success-soft':'#102B40',info:'#ABC6D7',
   'radius-sm':'8px','radius-md':'12px','radius-lg':'20px'
  };
  for(const [k,v] of Object.entries(vars)){
   assert.match(prefix,new RegExp('--'+k+':\\s*'+v.replace('#','\\#').replace('(','\\(')+';'),
    'Missing canonical token '+k);
  }
- assert.match(prefix,/--shadow-card:\s*0 12px 30px rgba\(0,0,0,\.25\)/);
- assert.match(prefix,/--shadow-dialog:\s*0 20px 50px rgba\(0,0,0,\.45\)/);
+ assert.match(prefix,/--shadow-card:\s*0 12px 30px color-mix\(in srgb, #0A1B2E 25%, transparent\)/);
+ assert.match(prefix,/--shadow-dialog:\s*0 20px 50px color-mix\(in srgb, #0A1B2E 45%, transparent\)/);
 });
 
 test('270 inline blocks migrated, six template styles and two scoped page repairs retained',()=>{
@@ -56,7 +56,7 @@ test('270 inline blocks migrated, six template styles and two scoped page repair
 test('HTML links Inter, stylesheet, and all existing application scripts',()=>{
  const head=html.slice(0,html.indexOf('</head>'));
  assert.match(head,/fonts\.googleapis\.com\/css2\?family=Inter:wght@400;500;600;700;800&display=swap/);
- assert.match(head,/rel="stylesheet" href="\/styles\.css\?v=20261121-unified-v1"/);
+ assert.match(head,/rel="stylesheet" href="\/styles\.css\?v=20261122-approved-seven-palette-v2"/);
  assert.match(html,/<script[^>]+(?:doweo-unified-shell\.js|doweo-unified-localize\.js)/);
  assert.match(html,/<section id="friends-page"/);
  assert.match(html,/id="tracker-dashboard"/);
