@@ -9082,7 +9082,9 @@ document.getElementById('ac-log').addEventListener('click',function(){
   const button=document.getElementById(id);
   if(id==='quick-receipt'){
    const card=document.getElementById('receipt-card'),modal=document.getElementById('sq-receipt-dialog'),file=document.getElementById('receipt-file');
-   if(typeof button?.onclick==='function')button.onclick.call(button);
+   // The Scan Receipt action should open the picker even if the receipt panel
+   // was already open. Do not let the original toggle handler close it first.
+   if(card.hidden && typeof button?.onclick==='function')button.onclick.call(button);
    if(card.hidden)return;
    if(modal){modal.hidden=false;document.body.classList.add('sq-action-dialog-open');}
    file.value='';file.setAttribute('accept','image/*');if(!mq.matches)file.setAttribute('capture','environment');else file.removeAttribute('capture');file.click();return;
