@@ -23,11 +23,6 @@
   toggle.setAttribute('aria-haspopup','menu');
   toggle.setAttribute('aria-expanded','false');
   toggle.setAttribute('aria-controls','dw-compact-add-menu');
-  const caret=document.createElement('span');
-  caret.className='dw-compact-add-caret';
-  caret.setAttribute('aria-hidden','true');
-  caret.textContent='⌄';
-  toggle.append(caret);
   const holder=document.createElement('div');
   holder.id='dw-compact-add-wrapper';
   holder.append(toggle);
