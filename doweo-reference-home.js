@@ -52,10 +52,14 @@
   if(!holder)return false;
   if(holder.parentElement!==add)add.append(holder);
   const button=holder.querySelector('#dw-compact-add');
-  if(button&&!button.dataset.dwRefLabeled){
-   button.dataset.dwRefLabeled='true';
-   button.replaceChildren(document.createTextNode('+ Add'));
-   button.setAttribute('aria-label','Add expense, scan receipt or split a bill');
+  if(button){
+   // Remove any leftover caret rendered by a previously cached Add-menu script.
+   button.querySelectorAll('.dw-compact-add-caret').forEach(caret=>caret.remove());
+   if(!button.dataset.dwRefLabeled){
+    button.dataset.dwRefLabeled='true';
+    button.replaceChildren(document.createTextNode('+ Add'));
+    button.setAttribute('aria-label','Add expense, scan receipt or split a bill');
+   }
   }
   return true;
  }
