@@ -15,14 +15,14 @@
   .dw-integrated-tabs [data-sq-tab]:focus-visible,
   .dw-integrated-picker select:focus-visible,
   #dw-compact-add-wrapper #dw-compact-add:focus-visible {
-    outline: 2px solid #54ead4 !important;
+    outline: 2px solid #ABC6D7 !important;
     outline-offset: 3px !important;
   }
 
   /* A consistent, unobtrusive hover treatment on the existing tracker tabs. */
   #tracker-dashboard .sq-workspace-tabs [data-sq-tab]:not([aria-selected="true"]):hover,
   .dw-integrated-tabs [data-sq-tab]:not([aria-selected="true"]):hover {
-    border-color: rgba(95, 225, 209, .65);
+    border-color: color-mix(in srgb, #ABC6D7 65%, transparent);
   }
 
   /* More compact Add Expense choices; keep all original actions and labels. */
@@ -50,8 +50,8 @@
 
   /* Close controls match the rest of the navy/mint dialogs when hovered. */
   html body #dw-split-modal #dw-split-modal-close:hover {
-    background: #205066 !important;
-    border-color: #5fe3d3 !important;
+    background: #204158 !important;
+    border-color: #ABC6D7 !important;
   }
   html body #dw-split-modal #split-page .split-header :is(h1, h2) {
     letter-spacing: -.022em;
