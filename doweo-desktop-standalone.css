@@ -688,3 +688,23 @@
   background:radial-gradient(ellipse at 72% 12%,rgba(97,222,216,.3),transparent 38%),linear-gradient(145deg,#193f5a,#122b43)!important
  }
 }
+
+/* Notification Center: match the user's muted blue-gray wallpaper reference.
+   Keep the selected tracker photo visible beneath a consistent slate tint.
+   Do not recolor notification cards, nav, other pages, or mobile. */
+@media(min-width:901px){
+  html body.notifications-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open){
+    background-color:#7788a0!important;
+    background-image:none!important;
+  }
+  html body.notifications-view:not(.sq-auth-guest):not(.sq-auth-loading):not(.sq-finance-open) > #backdrop#backdrop{
+    background-color:#7788a0!important;
+    background-image:
+      linear-gradient(rgba(94,114,143,.78),rgba(94,114,143,.78)),
+      var(--dw-selected-tracker-wallpaper)!important;
+    background-position:center center,center center!important;
+    background-size:cover,cover!important;
+    background-repeat:no-repeat,no-repeat!important;
+    opacity:1!important;
+  }
+}
