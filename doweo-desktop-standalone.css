@@ -387,3 +387,107 @@
     color:#f7fbff!important;
   }
 }
+
+/* Nov 22 Cash Flow navigation & cool-palette repair.
+   Only desktop: respect the user's saved tracker photo and leave mobile alone. */
+@media(min-width:901px){
+  /* An explicit hidden state wins over every legacy finance layout patch.
+     Also block pointer events when the route is not the active workspace. */
+  html body #sq-nextgen[hidden],
+  html body:not(.sq-finance-open) #sq-nextgen{
+    display:none!important;visibility:hidden!important;pointer-events:none!important;
+  }
+  html body.sq-finance-open #sq-nextgen:not([hidden]){
+    display:block!important;visibility:visible!important;pointer-events:auto!important;
+  }
+  /* Remove the washed-out, beige-like tint from bright tracker wallpapers
+     without modifying the original uploaded image or saved backdrop. */
+  html body.sq-finance-open #sq-nextgen[data-section="finance"]{
+    background-color:#0d243b!important;
+    background-image:
+      linear-gradient(115deg,rgba(9,28,47,.43),rgba(17,45,70,.18)),
+      var(--dw-selected-tracker-wallpaper,linear-gradient(140deg,#0d2b45,#132c4b))!important;
+    background-size:cover,cover!important;
+    background-position:center center!important;
+    background-attachment:fixed!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-shell{
+    max-width:1450px!important;
+    padding-bottom:90px!important;min-height:0!important;
+    box-sizing:border-box!important;
+  }
+  /* Readable, consistent title panel on top of any user-selected image. */
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-header{
+    padding:20px clamp(18px,2.4vw,32px)!important;
+    margin:18px 0 22px!important;
+    background:rgba(9,31,52,.88)!important;
+    color:#f5fbff!important;border:1px solid rgba(146,198,219,.44)!important;
+    border-radius:20px!important;
+    box-shadow:0 12px 30px rgba(5,20,38,.2)!important;
+    backdrop-filter:blur(7px)!important;-webkit-backdrop-filter:blur(7px)!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-header #sq-ng-title,
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-header :is(h1,h2,.sq-ng-kicker){
+    color:#f9fcff!important;opacity:1!important;
+    text-shadow:none!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-header #sq-ng-subtitle,
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-header p{
+    color:#d6e9f5!important;opacity:1!important;
+    font-size:15px!important;line-height:1.5!important;
+  }
+  /* The inactive Analytics tab was nearly invisible against navy. */
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs{
+    background:#0d253d!important;
+    border:1px solid #5c91a7!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs button:not([aria-current="page"]){
+    color:#eef8ff!important;opacity:1!important;font-weight:750!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs button[aria-current="page"]{
+    color:#092a3c!important;background:#63eac2!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-finance-overview{
+    min-width:0!important;align-items:stretch!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content :is(.sq-ng-card,.dw-web-comparison,.dw-web-trend,.dw-spending-categories){
+    background:linear-gradient(145deg,#16334f,#10273e)!important;
+    color:#f6fbff!important;border-color:#47718b!important;min-width:0!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content :is(.sq-ng-card,.dw-web-comparison,.dw-web-trend,.dw-spending-categories)
+    :is(h2,h3,strong,b,th,td){
+    color:#f9fcff!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content :is(.sq-ng-card,.dw-web-comparison,.dw-web-trend,.dw-spending-categories)
+    :is(p,small,.sq-ng-note){
+    color:#c5deeb!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-month{
+    min-width:0!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-month :is(small,span){
+    color:#d9e9f6!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-open-transaction{
+    background:#5de5be!important;color:#0b293c!important;
+    min-height:55px!important;border-radius:15px!important;
+  }
+  @media(max-width:1250px){
+    html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-finance-overview{
+      grid-template-columns:1fr!important;
+    }
+  }
+  @media(max-width:1050px){
+    html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-summary-stack{
+      grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    }
+  }
+  /* Replace the site's remaining decorative warm/gold palette with
+     navy, cyan and mint; never recolor the user's custom photo. */
+  html body #trackers-page .tracker-tile:nth-child(3n+2) .tracker-tile-banner{
+    background:radial-gradient(ellipse at 72% 12%,rgba(97,222,216,.3),transparent 38%),linear-gradient(145deg,#193f5a,#122b43)!important;
+  }
+  html body #sq-instagram-invite .sq-ig-card .sq-ig-mark{
+    background:linear-gradient(135deg,#4a9fe2,#62e8c6 55%,#425bb1)!important;
+  }
+}
