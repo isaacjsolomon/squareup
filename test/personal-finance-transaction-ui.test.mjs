@@ -5,7 +5,7 @@ import {Script} from 'node:vm';
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const source=html.match(/<script id="sq-nextgen-script">([\s\S]*?)<\/script>/)?.[1];
-const css=html.match(/<style id="sq-personal-finance-mobile-modal-20261107">([\s\S]*?)<\/style>/)?.[1];
+const css=readFileSync(new URL('../styles.css',import.meta.url),'utf8');
 
 test('Finance Hub inline script has valid JavaScript syntax',()=>{
   assert.ok(source,'Finance Hub script should exist');
