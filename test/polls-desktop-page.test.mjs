@@ -101,6 +101,8 @@ test('desktop Group polls moves out of Chat into Social and preserves create/vot
   await first.locator('.dw-poll-menu summary').click();
   assert.ok(await first.getByRole('button',{name:'Edit poll',exact:true}).isDisabled());
   await first.getByRole('button',{name:'Close poll',exact:true}).click();
+  // The refreshed poll dashboard files closed polls under the Closed tab.
+  await page.locator('[data-poll-filter="closed"]').click();
   await first.getByText('Winner: Pizza',{exact:true}).waitFor();
   assert.ok(await first.locator('[data-option="option-0"]').isDisabled());
   await page.locator('[data-poll-filter="open"]').click();assert.equal(await first.count(),0);
