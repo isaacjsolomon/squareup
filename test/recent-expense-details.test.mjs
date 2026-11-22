@@ -173,8 +173,12 @@ await page.locator('#receipt-items input[type=checkbox]').first().check();assert
   assert.ok(await page.locator('#dw-mobile-receipt-review').isVisible());
   for(const width of [390,430]){
    await page.setViewportSize({width,height:932});
-   const clean=await page.evaluate(()=>{const back=document.getElementById('dw-receipt-back').getBoundingClientRect(),save=document.getElementById('receipt-save').getBoundingClientRect(),modal=document.querySelector('#sq-receipt-dialog .sq-action-modal-inner');return {aligned:Math.abs(back.top-save.top)<1,overflow:modal.scrollWidth>modal.clientWidth+1};});
-   assert.ok(clean.aligned,'Back and Save align on one row '+width);assert.equal(clean.overflow,false,'no horizontal modal overflow '+width);
+   const clean=await page.evaluate(()=>{
+    const backEl=document.getElementById('dw-receipt-back'),saveEl=document.getElementById('receipt-save');
+    const back=backEl.getBoundingClientRect(),save=saveEl.getBoundingClientRect(),modal=document.querySelector('#sq-receipt-dialog .sq-action-modal-inner'),footer=document.getElementById('dw-receipt-footer');
+    return {aligned:Math.abs(back.top-save.top)<1,backTop:back.top,saveTop:save.top,backHeight:back.height,saveHeight:save.height,footerRows:getComputedStyle(footer).gridTemplateRows,overflow:modal.scrollWidth>modal.clientWidth+1};
+   });
+   assert.ok(clean.aligned,'Back and Save align on one row '+width+' '+JSON.stringify(clean));assert.equal(clean.overflow,false,'no horizontal modal overflow '+width);
   }
   await page.getByRole('button',{name:'Edit tax, tip or options',exact:true}).click();
   assert.equal(await page.locator('#receipt-card').getAttribute('data-receipt-step'),'2');assert.notEqual(await page.locator('#dw-receipt-extras').getAttribute('open'),null);
