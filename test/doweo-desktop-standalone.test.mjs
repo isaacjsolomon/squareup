@@ -9,8 +9,8 @@ const js=read('doweo-desktop-standalone.js');
 const workflow=read('.github/workflows/deploy-doweo-pages.yml');
 
 test('desktop-only full-page workspace assets deploy and preserve mobile dialogs',()=>{
- assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-approved-seven-palette-v2/);
- assert.match(html,/doweo-desktop-standalone\.js\?v=20261122-approved-seven-palette-v2/);
+ assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-approved-seven-palette-v3/);
+ assert.match(html,/doweo-desktop-standalone\.js\?v=20261122-approved-seven-palette-v3/);
  assert.match(workflow,/doweo-desktop-standalone\.css doweo-desktop-standalone\.js/);
  assert.match(css,/@media\(min-width:901px\)/);
  assert.doesNotMatch(css,/@media\(max-width:900px\)/);
@@ -45,7 +45,7 @@ test('Cash Flow matches Spending Analytics white panels, KPIs and visual charts'
  assert.match(css,/padding:calc\(var\(--dw-report-top,96px\) \+ 20px\)/);
  assert.match(css,/#dw-all-topbar\{/);
  assert.match(html,/dwCashFlowAnalyticsRender/);
- assert.match(html,/doweo-cashflow-analytics\.js\?v=20261122-approved-seven-palette-v2/);
+ assert.match(html,/doweo-cashflow-analytics\.js\?v=20261122-approved-seven-palette-v3/);
  assert.doesNotMatch(html,/select\(hub,'\.sq-ng-card'/);
  assert.doesNotMatch(html,/paint\(hub,/);
 });
