@@ -21,6 +21,14 @@
   }
   html body:not(.sq-auth-guest) .dw-desktop-standalone[hidden]{display:none!important}
   html body:not(.sq-auth-guest) .modal-bg.dw-desktop-standalone:not(.open){display:none!important}
+  /* A closed expense-details modal is not an independent desktop workspace.
+     The generic full-page rule above must never leave it over active controls. */
+  html body:not(.sq-auth-guest) #sq-details-overlay.dw-desktop-standalone:not(.open),
+  html body:not(.sq-auth-guest) #sq-details-overlay.dw-desktop-standalone[aria-hidden="true"]{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
   html body.side-collapsed:not(.sq-auth-guest) .dw-desktop-standalone{left:74px!important}
   .dw-standalone-head{
     display:flex!important;align-items:center!important;justify-content:space-between!important;
