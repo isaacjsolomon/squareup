@@ -6969,16 +6969,33 @@ render();
 
 <script id="sq-finance-integrated-navigation-script-2026">
 (()=>{
-const navIds=new Set(['nav-home','nav-trackers','nav-chat','nav-analytics','nav-profile','nav-about','nav-help-center','nav-friends','nav-settings','nav-notifications']);
-document.addEventListener('click',event=>{
- const nav=event.target.closest('button[id]');
- if(!nav||!navIds.has(nav.id))return;
+/* The original ID-only handler missed newer top tabs, flyouts and shortcut buttons.
+   Close the finance overlay BEFORE the destination's existing click handler runs. */
+const outsideNavigation=(event)=>{
  const hub=document.getElementById('sq-nextgen');
- if(!hub||hub.hidden)return;
- hub.hidden=true;
- document.body.classList.remove('sq-finance-open');
- document.body.style.removeProperty('--sq-finance-sidebar-offset');
- document.body.style.overflow='';
+ if(!hub||hub.hidden||!document.body.classList.contains('sq-finance-open'))return;
+ const target=event.target.closest('button,a,summary,[role="button"]');
+ if(!target||hub.contains(target))return;
+ if(!target.closest(
+  'aside.sidebar,#dw-all-topbar,#dw-all-top-tabs,.squareup-nav,'+
+  '#dw-social-flyout,#dw-more-flyout,.sq-workspace-tabs,.sq-mobile-nav'
+ )&&!target.matches(
+  '[id^="nav-"],[data-sq-destination],[data-dw-all-tab],[data-sq-tab],'+
+  '[data-dw-shell-key],[data-dw-all-tool],#notifications-toggle,#sqev-nav'
+ ))return;
+ window.squareUpCloseFinanceHub?.();
+ if(!hub.hidden){
+  hub.hidden=true;
+  document.body.classList.remove('sq-finance-open');
+  document.body.style.removeProperty('--sq-finance-sidebar-offset');
+  document.body.style.overflow='';
+ }
+};
+document.addEventListener('click',outsideNavigation,true);
+document.addEventListener('keydown',event=>{
+ if(event.key==='Escape'&&document.body.classList.contains('sq-finance-open')){
+  window.squareUpCloseFinanceHub?.();
+ }
 },true);
 })();
 </script>
@@ -7018,8 +7035,21 @@ function syncSectionTabs(){
  }
 }
 desktopSections.addEventListener('change',()=>{if(!root.hidden){if(!desktopDestination(tab))render()}});
-function open(which){if(desktopDestination(which))return;previousFinanceTabs=[];openedWorkspaces.trip=null;openedWorkspaces.household=null;root.hidden=false;document.body.classList.add('sq-finance-open');syncFinanceSidebar();document.body.style.overflow='hidden';tab=which;render();}
-function close(){root.hidden=true;document.body.classList.remove('sq-finance-open');document.body.style.removeProperty('--sq-finance-sidebar-offset');document.body.style.overflow='';previousFinanceTabs=[];}
+function open(which){
+ if(desktopDestination(which))return;
+ previousFinanceTabs=[];openedWorkspaces.trip=null;openedWorkspaces.household=null;
+ root.style.removeProperty('display');root.hidden=false;root.removeAttribute('aria-hidden');
+ document.body.classList.add('sq-finance-open');
+ syncFinanceSidebar();document.body.style.overflow='hidden';tab=which;render();
+}
+function close(){
+ root.hidden=true;root.setAttribute('aria-hidden','true');
+ root.style.setProperty('display','none','important');
+ document.body.classList.remove('sq-finance-open');
+ document.body.style.removeProperty('--sq-finance-sidebar-offset');
+ document.body.style.overflow='';previousFinanceTabs=[];
+}
+window.squareUpCloseFinanceHub=close;
 document.getElementById('sq-ng-back')?.addEventListener('click',()=>{close();document.getElementById('nav-home')?.click();});
 window.addEventListener('resize',()=>{if(!root.hidden)syncFinanceSidebar()});
 document.getElementById('side-toggle')?.addEventListener('click',()=>{if(!root.hidden)requestAnimationFrame(syncFinanceSidebar)});
