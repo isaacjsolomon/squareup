@@ -45,6 +45,7 @@
     if(!desktop.matches)return;
     if(event.target.closest('#nav-privacy-terms')!==trigger)return;
     event.preventDefault();event.stopImmediatePropagation();
+    if(current&&current.el!==page)closeViaOriginal(current.el,current.spec[3]);
     page.hidden=false;requestSync();
   },true);
  }
