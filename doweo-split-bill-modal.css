@@ -14,7 +14,7 @@ html body #dw-split-modal{
  min-height:0!important;
  margin:0!important;
  padding:max(14px,env(safe-area-inset-top,14px)) 14px max(14px,env(safe-area-inset-bottom,14px))!important;
- background:rgba(2,14,30,.84)!important;
+ background:color-mix(in srgb, #0A1B2E 84%, transparent)!important;
  backdrop-filter:blur(5px);
  -webkit-backdrop-filter:blur(5px);
  overflow:hidden!important;
@@ -35,11 +35,11 @@ html body #dw-split-modal #split-page{
  min-height:0!important;
  margin:0 auto!important;
  padding:20px 22px 25px!important;
- border:1px solid #4c8295!important;
+ border:1px solid #355E72!important;
  border-radius:22px!important;
- background:linear-gradient(150deg,#0b2c41,#091d32)!important;
- box-shadow:0 25px 95px rgba(0,0,0,.6)!important;
- color:#f1fbff!important;
+ background:linear-gradient(150deg,#102B40,#0A1B2E)!important;
+ box-shadow:0 25px 95px color-mix(in srgb, #0A1B2E 60%, transparent)!important;
+ color:#F3F8FC!important;
  overflow-x:hidden!important;
  overflow-y:auto!important;
  overscroll-behavior:contain!important;
@@ -57,15 +57,15 @@ html body #dw-split-modal #dw-split-modal-close{
  height:40px!important;
  margin:0 0 0 10px!important;
  padding:0!important;
- border:1px solid #54798b!important;
+ border:1px solid #355E72!important;
  border-radius:11px!important;
- color:#f4faff!important;
- background:#183e52!important;
+ color:#F3F8FC!important;
+ background:#173750!important;
  font:28px/1 inherit!important;
  cursor:pointer!important;
 }
 html body #dw-split-modal #dw-split-modal-close:focus-visible{
- outline:2px solid #48e7c7!important;
+ outline:2px solid #ABC6D7!important;
  outline-offset:2px!important;
 }
 html body #dw-split-modal #split-page .split-header{
