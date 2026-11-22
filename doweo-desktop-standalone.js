@@ -129,3 +129,28 @@
  },true);
  requestSync();
 })();
+
+/* Mirror the tracker backdrop selected by DoWeo's EXISTING settings.
+   It contains either the preset gradient or the authenticated tracker photo
+   blob URL; no new storage keys or network calls are introduced. */
+(function(){
+ 'use strict';
+ const desktop=window.matchMedia('(min-width:901px)');
+ const backdrop=document.getElementById('backdrop');
+ if(!backdrop)return;
+ const fallback='linear-gradient(135deg,#112b48,#0a1b31)';
+ const root=document.documentElement.style;
+ function syncWallpaper(){
+  if(!desktop.matches)return;
+  const image=backdrop.style.backgroundImage;
+  const next=image&&image!=='none'?image:fallback;
+  if(root.getPropertyValue('--dw-selected-tracker-wallpaper')!==next){
+   root.setProperty('--dw-selected-tracker-wallpaper',next);
+  }
+ }
+ syncWallpaper();
+ new MutationObserver(syncWallpaper).observe(backdrop,{attributes:true,attributeFilter:['style']});
+ desktop.addEventListener('change',syncWallpaper);
+ window.addEventListener('squareup:tracker-detail',syncWallpaper);
+ document.addEventListener('DOMContentLoaded',syncWallpaper,{once:true});
+})();
