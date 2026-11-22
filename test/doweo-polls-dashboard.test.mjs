@@ -10,8 +10,8 @@ const api=read('functions/api/[[path]].js');
 
 test('Polls dashboard JS parses and is bundled in production',()=>{
  assert.doesNotThrow(()=>new Function(js));
- assert.match(html,/doweo-polls-dashboard\.js\?v=20261122-polls-dashboard-v1/);
- assert.match(html,/doweo-polls-dashboard\.css\?v=20261122-polls-dashboard-v1/);
+ assert.match(html,/doweo-polls-dashboard\.js\?v=20261122-approved-seven-palette-v2/);
+ assert.match(html,/doweo-polls-dashboard\.css\?v=20261122-approved-seven-palette-v2/);
  assert.match(workflow,/doweo-polls-dashboard\.js doweo-polls-dashboard\.css/);
  assert.match(workflow,/node --check \.pages-output\/doweo-polls-dashboard\.js/);
 });
@@ -53,6 +53,6 @@ test('Desktop style matches approved navy and teal layout without mobile changes
  assert.match(css,/@media \(min-width:901px\)/);
  assert.doesNotMatch(css,/@media\s*\(max-width:900px\)/);
  for(const rule of ['dw-poll-dashboard-stats','dw-poll-dashboard-grid','dw-poll-dashboard-surface','dw-poll-dashboard-stat','dw-poll-quick-panel','dw-poll-voter-row','dw-poll-recent-panel'])assert.ok(css.includes(rule));
- assert.match(css,/#267a98/);
- assert.match(css,/#f8faff/);
+ assert.match(css,/#355E72/);
+ assert.match(css,/#F3F8FC/);
 });
