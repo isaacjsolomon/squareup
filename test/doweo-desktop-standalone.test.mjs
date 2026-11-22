@@ -9,7 +9,7 @@ const js=read('doweo-desktop-standalone.js');
 const workflow=read('.github/workflows/deploy-doweo-pages.yml');
 
 test('desktop-only full-page workspace assets deploy and preserve mobile dialogs',()=>{
- assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-wallpaper-instagram-final-v4/);
+ assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-cashflow-nav-cool-v5/);
  assert.match(html,/doweo-desktop-standalone\.js\?v=20261122-wallpaper-mirror-v3/);
  assert.match(workflow,/doweo-desktop-standalone\.css doweo-desktop-standalone\.js/);
  assert.match(css,/@media\(min-width:901px\)/);
@@ -72,4 +72,17 @@ test('desktop contrast fixes cover analytics amounts, names and KPI labels',()=>
  assert.match(css,/analytics-stats \.analytics-stat \.sq-stat-label/);
  assert.match(css,/dw-polls-page \.dw-poll-card/);
  assert.match(css,/#sq-instagram-invite \.sq-ig-card > button\.sq-ig-x/);
+});
+
+test('Cash Flow closes on newer desktop navigation and restores normal viewport state',()=>{
+ assert.match(html,/const outsideNavigation=\(event\)=>/);
+ assert.match(html,/window\.squareUpCloseFinanceHub=close/);
+ assert.match(html,/#dw-all-topbar,#dw-all-top-tabs/);
+ assert.match(html,/root\.style\.setProperty\('display','none','important'\)/);
+ assert.match(html,/root\.style\.removeProperty\('display'\)/);
+ assert.match(css,/html body #sq-nextgen\[hidden\]/);
+ assert.match(css,/html body:not\(\.sq-finance-open\) #sq-nextgen/);
+ assert.match(css,/Nov 22 Cash Flow navigation & cool-palette repair/);
+ assert.match(css,/\.sq-ng-header\{/);
+ assert.match(css,/button:not\(\[aria-current="page"\]\)/);
 });
