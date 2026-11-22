@@ -147,7 +147,7 @@
  }
  syncInstagramClose();
  desktop.addEventListener('change',syncInstagramClose);
- const fallback='linear-gradient(135deg,#112b48,#0a1b31)';
+ const fallback='linear-gradient(135deg,#102B40,#0A1B2E)';
  const root=document.documentElement.style;
  function syncWallpaper(){
   if(!desktop.matches)return;
