@@ -27,35 +27,35 @@
     width:100%;
     padding:16px 12px calc(100px + env(safe-area-inset-bottom,0px));
     margin:0 auto;
-    color:#f1fbff;
+    color:#F3F8FC;
     max-width:650px;
   }
   html body .dw-mobile-more-page .dw-mobile-more-back {
     display:inline-flex;align-items:center;gap:7px;
-    border:0;background:transparent;color:#53e7b6;
+    border:0;background:transparent;color:#ABC6D7;
     font-family:inherit;font-weight:700;font-size:14px;line-height:1.3;padding:10px 2px;margin-bottom:11px;
     cursor:pointer;
   }
   html body .dw-mobile-more-page h1 {
-    margin:6px 0 19px;color:#f2faff;
+    margin:6px 0 19px;color:#F3F8FC;
     font-size:clamp(28px,7vw,36px);line-height:1.2;letter-spacing:-.025em;
   }
   html body .dw-mobile-more-page .dw-mobile-more-page-card {
-    display:grid;gap:0;background:#0b2338;
-    border:1px solid #315b71;border-radius:19px;
-    overflow:hidden;box-shadow:0 10px 26px rgba(1,15,28,.12);
+    display:grid;gap:0;background:#102B40;
+    border:1px solid #355E72;border-radius:19px;
+    overflow:hidden;box-shadow:0 10px 26px color-mix(in srgb, #0A1B2E 12%, transparent);
   }
   html body .dw-mobile-more-page .dw-mobile-more-page-card > :is(a,button) {
     display:flex;align-items:center;justify-content:space-between;
     text-align:left;gap:16px;width:100%;min-height:64px;
     box-sizing:border-box;padding:16px 18px;
-    background:transparent;color:#effbff;border:0;
-    border-bottom:1px solid #315568;font-family:inherit;font-weight:750;font-size:16px;line-height:1.35;
+    background:transparent;color:#F3F8FC;border:0;
+    border-bottom:1px solid #355E72;font-family:inherit;font-weight:750;font-size:16px;line-height:1.35;
     text-decoration:none;cursor:pointer;
   }
   html body .dw-mobile-more-page .dw-mobile-more-page-card > :last-child {border-bottom:0}
-  html body .dw-mobile-more-page .dw-mobile-more-page-card :is(a,button):active {background:#16445b}
-  html body .dw-mobile-more-page :is(a,button):focus-visible {outline:3px solid #5ae9d4;outline-offset:-3px}
+  html body .dw-mobile-more-page .dw-mobile-more-page-card :is(a,button):active {background:#204158}
+  html body .dw-mobile-more-page :is(a,button):focus-visible {outline:3px solid #ABC6D7;outline-offset:-3px}
 }
 
 /* The retired Finance Hub shell now hosts the two existing, independently
