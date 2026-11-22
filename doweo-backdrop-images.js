@@ -136,7 +136,7 @@
     canvas.width=Math.max(1,Math.round(width*scale));
     canvas.height=Math.max(1,Math.round(height*scale));
     // Transparent PNG/SVG/GIF pixels become a consistent navy backdrop.
-    ctx.fillStyle='#0b2438';
+    ctx.fillStyle='#102B40';
     ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.drawImage(decoded.source,0,0,canvas.width,canvas.height);
     const quality=Math.max(.55,.87-attempt*.045);
