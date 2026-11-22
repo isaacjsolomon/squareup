@@ -9743,3 +9743,17 @@ html body :is(.sq-friend-row:nth-child(4n+4) .sq-friend-avatar,
     min-height:56px!important;cursor:pointer!important;
   }
 }
+
+/* A visible exit action keeps Cash Flow usable without trapping desktop navigation. */
+@media(min-width:901px){
+ html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-back {
+  display:inline-flex!important;align-items:center!important;gap:8px!important;
+  min-height:40px!important;padding:8px 12px!important;
+  margin:0 0 12px!important;color:#fff!important;
+  background:#12344d!important;border:1px solid #3e6a80!important;
+  border-radius:10px!important;cursor:pointer!important;
+ }
+ html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-back svg {
+  width:16px!important;height:16px!important;
+ }
+}
