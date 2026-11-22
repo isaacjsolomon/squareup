@@ -1,0 +1,78 @@
+/* DoWeo desktop full-page tools. All rules are desktop-only; mobile retains its original dialogs. */
+@media(min-width:901px){
+  :root{--dw-page-navy:#102139;--dw-page-ink:#142849;--dw-page-mint:#64eec5;--dw-page-outline:#3e6782}
+  html body:not(.sq-auth-guest) .dw-desktop-standalone{
+    position:fixed!important;
+    inset:0 0 0 270px!important;
+    width:auto!important;min-width:0!important;max-width:none!important;
+    min-height:100dvh!important;height:100dvh!important;max-height:100dvh!important;
+    overflow-x:hidden!important;overflow-y:auto!important;
+    display:block!important;visibility:visible!important;
+    box-sizing:border-box!important;
+    padding:30px clamp(22px,3.5vw,54px) 70px!important;
+    margin:0!important;border:0!important;border-radius:0!important;
+    background:#eaf0fa!important;background-image:radial-gradient(ellipse at 50% 0%,#f7faff,#eaf0fa 70%)!important;
+    color:var(--dw-page-ink)!important;
+    box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+    transform:none!important;place-items:initial!important;
+    align-items:initial!important;justify-content:initial!important;
+    z-index:2147483200!important;
+    overscroll-behavior:contain!important;
+  }
+  html body:not(.sq-auth-guest) .dw-desktop-standalone[hidden]{display:none!important}
+  html body:not(.sq-auth-guest) .modal-bg.dw-desktop-standalone:not(.open){display:none!important}
+  html body.side-collapsed:not(.sq-auth-guest) .dw-desktop-standalone{left:74px!important}
+  .dw-standalone-head{
+    display:flex!important;align-items:center!important;justify-content:space-between!important;
+    gap:20px!important;width:min(1120px,100%)!important;
+    margin:0 auto 24px!important;padding:0 0 16px!important;
+    border-bottom:1px solid #d4dfed!important;box-sizing:border-box!important;
+    background:transparent!important;color:#142849!important;
+  }
+  .dw-standalone-head .dw-standalone-copy{min-width:0;flex:1}
+  .dw-standalone-head .dw-standalone-eyebrow{display:block;color:#42758b!important;font-size:11px!important;font-weight:800!important;letter-spacing:.13em!important;text-transform:uppercase}
+  .dw-standalone-head h1{margin:5px 0 5px!important;font-size:clamp(26px,2.7vw,38px)!important;line-height:1.13!important;color:#142849!important;font-weight:800!important}
+  .dw-standalone-head p{margin:0!important;font-size:14px!important;color:#60748c!important;line-height:1.4!important}
+  .dw-standalone-back{order:-1;flex:0 0 auto;display:inline-flex!important;align-items:center;gap:8px;min-height:42px;cursor:pointer;padding:10px 15px;border:1px solid #b7cbdc;border-radius:12px;background:#fff;color:#142849;font:inherit;font-size:14px;font-weight:750}
+  .dw-standalone-back:hover,.dw-standalone-back:focus-visible{background:#dff6ed;outline:2px solid #63dec0;outline-offset:2px}
+  html body:not(.sq-auth-guest) .dw-desktop-standalone > :is(.card.modal,.sq-practical-modal,#sq-social-panel,#sq-features-panel,#sq-pay-now-panel,.sq-ng-txn-dialog,.sq-details-card,.sq-action-modal-inner){
+    display:block!important;position:relative!important;inset:auto!important;
+    box-sizing:border-box!important;width:min(1120px,100%)!important;max-width:1120px!important;
+    height:auto!important;max-height:none!important;min-height:280px!important;
+    margin:0 auto!important;padding:30px clamp(22px,3.4vw,42px)!important;
+    border-radius:22px!important;
+    background:linear-gradient(145deg,#142c48,#102139)!important;background-color:#102139!important;
+    color:#f2f9ff!important;border:1px solid #557891!important;box-shadow:0 12px 34px rgba(16,34,65,.12)!important;
+    overflow:visible!important;transform:none!important;
+  }
+  html body:not(.sq-auth-guest) .dw-desktop-standalone > .card.modal :is(h2,h3,h4,strong,label,p),
+  html body:not(.sq-auth-guest) .dw-desktop-standalone > :is(.sq-practical-modal,#sq-social-panel,#sq-features-panel,#sq-pay-now-panel,.sq-ng-txn-dialog,.sq-details-card) :is(h2,h3,h4,strong,label){
+    color:#f3faff!important
+  }
+  html body .dw-desktop-standalone :is(.hint,.sq-feature-muted,.sq-social-muted,.sq-ng-note,small,.note){color:#b7d0df!important}
+  html body .dw-desktop-standalone :is(input,select,textarea){
+    max-width:100%;box-sizing:border-box;
+    background:#f7faff!important;color:#142849!important;border:1px solid #a5c0d3!important;
+    border-radius:11px!important
+  }
+  html body .dw-desktop-standalone :is(input,select,textarea):focus-visible{outline:2px solid #6cebc7!important;outline-offset:2px}
+  html body .dw-desktop-standalone :is(button.primary,button.accent,.sq-ng-primary,.small-btn.accent,button[type=submit].primary){
+    background:#61eec1!important;color:#0e2940!important;border-color:transparent!important
+  }
+  html body .dw-desktop-standalone .dw-standalone-head button{color:#142849!important;background:#fff!important}
+  html body .dw-desktop-standalone .card.modal>.close{top:17px!important;right:17px!important;color:#c9e5ef!important}
+  html body #new-modal.dw-desktop-standalone .card.modal,
+  html body #share-modal.dw-desktop-standalone .card.modal{width:min(1120px,100%)!important;max-width:1120px!important;max-height:none!important;overflow:visible!important}
+  html body #new-modal.dw-desktop-standalone #sq-template-grid{grid-template-columns:repeat(auto-fit,minmax(185px,1fr))!important}
+  html body #sq-social-modal.dw-desktop-standalone #sq-social-panel,
+  html body #sq-features-overlay.dw-desktop-standalone #sq-features-panel,
+  html body #sq-pay-now-modal.dw-desktop-standalone #sq-pay-now-panel{width:min(1120px,100%)!important;max-width:1120px!important;max-height:none!important;overflow:visible!important}
+  html body #sq-quick-calculator.dw-desktop-standalone .sq-practical-modal{width:min(900px,100%)!important}
+  html body #sq-details-overlay.dw-desktop-standalone .sq-details-card{width:min(1120px,100%)!important;max-height:none!important}
+  html body #sq-ng-txn-overlay.dw-desktop-standalone .sq-ng-txn-dialog{width:min(920px,100%)!important;max-height:none!important}
+  html body .dw-desktop-standalone .sq-ng-txn-form{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  html body .dw-desktop-standalone .sq-ng-txn-form :is(.sq-ng-txn-save,.sq-ng-txn-feedback){grid-column:1/-1}
+}
+@media(min-width:901px) and (max-width:1220px){
+  html body:not(.sq-auth-guest):not(.side-collapsed) .dw-desktop-standalone{left:225px!important}
+}
