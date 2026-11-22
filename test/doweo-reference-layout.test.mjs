@@ -8,7 +8,7 @@ const js=readFileSync(new URL('../doweo-reference-home.js',import.meta.url),'utf
 const flow=readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',import.meta.url),'utf8');
 
 test('the screenshot layout ships as a real, connected piece of production HTML',()=>{
- for(const p of ['doweo-reference-home.css?v=20261122-tracker-text-navy-v3','doweo-reference-home.js?v=20261122-add-no-chevron-v2'])
+ for(const p of ['doweo-reference-home.css?v=20261122-approved-seven-palette-v2','doweo-reference-home.js?v=20261122-approved-seven-palette-v2'])
   assert.ok(html.includes(p),p+' is missing from index.html');
  assert.match(flow,/doweo-reference-home\.css doweo-reference-home\.js/);
  assert.match(flow,/node --check \.pages-output\/doweo-reference-home\.js/);
