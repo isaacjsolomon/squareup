@@ -4,29 +4,29 @@
   /* Notifications: eliminate the washed-out backdrop, including any reused
      workspace transparency, while leaving the permanent sidebar and toolbar. */
   html body.notifications-view:not(.sq-auth-guest) {
-    background:#0b1d34!important;
+    background:#0A1B2E!important;
     background-image:none!important;
   }
-  /* The actual wallpaper is a separate #backdrop BODY sibling (not .wrap).
+  /* The actual wallpaper is a separate #ABC6D7kdrop BODY sibling (not .wrap).
      Override both uploaded tracker photos and inline gradient backgrounds. */
-  html body.notifications-view:not(.sq-auth-guest) > #backdrop#backdrop {
-    background:#0b1d34!important;
+  html body.notifications-view:not(.sq-auth-guest) > #ABC6D7kdrop#ABC6D7kdrop {
+    background:#0A1B2E!important;
     background-image:none!important;
-    background-color:#0b1d34!important;
+    background-color:#0A1B2E!important;
     box-shadow:none!important;
     filter:none!important;
   }
   html body.notifications-view:not(.sq-auth-guest) > .wrap {
-    background:#0b1d34!important;
+    background:#0A1B2E!important;
     background-image:none!important;
   }
   html body.notifications-view:not(.sq-auth-guest) > .wrap::before {
     background-image:none!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-page {
-    background:#0b1d34!important;
+    background:#0A1B2E!important;
     background-image:none!important;
-    color:#f3f8ff!important;
+    color:#F3F8FC!important;
     max-width:1180px!important;
     border:0!important;
     border-radius:0!important;
@@ -34,46 +34,46 @@
     box-sizing:border-box!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-page .sq-notifications-header h2 {
-    color:#f4f8ff!important;
+    color:#F3F8FC!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-page #notifications-panel {
-    background:#132b45!important;
+    background:#102B40!important;
     background-image:none!important;
-    color:#f3f8ff!important;
-    border:1px solid #33516d!important;
+    color:#F3F8FC!important;
+    border:1px solid #355E72!important;
     border-radius:21px!important;
     backdrop-filter:none!important;
     -webkit-backdrop-filter:none!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-page
   :is(#notifications-list .entry,#notifications-list .dw-inbox-item) {
-    background:#203b57!important;
+    background:#204158!important;
     background-image:none!important;
-    border:1px solid #3a5a74!important;
-    color:#f3f8ff!important;
+    border:1px solid #355E72!important;
+    color:#F3F8FC!important;
     box-shadow:none!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-page
   :is(.notification-panel-heading,.entry b,.entry strong,.dw-inbox-date) {
-    color:#f4f9ff!important;
+    color:#F3F8FC!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-page
   :is(.entry .note,.entry p,.entry small,.sq-notification-tools label) {
-    color:#bfcfe2!important;
+    color:#ABC6D7!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-page #sq-notification-filter {
-    color:#14294c!important;background:#f5f8ff!important;
-    border:1px solid #afc4d7!important;
+    color:#102B40!important;background:#F3F8FC!important;
+    border:1px solid #ABC6D7!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-page .entry button {
-    color:#092f3d!important;background:#bdf4e6!important;
+    color:#102B40!important;background:#ABC6D7!important;
   }
 
   /* Bills back action is restored to the normal document flow.
      Previously it was at the same vertical coordinate as the shared tabs. */
   html body.dw-all-secondary-view #sq-bills-page {
     position:relative!important;
-    color:#172b4b!important;
+    color:#173750!important;
   }
   html body.dw-all-secondary-view #sq-bills-page #sq-bills-back {
     position:relative!important;
@@ -88,9 +88,9 @@
     margin:105px 0 14px!important;
     padding:10px 16px!important;
     white-space:nowrap!important;
-    background:#123850!important;
-    border:1px solid #44ceb3!important;
-    color:#fff!important;
+    background:#173750!important;
+    border:1px solid #ABC6D7!important;
+    color:#F3F8FC!important;
     border-radius:12px!important;
     z-index:2!important;
   }
@@ -106,19 +106,19 @@
       .sq-premium-metrics article strong,.sq-premium-metrics article span,
       .sq-premium-metrics article small,
       .sq-bills-help,.sq-bills-title p) {
-    color:#172b4b!important;
+    color:#173750!important;
   }
   html body.dw-all-secondary-view #sq-bills-page
   :is(.sq-premium-metrics article,.sq-bill-create-card,.sq-bills-column,.sq-bills-card) {
-    background:#f4f8ff!important;
-    color:#172b4b!important;
+    background:#F3F8FC!important;
+    color:#173750!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-calendar {
-    background:#102944!important;
+    background:#102B40!important;
     background-image:none!important;
-    color:#f2f8ff!important;
-    border:1px solid #3c617e!important;
-    box-shadow:0 8px 24px #0b213826!important;
+    color:#F3F8FC!important;
+    border:1px solid #355E72!important;
+    box-shadow:0 8px 24px color-mix(in srgb, #0A1B2E 14.9%, transparent)!important;
     backdrop-filter:none!important;
     -webkit-backdrop-filter:none!important;
   }
@@ -126,32 +126,32 @@
   :is(h3,.sq-premium-calhead strong,.sq-premium-selected,
       .sq-premium-selected b,.sq-premium-selected strong,
       .sq-premium-days button:not(:disabled)) {
-    color:#f2f8ff!important;
+    color:#F3F8FC!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-calendar
   :is(.sq-premium-days > span,.sq-premium-selected p,.sq-premium-selected small) {
-    color:#bed1e4!important;
+    color:#ABC6D7!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button {
-    color:#eff7ff!important;
+    color:#F3F8FC!important;
     background:transparent!important;
     opacity:1!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button:disabled {
-    color:#b0c1d4!important;opacity:.5!important;
+    color:#ABC6D7!important;opacity:.5!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button:where(.chosen,.has-bill) {
-    background:#15566a!important;
-    border-color:#59ddc4!important;
-    color:#fff!important;
+    background:#204158!important;
+    border-color:#ABC6D7!important;
+    color:#F3F8FC!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-calhead button {
-    background:#1b4660!important;
-    border:1px solid #59829a!important;
-    color:#fff!important;
+    background:#204158!important;
+    border:1px solid #355E72!important;
+    color:#F3F8FC!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-selected {
-    border-top:1px solid #3c617e!important;
+    border-top:1px solid #355E72!important;
   }
 
   /* Keep Cash Flow in its own scrollable viewport beneath the global toolbar.
@@ -164,9 +164,9 @@
     overflow-y:auto!important;
     overflow-x:hidden!important;
     overscroll-behavior:contain!important;
-    background:#edf2fa!important;
+    background:#F3F8FC!important;
     background-image:none!important;
-    color:#172b4b!important;
+    color:#173750!important;
     box-sizing:border-box!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"]::before {
@@ -180,34 +180,34 @@
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"]
   :is(#sq-ng-title,.sq-ng-card h2,.sq-ng-section h2,.sq-ng-heading h1) {
-    color:#14294b!important;
+    color:#102B40!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"]
   :is(.sq-ng-note,.sq-ng-card p,.sq-ng-header p,.sq-ng-item small,
       .dw-analytics-month small,.sq-ng-card small) {
-    color:#4d6682!important;
+    color:#355E72!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-card {
-    background:#f6f9ff!important;
-    color:#14294b!important;
-    border:1px solid #d5e1ee!important;
-    box-shadow:0 8px 20px #10274816!important;
+    background:#F3F8FC!important;
+    color:#102B40!important;
+    border:1px solid #F3F8FC!important;
+    box-shadow:0 8px 20px color-mix(in srgb, #102B40 8.6%, transparent)!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bars {
     min-height:160px!important;
     overflow:visible!important;
-    border-bottom:1px solid #a6bad0!important;
+    border-bottom:1px solid #ABC6D7!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.income {
-    background:#48b4de!important;
+    background:#ABC6D7!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.expense {
-    background:#60d9b6!important;
+    background:#ABC6D7!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"]
   :is(.sq-ng-item,.dw-web-comparison th,.dw-web-comparison td,
       .dw-analytics-category strong,.dw-analytics-category span) {
-    color:#14294b!important;
+    color:#102B40!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-back {
     display:inline-flex!important;
@@ -217,9 +217,9 @@
     width:max-content!important;
     padding:8px 14px!important;
     margin-bottom:10px!important;
-    border:1px solid #315d78!important;
-    background:#12344d!important;
-    color:white!important;
+    border:1px solid #355E72!important;
+    background:#173750!important;
+    color:#F3F8FC!important;
     border-radius:10px!important;
     cursor:pointer!important;
   }
@@ -236,53 +236,53 @@
   /* Billing readability v3. Navy text on the light bill cards;
      white/ice text on the NAVY calendar, including all dates and controls. */
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-calendar {
-    background-color:#0c2441!important;
+    background-color:#102B40!important;
     background-image:none!important;
-    color:#f5f9ff!important;
-    border-color:#365676!important;
+    color:#F3F8FC!important;
+    border-color:#355E72!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-calendar
     :is(h1,h2,h3,h4,p,span,strong,b,small,label,time,
         .sq-premium-calhead,.sq-premium-selected,.sq-premium-selected>div,
         .sq-premium-days>span,.sq-premium-days button) {
-    color:#f5f9ff!important;
+    color:#F3F8FC!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-calendar
     :is(.sq-premium-days>span,.sq-premium-selected p,.sq-premium-selected small) {
-    color:#c5d9ec!important;
+    color:#ABC6D7!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button:not(:disabled) {
-    color:#ffffff!important;
+    color:#F3F8FC!important;
     opacity:1!important;
     text-shadow:none!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button:disabled {
-    color:#9db6d1!important;
+    color:#ABC6D7!important;
     opacity:.68!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button:where(.chosen,.has-bill) {
-    background:#17536a!important;
-    color:#ffffff!important;
-    border-color:#4ad7bc!important;
+    background:#204158!important;
+    color:#F3F8FC!important;
+    border-color:#ABC6D7!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-calhead button {
-    background:#1d4662!important;
-    color:#ffffff!important;
-    border-color:#4e7491!important;
+    background:#204158!important;
+    color:#F3F8FC!important;
+    border-color:#355E72!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-calendar button:focus-visible {
-    outline:3px solid #61e5cc!important;
+    outline:3px solid #ABC6D7!important;
     outline-offset:2px!important;
   }
   html body.dw-all-secondary-view #sq-bills-page
     :is(.sq-bill-create-card,.sq-premium-metrics article,.sq-bills-card,.sq-bills-column)
     :is(h1,h2,h3,h4,p,span,b,strong,small,label) {
-    color:#14294b!important;
+    color:#102B40!important;
   }
   html body.dw-all-secondary-view #sq-bills-page
     :is(.sq-bill-create-card,.sq-premium-metrics article,.sq-bills-card,.sq-bills-column)
     :is(button.primary,button.sq-ng-primary,button[type="submit"]) {
-    color:#072e3a!important;
+    color:#102B40!important;
   }
 }
 
@@ -290,143 +290,143 @@
 /* Desktop screenshot correction v4. Target the existing routes and elements.
    No markup movement, no Supabase/API edits, and no mobile changes. */
 @media(min-width:901px){
-  /* Notifications has a separate, fixed wallpaper #backdrop under its BODY
+  /* Notifications has a separate, fixed wallpaper #ABC6D7kdrop under its BODY
      sibling page. Paint both so the displayed viewport is consistently navy. */
   html body.notifications-view.dw-all-secondary-view:not(.sq-auth-guest){
-    background:#0a1f38!important;background-image:none!important;
+    background:#0A1B2E!important;background-image:none!important;
   }
-  html body.notifications-view.dw-all-secondary-view:not(.sq-auth-guest) #backdrop#backdrop{
-    background:#0a1f38!important;background-image:none!important;
-    background-color:#0a1f38!important;opacity:1!important;
+  html body.notifications-view.dw-all-secondary-view:not(.sq-auth-guest) #ABC6D7kdrop#ABC6D7kdrop{
+    background:#0A1B2E!important;background-image:none!important;
+    background-color:#0A1B2E!important;opacity:1!important;
   }
-  html body.notifications-view.dw-all-secondary-view #backdrop.photo::after{
+  html body.notifications-view.dw-all-secondary-view #ABC6D7kdrop.photo::after{
     background:none!important;content:none!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-page{
-    background:#0a1f38!important;background-image:none!important;
-    color:#f6faff!important;min-height:calc(100dvh - 134px)!important;
+    background:#0A1B2E!important;background-image:none!important;
+    color:#F3F8FC!important;min-height:calc(100dvh - 134px)!important;
     padding:26px clamp(20px,3vw,42px) 65px!important;
     border:0!important;box-shadow:none!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-page
     :is(.sq-notifications-header h2,.notification-panel-heading){
-    color:#f6faff!important;
+    color:#F3F8FC!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-panel{
-    background:#122e4b!important;background-image:none!important;
-    border:1px solid #385977!important;color:#f7fbff!important;
-    box-shadow:0 14px 30px rgba(0,8,26,.25)!important;
+    background:#173750!important;background-image:none!important;
+    border:1px solid #355E72!important;color:#F3F8FC!important;
+    box-shadow:0 14px 30px color-mix(in srgb, #0A1B2E 25%, transparent)!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-list
     :is(.entry,.dw-inbox-item,.dw-inbox-card){
-    background:#1b3b58!important;border:1px solid #45657f!important;
-    color:#f8fbff!important;
+    background:#204158!important;border:1px solid #355E72!important;
+    color:#F3F8FC!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-page
     :is(.entry b,.entry strong,.entry h3,.dw-inbox-title){
-    color:#ffffff!important;
+    color:#F3F8FC!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-page
     :is(.entry p,.entry small,.entry .note,.dw-inbox-subtitle,.sq-notification-tools label){
-    color:#c5d7e9!important;
+    color:#ABC6D7!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-page
     :is(#sq-notification-filter,.sq-notification-tools select){
-    background:#f6faff!important;color:#142c4c!important;
+    background:#F3F8FC!important;color:#173750!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-page
     :is(.entry button,.dw-inbox-item button){
-    color:#092b39!important;background:#b8f4e4!important;
-    border:1px solid #86decb!important;
+    color:#102B40!important;background:#ABC6D7!important;
+    border:1px solid #ABC6D7!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-back{
-    color:#f4f9ff!important;background:#1d435f!important;
-    border:1px solid #52748e!important;
+    color:#F3F8FC!important;background:#204158!important;
+    border:1px solid #355E72!important;
   }
 
   /* The screenshot showed white-on-white content. All visible Bills SURFACES
      become navy; text changes to contrasting off-white, not invisible navy-on-navy. */
   html body.dw-all-secondary-view #sq-bills-page
     :is(.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article){
-    background:#102b49!important;background-image:none!important;
-    color:#f6faff!important;border:1px solid #42627e!important;
-    box-shadow:0 10px 27px rgba(6,20,39,.22)!important;
+    background:#102B40!important;background-image:none!important;
+    color:#F3F8FC!important;border:1px solid #355E72!important;
+    box-shadow:0 10px 27px color-mix(in srgb, #0A1B2E 22%, transparent)!important;
     backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
   }
   html body.dw-all-secondary-view #sq-bills-page
     :is(.sq-bills-card,.sq-premium-metrics article)
     :is(h1,h2,h3,h4,h5,p,span,small,strong,b,label,time){
-    color:#f6faff!important;
+    color:#F3F8FC!important;
   }
   html body.dw-all-secondary-view #sq-bills-page
     :is(.sq-bills-card,.sq-premium-metrics article)
     :is(.sq-bills-help,.sq-bills-empty,.sq-bills-row small,.sq-premium-metrics article span,.sq-premium-metrics article small){
-    color:#bdd4e9!important;
+    color:#ABC6D7!important;
   }
   html body.dw-all-secondary-view #sq-bills-page #sq-premium-monthly{
-    color:#76ebd0!important;
+    color:#ABC6D7!important;
   }
   html body.dw-all-secondary-view #sq-bills-page #sq-premium-active{
-    color:#f6faff!important;
+    color:#F3F8FC!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-calendar
     :is(h3,strong,b,span,p,small,button,.sq-premium-calhead,.sq-premium-selected){
-    color:#f6faff!important;
+    color:#F3F8FC!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-days
     :is(span,button){
-    color:#e5f1ff!important;
+    color:#F3F8FC!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button:disabled{
-    color:#b5cce3!important;opacity:.8!important;
+    color:#ABC6D7!important;opacity:.8!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button:where(.chosen,.has-bill){
-    background:#176174!important;color:#ffffff!important;
-    border:1px solid #75e8cf!important;
+    background:#355E72!important;color:#F3F8FC!important;
+    border:1px solid #ABC6D7!important;
   }
   html body.dw-all-secondary-view #sq-bills-page #sq-premium-selected{
-    color:#cadff1!important;border-top:1px solid #4c6b84!important;
+    color:#ABC6D7!important;border-top:1px solid #355E72!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-premium-calhead button{
-    color:#fff!important;background:#204864!important;
-    border:1px solid #7093a9!important;
+    color:#F3F8FC!important;background:#204158!important;
+    border:1px solid #ABC6D7!important;
   }
   html body.dw-all-secondary-view #sq-bills-page
     :is(.sq-bills-list-head,.sq-bills-row){
-    border-color:#42627e!important;
+    border-color:#355E72!important;
   }
   html body.dw-all-secondary-view #sq-bills-page
     :is(.sq-bills-row button,.sq-bills-actions button,
         .sq-bill-mobile-toggle,.sq-bills-card button.small-btn){
-    background:#20516b!important;color:#f9fcff!important;
-    border:1px solid #74a2b7!important;
+    background:#204158!important;color:#F3F8FC!important;
+    border:1px solid #ABC6D7!important;
     opacity:1!important;
   }
   html body.dw-all-secondary-view #sq-bills-page
     :is(.sq-bills-row button,.sq-bills-actions button,.sq-bill-mobile-toggle):hover{
-    background:#28637c!important;
+    background:#355E72!important;
   }
   html body.dw-all-secondary-view #sq-bills-page
     :is(.sq-bills-card input,.sq-bills-card select,.sq-bills-tracker-compact select){
-    background:#f7fbff!important;color:#172d4c!important;
-    border:1px solid #93b1c8!important;
+    background:#F3F8FC!important;color:#173750!important;
+    border:1px solid #ABC6D7!important;
   }
   html body.dw-all-secondary-view #sq-bills-page
     :is(.sq-bills-card input::placeholder){
-    color:#627a95!important;
+    color:#355E72!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-bills-tracker-compact label{
-    color:#e5f1ff!important;
+    color:#F3F8FC!important;
   }
   html body.dw-all-secondary-view #sq-bills-page .sq-bills-tracker-compact{
-    background:#103750!important;border-color:#47677f!important;
+    background:#173750!important;border-color:#355E72!important;
   }
 
   /* Cash Flow adopts Spending Analytics' canvas, header, panel widths, spacing,
      two-column charts and card treatment. Original records and form stay intact. */
   html body.sq-finance-open #sq-nextgen[data-section="finance"]{
-    background:#eaf1fc!important;background-image:none!important;
-    color:#142543!important;
+    background:#F3F8FC!important;background-image:none!important;
+    color:#102B40!important;
     top:var(--dw-report-top,0px)!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-shell{
@@ -435,27 +435,27 @@
     padding:20px clamp(20px,2.5vw,42px) 65px!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs{
-    background:#eff4fc!important;border:1px solid #dce5f2!important;
+    background:#F3F8FC!important;border:1px solid #F3F8FC!important;
     padding:5px!important;gap:5px!important;border-radius:18px!important;
     margin:0 0 26px!important;max-width:650px!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs button{
-    background:transparent!important;color:#35496b!important;
+    background:transparent!important;color:#355E72!important;
     border-radius:13px!important;min-height:43px!important;font-weight:750!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs button[aria-current="page"]{
-    background:#142849!important;color:#a3f6de!important;
+    background:#102B40!important;color:#ABC6D7!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-header{
     background:transparent!important;padding:8px 0 18px!important;
-    margin:0 0 24px!important;border-bottom:1px solid #cddbec!important;
+    margin:0 0 24px!important;border-bottom:1px solid #ABC6D7!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-title{
-    color:#17294b!important;font-size:clamp(29px,3vw,40px)!important;
+    color:#102B40!important;font-size:clamp(29px,3vw,40px)!important;
     font-weight:800!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-subtitle{
-    color:#556e8b!important;
+    color:#355E72!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content{
     display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
@@ -473,19 +473,19 @@
     gap:14px!important;min-width:0!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card{
-    background:#f7faff!important;color:#17294b!important;
-    border:1px solid #dbe5f2!important;border-radius:22px!important;
-    box-shadow:0 8px 24px #20375816!important;
+    background:#F3F8FC!important;color:#102B40!important;
+    border:1px solid #F3F8FC!important;border-radius:22px!important;
+    box-shadow:0 8px 24px color-mix(in srgb, #204158 8.6%, transparent)!important;
     padding:20px 22px!important;
     min-width:0!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card
     :is(h2,h3,h4,strong,b,th){
-    color:#17294b!important;
+    color:#102B40!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card
     :is(p,small,.sq-ng-note,.sq-ng-item small){
-    color:#526a87!important;
+    color:#355E72!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content
     .sq-ng-summary-stack .sq-ng-card strong{
@@ -510,20 +510,20 @@
     height:200px!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.income{
-    background:#48b4de!important;
+    background:#ABC6D7!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.expense{
-    background:#60d9b6!important;
+    background:#ABC6D7!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-open-transaction{
-    background:#7aebcf!important;color:#0c3541!important;
-    border:1px solid #58daba!important;min-height:54px!important;
+    background:#ABC6D7!important;color:#102B40!important;
+    border:1px solid #ABC6D7!important;min-height:54px!important;
     padding:12px 17px!important;border-radius:14px!important;
     cursor:pointer!important;position:relative!important;z-index:1!important;
   }
   html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-back{
-    background:#142849!important;color:#f8fcff!important;
-    border:1px solid #4f718e!important;
+    background:#102B40!important;color:#F3F8FC!important;
+    border:1px solid #355E72!important;
   }
   @media(max-width:1200px){
     html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content{
@@ -546,13 +546,13 @@
  html body.dw-all-secondary-view #sq-bills-page#sq-bills-page .sq-bills-card.sq-bills-card,
  html body.dw-all-secondary-view #sq-bills-page#sq-bills-page .sq-premium-metrics article,
  html body.dw-all-secondary-view #sq-bills-page#sq-bills-page .sq-premium-calendar.sq-premium-calendar{
-   background:#102b49!important;
-   background-color:#102b49!important;
+   background:#102B40!important;
+   background-color:#102B40!important;
    background-image:none!important;
-   color:#f6faff!important;
+   color:#F3F8FC!important;
  }
  html body.dw-all-secondary-view #sq-bills-page#sq-bills-page .sq-bills-card.sq-bills-card
  :is(h2,h3,h4,strong,b,span,label,small,p) {
-   color:#f6faff!important;
+   color:#F3F8FC!important;
  }
 }
