@@ -31,5 +31,5 @@ for(const file of files){
  if(rgb)throw Error('Unexpected direct RGB/HSL color in '+file+': '+rgb[0]);
 }
 const html=readFileSync(join(root,'index.html'),'utf8');
-if(!html.includes('20261122-approved-seven-palette-v2'))throw Error('Missing cache-busted release marker');
+if(!html.includes('20261122-approved-seven-palette-v3'))throw Error('Missing cache-busted release marker');
 console.log('Seven-color palette verified in '+files.length+' deployed files, '+total+' color literals checked');
