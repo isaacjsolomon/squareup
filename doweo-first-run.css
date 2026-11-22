@@ -2,47 +2,47 @@
    Does not change mobile navigation, existing tracker cards or financial UI. */
 @media (min-width: 901px) {
   #trackers-page .trackers-header {display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap}
-  #dw-first-run-open {flex:none;background:#15394c;border:1px solid #487789;color:#dffdf6;border-radius:11px;padding:10px 15px;min-height:42px;font:inherit;font-weight:700;cursor:pointer}
+  #dw-first-run-open {flex:none;background:#173750;border:1px solid #355E72;color:#F3F8FC;border-radius:11px;padding:10px 15px;min-height:42px;font:inherit;font-weight:700;cursor:pointer}
   #dw-first-run[hidden],#dw-first-run-prompt[hidden],#dw-first-run-overlay[hidden] {display:none!important}
-  #dw-first-run {margin:16px 0 24px;padding:22px;background:linear-gradient(140deg,#102d43,#092136);border:1px solid #345d75;border-radius:19px;color:#f0fbff;box-shadow:0 12px 32px rgba(0,12,28,.22)}
+  #dw-first-run {margin:16px 0 24px;padding:22px;background:linear-gradient(140deg,#102B40,#0A1B2E);border:1px solid #355E72;border-radius:19px;color:#F3F8FC;box-shadow:0 12px 32px color-mix(in srgb, #0A1B2E 22%, transparent)}
   .dw-first-run-top {display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
   .dw-first-run-top h2 {font-size:clamp(22px,2.1vw,28px);letter-spacing:-.025em;line-height:1.15;margin:6px 0 9px}
-  .dw-first-run-top p {font-size:14px;color:#b5d0dd;margin:0;line-height:1.55;max-width:680px}
-  .dw-first-run-eyebrow {display:inline-block;font-size:11px;letter-spacing:.13em;font-weight:800;color:#66e5c4}
-  .dw-first-run-dismiss {border:1px solid #486c83;background:#193c51;color:#d8e9f1;border-radius:9px;padding:9px 13px;font:inherit;font-size:13px;cursor:pointer}
-  .dw-first-run-progress {font-size:13px;color:#7cead0;font-weight:750;margin:16px 0 12px}
+  .dw-first-run-top p {font-size:14px;color:#ABC6D7;margin:0;line-height:1.55;max-width:680px}
+  .dw-first-run-eyebrow {display:inline-block;font-size:11px;letter-spacing:.13em;font-weight:800;color:#ABC6D7}
+  .dw-first-run-dismiss {border:1px solid #355E72;background:#173750;color:#F3F8FC;border-radius:9px;padding:9px 13px;font:inherit;font-size:13px;cursor:pointer}
+  .dw-first-run-progress {font-size:13px;color:#ABC6D7;font-weight:750;margin:16px 0 12px}
   .dw-first-run-steps {padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;list-style:none}
-  .dw-first-run-step {box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:11px;min-width:0;padding:13px;border-radius:12px;background:#14334a;border:1px solid #30546b}
+  .dw-first-run-step {box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:11px;min-width:0;padding:13px;border-radius:12px;background:#173750;border:1px solid #355E72}
   .dw-first-run-step-label {display:flex;gap:10px;align-items:flex-start;min-width:0;flex:1;cursor:pointer}
-  .dw-first-run-step-label input {accent-color:#37d8b5;margin:4px 0 0;width:17px;height:17px;flex:none}
+  .dw-first-run-step-label input {accent-color:#ABC6D7;margin:4px 0 0;width:17px;height:17px;flex:none}
   .dw-first-run-step-label input[disabled] {cursor:default}
   .dw-first-run-step-text {display:grid;gap:4px;min-width:0}
   .dw-first-run-step-text strong {font-size:14px;line-height:1.3}
-  .dw-first-run-step-text small {color:#a8c6d4;font-size:12px;line-height:1.4}
-  .dw-first-run-step-action {border:1px solid #4c7e8e;border-radius:9px;background:#1b4960;color:#e7faff;font:inherit;font-size:12px;font-weight:750;padding:9px;cursor:pointer;max-width:126px}
+  .dw-first-run-step-text small {color:#ABC6D7;font-size:12px;line-height:1.4}
+  .dw-first-run-step-action {border:1px solid #355E72;border-radius:9px;background:#204158;color:#F3F8FC;font:inherit;font-size:12px;font-weight:750;padding:9px;cursor:pointer;max-width:126px}
   .dw-first-run-step-action:disabled {opacity:.48;cursor:default}
-  .dw-first-run-done {border-color:rgba(93,219,187,.58)}
+  .dw-first-run-done {border-color:color-mix(in srgb, #ABC6D7 58%, transparent)}
   .dw-first-run-actions {display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
   .dw-first-run-primary,.dw-first-run-secondary {font:inherit;font-weight:750;font-size:14px;line-height:1.25;border-radius:11px;padding:11px 16px;min-height:42px;cursor:pointer}
-  .dw-first-run-primary {background:#2adbb8;color:#062b36;border:1px solid #2adbb8}
-  .dw-first-run-secondary {background:#173c51;color:#eafaff;border:1px solid #507f91}
-  #dw-first-run-prompt {margin:14px 0 21px;padding:17px 20px;background:#112d43;color:#ecfaff;border:1px solid #3e677b;border-radius:15px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+  .dw-first-run-primary {background:#ABC6D7;color:#102B40;border:1px solid #ABC6D7}
+  .dw-first-run-secondary {background:#173750;color:#F3F8FC;border:1px solid #355E72}
+  #dw-first-run-prompt {margin:14px 0 21px;padding:17px 20px;background:#102B40;color:#F3F8FC;border:1px solid #355E72;border-radius:15px;display:flex;align-items:center;justify-content:space-between;gap:15px}
   .dw-first-run-home-copy {font-size:15px;font-weight:650;line-height:1.45}
   .dw-first-run-home-actions {display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}
-  #trackers-gallery .dw-first-run-example-link {background:#17394b;border-color:#5c8794}
-  #dw-first-run-overlay {position:fixed;inset:0;z-index:2147482800;display:grid;place-items:center;padding:22px;background:rgba(1,10,24,.83);backdrop-filter:blur(6px)}
-  .dw-first-run-dialog {box-sizing:border-box;position:relative;width:min(520px,100%);max-height:calc(100dvh - 44px);overflow:auto;background:linear-gradient(145deg,#11364b,#081f33);border:1px solid #50758a;border-radius:22px;padding:30px;color:#f2fcff;box-shadow:0 25px 65px rgba(0,4,17,.5)}
-  .dw-first-run-close {position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:10px;background:#1d4359;color:#fff;border:1px solid #537486;font-size:25px;line-height:1;cursor:pointer}
-  .dw-first-run-dialog-kicker {display:block;color:#54e3c1;font-weight:800;letter-spacing:.11em;font-size:12px;margin:0 42px 20px 0}
+  #trackers-gallery .dw-first-run-example-link {background:#173750;border-color:#355E72}
+  #dw-first-run-overlay {position:fixed;inset:0;z-index:2147482800;display:grid;place-items:center;padding:22px;background:color-mix(in srgb, #0A1B2E 83%, transparent);backdrop-filter:blur(6px)}
+  .dw-first-run-dialog {box-sizing:border-box;position:relative;width:min(520px,100%);max-height:calc(100dvh - 44px);overflow:auto;background:linear-gradient(145deg,#173750,#0A1B2E);border:1px solid #355E72;border-radius:22px;padding:30px;color:#F3F8FC;box-shadow:0 25px 65px color-mix(in srgb, #0A1B2E 50%, transparent)}
+  .dw-first-run-close {position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:10px;background:#204158;color:#F3F8FC;border:1px solid #355E72;font-size:25px;line-height:1;cursor:pointer}
+  .dw-first-run-dialog-kicker {display:block;color:#ABC6D7;font-weight:800;letter-spacing:.11em;font-size:12px;margin:0 42px 20px 0}
   .dw-first-run-dialog h2 {font-size:clamp(24px,2.7vw,34px);line-height:1.15;letter-spacing:-.035em;margin:0 25px 13px 0}
-  .dw-first-run-dialog p {font-size:15px;color:#c6dbe6;line-height:1.65;margin:10px 0 22px}
-  .dw-first-run-dialog-tag {color:#62ebcf;font-size:14px}
+  .dw-first-run-dialog p {font-size:15px;color:#ABC6D7;line-height:1.65;margin:10px 0 22px}
+  .dw-first-run-dialog-tag {color:#ABC6D7;font-size:14px}
   .dw-first-run-example {display:grid;gap:8px;margin:10px 0 23px}
-  .dw-first-run-example-row {background:#183c51;border:1px solid #345b71;border-radius:10px;padding:12px;font-size:14px;color:#ecfaff}
+  .dw-first-run-example-row {background:#173750;border:1px solid #355E72;border-radius:10px;padding:12px;font-size:14px;color:#F3F8FC}
   .dw-first-run-dialog-foot {display:flex;justify-content:space-between;gap:12px}
   .dw-first-run-dialog-foot button {min-width:102px}
   .dw-first-run-dialog-foot button:disabled {opacity:.45;cursor:default}
-  #dw-first-run :is(button,input):focus-visible,#dw-first-run-prompt button:focus-visible,#dw-first-run-open:focus-visible,#dw-first-run-overlay button:focus-visible {outline:3px solid #61f5d1;outline-offset:3px}
+  #dw-first-run :is(button,input):focus-visible,#dw-first-run-prompt button:focus-visible,#dw-first-run-open:focus-visible,#dw-first-run-overlay button:focus-visible {outline:3px solid #ABC6D7;outline-offset:3px}
 }
 @media (min-width:901px) and (max-width:1240px) {
   .dw-first-run-steps {grid-template-columns:minmax(0,1fr)}
