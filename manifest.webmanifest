@@ -6,8 +6,8 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#051338",
-  "theme_color": "#051338",
+  "background_color": "#0A1B2E",
+  "theme_color": "#0A1B2E",
   "icons": [
     {
       "src": "/icons/icon-192.png?v=doweo-mobile-brand-v3",
