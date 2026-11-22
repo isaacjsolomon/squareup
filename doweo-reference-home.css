@@ -692,6 +692,13 @@
   visibility:hidden!important;pointer-events:none!important;
  }
 }
+/* Desktop Trackers: navy text on the existing mint Create new tracker button.
+   Scoped to this button only; preserve the background and all mobile styling. */
+@media(min-width:901px){
+ html body.trackers-view #trackers-page #trackers-gallery > .sq-create-tracker-row > #tracker-gallery-new{
+  color:#102143!important;
+ }
+}
 /* Only extend the new colors to mobile: leave all existing mobile layouts,
    the fixed bottom navigation and mobile Bills page positions unchanged. */
 @media(max-width:900px){
