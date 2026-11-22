@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {chromium} from 'playwright';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const unifiedCss=readFileSync(new URL('../styles.css',import.meta.url),'utf8');
 const scripts=['doweo-finance-planning.js','doweo-trips-activity.js','doweo-paylinks-currency.js'].map(name=>readFileSync(new URL('../'+name,import.meta.url),'utf8'));
 test('mobile Finance Hub keeps original tabs and keeps the retired launcher row hidden',async()=>{
  const browser=await chromium.launch({headless:true});
@@ -10,6 +11,7 @@ test('mobile Finance Hub keeps original tabs and keeps the retired launcher row 
   const page=await browser.newPage({viewport:{width:390,height:844}});
   await page.route('**/*',route=>route.abort());
   await page.setContent(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,''));
+  await page.addStyleTag({content:unifiedCss});
   await page.evaluate(()=>{
    const root=document.getElementById('sq-nextgen');
    root.hidden=false;
@@ -51,6 +53,7 @@ test('desktop cash flow metrics and transaction action fit the workspace',async(
   const page=await browser.newPage();
   await page.route('**/*',route=>route.abort());
   await page.setContent(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,''));
+  await page.addStyleTag({content:unifiedCss});
   await page.evaluate(()=>{
    document.body.classList.add('sq-finance-open');
    document.querySelector('#sq-nextgen').hidden=false;
@@ -78,6 +81,7 @@ test('desktop section bars route to the existing views and exclude retired pages
   const page=await browser.newPage({viewport:{width:1440,height:900}});
   await page.route('**/*',route=>route.abort());
   await page.setContent(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,''));
+  await page.addStyleTag({content:unifiedCss});
   const code=await page.evaluate(source=>{
    const parsed=new DOMParser().parseFromString(source,'text/html');
    return [...parsed.scripts].find(s=>s.textContent.includes('window.squareUpOpenFinanceHub=open')).textContent;
@@ -121,6 +125,7 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
   await page.goto('https://chat.test/');
   await page.route('**/*',route=>route.abort());
   await page.setContent(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,''));
+  await page.addStyleTag({content:unifiedCss});
   const init=html.slice(html.indexOf('function initMobileChatInbox(){'),html.indexOf('initMobileChatInbox();')+'initMobileChatInbox();'.length);
   await page.addScriptTag({content:`
    const currentUser={id:'a'},current={id:'t'},sqMentionIds=new Set();
@@ -151,8 +156,8 @@ test('mobile Chat opens the tracker inbox, a thread, then returns to the inbox',
    reference.set(height,await geometry());
   }
   await page.locator('#dw-chat-nav').evaluate(b=>b.click());
-  await page.waitForFunction(()=>{const b=document.querySelector('#dw-chat-rows>button');return b&&getComputedStyle(b).backgroundColor==='rgb(11, 37, 53)'});
-  assert.equal(await page.locator('#dw-chats').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(6, 27, 41)');
+  await page.waitForFunction(()=>{const b=document.querySelector('#dw-chat-rows>button');return b&&getComputedStyle(b).backgroundColor==='rgb(14, 35, 55)'});
+  assert.equal(await page.locator('#dw-chats').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(14, 35, 55)');
   assert.notEqual(await dock.evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 255, 255)');
   await page.locator('#dw-chat-rows button').waitFor({state:'attached'});
   assert.deepEqual(await bodyLayout(),standardLayout);
@@ -196,6 +201,7 @@ test('desktop report tabs clear the visible toolbar on Analytics and Cash Flow',
   const page=await browser.newPage();
   await page.route('**/*',route=>route.abort());
   await page.setContent(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,''));
+  await page.addStyleTag({content:unifiedCss});
   const alignment=await page.evaluate(source=>[...new DOMParser().parseFromString(source,'text/html').scripts].find(s=>s.textContent.includes("style.setProperty('--dw-report-top'")).textContent,html);
   await page.addScriptTag({content:alignment});
   for(const width of [1024,1440,2048]){
