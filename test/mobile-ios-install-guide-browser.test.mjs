@@ -7,7 +7,7 @@ import {chromium} from 'playwright';
 // stand-in DOM that can pass even when the actual button is missing.
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const start=html.indexOf('<div class="sq-balanced-overlay" id="sq-mobile-more-sheet"');
-const end=html.indexOf('<style id="dw-mobile-social-menu-style">',start);
+const end=html.indexOf('<script id="sq-balanced-mobile-script">',start);
 assert.ok(start>=0 && end>start,'real mobile More markup exists');
 const realMoreMarkup=html.slice(start,end);
 
