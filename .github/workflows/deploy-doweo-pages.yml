@@ -81,7 +81,8 @@ jobs:
           grep -Fq 'UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121' .pages-output/index.html
           grep -Fq 'id="dw-route-visual-enforcer-v6"' .pages-output/index.html
           grep -Fq 'doweo-unified-shell.css?v=20261122-fixed-tabs-v4' .pages-output/index.html
-          grep -Fq 'id="dw-bills-restored-dark-v8"' .pages-output/index.html
+          grep -Fq 'id="dw-bills-exact-reference-v9"' .pages-output/index.html
+          grep -Fq 'gradient, not a white' .pages-output/index.html || grep -Fq 'linear-gradient(145deg,#102139 0%,#10223b 52%,#0d2037 100%)' .pages-output/index.html
           node --test test/doweo-css-consolidation.test.mjs
           test -s .pages-output/doweo-unified-shell.css
           test -s .pages-output/doweo-unified-shell.js
@@ -129,7 +130,7 @@ jobs:
             if [[ "$page" == *'UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121'* ]] &&
                [[ "$page" == *'doweo-desktop-v5-navy-analytics'* ]] &&
                [[ "$page" == *'id="dw-route-visual-enforcer-v6"'* ]] &&
-               [[ "$page" == *'id="dw-bills-restored-dark-v8"'* ]] &&
+               [[ "$page" == *'id="dw-bills-exact-reference-v9"'* ]] &&
                [[ "$css" == *'Desktop screenshot correction v4'* ]]; then
               echo "Production HTML and CSS version verified on doweo.app"
               exit 0
