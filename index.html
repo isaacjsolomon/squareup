@@ -23,7 +23,7 @@
 <!-- DoWeo installable app -->
 <link rel="manifest" href="/manifest.webmanifest?v=doweo-mobile-brand-v3">
 <meta name="theme-color" content="#071827">
-<meta name="dw-mobile-theme-build" content="mobile-navy-v5-20261122">
+<meta name="dw-mobile-theme-build" content="mobile-navy-v7-photo-and-buttons-20261122">
 <meta name="application-name" content="DoWeo">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -3015,9 +3015,16 @@ async function applyBackdrop() {
     : (phoneTheme
        ? (MOBILE_PRESETS[b.preset] || navyCanvas)
        : (PRESETS[b.preset] || PRESETS.indigo).css);
+  // Keep uploaded tracker photos intact but color-grade them to navy on
+  // mobile, where the photo's original pale areas can resemble beige panels.
   el.style.setProperty("background-image", chosenImage, phoneTheme ? "important" : "");
-  if (phoneTheme) el.style.setProperty("background-color", "#0a1b2e", "important");
-  else el.style.removeProperty("background-color");
+  if (phoneTheme) {
+    el.style.setProperty("background-color", url ? "#6d9cb8" : "#0a1b2e", "important");
+    el.style.setProperty("background-blend-mode", url ? "multiply" : "normal", "important");
+  } else {
+    el.style.removeProperty("background-color");
+    el.style.removeProperty("background-blend-mode");
+  }
   var tint = url ? await photoTint(url) : null;
   if (run !== backdropRun) return;
   setSideTint(tint || (PRESETS[url ? "indigo" : b.preset] || PRESETS.indigo).side);
@@ -9243,7 +9250,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 
 <script id="dw-mobile-home-layered-script">(function(){
  const d=document.getElementById('tracker-dashboard'),source=document.getElementById('sq-return-summary');if(!d||!source)return;const media=matchMedia('(max-width:900px)');let queued=false,billTracker=null,bills=[],billSeq=0;
- const home=document.createElement('section');home.id='dw-mobile-home-layered';home.setAttribute('aria-label','Mobile tracker overview');home.innerHTML='<h2 id="dw-mh-greeting">Welcome back</h2><section class="dw-mh-hero" aria-label="Tracker balance"><strong id="dw-mh-amount">—</strong><span id="dw-mh-caption">Your tracker balance</span><div class="dw-mh-actions"><button type="button" data-mh-action="sq-clean-settle">Settle up</button><button type="button" data-mh-action="quick-pay-now">Pay now</button><button type="button" data-mh-action="quick-payment">Log payment</button></div></section><div class="dw-mh-grid"><button type="button" class="dw-mh-small" id="dw-mh-members"><h3>Members</h3><span id="dw-mh-people" aria-hidden="true"></span><span id="dw-mh-members-count"></span></button><button type="button" class="dw-mh-small" id="dw-mh-upcoming"><h3>Upcoming</h3><span id="dw-mh-upcoming-name">Loading…</span><strong id="dw-mh-upcoming-amount"></strong></button></div><section class="dw-mh-activity" aria-label="Recent activity"><div class="dw-mh-activity-head"><h3>Recent activity</h3><button type="button" class="dw-mh-see-all">See all ›</button></div><div id="dw-mh-activity-list"></div></section>';
+ const home=document.createElement('section');home.id='dw-mobile-home-layered';home.setAttribute('aria-label','Mobile tracker overview');home.innerHTML='<h2 id="dw-mh-greeting">Welcome back</h2><section class="dw-mh-hero" aria-label="Tracker balance"><strong id="dw-mh-amount">—</strong><span id="dw-mh-caption">Your tracker balance</span><div class="dw-mh-actions"><button type="button" data-mh-action="sq-clean-settle" aria-label="Settle up"><span class="dw-mh-settle-label" style="color:#062e36!important;-webkit-text-fill-color:#062e36!important;font-size:13px!important;font-weight:800!important;opacity:1!important;visibility:visible!important;">Settle up</span></button><button type="button" data-mh-action="quick-pay-now">Pay now</button><button type="button" data-mh-action="quick-payment">Log payment</button></div></section><div class="dw-mh-grid"><button type="button" class="dw-mh-small" id="dw-mh-members"><h3>Members</h3><span id="dw-mh-people" aria-hidden="true"></span><span id="dw-mh-members-count"></span></button><button type="button" class="dw-mh-small" id="dw-mh-upcoming"><h3>Upcoming</h3><span id="dw-mh-upcoming-name">Loading…</span><strong id="dw-mh-upcoming-amount"></strong></button></div><section class="dw-mh-activity" aria-label="Recent activity"><div class="dw-mh-activity-head"><h3>Recent activity</h3><button type="button" class="dw-mh-see-all">See all ›</button></div><div id="dw-mh-activity-list"></div></section>';
  const by=id=>document.getElementById(id),tab=name=>d.querySelector('[data-sq-tab="'+name+'"]')?.click(),money=(n,c)=>new Intl.NumberFormat(undefined,{style:'currency',currency:c||'USD'}).format(Number(n)||0);
  home.querySelectorAll('[data-mh-action]').forEach(button=>button.onclick=()=>{const target=by(button.dataset.mhAction);if(!target)return;if(typeof target.onclick==='function')target.onclick.call(target);else target.click();});
  byIdLocal('dw-mh-members').onclick=()=>tab('members');byIdLocal('dw-mh-upcoming').onclick=()=>tab('bills');home.querySelector('.dw-mh-see-all').onclick=()=>tab('expenses');
@@ -9642,7 +9649,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 <link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261122-polls-teal-buttons-v13">
 <link rel="stylesheet" href="/doweo-polls-dashboard.css?v=20261122-polls-dashboard-v1">
 <!-- Single authoritative mobile theme: inlined to avoid a stale PWA stylesheet. -->
-<style id="dw-mobile-theme-authoritative-v5">
+<style id="dw-mobile-theme-authoritative-v7">
 /* DoWeo mobile palette — navy + mint; no yellow, beige, cream or purple canvas.
    This supersedes earlier mobile color-scheme locks. Visual styling only;
    never touch desktop geometry, navigation, tracker data or user photos. */
@@ -9661,10 +9668,23 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
     --dw-receipt-alert-bg:#15384a;
     --dw-receipt-alert-border:#3d8f86;
     --dw-tracker-banner-highlight:rgba(79,225,200,.24);
+    --dw-photo-overlay:rgba(7,24,42,.48);
+    --accent:#60f1ad;
+    --on-accent:#062e36;
   }
   html {
     background-color:var(--dw-mobile-canvas)!important;
     background-image:none!important;
+  }
+  /* Uploaded photos stay stored and visible, but are navy color-graded on
+     phones so pale/cream areas do not leak into the visual theme. */
+  html body #backdrop#backdrop.photo {
+    background-color:#6d9cb8!important;
+    background-blend-mode:multiply!important;
+  }
+  html body #backdrop#backdrop.photo::after {
+    background:var(--dw-photo-overlay)!important;
+    pointer-events:none!important;
   }
   /* Before JS applies the stored mobile preset, display a navy fallback.
      Do NOT override JS-selected presets or uploaded photos. */
@@ -9719,14 +9739,46 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   html body #sq-instagram-invite .sq-ig-later {
     color:var(--dw-mobile-muted)!important;
   }
-  /* The first balance action used mint text on a mint fill, making it blank. */
-  html body #tracker-dashboard #dw-mobile-home-layered .dw-mh-actions button:first-child,
-  html body #tracker-dashboard #dw-mobile-home-layered .dw-mh-actions button:first-child :is(span,strong,small,b,svg) {
+  /* First balance action: explicit label, not color inherited from a
+     previously locked accent rule (invisible mint-on-mint in iOS Safari). */
+  html body #tracker-dashboard #dw-mobile-home-layered .dw-mh-actions button[data-mh-action="sq-clean-settle"] {
+    background:#60f1ad!important;
     color:#062e36!important;
     -webkit-text-fill-color:#062e36!important;
+    opacity:1!important;
   }
-  /* Mobile receipt and banner colors are now consumed by their original
-     styles.css rules through the scoped variables above. */
+  html body #tracker-dashboard #dw-mobile-home-layered .dw-mh-actions button[data-mh-action="sq-clean-settle"] .dw-mh-settle-label {
+    display:inline-block!important;
+    color:#062e36!important;
+    -webkit-text-fill-color:#062e36!important;
+    font-size:13px!important;
+    font-weight:800!important;
+    line-height:1.2!important;
+    text-align:center!important;
+    text-indent:0!important;
+    opacity:1!important;
+    visibility:visible!important;
+    text-shadow:none!important;
+  }
+  /* Consistent navy surfaces for standard mobile dialogs. Only visual
+     treatment changes; forms, keyboard, inputs, and click handlers remain. */
+  html body :is(
+    #backdrop-modal .card.modal,
+    .dw-standard-dialog-overlay .card.modal,
+    #dw-beta-modal .dw-panel,
+    #sq-instagram-invite .sq-ig-card
+  ) {
+    background-color:#102b40!important;
+    background-image:none!important;
+    border-color:#355e72!important;
+    color:#f3f8fc!important;
+  }
+  html body :is(#backdrop-modal .card.modal,#dw-beta-modal .dw-panel)
+      :is(h1,h2,h3,p,label,small) {
+    color:#f3f8fc!important;
+  }
+  /* Receipt and tracker banner colors are consumed by the original CSS
+     rules through these mobile-scoped semantic variables. */
 }
 </style>
 </body>
