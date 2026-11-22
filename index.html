@@ -933,7 +933,9 @@ function computeNet() {
 }
 
 // ============ DRAWING ============
-var COLORS = ["#6366f1", "#ec4899", "#f59e0b", "#10b981", "#0ea5e9", "#8b5cf6", "#ef4444", "#14b8a6"];
+var COLORS = window.matchMedia("(max-width:900px)").matches
+  ? ["#60f1ad","#39b7dc","#63b8d3","#38a9a3","#326b93","#6bbfcd","#2b8f86","#7db9db"]
+  : ["#6366f1", "#ec4899", "#f59e0b", "#10b981", "#0ea5e9", "#8b5cf6", "#ef4444", "#14b8a6"];
 function avatar(name, idx) {
   return '<div class="avatar" style="background:' + COLORS[idx % COLORS.length] + '">' + esc(name.charAt(0)) + "</div>";
 }
@@ -2910,6 +2912,16 @@ var PRESETS = {
   night:  { label: "Night",  css: "linear-gradient(135deg, #020617, #334155)", side: [148, 163, 184] },
   berry:  { label: "Berry",  css: "linear-gradient(135deg, #4a044e, #6b21a8)", side: [216, 180, 254] }
 };
+// Mobile palette equivalents for the built-in preset picker. User-uploaded
+// wallpaper photos stay untouched; desktop continues to use PRESETS.
+var MOBILE_PRESETS = {
+  indigo: "linear-gradient(155deg,#0a1b2e 0%,#10283e 52%,#15364b 100%)",
+  sunset: "linear-gradient(135deg,#102b40,#176177)",
+  ocean:  "linear-gradient(135deg,#0b2940,#175c7a)",
+  forest: "linear-gradient(135deg,#0c2b3e,#175b56)",
+  night:  "linear-gradient(135deg,#071827,#17354b)",
+  berry:  "linear-gradient(135deg,#142b45,#28536a)"
+};
 
 // Side panel takes a medium tint of the backdrop: a fixed tint for presets,
 // or the photo's average color mixed toward white.
@@ -2976,11 +2988,13 @@ async function applyBackdrop() {
   // old style blocks cannot resurrect the purple/beige canvas.
   const phoneTheme = window.matchMedia("(max-width:900px)").matches;
   const navyCanvas = "linear-gradient(155deg,#0a1b2e 0%,#10283e 52%,#15364b 100%)";
-  // The phone UI uses one consistent navy canvas for all palette presets.
-  // Uploaded tracker photo wallpapers are the one intentional exception.
+  // Mobile uses cool navy/blue/teal presets. Uploaded wallpaper photos
+  // take precedence. Desktop retains the original preset gradients.
   const chosenImage = url
     ? 'url("' + url + '")'
-    : (phoneTheme ? navyCanvas : (PRESETS[b.preset] || PRESETS.indigo).css);
+    : (phoneTheme
+       ? (MOBILE_PRESETS[b.preset] || navyCanvas)
+       : (PRESETS[b.preset] || PRESETS.indigo).css);
   el.style.setProperty("background-image", chosenImage, phoneTheme ? "important" : "");
   if (phoneTheme) el.style.setProperty("background-color", "#0a1b2e", "important");
   else el.style.removeProperty("background-color");
@@ -3001,7 +3015,7 @@ function renderBackdropPicker() {
     : "This backdrop is saved on this device only.";
   var html = Object.keys(PRESETS).map(function (k) {
     return '<button type="button" class="swatch' + (b.preset === k ? " active" : "") + '" data-preset="' + k +
-      '" style="background-image:' + PRESETS[k].css + '">' + PRESETS[k].label + "</button>";
+      '" style="background-image:' + (window.matchMedia("(max-width:900px)").matches ? MOBILE_PRESETS[k] : PRESETS[k].css) + '">' + PRESETS[k].label + "</button>";
   }).join("");
   if (b.preset === "photo") {
     var bg = $("backdrop").style.backgroundImage;
@@ -4168,7 +4182,10 @@ function renderSquareUpAnalytics(){
  var personRows=Object.entries(people).sort((a,b)=>b[1]-a[1]);
  if(!personRows.length){peopleEl.innerHTML='<p class="sq-analytics-empty">No expenses recorded for this period.</p>';}
  else{
-  var colors=['#65f5ac','#37a9ff','#f9bb70','#a993ff','#fb85aa','#56d4d8'];var angle=0;
+  var colors=window.matchMedia("(max-width:900px)").matches
+    ? ['#60f1ad','#37a9ff','#68c5d9','#419eaa','#58a9db','#70d3bc']
+    : ['#65f5ac','#37a9ff','#f9bb70','#a993ff','#fb85aa','#56d4d8'];
+  var angle=0;
   var stops=personRows.map((row,i)=>{var from=angle;angle+=row[1]/total*100;return colors[i%colors.length]+' '+from.toFixed(3)+'% '+angle.toFixed(3)+'%';});
   peopleEl.innerHTML='<div class="sq-person-donut" style="background:conic-gradient('+stops.join(',')+')"><div class="sq-person-donut-hole"><strong>'+squareUpMoney(total)+'</strong><span>Total</span></div></div><div class="sq-person-legend">'+personRows.map((r,i)=>'<div class="sq-person-legend-item"><span class="sq-person-dot" style="background:'+colors[i%colors.length]+'"></span><div><span>'+esc(r[0])+'</span><strong>'+squareUpMoney(r[1])+'</strong><small>'+(r[1]/total*100).toFixed(0)+'% of total</small></div></div>').join('')+'</div>';
  }
@@ -4301,10 +4318,10 @@ var sqTemplateProfiles=[
  {name:'Roommates',icon:'🏠',accent:'#4de3b8',soft:'#174c48',cats:['Rent','Electricity','Groceries','Utilities'],actions:[['Add a bill','expense','Rent'],['Recurring expenses','recurring'],['Settle up','pay']]},
  {name:'Vacation',icon:'✈️',accent:'#65c9ff',soft:'#204b70',cats:['Flights','Hotels','Food & Dining','Activities'],actions:[['Add travel expense','expense','Flights'],['Scan receipt','receipt'],['Trip budget','budget']]},
  {name:'School Trip',icon:'🎓',accent:'#b5a0ff',soft:'#443e70',cats:['Transportation','Food & Dining','Tickets','Supplies'],actions:[['Add group expense','expense','Transportation'],['Group budget','budget'],['Split a bill','split']]},
- {name:'Weekend Getaway',icon:'🌴',accent:'#f9cb70',soft:'#62512e',cats:['Lodging','Food & Dining','Activities','Transportation'],actions:[['Quick expense','expense','Lodging'],['Split a bill','split'],['Settle up','pay']]},
+ {name:'Weekend Getaway',icon:'🌴',accent:window.matchMedia("(max-width:900px)").matches?'#60f1ad':'#f9cb70',soft:window.matchMedia("(max-width:900px)").matches?'#173c4a':'#62512e',cats:['Lodging','Food & Dining','Activities','Transportation'],actions:[['Quick expense','expense','Lodging'],['Split a bill','split'],['Settle up','pay']]},
  {name:'Shared Household',icon:'👥',accent:'#4de3b8',soft:'#214d52',cats:['Rent','Electricity','Water','Gas','Internet','Groceries','Amenities','Other bills'],actions:[['Add purchase','expense','Rent'],['Scan receipt','receipt'],['Recurring expenses','recurring']]},
  {name:'Camping Trip',icon:'🏕️',accent:'#9ad68e',soft:'#365638',cats:['Campsite','Firewood','Food & Dining','Gear'],actions:[['Add camping expense','expense','Campsite'],['Split a bill','split'],['Trip budget','budget']]},
- {name:'Food & Dining',icon:'🍴',accent:'#f4bb75',soft:'#67462c',cats:['Meals','Drinks','Tax + tip','Groceries'],actions:[['Split this bill','split'],['Scan receipt','receipt'],['Add meal','expense','Meals']]}
+ {name:'Food & Dining',icon:'🍴',accent:window.matchMedia("(max-width:900px)").matches?'#69bce0':'#f4bb75',soft:window.matchMedia("(max-width:900px)").matches?'#153a54':'#67462c',cats:['Meals','Drinks','Tax + tip','Groceries'],actions:[['Split this bill','split'],['Scan receipt','receipt'],['Add meal','expense','Meals']]}
 ];
 function sqTemplateIndexForTracker(){
  if(!current||!current.id)return -1;
@@ -5551,7 +5568,10 @@ input.addEventListener('input',draw);
 <script>
 (function(){
 const root=document.getElementById('budget-card');if(!root)return;
-let type='recurring',view='overview';const colors=['#ff6d7e','#8c6afa','#3679ff','#ffcb57','#27d3a7','#9bb6d4','#f98c53','#5bbacb'];
+let type='recurring',view='overview';
+const colors=window.matchMedia("(max-width:900px)").matches
+  ? ['#60f1ad','#3e94c9','#3679bd','#64b3d6','#27d3a7','#9bb6d4','#4b9fa9','#5bbacb']
+  : ['#ff6d7e','#8c6afa','#3679ff','#ffcb57','#27d3a7','#9bb6d4','#f98c53','#5bbacb'];
 const $=id=>document.getElementById(id);const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>typeof sqFormat==='function'?sqFormat(n):'$'+Number(n||0).toFixed(2);
 const dateISO=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
