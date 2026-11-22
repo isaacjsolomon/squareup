@@ -95,8 +95,8 @@ test('production HTML and Cloudflare copy all scripts, CSS and complete locales 
   assert.ok(deploy.includes(filename),'Cloudflare build missing '+filename);
  }
  for(const filename of ['doweo-unified-shell.css','doweo-unified-shell.js','doweo-unified-localize.js'])
-  assert.match(html,new RegExp('/'+filename.replaceAll('.','\\.')+'\\?v=2026112[12]-'),filename+' not linked in live HTML');
- assert.ok(html.includes('/doweo-reference-home.js?v=20261122-add-no-chevron-v2'));
+  assert.match(html,new RegExp('/'+filename.replaceAll('.','\\.')+'\\?v=20261122-approved-seven-palette-v2'),filename+' not linked in live HTML');
+ assert.ok(html.includes('/doweo-reference-home.js?v=20261122-approved-seven-palette-v2'));
  assert.match(lang,/import\('\/doweo-unified-locales\.mjs'\)/);
  assert.match(deploy,/node --check \.pages-output\/doweo-unified-shell\.js/);
  assert.match(deploy,/node --test test\/doweo-unified-shell\.test\.mjs/);
