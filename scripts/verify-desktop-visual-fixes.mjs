@@ -8,7 +8,7 @@ try{
  await page.goto(base+'/?visual-check=original-instagram-v3',{waitUntil:'domcontentloaded',timeout:45000});
  await page.locator('#sq-instagram-invite').waitFor({state:'attached',timeout:20000});
  await page.waitForFunction(()=>{
-  return !!Array.from(document.styleSheets).find(s=>s.href?.includes('doweo-desktop-standalone.css?v=20261122-polls-teal-buttons-v13'));
+  return !!Array.from(document.styleSheets).find(s=>s.href?.includes('doweo-desktop-standalone.css?v=20261122-approved-seven-palette-v2'));
  },null,{timeout:25000});
 
  const result=await page.evaluate(async()=>{
@@ -98,8 +98,8 @@ try{
   assert.equal(part.openClass,false,name+' navigation must clear cashflow-open state');
  }
  assert.equal(financeNav.headingStyle,'none','Old dark finance heading card must be hidden');
- assert.equal(financeNav.panelBackground,'rgb(247, 250, 255)','Cash Flow panels must match Spending Analytics white cards');
- assert.equal(financeNav.titleColor,'rgb(25, 45, 80)','Cash Flow title must match Analytics navy typography');
+ assert.equal(financeNav.panelBackground,'rgb(243, 248, 252)','Cash Flow panels must match Spending Analytics white cards');
+ assert.equal(financeNav.titleColor,'rgb(23, 55, 80)','Cash Flow title must match Analytics navy typography');
  assert.equal(financeNav.kpiCount,4,'Cash Flow must display four analytics-style KPI cards');
  assert.equal(financeNav.chartCount,2,'Cash Flow must display two analytics-style chart panels');
  assert.equal(financeNav.headerSurface,'rgba(0, 0, 0, 0)','Cash Flow topbar backdrop must be transparent');
