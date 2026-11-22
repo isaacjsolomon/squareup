@@ -9,7 +9,7 @@ const js=read('doweo-desktop-standalone.js');
 const workflow=read('.github/workflows/deploy-doweo-pages.yml');
 
 test('desktop-only full-page workspace assets deploy and preserve mobile dialogs',()=>{
- assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-topbar-backdrop-fix-v8/);
+ assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-full-bleed-header-v9/);
  assert.match(html,/doweo-desktop-standalone\.js\?v=20261122-wallpaper-mirror-v3/);
  assert.match(workflow,/doweo-desktop-standalone\.css doweo-desktop-standalone\.js/);
  assert.match(css,/@media\(min-width:901px\)/);
@@ -39,6 +39,8 @@ test('Cash Flow matches Spending Analytics white panels, KPIs and visual charts'
  assert.match(css,/\.dw-cash-donut/);
  assert.match(css,/\.dw-cash-panel/);
  assert.match(css,/rgba\(9,27,48,\.35\)/);
+ assert.match(css,/top:0!important;bottom:0!important/);
+ assert.match(css,/padding:calc\(var\(--dw-report-top,96px\) \+ 20px\)/);
  assert.match(css,/#dw-all-topbar\{/);
  assert.match(html,/dwCashFlowAnalyticsRender/);
  assert.match(html,/doweo-cashflow-analytics\.js\?v=20261122-analytics-match-v1/);
