@@ -23,25 +23,25 @@
   return host;
  }
  const style=document.createElement('style');style.textContent=`
- #dw-paylink-launch{border:1px solid #487784;border-radius:12px;background:#12354a;color:#e9faff;min-height:44px;padding:10px 14px;font-weight:750;cursor:pointer}
- #dw-paylink-launch[aria-pressed=true]{background:#138781;border-color:#4ad5c2}
+ #dw-paylink-launch{border:1px solid #355E72;border-radius:12px;background:#173750;color:#F3F8FC;min-height:44px;padding:10px 14px;font-weight:750;cursor:pointer}
+ #dw-paylink-launch[aria-pressed=true]{background:#355E72;border-color:#ABC6D7}
  #dw-paylink-pane[hidden],#dw-paylink-pane [hidden]{display:none!important}
- #dw-paylink-pane{background:#0d2a3e;color:#f3feff;border:1px solid #426a7b;border-radius:19px;padding:19px;margin:16px 0;max-width:100%;box-sizing:border-box}
- #dw-paylink-pane h2{font-size:22px;margin:0 0 8px;color:#f5ffff}
- #dw-paylink-pane p{font-size:13px;line-height:1.5;color:#b1cbd6;margin:6px 0 14px}
+ #dw-paylink-pane{background:#102B40;color:#F3F8FC;border:1px solid #355E72;border-radius:19px;padding:19px;margin:16px 0;max-width:100%;box-sizing:border-box}
+ #dw-paylink-pane h2{font-size:22px;margin:0 0 8px;color:#F3F8FC}
+ #dw-paylink-pane p{font-size:13px;line-height:1.5;color:#ABC6D7;margin:6px 0 14px}
  #dw-paylink-pane .dw-pay-row{display:flex;gap:11px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
- #dw-paylink-pane label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:#c0dce7;font-weight:750;flex:1;min-width:120px}
- #dw-paylink-pane input,#dw-paylink-pane select,#dw-paylink-pane button{font:inherit;padding:10px 12px;min-height:43px;border-radius:11px;border:1px solid #426f80;background:#123649;color:#f2ffff;max-width:100%;box-sizing:border-box}
+ #dw-paylink-pane label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:#ABC6D7;font-weight:750;flex:1;min-width:120px}
+ #dw-paylink-pane input,#dw-paylink-pane select,#dw-paylink-pane button{font:inherit;padding:10px 12px;min-height:43px;border-radius:11px;border:1px solid #355E72;background:#173750;color:#F3F8FC;max-width:100%;box-sizing:border-box}
  #dw-paylink-pane button{cursor:pointer;font-weight:750}
- #dw-paylink-pane button.dw-pay-primary{background:#2ad4bf;color:#072e37;border-color:#2ad4bf}
+ #dw-paylink-pane button.dw-pay-primary{background:#ABC6D7;color:#102B40;border-color:#ABC6D7}
  #dw-paylink-pane button:disabled{opacity:.6;cursor:wait}
- #dw-paylink-pane .dw-pay-card{background:#153a4e;border:1px solid #365e70;border-radius:12px;padding:12px;margin:10px 0;overflow-wrap:anywhere}
- #dw-paylink-pane .dw-pay-card a{color:#70e9d9;overflow-wrap:anywhere}
- #dw-paylink-pane .dw-pay-qr{display:grid;place-items:center;max-width:210px;background:#fff;padding:8px;border-radius:9px;margin:10px 0}
+ #dw-paylink-pane .dw-pay-card{background:#173750;border:1px solid #355E72;border-radius:12px;padding:12px;margin:10px 0;overflow-wrap:anywhere}
+ #dw-paylink-pane .dw-pay-card a{color:#ABC6D7;overflow-wrap:anywhere}
+ #dw-paylink-pane .dw-pay-qr{display:grid;place-items:center;max-width:210px;background:#F3F8FC;padding:8px;border-radius:9px;margin:10px 0}
  #dw-paylink-pane .dw-pay-qr:empty{display:none}
- #dw-paylink-pane .dw-pay-status{min-height:22px;color:#b8ecdf;font-size:12px}
- #dw-weo-finance-control{display:flex;align-items:center;gap:7px;padding:6px 12px;color:#bedbe6;font-size:12px;cursor:pointer}
- #dw-weo-finance-control input{accent-color:#36dcc5;width:17px;height:17px}
+ #dw-paylink-pane .dw-pay-status{min-height:22px;color:#ABC6D7;font-size:12px}
+ #dw-weo-finance-control{display:flex;align-items:center;gap:7px;padding:6px 12px;color:#ABC6D7;font-size:12px;cursor:pointer}
+ #dw-weo-finance-control input{accent-color:#ABC6D7;width:17px;height:17px}
  @media(max-width:700px){#dw-paylink-pane{padding:13px;margin:12px 0}#dw-paylink-pane .dw-pay-row>*{width:100%;flex:1 1 100%}}
  `;document.head.append(style);
  const btn=document.createElement('button');btn.id='dw-paylink-launch';btn.type='button';btn.textContent='Payment Links & FX';btn.setAttribute('aria-pressed','false');toolsBar().append(btn);
