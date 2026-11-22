@@ -65,7 +65,14 @@ try{
    content,
    finance:[{id:'test-1',kind:'income',amount:100,description:'Sample income',category:'Work',occurred_on:today},
             {id:'test-2',kind:'expense',amount:20,description:'Sample expense',category:'Food',occurred_on:today}],
-   money:v=>'
+   money:v=>'$'+Number(v).toFixed(2),
+   esc:v=>String(v).replace(/[&<>"]/g,''),
+   refresh:()=>{}
+  });
+  const panelBackground=getComputedStyle(content.querySelector('.dw-cash-panel')).backgroundColor;
+  const titleColor=getComputedStyle(content.querySelector('.dw-cash-header h2')).color;
+  const kpiCount=content.querySelectorAll('.dw-cash-kpis .analytics-stat').length;
+  const chartCount=content.querySelectorAll('.dw-cash-charts .dw-cash-panel').length;
   const nav=document.createElement('button');nav.type='button';nav.textContent='Navigation regression probe';
   sidebar.append(nav);
   nav.click();
