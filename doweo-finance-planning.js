@@ -26,26 +26,26 @@
  }
  const style=document.createElement('style');
  style.textContent=`
- #dw-planning-launch{border:1px solid #4a7e88;border-radius:12px;background:#153849;color:#e7f9fa;min-height:44px;padding:10px 16px;font-weight:750;cursor:pointer}
- #dw-planning-launch[aria-pressed=true]{background:#117f82;border-color:#3cddc5;color:white}
+ #dw-planning-launch{border:1px solid #355E72;border-radius:12px;background:#173750;color:#F3F8FC;min-height:44px;padding:10px 16px;font-weight:750;cursor:pointer}
+ #dw-planning-launch[aria-pressed=true]{background:#355E72;border-color:#ABC6D7;color:#F3F8FC}
  #dw-planning-pane[hidden]{display:none!important}
- #dw-planning-pane{margin:18px 0 0;padding:20px;max-width:100%;box-sizing:border-box;background:#0e2b40;border:1px solid #3a6577;border-radius:19px;color:#effaff}
+ #dw-planning-pane{margin:18px 0 0;padding:20px;max-width:100%;box-sizing:border-box;background:#102B40;border:1px solid #355E72;border-radius:19px;color:#F3F8FC}
  #dw-planning-pane .dw-plan-row{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}
- #dw-planning-pane h2{font-size:22px;margin:0 0 6px;color:#f5fcff}
- #dw-planning-pane p{color:#acc8d3;font-size:13px;line-height:1.5;margin:4px 0 14px}
+ #dw-planning-pane h2{font-size:22px;margin:0 0 6px;color:#F3F8FC}
+ #dw-planning-pane p{color:#ABC6D7;font-size:13px;line-height:1.5;margin:4px 0 14px}
  #dw-planning-pane .dw-plan-tabs{display:flex;gap:8px;margin:16px 0;flex-wrap:wrap}
- #dw-planning-pane button,#dw-planning-pane select,#dw-planning-pane input{font:inherit;border:1px solid #426c7e;background:#102f43;color:#effaff;border-radius:11px;min-height:43px;padding:10px 12px;max-width:100%;box-sizing:border-box}
+ #dw-planning-pane button,#dw-planning-pane select,#dw-planning-pane input{font:inherit;border:1px solid #355E72;background:#102B40;color:#F3F8FC;border-radius:11px;min-height:43px;padding:10px 12px;max-width:100%;box-sizing:border-box}
  #dw-planning-pane button{cursor:pointer;font-weight:700}
- #dw-planning-pane button.dw-primary{background:#21ceb6;border-color:#21ceb6;color:#042d38}
+ #dw-planning-pane button.dw-primary{background:#355E72;border-color:#355E72;color:#102B40}
  #dw-planning-pane button:disabled{opacity:.6;cursor:wait}
  #dw-planning-pane .dw-plan-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
- #dw-planning-pane label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:#bdd9e5}
+ #dw-planning-pane label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:#ABC6D7}
  #dw-planning-pane .dw-plan-cards{display:grid;gap:10px;margin:16px 0}
- #dw-planning-pane .dw-plan-card{border-radius:13px;background:#14394e;border:1px solid #355f71;padding:14px;overflow-wrap:anywhere}
+ #dw-planning-pane .dw-plan-card{border-radius:13px;background:#173750;border:1px solid #355E72;padding:14px;overflow-wrap:anywhere}
  #dw-planning-pane .dw-plan-card strong{font-size:15px}
- #dw-planning-pane .dw-plan-progress{height:7px;background:#244d60;border-radius:20px;overflow:hidden;margin:10px 0 4px}
- #dw-planning-pane .dw-plan-progress span{display:block;height:100%;background:#33dac2;border-radius:20px}
- #dw-planning-pane .dw-plan-status{font-size:12px;min-height:18px;color:#d5f9f2}
+ #dw-planning-pane .dw-plan-progress{height:7px;background:#204158;border-radius:20px;overflow:hidden;margin:10px 0 4px}
+ #dw-planning-pane .dw-plan-progress span{display:block;height:100%;background:#ABC6D7;border-radius:20px}
+ #dw-planning-pane .dw-plan-status{font-size:12px;min-height:18px;color:#F3F8FC}
  @media(max-width:700px){#dw-planning-pane{margin:12px 0;padding:14px;border-radius:16px}#dw-planning-pane .dw-plan-fields{grid-template-columns:1fr}#dw-planning-pane .dw-plan-row>*{width:100%}}
  `;
  document.head.append(style);
