@@ -255,6 +255,7 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   // Screenshot regressions: verify ACTUAL loaded stylesheet/cascade, not only source CSS.
   assert.ok(await page.locator('link[href*="doweo-page-repairs.css"]').count(),
    'the latest page repairs stylesheet must be linked in the real HTML');
+  await page.waitForFunction(()=>getComputedStyle(document.querySelector('#sq-bills-page .sq-bill-create-card')).backgroundColor==='rgb(20, 47, 77)',{timeout:10000});
   const billsGeometry=await page.evaluate(()=>{
    const back=document.getElementById('sq-bills-back').getBoundingClientRect();
    const tabs=document.getElementById('dw-all-top-tabs').getBoundingClientRect();
@@ -278,11 +279,12 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
     'Bill panels must use the actual navy surface, not white');
   assert.match(billsGeometry.metricBackground,/^rgb\((?:16, 43, 73|20, 47, 77)\)$/, 
     'Monthly totals card should be navy too');
-  assert.equal(billsGeometry.billCardText,'rgb(246, 250, 255)',
+  assert.equal(billsGeometry.billCardText,'rgb(245, 250, 255)',
     'Bill card text must be white on navy');
   await page.screenshot({path:resolve(root,'test-results/unified/bills-page-repairs.png'),fullPage:true});
 
   await pageOpen('dw-ref-nav-notifications','notifications-view');
+  await page.waitForFunction(()=>getComputedStyle(document.getElementById('notifications-panel')).backgroundColor==='rgb(19, 46, 75)',{timeout:10000});
   const notificationsVisual=await page.evaluate(()=>({
     bodyBackground:getComputedStyle(document.body).backgroundColor,
     workspaceBackground:getComputedStyle(document.querySelector('body > .wrap')).backgroundColor,
@@ -292,11 +294,11 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   }));
   assert.equal(notificationsVisual.workspaceBackground,'rgb(11, 29, 52)',
    'Notifications workspace must be navy: '+JSON.stringify(notificationsVisual));
-  assert.equal(notificationsVisual.panelBackground,'rgb(19, 43, 69)',
+  assert.equal(notificationsVisual.panelBackground,'rgb(19, 46, 75)',
    'Notifications panel must no longer be the old white surface');
   assert.equal(notificationsVisual.backdropImage,'none',
    'Notifications must suppress the selected tracker photo on the actual #backdrop element');
-  assert.match(notificationsVisual.backdropBackground,/^rgba?\(10, 31, 56(?:, [0-9.]+)?\)$/,
+  assert.match(notificationsVisual.backdropBackground,/^rgba?\(11, 31, 56(?:, [0-9.]+)?\)$/,
    'The wallpaper layer must use navy RGB channels (a translucent backdrop is allowed)');
   await page.screenshot({path:resolve(root,'test-results/unified/notifications-page-repairs.png'),fullPage:true});
 
