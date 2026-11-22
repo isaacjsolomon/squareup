@@ -9607,3 +9607,139 @@ html body :is(.sq-friend-row:nth-child(4n+4) .sq-friend-avatar,
 .tracker-tile:nth-child(4n+4) .tracker-avatar){
   background:var(--surface-1);color:var(--text)
 }
+
+
+/* Desktop page repairs, Nov 2026. Scoped to desktop; original mobile geometry untouched.
+   This section deliberately does not change DOM targets, routing or transaction controls. */
+@media (min-width:901px) {
+  /* Notifications: replace the washed-out photographic workspace with navy. */
+  html body.notifications-view,
+  html body.notifications-view .wrap {
+    background-color:#0b1d34!important;
+    background-image:none!important;
+  }
+  html body.notifications-view #notifications-page {
+    background:#0b1d34!important;
+    color:#f0f6ff!important;
+    max-width:1120px!important;
+    padding:24px 24px 72px!important;
+    box-sizing:border-box;
+  }
+  html body.notifications-view #notifications-page .sq-notifications-header h2 {
+    color:#f0f6ff!important;
+  }
+  html body.notifications-view #notifications-page #notifications-panel {
+    background:#132943!important;
+    border:1px solid #375570!important;
+    box-shadow:0 12px 32px rgba(0,0,0,.16)!important;
+    color:#f0f6ff!important;
+  }
+  html body.notifications-view #notifications-page #notifications-list .entry {
+    background:#1c3551!important;
+    color:#f0f6ff!important;
+    border:1px solid #375570!important;
+  }
+  html body.notifications-view #notifications-page :is(.entry b,.entry strong,.notification-panel-heading) {
+    color:#fff!important;
+  }
+  html body.notifications-view #notifications-page :is(.entry .note,.entry .text small,.sq-notification-tools label) {
+    color:#bed0e2!important;
+  }
+  html body.notifications-view #notifications-page #sq-notification-filter {
+    background:#f2f6ff!important;color:#142746!important;
+    border:1px solid #7892ac!important;
+  }
+
+  /* Bills: locate the existing Back button BELOW shared tabs, next to the heading,
+     while keeping its original DOM position/handler and mobile layout unchanged. */
+  html body #sq-bills-page {position:relative!important;}
+  html body #sq-bills-page .sq-bills-back {
+    position:absolute!important;top:83px!important;right:310px!important;
+    z-index:3!important;margin:0!important;max-width:180px!important;
+    white-space:nowrap!important;background:#12344d!important;
+    color:#fff!important;border:1px solid #5be3c7!important;
+    padding:10px 14px!important;min-height:42px!important;
+  }
+  html body #sq-bills-page .sq-bills-title {margin-top:38px!important;}
+  @media (max-width:1170px) {
+    html body #sq-bills-page .sq-bills-back {right:20px!important;top:85px!important}
+    html body #sq-bills-page .sq-bills-title {margin-top:50px!important;}
+  }
+
+  /* The calendar has its own navy surface with solid readable labels and dates. */
+  html body #sq-bills-page .sq-premium-calendar {
+    background:#102743!important;
+    background-image:none!important;
+    color:#f5f9ff!important;border:1px solid #41617b!important;
+    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  }
+  html body #sq-bills-page .sq-premium-calendar :is(h3,strong,.sq-premium-calhead,.sq-premium-selected) {
+    color:#f5f9ff!important;
+  }
+  html body #sq-bills-page .sq-premium-days>span,
+  html body #sq-bills-page .sq-premium-selected :is(small,p) {
+    color:#b9cee3!important;
+  }
+  html body #sq-bills-page .sq-premium-days button {
+    color:#f1f7ff!important;
+  }
+  html body #sq-bills-page .sq-premium-days button:disabled {
+    color:#9bb2cc!important;opacity:.5!important;
+  }
+  html body #sq-bills-page .sq-premium-days button.has-bill,
+  html body #sq-bills-page .sq-premium-days button.chosen {
+    background:#155065!important;color:#fff!important;
+  }
+  html body #sq-bills-page .sq-premium-calhead button {
+    background:#20455e!important;color:#fff!important;border:1px solid #52718a!important;
+  }
+  html body #sq-bills-page .sq-premium-selected {
+    border-top:1px solid #41617b!important;
+  }
+  html body #sq-bills-page :is(.sq-premium-metrics article span,.sq-premium-metrics article small,.sq-bills-help,.sq-bills-tracker-compact label) {
+    color:#445e7a!important;
+  }
+  html body #sq-bills-page .sq-premium-metrics article strong {
+    color:#13284a!important;
+  }
+
+  /* Cash Flow remains driven by the existing finance/transactions API. Make its
+     scroll container, chart, actions and data legible and operable. */
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] {
+    overflow-y:auto!important;overscroll-behavior:contain!important;
+    max-height:100dvh!important;
+    background:#edf2fc!important;
+    color:#162a4e!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-shell {
+    min-height:0!important;box-sizing:border-box!important;
+    padding-top:22px!important;padding-bottom:70px!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] :is(#sq-ng-title,.sq-ng-header h2,.sq-ng-card h2) {
+    color:#14284b!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] :is(.sq-ng-note,.sq-ng-header p,.sq-ng-item small,.dw-analytics-month small) {
+    color:#4b6683!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-card {
+    color:#14284b!important;background:#f5f8ff!important;
+    border:1px solid #d2deee!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bars {
+    min-height:155px!important;overflow:visible!important;
+    border-bottom:1px solid #8ea8bd!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.income {
+    background:#49b5de!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.expense {
+    background:#75dfc4!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] :is(.sq-ng-item,.dw-web-comparison td,.dw-web-comparison th) {
+    color:#14284b!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-add-action {
+    position:relative!important;z-index:1!important;
+    min-height:56px!important;cursor:pointer!important;
+  }
+}
