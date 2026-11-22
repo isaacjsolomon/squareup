@@ -271,7 +271,7 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
    'billing calendar must have a solid navy background, not pale white');
   await page.screenshot({path:resolve(root,'test-results/unified/bills-page-repairs.png'),fullPage:true});
 
-  await pageOpen('nav-notifications','notifications-view');
+  await pageOpen('dw-ref-nav-notifications','notifications-view');
   const notificationsVisual=await page.evaluate(()=>({
     bodyBackground:getComputedStyle(document.body).backgroundColor,
     workspaceBackground:getComputedStyle(document.querySelector('body > .wrap')).backgroundColor,
