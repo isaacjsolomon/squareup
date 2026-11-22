@@ -210,6 +210,10 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
     const r=el.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height};
   });
   console.log('MATCHING_TOPBARS',JSON.stringify({overviewTabs,secondaryTabs}));
+  assert.ok(secondaryTabs.y>=0&&secondaryTabs.y<=25,
+    'Shared white tabs should stay at the top of the viewport, not over page headings: '+JSON.stringify(secondaryTabs));
+  assert.equal(await page.evaluate(()=>document.getElementById('dw-all-topbar').parentElement===document.body),true,
+    'Shared tabs must be attached directly to BODY to avoid transformed page containers');
   for(const key of ['x','y','w','h'])assert.ok(Math.abs(overviewTabs[key]-secondaryTabs[key])<3,
     'Overview and secondary topbars must share '+key+': '+JSON.stringify({overviewTabs,secondaryTabs}));
 
@@ -255,7 +259,7 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   // Screenshot regressions: verify ACTUAL loaded stylesheet/cascade, not only source CSS.
   assert.ok(await page.locator('link[href*="doweo-page-repairs.css"]').count(),
    'the latest page repairs stylesheet must be linked in the real HTML');
-  await page.waitForFunction(()=>getComputedStyle(document.querySelector('#sq-bills-page .sq-bill-create-card')).backgroundColor==='rgb(16, 36, 63)',{timeout:10000});
+  await page.waitForFunction(()=>getComputedStyle(document.querySelector('#sq-bills-page .sq-bill-create-card')).backgroundColor==='rgb(12, 41, 61)',{timeout:10000});
   const billsGeometry=await page.evaluate(()=>{
    const back=document.getElementById('sq-bills-back').getBoundingClientRect();
    const tabs=document.getElementById('dw-all-top-tabs').getBoundingClientRect();
@@ -275,19 +279,19 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
    'Bills Back to Home must be below the global tabs: '+JSON.stringify(billsGeometry));
   assert.ok(billsGeometry.backRight<1536&&billsGeometry.backLeft>=0,
    'Bills Back to Home must be fully inside the screen');
-  assert.match(billsGeometry.calendarBg,/^rgb\(16, 36, 63\)$/, 
+  assert.match(billsGeometry.calendarBg,/^rgb\(12, 41, 61\)$/, 
    'billing calendar must have a solid navy background, not pale white');
-  assert.match(billsGeometry.calendarText,/^rgb\(245, 250, 255\)$/, 
+  assert.match(billsGeometry.calendarText,/^rgb\(244, 250, 255\)$/, 
    'calendar date grid must use readable light text against navy');
-  assert.match(billsGeometry.billCardBackground,/^rgb\(16, 36, 63\)$/, 
+  assert.match(billsGeometry.billCardBackground,/^rgb\(12, 41, 61\)$/, 
     'Bill panels must use the actual navy surface, not white');
-  assert.match(billsGeometry.metricBackground,/^rgb\(16, 36, 63\)$/, 
+  assert.match(billsGeometry.metricBackground,/^rgb\(12, 41, 61\)$/, 
     'Monthly totals card should be navy too');
   for(const [name,value] of Object.entries({secondMetric:billsGeometry.secondMetricBackground,bills:billsGeometry.billsListBackground,subscriptions:billsGeometry.subscriptionsBackground})){
-    assert.equal(value,'rgb(16, 36, 63)',name+' card must match the navy reference');
+    assert.equal(value,'rgb(12, 41, 61)',name+' card must match the navy reference');
   }
-  assert.equal(billsGeometry.calendarDayText,'rgb(223, 235, 247)', 'calendar dates remain readable');
-  assert.equal(billsGeometry.billCardText,'rgb(245, 250, 255)',
+  assert.equal(billsGeometry.calendarDayText,'rgb(225, 240, 251)', 'calendar dates remain readable');
+  assert.equal(billsGeometry.billCardText,'rgb(244, 250, 255)',
     'Bill card text must be white on navy');
   await page.screenshot({path:resolve(root,'test-results/unified/bills-page-repairs.png'),fullPage:true});
 
