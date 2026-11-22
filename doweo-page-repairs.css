@@ -1,0 +1,226 @@
+/* DoWeo screenshot fixes v2 — loaded AFTER the unified desktop shell.
+   No DOM/financial API replacements. Desktop only; preserve mobile layout. */
+@media (min-width: 901px) {
+  /* Notifications: eliminate the washed-out backdrop, including any reused
+     workspace transparency, while leaving the permanent sidebar and toolbar. */
+  html body.notifications-view:not(.sq-auth-guest) {
+    background:#0b1d34!important;
+    background-image:none!important;
+  }
+  html body.notifications-view:not(.sq-auth-guest) > .wrap {
+    background:#0b1d34!important;
+    background-image:none!important;
+  }
+  html body.notifications-view:not(.sq-auth-guest) > .wrap::before {
+    background-image:none!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-page {
+    background:#0b1d34!important;
+    background-image:none!important;
+    color:#f3f8ff!important;
+    max-width:1180px!important;
+    border:0!important;
+    border-radius:0!important;
+    padding:20px 24px 72px!important;
+    box-sizing:border-box!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-page .sq-notifications-header h2 {
+    color:#f4f8ff!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-page #notifications-panel {
+    background:#132b45!important;
+    background-image:none!important;
+    color:#f3f8ff!important;
+    border:1px solid #33516d!important;
+    border-radius:21px!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-page
+  :is(#notifications-list .entry,#notifications-list .dw-inbox-item) {
+    background:#203b57!important;
+    background-image:none!important;
+    border:1px solid #3a5a74!important;
+    color:#f3f8ff!important;
+    box-shadow:none!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-page
+  :is(.notification-panel-heading,.entry b,.entry strong,.dw-inbox-date) {
+    color:#f4f9ff!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-page
+  :is(.entry .note,.entry p,.entry small,.sq-notification-tools label) {
+    color:#bfcfe2!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-page #sq-notification-filter {
+    color:#14294c!important;background:#f5f8ff!important;
+    border:1px solid #afc4d7!important;
+  }
+  html body.notifications-view.dw-all-secondary-view #notifications-page .entry button {
+    color:#092f3d!important;background:#bdf4e6!important;
+  }
+
+  /* Bills back action is restored to the normal document flow.
+     Previously it was at the same vertical coordinate as the shared tabs. */
+  html body.dw-all-secondary-view #sq-bills-page {
+    position:relative!important;
+    color:#172b4b!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page #sq-bills-back {
+    position:relative!important;
+    inset:auto!important;
+    float:none!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:max-content!important;
+    min-height:42px!important;
+    max-width:100%!important;
+    margin:105px 0 14px!important;
+    padding:10px 16px!important;
+    white-space:nowrap!important;
+    background:#123850!important;
+    border:1px solid #44ceb3!important;
+    color:#fff!important;
+    border-radius:12px!important;
+    z-index:2!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-bills-title {
+    margin-top:0!important;
+    padding-top:0!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page
+  :is(.sq-bills-title h2,.sq-bills-tracker-compact label,
+      .sq-bill-create-card h2,.sq-bill-create-card h3,
+      .sq-bills-column h2,.sq-bills-column h3,
+      .sq-bills-card h2,.sq-bills-card h3,
+      .sq-premium-metrics article strong,.sq-premium-metrics article span,
+      .sq-premium-metrics article small,
+      .sq-bills-help,.sq-bills-title p) {
+    color:#172b4b!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page
+  :is(.sq-premium-metrics article,.sq-bill-create-card,.sq-bills-column,.sq-bills-card) {
+    background:#f4f8ff!important;
+    color:#172b4b!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-calendar {
+    background:#102944!important;
+    background-image:none!important;
+    color:#f2f8ff!important;
+    border:1px solid #3c617e!important;
+    box-shadow:0 8px 24px #0b213826!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-calendar
+  :is(h3,.sq-premium-calhead strong,.sq-premium-selected,
+      .sq-premium-selected b,.sq-premium-selected strong,
+      .sq-premium-days button:not(:disabled)) {
+    color:#f2f8ff!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-calendar
+  :is(.sq-premium-days > span,.sq-premium-selected p,.sq-premium-selected small) {
+    color:#bed1e4!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button {
+    color:#eff7ff!important;
+    background:transparent!important;
+    opacity:1!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button:disabled {
+    color:#b0c1d4!important;opacity:.5!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button:where(.chosen,.has-bill) {
+    background:#15566a!important;
+    border-color:#59ddc4!important;
+    color:#fff!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-calhead button {
+    background:#1b4660!important;
+    border:1px solid #59829a!important;
+    color:#fff!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-selected {
+    border-top:1px solid #3c617e!important;
+  }
+
+  /* Keep Cash Flow in its own scrollable viewport beneath the global toolbar.
+     Financial records, actions, and tab routing remain owned by the app. */
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] {
+    top:var(--dw-report-top,96px)!important;
+    bottom:0!important;
+    height:auto!important;
+    max-height:none!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+    background:#edf2fa!important;
+    background-image:none!important;
+    color:#172b4b!important;
+    box-sizing:border-box!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"]::before {
+    display:none!important;
+    content:none!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-shell {
+    box-sizing:border-box!important;
+    min-height:100%!important;
+    padding:25px clamp(20px,3vw,44px) 75px!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"]
+  :is(#sq-ng-title,.sq-ng-card h2,.sq-ng-section h2,.sq-ng-heading h1) {
+    color:#14294b!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"]
+  :is(.sq-ng-note,.sq-ng-card p,.sq-ng-header p,.sq-ng-item small,
+      .dw-analytics-month small,.sq-ng-card small) {
+    color:#4d6682!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-card {
+    background:#f6f9ff!important;
+    color:#14294b!important;
+    border:1px solid #d5e1ee!important;
+    box-shadow:0 8px 20px #10274816!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bars {
+    min-height:160px!important;
+    overflow:visible!important;
+    border-bottom:1px solid #a6bad0!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.income {
+    background:#48b4de!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-analytics-bar.expense {
+    background:#60d9b6!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"]
+  :is(.sq-ng-item,.dw-web-comparison th,.dw-web-comparison td,
+      .dw-analytics-category strong,.dw-analytics-category span) {
+    color:#14294b!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-back {
+    display:inline-flex!important;
+    align-items:center!important;
+    gap:8px!important;
+    min-height:42px!important;
+    width:max-content!important;
+    padding:8px 14px!important;
+    margin-bottom:10px!important;
+    border:1px solid #315d78!important;
+    background:#12344d!important;
+    color:white!important;
+    border-radius:10px!important;
+    cursor:pointer!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-back svg {
+    width:16px!important;height:16px!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-open-transaction {
+    position:relative!important;
+    z-index:1!important;
+    cursor:pointer!important;
+    min-height:54px!important;
+  }
+}
