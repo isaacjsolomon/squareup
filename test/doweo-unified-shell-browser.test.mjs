@@ -302,7 +302,7 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   await page.locator('#sq-ng-back').click();
   await page.waitForFunction(()=>!document.body.classList.contains('sq-finance-open'),{timeout:10000});
 
-  await page.locator('#dw-all-top-tabs [data-dw-all-tab="overview"]').click();
+  await page.evaluate(()=>document.getElementById('nav-home')?.click());
   await page.locator('#dw-ref-home').waitFor({state:'visible',timeout:10000});
   for(const code of ['es','fr','he','he-script','zh-Hans','ar','bn']){
    await page.evaluate(code=>{
