@@ -6974,6 +6974,15 @@ render();
 const outsideNavigation=(event)=>{
  const hub=document.getElementById('sq-nextgen');
  if(!hub||hub.hidden||!document.body.classList.contains('sq-finance-open'))return;
+ // Keep the original mobile navigation behavior; the broader routing fix is desktop-only.
+ if(!window.matchMedia('(min-width:901px)').matches){
+  const nav=event.target.closest('button[id]');
+  if(!nav||!['nav-home','nav-trackers','nav-chat','nav-analytics','nav-profile',
+   'nav-about','nav-help-center','nav-friends','nav-settings','nav-notifications'].includes(nav.id))return;
+  hub.hidden=true;document.body.classList.remove('sq-finance-open');
+  document.body.style.removeProperty('--sq-finance-sidebar-offset');
+  document.body.style.overflow='';return;
+ }
  const target=event.target.closest('button,a,summary,[role="button"]');
  if(!target||hub.contains(target))return;
  if(!target.closest(
@@ -6993,7 +7002,7 @@ const outsideNavigation=(event)=>{
 };
 document.addEventListener('click',outsideNavigation,true);
 document.addEventListener('keydown',event=>{
- if(event.key==='Escape'&&document.body.classList.contains('sq-finance-open')){
+ if(window.matchMedia('(min-width:901px)').matches&&event.key==='Escape'&&document.body.classList.contains('sq-finance-open')){
   window.squareUpCloseFinanceHub?.();
  }
 },true);
