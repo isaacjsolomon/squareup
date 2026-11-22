@@ -2968,6 +2968,7 @@ async function applyBackdrop() {
   var url = b.preset === "photo" ? await photoUrl(b) : null;
   if (run !== backdropRun) return; // a newer change already won
   el.classList.toggle("photo", !!url);
+  el.dataset.preset = (b.preset && PRESETS[b.preset]) ? b.preset : "indigo";
   el.style.backgroundImage = url ? 'url("' + url + '")' : (PRESETS[b.preset] || PRESETS.indigo).css;
   var tint = url ? await photoTint(url) : null;
   if (run !== backdropRun) return;
