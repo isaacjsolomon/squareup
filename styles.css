@@ -8143,7 +8143,7 @@ html:is([lang="he"],[lang="ar"]) input[type="number"]{direction:ltr}
 .dw-a11y-setting input{width:22px;height:22px;flex:none;accent-color:var(--accent);cursor:pointer}
 html.dw-a11y-large{font-size:110%!important}
 html.dw-a11y-large body :is(p,small,label,button,input,select,textarea,.settings-muted,.action-sub,.sq-action-title,.sq-mobile-nav span){font-size:max(1em,16px)!important;line-height:1.45!important}
-html.dw-a11y-contrast body{--muted:var(--text)!important;
+html.dw-a11y-contrast body{--muted:var(--text)!important}
 html.dw-a11y-contrast body :is(.settings-panel,.card,.dashboard-action,input,select,textarea,button){border-color:var(--info)!important}
 html.dw-a11y-contrast body :is(.settings-muted,.action-sub,.muted){color:var(--text)!important}
 html.dw-a11y-contrast :focus-visible{outline:3px solid var(--border-strong)!important;outline-offset:3px!important}
