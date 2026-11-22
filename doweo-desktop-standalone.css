@@ -657,11 +657,13 @@
   max-width:100%!important;overflow-x:auto!important
  }
  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-cash-table-wrap table{
-  width:100%!important;min-width:470px!important;border-collapse:collapse!important;color:#192d50!important
+  width:100%!important;min-width:470px!important;border-collapse:collapse!important;color:#ffffff!important
  }
- html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-cash-table-wrap :is(th,td){
+ /* White column headings, category labels, and amounts on the existing navy table. */
+ html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .dw-cash-comparison .dw-cash-table-wrap :is(th,td){
   padding:13px 9px!important;text-align:left!important;
-  border-bottom:1px solid #dce5f2!important;color:#192d50!important;font-size:13px!important
+  border-bottom:1px solid #dce5f2!important;color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;opacity:1!important;font-size:13px!important
  }
  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .dw-cash-footnote{
   display:block!important;color:#4d6686!important;font-size:12px!important;margin:6px 0 0!important
