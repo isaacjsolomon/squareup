@@ -8,7 +8,7 @@ try{
  await page.goto(base+'/?visual-check=original-instagram-v3',{waitUntil:'domcontentloaded',timeout:45000});
  await page.locator('#sq-instagram-invite').waitFor({state:'attached',timeout:20000});
  await page.waitForFunction(()=>{
-  return !!Array.from(document.styleSheets).find(s=>s.href?.includes('doweo-desktop-standalone.css?v=20261122-polls-teal-v12'));
+  return !!Array.from(document.styleSheets).find(s=>s.href?.includes('doweo-desktop-standalone.css?v=20261122-polls-teal-buttons-v13'));
  },null,{timeout:25000});
 
  const result=await page.evaluate(async()=>{
