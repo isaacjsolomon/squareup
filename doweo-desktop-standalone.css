@@ -73,6 +73,25 @@
   html body .dw-desktop-standalone .sq-ng-txn-form{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   html body .dw-desktop-standalone .sq-ng-txn-form :is(.sq-ng-txn-save,.sq-ng-txn-feedback){grid-column:1/-1}
 }
+  /* Full-width legal destination, never a centered dialog on desktop. */
+  html body #dw-legal-standalone .dw-legal-document-cards{
+    width:min(1120px,100%)!important;margin:0 auto!important;
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:18px!important
+  }
+  html body #dw-legal-standalone .dw-legal-document-cards>a{
+    display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+    gap:14px!important;min-height:230px!important;box-sizing:border-box!important;
+    padding:32px!important;border-radius:21px!important;
+    color:#f5faff!important;text-decoration:none!important;
+    background:linear-gradient(145deg,#152e49,#102139)!important;
+    border:1px solid #5e8397!important;box-shadow:0 9px 25px #13273d1c!important
+  }
+  html body #dw-legal-standalone .dw-legal-document-cards>a strong{font-size:25px!important;color:#f9fcff!important}
+  html body #dw-legal-standalone .dw-legal-document-cards>a span:nth-child(2){font-size:15px!important;color:#c1d9e7!important;line-height:1.6!important}
+  html body #dw-legal-standalone .dw-legal-document-cards>a span:last-child{margin-top:auto!important;font-weight:800!important;color:#6ef2c9!important}
+  html body #dw-legal-standalone .dw-legal-document-cards>a:focus-visible{outline:3px solid #65ecc4!important;outline-offset:3px!important}
+
 @media(min-width:901px) and (max-width:1220px){
   html body:not(.sq-auth-guest):not(.side-collapsed) .dw-desktop-standalone{left:225px!important}
 }
