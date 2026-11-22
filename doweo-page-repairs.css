@@ -232,4 +232,56 @@
     cursor:pointer!important;
     min-height:54px!important;
   }
+
+  /* Billing readability v3. Navy text on the light bill cards;
+     white/ice text on the NAVY calendar, including all dates and controls. */
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-calendar {
+    background-color:#0c2441!important;
+    background-image:none!important;
+    color:#f5f9ff!important;
+    border-color:#365676!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-calendar
+    :is(h1,h2,h3,h4,p,span,strong,b,small,label,time,
+        .sq-premium-calhead,.sq-premium-selected,.sq-premium-selected>div,
+        .sq-premium-days>span,.sq-premium-days button) {
+    color:#f5f9ff!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-calendar
+    :is(.sq-premium-days>span,.sq-premium-selected p,.sq-premium-selected small) {
+    color:#c5d9ec!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button:not(:disabled) {
+    color:#ffffff!important;
+    opacity:1!important;
+    text-shadow:none!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button:disabled {
+    color:#9db6d1!important;
+    opacity:.68!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-days button:where(.chosen,.has-bill) {
+    background:#17536a!important;
+    color:#ffffff!important;
+    border-color:#4ad7bc!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-calhead button {
+    background:#1d4662!important;
+    color:#ffffff!important;
+    border-color:#4e7491!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page .sq-premium-calendar button:focus-visible {
+    outline:3px solid #61e5cc!important;
+    outline-offset:2px!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page
+    :is(.sq-bill-create-card,.sq-premium-metrics article,.sq-bills-card,.sq-bills-column)
+    :is(h1,h2,h3,h4,p,span,b,strong,small,label) {
+    color:#14294b!important;
+  }
+  html body.dw-all-secondary-view #sq-bills-page
+    :is(.sq-bill-create-card,.sq-premium-metrics article,.sq-bills-card,.sq-bills-column)
+    :is(button.primary,button.sq-ng-primary,button[type="submit"]) {
+    color:#072e3a!important;
+  }
 }
