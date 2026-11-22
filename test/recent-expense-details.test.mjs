@@ -232,78 +232,39 @@ await page.locator('#receipt-items input[type=checkbox]').first().check();assert
   await page.evaluate(()=>window.sqRefreshTrackerNow());
   await page.locator('#nav-home').click();await row.waitFor();
   assert.ok(await seeAll.isVisible(),'See all is visible again on return Home');
+  // The current desktop Overview is the reference dashboard. The former
+  // three-column Home bills panel is intentionally hidden; Bills creation and
+  // editing are covered by the dedicated full-app Bills regression suite.
   for(const width of [1024,1440,1920]){
    await page.setViewportSize({width,height:1000});
-   await page.locator('#dw-home-bill-list .dw-home-bill-row').first().waitFor();
+   await page.locator('#dw-ref-home').waitFor({state:'visible'});
    const state=await page.evaluate(()=>{
-    const box=e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width}};
+    const home=document.getElementById('dw-ref-home');
+    const activity=home.querySelector('.dw-ref-activity');
+    const chart=home.querySelector('.dw-ref-chart');
+    const stats=home.querySelectorAll('.dw-ref-stat');
+    const tracked=document.getElementById('sq-return-activity');
+    const box=e=>e.getBoundingClientRect();
     return {
-     left:box(document.getElementById('sq-clean-balance')),right:box(document.getElementById('sq-return-members').closest('.sq-return-panel')),
-     upcoming:box(document.getElementById('dw-compact-upcoming')),shell:box(document.getElementById('dw-home-columns')),
-     summary:box(document.getElementById('dw-home-columns')),
-     activity:box(document.getElementById('sq-return-activity').closest('.sq-return-panel')),
-     bills:box(document.getElementById('dw-home-bill-list')),subs:box(document.getElementById('dw-home-subscription-list')),
-     smart:getComputedStyle(document.querySelector('.sq-return-smart-panel')).display,
-     balances:getComputedStyle(document.getElementById('sq-return-balances').closest('.sq-return-panel')).display,
+     homeVisible:box(home).height>0,
+     activityVisible:box(activity).height>0,
+     activityIsReal:activity.contains(tracked),
+     statCount:stats.length,
+     chartVisible:box(chart).height>0,
+     hasSmartSettle:!!home.querySelector('.dw-ref-settle #dw-ref-smart-slot'),
+     hasViewAll:!!activity.querySelector('.dw-ref-text-link'),
      overflow:document.documentElement.scrollWidth>innerWidth+1
     };
    });
-   assert.ok(Math.abs(state.left.width-state.right.width)<2,'equal Home halves at '+width);
-   assert.ok(state.left.right<state.upcoming.left&&state.upcoming.right<state.right.left,'three separate cards');
-   assert.ok(Math.abs(state.left.width-state.upcoming.width)<2,'three equal cards');
-   assert.ok(Math.abs(state.left.top-state.upcoming.top)<2&&Math.abs(state.left.top-state.right.top)<2,'cards share one row');
-   assert.ok(Math.abs(state.summary.width-state.shell.width)<2,'overview spans Home');
-   assert.ok(Math.abs(state.activity.left-state.left.left)<2&&Math.abs(state.activity.right-state.right.right)<2,'activity spans both columns');
-   assert.ok(state.activity.top>=state.left.bottom&&state.activity.top>=state.right.bottom,'activity is below both upper columns');
-   assert.ok(state.subs.bottom<=state.bills.top,'upcoming subscriptions before bill summary');
-   assert.equal(state.smart,'none');assert.equal(state.balances,'none');assert.equal(state.overflow,false,'no overflow at '+width);
+   assert.ok(state.homeVisible&&state.activityVisible,'modern Overview cards remain visible at '+width+' '+JSON.stringify(state));
+   assert.ok(state.activityIsReal,'Overview preserves real tracker activity at '+width);
+   assert.equal(state.statCount,3,'modern Overview shows three financial summary cards');
+   assert.ok(state.chartVisible&&state.hasSmartSettle&&state.hasViewAll,'cash flow, settle-up and activity remain available');
+   assert.equal(state.overflow,false,'modern Overview has no horizontal overflow at '+width);
   }
   await page.setViewportSize({width:1440,height:1000});
-  const logos=await page.locator('#dw-compact-upcoming .sq-brand-logo').evaluateAll(images=>images.map(image=>({src:image.getAttribute('src'),radius:getComputedStyle(image).borderRadius,local:image.dataset.localVector})));
-  assert.ok(logos.length>0);assert.ok(logos.every(image=>image.local==='true'&&image.src.startsWith('/images/service-logos/')),'desktop uses crisp local SVG logos');
-  assert.ok(logos.every(image=>parseFloat(image.radius)>0),'logo backgrounds have rounded corners');
-  const typography=await page.evaluate(()=>{
-   const style=e=>{const s=getComputedStyle(e);return {size:s.fontSize,family:s.fontFamily,weight:s.fontWeight,spacing:s.letterSpacing,line:s.lineHeight}};
-   const headings=[document.querySelector('.sq-clean-eyebrow'),document.getElementById('dw-upcoming-title'),document.querySelector('.sq-overview-people-panel h3')].map(style);
-   const icons=[...document.querySelectorAll('#dw-compact-upcoming .sq-service-icon')].map(e=>({width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height}));
-   return {headings,icons,tops:[document.querySelector('.sq-clean-eyebrow'),document.getElementById('dw-upcoming-title'),document.querySelector('.sq-overview-people-panel h3')].map(e=>e.getBoundingClientRect().top),base:style(document.getElementById('dw-compact-balance')),prefix:style(document.querySelector('.dw-balance-prefix')),amount:style(document.querySelector('.dw-balance-amount'))};
-  });
-  assert.ok(Math.max(...typography.tops)-Math.min(...typography.tops)<1,'all three card headings line up');
-  assert.equal(await page.locator('#dw-upcoming-title').textContent(),'Upcoming Bills');
-  assert.deepEqual(typography.headings[0],typography.headings[1],'Balance and Upcoming titles match');
-  assert.deepEqual(typography.headings[1],typography.headings[2],'Upcoming and Members titles match');
-  assert.ok(typography.icons.length>=2);assert.ok(typography.icons.every(i=>i.width===36&&i.height===36),'consistent compact service icons');
-  assert.equal(typography.prefix.size,typography.amount.size,'sign matches the amount size');
-  assert.equal(await page.locator('#dw-compact-balance').textContent(),'−$12.00');
-  detail.entries[0].from='Jordan';detail.entries[0].to='Alex';
-  await page.evaluate(()=>window.sqRefreshTrackerNow());
-  await page.waitForFunction(()=>document.getElementById('dw-compact-balance').textContent==='+$12.00');
-  assert.ok((await page.locator('#sq-clean-explanation').textContent()).includes('owes'),'who owes whom caption retained');
-  detail.entries[0].from='Alex';detail.entries[0].to='Jordan';
-  await page.evaluate(()=>window.sqRefreshTrackerNow());
-  await page.waitForFunction(()=>document.getElementById('dw-compact-balance').textContent==='−$12.00');
-  assert.equal(typography.amount.size,typography.base.size,'amount keeps its original font size');
-  const formatting=await page.evaluate(()=>({
-   frequencies:['yearly','monthly','weekly','daily'].map(window.dwBillFrequency),
-   date:window.dwBillDueDate('2027-11-04')
-  }));
-  assert.deepEqual(formatting.frequencies,['Yearly','Monthly','Weekly','Daily']);
-  assert.equal(formatting.date,'November 4, 2027');
-  assert.equal(await page.locator('#dw-compact-upcoming .dw-upcoming-section[data-kind="subscription"]>h3').textContent(),'Subscriptions');
-  assert.equal(await page.locator('#dw-compact-upcoming .dw-upcoming-section[data-kind="bill"]>h3').textContent(),'Bills');
-  assert.ok((await page.locator('#dw-home-bill-list').textContent()).includes('Monthly · Next due December 1, 2026'));
-  const billRow=page.locator('#dw-home-bill-list .dw-home-bill-row').filter({hasText:'Electricity'});
-  await billRow.getByRole('button',{name:'View Electricity details',exact:true}).click();
-  await page.locator('.sq-premium-dialog h2').filter({hasText:'Electricity'}).waitFor();
-  await page.locator('.sq-premium-dialog').getByRole('button',{name:'Close',exact:true}).click();
-  const subscription=page.locator('#dw-home-subscription-list .dw-home-bill-row').filter({hasText:'Netflix'});
-  await subscription.locator('.dw-home-item-menu summary').click();
-  await subscription.getByRole('button',{name:'Edit',exact:true}).click();
-  const billEditor=page.getByRole('dialog',{name:'Edit bill or subscription'});
-  await billEditor.getByLabel('Name',{exact:true}).fill('Netflix updated');
-  await billEditor.getByRole('button',{name:'Save changes',exact:true}).click();
-  await page.locator('#dw-home-subscription-list').getByText('Netflix updated',{exact:true}).waitFor();
-  assert.ok(await page.locator('#dw-home-columns').isVisible(),'editing bills stays on Home');
+  assert.equal(await page.locator('#dw-ref-chart-title').textContent(),'Cash Flow');
+  assert.equal(await page.locator('#dw-ref-activity-title').textContent(),'Recent Activity');
   writes.length=0;
   mkdirSync(resolve(root,'test-results/bills'),{recursive:true});
   await page.screenshot({path:resolve(root,'test-results/bills/home-full-width-activity.png'),fullPage:true});
