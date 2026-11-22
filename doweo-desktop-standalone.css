@@ -406,7 +406,9 @@
  html body:not(.sq-finance-open) #sq-nextgen{display:none!important;visibility:hidden!important;pointer-events:none!important}
  html body.sq-finance-open #sq-nextgen:not([hidden]){display:block!important;visibility:visible!important;pointer-events:auto!important}
  html body.sq-finance-open #sq-nextgen[data-section="finance"]{
-  top:var(--dw-report-top,96px)!important;bottom:0!important;height:auto!important;max-height:none!important;
+  /* Paint this same wallpaper behind the floating global tabs, instead of
+     exposing the underlying dashboard's navy header in the reserved gap. */
+  top:0!important;bottom:0!important;height:auto!important;max-height:none!important;
   overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain!important;
   background-color:#dce8f8!important;
   /* Match the navy-muted treatment of Spending Analytics, over the exact same
@@ -420,7 +422,10 @@
  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-shell{
   width:100%!important;max-width:1450px!important;min-height:100%!important;
   box-sizing:border-box!important;background:transparent!important;
-  margin:0 auto!important;padding:20px clamp(20px,2.5vw,42px) 65px!important;
+  /* Preserve exactly the prior position of the Analytics/Cash Flow tabs
+     and every panel after the overlay extends to viewport top. */
+  margin:0 auto!important;
+  padding:calc(var(--dw-report-top,96px) + 20px) clamp(20px,2.5vw,42px) 65px!important;
  }
  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-shell>.sq-ng-header{display:none!important}
  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs:not([data-current-group]){display:none!important}
