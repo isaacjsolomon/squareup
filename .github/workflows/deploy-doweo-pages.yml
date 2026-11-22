@@ -80,6 +80,7 @@ jobs:
           grep -Fq 'doweo-page-repairs.css?v=20261121-production-visible-v5' .pages-output/index.html
           grep -Fq 'UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121' .pages-output/index.html
           grep -Fq 'id="dw-route-visual-enforcer-v6"' .pages-output/index.html
+          grep -Fq 'id="dw-bills-reference-v7"' .pages-output/index.html
           node --test test/doweo-css-consolidation.test.mjs
           test -s .pages-output/doweo-unified-shell.css
           test -s .pages-output/doweo-unified-shell.js
@@ -127,6 +128,7 @@ jobs:
             if [[ "$page" == *'UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121'* ]] &&
                [[ "$page" == *'doweo-desktop-v5-navy-analytics'* ]] &&
                [[ "$page" == *'id="dw-route-visual-enforcer-v6"'* ]] &&
+               [[ "$page" == *'id="dw-bills-reference-v7"'* ]] &&
                [[ "$css" == *'Desktop screenshot correction v4'* ]]; then
               echo "Production HTML and CSS version verified on doweo.app"
               exit 0
