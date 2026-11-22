@@ -2940,9 +2940,7 @@ var MOBILE_PRESETS = {
 // Side panel takes a medium tint of the backdrop: a fixed tint for presets,
 // or the photo's average color mixed toward white.
 function setSideTint(rgb) {
-  // Never derive interface colors from wallpaper photos or legacy presets.
-  // Photos themselves remain user content, but the surrounding UI is locked
-  // to DoWeo's seven approved color tokens on both desktop and mobile.
+  // Keep wallpaper visuals independent of the seven approved UI colors.
   var root = document.documentElement.style;
   root.setProperty("--side-bg", "#102B40");
   root.setProperty("--side-line", "#355E72");
@@ -9353,7 +9351,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 @media (min-width:901px) {
   /* Notification page is a BODY sibling of the main wrap. Remove wallpaper here. */
   html body.notifications-view {background:#0A1B2E!important;background-image:none!important}
-  html body.notifications-view #ABC6D7kdrop#ABC6D7kdrop {background:#0A1B2E!important;background-image:none!important}
+  html body.notifications-view #backdrop#backdrop {background:#0A1B2E!important;background-image:none!important}
   html body.notifications-view #notifications-page {
     background:#0A1B2E!important;background-image:none!important;
     min-height:calc(100vh - 130px)!important;color:#F3F8FC!important;
@@ -9675,17 +9673,17 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   }
   /* Uploaded photos stay stored and visible, but are navy color-graded on
      phones so pale/cream areas do not leak into the visual theme. */
-  html body #ABC6D7kdrop#ABC6D7kdrop.photo {
+  html body #backdrop#backdrop.photo {
     background-color:#ABC6D7!important;
     background-blend-mode:multiply!important;
   }
-  html body #ABC6D7kdrop#ABC6D7kdrop.photo::after {
+  html body #backdrop#backdrop.photo::after {
     background:var(--dw-photo-overlay)!important;
     pointer-events:none!important;
   }
   /* Before JS applies the stored mobile preset, display a navy fallback.
      Do NOT override JS-selected presets or uploaded photos. */
-  html body #ABC6D7kdrop#ABC6D7kdrop:not(.photo):not([data-preset]) {
+  html body #backdrop#backdrop:not(.photo):not([data-preset]) {
     background-color:var(--dw-mobile-canvas)!important;
     background-image:linear-gradient(155deg,#0A1B2E 0%,#102B40 52%,#173750 100%)!important;
     background-position:center!important;
@@ -9760,7 +9758,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   /* Consistent navy surfaces for standard mobile dialogs. Only visual
      treatment changes; forms, keyboard, inputs, and click handlers remain. */
   html body :is(
-    #ABC6D7kdrop-modal .card.modal,
+    #backdrop-modal .card.modal,
     .dw-standard-dialog-overlay .card.modal,
     #dw-beta-modal .dw-panel,
     #sq-instagram-invite .sq-ig-card
@@ -9770,7 +9768,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
     border-color:#355E72!important;
     color:#F3F8FC!important;
   }
-  html body :is(#ABC6D7kdrop-modal .card.modal,#dw-beta-modal .dw-panel)
+  html body :is(#backdrop-modal .card.modal,#dw-beta-modal .dw-panel)
       :is(h1,h2,h3,p,label,small) {
     color:#F3F8FC!important;
   }
