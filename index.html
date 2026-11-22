@@ -9305,39 +9305,115 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 }
 </style>
 
-<!-- Restored desktop Bills theme; the shared navigation is intentionally unaffected. -->
-<style id="dw-bills-restored-dark-v8">
-@media(min-width:901px){
-  html body #sq-bills-page .sq-premium-calendar,
-  html body #sq-bills-page .sq-bills-card,
-  html body #sq-bills-page .sq-premium-metrics article {
-    background:linear-gradient(155deg,#11334a,#081e34)!important;
-    background-color:#0c293d!important;color:#f4faff!important;
-    border:1px solid #315c70!important;
-    box-shadow:0 8px 28px rgba(1,12,24,.17)!important;
+<!-- Bills theme v9 — reference screenshot matched. CSS owns the Bills UI;
+     no route observer repaints these boxes or changes business logic. -->
+<style id="dw-bills-exact-reference-v9">
+@media (min-width:901px) {
+  /* All six panels share the reference image's deep navy fill and subtle
+     cyan stroke, while the image-backed page and top navigation stay intact. */
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  :is(.sq-bill-create-card,.sq-premium-calendar,.sq-premium-metrics>article,
+      .sq-bills-columns>.sq-bills-column) {
+    background:linear-gradient(145deg,#102139 0%,#10223b 52%,#0d2037 100%)!important;
+    background-color:#102139!important;
+    background-image:linear-gradient(145deg,#102139 0%,#10223b 52%,#0d2037 100%)!important;
+    color:#f7fbff!important;
+    border:1px solid #9acbd5!important;
+    border-radius:21px!important;
+    box-shadow:0 5px 18px rgba(4,18,34,.12)!important;
     backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+    opacity:1!important;
   }
-  html body #sq-bills-page :is(.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article)
-    :is(h2,h3,h4,strong,b,p,span,small,label){
-    color:#f4faff!important;opacity:1!important
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  :is(.sq-bill-create-card,.sq-premium-calendar,.sq-premium-metrics>article,
+      .sq-bills-columns>.sq-bills-column)
+  :is(h1,h2,h3,h4,h5,p,span,small,strong,b,label,time) {
+    color:#f7fbff!important;
+    opacity:1!important;
+    text-shadow:none!important;
   }
-  html body #sq-bills-page .sq-premium-days>span{color:#b2ccda!important}
-  html body #sq-bills-page .sq-premium-days button{color:#e1f0fb!important;opacity:1!important}
-  html body #sq-bills-page .sq-premium-days button:disabled{opacity:.68!important;color:#c0d5df!important}
-  html body #sq-bills-page .sq-premium-days button:where(.chosen,.has-bill){
-    background:#115668!important;color:#fff!important;border:1px solid #6ee7cd!important
+  /* Muted detail text is visible on navy. */
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  :is(.sq-bills-help,.sq-premium-metrics article>small,
+      .sq-bills-row small,.sq-bills-empty,.sq-premium-selected,
+      #sq-premium-selected,.sq-bills-row-subtitle) {
+    color:#d4e6f1!important;
+    opacity:1!important;
   }
-  html body #sq-bills-page :is(.sq-premium-calhead button,.sq-bills-row button,.sq-bills-actions button){
-    background:#193e53!important;color:#d5fff1!important;border:1px solid #5b9fa2!important
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  .sq-premium-metrics article>span {
+    color:#dceaf3!important;opacity:1!important;
   }
-  html body #sq-bills-page .sq-bills-list-head>span{
-    background:#173d4d!important;color:#b5f9e8!important;border:1px solid #5b9fa2!important
+  html body #sq-bills-page#sq-bills-page#sq-bills-page #sq-premium-monthly {
+    color:#6df0d0!important;opacity:1!important;
   }
-  html body #sq-bills-page #sq-premium-monthly{color:#69e6c6!important}
-  html body #sq-bills-page #sq-premium-active{color:#fff!important}
-  html body #sq-bills-page .sq-bills-card :is(input,select){
-    background:#f7fbff!important;color:#14294b!important
+  html body #sq-bills-page#sq-bills-page#sq-bills-page #sq-premium-active {
+    color:#ffffff!important;opacity:1!important;
   }
+  /* Calendar: light weekdays/dates, legible selected day, mint outline. */
+  html body #sq-bills-page#sq-bills-page#sq-bills-page .sq-premium-calhead
+  :is(h3,strong) {color:#fff!important}
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  .sq-premium-days>span {color:#bed4e3!important;opacity:1!important}
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  .sq-premium-days button {
+    color:#dceaf5!important;opacity:1!important;
+    background:transparent!important;text-shadow:none!important;
+    border-color:transparent!important;
+  }
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  .sq-premium-days button:disabled {color:#a4bccf!important;opacity:.65!important}
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  .sq-premium-days button:where(.chosen,.has-bill) {
+    color:#fff!important;background:#146a6b!important;
+    border:1px solid #58ebd0!important;
+    border-radius:12px!important;opacity:1!important;
+  }
+  html body #sq-bills-page#sq-bills-page#sq-bills-page .sq-premium-calhead button {
+    background:#123950!important;border:1px solid #62dbca!important;
+    border-radius:11px!important;color:#efffff!important;
+    opacity:1!important;
+  }
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  .sq-premium-selected {border-top-color:#587b94!important}
+  /* The bottom list panels keep the original layout and all action handlers. */
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  :is(.sq-bills-list-head,.sq-bills-row) {
+    border-color:#365873!important;
+  }
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  .sq-bills-list-head>span {
+    background:#133a46!important;border:1px solid #72ddc8!important;
+    border-radius:999px!important;color:#dbfff4!important;
+    opacity:1!important;
+  }
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  :is(.sq-bills-row button,.sq-bills-actions button) {
+    background:#10253c!important;border:1px solid #6bdac8!important;
+    border-radius:11px!important;color:#a2f5dd!important;
+    opacity:1!important;box-shadow:none!important;
+  }
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  :is(.sq-bills-row button,.sq-bills-actions button):hover {
+    background:#19475c!important;color:#e0fff5!important;
+  }
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  .sq-bill-mobile-toggle {
+    background:#0c2037!important;color:#b5cddc!important;
+    border:1px solid #68dac9!important;
+    border-radius:16px!important;
+    opacity:1!important;
+  }
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  :is(.sq-bills-card input,.sq-bills-card select,.sq-bills-tracker-compact select) {
+    color:#14294b!important;background:#fff!important;
+  }
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  .sq-bills-tracker-compact label {color:#e8f3fc!important;opacity:1!important}
+  /* Headline and outside wallpaper intentionally stay untouched. */
+  html body #sq-bills-page#sq-bills-page#sq-bills-page
+  .sq-bills-title h2 {color:#17294b!important}
 }
 </style>
 <!-- Release v6: route-based desktop visual repair. Uses inline important styles to
@@ -9393,36 +9469,8 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
       paint(document.body,navy);
       paint(document.getElementById('backdrop'),navy);
     }
-    if(billsOpen){
-      /* Restore the original dark Bills workspace instead of the white redesign.
-         Leave the shared tab bar and background wallpaper unchanged. */
-      const darkSurface={
-        background:'linear-gradient(155deg,#11334a,#081e34)',
-        'background-color':'#0c293d',color:'#f4faff',
-        border:'1px solid #315c70','box-shadow':'0 8px 28px rgba(1,12,24,.17)'
-      };
-      select(bills,'.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article',darkSurface);
-      select(bills,'.sq-premium-calendar :is(h3,strong,p,small,span,label),.sq-bills-card :is(h2,h3,h4,p,small,strong,span,label),.sq-premium-metrics article :is(span,small,strong),.sq-bills-row :is(strong,small)',{
-        color:'#f4faff',opacity:'1'
-      });
-      select(bills,'.sq-premium-days>span',{color:'#b2ccda',opacity:'1'});
-      select(bills,'.sq-premium-days button',{color:'#e1f0fb',opacity:'1'});
-      select(bills,'.sq-premium-days button:disabled',{color:'#c0d5df',opacity:'.68'});
-      select(bills,'.sq-premium-days button:where(.chosen,.has-bill)',{
-        background:'#115668',color:'#fff',border:'1px solid #6ee7cd'
-      });
-      select(bills,'.sq-premium-calhead button,.sq-bills-row button,.sq-bills-actions button',{
-        background:'#193e53',color:'#d5fff1',border:'1px solid #5b9fa2',opacity:'1'
-      });
-      select(bills,'.sq-bills-list-head>span',{
-        background:'#173d4d',color:'#b5f9e8',border:'1px solid #5b9fa2'
-      });
-      select(bills,'.sq-bills-card input,.sq-bills-card select',{
-        background:'#f7fbff',color:'#14294b'
-      });
-      paint(document.getElementById('sq-premium-monthly'),{color:'#69e6c6'});
-      paint(document.getElementById('sq-premium-active'),{color:'#fff'});
-    }
+    // Bills styling is now fully owned by #dw-bills-exact-reference-v9.
+    // Do not paint it with the MutationObserver; that raced the CSS cascade.
     if(notifications){
       const page=document.getElementById('notifications-page');
       paint(page,{background:'#0b1f38','background-color':'#0b1f38','background-image':'none',color:'#f6faff','min-height':'calc(100dvh - 120px)'});

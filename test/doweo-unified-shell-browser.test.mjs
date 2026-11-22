@@ -261,13 +261,16 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   // Screenshot regressions: verify ACTUAL loaded stylesheet/cascade, not only source CSS.
   assert.ok(await page.locator('link[href*="doweo-page-repairs.css"]').count(),
    'the latest page repairs stylesheet must be linked in the real HTML');
-  await page.waitForFunction(()=>getComputedStyle(document.querySelector('#sq-bills-page .sq-bill-create-card')).backgroundColor==='rgb(12, 41, 61)',{timeout:10000});
+  await page.waitForFunction(()=>getComputedStyle(document.querySelector('#sq-bills-page .sq-bill-create-card')).backgroundColor==='rgb(16, 33, 57)',{timeout:10000});
   const billsGeometry=await page.evaluate(()=>{
    const back=document.getElementById('sq-bills-back').getBoundingClientRect();
    const tabs=document.getElementById('dw-all-top-tabs').getBoundingClientRect();
    const cal=document.querySelector('#sq-bills-page .sq-premium-calendar');
    return {backTop:back.top,backLeft:back.left,backRight:back.right,tabsBottom:tabs.bottom,
     calendarBg:getComputedStyle(cal).backgroundColor,
+    calendarGradient:getComputedStyle(cal).backgroundImage,
+    calendarStroke:getComputedStyle(cal).borderTopColor,
+    plusStroke:getComputedStyle(document.getElementById('sq-bill-mobile-toggle')).borderTopColor,
     calendarText:getComputedStyle(cal.querySelector('.sq-premium-days')||cal).color,
     billCardBackground:getComputedStyle(document.querySelector('#sq-bills-page .sq-bill-create-card')).backgroundColor,
     billCardText:getComputedStyle(document.querySelector('#sq-bills-page .sq-bill-create-card h3')).color,
@@ -281,20 +284,27 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
    'Bills Back to Home must be below the global tabs: '+JSON.stringify(billsGeometry));
   assert.ok(billsGeometry.backRight<1536&&billsGeometry.backLeft>=0,
    'Bills Back to Home must be fully inside the screen');
-  assert.match(billsGeometry.calendarBg,/^rgb\(12, 41, 61\)$/, 
+  assert.match(billsGeometry.calendarGradient,/linear-gradient\(/,
+    'Calendar must have the reference deep-navy gradient, not a white fill');
+  assert.equal(billsGeometry.calendarStroke,'rgb(154, 203, 213)',
+    'Reference calendar stroke must be thin light cyan');
+  assert.equal(billsGeometry.plusStroke,'rgb(104, 218, 201)',
+    'Add button must have mint outline');
+  assert.match(billsGeometry.calendarBg,/^rgb\(16, 33, 57\)$/, 
    'billing calendar must have a solid navy background, not pale white');
-  assert.match(billsGeometry.calendarText,/^rgb\(244, 250, 255\)$/, 
+  assert.match(billsGeometry.calendarText,/^rgb\(247, 251, 255\)$/, 
    'calendar date grid must use readable light text against navy');
-  assert.match(billsGeometry.billCardBackground,/^rgb\(12, 41, 61\)$/, 
+  assert.match(billsGeometry.billCardBackground,/^rgb\(16, 33, 57\)$/, 
     'Bill panels must use the actual navy surface, not white');
-  assert.match(billsGeometry.metricBackground,/^rgb\(12, 41, 61\)$/, 
+  assert.match(billsGeometry.metricBackground,/^rgb\(16, 33, 57\)$/, 
     'Monthly totals card should be navy too');
   for(const [name,value] of Object.entries({secondMetric:billsGeometry.secondMetricBackground,bills:billsGeometry.billsListBackground,subscriptions:billsGeometry.subscriptionsBackground})){
-    assert.equal(value,'rgb(12, 41, 61)',name+' card must match the navy reference');
+    assert.equal(value,'rgb(16, 33, 57)',name+' card must match the navy reference');
   }
-  assert.equal(billsGeometry.calendarDayText,'rgb(225, 240, 251)', 'calendar dates remain readable');
-  assert.equal(billsGeometry.billCardText,'rgb(244, 250, 255)',
+  assert.equal(billsGeometry.calendarDayText,'rgb(220, 234, 245)', 'calendar dates remain readable');
+  assert.equal(billsGeometry.billCardText,'rgb(247, 251, 255)',
     'Bill card text must be white on navy');
+  assert.ok(await page.locator('#sq-bills-create').count(),'Bills create form and save functionality must remain');
   await page.screenshot({path:resolve(root,'test-results/unified/bills-page-repairs.png'),fullPage:true});
 
   await pageOpen('dw-ref-nav-notifications','notifications-view');
