@@ -7,9 +7,9 @@
     background:#0A1B2E!important;
     background-image:none!important;
   }
-  /* The actual wallpaper is a separate #ABC6D7kdrop BODY sibling (not .wrap).
+  /* The actual wallpaper is a separate #backdrop BODY sibling (not .wrap).
      Override both uploaded tracker photos and inline gradient backgrounds. */
-  html body.notifications-view:not(.sq-auth-guest) > #ABC6D7kdrop#ABC6D7kdrop {
+  html body.notifications-view:not(.sq-auth-guest) > #backdrop#backdrop {
     background:#0A1B2E!important;
     background-image:none!important;
     background-color:#0A1B2E!important;
@@ -290,16 +290,16 @@
 /* Desktop screenshot correction v4. Target the existing routes and elements.
    No markup movement, no Supabase/API edits, and no mobile changes. */
 @media(min-width:901px){
-  /* Notifications has a separate, fixed wallpaper #ABC6D7kdrop under its BODY
+  /* Notifications has a separate, fixed wallpaper #backdrop under its BODY
      sibling page. Paint both so the displayed viewport is consistently navy. */
   html body.notifications-view.dw-all-secondary-view:not(.sq-auth-guest){
     background:#0A1B2E!important;background-image:none!important;
   }
-  html body.notifications-view.dw-all-secondary-view:not(.sq-auth-guest) #ABC6D7kdrop#ABC6D7kdrop{
+  html body.notifications-view.dw-all-secondary-view:not(.sq-auth-guest) #backdrop#backdrop{
     background:#0A1B2E!important;background-image:none!important;
     background-color:#0A1B2E!important;opacity:1!important;
   }
-  html body.notifications-view.dw-all-secondary-view #ABC6D7kdrop.photo::after{
+  html body.notifications-view.dw-all-secondary-view #backdrop.photo::after{
     background:none!important;content:none!important;
   }
   html body.notifications-view.dw-all-secondary-view #notifications-page{
