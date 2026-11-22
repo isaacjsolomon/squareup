@@ -8,7 +8,7 @@ const js=readFileSync(new URL('../doweo-reference-home.js',import.meta.url),'utf
 const flow=readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',import.meta.url),'utf8');
 
 test('the screenshot layout ships as a real, connected piece of production HTML',()=>{
- for(const p of ['doweo-reference-home.css?v=20261121-reference-layout-v1','doweo-reference-home.js?v=20261121-reference-layout-v2'])
+ for(const p of ['doweo-reference-home.css?v=20261122-add-no-chevron-v2','doweo-reference-home.js?v=20261122-add-no-chevron-v2'])
   assert.ok(html.includes(p),p+' is missing from index.html');
  assert.match(flow,/doweo-reference-home\.css doweo-reference-home\.js/);
  assert.match(flow,/node --check \.pages-output\/doweo-reference-home\.js/);
@@ -47,4 +47,14 @@ test('the desktop visual shell does not override mobile navigation geometry',()=
  assert.ok(css.includes('#settings-page'));
  assert.ok(css.includes('#about-page'));
  assert.ok(css.includes('#dw-beta-modal'));
+});
+
+const addMenu=readFileSync(new URL('../doweo-home-add-menu.js',import.meta.url),'utf8');
+
+test('Add dropdown keeps its actions without rendering a chevron',()=>{
+ assert.doesNotMatch(addMenu,/dw-compact-add-caret|toggle\.append\(caret\)/);
+ assert.match(addMenu,/toggle\.addEventListener\('click'/);
+ assert.match(addMenu,/menu\.hidden=false/);
+ assert.match(js,/querySelectorAll\('\.dw-compact-add-caret'\)/);
+ assert.match(css,/\.dw-compact-add-caret,[\s\S]*?display:none!important/);
 });
