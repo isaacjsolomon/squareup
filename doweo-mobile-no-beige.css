@@ -19,10 +19,10 @@
     background-color:transparent!important;
     background-image:none!important;
   }
-  /* Selected photo wallpapers remain functional. All non-photo, previously
-     purple/orange/yellow/beige preset backgrounds display a navy gradient on
-     mobile. The desktop picker and stored choices are untouched. */
-  html body #backdrop#backdrop:not(.photo) {
+  /* Selected photo wallpapers remain functional. The old default Indigo preset displays a navy gradient on
+     mobile. Explicitly chosen presets and photos remain functional. */
+  html body #backdrop#backdrop:not(.photo):not([data-preset]),
+  html body #backdrop#backdrop:not(.photo)[data-preset="indigo"] {
     background-color:var(--dw-mobile-canvas)!important;
     background-image:linear-gradient(155deg,
       var(--dw-mobile-canvas-top) 0%,
