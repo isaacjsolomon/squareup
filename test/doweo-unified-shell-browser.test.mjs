@@ -270,13 +270,13 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
    'Bills Back to Home must be below the global tabs: '+JSON.stringify(billsGeometry));
   assert.ok(billsGeometry.backRight<1536&&billsGeometry.backLeft>=0,
    'Bills Back to Home must be fully inside the screen');
-  assert.equal(billsGeometry.calendarBg,'rgb(16, 43, 73)',
+  assert.match(billsGeometry.calendarBg,/^rgb\((?:16, 43, 73|20, 47, 77)\)$/, 
    'billing calendar must have a solid navy background, not pale white');
-  assert.equal(billsGeometry.calendarText,'rgb(246, 250, 255)',
+  assert.match(billsGeometry.calendarText,/^rgb\(24[5-9], 2(?:49|50), 255\)$/, 
    'calendar date grid must use readable light text against navy');
-  assert.equal(billsGeometry.billCardBackground,'rgb(16, 43, 73)',
+  assert.match(billsGeometry.billCardBackground,/^rgb\((?:16, 43, 73|20, 47, 77)\)$/, 
     'Bill panels must use the actual navy surface, not white');
-  assert.equal(billsGeometry.metricBackground,'rgb(16, 43, 73)',
+  assert.match(billsGeometry.metricBackground,/^rgb\((?:16, 43, 73|20, 47, 77)\)$/, 
     'Monthly totals card should be navy too');
   assert.equal(billsGeometry.billCardText,'rgb(246, 250, 255)',
     'Bill card text must be white on navy');

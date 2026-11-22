@@ -9224,7 +9224,131 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 <script defer src="/doweo-unified-shell.js?v=20261121-desktop-refinement-v3"></script>
 <script defer src="/doweo-unified-localize.js?v=20261121-all-locales-v1"></script>
 <!-- This must load last, after the unified-shell and every legacy stylesheet. -->
-<link rel="stylesheet" href="/doweo-page-repairs.css?v=20261121-navy-pages-v4">
+<link rel="stylesheet" href="/doweo-page-repairs.css?v=20261121-production-visible-v5">
+
+<!-- UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121. Included in HTML to avoid missing/old CSS asset. -->
+<style id="doweo-desktop-v5-navy-analytics">
+@media (min-width:901px) {
+  /* Notification page is a BODY sibling of the main wrap. Remove wallpaper here. */
+  html body.notifications-view {background:#0a1e35!important;background-image:none!important}
+  html body.notifications-view #backdrop#backdrop {background:#0a1e35!important;background-image:none!important}
+  html body.notifications-view #notifications-page {
+    background:#0a1e35!important;background-image:none!important;
+    min-height:calc(100vh - 130px)!important;color:#f5faff!important;
+    border:0!important;box-shadow:none!important;
+  }
+  html body.notifications-view #notifications-page .sq-notifications-header h2,
+  html body.notifications-view #notifications-page .notification-panel-heading {color:#f5faff!important}
+  html body.notifications-view #notifications-page #notifications-panel {
+    background:#112c49!important;background-image:none!important;
+    color:#f5faff!important;border:1px solid #365c78!important
+  }
+  html body.notifications-view #notifications-page #notifications-list :is(.entry,.dw-inbox-item,.dw-inbox-card){
+    background:#1c3a56!important;background-image:none!important;color:#f5faff!important;
+    border-color:#466784!important
+  }
+  html body.notifications-view #notifications-page #notifications-list :is(h3,b,strong){color:#fff!important}
+  html body.notifications-view #notifications-page #notifications-list :is(p,small,.note){color:#c4d7e8!important}
+  html body.notifications-view #notifications-page #sq-notification-filter{
+    color:#102947!important;background:#f5faff!important
+  }
+  html body.notifications-view #notifications-page #notifications-list button{
+    color:#073747!important;background:#bdf4e5!important
+  }
+  /* Bills: every visible card uses a solid navy surface rather than a pale
+     gradient. All information remains readable and buttons keep handlers. */
+  html body #sq-bills-page:not([hidden]){
+    background:#0b2038!important;background-image:none!important;
+    color:#f5faff!important;min-height:calc(100vh - 135px)!important;
+    border-radius:20px!important;
+  }
+  html body #sq-bills-page:not([hidden]) .sq-bills-title h2,
+  html body #sq-bills-page:not([hidden]) .sq-bills-tracker-compact label{color:#f5faff!important}
+  html body #sq-bills-page#sq-bills-page
+    :is(.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article){
+    background:#142f4d!important;background-color:#142f4d!important;
+    background-image:none!important;color:#f5faff!important;
+    border:1px solid #496e88!important;box-shadow:0 8px 20px #051c3233!important;
+    opacity:1!important;backdrop-filter:none!important
+  }
+  html body #sq-bills-page#sq-bills-page
+    :is(.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article)
+    :is(h2,h3,h4,p,span,small,strong,b,label,time){
+    color:#f5faff!important;opacity:1!important
+  }
+  html body #sq-bills-page#sq-bills-page
+    :is(.sq-premium-calendar,.sq-bills-card,.sq-premium-metrics article)
+    :is(.sq-bills-help,.sq-premium-metrics article span,.sq-premium-metrics article small,.sq-premium-selected){
+    color:#c2d7e9!important;opacity:1!important
+  }
+  html body #sq-bills-page#sq-bills-page #sq-premium-monthly{color:#77edd0!important}
+  html body #sq-bills-page#sq-bills-page .sq-premium-days>span{color:#c5dceb!important}
+  html body #sq-bills-page#sq-bills-page .sq-premium-days button {
+    color:#f5faff!important;opacity:1!important;text-shadow:none!important
+  }
+  html body #sq-bills-page#sq-bills-page .sq-premium-days button:disabled{
+    color:#b9cee2!important;opacity:.65!important
+  }
+  html body #sq-bills-page#sq-bills-page .sq-premium-days button:where(.chosen,.has-bill){
+    background:#176076!important;color:#fff!important;border-color:#64e6c9!important
+  }
+  html body #sq-bills-page#sq-bills-page .sq-premium-calhead button,
+  html body #sq-bills-page#sq-bills-page :is(.sq-bills-row button,.sq-bill-mobile-toggle){
+    background:#20546d!important;color:#fff!important;
+    border:1px solid #70a2b9!important;opacity:1!important
+  }
+  html body #sq-bills-page#sq-bills-page :is(.sq-bills-card input,.sq-bills-card select,.sq-bills-tracker-compact select){
+    background:#f7fbff!important;color:#14294b!important;border:1px solid #a2bbd0!important
+  }
+  /* Cash Flow uses the same airy canvas, title hierarchy, pill tabs and
+     white analytics panels as Spending Analytics. Preserve renderFinance(). */
+  html body.sq-finance-open #sq-nextgen[data-section="finance"]{
+    background:#eaf1fc!important;color:#142543!important;
+    overflow-y:auto!important;overflow-x:hidden!important
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-shell{
+    background:transparent!important;max-width:1450px!important;
+    padding:20px clamp(20px,2.5vw,42px) 65px!important;margin:0 auto!important;
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs{
+    background:#eff4fc!important;border:1px solid #dce5f2!important;
+    border-radius:18px!important;padding:5px!important;max-width:650px!important
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-section-tabs button[aria-current="page"]{
+    background:#142849!important;color:#a3f6de!important
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] :is(#sq-ng-title,.sq-ng-card h2){
+    color:#17294b!important
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-template-areas:"summary summary" "trend categories" "activity comparison" "note note"!important;
+    align-items:stretch!important;gap:18px!important
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .sq-ng-finance-overview{grid-area:summary!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-web-trend{grid-area:trend!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-spending-categories{grid-area:categories!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content>.sq-ng-section{grid-area:activity!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-web-comparison{grid-area:comparison!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content>p{grid-area:note!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card{
+    background:#f7faff!important;background-image:none!important;color:#17294b!important;
+    border:1px solid #dbe5f2!important;border-radius:22px!important;
+    box-shadow:0 8px 24px #20375816!important
+  }
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content .sq-ng-card
+    :is(h2,h3,strong,b){color:#17294b!important}
+  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-open-transaction{
+    background:#7aebcf!important;color:#0c3541!important;cursor:pointer!important
+  }
+  @media(max-width:1200px){
+    html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-content{
+      grid-template-columns:minmax(0,1fr)!important;
+      grid-template-areas:"summary" "trend" "categories" "activity" "comparison" "note"!important
+    }
+  }
+}
+</style>
 </body>
 </html>
 
