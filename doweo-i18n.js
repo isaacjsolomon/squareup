@@ -54,29 +54,29 @@
   .dw-language-preference.dw-language-grid-mode{display:block!important;padding:0!important;border:0!important;background:transparent!important;margin:12px 0!important}
   .dw-language-grid-mode [data-dw-language-select]{display:none!important}
 
-  .dw-language-grid-mode .dw-language-picker-toggle{display:flex;width:100%;min-height:66px;align-items:center;gap:13px;padding:13px 17px;background:#132f44;color:#f0f8ff;border:1px solid #385c70;border-radius:14px;cursor:pointer;text-align:left;box-sizing:border-box;font:inherit}
-  .dw-language-grid-mode .dw-language-picker-toggle:hover{border-color:#43d9c2;background:#173b4b}
-  .dw-language-grid-mode .dw-language-picker-toggle:focus-visible{outline:3px solid #67e5d3;outline-offset:2px}
+  .dw-language-grid-mode .dw-language-picker-toggle{display:flex;width:100%;min-height:66px;align-items:center;gap:13px;padding:13px 17px;background:#102B40;color:#F3F8FC;border:1px solid #355E72;border-radius:14px;cursor:pointer;text-align:left;box-sizing:border-box;font:inherit}
+  .dw-language-grid-mode .dw-language-picker-toggle:hover{border-color:#ABC6D7;background:#173750}
+  .dw-language-grid-mode .dw-language-picker-toggle:focus-visible{outline:3px solid #ABC6D7;outline-offset:2px}
   .dw-language-picker-toggle .dw-language-picker-flag{font-size:26px;line-height:1;flex:0 0 32px;text-align:center}
   .dw-language-picker-toggle .dw-language-picker-info{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:3px;direction:ltr;text-align:left}
   .dw-language-picker-toggle .dw-language-picker-name{font-weight:700;font-size:16px;line-height:1.3;unicode-bidi:isolate}
-  .dw-language-picker-toggle .dw-language-picker-subtitle{font-size:12px;color:#bdd2df;line-height:1.25}
-  .dw-language-picker-toggle .dw-language-picker-chevron{width:20px;height:20px;flex:0 0 auto;transition:transform .18s;color:#61e2d0}
+  .dw-language-picker-toggle .dw-language-picker-subtitle{font-size:12px;color:#ABC6D7;line-height:1.25}
+  .dw-language-picker-toggle .dw-language-picker-chevron{width:20px;height:20px;flex:0 0 auto;transition:transform .18s;color:#ABC6D7}
   .dw-language-picker-toggle[aria-expanded="true"] .dw-language-picker-chevron{transform:rotate(180deg)}
   .dw-language-modal[hidden]{display:none!important}
   .dw-language-modal{position:fixed!important;inset:0!important;z-index:2147483000!important;display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;direction:ltr}
-  .dw-language-modal-backdrop{position:absolute;inset:0;background:rgba(2,12,26,.75);backdrop-filter:blur(5px)}
-  .dw-language-modal-card{position:relative;display:flex;flex-direction:column;width:min(760px,100%);max-height:min(88dvh,820px);overflow:hidden;background:#0b2438;color:#f0f8ff;border:1px solid #42677a;border-radius:22px;box-shadow:0 24px 90px rgba(0,0,0,.5);direction:ltr}
-  .dw-language-modal-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 24px 16px;border-bottom:1px solid #2a4b60}
+  .dw-language-modal-backdrop{position:absolute;inset:0;background:color-mix(in srgb, #0A1B2E 75%, transparent);backdrop-filter:blur(5px)}
+  .dw-language-modal-card{position:relative;display:flex;flex-direction:column;width:min(760px,100%);max-height:min(88dvh,820px);overflow:hidden;background:#102B40;color:#F3F8FC;border:1px solid #355E72;border-radius:22px;box-shadow:0 24px 90px color-mix(in srgb, #0A1B2E 50%, transparent);direction:ltr}
+  .dw-language-modal-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 24px 16px;border-bottom:1px solid #204158}
   .dw-language-modal-title{font-weight:750;font-size:23px;line-height:1.3;text-align:left}
-  .dw-language-modal-close{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border:1px solid #42677a;border-radius:12px;background:#183b51;color:#fff;font:inherit;font-size:28px;cursor:pointer}
-  .dw-language-modal-close:hover{background:#24536b;border-color:#51dbc8}
-  .dw-language-modal-close:focus-visible{outline:3px solid #69ead5;outline-offset:2px}
+  .dw-language-modal-close{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border:1px solid #355E72;border-radius:12px;background:#173750;color:#F3F8FC;font:inherit;font-size:28px;cursor:pointer}
+  .dw-language-modal-close:hover{background:#355E72;border-color:#ABC6D7}
+  .dw-language-modal-close:focus-visible{outline:3px solid #ABC6D7;outline-offset:2px}
   .dw-language-modal-scroll{padding:20px 24px 24px;overflow-y:auto;overscroll-behavior:contain;min-height:0}
-  .dw-language-feedback-footer{padding:10px 24px 14px;border-top:1px solid #2a4b60;display:flex;justify-content:flex-start;flex-shrink:0}
-  .dw-language-feedback-link{font:inherit;font-size:13px;color:#86e9d8;text-decoration:underline;text-underline-offset:3px}
-  .dw-language-feedback-link:hover{color:#d8fff8}
-  .dw-language-feedback-link:focus-visible{outline:3px solid #69ead5;outline-offset:3px;border-radius:3px}
+  .dw-language-feedback-footer{padding:10px 24px 14px;border-top:1px solid #204158;display:flex;justify-content:flex-start;flex-shrink:0}
+  .dw-language-feedback-link{font:inherit;font-size:13px;color:#ABC6D7;text-decoration:underline;text-underline-offset:3px}
+  .dw-language-feedback-link:hover{color:#F3F8FC}
+  .dw-language-feedback-link:focus-visible{outline:3px solid #ABC6D7;outline-offset:3px;border-radius:3px}
   .dw-language-modal .dw-language-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   .dw-language-modal .dw-language-grid[hidden]{display:none!important}
   @media(max-width:520px){.dw-language-modal{padding:10px}.dw-language-modal-card{max-height:90dvh;border-radius:17px}.dw-language-modal-header{padding:16px}.dw-language-modal-title{font-size:19px}.dw-language-modal-scroll{padding:14px}.dw-language-modal .dw-language-grid{gap:8px}}
@@ -84,16 +84,16 @@
   
 
   .dw-language-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;width:100%;direction:ltr}
-  .dw-language-grid label.dw-language-tile{display:flex!important;align-items:center;gap:10px;position:relative;min-width:0;min-height:66px;padding:10px 12px;border:1px solid #315269;border-radius:13px;background:#112b40;color:#eff8ff;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s;box-sizing:border-box}
-  .dw-language-grid label.dw-language-tile:hover{background:#183b4c;border-color:#60bea9}
-  .dw-language-grid .dw-language-tile:has(input:checked){background:#133f45;border-color:#39e2c5;box-shadow:inset 0 0 0 1px #39e2c5}
-  .dw-language-grid .dw-language-tile:has(input:focus-visible){outline:3px solid #77baff;outline-offset:3px}
+  .dw-language-grid label.dw-language-tile{display:flex!important;align-items:center;gap:10px;position:relative;min-width:0;min-height:66px;padding:10px 12px;border:1px solid #355E72;border-radius:13px;background:#102B40;color:#F3F8FC;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s;box-sizing:border-box}
+  .dw-language-grid label.dw-language-tile:hover{background:#173750;border-color:#ABC6D7}
+  .dw-language-grid .dw-language-tile:has(input:checked){background:#173750;border-color:#ABC6D7;box-shadow:inset 0 0 0 1px #ABC6D7}
+  .dw-language-grid .dw-language-tile:has(input:focus-visible){outline:3px solid #ABC6D7;outline-offset:3px}
   .dw-language-grid .dw-language-radio{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
   .dw-language-grid .dw-language-flag{font-size:24px;line-height:1;flex:0 0 29px;display:inline-flex;justify-content:center}
   .dw-language-grid .dw-language-info{min-width:0;display:flex;flex:1;flex-direction:column;gap:3px;overflow-wrap:anywhere;direction:ltr;text-align:left;align-items:flex-start}
   .dw-language-grid .dw-language-native{font-size:14px;line-height:1.25;font-weight:700;text-align:left;unicode-bidi:isolate}
-  .dw-language-grid .dw-language-english{font-size:11px;line-height:1.25;font-weight:400;color:#b6cbd8}
-  .dw-language-grid .dw-language-check{flex:0 0 auto;font-size:17px;font-weight:800;color:#4ce4c7;visibility:hidden}
+  .dw-language-grid .dw-language-english{font-size:11px;line-height:1.25;font-weight:400;color:#ABC6D7}
+  .dw-language-grid .dw-language-check{flex:0 0 auto;font-size:17px;font-weight:800;color:#ABC6D7;visibility:hidden}
   .dw-language-grid .dw-language-tile:has(input:checked) .dw-language-check{visibility:visible}
   .dw-language-grid .dw-language-auto{grid-column:1/-1;min-height:61px!important}
   #settings-language-panel [data-dw-language-hint]{display:none!important}
