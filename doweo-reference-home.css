@@ -704,8 +704,23 @@
 @media(max-width:900px){
  html body .sq-mobile-top{background:#142747!important;border-color:#3b5877!important}
  html body .sq-mobile-nav{background:#10243d!important;border-top-color:#2c4c64!important}
+ /* Mobile beta feedback dialog follows the actual navy theme rather than
+    the older light desktop preview. This is the original mobile rule. */
  html body #dw-beta-nudge .dw-beta-nudge-panel{
-  background:linear-gradient(145deg,#fff,#f1f6ff)!important;color:#132544!important;
+  background:linear-gradient(145deg,#102b40,#0b2236)!important;
+  border-color:#355e72!important;color:#f3f8fc!important;
+ }
+ html body #dw-beta-nudge :is(h2,.dw-beta-nudge-close){color:#f3f8fc!important}
+ html body #dw-beta-nudge :is(#dw-beta-nudge-copy,.dw-beta-nudge-later){color:#abc6d7!important}
+ html body #dw-beta-nudge .dw-beta-nudge-topics button{
+  background:#173750!important;color:#f3f8fc!important;border-color:#355e72!important;
+ }
+ html body #dw-beta-nudge .dw-beta-nudge-topics button:is(:hover,[aria-pressed="true"]){
+  background:#204158!important;border-color:#60f1ad!important;
+ }
+ html body #dw-beta-nudge .dw-beta-nudge-topics button>span{color:#60f1ad!important}
+ html body #dw-beta-nudge .dw-beta-nudge-give{
+  background:#60f1ad!important;color:#062e36!important;
  }
  #dw-ref-home,#dw-ref-toolbar,#dw-ref-nav-notifications,.dw-ref-brand{display:none!important}
 }
