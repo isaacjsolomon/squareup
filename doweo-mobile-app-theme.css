@@ -2,7 +2,8 @@
 @layer mobileApp {
  @media (max-width:900px) {
   html {
-    --mobile-canvas:linear-gradient(170deg,#101e36 0%,#192a48 40%,#354766 56%,#dae2ef 78%,#f1f5fb 100%);
+    /* Full-height navy canvas: avoid the pale-to-purple cutoff on long mobile screens. */
+    --mobile-canvas:linear-gradient(170deg,#101e36 0%,#192a48 38%,#233855 70%,#173750 100%);
     --mobile-paper:#fafbff;
     --mobile-ink:#111c36;
     --mobile-muted:#506178;
