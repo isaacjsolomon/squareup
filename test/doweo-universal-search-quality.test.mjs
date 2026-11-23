@@ -10,7 +10,7 @@ const home=readFileSync(new URL('../doweo-reference-home.js',import.meta.url),'u
 const workflow=readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',import.meta.url),'utf8');
 
 test('search is a real browser script loaded by DoWeo and bundled for Cloudflare',()=>{
-  assert.match(html,/<script id="sq-global-search-script" defer src="\/doweo-global-search\.js\?v=[^"\\s]+"><\/script>/);
+  assert.match(html,/<script id="sq-global-search-script" defer src="\/doweo-global-search\.js\?v=[A-Za-z0-9-]+"><\/script>/);
   assert.match(workflow,/cp index\.html [^\n]*doweo-global-search\.js/);
   assert.match(workflow,/test -s \.pages-output\/doweo-global-search\.js/);
   assert.match(search,/window\.dwGlobalSearchReady=true/);
