@@ -29,7 +29,15 @@ assert(html.includes('doweo-desktop-standalone.css?v=20261123-tracker-workspace-
 assert(html.includes('styles.css?v=20261123-backdrop-gallery-v1'),'Backdrop gallery stylesheet not cache-busted');
 assert(/function sqBannerPalette\(\)\{\s*return SQ_BANNER_PRESETS;\s*\}/.test(html),'Mobile banner preset lock still active');
 assert(!/\bMOBILE_PRESETS\b|\bSQ_MOBILE_BANNER_PRESETS\b|dw-mobile-theme-authoritative-v7|seven-color-source-palette/.test(html),'Legacy palette lock still active');
-assert(html.includes('swatch.style.backgroundImage = config.preview || config.css'),'Backdrop previews must use the new preset background and avoid inline-HTML CSS injection');
+assert(html.includes('setBackdropSwatchArtwork(swatch, previewImage, config.label)'),'Every preset category must render the actual image or gradient in its own thumbnail layer');
+assert(html.includes('setBackdropSwatchArtwork(custom, photoPreview, "Your photo")'),'Uploaded photo thumbnail must also be visible on mobile');
+assert(html.includes('art.style.setProperty("background-image", image, "important")'),'Preview artwork must not be overridden by mobile button backgrounds');
+assert(html.includes('swatch.style.setProperty("background-image", previewImage, "important")'),'Original swatch background must remain as a compatible fallback');
+assert(html.includes('#backdrop-swatches .swatch > .dw-backdrop-preview-art'),'Preview art layer style is missing');
+assert(html.includes('#backdrop-swatches .swatch > .dw-backdrop-preview-title'),'Preview captions must remain readable');
+for (const tab of ['gradients', 'nature', 'sky']) {
+ assert(html.includes('id: "' + tab + '"'),'Missing mobile picker category: '+tab);
+}
 assert(html.includes('id="backdrop-categories"'),'Backdrop category controls missing');
 for (const key of ['mountainMist','tropicalCoast','alpineLake','desertDunes','evergreen','snowfall','cottonCandy','northernLights','stargazing','aquaFlow','topographic','midnightBlue']) {
  assert(section.includes(key+':'),'Missing new backdrop '+key);
@@ -48,4 +56,4 @@ assert(html.includes('el.style.setProperty("background-image", chosenImage, "imp
 assert(!html.includes('el.style.setProperty("background-blend-mode", url ? "multiply"'),'Mobile photo tint still active');
 assert(!css.includes('#backdrop.photo::after'),'Photo recoloring overlay still active');
 assert(css.includes('--accent: #60F1AD;'),'Mint action accent lost');
-console.log('Six original gradients, twenty-two additional backdrops, server allowlist and expanded desktop gallery verified');
+console.log('All 28 presets, all three mobile thumbnail tabs, uploaded-photo previews, and desktop gallery verified');
