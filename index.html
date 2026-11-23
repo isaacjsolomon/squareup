@@ -8485,28 +8485,27 @@ document.getElementById('ac-log').addEventListener('click',function(){
  nav.insertBefore(social,more);
  const makePanel=(id,ids)=>{
    const panel=document.createElement('div');panel.id=id;panel.className='dw-desktop-side-flyout';
-   panel.hidden=true;panel.setAttribute('role','group');panel.setAttribute('aria-label',id==='dw-social-flyout'?'Social navigation':'More navigation');
+   panel.hidden=true;panel.setAttribute('role','group');panel.setAttribute('aria-label',id==='dw-social-flyout'?'Social navigation':id==='dw-my-wallet-flyout'?'My Wallet navigation':'More navigation');
    for(const name of ids){const item=document.getElementById(name);if(item){if(name==='nav-friends'){item.hidden=false;item.removeAttribute('aria-hidden');item.removeAttribute('tabindex');}panel.appendChild(item);}}
    document.body.appendChild(panel);return panel;
  };
  const finance=document.createElement('button');
  finance.type='button';finance.id='dw-personal-finance';finance.className='sq-nav-link';
- finance.setAttribute('aria-label','Open My Wallet');
- finance.innerHTML='<span class="sq-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="15" rx="2"/><path d="M3 10V6a2 2 0 0 1 2-2h13M16 15h3"/></svg></span><span class="sq-nav-label">My Wallet</span>';
+ finance.setAttribute('aria-label','My Wallet sections');finance.setAttribute('aria-haspopup','true');finance.setAttribute('aria-expanded','false');
+ finance.innerHTML='<span class="sq-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="15" rx="2"/><path d="M3 10V6a2 2 0 0 1 2-2h13M16 15h3"/></svg></span><span class="sq-nav-label">My Wallet</span><span class="dw-flyout-caret" aria-hidden="true">›</span>';
  const events=document.getElementById('sqev-nav');
  events.before(finance);
- // My Wallet is a direct destination, not another nested flyout.
- finance.addEventListener('click',event=>{
-  event.preventDefault();event.stopPropagation();
-  window.dwOpenMyWallet?.();
- });
+ // Move the original destination buttons, retaining their existing navigation handlers.
+ // The same flyout mechanism powers the Social dropdown.
+ const walletPanel=makePanel('dw-my-wallet-flyout',['nav-analytics','nav-cashflow','sqev-nav']);
+ finance.setAttribute('aria-controls',walletPanel.id);
  const socialPanel=makePanel('dw-social-flyout',['nav-chat','nav-friends']);
  const morePanel=makePanel('dw-more-flyout',['nav-profile','nav-help-center','nav-about','nav-privacy-terms']);
  social.setAttribute('aria-controls',socialPanel.id);
  summary.setAttribute('aria-controls',morePanel.id);summary.setAttribute('aria-expanded','false');
  more.open=false;
  let active=null;
- const close=()=>{socialPanel.hidden=true;morePanel.hidden=true;more.open=false;social.setAttribute('aria-expanded','false');summary.setAttribute('aria-expanded','false');active=null;};
+ const close=()=>{walletPanel.hidden=true;finance.setAttribute('aria-expanded','false');socialPanel.hidden=true;morePanel.hidden=true;more.open=false;social.setAttribute('aria-expanded','false');summary.setAttribute('aria-expanded','false');active=null;};
  const position=(button,panel)=>{
    const rect=button.getBoundingClientRect();
    const width=panel.offsetWidth||230,height=panel.offsetHeight||190;
@@ -8523,11 +8522,12 @@ document.getElementById('ac-log').addEventListener('click',function(){
  };
  summary.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();toggle(summary,morePanel);});
  social.addEventListener('click',event=>{event.preventDefault();toggle(social,socialPanel);});
- for(const panel of [socialPanel,morePanel])panel.addEventListener('click',event=>{
+ finance.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();toggle(finance,walletPanel);});
+ for(const panel of [walletPanel,socialPanel,morePanel])panel.addEventListener('click',event=>{
    if(event.target.closest('button.sq-nav-link'))close();
  });
  document.addEventListener('pointerdown',event=>{
-   if(active&&!active.contains(event.target)&&!social.contains(event.target)&&!summary.contains(event.target))close();
+   if(active&&!active.contains(event.target)&&!finance.contains(event.target)&&!social.contains(event.target)&&!summary.contains(event.target))close();
  },true);
  document.addEventListener('keydown',event=>{
    if(event.key==='Escape'&&active){close();(document.activeElement?.blur?.());}
@@ -9890,7 +9890,9 @@ html body #new-modal #new-form [hidden] {display:none!important}
 @media(min-width:901px){
  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>#dw-personal-finance.sq-nav-link {display:flex!important;order:0!important}
  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav:has(>#dw-personal-finance)>#sq-finance-nav{display:none!important}
- html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav:has(>#dw-personal-finance)>:is(#sqev-nav,#nav-cashflow,#nav-analytics){display:flex!important}
+ html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav:has(>#dw-personal-finance)>:is(#sqev-nav,#nav-cashflow,#nav-analytics){display:none!important}
+ html body #dw-personal-finance>.dw-flyout-caret{margin-left:auto;font-size:22px;line-height:1;color:#ABC6D7}
+ html body.side-collapsed #dw-personal-finance>.dw-flyout-caret{display:none!important}
 }
 @media(max-width:900px){#dw-personal-finance{display:none!important}}
 </style>
