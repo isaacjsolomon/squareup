@@ -10,8 +10,8 @@ const api=read('functions/api/[[path]].js');
 
 test('Polls dashboard JS parses and is bundled in production',()=>{
  assert.doesNotThrow(()=>new Function(js));
- assert.match(html,/doweo-polls-dashboard\.js\?v=20261122-approved-seven-palette-v3/);
- assert.match(html,/doweo-polls-dashboard\.css\?v=20261122-approved-seven-palette-v3/);
+ assert.match(html,/doweo-polls-dashboard\.js\?v=20261122-backdrop-colors-v1/);
+ assert.match(html,/doweo-polls-dashboard\.css\?v=20261122-backdrop-colors-v1/);
  assert.match(workflow,/doweo-polls-dashboard\.js doweo-polls-dashboard\.css/);
  assert.match(workflow,/node --check \.pages-output\/doweo-polls-dashboard\.js/);
 });
