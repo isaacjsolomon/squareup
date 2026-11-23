@@ -151,11 +151,12 @@
    for(const item of [...asList(ctx.trackers),...asList(cache.trackers)]){
      if(validId(item?.id))byId.set(text(item.id),item);
    }
-   for(const item of cache.details){
-     if(validId(item?.id)&&byId.has(text(item.id)))byId.set(text(item.id),{...byId.get(text(item.id)),...item});
-   }
    if(ctx.active&&byId.has(text(ctx.active.id))){
      byId.set(text(ctx.active.id),{...byId.get(text(ctx.active.id)),...ctx.active});
+   }
+   // Fresh authenticated tracker details take priority over a fast startup preview.
+   for(const item of cache.details){
+     if(validId(item?.id)&&byId.has(text(item.id)))byId.set(text(item.id),{...byId.get(text(item.id)),...item});
    }
    return [...byId.values()];
  }
