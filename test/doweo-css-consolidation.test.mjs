@@ -81,7 +81,8 @@ test('original backdrop gradients are selectable on mobile and desktop',()=>{
  assert.ok(!html.includes('MOBILE_PRESETS'));
  assert.ok(!html.includes('SQ_MOBILE_BANNER_PRESETS'));
  assert.ok(!html.includes('dw-mobile-theme-authoritative-v7'));
- assert.ok(html.includes('swatch.style.backgroundImage = config.preview || config.css'), 'Gradient and image swatches use the shared preset CSS without unsafe inline markup');
+ assert.ok(html.includes('setBackdropSwatchArtwork(swatch, previewImage, config.label)'), 'Every gradient and scenic preset must render its actual image in the mobile picker');
+ assert.ok(html.includes('art.style.setProperty("background-image", image, "important")'), 'Mobile preview art must override the global navy button background');
  assert.ok(html.includes('restored-original-backdrops-20261122-v1'));
  assert.ok(!css.includes('#backdrop.photo::after'),'Uploaded photos must not be color-graded');
  assert.ok(!deploy.includes('verify-approved-palette.mjs'),'Do not enforce the retired color whitelist');
