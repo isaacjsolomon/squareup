@@ -34,7 +34,7 @@ async function invoke(path,method='GET',body,outsider=false){
  }finally{globalThis.fetch=prev;}
 }
 test('goals and budgets are mounted only in the existing Finance Hub',()=>{
- assert.match(html,/<script src="\/doweo-finance-planning\.js" defer><\/script>/);
+ assert.match(html,/<script src="\/doweo-finance-planning\.js(?:\?v=[^"]+)?" defer><\/script>/);
  assert.match(ui,/getElementById\('sq-nextgen'\)/);
  assert.match(ui,/getElementById\('sq-ng-content'\)|querySelector\('\.sq-ng-shell'\)/);
  assert.match(ui,/Goals & Budgets/);
