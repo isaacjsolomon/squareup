@@ -57,6 +57,7 @@
 
 <meta name="dw-backdrop-preset-build" content="restored-original-backdrops-20261122-v1">
 <meta name="dw-backdrop-gallery-build" content="expanded-gallery-18-presets-20261123-v1">
+<meta name="dw-backdrop-gallery-extended-build" content="expanded-gallery-28-presets-20261123-v2">
 <meta name="dw-navigation-build" content="cashflow-visible-sidebar-v4">
 <meta name="application-name" content="DoWeo">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3065,6 +3066,30 @@ var PRESETS = {
   midnightBlue: {
     label: "Midnight Blue", group: "sky", side: [131, 158, 185],
     css: "radial-gradient(ellipse at 76% 18%,rgba(65,105,175,.58),transparent 48%),radial-gradient(ellipse at 20% 82%,rgba(30,95,132,.43),transparent 50%),linear-gradient(125deg,#050d22,#0d2543 62%,#0a1b2e)"
+  },
+
+  // Ten new tracker-wide backdrops; their IDs also belong in the API allowlist.
+  mountainSummit: scenicBackdrop("Mountain Summit", "1464822759023-fed622ff2c3b", "#536e83,#1a344b", [137,169,190], "nature"),
+  forestTrail: scenicBackdrop("Forest Trail", "1473448912268-2022ce9509d8", "#2c674e,#102f32", [126,177,143], "nature"),
+  oceanWaves: scenicBackdrop("Ocean Waves", "1518837695005-2083093ee35b", "#12678b,#082d4e", [103,174,198], "nature"),
+  goldenValley: scenicBackdrop("Golden Valley", "1500534314209-a25ddb2bd429", "#9b7351,#364558", [188,159,132], "nature"),
+  sunriseSkies: scenicBackdrop("Sunrise Skies", "1500530855697-b586d89ba3ee", "#d38982,#344e79", [196,160,180], "sky"),
+  starryNight: scenicBackdrop("Starry Night", "1519681393784-d120267933ba", "#38466c,#0a1932", [136,158,194], "sky"),
+  blueMoon: {
+    label: "Blue Moon", group: "sky", side: [119,157,195],
+    css: "radial-gradient(circle at 78% 27%,#d1e9f5 0 5%,#a4c1d7 6%,transparent 10%),radial-gradient(circle at 76% 28%,rgba(122,183,223,.38),transparent 29%),linear-gradient(150deg,#040c20,#183657 67%,#061b34)"
+  },
+  glacierGlass: {
+    label: "Glacier Glass", group: "gradients", side: [143,197,211],
+    css: "radial-gradient(ellipse at 15% 80%,rgba(192,239,251,.58),transparent 45%),radial-gradient(ellipse at 90% 5%,rgba(69,152,190,.56),transparent 55%),linear-gradient(130deg,#0b304b,#2f728b 55%,#081a33)"
+  },
+  mintLagoon: {
+    label: "Mint Lagoon", group: "gradients", side: [113,201,180],
+    css: "radial-gradient(ellipse at 88% 12%,rgba(96,241,173,.56),transparent 49%),radial-gradient(ellipse at 5% 95%,rgba(18,145,174,.6),transparent 55%),linear-gradient(125deg,#06334b,#0f786f 55%,#081b2e)"
+  },
+  violetHorizon: {
+    label: "Violet Horizon", group: "gradients", side: [157,144,195],
+    css: "radial-gradient(ellipse at 63% 0%,rgba(178,136,235,.62),transparent 45%),linear-gradient(180deg,rgba(21,26,60,0) 50%,rgba(9,19,45,.8) 100%),linear-gradient(135deg,#172b50,#65518b 56%,#07192f)"
   }
 };
 
@@ -9820,7 +9845,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 <script defer src="/doweo-polls-dashboard.js?v=20261122-backdrop-colors-v1"></script>
 <script defer src="/doweo-cashflow-analytics.js?v=20261122-original-mint-v1"></script>
 <script defer src="/doweo-desktop-standalone.js?v=20261122-backdrop-colors-v1"></script>
-<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261122-banner-respect-v2">
+<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261123-tracker-workspace-wallpaper-v1">
 <link rel="stylesheet" href="/doweo-polls-dashboard.css?v=20261122-backdrop-colors-v1">
 <style id="dw-mobile-critical-colors-v8">
 /* Desktop and mobile: the brand icon is one self-contained SVG image, not a

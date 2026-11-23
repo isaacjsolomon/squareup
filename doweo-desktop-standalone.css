@@ -741,3 +741,65 @@
     opacity:1!important;
   }
 }
+
+/* Tracker Backdrop workspace: show the saved tracker wallpaper across the
+   entire desktop page, with readable controls and a full-sized preset gallery.
+   Other workspace pages and the mobile picker retain their original styling. */
+@media (min-width:901px) {
+  html body:not(.sq-auth-guest) #backdrop-modal.dw-desktop-standalone {
+    background-color:#0A1B2E!important;
+    background-image:
+      linear-gradient(180deg,rgba(10,27,46,.35),rgba(10,27,46,.56)),
+      var(--dw-selected-tracker-wallpaper,linear-gradient(135deg,#0A1B2E,#102B40))!important;
+    background-size:cover!important;
+    background-position:center center!important;
+    background-repeat:no-repeat!important;
+    background-attachment:fixed!important;
+  }
+  html body:not(.sq-auth-guest) #backdrop-modal.dw-desktop-standalone > .dw-standalone-head {
+    width:min(1220px,100%)!important;
+    border-bottom:1px solid rgba(171,198,215,.22)!important;
+    color:#F3F8FC!important;
+  }
+  html body:not(.sq-auth-guest) #backdrop-modal.dw-desktop-standalone > .dw-standalone-head .dw-standalone-eyebrow {
+    color:#ABC6D7!important;
+  }
+  html body:not(.sq-auth-guest) #backdrop-modal.dw-desktop-standalone > .dw-standalone-head h1 {
+    color:#F3F8FC!important;
+    text-shadow:0 2px 12px rgba(10,27,46,.4);
+  }
+  html body:not(.sq-auth-guest) #backdrop-modal.dw-desktop-standalone > .dw-standalone-head p {
+    color:#E1EDF6!important;
+    text-shadow:0 1px 8px rgba(10,27,46,.35);
+  }
+  html body:not(.sq-auth-guest) #backdrop-modal.dw-desktop-standalone > .dw-standalone-head .dw-standalone-back {
+    border-color:#567D90!important;
+    background:#173750!important;
+    color:#F3F8FC!important;
+  }
+  html body:not(.sq-auth-guest) #backdrop-modal.dw-desktop-standalone > .card.modal {
+    width:min(1220px,100%)!important;
+    max-width:1220px!important;
+    min-height:600px!important;
+    margin:0 auto!important;
+    padding:34px clamp(22px,3vw,44px) 38px!important;
+  }
+  html body:not(.sq-auth-guest) #backdrop-modal.dw-desktop-standalone #backdrop-swatches {
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:14px!important;
+    margin-top:18px!important;
+  }
+  html body:not(.sq-auth-guest) #backdrop-modal.dw-desktop-standalone #backdrop-swatches .swatch {
+    width:100%!important;
+    min-height:128px!important;
+    height:128px!important;
+    background-size:cover!important;
+    background-position:center!important;
+  }
+}
+@media (min-width:901px) and (max-width:1230px) {
+  html body:not(.sq-auth-guest) #backdrop-modal.dw-desktop-standalone #backdrop-swatches {
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}

@@ -9,13 +9,22 @@ const js=read('doweo-desktop-standalone.js');
 const workflow=read('.github/workflows/deploy-doweo-pages.yml');
 
 test('desktop-only full-page workspace assets deploy and preserve mobile dialogs',()=>{
- assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-banner-respect-v2/);
+ assert.match(html,/doweo-desktop-standalone\.css\?v=20261123-tracker-workspace-wallpaper-v1/);
  assert.match(html,/doweo-desktop-standalone\.js\?v=20261122-backdrop-colors-v1/);
  assert.match(workflow,/doweo-desktop-standalone\.css doweo-desktop-standalone\.js/);
  assert.match(css,/@media\(min-width:901px\)/);
  assert.doesNotMatch(css,/@media\(max-width:900px\)/);
  assert.match(js,/const desktop=window\.matchMedia\('\(min-width:901px\)'\)/);
  assert.match(js,/desktop\.matches/);
+});
+
+test('the backdrop workspace uses the saved wallpaper and a wider navy picker on desktop',()=>{
+ assert.match(css,/#backdrop-modal\.dw-desktop-standalone/);
+ assert.match(css,/var\(--dw-selected-tracker-wallpaper/);
+ assert.match(css,/max-width:1220px!important/);
+ assert.match(css,/grid-template-columns:repeat\(4,minmax\(0,1fr\)\)!important/);
+ assert.match(css,/\.dw-standalone-head h1/);
+ assert.match(js,/MutationObserver\(syncWallpaper\)/);
 });
 
 test('the existing tracker and finance handlers remain attached to full-page screens',()=>{
