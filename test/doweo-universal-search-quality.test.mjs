@@ -5,6 +5,7 @@ import {readFileSync} from 'node:fs';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const search=readFileSync(new URL('../doweo-global-search.js',import.meta.url),'utf8');
 const css=readFileSync(new URL('../doweo-reference-home.css',import.meta.url),'utf8');
+const home=readFileSync(new URL('../doweo-reference-home.js',import.meta.url),'utf8');
 const workflow=readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',import.meta.url),'utf8');
 
 test('search is a real browser script loaded by DoWeo and bundled for Cloudflare',()=>{
@@ -76,5 +77,5 @@ test('Recent Activity rows have no internal colored dividers, retaining layout a
   assert.match(css,/#sq-return-activity>\.sq-return-row\{[\s\S]*?border:0!important;border-top:0!important;border-bottom:0!important/);
   assert.match(css,/\.sq-return-row \.dw-activity-name/);
   assert.match(css,/\.sq-return-row \.dw-activity-value/);
-  assert.match(html,/id="dw-ref-activity-slot"|activity-slot/);
+  assert.match(home,/activitySlot\.id='dw-ref-activity-slot'/);
 });
