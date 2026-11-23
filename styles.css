@@ -8,8 +8,8 @@
   --border-strong: #355E72;
   --text: #F3F8FC;
   --text-muted: #ABC6D7;
-  --accent: #ABC6D7;
-  --accent-hover: #F3F8FC;
+  --accent: #60F1AD;
+  --accent-hover: #60F1AD;
   --on-accent: #0A1B2E;
   --danger: #ABC6D7;
   --danger-soft: #102B40;
@@ -9756,4 +9756,29 @@ html body :is(.sq-friend-row:nth-child(4n+4) .sq-friend-avatar,
  html body.sq-finance-open #sq-nextgen[data-section="finance"] #sq-ng-back svg {
   width:16px!important;height:16px!important;
  }
+}
+
+/* Restore DoWeo mint accent on desktop, leaving navy/white surfaces unchanged.
+   This overrides legacy seven-color palette locks for branded actions only. */
+@media (min-width:901px) {
+  :root { --accent:#60F1AD;--accent-hover:#60F1AD;--on-accent:#0A1B2E;--green:#60F1AD; }
+  html body :is(
+    .primary,.split-save,.settings-action.primary,.tracker-create,.about-start,
+    .tile-open,.dashboard-action.expense,.small-btn.accent,.banner-editor-save,
+    [data-action="save-banner"],.sq-ig-follow
+  ) {
+    background:#60F1AD!important;
+    color:#0A1B2E!important;
+    -webkit-text-fill-color:#0A1B2E!important;
+  }
+  html body :is(
+    .primary,.split-save,.settings-action.primary,.tracker-create,.about-start,
+    .tile-open,.dashboard-action.expense,.small-btn.accent,.banner-editor-save,
+    [data-action="save-banner"],.sq-ig-follow
+  ) :is(span,strong,small,svg) {
+    color:inherit!important;
+  }
+  html body :is(.primary,.split-save,.settings-action.primary,.tracker-create,.about-start,.tile-open,.dashboard-action.expense,.small-btn.accent):hover {
+    filter:brightness(.95);
+  }
 }
