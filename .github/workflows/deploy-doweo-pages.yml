@@ -23,7 +23,7 @@ jobs:
           mkdir -p .pages-output
           cp index.html styles.css doweo-page-repairs.css doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs doweo-bills-mobile-dashboard.js doweo-bills-mobile-dashboard.css doweo-finance-planning.js doweo-trips-activity.js doweo-paylinks-currency.js doweo-trackers-tabs.css doweo-home-add-menu.js doweo-home-add-menu.css doweo-desktop-polish.css doweo-mobile-more-pages.js doweo-mobile-more-pages.css doweo-mobile-home-navy-cards.css doweo-mint-dashboard.css doweo-reference-home.css doweo-reference-home.js doweo-desktop-standalone.css doweo-desktop-standalone.js doweo-cashflow-analytics.js doweo-polls-dashboard.js doweo-polls-dashboard.css doweo-unified-shell.css doweo-unified-shell.js doweo-unified-localize.js doweo-unified-locales.mjs doweo-beta-nudge.css doweo-beta-nudge.js doweo-first-run.js doweo-first-run.css doweo-split-bill-modal.css doweo-split-bill-modal.js doweo-backdrop-images.js .pages-output/
           # Bump these URLs in the published HTML to invalidate old browser-cached UI assets.
-          sed -E -i 's#(doweo-bills-mobile-dashboard\.(css|js))\?v=[^\"]+#\1?v=20261122-approved-seven-palette-v3#g' .pages-output/index.html
+          sed -E -i 's#(doweo-bills-mobile-dashboard\.(css|js))\?v=[^\"]+#\1?v=20261122-backdrop-colors-v1#g' .pages-output/index.html
           # Version the cleaned tracker planning script to invalidate old broken navigation code.
           sed -i 's#src="/doweo-trips-activity.js"#src="/doweo-trips-activity.js?v=20261119-removed-category-tabs-v8"#g' .pages-output/index.html
           # Ensure iOS PWA installations load the refreshed translation catalog and fallbacks.
@@ -35,20 +35,20 @@ jobs:
           from pathlib import Path
           page = Path('.pages-output/index.html')
           html = page.read_text()
-          css = '<link rel="stylesheet" href="/doweo-tracker-header.css?v=20261122-approved-seven-palette-v3">'
-          css += '<link rel="stylesheet" href="/doweo-trackers-tabs.css?v=20261122-approved-seven-palette-v3">'
-          css += '<link rel="stylesheet" href="/doweo-home-add-menu.css?v=20261122-approved-seven-palette-v3">'
-          css += '<link rel="stylesheet" href="/doweo-split-bill-modal.css?v=20261122-approved-seven-palette-v3">'
-          css += '<link rel="stylesheet" href="/doweo-desktop-polish.css?v=20261122-approved-seven-palette-v3">'
-          css += '<link rel="stylesheet" href="/doweo-first-run.css?v=20261122-approved-seven-palette-v3">'
-          css += '<link rel="stylesheet" href="/doweo-mobile-more-pages.css?v=20261122-approved-seven-palette-v3">'
-          css += '<link rel="stylesheet" href="/doweo-mobile-home-navy-cards.css?v=20261122-approved-seven-palette-v3">'
-          js = '<script defer src="/doweo-tracker-header.js?v=20261122-approved-seven-palette-v3"></script>'
-          js += '<script defer src="/doweo-home-add-menu.js?v=20261122-approved-seven-palette-v3"></script>'
-          js += '<script defer src="/doweo-split-bill-modal.js?v=20261122-approved-seven-palette-v3"></script>'
-          js += '<script defer src="/doweo-backdrop-images.js?v=20261122-approved-seven-palette-v3"></script>'
-          js += '<script defer src="/doweo-mobile-more-pages.js?v=20261122-approved-seven-palette-v3"></script>'
-          js += '<script defer src="/doweo-first-run.js?v=20261122-approved-seven-palette-v3"></script>'
+          css = '<link rel="stylesheet" href="/doweo-tracker-header.css?v=20261122-backdrop-colors-v1">'
+          css += '<link rel="stylesheet" href="/doweo-trackers-tabs.css?v=20261122-backdrop-colors-v1">'
+          css += '<link rel="stylesheet" href="/doweo-home-add-menu.css?v=20261122-backdrop-colors-v1">'
+          css += '<link rel="stylesheet" href="/doweo-split-bill-modal.css?v=20261122-backdrop-colors-v1">'
+          css += '<link rel="stylesheet" href="/doweo-desktop-polish.css?v=20261122-backdrop-colors-v1">'
+          css += '<link rel="stylesheet" href="/doweo-first-run.css?v=20261122-backdrop-colors-v1">'
+          css += '<link rel="stylesheet" href="/doweo-mobile-more-pages.css?v=20261122-backdrop-colors-v1">'
+          css += '<link rel="stylesheet" href="/doweo-mobile-home-navy-cards.css?v=20261122-backdrop-colors-v1">'
+          js = '<script defer src="/doweo-tracker-header.js?v=20261122-backdrop-colors-v1"></script>'
+          js += '<script defer src="/doweo-home-add-menu.js?v=20261122-backdrop-colors-v1"></script>'
+          js += '<script defer src="/doweo-split-bill-modal.js?v=20261122-backdrop-colors-v1"></script>'
+          js += '<script defer src="/doweo-backdrop-images.js?v=20261122-backdrop-colors-v1"></script>'
+          js += '<script defer src="/doweo-mobile-more-pages.js?v=20261122-backdrop-colors-v1"></script>'
+          js += '<script defer src="/doweo-first-run.js?v=20261122-backdrop-colors-v1"></script>'
           assert '</head>' in html and '</body>' in html
           import re
           marker_match = re.search(r'<link\s+rel="stylesheet"\s+href="/styles\.css\?v=[^"]+"[^>]*>', html)
@@ -85,19 +85,19 @@ jobs:
           test -s .pages-output/doweo-polls-dashboard.js
           node --check .pages-output/doweo-polls-dashboard.js
           test -s .pages-output/doweo-polls-dashboard.css
-          grep -Fq 'doweo-polls-dashboard.js?v=20261122-approved-seven-palette-v3' .pages-output/index.html
-          grep -Fq 'doweo-polls-dashboard.css?v=20261122-approved-seven-palette-v3' .pages-output/index.html
+          grep -Fq 'doweo-polls-dashboard.js?v=20261122-backdrop-colors-v1' .pages-output/index.html
+          grep -Fq 'doweo-polls-dashboard.css?v=20261122-backdrop-colors-v1' .pages-output/index.html
           node --test test/doweo-polls-dashboard.test.mjs
           node --test test/doweo-desktop-standalone.test.mjs
           test -s .pages-output/styles.css
           test -s .pages-output/doweo-page-repairs.css
-          grep -Fq 'doweo-page-repairs.css?v=20261122-approved-seven-palette-v3' .pages-output/index.html
+          grep -Fq 'doweo-page-repairs.css?v=20261122-backdrop-colors-v1' .pages-output/index.html
           grep -Fq 'UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121' .pages-output/index.html
           grep -Fq 'id="dw-route-visual-enforcer-v6"' .pages-output/index.html
-          grep -Fq 'doweo-unified-shell.css?v=20261122-approved-seven-palette-v3' .pages-output/index.html
+          grep -Fq 'doweo-unified-shell.css?v=20261122-backdrop-colors-v1' .pages-output/index.html
           grep -Fq 'id="dw-bills-exact-reference-v9"' .pages-output/index.html
           grep -Fq -- '--bg: #0A1B2E' .pages-output/styles.css
-          grep -Fq -- '--accent: #ABC6D7' .pages-output/styles.css
+          grep -Fq -- '--accent: #60F1AD' .pages-output/styles.css
           node --test test/doweo-css-consolidation.test.mjs
           test -s .pages-output/doweo-unified-shell.css
           test -s .pages-output/doweo-unified-shell.js
@@ -123,7 +123,7 @@ jobs:
           node --test test/polls-api.test.mjs test/recent-expense-api.test.mjs test/tracker-loading-performance.test.mjs
           node --test test/mobile-ios-install-guide.test.mjs test/mobile-more-inspect.test.mjs test/doweo-mobile-more-flat-grid.test.mjs
           node scripts/verify-pages-assets.mjs .pages-output
-          node scripts/verify-approved-palette.mjs .pages-output
+          node scripts/verify-backdrop-presets.mjs .pages-output
 
       # Run Wrangler from the repository root so it discovers ./functions.
       # Uploading through the dashboard would not compile Pages Functions.
@@ -136,50 +136,50 @@ jobs:
 
       # A passing build does not prove the public site serves the new release.
       # Fetch the production origin and validate the release marker and palette.
-      - name: Verify the approved seven-color release on production
-        shell: bash
-        run: |
-          set -euo pipefail
-          for n in {1..15}; do
-            page="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' "https://doweo.app/?release=20261122-approved-seven-palette-v3" || true)"
-            css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' "https://doweo.app/styles.css?v=20261122-approved-seven-palette-v3" || true)"
-            if [[ "$page" == *'seven-color-source-palette-20261122-v3'* ]] &&
-               [[ "$page" == *'styles.css?v=20261122-approved-seven-palette-v3'* ]] &&
-               [[ "$css" == *'--bg: #0A1B2E'* ]] &&
-               [[ "$css" == *'--accent: #ABC6D7'* ]] &&
-               [[ "$css" == *'--text: #F3F8FC'* ]]; then
-              echo "Production HTML and strict seven-color stylesheet verified on doweo.app"
-              exit 0
-            fi
-            echo "Production does not yet serve the verified seven-color release (check $n of 15)"
-            sleep 10
-          done
-          echo "::error::Cloudflare did not publish the approved seven-color HTML and CSS to doweo.app"
-          exit 1
-
-      - name: Verify restored mint accents on production
+      - name: Verify original backdrop presets are live on production
         shell: bash
         run: |
           set -euo pipefail
           for attempt in {1..15}; do
-            page="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/?palette=original-mint-20261122' || true)"
+            page="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/?release=original-backdrops-20261122-v1' || true)"
+            css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/styles.css?v=20261122-backdrop-colors-v1' || true)"
+            if [[ "$page" == *'restored-original-backdrops-20261122-v1'* ]] &&
+               [[ "$page" == *'css: "linear-gradient(135deg, #7c2d12, #be185d)"'* ]] &&
+               [[ "$page" == *'css: "linear-gradient(135deg, #14532d, #115e59)"'* ]] &&
+               [[ "$page" == *'css: "linear-gradient(135deg, #4a044e, #6b21a8)"'* ]] &&
+               [[ "$page" == *'styles.css?v=20261122-backdrop-colors-v1'* ]] &&
+               [[ "$css" == *'--accent: #60F1AD'* ]]; then
+              echo "Production is serving the original Sunset, Forest and Berry backdrops with mint accents."
+              exit 0
+            fi
+            echo "Checking updated backdrop release (attempt $attempt of 15)"
+            sleep 10
+          done
+          echo "::error::Cloudflare is not serving the restored original backdrop release."
+          exit 1
+
+      - name: Verify mint branding and original color selection on production
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in {1..15}; do
+            page="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/?theme=mint-and-original-backdrops-v1' || true)"
             mint_css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/doweo-reference-home.css?v=20261122-original-mint-v1' || true)"
             mint_js="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/doweo-cashflow-analytics.js?v=20261122-original-mint-v1' || true)"
-            if [[ "$page" == *'--dw-mobile-accent:#60F1AD'* ]] &&
-               [[ "$page" == *'--accent:#60F1AD'* ]] &&
+            if [[ "$page" == *'restored-original-backdrops-20261122-v1'* ]] &&
+               [[ "$page" == *'id="dw-mobile-critical-colors-v8"'* ]] &&
                [[ "$page" == *'background:#60F1AD!important'* ]] &&
                [[ "$page" == *'doweo-reference-home.css?v=20261122-original-mint-v1'* ]] &&
                [[ "$page" == *'doweo-cashflow-analytics.js?v=20261122-original-mint-v1'* ]] &&
-               [[ "$mint_css" == *'border-color:#60F1AD!important'* ]] &&
                [[ "$mint_css" == *'background:#60F1AD!important'* ]] &&
                [[ "$mint_js" == *'#60F1AD'* ]]; then
-              echo "Original mint #60F1AD verified in live HTML, feedback CSS and Cash Flow JS."
+              echo "Production mint accents verified alongside the restored backdrop palette."
               exit 0
             fi
-            echo "Checking live mint colors (attempt $attempt of 15)"
+            echo "Checking live mint branding (attempt $attempt of 15)"
             sleep 10
           done
-          echo "::error::Live site does not yet serve the restored #60F1AD colors."
+          echo "::error::Live site does not yet serve the current mint and backdrop release."
           exit 1
 
       - uses: actions/setup-node@v4
