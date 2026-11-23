@@ -75,6 +75,16 @@ test('sidebar icons and text are consistent across original destinations',()=>{
  assert.match(css,/#dw-beta-launch/);
 });
 
+test('My Wallet uses the approved outline icon without a duplicate generated glyph',()=>{
+ assert.match(html,/sq-nav-icon dw-my-wallet-icon/,'My Wallet must have its own accessible original icon');
+ assert.match(html,/circle cx="19\.5" cy="14\.75"/,'approved wallet clasp must be present');
+ assert.match(html,/#dw-personal-finance>\.dw-my-wallet-icon/,'wallet icon must be visible in desktop sidebar');
+ assert.match(html,/doweo-unified-shell\.js\?v=20261123-my-wallet-icon-v1/,'updated icon script must bypass stale browser cache');
+ assert.match(shell,/const isMyWallet=entry\.id==='dw-personal-finance'/);
+ assert.match(shell,/mark=entry\.querySelector\(':scope > \.dw-my-wallet-icon'\)/);
+ assert.match(shell,/if\(!mark&&!isMyWallet\)/,'do not inject generic duplicate wallet icon');
+});
+
 test('sparse finance data uses real grouped monthly bars, not a fabricated zero-month line',()=>{
  assert.match(dashboard,/window\.squareUpApi\('finance\/transactions'\)/);
  assert.match(dashboard,/chartBody\.replaceChildren\(\)/);
