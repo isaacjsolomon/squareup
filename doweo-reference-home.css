@@ -374,7 +374,7 @@
     grid-template-rows:auto auto!important;align-items:center!important;
     gap:2px 11px!important;padding:12px 2px!important;
     min-height:65px!important;margin:0!important;background:transparent!important;
-    border:0!important;border-bottom:1px solid #F3F8FC!important;
+    border:0!important;border-top:0!important;border-bottom:0!important;
     border-radius:0!important;
     color:#102B40!important;box-shadow:none!important;
   }
