@@ -23,7 +23,22 @@
 <!-- DoWeo installable app -->
 <link rel="manifest" href="/manifest.webmanifest?v=20261122-approved-seven-palette-v3">
 <meta name="theme-color" content="#0A1B2E">
-<meta name="dw-mobile-theme-build" content="seven-color-source-palette-20261122-v3">
+
+<style id="dw-brand-first-paint">
+  /* Render the navy brand palette immediately, before the external CSS is fetched. */
+  html,body {background-color:#0A1B2E;}
+  #sq-startup-overlay {
+    position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;
+    background:#0A1B2E;color:#F3F8FC;
+  }
+  #sq-startup-overlay[hidden]{display:none!important;}
+  #sq-startup-overlay .sq-startup-content{display:grid;place-items:center;}
+  #sq-startup-overlay .doweo-loading-logo{
+    display:block;width:clamp(160px,27vw,240px);height:auto;
+  }
+</style>
+
+<meta name="dw-mobile-theme-build" content="mobile-brand-contrast-20261122-v5">
 <meta name="application-name" content="DoWeo">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -134,7 +149,7 @@ window.dwBillDueDate=function(value){
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=20261122-mint-restored-v4">
+<link rel="stylesheet" href="/styles.css?v=20261122-mobile-contrast-v5">
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
@@ -703,7 +718,7 @@ window.dwBillDueDate=function(value){
      <button type="button" id="tab-login" class="active">Sign in</button>
      <button type="button" id="tab-signup">Create account</button>
     </div>
-    <button type="button" id="dw-google-signin" class="dw-google-signin"><svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#355E72" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#ABC6D7" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6C44.4 38.03 46.98 31.88 46.98 24.55z"/><path fill="#ABC6D7" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.6.27-3.16.76-4.59l-7.98-6.2A23.9 23.9 0 0 0 0 24c0 3.87.93 7.51 2.56 10.78l7.97-6.19z"/><path fill="#355E72" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.18 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><span>Continue with Google</span></button>
+    <button type="button" id="dw-google-signin" class="dw-google-signin"><svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6C44.4 38.03 46.98 31.88 46.98 24.55z"/><path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.6.27-3.16.76-4.59l-7.98-6.2A23.9 23.9 0 0 0 0 24c0 3.87.93 7.51 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.18 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><span>Continue with Google</span></button>
     <div class="sq-auth-divider"><span>or continue with email</span></div>
     <form id="auth-form">
      <div class="sq-auth-field" id="sq-auth-name-wrap" hidden><span aria-hidden="true">♙</span><input id="auth-name" aria-label="Your name" placeholder="Your name" autocomplete="name" hidden></div>
@@ -9779,103 +9794,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 }
 </style>
 
-<style id="dw-mobile-brand-consistency-20261122">
-/* Single mobile brand correction, scoped to presentation only. */
-@media (max-width:900px) {
-  html, html body { font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important; }
-  html body #auth-modal,
-  html body #auth-modal :is(button,input,label,p,h1,h2,h3,a,span,strong,small) {
-    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
-  }
-  html body #auth-modal #dw-google-signin {
-    background:#F3F8FC!important;
-    color:#102B40!important;
-    border:1px solid #ABC6D7!important;
-  }
-  html body #auth-modal #dw-google-signin:hover,
-  html body #auth-modal #dw-google-signin:focus-visible {
-    background:#ABC6D7!important;
-    color:#0A1B2E!important;
-  }
-  html body #auth-modal #dw-google-signin svg {
-    color:inherit!important;
-  }
-  html body .sq-mobile-nav button.sq-add .sq-m-icon,
-  html body .sq-mobile-nav button.sq-add .sq-m-icon svg,
-  html body .sq-mobile-nav button.sq-add .sq-m-icon svg * {
-    color:#0A1B2E!important;
-    stroke:#0A1B2E!important;
-  }
-  html body .sq-mobile-nav button.sq-add .sq-m-icon { background:#60F1AD!important; }
-  /* Text on mint-fill actions must stay dark enough to read. */
-  html body :is(
-    .sq-ig-follow,
-    #auth-submit,
-    #dw-auth-submit,
-    .sq-auth-submit,
-    .sq-primary,
-    .btn.primary,
-    button.primary,
-    .sq-btn-primary,
-    .sq-ng-add-action,
-    .sq-tracker-open,
-    .sq-featured-tracker button,
-    .sq-featured-tracker a,
-    .sq-mobile-create,
-    .sq-mobile-nav button.sq-add .sq-m-icon
-  ) {
-    --dw-accent-foreground:#0A1B2E;
-  }
-  html body :is(
-    .sq-ig-follow,
-    #auth-submit,
-    #dw-auth-submit,
-    .sq-auth-submit,
-    .sq-primary,
-    .btn.primary,
-    button.primary,
-    .sq-btn-primary,
-    .sq-tracker-open,
-    .sq-featured-tracker button,
-    .sq-featured-tracker a,
-    .sq-mobile-create
-  ) {
-    color:var(--dw-accent-foreground)!important;
-  }
-  html body :is(
-    .sq-ig-follow,
-    #auth-submit,
-    #dw-auth-submit,
-    .sq-auth-submit,
-    .sq-primary,
-    .btn.primary,
-    button.primary,
-    .sq-btn-primary,
-    .sq-tracker-open,
-    .sq-featured-tracker button,
-    .sq-featured-tracker a,
-    .sq-mobile-create
-  ) :is(span,strong,small,svg) {
-    color:inherit!important;
-  }
-  /* Instagram's official multi-color camera treatment, independent of palette locks. */
-  html body #sq-instagram-invite .sq-ig-mark {
-    background:radial-gradient(circle at 32% 105%,#feda75 0%,#fa7e1e 24%,#d62976 48%,#962fbf 70%,#4f5bd5 100%)!important;
-    color:#fff!important;
-  }
-  html body #sq-instagram-invite .sq-ig-mark svg { color:#fff!important;stroke:#fff!important; }
-  html body #sq-startup-overlay {
-    background:#0A1B2E!important;
-    color:#F3F8FC!important;
-  }
-  html body #sq-startup-overlay .sq-startup-content {
-    background:#102B40!important;
-    border:1px solid #355E72!important;
-    color:#F3F8FC!important;
-    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
-  }
-}
-</style>
+
 </body>
 </html>
 
