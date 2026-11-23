@@ -9515,7 +9515,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 <script defer src="/doweo-beta-nudge.js?v=20261122-backdrop-colors-v1"></script>
 <!-- Screenshot-matched layout, preserving existing DoWeo data and controls. -->
 <link rel="stylesheet" href="/doweo-reference-home.css?v=20261123-activity-no-lines-v1">
-<script defer src="/doweo-reference-home.js?v=20261123-cashflow-sidebar-v5"></script>
+<script defer src="/doweo-reference-home.js?v=20261123-wallet-menu-clean-v1"></script>
 
 <!-- Unified desktop shell and reviewed offline labels for every supported language. -->
 <link rel="stylesheet" href="/doweo-unified-shell.css?v=20261123-cashflow-visible-v4">
@@ -9973,6 +9973,11 @@ html body #new-modal #new-form [hidden] {display:none!important}
  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>#dw-personal-finance.sq-nav-link {display:flex!important;order:0!important}
  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav:has(>#dw-personal-finance)>#sq-finance-nav{display:none!important}
  html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav:has(>#dw-personal-finance)>:is(#sqev-nav,#nav-cashflow,#nav-analytics){display:none!important}
+ /* One icon per wallet item. Legacy sidebar scripts may add extra glyphs. */
+ html body #dw-my-wallet-flyout>.sq-nav-link>.dw-ref-static-icon,
+ html body #dw-my-wallet-flyout>.sq-nav-link>.dw-all-nav-icon{display:none!important}
+ html body #dw-my-wallet-flyout>.sq-nav-link>.sq-nav-icon{display:inline-flex!important}
+ html body #dw-my-wallet-flyout>:not(#nav-analytics):not(#nav-cashflow):not(#sqev-nav){display:none!important}
  html body #dw-personal-finance>.dw-flyout-caret{margin-left:auto;font-size:22px;line-height:1;color:#ABC6D7}
  html body.side-collapsed #dw-personal-finance>.dw-flyout-caret{display:none!important}
 }
