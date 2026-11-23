@@ -9830,6 +9830,10 @@ html body #sq-return-activity > .sq-return-row::after {
 }
 
 @media (min-width:901px) {
+  /* Hide the desktop greeting without removing the header actions or the mobile greeting. */
+  html body #tracker-dashboard.sq-tab-overview #sq-return-summary > .sq-return-welcome > .sq-overview-heading {
+    display: none !important;
+  }
   html body #tracker-dashboard #dw-ref-home .dw-ref-greeting,
   html body #dw-ref-home .dw-ref-greeting {
     background: #fff !important;
