@@ -13,7 +13,13 @@ test('Account tab uses two-column responsive layout and no three-column override
 });
 test('translation assets ship to Cloudflare',()=>{
   assert.match(html,/<script src="doweo-translations\.js(?:\?v=[^"]+)?" defer><\/script>/);
-  assert.match(dep,/cp index\.html styles\.css doweo-page-repairs\.css doweo-i18n\.js doweo-translations\.js manifest\.webmanifest/);
+  // Deployment includes additional assets between these required files.
+  // Verify membership rather than relying on a historically fixed argument order.
+  const copyLine=dep.split('\n').find(line=>/^\s*cp index\.html\s/.test(line));
+  assert.ok(copyLine,'Cloudflare asset copy step missing');
+  const copied=new Set(copyLine.trim().split(/\s+/).slice(1));
+  for (const required of ['index.html','styles.css','doweo-page-repairs.css','doweo-i18n.js','doweo-translations.js','manifest.webmanifest'])
+    assert.ok(copied.has(required),required+' missing from Pages output');
   assert.match(html,/doweo-page-repairs\.css\?v=20261122-backdrop-colors-v1/);
   assert.ok(html.includes('UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121'));
   assert.ok(html.includes('id="doweo-desktop-v5-navy-analytics"'));
