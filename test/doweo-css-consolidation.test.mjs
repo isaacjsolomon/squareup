@@ -23,7 +23,8 @@ const scopedRepairIds=[
  'dw-brand-first-paint',
  'doweo-desktop-v5-navy-analytics',
  'dw-bills-exact-reference-v9',
- 'dw-mobile-critical-colors-v8'
+ 'dw-mobile-critical-colors-v8',
+ 'dw-activity-divider-cleanup-20261123'
 ];
 
 test('design system retains base surfaces and the mint brand accent',()=>{
@@ -57,7 +58,7 @@ test('consolidated styles retain existing compatibility patches without palette 
 
 test('HTML links Inter, stylesheet, and all existing application scripts',()=>{
  const head=html.slice(0,html.indexOf('</head>'));
- assert.match(head,/fonts\.googleapis\.com\/css2\?family=Inter:wght@400;500;600;700;800&display=swap/);
+ assert.match(head,/fonts\.googleapis\.com\/css2\?family=Inter:wght@400;500;600;700;800;900&display=swap/);
  assert.match(head,/rel="stylesheet" href="\/styles\.css\?v=[A-Za-z0-9-]+"/);
  assert.match(html,/<script[^>]+(?:doweo-unified-shell\.js|doweo-unified-localize\.js)/);
  assert.match(html,/<section id="friends-page"/);
@@ -128,7 +129,7 @@ test('legacy theme colors and unsupported simple font values are gone from migra
  for(const hex of ['#6366f1','#4f46e5','#5f60ed','#eef2ff'])
   assert.equal(new RegExp(hex,'i').test(css),false,'Indigo left in stylesheet: '+hex);
  const badWeight=[...css.matchAll(/font-weight\s*:\s*(\d+)(?:\s*!important)?(?=[;}])/gi)]
-  .map(x=>Number(x[1])).filter(w=>![400,500,600,700,800].includes(w));
+  .map(x=>Number(x[1])).filter(w=>![400,500,600,700,800,900].includes(w));
  assert.equal(badWeight.length,0,'Invalid remaining font weights');
  const tinySizes=[...css.matchAll(/font-size\s*:\s*(\d+(?:\.\d+)?)px(?:\s*!important)?(?=[;}])/gi)]
   .filter(x=>Number(x[1])<12);
