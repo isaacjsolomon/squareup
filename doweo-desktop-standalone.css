@@ -720,9 +720,6 @@
  html body #sq-instagram-invite .sq-ig-card .sq-ig-mark svg{
   display:block!important;width:52px!important;height:52px!important;color:#F3F8FC!important
  }
- html body #trackers-page .tracker-tile:nth-child(3n+2) .tracker-tile-banner{
-  background:radial-gradient(ellipse at 72% 12%,color-mix(in srgb, #ABC6D7 30%, transparent),transparent 38%),linear-gradient(145deg,#204158,#102B40)!important
- }
 }
 
 /* Notification Center: match the user's muted blue-gray wallpaper reference.
