@@ -5764,7 +5764,7 @@ document.addEventListener('click',function(event){var trigger=event.target.close
 <div id="sq-instagram-invite" hidden>
  <div class="sq-ig-card" role="dialog" aria-modal="true" aria-labelledby="sq-ig-title" aria-describedby="sq-ig-description">
   <button type="button" class="doweo-close-control sq-ig-x" aria-label="Close Instagram invitation">&times;</button>
-  <div class="sq-ig-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.25"/><circle cx="17.6" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></div>
+  <div class="sq-ig-mark" aria-hidden="true"><img class="sq-instagram-logo" src="/images/instagram-app-icon.svg?v=20261122-instagram-logo-v1" width="64" height="64" decoding="sync" alt=""></div>
   <h2 id="sq-ig-title">Follow DoWeo on Instagram!</h2>
   <p id="sq-ig-description">Get updates, new features, and tips for splitting expenses. Find us at <strong>@doweo.app</strong>.</p>
   <a class="sq-ig-follow" href="https://www.instagram.com/doweo.app/" target="_blank" rel="noopener noreferrer">Follow on Instagram ↗</a>
@@ -9620,6 +9620,30 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 <link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261122-backdrop-colors-v1">
 <link rel="stylesheet" href="/doweo-polls-dashboard.css?v=20261122-backdrop-colors-v1">
 <style id="dw-mobile-critical-colors-v8">
+/* Desktop and mobile: the brand icon is one self-contained SVG image, not a
+   theme-colored camera glyph. Keep old gradient backgrounds out of the mark. */
+html body #sq-instagram-invite .sq-ig-mark {
+  background:transparent!important;
+  background-image:none!important;
+  border:0!important;
+  padding:0!important;
+  filter:none!important;
+  -webkit-filter:none!important;
+}
+html body #sq-instagram-invite .sq-ig-mark img.sq-instagram-logo {
+  display:block!important;
+  width:64px!important;
+  height:64px!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  border:0!important;
+  border-radius:14px!important;
+  background:transparent!important;
+  filter:none!important;
+  -webkit-filter:none!important;
+}
+
 /* Deliberately inline: the loading logo and controls must not depend on a cached stylesheet. */
 @media screen and (max-width:900px){
   html body .sq-mobile-nav button.sq-add .sq-m-icon {
@@ -9631,11 +9655,8 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
     stroke:#0A1B2E!important;color:#0A1B2E!important;
   }
   html body #sq-instagram-invite .sq-ig-mark {
-    background:radial-gradient(circle at 32% 105%,#feda75 0%,#fa7e1e 24%,#d62976 48%,#962fbf 70%,#4f5bd5 100%)!important;
-    color:#F3F8FC!important;
-  }
-  html body #sq-instagram-invite .sq-ig-mark svg {
-    color:#F3F8FC!important;stroke:#F3F8FC!important;
+    background:transparent!important;
+    background-image:none!important;
   }
   html body #auth-modal,
   html body #auth-modal .sq-auth-layout,
