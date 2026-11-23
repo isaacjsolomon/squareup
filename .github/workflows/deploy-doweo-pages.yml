@@ -157,6 +157,31 @@ jobs:
           echo "::error::Cloudflare did not publish the approved seven-color HTML and CSS to doweo.app"
           exit 1
 
+      - name: Verify restored mint accents on production
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in {1..15}; do
+            page="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/?palette=original-mint-20261122' || true)"
+            mint_css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/doweo-reference-home.css?v=20261122-original-mint-v1' || true)"
+            mint_js="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/doweo-cashflow-analytics.js?v=20261122-original-mint-v1' || true)"
+            if [[ "$page" == *'--dw-mobile-accent:#60F1AD'* ]] &&
+               [[ "$page" == *'--accent:#60F1AD'* ]] &&
+               [[ "$page" == *'background:#60F1AD!important'* ]] &&
+               [[ "$page" == *'doweo-reference-home.css?v=20261122-original-mint-v1'* ]] &&
+               [[ "$page" == *'doweo-cashflow-analytics.js?v=20261122-original-mint-v1'* ]] &&
+               [[ "$mint_css" == *'border-color:#60F1AD!important'* ]] &&
+               [[ "$mint_css" == *'background:#60F1AD!important'* ]] &&
+               [[ "$mint_js" == *'#60F1AD'* ]]; then
+              echo "Original mint #60F1AD verified in live HTML, feedback CSS and Cash Flow JS."
+              exit 0
+            fi
+            echo "Checking live mint colors (attempt $attempt of 15)"
+            sleep 10
+          done
+          echo "::error::Live site does not yet serve the restored #60F1AD colors."
+          exit 1
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
