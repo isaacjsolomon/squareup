@@ -9,7 +9,7 @@ const js=read('doweo-desktop-standalone.js');
 const workflow=read('.github/workflows/deploy-doweo-pages.yml');
 
 test('desktop-only full-page workspace assets deploy and preserve mobile dialogs',()=>{
- assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-backdrop-colors-v1/);
+ assert.match(html,/doweo-desktop-standalone\.css\?v=20261122-banner-respect-v2/);
  assert.match(html,/doweo-desktop-standalone\.js\?v=20261122-backdrop-colors-v1/);
  assert.match(workflow,/doweo-desktop-standalone\.css doweo-desktop-standalone\.js/);
  assert.match(css,/@media\(min-width:901px\)/);
