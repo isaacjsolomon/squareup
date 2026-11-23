@@ -3429,7 +3429,7 @@ body.trackers-view .tracker-tile-menu-panel{z-index:20!important}
 #sq-instagram-invite[hidden]{display:none!important}
 #sq-instagram-invite{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:20px;background:color-mix(in srgb, #0A1B2E 76%, transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 #sq-instagram-invite .sq-ig-card{position:relative;width:min(100%,420px);max-height:calc(100dvh - 44px);overflow:auto;box-sizing:border-box;padding:34px 26px 28px;border:1px solid color-mix(in srgb, #ABC6D7 33%, transparent);border-radius:var(--radius-lg);background:linear-gradient(150deg,var(--surface-3),var(--surface-1) 85%);box-shadow:0 24px 85px color-mix(in srgb, #0A1B2E 55%, transparent);color:var(--text);text-align:center;font-family:inherit}
-#sq-instagram-invite .sq-ig-mark{width:64px;height:64px;border-radius:var(--radius-lg);margin:0 auto 17px;display:grid;place-items:center;background:radial-gradient(circle at 32% 105%,#feda75 0%,#fa7e1e 24%,#d62976 48%,#962fbf 70%,#4f5bd5 100%);color:#F3F8FC;font-size:28px}
+#sq-instagram-invite .sq-ig-mark{width:64px;height:64px;border-radius:var(--radius-lg);margin:0 auto 17px;display:grid;place-items:center;background:transparent;color:#F3F8FC;font-size:28px}
 #sq-instagram-invite h2{font-size:22px;line-height:1.2;margin:0 0 12px;color:var(--text)}
 #sq-instagram-invite p{color:var(--text-muted);font-size:14px;line-height:1.55;margin:0 0 21px}
 #sq-instagram-invite .sq-ig-follow{display:block;box-sizing:border-box;width:100%;padding:15px 16px;border-radius:var(--radius-md);background:var(--accent);color:var(--on-accent);font-size:16px;font-weight:800;text-decoration:none}
@@ -9811,7 +9811,7 @@ html body :is(.sq-friend-row:nth-child(4n+4) .sq-friend-avatar,
     color:#F3F8FC!important;
   }
   html body #sq-instagram-invite .sq-ig-mark {
-    background:radial-gradient(circle at 32% 105%,#feda75 0%,#fa7e1e 24%,#d62976 48%,#962fbf 70%,#4f5bd5 100%)!important;
+    background:transparent!important;
     color:#F3F8FC!important;
   }
   html body #sq-instagram-invite .sq-ig-mark svg {stroke:#F3F8FC!important;color:#F3F8FC!important;}
