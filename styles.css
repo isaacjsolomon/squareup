@@ -9845,3 +9845,68 @@ html body :is(.sq-friend-row:nth-child(4n+4) .sq-friend-avatar,
     color:inherit!important;-webkit-text-fill-color:inherit!important;
   }
 }
+
+/* 2026-11-22 — Navy profile initials + restrained web mint.
+   Only avatar placeholders get the navy fill; real profile photos retain
+   their background images and their original colors. */
+html body.trackers-view #trackers-page #trackers-gallery > .tracker-tile .tracker-avatar,
+html body .sq-friend-row .sq-friend-avatar,
+html body :is(.tb-members,.member,.sq-member-profile,#nets) .avatar:not(.has-photo),
+html body .me-avatar:not(.has-photo),
+html body #settings-avatar:not([style*="background-image"]),
+html body #onboard-avatar:not([style*="background-image"]),
+html body #auth-modal .sq-auth-avatars i,
+html body #tracker-dashboard #sq-return-members .sq-return-icon:not(.sq-member-avatar-loaded) {
+  background-color:#0A1B2E!important;
+  color:#F3F8FC!important;
+  -webkit-text-fill-color:#F3F8FC!important;
+  border-color:#355E72!important;
+}
+html body .avatar.has-photo,
+html body #tracker-dashboard #sq-return-members .sq-return-icon.sq-member-avatar-loaded {
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+}
+
+/* Keep the main desktop interface navy. Mint is reserved for active
+   indicators, favoriting, and key actions, not full cards or light text. */
+@media (min-width:901px) {
+  html body .sidebar .squareup-nav .sq-nav-link:is(.active,[aria-current="page"]) {
+    color:#F3F8FC!important;
+    box-shadow:inset 3px 0 #60F1AD!important;
+    background-color:#173750!important;
+  }
+  html body .sidebar .squareup-nav .sq-nav-link:is(.active,[aria-current="page"]) .sq-nav-icon,
+  html body .sidebar .squareup-nav .sq-nav-link:is(.active,[aria-current="page"]) .sq-nav-icon svg {
+    color:#60F1AD!important;
+    stroke:#60F1AD!important;
+  }
+  html body #tracker-dashboard .sq-workspace-tabs button[aria-selected="true"] {
+    background:#204158!important;
+    color:#F3F8FC!important;
+    -webkit-text-fill-color:#F3F8FC!important;
+    box-shadow:inset 0 -3px #60F1AD!important;
+  }
+  html body.trackers-view #trackers-page #trackers-gallery .tracker-tile .tile-open {
+    background:#173750!important;
+    color:#F3F8FC!important;
+    -webkit-text-fill-color:#F3F8FC!important;
+    border:1px solid #355E72!important;
+  }
+  html body.trackers-view #trackers-page #trackers-gallery .tracker-tile .tile-open:hover {
+    border-color:#60F1AD!important;
+  }
+  html body.trackers-view #trackers-page #trackers-gallery .sq-favorite-toggle[aria-pressed="true"]::after,
+  html body.trackers-view #trackers-page #trackers-gallery .sq-favorite-toggle:hover::after {
+    color:#60F1AD!important;
+  }
+  html body :is(button.primary,.settings-action.primary,.tracker-create,.dashboard-action.expense,.sq-ig-follow) {
+    background-color:#60F1AD!important;
+    color:#0A1B2E!important;
+    -webkit-text-fill-color:#0A1B2E!important;
+  }
+  html body :is(button.primary,.settings-action.primary,.tracker-create,.dashboard-action.expense,.sq-ig-follow) :is(span,strong,small) {
+    color:inherit!important;
+    -webkit-text-fill-color:inherit!important;
+  }
+}
