@@ -198,7 +198,7 @@ html { background-color: var(--surface-1); }
     background: linear-gradient(135deg, var(--bg1), var(--bg2)) center / cover no-repeat;
     transition: background .3s;
   }
-  #backdrop.photo::after { content: ""; position: absolute; inset: 0; background: color-mix(in srgb, #0A1B2E 35%, transparent); }
+  /* Uploaded backdrops display their natural colors without the old navy tint. */
   .logo-btn { border: 0; padding: 0; background: none; cursor: pointer; border-radius: var(--radius-md); align-self: flex-start; margin-bottom: 4px; flex-shrink: 0; }
   .logo-btn:focus-visible { outline: 3px solid var(--border-strong); outline-offset: 2px; }
   .sidebar .logo { display: block; width: 40px; height: 40px; border-radius: var(--radius-md); box-shadow: 0 4px 12px color-mix(in srgb, #0A1B2E 25%, transparent); transition: transform .15s; }
@@ -9760,7 +9760,7 @@ html body :is(.sq-friend-row:nth-child(4n+4) .sq-friend-avatar,
 }
 
 /* Restore DoWeo mint accent on desktop, leaving navy/white surfaces unchanged.
-   This overrides legacy seven-color palette locks for branded actions only. */
+   Brand action colors are independent of the wallpaper preset colors. */
 @media (min-width:901px) {
   :root { --accent:#60F1AD;--accent-hover:#60F1AD;--on-accent:#0A1B2E;--green:#60F1AD; }
   html body :is(
