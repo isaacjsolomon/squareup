@@ -9935,11 +9935,24 @@ html body #onboarding-page :is(.onboard-wrap button,.onboard-panel button) {
 /* 2026-11-23 — Cash Flow is its own desktop destination, directly above Analytics.
    Reuse the existing sidebar button styling and don't change mobile navigation. */
 @media (min-width:901px) {
-  html body .sidebar .squareup-nav #nav-cashflow {
+  html body .sidebar .squareup-nav > #nav-cashflow {
+    /* Match sibling order: the older "button.sq-nav-link" rule sets order:0,
+       so order:6 was placing Cash Flow after More and Beta Feedback. */
     display:flex!important;
-    order:6!important;
+    order:0!important;
+    width:100%!important;
+    margin:0!important;
   }
 }
 @media (max-width:900px) {
   html body .sidebar .squareup-nav #nav-cashflow {display:none!important}
+}
+
+/* Desktop Cash Flow is a sidebar destination, not an Analytics pill.
+   Guard against legacy tab markup during a cached or incremental deployment. */
+@media (min-width:901px) {
+  html body #analytics-page .sq-analytics-shell > nav.dw-section-tabs[aria-label="Analytics sections"],
+  html body.sq-finance-open #sq-nextgen .sq-ng-shell > nav.dw-section-tabs[aria-label="Analytics sections"] {
+    display:none!important;
+  }
 }
