@@ -115,10 +115,17 @@ test('Cash Flow closes on newer desktop navigation and restores normal viewport 
  assert.match(html,/const ticket=\+\+renderToken/);
 });
 
-test('Instagram popup renders the recognizable SVG camera logo',()=>{
- assert.match(html,/class="sq-ig-mark" aria-hidden="true"><svg viewBox="0 0 24 24"/);
- assert.match(html,/<rect x="2\.5" y="2\.5" width="19" height="19" rx="5\.5"\/>/);
- assert.match(html,/<circle cx="12" cy="12" r="4\.25"\/>/);
+test('Instagram popup uses the full-color app logo on mobile and web',()=>{
+ const asset=read('images/instagram-app-icon.svg');
+ assert.match(html,/<div class="sq-ig-mark" aria-hidden="true"><img class="sq-instagram-logo"/);
+ assert.match(html,/src="\/images\/instagram-app-icon\.svg\?v=20261122-instagram-logo-v1"/);
+ assert.match(asset,/#D62976/i);
+ assert.match(asset,/#962FBF/i);
+ assert.match(asset,/#FEDA75/i);
+ assert.match(asset,/<circle cx="64" cy="64" r="19"/);
+ assert.match(asset,/<circle cx="89" cy="40" r="5\.6"/);
+ assert.match(css,/#sq-instagram-invite \.sq-ig-mark\{[\s\S]*?background:transparent!important/);
+ assert.match(workflow,/test -s \.pages-output\/images\/instagram-app-icon\.svg/);
 });
 
 test('private Cash Flow controls and month filtering remain functional',()=>{
