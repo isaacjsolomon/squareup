@@ -56,6 +56,7 @@
 </style>
 
 <meta name="dw-backdrop-preset-build" content="restored-original-backdrops-20261122-v1">
+<meta name="dw-backdrop-gallery-build" content="expanded-gallery-18-presets-20261123-v1">
 <meta name="dw-navigation-build" content="cashflow-visible-sidebar-v4">
 <meta name="application-name" content="DoWeo">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -167,7 +168,7 @@ window.dwBillDueDate=function(value){
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=20261123-cashflow-visible-v4">
+<link rel="stylesheet" href="/styles.css?v=20261123-backdrop-gallery-v1">
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
@@ -860,7 +861,8 @@ window.dwBillDueDate=function(value){
     <button type="button" class="doweo-close-control close" data-close aria-label="Close">×</button>
     <h2 id="backdrop-title">Backdrop</h2>
     <p class="hint" id="backdrop-scope"></p>
-    <div class="swatches" id="backdrop-swatches" style="margin-top:10px"></div>
+    <div class="backdrop-categories" id="backdrop-categories" role="group" aria-label="Backdrop categories"></div>
+    <div class="swatches" id="backdrop-swatches" style="margin-top:12px"></div>
     <input type="file" id="backdrop-file" accept="image/*,.heic,.heif,.hif,.tif,.tiff,.avif,.gif,.bmp,.svg,.jfif,.ico" hidden>
     <div class="tb-row" style="margin-top:12px">
       <button type="button" class="small-btn accent" id="backdrop-upload">Upload a photo</button>
@@ -3021,13 +3023,49 @@ $('tracker-gallery-new').onclick=function(){$('tb-new').click();};
 // Shared trackers keep their backdrop on the server so every member sees it;
 // the on-device tracker keeps its own in this browser.
 var BACKDROP_KEY = "squareup-backdrop";
+// Preset IDs are also validated by /api/trackers/:id (PATCH).
+// Keep this list and the API allowlist in sync so every member sees the choice.
+function scenicBackdrop(label, imageId, fallback, side, group) {
+  // Fixed Unsplash image IDs (not random source URLs): thumbnails load in the
+  // picker; the larger image loads only when someone selects that backdrop.
+  // A layered local gradient remains visible if an image cannot be downloaded.
+  function layer(width, quality) {
+    return 'linear-gradient(180deg,rgba(10,27,46,.10),rgba(10,27,46,.64)),url("https://images.unsplash.com/photo-' +
+      imageId + '?auto=format&fit=crop&w=' + width + '&q=' + quality +
+      '"),linear-gradient(135deg,' + fallback + ')';
+  }
+  return { label: label, css: layer(1600, 80), preview: layer(480, 65), side: side, group: group };
+}
 var PRESETS = {
-  indigo: { label: "Indigo", css: "linear-gradient(135deg, #1e1b4b, #312e81)", side: [159, 202, 211] },
-  sunset: { label: "Sunset", css: "linear-gradient(135deg, #7c2d12, #be185d)", side: [253, 164, 175] },
-  ocean:  { label: "Ocean",  css: "linear-gradient(135deg, #0c4a6e, #0e7490)", side: [103, 232, 249] },
-  forest: { label: "Forest", css: "linear-gradient(135deg, #14532d, #115e59)", side: [110, 231, 183] },
-  night:  { label: "Night",  css: "linear-gradient(135deg, #020617, #334155)", side: [148, 163, 184] },
-  berry:  { label: "Berry",  css: "linear-gradient(135deg, #4a044e, #6b21a8)", side: [216, 180, 254] }
+  indigo: { label: "Indigo", css: "linear-gradient(135deg, #1e1b4b, #312e81)", side: [159, 202, 211], group: "gradients" },
+  sunset: { label: "Sunset", css: "linear-gradient(135deg, #7c2d12, #be185d)", side: [253, 164, 175], group: "gradients" },
+  ocean:  { label: "Ocean",  css: "linear-gradient(135deg, #0c4a6e, #0e7490)", side: [103, 232, 249], group: "gradients" },
+  forest: { label: "Forest", css: "linear-gradient(135deg, #14532d, #115e59)", side: [110, 231, 183], group: "gradients" },
+  night:  { label: "Night",  css: "linear-gradient(135deg, #020617, #334155)", side: [148, 163, 184], group: "gradients" },
+  berry:  { label: "Berry",  css: "linear-gradient(135deg, #4a044e, #6b21a8)", side: [216, 180, 254], group: "gradients" },
+
+  mountainMist: scenicBackdrop("Mountain Mist", "1500534623283-312aade485b7", "#3d6565,#102b40", [121, 167, 170], "nature"),
+  tropicalCoast: scenicBackdrop("Tropical Coast", "1507525428034-b723cf961d3e", "#0b829d,#15455b", [104, 192, 206], "nature"),
+  alpineLake: scenicBackdrop("Alpine Lake", "1470770841072-f978cf4d019e", "#476d7c,#0d3449", [136, 180, 192], "nature"),
+  desertDunes: scenicBackdrop("Desert Dunes", "1509316785289-025f5b846b35", "#ac7053,#4f3345", [196, 160, 145], "nature"),
+  evergreen: scenicBackdrop("Evergreen", "1441974231531-c6227db76b6e", "#27563f,#0b3935", [126, 180, 153], "nature"),
+  snowfall: scenicBackdrop("Snowfall", "1517299321609-52687d1bc55a", "#90a9bc,#38546c", [164, 190, 209], "nature"),
+
+  cottonCandy: scenicBackdrop("Cotton Candy", "1534088568595-a066f410bcda", "#be819f,#6c6da1", [195, 169, 202], "sky"),
+  northernLights: scenicBackdrop("Northern Lights", "1531366936337-7c912a4589a7", "#116c67,#2d315c", [119, 189, 182], "sky"),
+  stargazing: scenicBackdrop("Stargazing", "1462331940025-496dfbfc7564", "#202e5b,#080f29", [133, 149, 182], "sky"),
+  aquaFlow: {
+    label: "Aqua Flow", group: "sky", side: [113, 201, 203],
+    css: "radial-gradient(ellipse at 5% 100%,rgba(96,241,173,.4),transparent 48%),radial-gradient(ellipse at 100% 0%,rgba(10,190,214,.6),transparent 54%),linear-gradient(125deg,#071d36,#126273 56%,#0a1b2e)"
+  },
+  topographic: {
+    label: "Topographic", group: "sky", side: [130, 169, 184],
+    css: "repeating-radial-gradient(ellipse at 20% 70%,transparent 0 13px,rgba(171,198,215,.22) 14px 15px,transparent 16px 29px),linear-gradient(125deg,#0a1b2e,#204158)"
+  },
+  midnightBlue: {
+    label: "Midnight Blue", group: "sky", side: [131, 158, 185],
+    css: "radial-gradient(ellipse at 76% 18%,rgba(65,105,175,.58),transparent 48%),radial-gradient(ellipse at 20% 82%,rgba(30,95,132,.43),transparent 50%),linear-gradient(125deg,#050d22,#0d2543 62%,#0a1b2e)"
+  }
 };
 
 // Side panel takes a medium tint of the backdrop: a fixed tint for presets,
@@ -3113,21 +3151,56 @@ function backdropMsg(text, kind) {
   $("backdrop-msg").className = "msg" + (kind ? " " + kind : "");
   $("backdrop-msg").textContent = text || "";
 }
+var backdropCategory = "gradients";
+var BACKDROP_CATEGORIES = [
+  { id: "gradients", label: "Gradients" },
+  { id: "nature", label: "Nature" },
+  { id: "sky", label: "Sky & Modern" }
+];
 function renderBackdropPicker() {
   var b = backdropState();
   $("backdrop-scope").innerHTML = current
     ? "Everyone in <b>" + esc(current.name) + "</b> sees this backdrop."
     : "This backdrop is saved on this device only.";
-  var html = Object.keys(PRESETS).map(function (k) {
-    return '<button type="button" class="swatch' + (b.preset === k ? " active" : "") + '" data-preset="' + k +
-      '" style="background-image:' + (PRESETS[k].css) + '">' + PRESETS[k].label + "</button>";
-  }).join("");
+
+  var tabs = document.createDocumentFragment();
+  BACKDROP_CATEGORIES.forEach(function (category) {
+    var tab = document.createElement("button");
+    tab.type = "button";
+    tab.className = "backdrop-category" + (backdropCategory === category.id ? " active" : "");
+    tab.dataset.backdropCategory = category.id;
+    tab.setAttribute("aria-pressed", String(backdropCategory === category.id));
+    tab.textContent = category.label;
+    tabs.appendChild(tab);
+  });
+  $("backdrop-categories").replaceChildren(tabs);
+
+  // Set styles via the CSSOM instead of inserting raw CSS in HTML attributes:
+  // photo URLs contain quotes and must not break the picker markup.
+  var choices = document.createDocumentFragment();
   if (b.preset === "photo") {
-    var bg = $("backdrop").style.backgroundImage;
-    html += '<button type="button" class="swatch photo-swatch active" data-preset="photo" style=\'background-image:' +
-      esc(bg) + '\'>Your photo</button>';
+    var custom = document.createElement("button");
+    custom.type = "button";
+    custom.className = "swatch photo-swatch active";
+    custom.dataset.preset = "photo";
+    custom.setAttribute("aria-pressed", "true");
+    custom.textContent = "Your photo";
+    custom.style.backgroundImage = $("backdrop").style.backgroundImage;
+    choices.appendChild(custom);
   }
-  $("backdrop-swatches").innerHTML = html;
+  Object.keys(PRESETS).forEach(function (key) {
+    var config = PRESETS[key];
+    if (config.group !== backdropCategory) return;
+    var swatch = document.createElement("button");
+    swatch.type = "button";
+    swatch.className = "swatch" + (b.preset === key ? " active" : "");
+    swatch.dataset.preset = key;
+    swatch.setAttribute("aria-pressed", String(b.preset === key));
+    swatch.textContent = config.label;
+    swatch.style.backgroundImage = config.preview || config.css;
+    choices.appendChild(swatch);
+  });
+  $("backdrop-swatches").replaceChildren(choices);
   $("backdrop-upload").textContent = b.preset === "photo" ? "Upload a different photo" : "Upload a photo";
 }
 
@@ -3192,6 +3265,7 @@ async function uploadPhoto(file) {
 
 $("btn-backdrop").onclick = function () {
   backdropMsg("");
+  backdropCategory = (PRESETS[backdropState().preset] || PRESETS.indigo).group;
   renderBackdropPicker();
   $("backdrop-modal").classList.add("open");
 };
@@ -3202,8 +3276,16 @@ if ($("settings-change-backdrop")) {
     $("btn-backdrop").click();
   };
 }
+$("backdrop-categories").addEventListener("click", function (e) {
+  var category = e.target.closest("button[data-backdrop-category]");
+  if (category && category.dataset.backdropCategory !== backdropCategory) {
+    backdropCategory = category.dataset.backdropCategory;
+    renderBackdropPicker();
+  }
+});
 $("backdrop-swatches").addEventListener("click", function (e) {
-  var preset = e.target.dataset && e.target.dataset.preset;
+  var swatch = e.target.closest("button[data-preset]");
+  var preset = swatch && swatch.dataset.preset;
   if (preset && preset !== "photo" && preset !== backdropState().preset) setPreset(preset);
 });
 $("backdrop-upload").onclick = function () { $("backdrop-file").click(); };
