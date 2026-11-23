@@ -21,7 +21,7 @@ jobs:
       - name: Prepare Pages static assets
         run: |
           mkdir -p .pages-output
-          cp index.html styles.css doweo-page-repairs.css doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs doweo-bills-mobile-dashboard.js doweo-bills-mobile-dashboard.css doweo-finance-planning.js doweo-trips-activity.js doweo-paylinks-currency.js doweo-trackers-tabs.css doweo-home-add-menu.js doweo-home-add-menu.css doweo-desktop-polish.css doweo-mobile-more-pages.js doweo-mobile-more-pages.css doweo-mobile-home-navy-cards.css doweo-mint-dashboard.css doweo-reference-home.css doweo-reference-home.js doweo-desktop-standalone.css doweo-desktop-standalone.js doweo-cashflow-analytics.js doweo-polls-dashboard.js doweo-polls-dashboard.css doweo-unified-shell.css doweo-unified-shell.js doweo-unified-localize.js doweo-unified-locales.mjs doweo-beta-nudge.css doweo-beta-nudge.js doweo-first-run.js doweo-first-run.css doweo-split-bill-modal.css doweo-split-bill-modal.js doweo-backdrop-images.js .pages-output/
+          cp index.html styles.css doweo-page-repairs.css doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs doweo-bills-mobile-dashboard.js doweo-bills-mobile-dashboard.css doweo-finance-planning.js doweo-trips-activity.js doweo-paylinks-currency.js doweo-trackers-tabs.css doweo-home-add-menu.js doweo-home-add-menu.css doweo-desktop-polish.css doweo-mobile-more-pages.js doweo-mobile-more-pages.css doweo-mobile-home-navy-cards.css doweo-mint-dashboard.css doweo-reference-home.css doweo-global-search.js doweo-reference-home.js doweo-desktop-standalone.css doweo-desktop-standalone.js doweo-cashflow-analytics.js doweo-polls-dashboard.js doweo-polls-dashboard.css doweo-unified-shell.css doweo-unified-shell.js doweo-unified-localize.js doweo-unified-locales.mjs doweo-beta-nudge.css doweo-beta-nudge.js doweo-first-run.js doweo-first-run.css doweo-split-bill-modal.css doweo-split-bill-modal.js doweo-backdrop-images.js .pages-output/
           # Bump these URLs in the published HTML to invalidate old browser-cached UI assets.
           sed -E -i 's#(doweo-bills-mobile-dashboard\.(css|js))\?v=[^\"]+#\1?v=20261122-backdrop-colors-v1#g' .pages-output/index.html
           # Version the cleaned tracker planning script to invalidate old broken navigation code.
@@ -76,6 +76,7 @@ jobs:
           test -s .pages-output/doweo-beta-nudge.css
           test -s .pages-output/doweo-beta-nudge.js
           node --check .pages-output/doweo-beta-nudge.js
+          test -s .pages-output/doweo-global-search.js
           test -s .pages-output/doweo-reference-home.css
           test -s .pages-output/doweo-reference-home.js
           node --check .pages-output/doweo-reference-home.js
@@ -166,12 +167,12 @@ jobs:
           set -euo pipefail
           for attempt in {1..15}; do
             page="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/?theme=mint-and-original-backdrops-v1' || true)"
-            mint_css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/doweo-reference-home.css?v=20261122-overview-mint-bars-v2' || true)"
+            mint_css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/doweo-reference-home.css?v=20261123-activity-no-lines-v1' || true)"
             mint_js="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/doweo-cashflow-analytics.js?v=20261122-original-mint-v1' || true)"
             if [[ "$page" == *'restored-original-backdrops-20261122-v1'* ]] &&
                [[ "$page" == *'id="dw-mobile-critical-colors-v8"'* ]] &&
                [[ "$page" == *'background:#60F1AD!important'* ]] &&
-               [[ "$page" == *'doweo-reference-home.css?v=20261122-overview-mint-bars-v2'* ]] &&
+               [[ "$page" == *'doweo-reference-home.css?v=20261123-activity-no-lines-v1'* ]] &&
                [[ "$page" == *'doweo-cashflow-analytics.js?v=20261122-original-mint-v1'* ]] &&
                [[ "$mint_css" == *'background:#60F1AD!important'* ]] &&
                [[ "$mint_js" == *'#60F1AD'* ]]; then
