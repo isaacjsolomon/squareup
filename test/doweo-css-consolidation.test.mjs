@@ -20,18 +20,19 @@ const compatibilityIds=[
 ];
 // Recent page repairs retain two separately scoped production-only overrides.
 const scopedRepairIds=[
+ 'dw-brand-first-paint',
  'doweo-desktop-v5-navy-analytics',
  'dw-bills-exact-reference-v9',
- 'dw-mobile-theme-authoritative-v7'
+ 'dw-mobile-critical-colors-v8'
 ];
 
-test('design system has exactly the requested global theme tokens',()=>{
+test('design system retains base surfaces and the mint brand accent',()=>{
  const prefix=css.slice(0,1500);
  const vars={
   bg:'#0A1B2E','surface-1':'#102B40','surface-2':'#173750',
   'surface-3':'#204158',border:'#355E72','border-strong':'#355E72',
   text:'#F3F8FC','text-muted':'#ABC6D7',accent:'#ABC6D7',
-  'accent-hover':'#F3F8FC','on-accent':'#0A1B2E',danger:'#ABC6D7',
+  'accent-hover':'#60F1AD','on-accent':'#0A1B2E',danger:'#ABC6D7',
   'danger-soft':'#102B40','success-soft':'#102B40',info:'#ABC6D7',
   'radius-sm':'8px','radius-md':'12px','radius-lg':'20px'
  };
@@ -43,7 +44,7 @@ test('design system has exactly the requested global theme tokens',()=>{
  assert.match(prefix,/--shadow-dialog:\s*0 20px 50px color-mix\(in srgb, #0A1B2E 45%, transparent\)/);
 });
 
-test('270 inline blocks migrated, six template styles and three scoped page repairs retained',()=>{
+test('consolidated styles retain existing compatibility patches without palette lock',()=>{
  const styles=[...html.matchAll(/<style\b([^>]*)>([\s\S]*?)<\/style>/gi)];
  const expectedIds=[...compatibilityIds,...scopedRepairIds];
  assert.equal(styles.length,expectedIds.length);
@@ -57,10 +58,33 @@ test('270 inline blocks migrated, six template styles and three scoped page repa
 test('HTML links Inter, stylesheet, and all existing application scripts',()=>{
  const head=html.slice(0,html.indexOf('</head>'));
  assert.match(head,/fonts\.googleapis\.com\/css2\?family=Inter:wght@400;500;600;700;800&display=swap/);
- assert.match(head,/rel="stylesheet" href="\/styles\.css\?v=20261122-approved-seven-palette-v3"/);
+ assert.match(head,/rel="stylesheet" href="\/styles\.css\?v=20261122-backdrop-colors-v1"/);
  assert.match(html,/<script[^>]+(?:doweo-unified-shell\.js|doweo-unified-localize\.js)/);
  assert.match(html,/<section id="friends-page"/);
  assert.match(html,/id="tracker-dashboard"/);
+});
+
+test('original backdrop gradients are selectable on mobile and desktop',()=>{
+ for(const [name,start,end] of [
+  ['indigo','#1e1b4b','#312e81'],
+  ['sunset','#7c2d12','#be185d'],
+  ['ocean','#0c4a6e','#0e7490'],
+  ['forest','#14532d','#115e59'],
+  ['night','#020617','#334155'],
+  ['berry','#4a044e','#6b21a8']
+ ]){
+  const line=html.split('\n').find(s=>s.trimStart().startsWith(name+': { label:'));
+  assert.ok(line?.includes(start)&&line?.includes(end),name+' original gradient missing');
+ }
+ assert.ok(html.includes('return SQ_BANNER_PRESETS;'));
+ assert.ok(!html.includes('MOBILE_PRESETS'));
+ assert.ok(!html.includes('SQ_MOBILE_BANNER_PRESETS'));
+ assert.ok(!html.includes('dw-mobile-theme-authoritative-v7'));
+ assert.ok(html.includes('PRESETS[k].css'));
+ assert.ok(html.includes('restored-original-backdrops-20261122-v1'));
+ assert.ok(!css.includes('#backdrop.photo::after'),'Uploaded photos must not be color-graded');
+ assert.ok(!deploy.includes('verify-approved-palette.mjs'),'Do not enforce the retired color whitelist');
+ assert.ok(deploy.includes('verify-backdrop-presets.mjs'),'Verify restored colors in the deployment');
 });
 
 test('Cloudflare copy manifest carries stylesheet, and injects component CSS before it',()=>{
