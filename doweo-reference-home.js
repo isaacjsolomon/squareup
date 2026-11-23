@@ -309,7 +309,7 @@
   }catch(_){
    incomeAmount.textContent='—';spendAmount.textContent='—';
    chartBody.dataset.dwShellKey='chartUnavailable';
-   chartBody.textContent=tr('chartUnavailable','Cash flow is unavailable right now. You can still open Cash Flow from Analytics.');
+   chartBody.textContent=tr('chartUnavailable','Cash flow is unavailable right now. You can still open Cash Flow from the sidebar.');
   }finally{financeBusy=false;}
  }
  // The finance endpoint is read-only. Recheck when records are edited elsewhere.
@@ -382,9 +382,7 @@
        cashFlow.classList.add('active');cashFlow.setAttribute('aria-current','page');
      });
    }
-   const events=nav.querySelector('#sqev-nav');
-   if(events&&events.nextElementSibling!==cashFlow)events.insertAdjacentElement('afterend',cashFlow);
-   else if(!events&&cashFlow.nextElementSibling!==analytics)analytics.before(cashFlow);
+   if(cashFlow.nextElementSibling!==analytics)analytics.before(cashFlow);
  }
  if(nav&&analytics&&!document.getElementById('dw-ref-nav-notifications')){
   const button=document.createElement('button');button.type='button';button.id='dw-ref-nav-notifications';button.className='sq-nav-link';
