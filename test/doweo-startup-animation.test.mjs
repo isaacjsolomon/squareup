@@ -17,7 +17,8 @@ test('first paint draws the real mint/cyan/white SVG logo on both screen sizes',
   assert.match(html,/@keyframes dw-startup-logo-draw/);
   assert.match(html,/stroke-dasharray:1;stroke-dashoffset:1/);
   assert.match(css,/#sq-startup-overlay \.doweo-logo-trace\{\s*stroke-dasharray:1;stroke-dashoffset:1;opacity:1;/);
-  assert.doesNotMatch(css,/#sq-startup-overlay \.doweo-logo-trace\{[^}]*animation:none/);
+  assert.match(css,/#sq-startup-overlay \.doweo-logo-trace\{[^}]*animation:dw-startup-logo-draw/);
+  assert.match(css,/@media\(prefers-reduced-motion:reduce\)\{\s*#sq-startup-overlay \.doweo-logo-trace\{animation:none!important/);
   assert.match(css,/html body #sq-startup-overlay \.sq-startup-content \{\s*background:transparent!important;border:0!important/);
   assert.match(html,/prefers-reduced-motion:reduce/);
 });
