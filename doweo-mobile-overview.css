@@ -5,7 +5,7 @@
     box-sizing:border-box!important; display:flex!important; flex-direction:column!important; gap:14px!important;
     width:100%!important; min-width:0!important; margin:0!important;
     padding:18px 4px calc(104px + env(safe-area-inset-bottom,0px))!important;
-    color:#f3f8fc!important; background:linear-gradient(174deg,#101f39 0%,#1d3052 48%,#eaf0f9 86%)!important;
+    color:#f3f8fc!important; background:transparent!important;
     font-family:inherit!important;
   }
   #dw-mobile-home-layered * {box-sizing:border-box!important}
@@ -60,6 +60,6 @@
   #tracker-dashboard.dw-mobile-layered-home .sq-workspace-tabs button {border-radius:999px!important;min-height:28px!important;padding:4px 2px!important}
   .wrap:has(>#tracker-dashboard.dw-mobile-layered-home) > .sq-mobile-top {border:0!important;box-shadow:none!important;background:transparent!important}
   #dw-mobile-home-layered {background:transparent!important;position:relative!important;isolation:isolate!important}
-  #dw-mobile-home-layered::before {content:""!important;position:absolute!important;z-index:-1!important;pointer-events:none!important;inset:0 calc((100% - 100vw)/2) 0!important;background:linear-gradient(172deg,#14233f 0%,#182947 42%,#243551 53%,#d9e1ef 76%,#f1f5fb 95%)!important}
+  #dw-mobile-home-layered::before {content:none!important}
 }
 }
