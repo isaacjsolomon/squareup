@@ -9759,6 +9759,24 @@ html body #sq-return-activity > .sq-return-row::after {
   border-top:0!important;
   border-bottom:0!important;
 }
+
+@media (min-width:901px) {
+  html body #tracker-dashboard #dw-ref-home .dw-ref-greeting,
+  html body #dw-ref-home .dw-ref-greeting {
+    background: #fff !important;
+    border-radius: 18px !important;
+    padding: 12px 20px !important;
+    width: fit-content !important;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  html body #dw-ref-toolbar button.dw-ref-tool:is([data-ref-tool="search"],[data-ref-tool="notifications"]),
+  html body #dw-all-top-tools button.dw-all-tool:is([data-dw-all-tool="search"],[data-dw-all-tool="notifications"]) {
+    background: #fff !important;
+    color: #102B40 !important;
+    border-radius: 12px !important;
+  }
+}
 </style>
 </body>
 </html>
