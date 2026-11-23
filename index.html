@@ -1987,6 +1987,44 @@ async function api(path, method, body) {
   return data;
 }
 window.squareUpApi = api;
+// Search accesses only information this authenticated user can already read.
+// Keep Supabase and the application's private module state inside this module.
+window.dwSearchAccess = {
+  snapshot: () => ({
+    userId: currentUser?.id || null,
+    trackers: Array.isArray(trackers) ? trackers.slice() : [],
+    active: current || null,
+    notifications: Array.isArray(inbox) ? inbox.slice() : []
+  }),
+  findProfiles: async term => {
+    if(!currentUser || String(term).trim().length < 3) return [];
+    const result = await supabase.rpc('sq_find_users', {search_term:String(term).trim().slice(0,80)});
+    if(result.error) throw result.error;
+    return Array.isArray(result.data) ? result.data : [];
+  },
+  listFriends: async () => {
+    if(!currentUser) return [];
+    const result = await supabase.rpc('sq_list_friends', {});
+    if(result.error) throw result.error;
+    return Array.isArray(result.data) ? result.data : [];
+  },
+  openFriends: (mode, username) => {
+    settingsRoute('friends');
+    const field = document.getElementById('sq-friend-query');
+    if(field && username) field.value = String(username);
+    document.querySelector('[data-friends-tab="'+(mode === 'find'?'find':'friends')+'"]')?.click();
+  },
+  openNotification: async (id, social) => {
+    document.getElementById('notifications-toggle')?.click();
+    await refreshInbox();
+    const index = inbox.findIndex(item => String(item.id) === String(id) && !!item._social === !!social);
+    if(index >= 0){
+      const button = Array.from(document.querySelectorAll('#notifications-list [data-notification-open]'))
+        .find(item => item.getAttribute('data-notification-open') === String(index));
+      if(button) button.click();
+    }
+  }
+};
 // Expose only the existing tracker navigation to the Weo UI (no data writes).
 window.sqOpenTrackerForWeo = async function(id) {
   if (typeof id !== 'string' || !id || id === 'local') throw new Error('Select a saved tracker.');
@@ -5007,7 +5045,7 @@ const tour=document.getElementById('sq-replay-tour');if(tour){const original=tou
 })();
 </script>
 
-<div id="sq-global-search" class="sq-global-search" role="dialog" aria-modal="true" aria-label="Search DoWeo" aria-hidden="true"><div class="sq-search-panel"><div class="sq-search-head"><input id="sq-global-query" type="search" placeholder="Search trackers, members, expenses…" autocomplete="off" aria-label="Search DoWeo"><button class="doweo-close-control" type="button" id="sq-search-close" aria-label="Close search">✕</button></div><div class="sq-search-results" id="sq-search-results" aria-live="polite"><p class="sq-search-empty">Search your loaded trackers and expenses.</p></div></div></div>
+<div id="sq-global-search" class="sq-global-search" role="dialog" aria-modal="true" aria-label="Search DoWeo" aria-hidden="true"><div class="sq-search-panel"><div class="sq-search-head"><input id="sq-global-query" type="search" placeholder="Search people, trackers, polls, notifications…" autocomplete="off" aria-label="Search DoWeo"><button class="doweo-close-control" type="button" id="sq-search-close" aria-label="Close search">✕</button></div><div class="sq-search-results" id="sq-search-results" aria-live="polite"><p class="sq-search-empty">Search profiles, shared trackers, members, polls, and more.</p></div></div></div>
 <div class="sq-dispute-overlay" id="sq-payment-dispute-overlay" hidden><div class="sq-dispute-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-dispute-heading"><div class="sq-dispute-mark" aria-hidden="true">!</div><h2 id="sq-dispute-heading">Dispute this payment?</h2><p id="sq-dispute-summary">This will notify the person who reported the payment. The balance will remain unchanged until the payment is resolved.</p><textarea id="sq-dispute-reason" maxlength="200" placeholder="Why are you disputing this payment? (required)" aria-label="Reason for dispute (required)"></textarea><p class="sq-dispute-error" id="sq-dispute-error" role="alert"></p><div class="sq-dispute-actions"><button type="button" id="sq-dispute-cancel">Cancel</button><button type="button" class="sq-dispute-confirm" id="sq-dispute-submit">Dispute payment</button></div></div></div>
 <script id="sq-payment-dispute-script">(function(){
 'use strict';
@@ -5045,87 +5083,7 @@ submit.addEventListener('click',()=>{
 reason.addEventListener('input',()=>{error.textContent='';});
 })();</script>
 
-<script id="sq-global-search-script">
-(function(){
-'use strict';
-const overlay=document.getElementById('sq-global-search'),input=document.getElementById('sq-global-query'),results=document.getElementById('sq-search-results');
-const launch=document.createElement('button');launch.type='button';launch.className='sq-search-launch';launch.innerHTML='<span aria-hidden="true">⌕</span> Search <kbd>⌘ K</kbd>';launch.setAttribute('aria-label','Search DoWeo');
-const title=document.querySelector('.tracker-heading .sq-title-and-tour')||document.querySelector('.tracker-heading');if(title)title.append(launch);
-let returnFocus=null,friendSearchTimer=null,friendSearchSerial=0;
-function open(){returnFocus=document.activeElement;overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');input.value='';draw();input.focus();}
-function close(){
- friendSearchSerial++;clearTimeout(friendSearchTimer);
- overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');results.replaceChildren();
- if(returnFocus&&returnFocus.focus)returnFocus.focus();
-}
-launch.addEventListener('click',open);document.getElementById('sq-mobile-search')?.addEventListener('click',open);document.getElementById('sq-search-close').addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
-document.addEventListener('keydown',e=>{
- if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();overlay.classList.contains('open')?close():open();}
- else if(e.key==='Escape'&&overlay.classList.contains('open'))close();
-});
-overlay.addEventListener('keydown',e=>{
- if(e.key!=='Tab'||!overlay.classList.contains('open'))return;
- const focusable=[input,document.getElementById('sq-search-close'),...results.querySelectorAll('button:not([disabled])')].filter(Boolean);
- const first=focusable[0],last=focusable[focusable.length-1];
- if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
- else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
-});
-function label(value){return String(value==null?'':value)}
-function group(name,items){if(!items.length)return;const head=document.createElement('div');head.className='sq-search-group';head.textContent=name;results.append(head);items.forEach(item=>{const btn=document.createElement('button');btn.type='button';btn.className='sq-search-hit';const icon=document.createElement('span');icon.textContent=item.icon;const body=document.createElement('span');const strong=document.createElement('strong');strong.textContent=item.title;const small=document.createElement('small');small.textContent=item.sub;body.append(strong,small);btn.append(icon,body);btn.addEventListener('click',async()=>{close();try{await item.action()}catch(err){console.error('Search navigation:',err);alert(err.message||'Could not open result.')}});results.append(btn);});}
-function draw(){const q=input.value.trim().toLocaleLowerCase();results.replaceChildren();if(!q){const p=document.createElement('p');p.className='sq-search-empty';p.textContent='Search pages, features, trackers, members, and expenses.';results.append(p);return;}
-const list=typeof trackers!=='undefined'&&Array.isArray(trackers)?trackers:[];
-const trackerHits=list.filter(t=>label(t.name).toLowerCase().includes(q)).slice(0,15).map(t=>({icon:'▣',title:label(t.name),sub:'Tracker',action:async()=>{document.getElementById('nav-home')?.click();await openTracker(t.id);}}));
-const active=typeof current!=='undefined'?current:null;
-const memberHits=(active&&Array.isArray(active.members)?active.members:[]).filter(m=>label(m.name||m.email).toLowerCase().includes(q)).slice(0,12).map(m=>({icon:'♙',title:label(m.name||m.email),sub:'Member · '+label(active.name),action:async()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab="members"]')?.click();}}));
-const expenseHits=(active&&Array.isArray(active.entries)?active.entries:[]).filter(e=>[e.note,e.from,e.to,e.amount,e.date].some(v=>label(v).toLowerCase().includes(q))).slice(0,20).map(e=>({icon:'▤',title:label(e.note|| (e.type==='payment'?'Payment':'Expense')),sub:label(e.from)+' → '+label(e.to)+' · '+label(e.amount),action:async()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab="expenses"]')?.click();const row=[...document.querySelectorAll('#history > .entry')].find(r=>r.querySelector('[data-del]')?.dataset.del===String(e.id));if(row){row.scrollIntoView({behavior:'smooth',block:'center'});row.querySelector('.sq-detail-btn')?.click();}}}));
-const features=[
- ['Events','Group plans, upcoming events',()=>document.getElementById('sqev-nav')?.click()],
- ...(matchMedia('(min-width:901px)').matches?[
- ['Cash Flow','Personal income and spending',()=>window.squareUpOpenFinanceHub('finance')],
-
- ['Subscriptions & Bills','Recurring payments',()=>window.squareUpOpenFinanceHub('subscriptions')],
- ['Trips','Travel trackers',()=>window.squareUpOpenFinanceHub('trip')],
- ['Households','Household trackers',()=>window.squareUpOpenFinanceHub('home')]
- ]:[
- ['Finance Hub','Wallet, personal spending, trips, households and currencies',()=>document.getElementById('sq-finance-nav')?.click()],
- ['Wallet','Balances and settlements',()=>document.getElementById('sq-finance-nav')?.click()],
- ['Subscriptions & Bills','Recurring payments, subscriptions',()=>document.getElementById('sq-finance-nav')?.click()],
- ['Trips','Travel trackers, shared trips',()=>document.getElementById('sq-finance-nav')?.click()],
- ['Households','Household trackers, shared bills',()=>document.getElementById('sq-finance-nav')?.click()],
- ['Currency converter','Convert between currencies',()=>document.getElementById('sq-finance-nav')?.click()],
- ]),
- ['Home','Dashboard, overview',()=>document.getElementById('nav-home')?.click()],
- ['Trackers','My trackers, groups',()=>document.getElementById('nav-trackers')?.click()],
- ['Friends','Friend requests, find friends',()=>settingsRoute('friends')],
- ['Chat','Group messages',()=>document.getElementById('nav-chat')?.click()],
- ['Analytics','Charts, spending insights',()=>document.getElementById('nav-analytics')?.click()],
- ['Account','Profile, payment accounts',()=>document.getElementById('nav-profile')?.click()],
- ['Settings','Account settings',()=>document.getElementById('nav-profile')?.click()],
- ['About','About DoWeo, tutorial',()=>document.getElementById('nav-about')?.click()],
- ['Notifications','Notification Center, alerts',()=>document.getElementById('nav-notifications')?.click()||document.getElementById('sq-mobile-notifications')?.click()],
- ['Expenses','Expense history, filters',()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab=expenses]')?.click()}],
- ['Members','Tracker members',()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab=members]')?.click()}],
- ['Add Expense','Create expense, owe money',()=>{document.getElementById('nav-home')?.click();document.getElementById('quick-expense')?.click()}],
- ['Pay Now','Record payment, settle balance',()=>{document.getElementById('nav-home')?.click();document.getElementById('quick-pay')?.click()}],
- ['Scan Receipt','Receipt photo, itemized split',()=>{document.getElementById('nav-home')?.click();document.getElementById('quick-receipt')?.click()}],
- ['Split a Bill','Split expenses with friends',()=>{document.getElementById('nav-home')?.click();document.getElementById('quick-split')?.click()}],
- ['Smart settle-up','Suggested payments',()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab=overview]')?.click();document.getElementById('sq-smart-settle-card')?.scrollIntoView({behavior:'smooth'})}],
- ['Recurring expenses','Repeat scheduled expenses',()=>{document.getElementById('nav-home')?.click();document.querySelector('[data-sq-tab=overview]')?.click();document.getElementById('recurring-card')?.scrollIntoView({behavior:'smooth'})}],
- ['New tracker','Create a tracker',()=>{document.getElementById('nav-trackers')?.click();document.getElementById('tracker-gallery-new')?.click()}]
- ];
-const featureHits=features.filter(f=>(f[0]+' '+f[1]).toLocaleLowerCase().includes(q)).map(f=>({icon:'↗',title:f[0],sub:f[1],action:f[2]}));
-group('Pages & features',featureHits);group('Trackers',trackerHits);group('Members in open tracker',memberHits);group('Expenses in open tracker',expenseHits);const serial=++friendSearchSerial;clearTimeout(friendSearchTimer);
-if(q.length>=3){const loading=document.createElement('p');loading.className='sq-search-empty';loading.textContent='Searching DoWeo profiles…';results.append(loading);friendSearchTimer=setTimeout(async()=>{try{
- if(typeof supabase==='undefined'||!supabase?.rpc)return;
- const response=await supabase.rpc('sq_find_users',{search_term:input.value.trim()});
- if(serial!==friendSearchSerial||!overlay.classList.contains('open'))return;
- loading.remove();if(response.error){const p=document.createElement('p');p.className='sq-search-empty';p.textContent='Profile search unavailable. Check Friends setup.';results.append(p);return;}
- const matches=(Array.isArray(response.data)?response.data:[]).slice(0,12).map(u=>({icon:'♙',title:label(u.display_name||u.username||'DoWeo user'),sub:'@'+label(u.username)+' · DoWeo profile',action:async()=>{settingsRoute('friends');const field=document.getElementById('sq-friend-query');if(field)field.value=label(u.username);document.querySelector('[data-friends-tab="find"]')?.click();}}));group('Friend profiles',matches);
- }catch(err){loading.remove();console.warn('Profile search:',err)}},350);}
-if(!featureHits.length&&!trackerHits.length&&!memberHits.length&&!expenseHits.length){const p=document.createElement('p');p.className='sq-search-empty';p.textContent='No matches in the data currently loaded. Open a tracker to search its expenses and members.';results.append(p);}}
-input.addEventListener('input',draw);
-})();
-</script>
+<script id="sq-global-search-script" defer src="/doweo-global-search.js?v=20261123-search-all-v1"></script>
 
 
 
