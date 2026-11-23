@@ -8496,7 +8496,10 @@ document.getElementById('ac-log').addEventListener('click',function(){
  const events=document.getElementById('sqev-nav');
  events.before(finance);
  // My Wallet is a direct destination, not another nested flyout.
- finance.addEventListener('click',()=>window.dwOpenMyWallet?.());
+ finance.addEventListener('click',event=>{
+  event.preventDefault();event.stopPropagation();
+  window.dwOpenMyWallet?.();
+ });
  const socialPanel=makePanel('dw-social-flyout',['nav-chat','nav-friends']);
  const morePanel=makePanel('dw-more-flyout',['nav-profile','nav-help-center','nav-about','nav-privacy-terms']);
  social.setAttribute('aria-controls',socialPanel.id);
