@@ -9937,7 +9937,7 @@ html body #onboarding-page :is(.onboard-wrap button,.onboard-panel button) {
 @media (min-width:901px) {
   html body .sidebar .squareup-nav #nav-cashflow {
     display:flex!important;
-    order:6.5!important;
+    order:6!important;
   }
 }
 @media (max-width:900px) {
