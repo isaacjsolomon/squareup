@@ -21,7 +21,7 @@
 <meta name="twitter:card" content="summary">
 
 <!-- DoWeo installable app -->
-<link rel="manifest" href="/manifest.webmanifest?v=20261122-approved-seven-palette-v3">
+<link rel="manifest" href="/manifest.webmanifest?v=20261122-backdrop-colors-v1">
 <meta name="theme-color" content="#0A1B2E">
 
 <style id="dw-brand-first-paint">
@@ -38,7 +38,7 @@
   }
 </style>
 
-<meta name="dw-mobile-theme-build" content="mobile-brand-colors-20261122-v8">
+<meta name="dw-backdrop-preset-build" content="restored-original-backdrops-20261122-v1">
 <meta name="application-name" content="DoWeo">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -127,8 +127,8 @@
   window.dwNotify=notify;
 })();
 </script>
-<link rel="stylesheet" href="/weo-mascot.css?v=20261122-approved-seven-palette-v3">
-<link rel="stylesheet" href="/weo-actions.css?v=20261122-approved-seven-palette-v3">
+<link rel="stylesheet" href="/weo-mascot.css?v=20261122-backdrop-colors-v1">
+<link rel="stylesheet" href="/weo-actions.css?v=20261122-backdrop-colors-v1">
 
 
 
@@ -149,7 +149,7 @@ window.dwBillDueDate=function(value){
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=20261122-logo-isolated-v8">
+<link rel="stylesheet" href="/styles.css?v=20261122-backdrop-colors-v1">
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
@@ -2337,25 +2337,15 @@ function renderPicker() {
 // Per-tracker banners: presets + uploaded images, saved locally in IndexedDB.
 // This avoids touching tracker backdrops or requiring a database migration.
 var SQ_BANNER_PRESETS={
- ocean:'linear-gradient(125deg,#204158,#355E72 55%,#102B40)',
- sunset:'linear-gradient(125deg,#355E72,#ABC6D7 55%,#ABC6D7)',
- forest:'linear-gradient(125deg,#102B40,#355E72 55%,#ABC6D7)',
- night:'linear-gradient(125deg,#0A1B2E,#355E72 55%,#355E72)',
- coral:'linear-gradient(125deg,#204158,#355E72 48%,#ABC6D7)',
- lavender:'linear-gradient(125deg,#204158,#355E72 55%,#ABC6D7)'
-};
-// Mobile tracker banner palette. Every built-in banner becomes navy/blue/teal
-// on phones; uploaded banner images remain untouched and desktop stays original.
-var SQ_MOBILE_BANNER_PRESETS={
- ocean:'linear-gradient(125deg,#102B40,#355E72 55%,#102B40)',
- sunset:'linear-gradient(125deg,#102B40,#355E72 55%,#355E72)',
- forest:'linear-gradient(125deg,#102B40,#204158 55%,#204158)',
- night:'linear-gradient(125deg,#0A1B2E,#173750 55%,#102B40)',
- coral:'linear-gradient(125deg,#102B40,#355E72 55%,#ABC6D7)',
- lavender:'linear-gradient(125deg,#102B40,#355E72 55%,#ABC6D7)'
+ ocean:'linear-gradient(125deg,#034d68,#12a3aa 55%,#05314d)',
+ sunset:'linear-gradient(125deg,#51376b,#dc795e 55%,#f4bd80)',
+ forest:'linear-gradient(125deg,#073c3d,#27775c 55%,#96ad65)',
+ night:'linear-gradient(125deg,#080e30,#334a86 55%,#7c6d99)',
+ coral:'linear-gradient(125deg,#004a66,#1e9b9d 48%,#d97884)',
+ lavender:'linear-gradient(125deg,#262c64,#856cae 55%,#d4a3c1)'
 };
 function sqBannerPalette(){
- return window.matchMedia("(max-width:900px)").matches ? SQ_MOBILE_BANNER_PRESETS : SQ_BANNER_PRESETS;
+ return SQ_BANNER_PRESETS;
 }
 var sqBannerDBPromise=null;
 function sqBannerDB(){
@@ -2923,31 +2913,26 @@ $('tracker-gallery-new').onclick=function(){$('tb-new').click();};
 // the on-device tracker keeps its own in this browser.
 var BACKDROP_KEY = "squareup-backdrop";
 var PRESETS = {
-  indigo: { label: "Indigo", css: "linear-gradient(135deg, #102B40, #204158)", side: [159, 202, 211] },
-  sunset: { label: "Sunset", css: "linear-gradient(135deg, #204158, #355E72)", side: [253, 164, 175] },
-  ocean:  { label: "Ocean",  css: "linear-gradient(135deg, #204158, #355E72)", side: [103, 232, 249] },
-  forest: { label: "Forest", css: "linear-gradient(135deg, #102B40, #204158)", side: [110, 231, 183] },
-  night:  { label: "Night",  css: "linear-gradient(135deg, #0A1B2E, #204158)", side: [148, 163, 184] },
-  berry:  { label: "Berry",  css: "linear-gradient(135deg, #102B40, #355E72)", side: [216, 180, 254] }
-};
-// Mobile palette equivalents for the built-in preset picker. User-uploaded
-// wallpaper photos stay untouched; desktop continues to use PRESETS.
-var MOBILE_PRESETS = {
-  indigo: "linear-gradient(155deg,#0A1B2E 0%,#102B40 52%,#173750 100%)",
-  sunset: "linear-gradient(135deg,#102B40,#355E72)",
-  ocean:  "linear-gradient(135deg,#102B40,#355E72)",
-  forest: "linear-gradient(135deg,#102B40,#204158)",
-  night:  "linear-gradient(135deg,#0A1B2E,#173750)",
-  berry:  "linear-gradient(135deg,#102B40,#355E72)"
+  indigo: { label: "Indigo", css: "linear-gradient(135deg, #1e1b4b, #312e81)", side: [159, 202, 211] },
+  sunset: { label: "Sunset", css: "linear-gradient(135deg, #7c2d12, #be185d)", side: [253, 164, 175] },
+  ocean:  { label: "Ocean",  css: "linear-gradient(135deg, #0c4a6e, #0e7490)", side: [103, 232, 249] },
+  forest: { label: "Forest", css: "linear-gradient(135deg, #14532d, #115e59)", side: [110, 231, 183] },
+  night:  { label: "Night",  css: "linear-gradient(135deg, #020617, #334155)", side: [148, 163, 184] },
+  berry:  { label: "Berry",  css: "linear-gradient(135deg, #4a044e, #6b21a8)", side: [216, 180, 254] }
 };
 
 // Side panel takes a medium tint of the backdrop: a fixed tint for presets,
 // or the photo's average color mixed toward white.
 function setSideTint(rgb) {
-  // Keep wallpaper visuals independent of the seven approved UI colors.
+  // Do not let old palette presets reintroduce cream, pink, purple or beige
+  // into mobile navigation/sidebar surfaces. Desktop keeps its original tint.
+  var phoneTheme = window.matchMedia("(max-width:900px)").matches;
+  var side = phoneTheme ? [16,43,64] : rgb;
+  var border = phoneTheme ? [53,94,114] :
+    rgb.map(function (c) { return Math.round(c * 0.88); });
   var root = document.documentElement.style;
-  root.setProperty("--side-bg", "#102B40");
-  root.setProperty("--side-line", "#355E72");
+  root.setProperty("--side-bg", "rgb(" + side.join(",") + ")");
+  root.setProperty("--side-line", "rgb(" + border.join(",") + ")");
 }
 function photoTint(url) {
   return new Promise(function (resolve) {
@@ -2998,32 +2983,17 @@ async function applyBackdrop() {
   var b = backdropState();
   var el = $("backdrop");
   var url = b.preset === "photo" ? await photoUrl(b) : null;
-  if (run !== backdropRun) return; // a newer change already won
+  if (run !== backdropRun) return;
+  // Honor the selected preset or uploaded photo at every screen width.
+  // No mobile recoloring, navy multiplication or palette whitelist.
   el.classList.toggle("photo", !!url);
   el.dataset.preset = (b.preset && PRESETS[b.preset]) ? b.preset : "indigo";
-  // Explicit mobile brand override: the original Indigo preset is purple,
-  // and the screenshot shows it still rendering behind mobile cards/modals.
-  // Apply the navy gradient directly to the backdrop, with !important so
-  // old style blocks cannot resurrect the purple/beige canvas.
-  const phoneTheme = window.matchMedia("(max-width:900px)").matches;
-  const navyCanvas = "linear-gradient(155deg,#0A1B2E 0%,#102B40 52%,#173750 100%)";
-  // Mobile uses cool navy/blue/teal presets. Uploaded wallpaper photos
-  // take precedence. Desktop retains the original preset gradients.
-  const chosenImage = url
+  var chosenImage = url
     ? 'url("' + url + '")'
-    : (phoneTheme
-       ? (MOBILE_PRESETS[b.preset] || navyCanvas)
-       : (PRESETS[b.preset] || PRESETS.indigo).css);
-  // Keep uploaded tracker photos intact but color-grade them to navy on
-  // mobile, where the photo's original pale areas can resemble beige panels.
-  el.style.setProperty("background-image", chosenImage, phoneTheme ? "important" : "");
-  if (phoneTheme) {
-    el.style.setProperty("background-color", url ? "#ABC6D7" : "#0A1B2E", "important");
-    el.style.setProperty("background-blend-mode", url ? "multiply" : "normal", "important");
-  } else {
-    el.style.removeProperty("background-color");
-    el.style.removeProperty("background-blend-mode");
-  }
+    : (PRESETS[b.preset] || PRESETS.indigo).css;
+  el.style.setProperty("background-image", chosenImage, "important");
+  el.style.removeProperty("background-color");
+  el.style.removeProperty("background-blend-mode");
   var tint = url ? await photoTint(url) : null;
   if (run !== backdropRun) return;
   setSideTint(tint || (PRESETS[url ? "indigo" : b.preset] || PRESETS.indigo).side);
@@ -3041,7 +3011,7 @@ function renderBackdropPicker() {
     : "This backdrop is saved on this device only.";
   var html = Object.keys(PRESETS).map(function (k) {
     return '<button type="button" class="swatch' + (b.preset === k ? " active" : "") + '" data-preset="' + k +
-      '" style="background-image:' + (window.matchMedia("(max-width:900px)").matches ? MOBILE_PRESETS[k] : PRESETS[k].css) + '">' + PRESETS[k].label + "</button>";
+      '" style="background-image:' + (PRESETS[k].css) + '">' + PRESETS[k].label + "</button>";
   }).join("");
   if (b.preset === "photo") {
     var bg = $("backdrop").style.backgroundImage;
@@ -8144,8 +8114,8 @@ document.getElementById('ac-log').addEventListener('click',function(){
 </script>
 
 
-<script src="/weo-mascot.js?v=20261122-approved-seven-palette-v3" defer></script>
-<script src="/weo-actions.js?v=20261122-approved-seven-palette-v3" defer></script>
+<script src="/weo-mascot.js?v=20261122-backdrop-colors-v1" defer></script>
+<script src="/weo-actions.js?v=20261122-backdrop-colors-v1" defer></script>
 
 
 
@@ -8230,9 +8200,9 @@ document.getElementById('ac-log').addEventListener('click',function(){
 
 
 
-<script src="doweo-i18n.js?v=20261122-approved-seven-palette-v3" defer></script>
-<script src="doweo-translations.js?v=20261122-approved-seven-palette-v3" defer></script>
-<script src="doweo-localize-ui.js?v=20261122-approved-seven-palette-v3" defer></script>
+<script src="doweo-i18n.js?v=20261122-backdrop-colors-v1" defer></script>
+<script src="doweo-translations.js?v=20261122-backdrop-colors-v1" defer></script>
+<script src="doweo-localize-ui.js?v=20261122-backdrop-colors-v1" defer></script>
 
 
 
@@ -8385,11 +8355,11 @@ document.getElementById('ac-log').addEventListener('click',function(){
  dialog.addEventListener('click',function(e){if(e.target===dialog)dialog.close()});
 })();</script>
 
-<script src="/doweo-finance-planning.js?v=20261122-approved-seven-palette-v3" defer></script>
-<script src="/doweo-trips-activity.js?v=20261122-approved-seven-palette-v3" defer></script>
-<script src="/doweo-paylinks-currency.js?v=20261122-approved-seven-palette-v3" defer></script>
-<link rel="stylesheet" href="/doweo-bills-mobile-dashboard.css?v=20261122-approved-seven-palette-v3">
-<script src="/doweo-bills-mobile-dashboard.js?v=20261122-approved-seven-palette-v3" defer></script>
+<script src="/doweo-finance-planning.js?v=20261122-backdrop-colors-v1" defer></script>
+<script src="/doweo-trips-activity.js?v=20261122-backdrop-colors-v1" defer></script>
+<script src="/doweo-paylinks-currency.js?v=20261122-backdrop-colors-v1" defer></script>
+<link rel="stylesheet" href="/doweo-bills-mobile-dashboard.css?v=20261122-backdrop-colors-v1">
+<script src="/doweo-bills-mobile-dashboard.js?v=20261122-backdrop-colors-v1" defer></script>
 
 
 
@@ -9337,19 +9307,19 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
  <div id="dw-chat-rows" aria-live="polite"></div></div>
  <div id="dw-chat-thread" hidden><header><button id="dw-chat-back" aria-label="Back to chats">‹ Chats</button><div><strong id="dw-chat-name"></strong><small>Tracker chat</small></div><button id="dw-chat-find" aria-label="Search messages"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button></header><div id="dw-chat-host"></div><div id="dw-dm-panel" hidden><div id="dw-dm-messages" aria-label="Private messages"></div><small id="dw-dm-status" role="status"></small><form id="dw-dm-form"><input id="dw-dm-input" aria-label="Private message" maxlength="4000" autocomplete="off"><button type="submit">Send</button></form></div></div></section>
 <!-- DoWeo's mint/navy visual refresh and timed beta-feedback invitation. -->
-<link rel="stylesheet" href="/doweo-mint-dashboard.css?v=20261122-approved-seven-palette-v3">
-<link rel="stylesheet" href="/doweo-beta-nudge.css?v=20261122-approved-seven-palette-v3">
-<script defer src="/doweo-beta-nudge.js?v=20261122-approved-seven-palette-v3"></script>
+<link rel="stylesheet" href="/doweo-mint-dashboard.css?v=20261122-backdrop-colors-v1">
+<link rel="stylesheet" href="/doweo-beta-nudge.css?v=20261122-backdrop-colors-v1">
+<script defer src="/doweo-beta-nudge.js?v=20261122-backdrop-colors-v1"></script>
 <!-- Screenshot-matched layout, preserving existing DoWeo data and controls. -->
 <link rel="stylesheet" href="/doweo-reference-home.css?v=20261122-original-mint-v1">
-<script defer src="/doweo-reference-home.js?v=20261122-approved-seven-palette-v3"></script>
+<script defer src="/doweo-reference-home.js?v=20261122-backdrop-colors-v1"></script>
 
 <!-- Unified desktop shell and reviewed offline labels for every supported language. -->
-<link rel="stylesheet" href="/doweo-unified-shell.css?v=20261122-approved-seven-palette-v3">
-<script defer src="/doweo-unified-shell.js?v=20261122-approved-seven-palette-v3"></script>
-<script defer src="/doweo-unified-localize.js?v=20261122-approved-seven-palette-v3"></script>
+<link rel="stylesheet" href="/doweo-unified-shell.css?v=20261122-backdrop-colors-v1">
+<script defer src="/doweo-unified-shell.js?v=20261122-backdrop-colors-v1"></script>
+<script defer src="/doweo-unified-localize.js?v=20261122-backdrop-colors-v1"></script>
 <!-- This must load last, after the unified-shell and every legacy stylesheet. -->
-<link rel="stylesheet" href="/doweo-page-repairs.css?v=20261122-approved-seven-palette-v3">
+<link rel="stylesheet" href="/doweo-page-repairs.css?v=20261122-backdrop-colors-v1">
 
 
 <!-- UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121. Included in HTML to avoid missing/old CSS asset. -->
@@ -9644,147 +9614,11 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   else start();
 })();
 </script>
-<script defer src="/doweo-polls-dashboard.js?v=20261122-approved-seven-palette-v3"></script>
+<script defer src="/doweo-polls-dashboard.js?v=20261122-backdrop-colors-v1"></script>
 <script defer src="/doweo-cashflow-analytics.js?v=20261122-original-mint-v1"></script>
-<script defer src="/doweo-desktop-standalone.js?v=20261122-approved-seven-palette-v3"></script>
-<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261122-approved-seven-palette-v3">
-<link rel="stylesheet" href="/doweo-polls-dashboard.css?v=20261122-approved-seven-palette-v3">
-<!-- Single authoritative mobile theme: inlined to avoid a stale PWA stylesheet. -->
-<style id="dw-mobile-theme-authoritative-v7">
-/* DoWeo mobile palette — navy + mint; no yellow, beige, cream or purple canvas.
-   This supersedes earlier mobile color-scheme locks. Visual styling only;
-   never touch desktop geometry, navigation, tracker data or user photos. */
-@media screen and (max-width:900px) {
-  :root {
-    --dw-mobile-canvas:#0A1B2E;
-    --dw-mobile-canvas-top:#0A1B2E;
-    --dw-mobile-canvas-bottom:#173750;
-    --dw-mobile-card:#102B40;
-    --dw-mobile-border:#355E72;
-    --dw-mobile-accent:#60F1AD;
-    --dw-mobile-ink:#F3F8FC;
-    --dw-mobile-muted:#ABC6D7;
-    --side-bg:#102B40;
-    --side-line:#355E72;
-    --dw-receipt-alert-bg:#173750;
-    --dw-receipt-alert-border:#355E72;
-    --dw-tracker-banner-highlight:color-mix(in srgb, #ABC6D7 24%, transparent);
-    --dw-photo-overlay:color-mix(in srgb, #0A1B2E 48%, transparent);
-    --accent:#60F1AD;
-    --on-accent:#102B40;
-  }
-  html {
-    background-color:var(--dw-mobile-canvas)!important;
-    background-image:none!important;
-  }
-  /* Uploaded photos stay stored and visible, but are navy color-graded on
-     phones so pale/cream areas do not leak into the visual theme. */
-  html body #backdrop#backdrop.photo {
-    background-color:#ABC6D7!important;
-    background-blend-mode:multiply!important;
-  }
-  html body #backdrop#backdrop.photo::after {
-    background:var(--dw-photo-overlay)!important;
-    pointer-events:none!important;
-  }
-  /* Before JS applies the stored mobile preset, display a navy fallback.
-     Do NOT override JS-selected presets or uploaded photos. */
-  html body #backdrop#backdrop:not(.photo):not([data-preset]) {
-    background-color:var(--dw-mobile-canvas)!important;
-    background-image:linear-gradient(155deg,#0A1B2E 0%,#102B40 52%,#173750 100%)!important;
-    background-position:center!important;
-    background-size:cover!important;
-  }
-  /* Prevent browser body/html backgrounds exposing a second purple strip
-     outside the backdrop on mobile and when a dialog is open. */
-  html body:not(.sq-auth-guest):not(.sq-auth-loading) {
-    background-color:transparent!important;
-    background-image:none!important;
-  }
-  /* Every shared top and bottom mobile navigation surface uses navy. */
-  html body :is(.sq-mobile-top,.sq-mobile-nav,.sq-workspace-tabs) {
-    background-color:#102B40!important;
-    border-color:var(--dw-mobile-border)!important;
-  }
-  /* Standard cards and dialogs use the same navy family; preserve shape,
-     existing positioning, custom wallpapers, photographs and action logic. */
-  html body :is(
-    .dw-mh-small,.dw-mh-activity,.dw-mobile-more-page-card,
-    .sq-ng-card,.sq-ng-panel,.sq-ng-item,
-    .sq-bill-create-card,.sq-bills-card,.sq-bills-column,
-    .sq-premium-calendar,.sq-premium-metrics > article,
-    .sq-bills-row,.sq-bills-list-head,.dw-inbox-item,
-    .notification-panel,.sq-mobile-sheet,.sq-balanced-sheet
-  ) {
-    background-color:var(--dw-mobile-card)!important;
-    border-color:var(--dw-mobile-border)!important;
-  }
-  /* Navy Instagram invitation, including after it opens over any route.
-     This supersedes earlier popup palette restrictions. */
-  html body #sq-instagram-invite .sq-ig-card {
-    background:#102B40!important;
-    background-image:none!important;
-    border:1px solid #355E72!important;
-    color:var(--dw-mobile-ink)!important;
-  }
-  html body #sq-instagram-invite :is(#sq-ig-title,.sq-ig-x) {
-    color:var(--dw-mobile-ink)!important;
-  }
-  html body #sq-instagram-invite #sq-ig-description {
-    color:var(--dw-mobile-muted)!important;
-  }
-  html body #sq-instagram-invite .sq-ig-follow {
-    background:var(--dw-mobile-accent)!important;
-    color:#102B40!important;
-  }
-  html body #sq-instagram-invite .sq-ig-later {
-    color:var(--dw-mobile-muted)!important;
-  }
-  /* First balance action: explicit label, not color inherited from a
-     previously locked accent rule (invisible mint-on-mint in iOS Safari). */
-  html body #tracker-dashboard #dw-mobile-home-layered .dw-mh-actions button[data-mh-action="sq-clean-settle"] {
-    background:#60F1AD!important;
-    color:#102B40!important;
-    -webkit-text-fill-color:#102B40!important;
-    opacity:1!important;
-  }
-  html body #tracker-dashboard #dw-mobile-home-layered .dw-mh-actions button[data-mh-action="sq-clean-settle"] .dw-mh-settle-label {
-    display:inline-block!important;
-    color:#102B40!important;
-    -webkit-text-fill-color:#102B40!important;
-    font-size:13px!important;
-    font-weight:800!important;
-    line-height:1.2!important;
-    text-align:center!important;
-    text-indent:0!important;
-    opacity:1!important;
-    visibility:visible!important;
-    text-shadow:none!important;
-  }
-  /* Consistent navy surfaces for standard mobile dialogs. Only visual
-     treatment changes; forms, keyboard, inputs, and click handlers remain. */
-  html body :is(
-    #backdrop-modal .card.modal,
-    .dw-standard-dialog-overlay .card.modal,
-    #dw-beta-modal .dw-panel,
-    #sq-instagram-invite .sq-ig-card
-  ) {
-    background-color:#102B40!important;
-    background-image:none!important;
-    border-color:#355E72!important;
-    color:#F3F8FC!important;
-  }
-  html body :is(#backdrop-modal .card.modal,#dw-beta-modal .dw-panel)
-      :is(h1,h2,h3,p,label,small) {
-    color:#F3F8FC!important;
-  }
-  /* Receipt and tracker banner colors are consumed by the original CSS
-     rules through these mobile-scoped semantic variables. */
-}
-</style>
-
-
-
+<script defer src="/doweo-desktop-standalone.js?v=20261122-backdrop-colors-v1"></script>
+<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261122-backdrop-colors-v1">
+<link rel="stylesheet" href="/doweo-polls-dashboard.css?v=20261122-backdrop-colors-v1">
 <style id="dw-mobile-critical-colors-v8">
 /* Deliberately inline: the loading logo and controls must not depend on a cached stylesheet. */
 @media screen and (max-width:900px){
