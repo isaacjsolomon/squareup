@@ -41,7 +41,7 @@ test('payment links are noncustodial, private by default and expire',()=>{
  assert.match(migration,/revoke all .* from public, anon, authenticated/);
  assert.match(migration,/expires_at timestamptz not null/);
  assert.match(migration,/token uuid not null unique/);
- assert.match(html,/<script src="\/doweo-paylinks-currency\.js" defer><\/script>/);
+ assert.match(html,/<script src="\/doweo-paylinks-currency\.js(?:\?v=[^"]+)?" defer><\/script>/);
 });
 test('payment request denies other tracker members',async()=>{
  const result=await invoke('payment-requests','POST',{tracker_id:tracker,amount:24},true);
