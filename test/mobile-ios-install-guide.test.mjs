@@ -45,6 +45,6 @@ test('the Safari guide copy is approved for interface localization and packaged 
   assert.ok(UI_PHRASES.includes(phrase),'not approved for translation: '+phrase);
  }
  assert.match(workflow,/cp index.html/);
- assert.match(workflow,/doweo-mobile-more-pages\.js\?v=20261122-approved-seven-palette-v3/);
- assert.match(workflow,/doweo-mobile-more-pages\.css\?v=20261122-approved-seven-palette-v3/);
+ assert.match(workflow,/doweo-mobile-more-pages\.js\?v=20261122-backdrop-colors-v1/);
+ assert.match(workflow,/doweo-mobile-more-pages\.css\?v=20261122-backdrop-colors-v1/);
 });
