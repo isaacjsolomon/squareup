@@ -27,8 +27,8 @@ async function invoke(path,method='GET',body,outsider=false){
  }finally{globalThis.fetch=previous}
 }
 test('trip planning UI integrates with Finance Hub and retains existing scripts',()=>{
- assert.match(html,/<script src="\/doweo-trips-activity\.js" defer><\/script>/);
- assert.match(html,/<script src="\/doweo-finance-planning\.js" defer><\/script>/);
+ assert.match(html,/<script src="\/doweo-trips-activity\.js(?:\?v=[^"]+)?" defer><\/script>/);
+ assert.match(html,/<script src="\/doweo-finance-planning\.js(?:\?v=[^"]+)?" defer><\/script>/);
  assert.match(ui,/querySelector\('\.sq-ng-tabs'\)/);
  assert.match(ui,/financial activity/i);
  assert.match(sql,/add column if not exists/);
