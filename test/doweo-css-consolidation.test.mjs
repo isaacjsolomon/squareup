@@ -31,7 +31,7 @@ test('design system retains base surfaces and the mint brand accent',()=>{
  const vars={
   bg:'#0A1B2E','surface-1':'#102B40','surface-2':'#173750',
   'surface-3':'#204158',border:'#355E72','border-strong':'#355E72',
-  text:'#F3F8FC','text-muted':'#ABC6D7',accent:'#ABC6D7',
+  text:'#F3F8FC','text-muted':'#ABC6D7',accent:'#60F1AD',
   'accent-hover':'#60F1AD','on-accent':'#0A1B2E',danger:'#ABC6D7',
   'danger-soft':'#102B40','success-soft':'#102B40',info:'#ABC6D7',
   'radius-sm':'8px','radius-md':'12px','radius-lg':'20px'
@@ -73,7 +73,7 @@ test('original backdrop gradients are selectable on mobile and desktop',()=>{
   ['night','#020617','#334155'],
   ['berry','#4a044e','#6b21a8']
  ]){
-  const line=html.split('\n').find(s=>s.trimStart().startsWith(name+': { label:'));
+  const line=html.split('\n').find(s=>new RegExp('^\\s*'+name+':\\s*\\{\\s*label:').test(s));
   assert.ok(line?.includes(start)&&line?.includes(end),name+' original gradient missing');
  }
  assert.ok(html.includes('return SQ_BANNER_PRESETS;'));
