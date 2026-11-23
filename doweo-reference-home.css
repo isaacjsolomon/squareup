@@ -716,11 +716,11 @@
   background:#173750!important;color:#F3F8FC!important;border-color:#355E72!important;
  }
  html body #dw-beta-nudge .dw-beta-nudge-topics button:is(:hover,[aria-pressed="true"]){
-  background:#204158!important;border-color:#ABC6D7!important;
+  background:#204158!important;border-color:#60F1AD!important;
  }
- html body #dw-beta-nudge .dw-beta-nudge-topics button>span{color:#ABC6D7!important}
+ html body #dw-beta-nudge .dw-beta-nudge-topics button>span{color:#60F1AD!important}
  html body #dw-beta-nudge .dw-beta-nudge-give{
-  background:#ABC6D7!important;color:#102B40!important;
+  background:#60F1AD!important;color:#102B40!important;
  }
  #dw-ref-home,#dw-ref-toolbar,#dw-ref-nav-notifications,.dw-ref-brand{display:none!important}
 }
