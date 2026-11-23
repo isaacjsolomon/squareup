@@ -32,7 +32,7 @@
   rows.filter(x=>x.kind==='expense').forEach(x=>{const name=String(x.category||'Uncategorized');categories[name]=(categories[name]||0)+Number(x.amount);});
   const groups=Object.entries(categories).sort((a,b)=>b[1]-a[1]);
   const colors=window.matchMedia('(max-width:900px)').matches
-    ? ['#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7']
+    ? ['#60F1AD','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7']
     : ['#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7'];
   let angle=0;
   const gradient=groups.map(([name,amount],i)=>{const start=angle;angle+=spent?amount/spent*100:0;return colors[i%colors.length]+' '+start.toFixed(2)+'% '+angle.toFixed(2)+'%';}).join(',');
