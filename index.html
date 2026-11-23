@@ -8599,7 +8599,8 @@ document.getElementById('ac-log').addEventListener('click',function(){
  const finance=document.createElement('button');
  finance.type='button';finance.id='dw-personal-finance';finance.className='sq-nav-link';
  finance.setAttribute('aria-label','My Wallet sections');finance.setAttribute('aria-haspopup','true');finance.setAttribute('aria-expanded','false');
- finance.innerHTML='<span class="sq-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="15" rx="2"/><path d="M3 10V6a2 2 0 0 1 2-2h13M16 15h3"/></svg></span><span class="sq-nav-label">My Wallet</span><span class="dw-flyout-caret" aria-hidden="true">›</span>';
+ // The approved outlined wallet icon: rounded top fold and right-hand snap clasp.
+ finance.innerHTML='<span class="sq-nav-icon dw-my-wallet-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M19 8V5.5A2.5 2.5 0 0 0 16.5 3H5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h14a2 2 0 0 0 2-2v-2"/><path d="M2 7.5h16a3 3 0 0 1 3 3v1.5"/><path d="M19.5 12.5H22v4.5h-2.5a2.25 2.25 0 1 1 0-4.5Z"/><circle cx="19.5" cy="14.75" r=".6" fill="currentColor" stroke="none"/></svg></span><span class="sq-nav-label">My Wallet</span><span class="dw-flyout-caret" aria-hidden="true">›</span>';
  const events=document.getElementById('sqev-nav');
  events.before(finance);
  // Move the original destination buttons, retaining their existing navigation handlers.
@@ -10003,6 +10004,22 @@ html body #new-modal #new-form [hidden] {display:none!important}
  html body #dw-my-wallet-flyout>.sq-nav-link>.dw-all-nav-icon{display:none!important}
  html body #dw-my-wallet-flyout>.sq-nav-link>.sq-nav-icon{display:inline-flex!important}
  html body #dw-my-wallet-flyout>:not(#nav-analytics):not(#nav-cashflow):not(#sqev-nav){display:none!important}
+ /* Match the approved wallet outline, and keep it to exactly one glyph. */
+ html body:not(.sq-auth-guest) #dw-personal-finance>.dw-my-wallet-icon {
+   display:inline-flex!important;visibility:visible!important;opacity:1!important;
+   align-items:center!important;justify-content:center!important;
+   width:27px!important;height:27px!important;min-width:27px!important;
+   flex:0 0 27px!important;margin:0 13px 0 0!important;padding:0!important;
+   color:#F3F8FC!important;
+ }
+ html body:not(.sq-auth-guest) #dw-personal-finance>.dw-my-wallet-icon svg {
+   display:block!important;width:25px!important;height:25px!important;
+   fill:none!important;stroke:currentColor!important;stroke-width:1.85!important;
+   stroke-linejoin:round!important;stroke-linecap:round!important;
+ }
+ html body:not(.sq-auth-guest) #dw-personal-finance>.dw-my-wallet-icon svg circle {
+   fill:currentColor!important;stroke:none!important;
+ }
  html body #dw-personal-finance>.dw-flyout-caret{margin-left:auto;font-size:22px;line-height:1;color:#ABC6D7}
  html body.side-collapsed #dw-personal-finance>.dw-flyout-caret{display:none!important}
 }
