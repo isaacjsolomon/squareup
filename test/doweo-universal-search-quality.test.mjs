@@ -5,6 +5,7 @@ import {readFileSync} from 'node:fs';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const search=readFileSync(new URL('../doweo-global-search.js',import.meta.url),'utf8');
 const css=readFileSync(new URL('../doweo-reference-home.css',import.meta.url),'utf8');
+const mobileCss=readFileSync(new URL('../styles.css',import.meta.url),'utf8');
 const home=readFileSync(new URL('../doweo-reference-home.js',import.meta.url),'utf8');
 const workflow=readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',import.meta.url),'utf8');
 
@@ -78,4 +79,23 @@ test('Recent Activity rows have no internal colored dividers, retaining layout a
   assert.match(css,/\.sq-return-row \.dw-activity-name/);
   assert.match(css,/\.sq-return-row \.dw-activity-value/);
   assert.match(home,/activitySlot\.id='dw-ref-activity-slot'/);
+});
+
+test('mobile Recent Activity has no mint separator lines',()=>{
+  const row=mobileCss.split('html body #dw-mobile-home-layered .dw-mh-entry{')[1]?.split('}')[0];
+  assert.ok(row,'mobile activity row styles must exist');
+  assert.match(row,/border-top:0!important/);
+  assert.doesNotMatch(row,/border-top:1px solid var\(--accent\)/);
+  assert.match(row,/display:grid!important/);
+});
+
+test('search preloads the signed-in account and includes private financial history',()=>{
+  assert.match(search,/if\(activeOwner\(\)\)void loadIndex\(\)/);
+  assert.match(search,/capture\(api\('finance\/transactions'\)\)/);
+  assert.match(search,/cache\.personal=asList\(personal\)/);
+  assert.match(search,/\['Personal transactions',personalHits\]/);
+  assert.match(search,/\['Group polls',pollHits\]/);
+  assert.match(search,/\['Notifications',notificationHits\]/);
+  assert.match(search,/\['Friend profiles',profileHits\]/);
+  assert.match(html,/field\.dispatchEvent\(new Event\('input',\{bubbles:true\}\)\)/);
 });
