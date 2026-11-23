@@ -58,3 +58,16 @@ test('Add dropdown keeps its actions without rendering a chevron',()=>{
  assert.match(js,/querySelectorAll\('\.dw-compact-add-caret'\)/);
  assert.match(css,/\.dw-compact-add-caret,[\s\S]*?display:none!important/);
 });
+
+test('Overview mint accents, cash-flow legend, and banner preference persist',()=>{
+ const chartCss=readFileSync(new URL('../doweo-unified-shell.css',import.meta.url),'utf8');
+ const desktopCss=readFileSync(new URL('../doweo-desktop-standalone.css',import.meta.url),'utf8');
+ assert.ok(css.includes('#dw-ref-stat-net .dw-ref-stat-amount{color:#60F1AD}'));
+ assert.ok(css.includes('background:linear-gradient(120deg,#102B40,#0A1B2E)!important;\n    color:#60F1AD!important;'));
+ assert.match(chartCss,/\.dw-ref-bar-income\{[\s\S]*?background:linear-gradient\(180deg,#60F1AD,#60F1AD\)!important/);
+ assert.match(chartCss,/\.dw-ref-bar-expense\{[\s\S]*?background:linear-gradient\(180deg,#102B40,#102B40\)!important/);
+ assert.match(chartCss,/\.dw-ref-legend-income\{\s*background:#60F1AD!important/);
+ assert.match(chartCss,/\.dw-ref-legend-expense\{\s*background:#102B40!important/);
+ assert.ok(html.includes("banner.style.setProperty('background-image',chosen,'important')"));
+ assert.doesNotMatch(desktopCss,/\.tracker-tile:nth-child\(3n\+2\) \.tracker-tile-banner\{/);
+});
