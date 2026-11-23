@@ -10,7 +10,7 @@ const flow=readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',im
 test('the screenshot layout ships as a real, connected piece of production HTML',()=>{
  for(const p of ['doweo-reference-home.css?v=20261123-activity-no-lines-v1','doweo-reference-home.js?v=20261122-backdrop-colors-v1'])
   assert.ok(html.includes(p),p+' is missing from index.html');
- assert.match(flow,/doweo-reference-home\.css doweo-reference-home\.js/);
+ assert.match(flow,/doweo-reference-home\.css doweo-global-search\.js doweo-reference-home\.js/);
  assert.match(flow,/node --check \.pages-output\/doweo-reference-home\.js/);
  assert.match(flow,/node --test test\/doweo-reference-layout\.test\.mjs/);
  assert.doesNotMatch(js,/\$248\.50|\$660\.80|\$412\.30/,'example financial numbers may not be deployed');
