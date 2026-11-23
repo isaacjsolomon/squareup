@@ -31,6 +31,7 @@
     home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
     trackers:'<path d="m12 3 9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 16l9 5 9-5"/>',
     analytics:'<path d="M4 20V4m5 16v-6m5 6V8m5 12V5"/>',
+    cashflow:'<path d="M3 3v18h18"/><path d="m6 15 4-4 3 2 5-7"/><path d="M16 6h2v2"/>',
     events:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/>',
     social:'<circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M19 8v8m-4-4h8"/>',
     more:'<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>',
@@ -97,6 +98,7 @@
 
   const nameFor=el=>{
     const raw=(el.id||'').toLowerCase();
+    if(raw.includes('cashflow'))return 'cashflow';
     if(raw.includes('notification'))return 'notifications';
     if(raw.includes('analytic'))return 'analytics';
     if(raw.includes('tracker'))return 'trackers';
@@ -111,8 +113,8 @@
     if(raw.includes('more'))return 'more';
     const name=(el.querySelector('.dw-nav-group-name,.dw-social-label,.sq-nav-label')?.textContent||
       el.getAttribute('aria-label')||el.textContent||'').trim().toLowerCase();
-    for(const key of ['notification','analytic','tracker','event','poll','chat','friend','social','home','account','setting','more','about','privacy']){
-      if(name.includes(key))return ({notification:'notifications',analytic:'analytics',tracker:'trackers',
+    for(const key of ['cash flow','notification','analytic','tracker','event','poll','chat','friend','social','home','account','setting','more','about','privacy']){
+      if(name.includes(key))return ({'cash flow':'cashflow',notification:'notifications',analytic:'analytics',tracker:'trackers',
         event:'events',friend:'social',setting:'account'}[key]||key);
     }
     return 'default';
@@ -130,6 +132,12 @@
       originalSidebarStyles.clear();
       return;
     }
+    // Anchor Cash Flow to the real desktop nav immediately ahead of Analytics.
+    // This fixes older flex ordering and avoids proxy links or duplicate buttons.
+    const cashflow=sidebarNav.querySelector(':scope > #nav-cashflow');
+    const analytics=sidebarNav.querySelector(':scope > #nav-analytics');
+    if(cashflow&&analytics&&cashflow.nextElementSibling!==analytics)
+      sidebarNav.insertBefore(cashflow,analytics);
     // Every direct navigation surface, including independently implemented
     // Social/More controls, gets the exact same icon box and text metrics.
     const entries=[
