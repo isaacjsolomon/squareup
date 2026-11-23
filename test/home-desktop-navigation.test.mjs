@@ -76,6 +76,35 @@ test('desktop Home remains full width after navigation and shows only four track
    await page.screenshot({path:resolve(root,'test-results/bills/home-'+label+'.png'),fullPage:true});
   }
   await verifyHome('startup');
+  // Desktop My Wallet must contain only the real destination buttons, exactly
+  // one visible icon each. Notifications belongs to the primary sidebar.
+  await page.locator('#dw-personal-finance').waitFor({state:'visible'});
+  await page.locator('#dw-personal-finance').click();
+  await page.locator('#dw-my-wallet-flyout').waitFor({state:'visible'});
+  const walletNav=await page.evaluate(()=>{
+    const panel=document.getElementById('dw-my-wallet-flyout');
+    const buttons=[...panel.querySelectorAll(':scope > button.sq-nav-link')];
+    const visibleIcons=button=>[...button.querySelectorAll(':scope > .sq-nav-icon, :scope > .dw-ref-static-icon, :scope > .dw-all-nav-icon')].filter(icon=>{
+      const css=getComputedStyle(icon);return css.display!=='none'&&css.visibility!=='hidden';
+    }).length;
+    return {
+      ids:buttons.map(button=>button.id),
+      iconCounts:buttons.map(visibleIcons),
+      notificationsInSidebar:!!document.querySelector('.sidebar .squareup-nav > #dw-ref-nav-notifications'),
+      notificationInWallet:!!panel.querySelector('#dw-ref-nav-notifications'),
+      cashFlowCount:document.querySelectorAll('#nav-cashflow').length,
+      eventsCount:document.querySelectorAll('#sqev-nav').length,
+      analyticsCount:document.querySelectorAll('#nav-analytics').length
+    };
+  });
+  assert.deepEqual(walletNav.ids,['nav-analytics','nav-cashflow','sqev-nav'],'wallet contains only Analytics, Cash Flow, Events');
+  assert.deepEqual(walletNav.iconCounts,[1,1,1],'wallet rows contain one visible icon each');
+  assert.equal(walletNav.notificationsInSidebar,true,'Notifications remains a direct desktop sidebar button');
+  assert.equal(walletNav.notificationInWallet,false,'Notifications is not in My Wallet');
+  assert.equal(walletNav.cashFlowCount,1,'Cash Flow is not duplicated');
+  assert.equal(walletNav.eventsCount,1,'Events is not duplicated');
+  assert.equal(walletNav.analyticsCount,1,'Analytics is not duplicated');
+  await page.locator('#dw-personal-finance').click();
   assert.ok(await page.locator('#dw-inline-tracker-picker').isVisible(),'switcher visible on Home Overview');
   for(const section of ['expenses','members','bills']){
    await page.evaluate(section=>document.querySelector('#tracker-dashboard [data-sq-tab="'+section+'"]').click(),section);
