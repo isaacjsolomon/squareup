@@ -21,7 +21,7 @@ for(const [name,[start,end]] of Object.entries(required)){
  assert(line&&line.includes(start)&&line.includes(end),name+' lost its original gradient');
 }
 assert(html.includes('restored-original-backdrops-20261122-v1'),'Missing restored backdrop release marker');
-assert(html.includes('styles.css?v=20261122-animated-loader-v1'),'Backdrop styles not cache-busted');
+assert(html.includes('styles.css?v=20261123-global-search-v1'),'Backdrop styles not cache-busted');
 assert(/function sqBannerPalette\(\)\{\s*return SQ_BANNER_PRESETS;\s*\}/.test(html),'Mobile banner preset lock still active');
 assert(!/\bMOBILE_PRESETS\b|\bSQ_MOBILE_BANNER_PRESETS\b|dw-mobile-theme-authoritative-v7|seven-color-source-palette/.test(html),'Legacy palette lock still active');
 assert(html.includes('style="background-image:')===false||html.includes('PRESETS[k].css'),'Backdrop preview should use shared preset CSS');
