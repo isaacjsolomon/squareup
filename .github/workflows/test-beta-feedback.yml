@@ -43,6 +43,8 @@ jobs:
         run: node --check doweo-reference-home.js && node --test test/doweo-reference-layout.test.mjs
       - name: Verify 20-language unified navigation, sidebar icons, and sparse cash-flow charts
         run: node --check doweo-unified-shell.js && node --check doweo-unified-localize.js && node --test test/doweo-unified-shell.test.mjs
+      - name: Verify the mobile and desktop animated startup logo and loading lifecycle
+        run: node --test test/doweo-startup-animation.test.mjs
       - name: Verify seven-minute beta invitation and mint dashboard assets
         run: node --check doweo-beta-nudge.js && node --test test/doweo-beta-nudge-theme.test.mjs
       - name: Verify every production translation module is packaged
