@@ -7130,8 +7130,8 @@ html body #sq-startup-overlay .sq-startup-content{
  display:block;width:clamp(160px,27vw,240px);height:auto;overflow:visible;
 }
 #sq-startup-overlay .doweo-logo-trace{
- stroke-dasharray:none;stroke-dashoffset:0;opacity:1;
- animation:none;
+ stroke-dasharray:1;stroke-dashoffset:1;opacity:1;
+ animation:dw-startup-logo-draw 1.08s cubic-bezier(.25,.7,.22,1) both;
 }
 #sq-startup-overlay .doweo-logo-left{animation-delay:0s}
 #sq-startup-overlay .doweo-logo-right{animation-delay:.12s}
@@ -9807,8 +9807,8 @@ html body :is(.sq-friend-row:nth-child(4n+4) .sq-friend-avatar,
   }
   html body #sq-startup-overlay { background:#0A1B2E!important;color:#F3F8FC!important; }
   html body #sq-startup-overlay .sq-startup-content {
-    background:#102B40!important;border-color:#355E72!important;
-    color:#F3F8FC!important;
+    background:transparent!important;border:0!important;
+    box-shadow:none!important;color:#F3F8FC!important;
   }
   html body #sq-instagram-invite .sq-ig-mark {
     background:transparent!important;
