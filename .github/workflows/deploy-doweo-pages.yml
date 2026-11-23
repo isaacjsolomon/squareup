@@ -59,6 +59,8 @@ jobs:
           page.write_text(html)
           PY
           cp -R icons images beta privacy terms .pages-output/
+          test -s .pages-output/images/instagram-app-icon.svg
+          grep -Fq 'instagram-app-icon.svg?v=20261122-instagram-logo-v1' .pages-output/index.html
           cp robots.txt sitemap.xml _headers .pages-output/
           test -s .pages-output/_headers
           mkdir -p .pages-output/.well-known
