@@ -9286,7 +9286,37 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 
 <script id="dw-mobile-home-layered-script">(function(){
  const d=document.getElementById('tracker-dashboard'),source=document.getElementById('sq-return-summary');if(!d||!source)return;const media=matchMedia('(max-width:900px)');let queued=false,billTracker=null,bills=[],billSeq=0;
- const home=document.createElement('section');home.id='dw-mobile-home-layered';home.setAttribute('aria-label','Mobile tracker overview');home.innerHTML='<h2 id="dw-mh-greeting">Welcome back</h2><section class="dw-mh-hero" aria-label="Tracker balance"><strong id="dw-mh-amount">—</strong><span id="dw-mh-caption">Your tracker balance</span><div class="dw-mh-actions"><button type="button" data-mh-action="sq-clean-settle" aria-label="Settle up"><span class="dw-mh-settle-label" style="color:#102B40!important;-webkit-text-fill-color:#102B40!important;font-size:13px!important;font-weight:800!important;opacity:1!important;visibility:visible!important;">Settle up</span></button><button type="button" data-mh-action="quick-pay-now">Pay now</button><button type="button" data-mh-action="quick-payment">Log payment</button></div></section><div class="dw-mh-grid"><button type="button" class="dw-mh-small" id="dw-mh-members"><h3>Members</h3><span id="dw-mh-people" aria-hidden="true"></span><span id="dw-mh-members-count"></span></button><button type="button" class="dw-mh-small" id="dw-mh-upcoming"><h3>Upcoming</h3><span id="dw-mh-upcoming-name">Loading…</span><strong id="dw-mh-upcoming-amount"></strong></button></div><section class="dw-mh-activity" aria-label="Recent activity"><div class="dw-mh-activity-head"><h3>Recent activity</h3><button type="button" class="dw-mh-see-all">See all ›</button></div><div id="dw-mh-activity-list"></div></section>';
+ const home=document.createElement('section');home.id='dw-mobile-home-layered';home.setAttribute('aria-label','Mobile tracker overview');home.innerHTML=`
+<header class="dw-mh-intro">
+  <div><span class="dw-mh-kicker">Tracker overview</span><h2 id="dw-mh-greeting">Welcome back</h2></div>
+</header>
+<section class="dw-mh-hero" aria-label="Your balance">
+  <div class="dw-mh-hero-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M16 13h5M7 6V4h11"/></svg><span>Net balance</span></div>
+  <strong id="dw-mh-amount">—</strong><span id="dw-mh-caption">Your tracker balance</span>
+</section>
+<div class="dw-mh-actions" role="group" aria-label="Payment actions">
+  <button type="button" data-mh-action="sq-clean-settle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 8 4-4 4 4M8 4v12M20 16l-4 4-4-4m4 4V8"/></svg><span class="dw-mh-settle-label">Settle up</span></button>
+  <button type="button" data-mh-action="quick-pay-now"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20m-5 5h2"/></svg><span class="dw-mh-action-text">Pay now</span></button>
+  <button type="button" data-mh-action="quick-payment"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h10v18l-5-3-5 3V3zM10 9h4m-4 4h4"/></svg><span class="dw-mh-action-text">Log payment</span></button>
+</div>
+<div class="dw-mh-snapshot" aria-label="Balance breakdown">
+  <div class="dw-mh-stat"><span>Owed to you</span><strong id="dw-mh-owed">—</strong></div>
+  <div class="dw-mh-stat"><span>You owe</span><strong id="dw-mh-owe">—</strong></div>
+</div>
+<section class="dw-mh-activity" aria-label="Recent activity">
+  <div class="dw-mh-activity-head"><h3>Recent activity</h3><button type="button" class="dw-mh-see-all">See all ›</button></div>
+  <div id="dw-mh-activity-list"></div>
+</section>
+<div class="dw-mh-lower">
+  <button type="button" class="dw-mh-small" id="dw-mh-upcoming">
+    <span class="dw-mh-small-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4m8-4v4M3 10h18"/></svg></span>
+    <span class="dw-mh-small-copy"><h3>Upcoming</h3><span id="dw-mh-upcoming-name">Loading…</span></span><strong id="dw-mh-upcoming-amount"></strong><span class="dw-mh-row-arrow" aria-hidden="true">›</span>
+  </button>
+  <button type="button" class="dw-mh-small" id="dw-mh-members">
+    <span class="dw-mh-small-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 5a3 3 0 0 1 0 6m1 3a6 6 0 0 1 3 5"/></svg></span>
+    <span class="dw-mh-small-copy"><h3>Members</h3><span id="dw-mh-members-count"></span></span><span id="dw-mh-people" aria-hidden="true"></span><span class="dw-mh-row-arrow" aria-hidden="true">›</span>
+  </button>
+</div>`;
  const by=id=>document.getElementById(id),tab=name=>d.querySelector('[data-sq-tab="'+name+'"]')?.click(),money=(n,c)=>new Intl.NumberFormat(undefined,{style:'currency',currency:c||'USD'}).format(Number(n)||0);
  home.querySelectorAll('[data-mh-action]').forEach(button=>button.onclick=()=>{const target=by(button.dataset.mhAction);if(!target)return;if(typeof target.onclick==='function')target.onclick.call(target);else target.click();});
  byIdLocal('dw-mh-members').onclick=()=>tab('members');byIdLocal('dw-mh-upcoming').onclick=()=>tab('bills');home.querySelector('.dw-mh-see-all').onclick=()=>tab('expenses');
@@ -9295,13 +9325,14 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
  function paintUpcoming(){const tracker=window.sqLastOpenedTrackerDetail;const list=bills.filter(b=>b.active!==false&&b.due).sort((a,b)=>String(a.due).localeCompare(String(b.due)));const bill=list[0];by('dw-mh-upcoming-name').textContent=bill?bill.name+' · '+new Date(bill.due+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'Nothing scheduled';by('dw-mh-upcoming-amount').textContent=bill?money(bill.amount,tracker?.currency):'';}
  function render(){queued=false;const enabled=media.matches&&d.classList.contains('sq-tab-overview')&&!d.classList.contains('dw-template-original');if(d.classList.contains('dw-mobile-layered-home')!==enabled)d.classList.toggle('dw-mobile-layered-home',enabled);if(!enabled){home.remove();return;}if(home.parentElement!==d)d.querySelector('.sq-workspace-tabs').after(home);
   const tracker=window.sqLastOpenedTrackerDetail;by('dw-mh-greeting').textContent=by('sq-return-greeting')?.textContent||'Welcome back';by('dw-mh-amount').textContent=(by('sq-clean-net')?.textContent||'—').trim().replace(/^[-−+]/,'');by('dw-mh-caption').textContent=(by('sq-clean-explanation')?.textContent||'Your tracker balance').split(' · ')[0];
+  [['dw-mh-owed','sq-stat-owed'],['dw-mh-owe','sq-stat-owe']].forEach(([dest,src])=>{by(dest).textContent=(by(src)?.textContent||'—').trim();});
   const members=Array.isArray(tracker?.members)?tracker.members:[];const people=by('dw-mh-people');people.replaceChildren();members.slice(0,3).forEach(m=>{const span=document.createElement('span');span.textContent=String(m.name||m.displayName||'M').trim().charAt(0).toUpperCase();people.append(span);});by('dw-mh-members-count').textContent=members.length+' '+(members.length===1?'person':'people');
   const entries=(tracker?.entries||[]).slice().reverse().sort((a,b)=>new Date(b.date||b.createdAt||0)-new Date(a.date||a.createdAt||0)).slice(0,3),list=by('dw-mh-activity-list');list.replaceChildren();
   entries.forEach(e=>{const row=document.createElement('button');row.type='button';row.className='dw-mh-entry';const title=String(e.note||(e.type==='payment'?'Payment':'Expense')).replace(/^\[Category:\s*[^\]]+\]\s*/,'').replace(/^Split bill:\s*/i,'');const glyph=document.createElement('span');glyph.className='dw-mh-entry-icon';glyph.innerHTML=icon(e.type==='payment'?'<path d="M3 7h17m-4-4 4 4-4 4M21 17H4m4-4-4 4 4 4"/>':/uber|taxi|transport|train/i.test(title)?'<path d="m5 7 2-4h10l2 4M3 8h18v10H3V8Zm2 10v3m14-3v3M6 12h2m8 0h2"/>':'<path d="M5 3v7m-3-7v7c0 3 6 3 6 0V3M5 13v8M18 3c-4 4-4 9 0 9V3Zm0 9v9"/>');const copy=document.createElement('span');copy.className='dw-mh-entry-copy';const strong=document.createElement('strong');strong.textContent=title;const small=document.createElement('small');small.textContent=(e.from||'')+' → '+(e.to||'');copy.append(strong,small);const amount=document.createElement('strong');amount.className='dw-mh-entry-value';amount.textContent=money(e.amount,tracker.currency);const arrow=document.createElement('span');arrow.className='dw-mh-entry-chevron';arrow.textContent='›';row.append(glyph,copy,amount,arrow);row.onclick=()=>window.squareUpOpenExpenseDetails?.(e.id);list.append(row);});if(!entries.length){const empty=document.createElement('p');empty.className='dw-mh-empty';empty.textContent='No activity yet.';list.append(empty);}
   if(tracker?.id&&tracker.id!=='local'&&billTracker!==tracker.id&&typeof window.squareUpApi==='function'){billTracker=tracker.id;bills=[];const seq=++billSeq;by('dw-mh-upcoming-name').textContent='Loading…';by('dw-mh-upcoming-amount').textContent='';window.squareUpApi('trackers/'+encodeURIComponent(tracker.id)+'/bills').then(data=>{if(seq!==billSeq)return;bills=Array.isArray(data)?data:[];if(home.isConnected)paintUpcoming();}).catch(()=>{if(seq===billSeq&&home.isConnected){by('dw-mh-upcoming-name').textContent='View bills';by('dw-mh-upcoming-amount').textContent='';}});}else paintUpcoming();
  }
  function queue(){if(!queued){queued=true;requestAnimationFrame(render);}}
- media.addEventListener('change',queue);window.addEventListener('squareup:tracker-detail',()=>{billTracker=null;queue();});new MutationObserver(queue).observe(d,{attributes:true,attributeFilter:['class']});for(const id of ['sq-clean-net','sq-clean-explanation','sq-return-greeting']){const el=by(id);if(el)new MutationObserver(queue).observe(el,{childList:true,subtree:true,characterData:true});}queue();
+ media.addEventListener('change',queue);window.addEventListener('squareup:tracker-detail',()=>{billTracker=null;queue();});new MutationObserver(queue).observe(d,{attributes:true,attributeFilter:['class']});for(const id of ['sq-clean-net','sq-clean-explanation','sq-return-greeting','sq-stat-owed','sq-stat-owe']){const el=by(id);if(el)new MutationObserver(queue).observe(el,{childList:true,subtree:true,characterData:true});}queue();
 })();</script>
 
 
@@ -9827,6 +9858,8 @@ html body #new-modal #new-form [hidden] {display:none!important}
   html body:has(#new-modal.open) .sq-mobile-nav {visibility:hidden!important}
 }
 </style>
+<!-- Mobile overview redesign; loaded after legacy CSS so mobile alone receives these styles. -->
+<link rel="stylesheet" href="/doweo-mobile-overview.css?v=20261123-mobile-layout-v1">
 </body>
 </html>
 
