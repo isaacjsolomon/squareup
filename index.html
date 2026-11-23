@@ -8475,13 +8475,30 @@ document.getElementById('ac-log').addEventListener('click',function(){
    for(const name of ids){const item=document.getElementById(name);if(item){if(name==='nav-friends'){item.hidden=false;item.removeAttribute('aria-hidden');item.removeAttribute('tabindex');}panel.appendChild(item);}}
    document.body.appendChild(panel);return panel;
  };
+ const finance=document.createElement('button');
+ finance.type='button';finance.id='dw-personal-finance';finance.className='sq-nav-link';
+ finance.setAttribute('aria-expanded','false');
+ finance.innerHTML='<span class="sq-nav-icon" aria-hidden="true"></span><span class="sq-nav-label">Personal Finance</span>';
+ const events=document.getElementById('sqev-nav');
+ events.before(finance);
+ const financePanel=makePanel('dw-personal-finance-flyout',[]);
+ financePanel.setAttribute('aria-label','Personal Finance');
+ finance.setAttribute('aria-controls',financePanel.id);
+ for(const id of ['sqev-nav','nav-cashflow','nav-analytics']){
+   const source=document.getElementById(id);
+   const item=document.createElement('button');
+   item.type='button';item.className='sq-nav-link';
+   item.append(source.querySelector('.sq-nav-icon').cloneNode(true),source.querySelector('.sq-nav-label').cloneNode(true));
+   item.addEventListener('click',()=>source.click());
+   financePanel.append(item);
+ }
  const socialPanel=makePanel('dw-social-flyout',['nav-chat','nav-friends']);
  const morePanel=makePanel('dw-more-flyout',['nav-profile','nav-help-center','nav-about','nav-privacy-terms']);
  social.setAttribute('aria-controls',socialPanel.id);
  summary.setAttribute('aria-controls',morePanel.id);summary.setAttribute('aria-expanded','false');
  more.open=false;
  let active=null;
- const close=()=>{socialPanel.hidden=true;morePanel.hidden=true;more.open=false;social.setAttribute('aria-expanded','false');summary.setAttribute('aria-expanded','false');active=null;};
+ const close=()=>{financePanel.hidden=true;finance.setAttribute('aria-expanded','false');socialPanel.hidden=true;morePanel.hidden=true;more.open=false;social.setAttribute('aria-expanded','false');summary.setAttribute('aria-expanded','false');active=null;};
  const position=(button,panel)=>{
    const rect=button.getBoundingClientRect();
    const width=panel.offsetWidth||230,height=panel.offsetHeight||190;
@@ -8494,15 +8511,16 @@ document.getElementById('ac-log').addEventListener('click',function(){
    if(active===panel&&!panel.hidden){close();return;}
    close();panel.hidden=false;active=panel;position(button,panel);
    if(panel===morePanel){more.open=true;summary.setAttribute('aria-expanded','true');}
-   else social.setAttribute('aria-expanded','true');
+   else button.setAttribute('aria-expanded','true');
  };
  summary.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();toggle(summary,morePanel);});
  social.addEventListener('click',event=>{event.preventDefault();toggle(social,socialPanel);});
- for(const panel of [socialPanel,morePanel])panel.addEventListener('click',event=>{
+ finance.addEventListener('click',()=>toggle(finance,financePanel));
+ for(const panel of [financePanel,socialPanel,morePanel])panel.addEventListener('click',event=>{
    if(event.target.closest('button.sq-nav-link'))close();
  });
  document.addEventListener('pointerdown',event=>{
-   if(active&&!active.contains(event.target)&&!social.contains(event.target)&&!summary.contains(event.target))close();
+   if(active&&!active.contains(event.target)&&!finance.contains(event.target)&&!social.contains(event.target)&&!summary.contains(event.target))close();
  },true);
  document.addEventListener('keydown',event=>{
    if(event.key==='Escape'&&active){close();(document.activeElement?.blur?.());}
@@ -9857,6 +9875,12 @@ html body #new-modal #new-form [hidden] {display:none!important}
   html body #new-modal #new-form {height:auto!important;max-height:none!important;overflow:visible!important}
   html body:has(#new-modal.open) .sq-mobile-nav {visibility:hidden!important}
 }
+
+@media(min-width:901px){
+ html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>#dw-personal-finance.sq-nav-link {display:flex!important;order:0!important}
+ html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav:has(>#dw-personal-finance)>:is(#sqev-nav,#nav-cashflow,#nav-analytics){display:none!important}
+}
+@media(max-width:900px){#dw-personal-finance{display:none!important}}
 </style>
 <!-- Mobile overview redesign; loaded after legacy CSS so mobile alone receives these styles. -->
 <link rel="stylesheet" href="/doweo-mobile-overview.css?v=20261123-mobile-layout-v1">
