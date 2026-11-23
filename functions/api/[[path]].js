@@ -39,7 +39,9 @@ async function exchangeRate(from, to) {
 
   return rate;
 }
-const presets = ['indigo', 'sunset', 'ocean', 'forest', 'night', 'berry'];
+const presets = ['indigo', 'sunset', 'ocean', 'forest', 'night', 'berry',
+  'mountainMist', 'tropicalCoast', 'alpineLake', 'desertDunes', 'evergreen', 'snowfall',
+  'cottonCandy', 'northernLights', 'stargazing', 'aquaFlow', 'topographic', 'midnightBlue'];
 
 function kind(b) {
   return b[0] === 255 && b[1] === 216 && b[2] === 255 ? 'image/jpeg' :
