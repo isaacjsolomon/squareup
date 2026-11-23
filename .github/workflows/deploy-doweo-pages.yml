@@ -144,12 +144,12 @@ jobs:
           set -euo pipefail
           for attempt in {1..15}; do
             page="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/?release=original-backdrops-20261122-v1' || true)"
-            css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/styles.css?v=20261122-profile-navy-mint-v2' || true)"
+            css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/styles.css?v=20261122-animated-loader-v1' || true)"
             if [[ "$page" == *'restored-original-backdrops-20261122-v1'* ]] &&
                [[ "$page" == *'css: "linear-gradient(135deg, #7c2d12, #be185d)"'* ]] &&
                [[ "$page" == *'css: "linear-gradient(135deg, #14532d, #115e59)"'* ]] &&
                [[ "$page" == *'css: "linear-gradient(135deg, #4a044e, #6b21a8)"'* ]] &&
-               [[ "$page" == *'styles.css?v=20261122-profile-navy-mint-v2'* ]] &&
+               [[ "$page" == *'styles.css?v=20261122-animated-loader-v1'* ]] &&
                [[ "$css" == *'--accent: #60F1AD'* ]]; then
               echo "Production is serving the original Sunset, Forest and Berry backdrops with mint accents."
               exit 0
