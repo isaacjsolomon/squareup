@@ -9931,3 +9931,15 @@ html body #onboarding-page :is(.onboard-wrap button,.onboard-panel button) {
   font-weight:700!important;
   letter-spacing:-.015em;
 }
+
+/* 2026-11-23 — Cash Flow is its own desktop destination, directly above Analytics.
+   Reuse the existing sidebar button styling and don't change mobile navigation. */
+@media (min-width:901px) {
+  html body .sidebar .squareup-nav #nav-cashflow {
+    display:flex!important;
+    order:6!important;
+  }
+}
+@media (max-width:900px) {
+  html body .sidebar .squareup-nav #nav-cashflow {display:none!important}
+}

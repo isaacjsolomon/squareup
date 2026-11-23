@@ -166,7 +166,7 @@ window.dwBillDueDate=function(value){
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=20261123-auth-wordmark-font-v1">
+<link rel="stylesheet" href="/styles.css?v=20261123-cashflow-sidebar-v1">
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
@@ -239,6 +239,7 @@ window.dwBillDueDate=function(value){
   <button type="button" id="nav-friends" class="sq-nav-link" hidden aria-hidden="true" tabindex="-1"><span class="sq-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2"/><path d="M18 8v8M14 12h8"/></svg></span><span class="sq-nav-label">Friends</span></button>
   <button type="button" id="sq-finance-nav" class="sq-nav-link"><span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7 16v-4m5 4V8m5 8v-6"/><path d="M6.5 6.5h2"/></svg></span><span class="sq-nav-label">Finance Hub</span></button>
   <button type="button" id="sqev-nav" class="sq-nav-link" aria-label="Open Events"><span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 15h3m3 0h2"/></svg></span><span class="sq-nav-label">Events</span></button>
+  <button type="button" id="nav-cashflow" class="sq-nav-link" aria-label="Open Cash Flow"><span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m6 15 4-4 3 2 5-7"/><path d="M16 6h2v2"/></svg></span><span class="sq-nav-label">Cash Flow</span></button>
   <button type="button" id="nav-analytics" class="sq-nav-link"><span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 16v-5m5 5V7m5 9V5"/></svg></span><span class="sq-nav-label">Analytics</span></button>
   <button type="button" id="nav-profile" class="sq-nav-link"><span class="sq-nav-icon profile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="sq-nav-label">Settings</span></button>
   <button type="button" id="nav-help-center" class="sq-nav-link"><span class="sq-nav-icon">✦</span><span class="sq-nav-label">Help Center</span></button>
@@ -429,7 +430,7 @@ window.dwBillDueDate=function(value){
   </div><!-- /tracker-dashboard -->
 
   <section id="analytics-page" aria-label="Spending analytics">
-    <div class="sq-analytics-shell"><nav class="dw-section-tabs" aria-label="Analytics sections"><button type="button" data-dw-section="analytics" aria-current="page">Analytics</button><button type="button" data-dw-section="finance">Cash Flow</button></nav>
+    <div class="sq-analytics-shell">
       <div class="sq-analytics-header dw-page-header">
         <div><h2>Spending Analytics</h2><p id="analytics-tracker-title">Select a tracker to see its spending.</p></div>
         <label class="sq-analytics-filter">Time range <select id="analytics-range" aria-label="Analytics time range"><option value="6">Last 6 months</option><option value="12">Last 12 months</option><option value="all">All time</option></select></label>
@@ -5087,7 +5088,7 @@ submit.addEventListener('click',()=>{
 reason.addEventListener('input',()=>{error.textContent='';});
 })();</script>
 
-<script id="sq-global-search-script" defer src="/doweo-global-search.js?v=20261123-search-all-v3"></script>
+<script id="sq-global-search-script" defer src="/doweo-global-search.js?v=20261123-cashflow-sidebar-v1"></script>
 
 
 
@@ -7000,7 +7001,7 @@ render();
 
 <section id="sq-nextgen" hidden aria-label="DoWeo Finance Workspace">
  <div class="sq-ng-shell">
-  <nav class="dw-section-tabs" aria-label="Analytics sections"><button type="button" data-dw-section="analytics">Analytics</button><button type="button" data-dw-section="finance">Cash Flow</button></nav><nav class="dw-section-tabs" aria-label="Tracker sections"><button type="button" data-dw-section="trackers">All Trackers</button><button type="button" data-dw-section="trip">Trips</button><button type="button" data-dw-section="home">Households</button></nav><header class="sq-ng-header"><div class="sq-ng-heading"><button type="button" id="sq-ng-back" aria-label="Back to Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Home</span></button><span class="sq-ng-kicker">DOWEO / YOUR MONEY</span><h1 id="sq-ng-title">Finance Hub</h1><p id="sq-ng-subtitle">A clearer picture of your finances.</p></div>
+  <nav class="dw-section-tabs" aria-label="Tracker sections"><button type="button" data-dw-section="trackers">All Trackers</button><button type="button" data-dw-section="trip">Trips</button><button type="button" data-dw-section="home">Households</button></nav><header class="sq-ng-header"><div class="sq-ng-heading"><button type="button" id="sq-ng-back" aria-label="Back to Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Home</span></button><span class="sq-ng-kicker">DOWEO / YOUR MONEY</span><h1 id="sq-ng-title">Finance Hub</h1><p id="sq-ng-subtitle">A clearer picture of your finances.</p></div>
   <div class="sq-ng-mobile-picker" style="display:none!important" aria-hidden="true"><label for="sq-ng-mobile-select">Finance Hub section</label><div class="sq-ng-mobile-select-wrap"><select id="sq-ng-mobile-select" aria-label="Choose Finance Hub section"><option value="finance">Personal Finance</option><option value="wallet">Wallet &amp; Settlements</option><option value="trip">Trips</option><option value="home">Household</option><option value="subscriptions">Subscriptions</option><option value="currencies">Currencies</option><option value="insights">Smart Insights</option></select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
   <nav id="sq-finance-mobile-tiles" aria-label="Finance Hub sections">
 <button id="sq-ng-prev-tabs" type="button" aria-label="Show previous Finance Hub sections" title="Show previous sections"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
@@ -7106,13 +7107,34 @@ function close(){
  document.body.classList.remove('sq-finance-open');
  document.body.style.removeProperty('--sq-finance-sidebar-offset');
  document.body.style.overflow='';previousFinanceTabs=[];
+ const cashflow=document.getElementById('nav-cashflow');
+ if(cashflow?.classList.contains('active')){
+  cashflow.classList.remove('active');cashflow.removeAttribute('aria-current');
+  const home=document.getElementById('nav-home');
+  if(home&&!document.querySelector('.sidebar .squareup-nav .sq-nav-link.active')){
+   home.classList.add('active');home.setAttribute('aria-current','page');
+  }
+ }
 }
 window.squareUpCloseFinanceHub=close;
 document.getElementById('sq-ng-back')?.addEventListener('click',()=>{close();document.getElementById('nav-home')?.click();});
 window.addEventListener('resize',()=>{if(!root.hidden)syncFinanceSidebar()});
 document.getElementById('side-toggle')?.addEventListener('click',()=>{if(!root.hidden)requestAnimationFrame(syncFinanceSidebar)});
 function switchFinanceTab(next){if(desktopDestination(next)||next===tab)return;previousFinanceTabs.push(tab);tab=next;openedWorkspaces.trip=null;openedWorkspaces.household=null;render();}
-document.getElementById('sq-finance-nav').addEventListener('click',()=>open('finance'));document.getElementById('sq-ng-mobile-select').addEventListener('change',e=>switchFinanceTab(e.target.value));root.querySelectorAll('[data-ng-tab]').forEach(b=>b.addEventListener('click',()=>switchFinanceTab(b.dataset.ngTab)));
+document.getElementById('sq-finance-nav').addEventListener('click',()=>open('finance'));
+// Cash Flow is now a standalone desktop sidebar destination (not an Analytics tab).
+const cashflowLink=document.getElementById('nav-cashflow');
+cashflowLink?.addEventListener('click',()=>{
+ if(!desktopSections.matches)return;
+ // Reset any previous standalone page through the existing router before opening.
+ document.getElementById('nav-home')?.click();
+ open('finance');
+ document.querySelectorAll('.sidebar .squareup-nav .sq-nav-link').forEach(button=>{
+  button.classList.remove('active');button.removeAttribute('aria-current');
+ });
+ cashflowLink.classList.add('active');cashflowLink.setAttribute('aria-current','page');
+});
+document.getElementById('sq-ng-mobile-select').addEventListener('change',e=>switchFinanceTab(e.target.value));root.querySelectorAll('[data-ng-tab]').forEach(b=>b.addEventListener('click',()=>switchFinanceTab(b.dataset.ngTab)));
 async function render(){
  const ticket=++renderToken, requestedTab=tab;
  syncSectionTabs();
@@ -7521,7 +7543,7 @@ window.squareUpOpenFinanceHub=open;
 <script id="sq-sidebar-back-script-2026">
 (()=>{
   const back=document.getElementById('sq-sidebar-back');if(!back)return;
-  const ids=new Set(['nav-home','nav-trackers','nav-chat','sq-finance-nav','nav-analytics','nav-profile','nav-about','nav-help-center']);
+  const ids=new Set(['nav-home','nav-trackers','nav-chat','sq-finance-nav','nav-cashflow','nav-analytics','nav-profile','nav-about','nav-help-center']);
   const history=[];let current='nav-home',goingBack=false;
   document.addEventListener('click',e=>{
     const nav=e.target.closest('button[id]');if(!nav||!ids.has(nav.id)||goingBack)return;
@@ -7538,7 +7560,7 @@ window.squareUpOpenFinanceHub=open;
 </script>
 <script id="sq-sidebar-quick-script-2026">
 (()=>{
- const navNames={'nav-home':'Home','nav-trackers':'Trackers','nav-chat':'Chat','sq-finance-nav':'Finance Hub','nav-analytics':'Analytics','nav-profile':'Account','nav-about':'About','nav-help-center':'Help Center'};
+ const navNames={'nav-home':'Home','nav-trackers':'Trackers','nav-chat':'Chat','sq-finance-nav':'Finance Hub','nav-cashflow':'Cash Flow','nav-analytics':'Analytics','nav-profile':'Account','nav-about':'About','nav-help-center':'Help Center'};
  const storage='sq_quick_access_v1';let data={pins:[],recent:[]};
  try{const saved=JSON.parse(localStorage.getItem(storage)||'{}');if(Array.isArray(saved.pins))data.pins=saved.pins;if(Array.isArray(saved.recent))data.recent=saved.recent}catch(_){}
  const clean=x=>x&&typeof x==='object'&&((x.type==='page'&&navNames[x.id])||(x.type==='tracker'&&typeof x.id==='string'&&x.id.length<200))&&typeof x.name==='string'&&x.name.length<200;
@@ -8172,7 +8194,7 @@ document.getElementById('ac-log').addEventListener('click',function(){
  const nav=document.querySelector('.sidebar .squareup-nav');
  if(nav){
   // Keep existing buttons (and their event listeners) rather than creating proxy links.
-  const order=['nav-home','nav-trackers','sqev-nav','sq-finance-nav','nav-analytics','nav-chat','nav-friends'];
+  const order=['nav-home','nav-trackers','sqev-nav','sq-finance-nav','nav-chat','nav-friends','nav-cashflow','nav-analytics'];
   const friends=nav.querySelector('#nav-friends');
   if(friends){friends.hidden=false;friends.removeAttribute('aria-hidden');friends.removeAttribute('tabindex');}
   // This is the only expandable sidebar section; Settings, About and legal stay inside it.
