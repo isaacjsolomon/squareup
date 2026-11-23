@@ -21,7 +21,7 @@
  const validId=value=>typeof value==='string'&&value&&value!=='local';
  const api=(path)=>window.squareUpApi(path);
  const keyOf=(kind,tracker,item)=>kind+':'+text(tracker)+':'+text(item);
- const newIndex=(owner)=>({owner,loadedAt:0,loading:false,trackers:[],details:[],polls:[],bills:[],messages:[],wishes:[],notifications:[],friends:[],errors:0});
+ const newIndex=(owner)=>({owner,loadedAt:0,loading:false,trackers:[],details:[],polls:[],bills:[],messages:[],wishes:[],notifications:[],friends:[],personal:[],errors:0});
  let index=newIndex(null),profile={query:'',rows:[],loading:false,error:false};
  let returnFocus=null,querySerial=0,searchTimer=null,renderTimer=null;
  function currentQuery(){return clean(input.value);}
@@ -64,6 +64,8 @@
    overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');
    input.value='';profile={query:'',rows:[],loading:false,error:false};
    render();input.focus();
+   // Populate authenticated sources immediately instead of waiting for the first keystroke.
+   if(activeOwner())void loadIndex();
  }
  function close(){
    ++querySerial;
@@ -233,10 +235,14 @@
    for(const item of [...asList(ctx.notifications),...cache.notifications]){
      notifications.set(keyOf('notification',item._social?'social':'regular',item.id),item);
    }
-   const notificationHits=[...notifications.values()].filter(n=>matches(q,n.title,n.message,n.kind))
+   const notificationHits=[...notifications.values()].filter(n=>matches(q,n.title,n.message,n.kind,n.type,n.actor_name,n.tracker_name))
      .map(n=>({icon:'◌',title:text(n.title||'Notification'),sub:text(n.message||'Notification Center').slice(0,125),
        action:()=>access()?.openNotification(n.id,!!n._social)}));
-   const profileHits=profile.query===q?profile.rows.filter(u=>matches(q,u.username,u.display_name)).map(u=>({
+   const personalHits=cache.personal.filter(item=>matches(q,item.description,item.category,item.kind,item.amount,item.occurred_on))
+     .map(item=>({icon:'▤',title:text(item.description||'Personal transaction'),
+       sub:'Personal '+text(item.kind||'transaction')+' · '+text(item.category||'Other')+' · '+text(item.amount),
+       action:()=>window.squareUpOpenFinanceHub?.('finance')}));
+   const profileHits=profile.query===q?profile.rows.filter(u=>matches(q,u.username,u.display_name,u.displayName)).map(u=>({
      icon:'♙',title:text(u.display_name||u.username||'DoWeo user'),
      sub:'@'+text(u.username||'')+' · DoWeo profile',
      action:()=>access()?.openFriends('find',u.username)
@@ -248,6 +254,7 @@
      ['Friends',friendHits],
      ['Friend profiles',profileHits],
      ['Expenses & payments',expenseHits],
+     ['Personal transactions',personalHits],
      ['Group polls',pollHits],
      ['Bills & subscriptions',billHits],
      ['Notifications',notificationHits],
@@ -268,7 +275,7 @@
    const cache=ensureIndex();
    if(cache.loading||cache.loadedAt&&Date.now()-cache.loadedAt<120000)return;
    cache.loading=true;cache.errors=0;
-   cache.trackers=[];cache.details=[];cache.polls=[];cache.bills=[];cache.messages=[];cache.wishes=[];cache.notifications=[];cache.friends=[];
+   cache.trackers=[];cache.details=[];cache.polls=[];cache.bills=[];cache.messages=[];cache.wishes=[];cache.notifications=[];cache.friends=[];cache.personal=[];
    queueRender();
    const live=()=>cache===index&&activeOwner()===owner;
    const capture=async promise=>{
@@ -280,14 +287,16 @@
      if(!live())return;
      cache.trackers=list.filter(t=>validId(t?.id));
      queueRender();
-     const [regular,social,friends]=await Promise.all([
+     const [regular,social,friends,personal]=await Promise.all([
        capture(api('notifications')),
        capture(api('social/notifications')),
-       typeof access()?.listFriends==='function'?capture(access().listFriends()):Promise.resolve([])
+       typeof access()?.listFriends==='function'?capture(access().listFriends()):Promise.resolve([]),
+       capture(api('finance/transactions'))
      ]);
      if(!live())return;
      cache.notifications=[...asList(regular),...asList(social).map(item=>({...item,_social:true}))];
      cache.friends=asList(friends);
+     cache.personal=asList(personal);
      queueRender();
      // Only use tracker IDs returned by this account's authenticated tracker list.
      let cursor=0;
