@@ -16,8 +16,8 @@ test('Mascot and chat JavaScript parse and required assets are deployed',()=>{
  assert.ok(chat);
  assert.doesNotThrow(()=>new Script(chat));
  assert.doesNotThrow(()=>new Script(server.replace(/\bexport\s+(?=async\s+function\b)/g,'')));
- assert.match(html,/<link rel="stylesheet" href="\/weo-mascot\.css">/);
- assert.match(html,/<script src="\/weo-mascot\.js" defer><\/script>/);
+ assert.match(html,/<link rel="stylesheet" href="\/weo-mascot\.css(?:\?v=[^"]+)?">/);
+ assert.match(html,/<script src="\/weo-mascot\.js(?:\?v=[^"]+)?" defer><\/script>/);
  assert.match(workflow,/cp index\.html[^\n]*weo-mascot\.js weo-mascot\.css/);
 });
 
