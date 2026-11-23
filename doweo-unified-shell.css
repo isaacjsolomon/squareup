@@ -224,7 +224,7 @@
     overflow:hidden!important;
   }
   html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>
-    :is(#nav-home,#nav-trackers,#sqev-nav,#nav-analytics,#dw-ref-nav-notifications){
+    :is(#nav-home,#nav-trackers,#sqev-nav,#nav-cashflow,#nav-analytics,#dw-ref-nav-notifications){
     display:flex!important;
   }
   html body:not(.sq-auth-guest)>aside.sidebar .squareup-nav>.dw-nav-social-trigger,

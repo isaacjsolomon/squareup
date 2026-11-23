@@ -363,6 +363,29 @@
  // Keep a real sidebar notifications destination, like the approved mockup.
  const nav=document.querySelector('.sidebar .squareup-nav');
  const analytics=document.getElementById('nav-analytics');
+ // The actual desktop sidebar (Events, Analytics, Notifications) is finalized here.
+ // Keep Cash Flow as a real native button between Events and Analytics. A fallback
+ // covers HTML that was cached before the Cash Flow nav item was introduced.
+ if(nav&&analytics){
+   let cashFlow=nav.querySelector('#nav-cashflow');
+   if(!cashFlow){
+     cashFlow=document.createElement('button');
+     cashFlow.type='button';cashFlow.id='nav-cashflow';cashFlow.className='sq-nav-link';
+     cashFlow.setAttribute('aria-label','Open Cash Flow');
+     cashFlow.innerHTML='<span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m6 15 4-4 3 2 5-7"/><path d="M16 6h2v2"/></svg></span><span class="sq-nav-label">Cash Flow</span>';
+     cashFlow.addEventListener('click',()=>{
+       document.getElementById('nav-home')?.click();
+       window.squareUpOpenFinanceHub?.('finance');
+       nav.querySelectorAll('.sq-nav-link').forEach(button=>{
+         button.classList.remove('active');button.removeAttribute('aria-current');
+       });
+       cashFlow.classList.add('active');cashFlow.setAttribute('aria-current','page');
+     });
+   }
+   const events=nav.querySelector('#sqev-nav');
+   if(events&&events.nextElementSibling!==cashFlow)events.insertAdjacentElement('afterend',cashFlow);
+   else if(!events&&cashFlow.nextElementSibling!==analytics)analytics.before(cashFlow);
+ }
  if(nav&&analytics&&!document.getElementById('dw-ref-nav-notifications')){
   const button=document.createElement('button');button.type='button';button.id='dw-ref-nav-notifications';button.className='sq-nav-link';
   button.innerHTML='<span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></span><span class="sq-nav-label">Notifications</span>';
@@ -376,6 +399,7 @@
   ['#nav-home','<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>'],
   ['#nav-trackers','<path d="m12 3 9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 16l9 5 9-5"/>'],
   ['#sqev-nav','<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/>'],
+  ['#nav-cashflow','<path d="M3 3v18h18"/><path d="m6 15 4-4 3 2 5-7"/><path d="M16 6h2v2"/>'],
   ['#nav-analytics','<path d="M3 20V4M7 20v-6m5 6V9m5 11V5"/>'],
   ['#dw-ref-nav-notifications','<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>'],
   ['.sidebar .dw-nav-group[data-dw-nav-group="social"]>summary','<circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M19 8v8m-4-4h8"/>'],
