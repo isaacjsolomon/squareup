@@ -821,6 +821,14 @@ window.dwBillDueDate=function(value){
 </div>
 
 <!-- NEW TRACKER MODAL -->
+<dialog id="tracker-start-choice" aria-labelledby="tracker-start-question">
+  <form method="dialog">
+    <button type="submit" value="cancel" aria-label="Close" class="close">×</button>
+    <h2 id="tracker-start-question">How would you like to start?</h2>
+    <button type="submit" value="blank" class="primary">Blank tracker</button>
+    <button type="submit" value="template" class="small-btn">Template</button>
+  </form>
+</dialog>
 <div class="modal-bg dw-standard-dialog-overlay" id="new-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="new-title">
     <button type="button" class="doweo-close-control close" data-close aria-label="Close">×</button>
@@ -3471,6 +3479,14 @@ document.querySelectorAll("[data-close]").forEach(function (b) { b.onclick = clo
 
 // --- new tracker ---
 $("tb-new").onclick = function () {
+  const choice = $("tracker-start-choice");
+  choice.returnValue = "";
+  choice.showModal();
+};
+$("tracker-start-choice").addEventListener("close", function () {
+  if (this.returnValue === "blank" || this.returnValue === "template") openNewTracker(this.returnValue);
+});
+function openNewTracker(mode) {
   $("new-form").reset();
   if (typeof sqTemplateSelected !== "undefined") { sqTemplateSelected = -1; if (typeof sqDrawTemplates === "function") sqDrawTemplates(); }
   $("sq-template-grid").hidden = false;
@@ -3483,10 +3499,19 @@ $("tb-new").onclick = function () {
   $("new-import").checked = !!localCount;
   $("new-import-label").textContent = "Copy the " + localCount + " " + (localCount === 1 ? "entry" : "entries") + " saved on this device";
   $("new-modal").classList.add("open");
-  $("new-name").focus();
-};
+  $(mode === "blank" ? "sq-blank-tab" : "sq-template-tab").click();
+  $("new-modal").dataset.startMode = mode;
+  const panel = $("new-form").closest(".modal");
+  panel.scrollTop = 0;
+  (mode === "blank" ? $("new-name") : $("sq-template-grid").querySelector("button"))?.focus({preventScroll:true});
+}
 $("new-form").addEventListener("submit", async function (e) {
   e.preventDefault();
+  if ($("new-modal").dataset.startMode === "template" && sqTemplateSelected < 0) {
+    $("new-msg").textContent = "Choose a template.";
+    $("sq-template-grid").querySelector("button")?.focus();
+    return;
+  }
   var btn = $("new-submit");
   btn.disabled = true;
   $("new-msg").className = "msg";
@@ -9776,6 +9801,35 @@ html body #sq-return-activity > .sq-return-row::after {
     color: #102B40 !important;
     border-radius: 12px !important;
   }
+}
+
+#tracker-start-choice {
+  width:min(360px,calc(100% - 32px)); box-sizing:border-box; margin:auto;
+  border:1px solid #355E72; border-radius:20px; padding:26px;
+  background:#102B40; color:#F3F8FC;
+}
+#tracker-start-choice::backdrop {background:rgb(10 27 46 / 72%)}
+#tracker-start-choice form {display:grid;gap:12px}
+#tracker-start-choice h2 {margin:0 32px 8px 0;font-size:22px}
+#tracker-start-choice .close {position:absolute;top:8px;right:8px}
+#tracker-start-choice button:not(.close) {min-height:44px}
+html body #new-modal #new-form .sq-template-tabs,
+html body #new-modal #new-form [hidden] {display:none!important}
+@media(max-width:900px){
+  html body #new-modal.modal-bg.open {
+    position:fixed!important;inset:0!important;height:100dvh!important;
+    box-sizing:border-box!important;display:flex!important;align-items:center!important;
+    justify-content:center!important;z-index:2147483647!important;overflow:hidden!important;
+    padding:max(12px,env(safe-area-inset-top)) 12px max(16px,env(safe-area-inset-bottom))!important;
+  }
+  html body #new-modal.modal-bg.open .card.modal {
+    position:relative!important;inset:auto!important;transform:none!important;margin:0!important;
+    min-height:0!important;height:auto!important;max-height:100%!important;
+    box-sizing:border-box!important;overflow-y:auto!important;overscroll-behavior:contain;
+    touch-action:pan-y!important;padding-bottom:24px!important;
+  }
+  html body #new-modal #new-form {height:auto!important;max-height:none!important;overflow:visible!important}
+  html body:has(#new-modal.open) .sq-mobile-nav {visibility:hidden!important}
 }
 </style>
 </body>
