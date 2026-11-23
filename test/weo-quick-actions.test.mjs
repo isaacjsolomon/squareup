@@ -15,8 +15,8 @@ test('Weo actions and existing AI script parse and are included in Pages deploym
  assert.ok(aiScript);
  assert.doesNotThrow(()=>new Script(actions));
  assert.doesNotThrow(()=>new Script(aiScript));
- assert.match(html,/<link rel="stylesheet" href="\/weo-actions\.css"/);
- assert.match(html,/<script src="\/weo-actions\.js" defer><\/script>/);
+ assert.match(html,/<link rel="stylesheet" href="\/weo-actions\.css(?:\?v=[^"]+)?"/);
+ assert.match(html,/<script src="\/weo-actions\.js(?:\?v=[^"]+)?" defer><\/script>/);
  assert.match(workflow,/weo-actions\.js weo-actions\.css/);
 });
 
