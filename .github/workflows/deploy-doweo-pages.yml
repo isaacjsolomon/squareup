@@ -21,7 +21,7 @@ jobs:
       - name: Prepare Pages static assets
         run: |
           mkdir -p .pages-output
-          cp index.html styles.css doweo-mobile-overview.css doweo-page-repairs.css doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs doweo-bills-mobile-dashboard.js doweo-bills-mobile-dashboard.css doweo-finance-planning.js doweo-trips-activity.js doweo-paylinks-currency.js doweo-trackers-tabs.css doweo-home-add-menu.js doweo-home-add-menu.css doweo-desktop-polish.css doweo-mobile-more-pages.js doweo-mobile-more-pages.css doweo-mobile-home-navy-cards.css doweo-mint-dashboard.css doweo-reference-home.css doweo-global-search.js doweo-reference-home.js doweo-desktop-standalone.css doweo-desktop-standalone.js doweo-cashflow-analytics.js doweo-polls-dashboard.js doweo-polls-dashboard.css doweo-unified-shell.css doweo-unified-shell.js doweo-unified-localize.js doweo-unified-locales.mjs doweo-beta-nudge.css doweo-beta-nudge.js doweo-first-run.js doweo-first-run.css doweo-split-bill-modal.css doweo-split-bill-modal.js doweo-backdrop-images.js .pages-output/
+          cp index.html styles.css doweo-mobile-overview.css doweo-mobile-app-theme.css doweo-page-repairs.css doweo-i18n.js doweo-translations.js manifest.webmanifest sw.js squareup-events.js beta-feedback.js weo-mascot.js weo-mascot.css weo-actions.js weo-actions.css weo-history.js doweo-localize-ui.js doweo-ui-catalog.mjs doweo-core-locales.mjs doweo-bills-mobile-dashboard.js doweo-bills-mobile-dashboard.css doweo-finance-planning.js doweo-trips-activity.js doweo-paylinks-currency.js doweo-trackers-tabs.css doweo-home-add-menu.js doweo-home-add-menu.css doweo-desktop-polish.css doweo-mobile-more-pages.js doweo-mobile-more-pages.css doweo-mobile-home-navy-cards.css doweo-mint-dashboard.css doweo-reference-home.css doweo-global-search.js doweo-reference-home.js doweo-desktop-standalone.css doweo-desktop-standalone.js doweo-cashflow-analytics.js doweo-polls-dashboard.js doweo-polls-dashboard.css doweo-unified-shell.css doweo-unified-shell.js doweo-unified-localize.js doweo-unified-locales.mjs doweo-beta-nudge.css doweo-beta-nudge.js doweo-first-run.js doweo-first-run.css doweo-split-bill-modal.css doweo-split-bill-modal.js doweo-backdrop-images.js .pages-output/
           # Bump these URLs in the published HTML to invalidate old browser-cached UI assets.
           sed -E -i 's#(doweo-bills-mobile-dashboard\.(css|js))\?v=[^\"]+#\1?v=20261122-backdrop-colors-v1#g' .pages-output/index.html
           # Version the cleaned tracker planning script to invalidate old broken navigation code.
@@ -72,6 +72,9 @@ jobs:
           test -s .pages-output/doweo-first-run.css
           test -s .pages-output/doweo-mobile-more-pages.css
           test -s .pages-output/doweo-mobile-home-navy-cards.css
+          test -s .pages-output/doweo-mobile-app-theme.css
+          grep -Fq 'window.dwOpenMyWallet=()=>{' .pages-output/index.html
+          grep -Fq 'My Wallet</span>' .pages-output/index.html
           test -s .pages-output/doweo-mint-dashboard.css
           test -s .pages-output/doweo-beta-nudge.css
           test -s .pages-output/doweo-beta-nudge.js
