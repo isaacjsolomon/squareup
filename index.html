@@ -5028,7 +5028,7 @@ if(inboxEl){filterInbox();}
   ['Payments and settlements','Use Pay Now and the tracker payment workflow to record and confirm settlements. The Finance Hub Wallet summarizes balances across trackers without merging currencies or duplicating debts.'],
   ['Bills and subscriptions','The Bills section manages recurring bills and subscriptions, including available scheduling and payment-sharing controls. Finance Hub → Subscriptions links to this same billing center, not a second set of charges.'],
   ['Open your Finance Hub','Select Finance in the mobile bottom navigation or the Finance Hub navigation entry on desktop. On mobile, use the Finance Hub section dropdown to switch between its tools.'],
-  ['Personal Finance','Finance Hub → Personal Finance lets you add and manage private income and expense records. These are separate from shared tracker debts. Smart Insights summarizes the personal records you have saved.'],
+  ['My Wallet','On desktop, open My Wallet to manage private income and expense records. On mobile, use Finance Hub → Personal Finance. These records are separate from shared tracker debts.'],
   ['Trips and travel spending','Finance Hub → Trips lets you select a tracker, view travel spending and category breakdowns, and manage trip plans or budgets. Shared charges continue to use the tracker expense and payment system.'],
   ['Household tools','Finance Hub → Household connects household plans, chores, groceries, and notes to an existing tracker. Use the household workspace to create, edit, complete, or delete available items.'],
   ['Currency converter and favorites','Finance Hub → Currencies converts amounts using the latest available exchange rates. Codes are shown with currency names; tap a star to favorite a currency and move it to the top of the selectors. Favorites are saved on this device. Conversions are estimates and do not change balances.'],
@@ -7087,7 +7087,7 @@ document.addEventListener('keydown',event=>{
 (()=>{
 const root=document.getElementById('sq-nextgen'), content=document.getElementById('sq-ng-content'), status=document.getElementById('sq-ng-status');let tab='finance', finance=[], renderToken=0;const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=(v,c='USD')=>{try{return new Intl.NumberFormat(undefined,{style:'currency',currency:c}).format(v)}catch{return String(v)}};const api=(path,method='GET',body)=>window.squareUpApi(path,method,body);
 const card=(name,val,feature=false)=>`<article class="sq-ng-card ${feature?'feature':''}"><small>${esc(name)}</small><strong>${esc(val)}</strong></article>`;
-let previousFinanceTabs=[];const openedWorkspaces={trip:null,household:null};function syncFinanceSidebar(){const sidebar=document.querySelector('.sidebar');const rect=sidebar?.getBoundingClientRect();const offset=rect&&rect.width&&rect.right>0?Math.ceil(rect.right):0;document.body.style.setProperty('--sq-finance-sidebar-offset',offset+'px');}
+let financeOpenSource='wallet';let previousFinanceTabs=[];const openedWorkspaces={trip:null,household:null};function syncFinanceSidebar(){const sidebar=document.querySelector('.sidebar');const rect=sidebar?.getBoundingClientRect();const offset=rect&&rect.width&&rect.right>0?Math.ceil(rect.right):0;document.body.style.setProperty('--sq-finance-sidebar-offset',offset+'px');}
 const desktopSections=matchMedia('(min-width:901px)');
 function desktopDestination(which){
  if(!desktopSections.matches)return false;
@@ -7114,7 +7114,8 @@ function syncSectionTabs(){
  }
 }
 desktopSections.addEventListener('change',()=>{if(!root.hidden){if(!desktopDestination(tab))render()}});
-function open(which){
+function open(which,source='wallet'){
+ if(which==='finance')financeOpenSource=source==='cashflow'?'cashflow':'wallet';
  if(desktopDestination(which))return;
  previousFinanceTabs=[];openedWorkspaces.trip=null;openedWorkspaces.household=null;
  root.style.removeProperty('display');root.hidden=false;root.removeAttribute('aria-hidden');
@@ -7142,14 +7143,14 @@ document.getElementById('sq-ng-back')?.addEventListener('click',()=>{close();doc
 window.addEventListener('resize',()=>{if(!root.hidden)syncFinanceSidebar()});
 document.getElementById('side-toggle')?.addEventListener('click',()=>{if(!root.hidden)requestAnimationFrame(syncFinanceSidebar)});
 function switchFinanceTab(next){if(desktopDestination(next)||next===tab)return;previousFinanceTabs.push(tab);tab=next;openedWorkspaces.trip=null;openedWorkspaces.household=null;render();}
-document.getElementById('sq-finance-nav').addEventListener('click',()=>open('finance'));
+document.getElementById('sq-finance-nav').addEventListener('click',()=>open('finance','wallet'));
 // Cash Flow is now a standalone desktop sidebar destination (not an Analytics tab).
 const cashflowLink=document.getElementById('nav-cashflow');
 cashflowLink?.addEventListener('click',()=>{
  if(!desktopSections.matches)return;
  // Reset any previous standalone page through the existing router before opening.
  document.getElementById('nav-home')?.click();
- open('finance');
+ open('finance','cashflow');
  document.querySelectorAll('.sidebar .squareup-nav .sq-nav-link').forEach(button=>{
   button.classList.remove('active');button.removeAttribute('aria-current');
  });
@@ -7162,7 +7163,7 @@ async function render(){
  document.getElementById('sq-ng-mobile-select').value=tab;
  root.querySelectorAll('[data-ng-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.ngTab===tab));
  const labels={finance:['Personal Finance Hub','Private spending and income, separate from your shared trackers.'],wallet:['Wallet & Settlements','Your balances across existing trackers, without changing any debts.'],trip:['Trip Mode','Your existing trips stay linked to their trackers.'],home:['Household Mode','Build shared routines around your existing trackers.'],subscriptions:['Subscription Manager','Manage recurring bills in your existing billing center.'],currencies:['Multi-Currency','Understand how currency conversion works in DoWeo.'],insights:['Smart Insights','Useful answers calculated from your saved financial records.']};
- document.getElementById('sq-ng-title').textContent=(desktopSections.matches&&({finance:'Cash Flow',insights:'Insights',trip:'Trips',home:'Households'})[tab])||labels[tab][0];
+ document.getElementById('sq-ng-title').textContent=(desktopSections.matches&&(tab==='finance'?(financeOpenSource==='cashflow'?'Cash Flow':'My Wallet'):({insights:'Insights',trip:'Trips',home:'Households'})[tab]))||labels[tab][0];
  document.getElementById('sq-ng-subtitle').textContent=labels[tab][1];
  status.textContent='';content.innerHTML='<p>Loading your workspace…</p>';
  const stale=()=>desktopSections.matches&&(root.hidden||ticket!==renderToken||tab!==requestedTab);
@@ -8478,11 +8479,15 @@ document.getElementById('ac-log').addEventListener('click',function(){
  const finance=document.createElement('button');
  finance.type='button';finance.id='dw-personal-finance';finance.className='sq-nav-link';
  finance.setAttribute('aria-expanded','false');
- finance.innerHTML='<span class="sq-nav-icon" aria-hidden="true"></span><span class="sq-nav-label">Personal Finance</span>';
+ finance.innerHTML='<span class="sq-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="15" rx="2"/><path d="M3 10V6a2 2 0 0 1 2-2h13M16 15h3"/></svg></span><span class="sq-nav-label">My Wallet</span>';
  const events=document.getElementById('sqev-nav');
  events.before(finance);
  const financePanel=makePanel('dw-personal-finance-flyout',[]);
- financePanel.setAttribute('aria-label','Personal Finance');
+ financePanel.setAttribute('aria-label','My Wallet navigation');
+ const walletItem=document.createElement('button');walletItem.type='button';walletItem.className='sq-nav-link';
+ walletItem.innerHTML='<span class="sq-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="15" rx="2"/><path d="M3 10V6a2 2 0 0 1 2-2h13M16 15h3"/></svg></span><span class="sq-nav-label">Open My Wallet</span>';
+ walletItem.addEventListener('click',()=>document.getElementById('sq-finance-nav')?.click());
+ financePanel.append(walletItem);
  finance.setAttribute('aria-controls',financePanel.id);
  for(const id of ['sqev-nav','nav-cashflow','nav-analytics']){
    const source=document.getElementById(id);
