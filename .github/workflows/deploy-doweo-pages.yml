@@ -73,7 +73,8 @@ jobs:
           test -s .pages-output/doweo-mobile-more-pages.css
           test -s .pages-output/doweo-mobile-home-navy-cards.css
           test -s .pages-output/doweo-mobile-app-theme.css
-          grep -Fq 'window.dwOpenMyWallet=()=>{' .pages-output/index.html
+          grep -Fq 'dw-my-wallet-flyout' .pages-output/index.html
+          grep -Fq "['nav-analytics','nav-cashflow','sqev-nav']" .pages-output/index.html
           grep -Fq 'My Wallet</span>' .pages-output/index.html
           test -s .pages-output/doweo-mint-dashboard.css
           test -s .pages-output/doweo-beta-nudge.css
