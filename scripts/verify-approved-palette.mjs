@@ -46,7 +46,7 @@ for(const [name,expected] of mintFiles){
 }
 if(!html.includes('--dw-mobile-accent:#60F1AD;')||
    !html.includes('--accent:#60F1AD;')||
-   !html.includes('button[data-mh-action="sq-clean-settle"] {\\n    background:#60F1AD!important;')) {
+   !html.includes('button[data-mh-action="sq-clean-settle"] {\n    background:#60F1AD!important;')) {
  throw Error('Mobile theme or Settle Up lost the original mint color');
 }
 if(!html.includes('doweo-reference-home.css?v=20261122-original-mint-v1')||
