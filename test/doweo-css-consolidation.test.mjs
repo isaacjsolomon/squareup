@@ -58,7 +58,7 @@ test('consolidated styles retain existing compatibility patches without palette 
 test('HTML links Inter, stylesheet, and all existing application scripts',()=>{
  const head=html.slice(0,html.indexOf('</head>'));
  assert.match(head,/fonts\.googleapis\.com\/css2\?family=Inter:wght@400;500;600;700;800&display=swap/);
- assert.match(head,/rel="stylesheet" href="\/styles\.css\?v=20261123-global-search-v1"/);
+ assert.match(head,/rel="stylesheet" href="\/styles\.css\?v=20261123-search-activity-v2"/);
  assert.match(html,/<script[^>]+(?:doweo-unified-shell\.js|doweo-unified-localize\.js)/);
  assert.match(html,/<section id="friends-page"/);
  assert.match(html,/id="tracker-dashboard"/);
