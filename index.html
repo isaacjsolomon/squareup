@@ -140,9 +140,9 @@ window.dwBillDueDate=function(value){
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
   <div class="sq-startup-content"><svg class="doweo-loading-logo" viewBox="0 0 972 972" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 <defs>
- <linearGradient id="doweo-loader-mint" x1="180" y1="420" x2="425" y2="720" gradientUnits="userSpaceOnUse"><stop stop-color="#ABC6D7"/><stop offset="1" stop-color="#355E72"/></linearGradient>
- <linearGradient id="doweo-loader-cyan" x1="460" y1="480" x2="725" y2="700" gradientUnits="userSpaceOnUse"><stop stop-color="#ABC6D7"/><stop offset="1" stop-color="#355E72"/></linearGradient>
- <linearGradient id="doweo-loader-front" x1="330" y1="700" x2="575" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#ABC6D7"/><stop offset="1" stop-color="#ABC6D7"/></linearGradient>
+ <linearGradient id="doweo-loader-mint" x1="180" y1="420" x2="425" y2="720" gradientUnits="userSpaceOnUse"><stop stop-color="#60F1AD"/><stop offset="1" stop-color="#2CE5C6"/></linearGradient>
+ <linearGradient id="doweo-loader-cyan" x1="460" y1="480" x2="725" y2="700" gradientUnits="userSpaceOnUse"><stop stop-color="#24E5E7"/><stop offset="1" stop-color="#00CFE9"/></linearGradient>
+ <linearGradient id="doweo-loader-front" x1="330" y1="700" x2="575" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#28F0D3"/><stop offset="1" stop-color="#00DDEB"/></linearGradient>
 </defs>
 <g fill="none" stroke-linecap="round" stroke-linejoin="round">
  <path class="doweo-logo-trace doweo-logo-left" pathLength="1" d="M248 500 L380 690" stroke="url(#doweo-loader-mint)" stroke-width="176"/>
@@ -9776,6 +9776,104 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   }
   /* Receipt and tracker banner colors are consumed by the original CSS
      rules through these mobile-scoped semantic variables. */
+}
+</style>
+
+<style id="dw-mobile-brand-consistency-20261122">
+/* Single mobile brand correction, scoped to presentation only. */
+@media (max-width:900px) {
+  html, html body { font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important; }
+  html body #auth-modal,
+  html body #auth-modal :is(button,input,label,p,h1,h2,h3,a,span,strong,small) {
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  }
+  html body #auth-modal #dw-google-signin {
+    background:#F3F8FC!important;
+    color:#102B40!important;
+    border:1px solid #ABC6D7!important;
+  }
+  html body #auth-modal #dw-google-signin:hover,
+  html body #auth-modal #dw-google-signin:focus-visible {
+    background:#ABC6D7!important;
+    color:#0A1B2E!important;
+  }
+  html body #auth-modal #dw-google-signin svg {
+    color:inherit!important;
+  }
+  html body .sq-mobile-nav button.sq-add .sq-m-icon,
+  html body .sq-mobile-nav button.sq-add .sq-m-icon svg,
+  html body .sq-mobile-nav button.sq-add .sq-m-icon svg * {
+    color:#0A1B2E!important;
+    stroke:#0A1B2E!important;
+  }
+  html body .sq-mobile-nav button.sq-add .sq-m-icon { background:#60F1AD!important; }
+  /* Text on mint-fill actions must stay dark enough to read. */
+  html body :is(
+    .sq-ig-follow,
+    #auth-submit,
+    #dw-auth-submit,
+    .sq-auth-submit,
+    .sq-primary,
+    .btn.primary,
+    button.primary,
+    .sq-btn-primary,
+    .sq-ng-add-action,
+    .sq-tracker-open,
+    .sq-featured-tracker button,
+    .sq-featured-tracker a,
+    .sq-mobile-create,
+    .sq-mobile-nav button.sq-add .sq-m-icon
+  ) {
+    --dw-accent-foreground:#0A1B2E;
+  }
+  html body :is(
+    .sq-ig-follow,
+    #auth-submit,
+    #dw-auth-submit,
+    .sq-auth-submit,
+    .sq-primary,
+    .btn.primary,
+    button.primary,
+    .sq-btn-primary,
+    .sq-tracker-open,
+    .sq-featured-tracker button,
+    .sq-featured-tracker a,
+    .sq-mobile-create
+  ) {
+    color:var(--dw-accent-foreground)!important;
+  }
+  html body :is(
+    .sq-ig-follow,
+    #auth-submit,
+    #dw-auth-submit,
+    .sq-auth-submit,
+    .sq-primary,
+    .btn.primary,
+    button.primary,
+    .sq-btn-primary,
+    .sq-tracker-open,
+    .sq-featured-tracker button,
+    .sq-featured-tracker a,
+    .sq-mobile-create
+  ) :is(span,strong,small,svg) {
+    color:inherit!important;
+  }
+  /* Instagram's official multi-color camera treatment, independent of palette locks. */
+  html body #sq-instagram-invite .sq-ig-mark {
+    background:radial-gradient(circle at 32% 105%,#feda75 0%,#fa7e1e 24%,#d62976 48%,#962fbf 70%,#4f5bd5 100%)!important;
+    color:#fff!important;
+  }
+  html body #sq-instagram-invite .sq-ig-mark svg { color:#fff!important;stroke:#fff!important; }
+  html body #sq-startup-overlay {
+    background:#0A1B2E!important;
+    color:#F3F8FC!important;
+  }
+  html body #sq-startup-overlay .sq-startup-content {
+    background:#102B40!important;
+    border:1px solid #355E72!important;
+    color:#F3F8FC!important;
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  }
 }
 </style>
 </body>
