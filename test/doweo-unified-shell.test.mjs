@@ -94,7 +94,8 @@ test('production HTML and Cloudflare copy all scripts, CSS and complete locales 
   'doweo-unified-localize.js','doweo-unified-locales.mjs']){
   assert.ok(deploy.includes(filename),'Cloudflare build missing '+filename);
  }
- for(const filename of ['doweo-unified-shell.css','doweo-unified-shell.js','doweo-unified-localize.js'])
+ assert.ok(html.includes('/doweo-unified-shell.css?v=20261122-overview-mint-bars-v2'));
+  for(const filename of ['doweo-unified-shell.js','doweo-unified-localize.js'])
   assert.match(html,new RegExp('/'+filename.replaceAll('.','\\.')+'\\?v=20261122-backdrop-colors-v1'),filename+' not linked in live HTML');
  assert.ok(html.includes('/doweo-reference-home.js?v=20261122-backdrop-colors-v1'));
  assert.match(lang,/import\('\/doweo-unified-locales\.mjs'\)/);
