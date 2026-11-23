@@ -30,6 +30,6 @@ test('mobile navigation assets are included and cache-versioned in Pages deploym
  const copied=workflow.split('\n').find(line=>line.trim().startsWith('cp index.html '));
  assert.ok(copied?.includes('doweo-mobile-more-pages.js'));
  assert.ok(copied?.includes('doweo-mobile-more-pages.css'));
- assert.ok(workflow.includes('/doweo-mobile-more-pages.css?v=20261122-approved-seven-palette-v3'));
- assert.ok(workflow.includes('/doweo-mobile-more-pages.js?v=20261122-approved-seven-palette-v3'));
+ assert.ok(workflow.includes('/doweo-mobile-more-pages.css?v=20261122-backdrop-colors-v1'));
+ assert.ok(workflow.includes('/doweo-mobile-more-pages.js?v=20261122-backdrop-colors-v1'));
 });
