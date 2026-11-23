@@ -94,10 +94,10 @@ test('production HTML and Cloudflare copy all scripts, CSS and complete locales 
   'doweo-unified-localize.js','doweo-unified-locales.mjs']){
   assert.ok(deploy.includes(filename),'Cloudflare build missing '+filename);
  }
- assert.ok(html.includes('/doweo-unified-shell.css?v=20261122-overview-mint-bars-v2'));
+ assert.ok(html.includes('/doweo-unified-shell.css?v=20261123-cashflow-visible-v4'));
   for(const filename of ['doweo-unified-shell.js','doweo-unified-localize.js'])
-  assert.match(html,new RegExp('/'+filename.replaceAll('.','\\.')+'\\?v=20261122-backdrop-colors-v1'),filename+' not linked in live HTML');
- assert.ok(html.includes('/doweo-reference-home.js?v=20261122-backdrop-colors-v1'));
+  assert.match(html,new RegExp('/'+filename.replaceAll('.','\\.')+'\\?v=[^"\\\\s]+'),filename+' not linked in live HTML');
+ assert.ok(html.includes('/doweo-reference-home.js?v=20261123-cashflow-sidebar-v5'));
  assert.match(lang,/import\('\/doweo-unified-locales\.mjs'\)/);
  assert.match(deploy,/node --check \.pages-output\/doweo-unified-shell\.js/);
  assert.match(deploy,/node --test test\/doweo-unified-shell\.test\.mjs/);

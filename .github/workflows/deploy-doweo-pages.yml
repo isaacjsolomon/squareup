@@ -99,7 +99,7 @@ jobs:
           grep -Fq 'doweo-page-repairs.css?v=20261122-backdrop-colors-v1' .pages-output/index.html
           grep -Fq 'UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121' .pages-output/index.html
           grep -Fq 'id="dw-route-visual-enforcer-v6"' .pages-output/index.html
-          grep -Fq 'doweo-unified-shell.css?v=20261122-overview-mint-bars-v2' .pages-output/index.html
+          grep -Fq 'doweo-unified-shell.css?v=20261123-cashflow-visible-v4' .pages-output/index.html
           grep -Fq 'id="dw-bills-exact-reference-v9"' .pages-output/index.html
           grep -Fq -- '--bg: #0A1B2E' .pages-output/styles.css
           grep -Fq -- '--accent: #60F1AD' .pages-output/styles.css
@@ -147,12 +147,12 @@ jobs:
           set -euo pipefail
           for attempt in {1..15}; do
             page="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/?release=original-backdrops-20261122-v1' || true)"
-            css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/styles.css?v=20261123-search-activity-v2' || true)"
+            css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/styles.css?v=20261123-cashflow-visible-v4' || true)"
             if [[ "$page" == *'restored-original-backdrops-20261122-v1'* ]] &&
                [[ "$page" == *'css: "linear-gradient(135deg, #7c2d12, #be185d)"'* ]] &&
                [[ "$page" == *'css: "linear-gradient(135deg, #14532d, #115e59)"'* ]] &&
                [[ "$page" == *'css: "linear-gradient(135deg, #4a044e, #6b21a8)"'* ]] &&
-               [[ "$page" == *'styles.css?v=20261123-search-activity-v2'* ]] &&
+               [[ "$page" == *'styles.css?v=20261123-cashflow-visible-v4'* ]] &&
                [[ "$css" == *'--accent: #60F1AD'* ]]; then
               echo "Production is serving the original Sunset, Forest and Berry backdrops with mint accents."
               exit 0
