@@ -5087,7 +5087,7 @@ submit.addEventListener('click',()=>{
 reason.addEventListener('input',()=>{error.textContent='';});
 })();</script>
 
-<script id="sq-global-search-script" defer src="/doweo-global-search.js?v=20261123-search-all-v2"></script>
+<script id="sq-global-search-script" defer src="/doweo-global-search.js?v=20261123-search-all-v3"></script>
 
 
 
@@ -9718,6 +9718,23 @@ html body #sq-instagram-invite .sq-ig-mark img.sq-instagram-logo {
   ) :is(span,strong,small) {
     color:inherit!important;-webkit-text-fill-color:inherit!important;
   }
+}
+</style>
+
+<!-- Recent activity: remove colored separator lines without changing other panels. -->
+<style id="dw-activity-divider-cleanup-20261123">
+html body #sq-return-activity > .sq-return-row,
+html body #dw-home-columns #sq-return-activity > .sq-return-row,
+html body #tracker-dashboard #sq-return-activity > .sq-return-row,
+html body #sq-return-activity > .sq-return-row + .sq-return-row {
+  border-top:0!important;
+  border-bottom:0!important;
+  box-shadow:none!important;
+}
+html body #sq-return-activity > .sq-return-row::before,
+html body #sq-return-activity > .sq-return-row::after {
+  border-top:0!important;
+  border-bottom:0!important;
 }
 </style>
 </body>
