@@ -148,13 +148,22 @@
     ];
     for(const entry of new Set(entries)){
       if(!entry.isConnected||entry.hidden||getComputedStyle(entry).display==='none')continue;
+      // My Wallet provides its own approved outlined snap-wallet SVG.
+      // Keep that original icon and never inject a generic second symbol.
+      const isMyWallet=entry.id==='dw-personal-finance';
       let mark=entry.querySelector(':scope > .dw-all-nav-icon');
-      if(!mark){
+      if(isMyWallet){
+        mark?.remove();
+        entry.querySelector(':scope > .dw-ref-static-icon')?.remove();
+        mark=entry.querySelector(':scope > .dw-my-wallet-icon');
+      }
+      if(!mark&&!isMyWallet){
         mark=document.createElement('span');mark.className='dw-all-nav-icon';
         mark.setAttribute('aria-hidden','true');
         mark.innerHTML=svg(icons[nameFor(entry)]||icons.default);
         entry.prepend(mark);
       }
+      if(!mark)continue;
       // Historical DoWeo styles include higher-specificity !important icon
       // hiding rules. Important inline presentation wins without replacing the
       // real buttons, click handlers, flyouts, accessible names or labels.
