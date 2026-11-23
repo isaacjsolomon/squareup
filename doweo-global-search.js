@@ -138,7 +138,7 @@
      ['Expenses','Payments, expenses, and expense history',()=>{goHome();selectTab('expenses');}],
      ['Bills','Bills and subscriptions',()=>{goHome();selectTab('bills');}],
      ['Members','People sharing your current tracker',()=>{goHome();selectTab('members');}],
-     ['Cash Flow','Income and spending trends',()=>window.squareUpOpenFinanceHub?.('finance')],
+     ['Cash Flow','Income and spending trends',()=>window.matchMedia('(min-width:901px)').matches?document.getElementById('nav-cashflow')?.click():window.squareUpOpenFinanceHub?.('finance')],
      ['Analytics','Spending charts and insights',()=>document.getElementById('nav-analytics')?.click()],
      ['Events','Group plans and upcoming events',()=>document.getElementById('sqev-nav')?.click()],
      ['Settings','Account, profile and preferences',()=>document.getElementById('nav-profile')?.click()],
