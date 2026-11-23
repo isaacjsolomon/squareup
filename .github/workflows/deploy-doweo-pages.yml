@@ -76,6 +76,8 @@ jobs:
           test -s .pages-output/doweo-beta-nudge.css
           test -s .pages-output/doweo-beta-nudge.js
           node --check .pages-output/doweo-beta-nudge.js
+          node --check doweo-global-search.js
+          node --test test/doweo-universal-search-quality.test.mjs
           test -s .pages-output/doweo-global-search.js
           test -s .pages-output/doweo-reference-home.css
           test -s .pages-output/doweo-reference-home.js
