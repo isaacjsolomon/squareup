@@ -214,15 +214,15 @@
     display:inline-flex!important;align-items:center!important;justify-content:center!important;
     gap:10px!important;margin:0!important;padding:11px 24px!important;
     background:linear-gradient(120deg,#102B40,#0A1B2E)!important;
-    color:#ABC6D7!important;border:0!important;border-radius:999px!important;
+    color:#60F1AD!important;border:0!important;border-radius:999px!important;
     font-family:inherit!important;font-size:24px!important;font-weight:800!important;
     line-height:1.2!important;box-shadow:0 7px 16px color-mix(in srgb, #102B40 8.6%, transparent)!important;
   }
   html body #dw-ref-home #dw-ref-add #dw-compact-add:hover{
-    background:#204158!important;color:#ABC6D7!important;
+    background:#204158!important;color:#60F1AD!important;
   }
   html body #dw-ref-home #dw-ref-add #dw-compact-add-caret{
-    color:#ABC6D7!important;
+    color:#60F1AD!important;
   }
   /* Keep the + Add action and its dropdown; never show a chevron. */
   html body #dw-ref-home #dw-ref-add #dw-compact-add .dw-compact-add-caret,
@@ -272,7 +272,7 @@
     border-color:#173750!important;
   }
   html body #dw-ref-home #dw-ref-stat-net .dw-ref-stat-label{color:#F3F8FC}
-  html body #dw-ref-home #dw-ref-stat-net .dw-ref-stat-amount{color:#ABC6D7}
+  html body #dw-ref-home #dw-ref-stat-net .dw-ref-stat-amount{color:#60F1AD}
   html body #dw-ref-home #dw-ref-stat-net .dw-ref-stat-detail{color:#ABC6D7}
   html body #dw-ref-home #dw-ref-stat-net .dw-ref-stat-icon{
     background:#355E72;color:#ABC6D7;border-radius:15px;
@@ -336,10 +336,10 @@
     transition:height .25s ease;
   }
   html body #dw-ref-home .dw-ref-chart-bar.dw-ref-income{
-    background:linear-gradient(180deg,#ABC6D7,#ABC6D7);
+    background:linear-gradient(180deg,#60F1AD,#60F1AD);
   }
   html body #dw-ref-home .dw-ref-chart-bar.dw-ref-expense{
-    background:linear-gradient(180deg,#ABC6D7,#ABC6D7);
+    background:linear-gradient(180deg,#102B40,#102B40);
   }
   html body #dw-ref-home .dw-ref-chart-month small{
     flex:0 0 auto;text-align:center;font-size:12px;color:#355E72;font-weight:500;
@@ -355,9 +355,9 @@
   }
   html body #dw-ref-home .dw-ref-chart-legend span{display:inline-flex;align-items:center;gap:6px}
   html body #dw-ref-home .dw-ref-chart-legend i{
-    width:9px;height:9px;border-radius:50%;background:#ABC6D7;
+    width:9px;height:9px;border-radius:50%;background:#60F1AD;
   }
-  html body #dw-ref-home .dw-ref-chart-legend .dw-ref-legend-expense{background:#ABC6D7}
+  html body #dw-ref-home .dw-ref-chart-legend .dw-ref-legend-expense{background:#102B40}
   html body #dw-ref-home .dw-ref-chart-legend .dw-ref-legend-net{background:#355E72}
   html body #dw-ref-home .dw-ref-lower{
     display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);

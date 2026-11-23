@@ -8,7 +8,7 @@ const js=readFileSync(new URL('../doweo-reference-home.js',import.meta.url),'utf
 const flow=readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',import.meta.url),'utf8');
 
 test('the screenshot layout ships as a real, connected piece of production HTML',()=>{
- for(const p of ['doweo-reference-home.css?v=20261122-original-mint-v1','doweo-reference-home.js?v=20261122-backdrop-colors-v1'])
+ for(const p of ['doweo-reference-home.css?v=20261122-overview-mint-bars-v2','doweo-reference-home.js?v=20261122-backdrop-colors-v1'])
   assert.ok(html.includes(p),p+' is missing from index.html');
  assert.match(flow,/doweo-reference-home\.css doweo-reference-home\.js/);
  assert.match(flow,/node --check \.pages-output\/doweo-reference-home\.js/);
@@ -57,4 +57,17 @@ test('Add dropdown keeps its actions without rendering a chevron',()=>{
  assert.match(addMenu,/menu\.hidden=false/);
  assert.match(js,/querySelectorAll\('\.dw-compact-add-caret'\)/);
  assert.match(css,/\.dw-compact-add-caret,[\s\S]*?display:none!important/);
+});
+
+test('Overview mint accents, cash-flow legend, and banner preference persist',()=>{
+ const chartCss=readFileSync(new URL('../doweo-unified-shell.css',import.meta.url),'utf8');
+ const desktopCss=readFileSync(new URL('../doweo-desktop-standalone.css',import.meta.url),'utf8');
+ assert.ok(css.includes('#dw-ref-stat-net .dw-ref-stat-amount{color:#60F1AD}'));
+ assert.ok(css.includes('background:linear-gradient(120deg,#102B40,#0A1B2E)!important;\n    color:#60F1AD!important;'));
+ assert.match(chartCss,/\.dw-ref-bar-income\{[\s\S]*?background:linear-gradient\(180deg,#60F1AD,#60F1AD\)!important/);
+ assert.match(chartCss,/\.dw-ref-bar-expense\{[\s\S]*?background:linear-gradient\(180deg,#102B40,#102B40\)!important/);
+ assert.match(chartCss,/\.dw-ref-legend-income\{\s*background:#60F1AD!important/);
+ assert.match(chartCss,/\.dw-ref-legend-expense\{\s*background:#102B40!important/);
+ assert.ok(html.includes("banner.style.setProperty('background-image',chosen,'important')"));
+ assert.doesNotMatch(desktopCss,/\.tracker-tile:nth-child\(3n\+2\) \.tracker-tile-banner\{/);
 });

@@ -182,7 +182,7 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
   const trackerTitle=page.locator('#trackers-gallery .tracker-tile h3').first();
   if(await trackerTitle.count()){
     const trackerTitleColor=await trackerTitle.evaluate(el=>getComputedStyle(el).color);
-    assert.equal(trackerTitleColor,'rgb(255, 255, 255)','tracker names must be white against navy tiles');
+    assert.equal(trackerTitleColor,'rgb(243, 248, 252)','tracker names must use the approved off-white against navy tiles');
   }
 
   await pageOpen('nav-friends','friends-view');

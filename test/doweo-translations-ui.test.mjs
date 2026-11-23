@@ -12,9 +12,9 @@ test('Account tab uses two-column responsive layout and no three-column override
   assert.match(css,/#settings-content-account > \.settings-tab-grid > div:nth-child\(3\)\{[\s\S]*?grid-column:2/);
 });
 test('translation assets ship to Cloudflare',()=>{
-  assert.match(html,/<script src="doweo-translations\.js" defer><\/script>/);
+  assert.match(html,/<script src="doweo-translations\.js(?:\?v=[^"]+)?" defer><\/script>/);
   assert.match(dep,/cp index\.html styles\.css doweo-page-repairs\.css doweo-i18n\.js doweo-translations\.js manifest\.webmanifest/);
-  assert.match(html,/doweo-page-repairs\.css\?v=20261121-production-visible-v5/);
+  assert.match(html,/doweo-page-repairs\.css\?v=20261122-backdrop-colors-v1/);
   assert.ok(html.includes('UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121'));
   assert.ok(html.includes('id="doweo-desktop-v5-navy-analytics"'));
 });
