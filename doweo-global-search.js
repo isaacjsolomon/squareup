@@ -110,6 +110,7 @@
    if(typeof window.dwOpenPollsPage==='function')window.dwOpenPollsPage();
    else document.getElementById('dw-polls-nav')?.click();
    if(pollId){
+     if(typeof window.sqLoadChatPolls==='function')await window.sqLoadChatPolls();
      const card=[...document.querySelectorAll('[data-poll-card-id]')].find(el=>el.dataset.pollCardId===text(pollId));
      if(card)card.scrollIntoView({block:'center',behavior:'smooth'});
    }
@@ -171,8 +172,10 @@
      return;
    }
    const all=collectedTrackers(ctx,cache);
+   // An active tracker can be available before the full tracker index finishes.
+   if(ctx.active&&validId(ctx.active.id)&&!all.some(t=>text(t.id)===text(ctx.active.id)))all.push(ctx.active);
    const trackerById=new Map(all.map(t=>[text(t.id),t]));
-   const trackerHits=all.filter(t=>matches(q,t.name,t.currency,t.role)).map(t=>({
+   const trackerHits=all.filter(t=>matches(q,t.name,t.description,t.currency,t.role,t.category)).map(t=>({
      icon:'▣',title:text(t.name||'Tracker'),sub:'Shared tracker',action:()=>goTracker(t)
    }));
    let memberHits=[],expenseHits=[],pollHits=[],billHits=[],messageHits=[],wishHits=[];
@@ -182,7 +185,7 @@
        const memberKey=keyOf('member',tracker.id,member.user_id||member.userId||member.id||member.email||member.name);
        if(seenMembers.has(memberKey))continue;seenMembers.add(memberKey);
        const name=text(member.displayName||member.display_name||member.name||member.username||member.email||'Member');
-       if(!matches(q,name,member.email,member.username,tracker.name))continue;
+       if(!matches(q,name,member.email,member.username,member.display_name,tracker.name))continue;
        memberHits.push({icon:'♙',title:name,sub:'Member · '+text(tracker.name),action:()=>goTracker(tracker,'members')});
      }
      for(const entry of asList(tracker.entries)){
@@ -225,8 +228,13 @@
      wishHits.push({icon:'☆',title:text(wish.title||'Wishlist idea'),sub:'Shared wishlist · '+text(tracker.name),
        action:async()=>{await goTracker(tracker);document.getElementById('nav-friends')?.click();}});
    }
-   const friendHits=cache.friends.filter(item=>['accepted','pending','requested'].includes(clean(item.status)))
-     .filter(item=>matches(q,item.display_name,item.displayName,item.name,item.username)).map(item=>({
+   const friendHits=cache.friends.filter(item=>{
+       // The friends RPC can return either an explicit status or accepted rows
+       // without one; exclude only explicitly declined/blocked connections.
+       const status=clean(item.status||item.friendship_status);
+       return !status||['accepted','pending','requested','incoming','outgoing'].includes(status);
+     })
+     .filter(item=>matches(q,item.display_name,item.displayName,item.name,item.username,item.email)).map(item=>({
        icon:'♙',title:text(item.display_name||item.displayName||item.name||item.username||'Friend'),
        sub:'@'+text(item.username||'')+' · '+(clean(item.status)==='accepted'?'Friend':'Friend request'),
        action:()=>access()?.openFriends('friends')
@@ -235,14 +243,14 @@
    for(const item of [...asList(ctx.notifications),...cache.notifications]){
      notifications.set(keyOf('notification',item._social?'social':'regular',item.id),item);
    }
-   const notificationHits=[...notifications.values()].filter(n=>matches(q,n.title,n.message,n.kind,n.type,n.actor_name,n.tracker_name))
+   const notificationHits=[...notifications.values()].filter(n=>matches(q,n.title,n.message,n.body,n.kind,n.type,n.actor_name,n.tracker_name))
      .map(n=>({icon:'◌',title:text(n.title||'Notification'),sub:text(n.message||'Notification Center').slice(0,125),
        action:()=>access()?.openNotification(n.id,!!n._social)}));
    const personalHits=cache.personal.filter(item=>matches(q,item.description,item.category,item.kind,item.amount,item.occurred_on))
      .map(item=>({icon:'▤',title:text(item.description||'Personal transaction'),
        sub:'Personal '+text(item.kind||'transaction')+' · '+text(item.category||'Other')+' · '+text(item.amount),
        action:()=>window.squareUpOpenFinanceHub?.('finance')}));
-   const profileHits=profile.query===q?profile.rows.filter(u=>matches(q,u.username,u.display_name,u.displayName)).map(u=>({
+   const profileHits=profile.query===q?profile.rows.filter(u=>matches(q,u.username,u.display_name,u.displayName,u.name)).map(u=>({
      icon:'♙',title:text(u.display_name||u.username||'DoWeo user'),
      sub:'@'+text(u.username||'')+' · DoWeo profile',
      action:()=>access()?.openFriends('find',u.username)
@@ -283,7 +291,14 @@
    };
    try{
      let list=asList(ctx.trackers);
-     if(!list.length)list=asList(await capture(api('trackers')));
+     // Always refresh the server-authorized tracker list: the dashboard snapshot may
+     // only contain a subset until the trackers page has finished loading.
+     const fresh=await capture(api('trackers'));
+     if(Array.isArray(fresh)){
+       const map=new Map(list.filter(t=>validId(t?.id)).map(t=>[text(t.id),t]));
+       for(const t of fresh){if(validId(t?.id))map.set(text(t.id),{...map.get(text(t.id)),...t});}
+       list=[...map.values()];
+     }
      if(!live())return;
      cache.trackers=list.filter(t=>validId(t?.id));
      queueRender();
