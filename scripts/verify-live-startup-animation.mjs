@@ -25,7 +25,7 @@ try {
     });
     assert.equal(state.pathCount,4,'DoWeo SVG must contain all four logo strokes');
     assert.ok(state.colors.includes('#60F1AD'),'the animated logo must retain mint');
-    assert.ok(state.colors.includes('#00D8F5'),'the animated logo must retain cyan');
+    assert.ok(state.colors.includes('#1EDFFF'),'the animated logo must retain cyan');
     assert.ok(state.animation.every(x=>x.includes('dw-startup-logo-draw')),
       'all SVG paths must animate on '+viewport.width+'px: '+JSON.stringify(state));
     assert.equal(state.controller,'function','startup dismissal controller must be installed');
