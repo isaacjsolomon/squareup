@@ -139,7 +139,7 @@
     width:64px!important;height:64px!important;margin:0 auto 17px!important;
     display:grid!important;place-items:center!important;font-size:28px!important;
     border-radius:var(--radius-lg)!important;
-    background:linear-gradient(45deg,var(--surface-1),var(--surface-2),var(--danger-soft),var(--surface-3),var(--surface-2))!important
+    background:transparent!important
   }
   html body #sq-instagram-invite #sq-ig-title{
     width:100%!important;max-width:100%!important;
@@ -223,7 +223,7 @@
     width:64px!important;height:64px!important;min-width:64px!important;min-height:64px!important;
     border-radius:17px!important;margin:0 auto 17px!important;
     display:grid!important;place-items:center!important;
-    background:linear-gradient(135deg,#ABC6D7,#ABC6D7 24%,#355E72 56%,#355E72 78%,#355E72)!important;
+    background:transparent!important;
     color:#F3F8FC!important;font-size:31px!important;
     box-shadow:none!important;
   }
