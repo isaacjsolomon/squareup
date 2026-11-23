@@ -109,7 +109,7 @@ jobs:
           node --check .pages-output/doweo-unified-localize.js
           node --check .pages-output/doweo-unified-locales.mjs
           node --test test/doweo-unified-shell.test.mjs
-          node --test test/doweo-reference-layout.test.mjs
+          node --test test/doweo-reference-layout.test.mjs test/doweo-startup-animation.test.mjs
           node --test test/doweo-beta-nudge-theme.test.mjs
           test -s .pages-output/doweo-backdrop-images.js
           test -s .pages-output/third_party/heic2any.min.js
