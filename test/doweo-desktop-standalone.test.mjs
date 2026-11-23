@@ -45,7 +45,7 @@ test('Cash Flow matches Spending Analytics white panels, KPIs and visual charts'
  assert.match(css,/padding:calc\(var\(--dw-report-top,96px\) \+ 20px\)/);
  assert.match(css,/#dw-all-topbar\{/);
  assert.match(html,/dwCashFlowAnalyticsRender/);
- assert.match(html,/doweo-cashflow-analytics\.js\?v=20261122-approved-seven-palette-v3/);
+ assert.match(html,/doweo-cashflow-analytics\.js\?v=20261122-original-mint-v1/);
  assert.doesNotMatch(html,/select\(hub,'\.sq-ng-card'/);
  assert.doesNotMatch(html,/paint\(hub,/);
 });
