@@ -35,7 +35,7 @@ for (const key of ['mountainMist','tropicalCoast','alpineLake','desertDunes','ev
  assert(section.includes(key+':'),'Missing new backdrop '+key);
 }
 const newIds=['mountainSummit','forestTrail','oceanWaves','goldenValley','sunriseSkies','starryNight','blueMoon','glacierGlass','mintLagoon','violetHorizon'];
-const keys=[...section.matchAll(/^  ([A-Za-z]\\w*):/gm)].map(m=>m[1]);
+const keys=[...section.matchAll(/^  ([A-Za-z]\w*):/gm)].map(m=>m[1]);
 assert(keys.length===28&&new Set(keys).size===28,'Gallery must offer exactly 28 unique options');
 for(const key of newIds){
  assert(section.includes(key+':'),'New backdrop missing from picker: '+key);
