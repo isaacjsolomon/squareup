@@ -934,7 +934,7 @@ function computeNet() {
 
 // ============ DRAWING ============
 var COLORS = window.matchMedia("(max-width:900px)").matches
-  ? ["#ABC6D7","#ABC6D7","#ABC6D7","#355E72","#355E72","#ABC6D7","#355E72","#ABC6D7"]
+  ? ["#60F1AD","#ABC6D7","#ABC6D7","#355E72","#355E72","#ABC6D7","#355E72","#ABC6D7"]
   : ["#ABC6D7", "#ABC6D7", "#ABC6D7", "#355E72", "#355E72", "#ABC6D7", "#355E72", "#355E72"];
 function avatar(name, idx) {
   return '<div class="avatar" style="background:' + COLORS[idx % COLORS.length] + '">' + esc(name.charAt(0)) + "</div>";
@@ -4205,7 +4205,7 @@ function renderSquareUpAnalytics(){
  if(!personRows.length){peopleEl.innerHTML='<p class="sq-analytics-empty">No expenses recorded for this period.</p>';}
  else{
   var colors=window.matchMedia("(max-width:900px)").matches
-    ? ['#ABC6D7','#ABC6D7','#ABC6D7','#355E72','#ABC6D7','#ABC6D7']
+    ? ['#60F1AD','#ABC6D7','#ABC6D7','#355E72','#ABC6D7','#ABC6D7']
     : ['#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7'];
   var angle=0;
   var stops=personRows.map((row,i)=>{var from=angle;angle+=row[1]/total*100;return colors[i%colors.length]+' '+from.toFixed(3)+'% '+angle.toFixed(3)+'%';});
@@ -4340,7 +4340,7 @@ var sqTemplateProfiles=[
  {name:'Roommates',icon:'🏠',accent:'#ABC6D7',soft:'#204158',cats:['Rent','Electricity','Groceries','Utilities'],actions:[['Add a bill','expense','Rent'],['Recurring expenses','recurring'],['Settle up','pay']]},
  {name:'Vacation',icon:'✈️',accent:'#ABC6D7',soft:'#204158',cats:['Flights','Hotels','Food & Dining','Activities'],actions:[['Add travel expense','expense','Flights'],['Scan receipt','receipt'],['Trip budget','budget']]},
  {name:'School Trip',icon:'🎓',accent:'#ABC6D7',soft:'#355E72',cats:['Transportation','Food & Dining','Tickets','Supplies'],actions:[['Add group expense','expense','Transportation'],['Group budget','budget'],['Split a bill','split']]},
- {name:'Weekend Getaway',icon:'🌴',accent:window.matchMedia("(max-width:900px)").matches?'#ABC6D7':'#ABC6D7',soft:window.matchMedia("(max-width:900px)").matches?'#173750':'#204158',cats:['Lodging','Food & Dining','Activities','Transportation'],actions:[['Quick expense','expense','Lodging'],['Split a bill','split'],['Settle up','pay']]},
+ {name:'Weekend Getaway',icon:'🌴',accent:window.matchMedia("(max-width:900px)").matches?'#60F1AD':'#ABC6D7',soft:window.matchMedia("(max-width:900px)").matches?'#173750':'#204158',cats:['Lodging','Food & Dining','Activities','Transportation'],actions:[['Quick expense','expense','Lodging'],['Split a bill','split'],['Settle up','pay']]},
  {name:'Shared Household',icon:'👥',accent:'#ABC6D7',soft:'#204158',cats:['Rent','Electricity','Water','Gas','Internet','Groceries','Amenities','Other bills'],actions:[['Add purchase','expense','Rent'],['Scan receipt','receipt'],['Recurring expenses','recurring']]},
  {name:'Camping Trip',icon:'🏕️',accent:'#ABC6D7',soft:'#204158',cats:['Campsite','Firewood','Food & Dining','Gear'],actions:[['Add camping expense','expense','Campsite'],['Split a bill','split'],['Trip budget','budget']]},
  {name:'Food & Dining',icon:'🍴',accent:window.matchMedia("(max-width:900px)").matches?'#ABC6D7':'#ABC6D7',soft:window.matchMedia("(max-width:900px)").matches?'#173750':'#204158',cats:['Meals','Drinks','Tax + tip','Groceries'],actions:[['Split this bill','split'],['Scan receipt','receipt'],['Add meal','expense','Meals']]}
@@ -5592,7 +5592,7 @@ input.addEventListener('input',draw);
 const root=document.getElementById('budget-card');if(!root)return;
 let type='recurring',view='overview';
 const colors=window.matchMedia("(max-width:900px)").matches
-  ? ['#ABC6D7','#355E72','#355E72','#ABC6D7','#355E72','#ABC6D7','#355E72','#ABC6D7']
+  ? ['#60F1AD','#355E72','#355E72','#ABC6D7','#355E72','#ABC6D7','#355E72','#ABC6D7']
   : ['#ABC6D7','#ABC6D7','#355E72','#ABC6D7','#355E72','#ABC6D7','#ABC6D7','#ABC6D7'];
 const $=id=>document.getElementById(id);const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>typeof sqFormat==='function'?sqFormat(n):'$'+Number(n||0).toFixed(2);
@@ -9337,7 +9337,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 <link rel="stylesheet" href="/doweo-beta-nudge.css?v=20261122-approved-seven-palette-v3">
 <script defer src="/doweo-beta-nudge.js?v=20261122-approved-seven-palette-v3"></script>
 <!-- Screenshot-matched layout, preserving existing DoWeo data and controls. -->
-<link rel="stylesheet" href="/doweo-reference-home.css?v=20261122-approved-seven-palette-v3">
+<link rel="stylesheet" href="/doweo-reference-home.css?v=20261122-original-mint-v1">
 <script defer src="/doweo-reference-home.js?v=20261122-approved-seven-palette-v3"></script>
 
 <!-- Unified desktop shell and reviewed offline labels for every supported language. -->
@@ -9641,7 +9641,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 })();
 </script>
 <script defer src="/doweo-polls-dashboard.js?v=20261122-approved-seven-palette-v3"></script>
-<script defer src="/doweo-cashflow-analytics.js?v=20261122-approved-seven-palette-v3"></script>
+<script defer src="/doweo-cashflow-analytics.js?v=20261122-original-mint-v1"></script>
 <script defer src="/doweo-desktop-standalone.js?v=20261122-approved-seven-palette-v3"></script>
 <link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261122-approved-seven-palette-v3">
 <link rel="stylesheet" href="/doweo-polls-dashboard.css?v=20261122-approved-seven-palette-v3">
@@ -9657,7 +9657,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
     --dw-mobile-canvas-bottom:#173750;
     --dw-mobile-card:#102B40;
     --dw-mobile-border:#355E72;
-    --dw-mobile-accent:#ABC6D7;
+    --dw-mobile-accent:#60F1AD;
     --dw-mobile-ink:#F3F8FC;
     --dw-mobile-muted:#ABC6D7;
     --side-bg:#102B40;
@@ -9666,7 +9666,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
     --dw-receipt-alert-border:#355E72;
     --dw-tracker-banner-highlight:color-mix(in srgb, #ABC6D7 24%, transparent);
     --dw-photo-overlay:color-mix(in srgb, #0A1B2E 48%, transparent);
-    --accent:#ABC6D7;
+    --accent:#60F1AD;
     --on-accent:#102B40;
   }
   html {
@@ -9739,7 +9739,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   /* First balance action: explicit label, not color inherited from a
      previously locked accent rule (invisible mint-on-mint in iOS Safari). */
   html body #tracker-dashboard #dw-mobile-home-layered .dw-mh-actions button[data-mh-action="sq-clean-settle"] {
-    background:#ABC6D7!important;
+    background:#60F1AD!important;
     color:#102B40!important;
     -webkit-text-fill-color:#102B40!important;
     opacity:1!important;
