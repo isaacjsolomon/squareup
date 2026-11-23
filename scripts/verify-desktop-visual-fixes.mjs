@@ -8,7 +8,7 @@ try{
  await page.goto(base+'/?visual-check=original-instagram-v3',{waitUntil:'domcontentloaded',timeout:45000});
  await page.locator('#sq-instagram-invite').waitFor({state:'attached',timeout:20000});
  await page.waitForFunction(()=>{
-  return !!Array.from(document.styleSheets).find(s=>s.href?.includes('doweo-desktop-standalone.css?v=20261122-approved-seven-palette-v3'));
+  return !!Array.from(document.styleSheets).find(s=>s.href?.includes('doweo-desktop-standalone.css?v=20261122-banner-respect-v2'));
  },null,{timeout:25000});
 
  const result=await page.evaluate(async()=>{
@@ -27,7 +27,7 @@ try{
    closeHeight:close.getBoundingClientRect().height,
    closeRounded:css(close).borderRadius,
    titleFont:css(title).fontSize,
-   markBackground:css(logo).backgroundImage,
+   logoSrc:logo.querySelector('img.sq-instagram-logo')?.getAttribute('src')||'',
    inheritedCloseClass:close.classList.contains('doweo-close-control'),
   };
  });
@@ -37,7 +37,7 @@ try{
  assert.ok(Math.abs(result.closeWidth-36)<2&&Math.abs(result.closeHeight-36)<2,'Close button must be 36px round');
  assert.ok(result.closeRounded==='50%','Close button must be circular');
  assert.equal(result.titleFont,'22px');
- assert.ok(result.markBackground.includes('gradient'),'Instagram mark must keep its colorful gradient');
+ assert.ok(result.logoSrc.includes('/images/instagram-app-icon.svg'),'Instagram popup must show the official multicolor logo');
  assert.equal(result.inheritedCloseClass,false,'Desktop popup must opt out of the global large close style');
 
  const mirrored=await page.evaluate(async()=>{
