@@ -21,7 +21,7 @@
  const validId=value=>typeof value==='string'&&value&&value!=='local';
  const api=(path)=>window.squareUpApi(path);
  const keyOf=(kind,tracker,item)=>kind+':'+text(tracker)+':'+text(item);
- const newIndex=(owner)=>({owner,loadedAt:0,loading:false,details:[],polls:[],bills:[],messages:[],wishes:[],notifications:[],friends:[],errors:0});
+ const newIndex=(owner)=>({owner,loadedAt:0,loading:false,trackers:[],details:[],polls:[],bills:[],messages:[],wishes:[],notifications:[],friends:[],errors:0});
  let index=newIndex(null),profile={query:'',rows:[],loading:false,error:false};
  let returnFocus=null,querySerial=0,searchTimer=null,renderTimer=null;
  function currentQuery(){return clean(input.value);}
@@ -148,7 +148,7 @@
  }
  function collectedTrackers(ctx,cache){
    const byId=new Map();
-   for(const item of asList(ctx.trackers)){
+   for(const item of [...asList(ctx.trackers),...asList(cache.trackers)]){
      if(validId(item?.id))byId.set(text(item.id),item);
    }
    for(const item of cache.details){
@@ -267,7 +267,7 @@
    const cache=ensureIndex();
    if(cache.loading||cache.loadedAt&&Date.now()-cache.loadedAt<120000)return;
    cache.loading=true;cache.errors=0;
-   cache.details=[];cache.polls=[];cache.bills=[];cache.messages=[];cache.wishes=[];cache.notifications=[];cache.friends=[];
+   cache.trackers=[];cache.details=[];cache.polls=[];cache.bills=[];cache.messages=[];cache.wishes=[];cache.notifications=[];cache.friends=[];
    queueRender();
    const live=()=>cache===index&&activeOwner()===owner;
    const capture=async promise=>{
@@ -277,6 +277,8 @@
      let list=asList(ctx.trackers);
      if(!list.length)list=asList(await capture(api('trackers')));
      if(!live())return;
+     cache.trackers=list.filter(t=>validId(t?.id));
+     queueRender();
      const [regular,social,friends]=await Promise.all([
        capture(api('notifications')),
        capture(api('social/notifications')),
