@@ -28,7 +28,9 @@ try {
     assert.ok(state.colors.includes('#1EDFFF'),'the animated logo must retain cyan');
     assert.ok(state.animation.every(x=>x.includes('dw-startup-logo-draw')),
       'all SVG paths must animate on '+viewport.width+'px: '+JSON.stringify(state));
-    assert.equal(state.controller,'function','startup dismissal controller must be installed');
+    // The SVG can be parsed before its following controller script executes.
+    // Check the first-paint animation immediately, then wait for initialization.
+    await page.waitForFunction(()=>typeof window.dwSetStartupScreen==='function',null,{timeout:10000});
     assert.equal(state.initiallyHidden,false,'logo must remain visible at first paint on '+viewport.width+'px');
     await page.waitForFunction(()=>document.getElementById('sq-startup-overlay')?.hidden===true,
       null,{timeout:25000});
