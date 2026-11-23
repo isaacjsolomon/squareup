@@ -556,3 +556,21 @@
    color:#F3F8FC!important;
  }
 }
+
+@media (min-width: 901px) {
+  html body #dw-ref-home .dw-ref-greeting {
+    width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 12px 20px;
+    border-radius: 18px;
+    background: #F3F8FC !important;
+  }
+
+  html body #dw-ref-toolbar button.dw-ref-tool:is([data-ref-tool="search"], [data-ref-tool^="notif"]),
+  html body #dw-all-top-tools button.dw-all-tool:is([data-dw-all-tool="search"], [data-dw-all-tool^="notif"]) {
+    background: #F3F8FC !important;
+    color: #102B40 !important;
+    border-radius: 12px !important;
+  }
+}
