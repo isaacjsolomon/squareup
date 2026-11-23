@@ -363,11 +363,10 @@
  // Keep a real sidebar notifications destination, like the approved mockup.
  const nav=document.querySelector('.sidebar .squareup-nav');
  const analytics=document.getElementById('nav-analytics');
- // The actual desktop sidebar (Events, Analytics, Notifications) is finalized here.
- // Keep Cash Flow as a real native button between Events and Analytics. A fallback
- // covers HTML that was cached before the Cash Flow nav item was introduced.
+ // Existing destinations can now live in the My Wallet flyout rather than the
+ // direct sidebar. Search the whole document to avoid cloning Cash Flow.
  if(nav&&analytics){
-   let cashFlow=nav.querySelector('#nav-cashflow');
+   let cashFlow=document.getElementById('nav-cashflow');
    if(!cashFlow){
      cashFlow=document.createElement('button');
      cashFlow.type='button';cashFlow.id='nav-cashflow';cashFlow.className='sq-nav-link';
@@ -382,13 +381,31 @@
        cashFlow.classList.add('active');cashFlow.setAttribute('aria-current','page');
      });
    }
-   if(cashFlow.nextElementSibling!==analytics)analytics.before(cashFlow);
+   // Keep Cash Flow beside Analytics only when both are direct sidebar links.
+   // When the destinations are in My Wallet, do not reorder or duplicate them.
+   if(!cashFlow.isConnected){
+     if(analytics.closest('#dw-my-wallet-flyout'))analytics.after(cashFlow);
+     else analytics.before(cashFlow);
+   }else if(cashFlow.parentElement===nav&&analytics.parentElement===nav&&cashFlow.nextElementSibling!==analytics){
+     analytics.before(cashFlow);
+   }
  }
- if(nav&&analytics&&!document.getElementById('dw-ref-nav-notifications')){
-  const button=document.createElement('button');button.type='button';button.id='dw-ref-nav-notifications';button.className='sq-nav-link';
+ if(nav&&analytics){
+  let button=document.getElementById('dw-ref-nav-notifications');
+  if(!button){
+   button=document.createElement('button');button.type='button';button.id='dw-ref-nav-notifications';button.className='sq-nav-link';
   button.innerHTML='<span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></span><span class="sq-nav-label">Notifications</span>';
-  button.addEventListener('click',()=>{if(!click('#sq-mobile-notifications'))click('#notifications-toggle');});
-  analytics.insertAdjacentElement('afterend',button);
+   button.addEventListener('click',()=>{if(!click('#sq-mobile-notifications'))click('#notifications-toggle');});
+  }
+  // Notifications belong in the actual sidebar, never the wallet flyout.
+  // Preserve the original mobile placement when the wallet menu is absent.
+  const wallet=window.matchMedia('(min-width:901px)').matches?nav.querySelector('#dw-personal-finance'):null;
+  if(wallet){
+    if(button.parentElement!==nav||button.previousElementSibling!==wallet)wallet.after(button);
+  }else if(!button.isConnected){
+    if(analytics.parentElement===nav)analytics.after(button);
+    else nav.append(button);
+  }
  }
  // Legacy sidebar themes sometimes hide the original icon spans. Provide a
  // guaranteed visible icon for each original destination without replacing its
@@ -405,7 +422,9 @@
  ];
  for(const [selector,parts] of sidebarIcons){
   const button=document.querySelector(selector);
-  if(!button||button.querySelector(':scope>.dw-ref-static-icon'))continue;
+  // The flyout displays the original .sq-nav-icon; never prepend a second
+  // icon to items moved out of the sidebar.
+  if(!button||!nav?.contains(button)||button.querySelector(':scope>.dw-ref-static-icon'))continue;
   const mark=document.createElement('span');mark.className='dw-ref-static-icon';mark.setAttribute('aria-hidden','true');
   mark.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+parts+'</svg>';
   button.prepend(mark);
