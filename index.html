@@ -3758,13 +3758,63 @@ async function refreshInbox(){
  if(!currentUser){inbox=[];drawInbox();return;}
  try {var results=await Promise.allSettled([api('notifications'),api('social/notifications')]);if(results.every(r=>r.status==='rejected'))throw results[0].reason;var regular=results[0].status==='fulfilled'&&Array.isArray(results[0].value)?results[0].value:[];var social=results[1].status==='fulfilled'&&Array.isArray(results[1].value)?results[1].value:[];inbox=[...regular,...social.map(x=>({...x,_social:true}))].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));drawInbox();}catch(e){console.warn('Notifications unavailable',e);drawInbox();var list=document.getElementById('notifications-list');if(list&&!inbox.length)list.innerHTML='<p>Notifications could not be loaded right now. Please try again shortly.</p>';}
 }
+function notificationDestination(n) {
+ const signal = String(n?.kind || '') + ' ' + String(n?.title || '');
+ if (/chat|message/i.test(signal)) return 'chat';
+ if (/friend/i.test(signal)) return 'friends';
+ if (/invite|invitation/i.test(signal)) return 'trackers';
+ if (/member/i.test(signal)) return 'members';
+ return 'expenses';
+}
+const notificationLabels = {chat:'Open chat', friends:'View friends', trackers:'View trackers', members:'View members', expenses:'View expense'};
+(function bindNotificationNavigation(){
+ const list=document.getElementById('notifications-list');
+ async function navigate(row){
+  const n = row.hasAttribute('data-notification-index') ? inbox[Number(row.dataset.notificationIndex)] : null;
+  const destination = notificationDestination(n);
+  const trackerId = n?.tracker_id;
+  try {
+   if (trackerId && ['chat','members','expenses'].includes(destination) && String(current?.id)!==String(trackerId)) {
+    await openTracker(String(trackerId));
+    if (String(current?.id)!==String(trackerId)) { alert('This tracker is unavailable.'); return; }
+   }
+   document.getElementById('notifications-toggle').setAttribute('aria-expanded','false');
+   settingsRoute('home');
+   if (['friends','trackers','chat'].includes(destination)) {
+    document.getElementById('nav-'+destination).click();
+   } else {
+    document.querySelector('#tracker-dashboard [data-sq-tab="'+destination+'"]').click();
+    const entryId=n?.entry_id || row.dataset.dueEntry;
+    if(destination==='expenses' && entryId) window.squareUpOpenExpenseDetails?.(entryId);
+   }
+   if(n && !n.read_at){
+    await api((n._social?'social/notifications/':'notifications/')+encodeURIComponent(n.id),'PATCH',{});
+    n.read_at=new Date().toISOString();
+    drawInbox();
+   }
+  } catch(err){console.warn('Notification action failed',err);}
+ }
+ // Capture phase ensures row navigation does not get overridden by a later handler.
+ list.addEventListener('click',function(e){
+   const action=e.target.closest('[data-notification-open]');if(action){const row=action.closest('[data-notification-index]');if(row){e.preventDefault();e.stopImmediatePropagation();navigate(row);}return;}
+   if(e.target.closest('button,a,input,select,textarea'))return;
+   const row=e.target.closest('[data-notification-index],[data-due-entry]');
+   if(!row)return;
+   e.preventDefault();e.stopImmediatePropagation();navigate(row);
+ },true);
+ list.addEventListener('keydown',function(e){
+   if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-notification-index],[data-due-entry]')){
+     e.preventDefault();e.stopImmediatePropagation();navigate(e.target);
+   }
+ },true);
+})();
 function drawInbox(){
  var count=inbox.filter(n=>!n.read_at).length;
  var badge=document.getElementById('notifications-count');badge.textContent=count>99?'99+':String(count);badge.hidden=!count;
  var mobileBadge=document.getElementById('sq-mobile-notifications-count');if(mobileBadge){mobileBadge.textContent=count>99?'99+':String(count);mobileBadge.hidden=!count;}
  var due=(current?.entries||[]).filter(e=>e.type==='debt'&&e.dueDate&&e.dueDate<=new Date(Date.now()+3*86400000).toISOString().slice(0,10)&&e.paymentStatus!=='disputed');
  var dueHtml=due.map(e=>'<div class="entry sq-notification-link" role="link" tabindex="0" data-due-entry="'+esc(e.id)+'"><div class="text"><b>'+esc(e.dueDate<new Date().toISOString().slice(0,10)?'Overdue':'Due soon')+'</b> · '+esc(e.from)+' owes '+esc(e.to)+' '+money(e.amount)+'<div class="note">Due '+esc(e.dueDate)+'</div></div></div>').join('');
- document.getElementById('notifications-list').innerHTML=(inbox.map(n=>'<div class="entry sq-notification-link" role="link" tabindex="0" data-notification-index="'+inbox.indexOf(n)+'"><div class="text"><b>'+esc(n.title)+'</b><div class="note">'+esc(n.message)+' · '+esc(new Date(n.created_at).toLocaleString())+'</div>'+(n.kind==='tracker_invite'&&n.invitation_id?'<button class="small-btn" data-invite-accept="'+esc(n.invitation_id)+'">Accept tracker</button> <button class="small-btn danger" data-invite-decline="'+esc(n.invitation_id)+'">Decline</button>':'')+(n.kind==='payment_pending'&&n.entry_id?'<button class="small-btn" data-confirm-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Confirm payment</button> <button class="small-btn danger" data-dispute-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Dispute</button>':'')+'</div>'+'<button type="button" class="small-btn sq-notification-action" data-notification-open="'+inbox.indexOf(n)+'">'+(/chat|message/i.test(String(n.kind)+' '+String(n.title))?'Open chat':/friend/i.test(String(n.kind)+' '+String(n.title))?'View friends':/member/i.test(String(n.kind)+' '+String(n.title))?'View members':/invite/i.test(String(n.kind)+' '+String(n.title))?'View trackers':'View expense')+'</button>'+(n.read_at?'':'<button class="small-btn" data-read-notification="'+esc(n.id)+'">Mark read</button>')+'</div>').join('')||'<div class="sq-enhanced-empty"><strong>All caught up</strong><span>Payment updates, invitations and messages will appear here.</span></div>')+dueHtml;
+ document.getElementById('notifications-list').innerHTML=(inbox.map(n=>'<div class="entry sq-notification-link" role="link" tabindex="0" data-notification-index="'+inbox.indexOf(n)+'"><div class="text"><b>'+esc(n.title)+'</b><div class="note">'+esc(n.message)+' · '+esc(new Date(n.created_at).toLocaleString())+'</div>'+(n.kind==='tracker_invite'&&n.invitation_id?'<button class="small-btn" data-invite-accept="'+esc(n.invitation_id)+'">Accept tracker</button> <button class="small-btn danger" data-invite-decline="'+esc(n.invitation_id)+'">Decline</button>':'')+(n.kind==='payment_pending'&&n.entry_id?'<button class="small-btn" data-confirm-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Confirm payment</button> <button class="small-btn danger" data-dispute-payment="'+esc(n.entry_id)+'" data-tracker-id="'+esc(n.tracker_id)+'">Dispute</button>':'')+'</div>'+'<button type="button" class="small-btn sq-notification-action" data-notification-open="'+inbox.indexOf(n)+'">'+notificationLabels[notificationDestination(n)]+'</button>'+(n.read_at?'':'<button class="small-btn" data-read-notification="'+esc(n.id)+'">Mark read</button>')+'</div>').join('')||'<div class="sq-enhanced-empty"><strong>All caught up</strong><span>Payment updates, invitations and messages will appear here.</span></div>')+dueHtml;
 }
 document.getElementById('notifications-toggle').onclick=function(){
  settingsRoute('home');document.body.classList.add('notifications-view');
@@ -5281,62 +5331,7 @@ reason.addEventListener('input',()=>{error.textContent='';});
 
 
 
-<script id="sq-notification-click-navigation">
-(function(){
- const list=document.getElementById('notifications-list');if(!list)return;
- function navigate(row){
-  const idx=row.getAttribute('data-notification-index');
-  const n=idx!==null && typeof inbox!=='undefined' ? inbox[Number(idx)] : null;
-  const title=(n?.title||row.querySelector('b')?.textContent||'').toLowerCase();
-  const kind=String(n?.kind||'').toLowerCase();
-  const message=String(n?.message||'').toLowerCase();
-  const signal=kind+' '+title+' '+message;
-  const trackerId=n?.tracker_id;
-  const isFriend=/friend|request.accepted|request.received/.test(signal);
-  const isChat=/chat|group.message|new.message|message.from|sent a message/.test(signal);
-  const isInvite=/tracker.invite|invitation to.*tracker/.test(signal);
-  const isBudget=false; // Budget page was retired; send related notices to Expenses.
-  const isMember=/member/.test(signal);
-  // Navigate synchronously. Never wait for PATCH before showing the destination.
-  if(isFriend){settingsRoute('friends');}
-  else if(isInvite){document.getElementById('nav-trackers')?.click();}
-  else if(isChat){
-    // Chat's existing click handler switches to the actual chat panel.
-    document.getElementById('nav-chat')?.click();
-    if(trackerId && (!current || String(current.id)!==String(trackerId))){
-      Promise.resolve(openTracker(String(trackerId))).then(()=>document.getElementById('nav-chat')?.click()).catch(err=>console.warn('Chat tracker unavailable',err));
-    }
-  }else{
-    const showDestination=()=>{
-      document.getElementById('nav-home')?.click();
-      document.querySelector('[data-sq-tab="'+(isBudget?'budget':isMember?'members':'expenses')+'"]')?.click();
-    };
-    if(trackerId && (!current || String(current.id)!==String(trackerId))){
-      Promise.resolve(openTracker(String(trackerId))).then(showDestination).catch(err=>console.warn('Notification tracker unavailable',err));
-    }else showDestination();
-  }
-  document.body.classList.remove('notifications-view');
-  document.getElementById('notifications-toggle')?.setAttribute('aria-expanded','false');
-  if(n&&!n.read_at){
-    n.read_at=new Date().toISOString();
-    Promise.resolve(api((n._social?'social/notifications/':'notifications/')+encodeURIComponent(n.id),'PATCH',{})).catch(err=>console.warn('Notification read update failed',err));
-  }
- }
- // Capture phase ensures row navigation does not get overridden by a later handler.
- list.addEventListener('click',function(e){
-   const action=e.target.closest('[data-notification-open]');if(action){const row=action.closest('[data-notification-index]');if(row){e.preventDefault();e.stopImmediatePropagation();navigate(row);}return;}
-   if(e.target.closest('button,a,input,select,textarea'))return;
-   const row=e.target.closest('[data-notification-index],[data-due-entry]');
-   if(!row)return;
-   e.preventDefault();e.stopImmediatePropagation();navigate(row);
- },true);
- list.addEventListener('keydown',function(e){
-   if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-notification-index],[data-due-entry]')){
-     e.preventDefault();e.stopImmediatePropagation();navigate(e.target);
-   }
- },true);
-})();
-</script>
+
 
 
 
