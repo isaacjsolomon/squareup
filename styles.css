@@ -9910,3 +9910,24 @@ html body #tracker-dashboard #sq-return-members .sq-return-icon.sq-member-avatar
     -webkit-text-fill-color:inherit!important;
   }
 }
+
+/* 2026-11-23 — Match authentication/onboarding typography to the DoWeo wordmark.
+   Intentionally limited to the sign-in, create-account and profile-onboarding views. */
+html body #auth-modal .sq-auth-layout,
+html body #onboarding-page .onboard-wrap {
+  font-family:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+html body #auth-modal .sq-auth-layout :is(h1,h2,h3,h4,p,span,strong,small,a,label,button,input,textarea,select,div),
+html body #onboarding-page .onboard-wrap :is(h1,h2,h3,h4,p,span,strong,small,a,label,button,input,textarea,select,div) {
+  font-family:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+html body #auth-modal :is(#auth-title,.sq-auth-brand strong,.sq-auth-hero-bottom h2),
+html body #onboarding-page :is(.onboard-wrap h1,.onboard-panel h2) {
+  font-weight:900!important;
+  letter-spacing:-.045em!important;
+}
+html body #auth-modal :is(#auth-tabs button,#auth-submit,#dw-google-signin,#sq-auth-invite),
+html body #onboarding-page :is(.onboard-wrap button,.onboard-panel button) {
+  font-weight:700!important;
+  letter-spacing:-.015em;
+}
