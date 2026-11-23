@@ -409,13 +409,13 @@
    transition:height .24s ease;
  }
  html body #dw-ref-home .dw-ref-chart-bar.dw-ref-bar-income{
-   background:linear-gradient(180deg,#ABC6D7,#ABC6D7)!important;
-   border:1px solid #ABC6D7;
+   background:linear-gradient(180deg,#60F1AD,#60F1AD)!important;
+   border:1px solid #60F1AD;
    box-shadow:0 5px 11px color-mix(in srgb, #355E72 13%, transparent);
  }
  html body #dw-ref-home .dw-ref-chart-bar.dw-ref-bar-expense{
-   background:linear-gradient(180deg,#ABC6D7,#ABC6D7)!important;
-   border:1px solid #ABC6D7;
+   background:linear-gradient(180deg,#102B40,#102B40)!important;
+   border:1px solid #102B40;
    box-shadow:0 5px 11px color-mix(in srgb, #355E72 10%, transparent);
  }
  html body #dw-ref-home .dw-ref-chart-bar.dw-ref-zero{
@@ -446,10 +446,10 @@
    border-radius:3px;
  }
  html body #dw-ref-home .dw-ref-chart-legend .dw-ref-legend-income{
-   background:#ABC6D7!important;
+   background:#60F1AD!important;
  }
  html body #dw-ref-home .dw-ref-chart-legend .dw-ref-legend-expense{
-   background:#ABC6D7!important;
+   background:#102B40!important;
  }
  html body #dw-ref-home .dw-ref-chart-empty{
    border:1px dashed #ABC6D7;border-radius:16px;
