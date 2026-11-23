@@ -102,7 +102,7 @@ jobs:
           grep -Fq 'doweo-page-repairs.css?v=20261122-backdrop-colors-v1' .pages-output/index.html
           grep -Fq 'UI_RELEASE: doweo-desktop-v5-navy-analytics-20261121' .pages-output/index.html
           grep -Fq 'id="dw-route-visual-enforcer-v6"' .pages-output/index.html
-          grep -Fq 'doweo-unified-shell.css?v=20261123-cashflow-visible-v4' .pages-output/index.html
+          grep -Fq 'doweo-unified-shell.css?v=20261123-backdrop-gallery-v1' .pages-output/index.html
           grep -Fq 'id="dw-bills-exact-reference-v9"' .pages-output/index.html
           grep -Fq -- '--bg: #0A1B2E' .pages-output/styles.css
           grep -Fq -- '--accent: #60F1AD' .pages-output/styles.css
@@ -144,26 +144,28 @@ jobs:
 
       # A passing build does not prove the public site serves the new release.
       # Fetch the production origin and validate the release marker and palette.
-      - name: Verify original backdrop presets are live on production
+      - name: Verify expanded backdrop gallery and original presets on production
         shell: bash
         run: |
           set -euo pipefail
           for attempt in {1..15}; do
             page="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/?release=original-backdrops-20261122-v1' || true)"
-            css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/styles.css?v=20261123-cashflow-visible-v4' || true)"
+            css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/styles.css?v=20261123-backdrop-gallery-v1' || true)"
             if [[ "$page" == *'restored-original-backdrops-20261122-v1'* ]] &&
+               [[ "$page" == *'expanded-gallery-18-presets-20261123-v1'* ]] &&
+               [[ "$page" == *'id="backdrop-categories"'* ]] &&
                [[ "$page" == *'css: "linear-gradient(135deg, #7c2d12, #be185d)"'* ]] &&
                [[ "$page" == *'css: "linear-gradient(135deg, #14532d, #115e59)"'* ]] &&
                [[ "$page" == *'css: "linear-gradient(135deg, #4a044e, #6b21a8)"'* ]] &&
-               [[ "$page" == *'styles.css?v=20261123-cashflow-visible-v4'* ]] &&
+               [[ "$page" == *'styles.css?v=20261123-backdrop-gallery-v1'* ]] &&
                [[ "$css" == *'--accent: #60F1AD'* ]]; then
-              echo "Production is serving the original Sunset, Forest and Berry backdrops with mint accents."
+              echo "Production is serving the expanded gallery, original gradients, and mint accents."
               exit 0
             fi
             echo "Checking updated backdrop release (attempt $attempt of 15)"
             sleep 10
           done
-          echo "::error::Cloudflare is not serving the restored original backdrop release."
+          echo "::error::Cloudflare is not serving the expanded backdrop gallery release."
           exit 1
 
       - name: Verify mint branding and original color selection on production
@@ -175,6 +177,8 @@ jobs:
             mint_css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/doweo-reference-home.css?v=20261123-activity-no-lines-v1' || true)"
             mint_js="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/doweo-cashflow-analytics.js?v=20261122-original-mint-v1' || true)"
             if [[ "$page" == *'restored-original-backdrops-20261122-v1'* ]] &&
+               [[ "$page" == *'expanded-gallery-18-presets-20261123-v1'* ]] &&
+               [[ "$page" == *'id="backdrop-categories"'* ]] &&
                [[ "$page" == *'id="dw-mobile-critical-colors-v8"'* ]] &&
                [[ "$page" == *'background:#60F1AD!important'* ]] &&
                [[ "$page" == *'doweo-reference-home.css?v=20261123-activity-no-lines-v1'* ]] &&
