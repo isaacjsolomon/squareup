@@ -3182,6 +3182,22 @@ var BACKDROP_CATEGORIES = [
   { id: "nature", label: "Nature" },
   { id: "sky", label: "Sky & Modern" }
 ];
+// The mobile theme gives buttons a solid navy background with !important.
+// Render each chosen preview on a separate child layer so that rule cannot
+// cover landscapes, gradients, or uploaded photos in any of the three tabs.
+function setBackdropSwatchArtwork(button, image, label) {
+  var art = document.createElement("span");
+  art.className = "dw-backdrop-preview-art";
+  art.setAttribute("aria-hidden", "true");
+  art.style.setProperty("background-image", image, "important");
+  art.style.setProperty("background-size", "cover", "important");
+  art.style.setProperty("background-position", "center", "important");
+  art.style.setProperty("background-repeat", "no-repeat", "important");
+  var caption = document.createElement("span");
+  caption.className = "dw-backdrop-preview-title";
+  caption.textContent = label;
+  button.replaceChildren(art, caption);
+}
 function renderBackdropPicker() {
   var b = backdropState();
   $("backdrop-scope").innerHTML = current
@@ -3209,8 +3225,9 @@ function renderBackdropPicker() {
     custom.className = "swatch photo-swatch active";
     custom.dataset.preset = "photo";
     custom.setAttribute("aria-pressed", "true");
-    custom.textContent = "Your photo";
-    custom.style.backgroundImage = $("backdrop").style.backgroundImage;
+    var photoPreview = $("backdrop").style.backgroundImage;
+    custom.style.setProperty("background-image", photoPreview, "important");
+    setBackdropSwatchArtwork(custom, photoPreview, "Your photo");
     choices.appendChild(custom);
   }
   Object.keys(PRESETS).forEach(function (key) {
@@ -3221,8 +3238,9 @@ function renderBackdropPicker() {
     swatch.className = "swatch" + (b.preset === key ? " active" : "");
     swatch.dataset.preset = key;
     swatch.setAttribute("aria-pressed", String(b.preset === key));
-    swatch.textContent = config.label;
-    swatch.style.backgroundImage = config.preview || config.css;
+    var previewImage = config.preview || config.css;
+    swatch.style.setProperty("background-image", previewImage, "important");
+    setBackdropSwatchArtwork(swatch, previewImage, config.label);
     choices.appendChild(swatch);
   });
   $("backdrop-swatches").replaceChildren(choices);
@@ -10024,6 +10042,24 @@ html body #new-modal #new-form [hidden] {display:none!important}
  html body.side-collapsed #dw-personal-finance>.dw-flyout-caret{display:none!important}
 }
 @media(max-width:900px){#dw-personal-finance{display:none!important}}
+/* Backdrop picker previews use their own art layer: general mobile button
+   background rules cannot paint over the selected image or gradient. */
+html body #backdrop-modal #backdrop-swatches .swatch{
+  position:relative!important;isolation:isolate!important;overflow:hidden!important;
+}
+html body #backdrop-modal #backdrop-swatches .swatch > .dw-backdrop-preview-art{
+  position:absolute!important;inset:0!important;z-index:0!important;
+  display:block!important;width:100%!important;height:100%!important;
+  background-size:cover!important;background-position:center!important;
+  background-repeat:no-repeat!important;opacity:1!important;filter:none!important;
+  border-radius:inherit!important;pointer-events:none!important;
+}
+html body #backdrop-modal #backdrop-swatches .swatch > .dw-backdrop-preview-title{
+  display:block!important;position:relative!important;z-index:1!important;
+  color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;
+  text-shadow:0 1px 7px rgba(10,27,46,.94),0 1px 2px #0A1B2E!important;
+  text-align:left!important;pointer-events:none!important;
+}
 </style>
 <!-- Mobile overview redesign; loaded after legacy CSS so mobile alone receives these styles. -->
 <link rel="stylesheet" href="/doweo-mobile-app-theme.css?v=20261123-continuous-navy-v1" media="(max-width:900px)">
