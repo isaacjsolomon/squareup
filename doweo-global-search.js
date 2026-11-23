@@ -225,10 +225,10 @@
      wishHits.push({icon:'☆',title:text(wish.title||'Wishlist idea'),sub:'Shared wishlist · '+text(tracker.name),
        action:async()=>{await goTracker(tracker);document.getElementById('nav-friends')?.click();}});
    }
-   const friendHits=cache.friends.filter(item=>item.status==='accepted'||item.status==='pending')
-     .filter(item=>matches(q,item.display_name,item.username)).map(item=>({
-       icon:'♙',title:text(item.display_name||item.username||'Friend'),
-       sub:'@'+text(item.username||'')+' · '+(item.status==='accepted'?'Friend':'Friend request'),
+   const friendHits=cache.friends.filter(item=>['accepted','pending','requested'].includes(clean(item.status)))
+     .filter(item=>matches(q,item.display_name,item.displayName,item.name,item.username)).map(item=>({
+       icon:'♙',title:text(item.display_name||item.displayName||item.name||item.username||'Friend'),
+       sub:'@'+text(item.username||'')+' · '+(clean(item.status)==='accepted'?'Friend':'Friend request'),
        action:()=>access()?.openFriends('friends')
      }));
    const notifications=new Map();
