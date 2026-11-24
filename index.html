@@ -2496,7 +2496,7 @@ async function sqBannerEdit(trackerId,trackerName,banner){
  var categories=[{id:'all',label:'All'},{id:'nature',label:'Nature & Landscapes'},{id:'cities',label:'Cities & Travel'},{id:'gradients',label:'Gradients & Abstract'},{id:'textures',label:'Textures & Designs'},{id:'animals',label:'Animals'}];
  var saved=await sqBannerGet(trackerId);
  var chosen=saved&&saved.preset||'ocean';
- var selectedCategory=(catalog[chosen]&&catalog[chosen].group)||'nature';
+ var selectedCategory=(catalog[chosen]&&catalog[chosen].group)||'gradients';
  var palette=sqBannerPalette();
  var names=Object.keys(palette);
  function renderChoices(){
