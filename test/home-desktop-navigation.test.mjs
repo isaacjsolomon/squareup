@@ -76,6 +76,46 @@ test('desktop Home remains full width after navigation and shows only four track
    await page.screenshot({path:resolve(root,'test-results/bills/home-'+label+'.png'),fullPage:true});
   }
   await verifyHome('startup');
+  // The live desktop greeting is a single wide white surface ending before the
+  // original Add button, and follows the viewer's clock without a reload.
+  await page.locator('#dw-ref-greeting').waitFor({state:'visible'});
+  const greetingPlacement=await page.evaluate(()=>{
+    const banner=document.querySelector('#dw-ref-home .dw-ref-greeting');
+    const add=document.getElementById('dw-compact-add');
+    const b=banner.getBoundingClientRect(),a=add.getBoundingClientRect();
+    return {left:b.left,right:b.right,width:b.width,addLeft:a.left,visible:!!b.width};
+  });
+  assert.ok(greetingPlacement.visible,'desktop greeting must show on the overview');
+  assert.ok(greetingPlacement.width>350,'greeting should use the available horizontal space');
+  assert.ok(greetingPlacement.right<=greetingPlacement.addLeft,'greeting must not overlap + Add');
+  assert.ok(greetingPlacement.addLeft-greetingPlacement.right<=40,'greeting should extend to the Add button');
+  const greetingPhases=await page.evaluate(()=>{
+    const OriginalDate=Date;
+    const check=hour=>{
+      class MockDate extends OriginalDate{
+        constructor(...args){super(...(args.length?args:[2026,10,23,hour,30]));}
+      }
+      window.Date=MockDate;
+      try{
+        window.dispatchEvent(new Event('focus'));
+        return {phase:document.querySelector('#dw-ref-home .dw-ref-greeting')?.dataset.timeOfDay,
+          text:document.getElementById('dw-ref-greeting')?.textContent,
+          date:document.getElementById('dw-ref-greeting-date')?.textContent};
+      }finally{window.Date=OriginalDate;}
+    };
+    return [check(9),check(14),check(19),check(23)];
+  });
+  for(const [index,phase] of ['morning','afternoon','evening','night'].entries()){
+    assert.equal(greetingPhases[index].phase,phase,'wrong phase '+phase);
+    assert.match(greetingPhases[index].text,new RegExp('Good '+phase,'i'));
+    assert.ok(greetingPhases[index].date.includes('November'),'date should use the actual local date');
+  }
+  const originalNet=await page.locator('#sq-clean-net').textContent();
+  for(const [amount,status] of [['+$3.24','On track'],['-$5.50','To settle'],['$0.00','All settled'],['—','Balance pending']]){
+    await page.locator('#sq-clean-net').evaluate((node,value)=>{node.textContent=value;},amount);
+    await page.waitForFunction(value=>document.querySelector('#dw-ref-balance-pill')?.textContent===value,status,{timeout:5000});
+  }
+  await page.locator('#sq-clean-net').evaluate((node,value)=>{node.textContent=value;},originalNet);
   // Desktop My Wallet must contain only the real destination buttons, exactly
   // one visible icon each. Notifications belongs to the primary sidebar.
   await page.locator('#dw-personal-finance').waitFor({state:'visible'});

@@ -197,6 +197,75 @@
   html body #dw-ref-home .dw-ref-greeting p{
     color:#355E72!important;margin:0;font-family:inherit;font-size:clamp(14px,1.35vw,19px);font-weight:500;line-height:1.35;
   }
+  html body #dw-ref-home .dw-ref-intro{align-items:stretch!important}
+  /* Full-width greeting: the white surface grows right up to the real Add
+     control, with the same rounded proportions as the approved mockup. */
+  html body #dw-ref-home .dw-ref-greeting{
+    display:grid!important;grid-template-columns:68px minmax(0,1fr) minmax(182px,auto)!important;
+    align-items:center!important;column-gap:22px!important;
+    flex:1 1 auto!important;min-width:0!important;min-height:140px!important;
+    box-sizing:border-box!important;overflow:hidden!important;
+    box-shadow:0 13px 32px rgba(10,27,46,.09)!important;
+  }
+  html body #dw-ref-home .dw-ref-time-icon{
+    display:grid;place-items:center;width:68px;height:68px;flex:0 0 68px;
+    border-radius:19px;background:rgba(96,241,173,.26);
+    color:#102B40;
+  }
+  html body #dw-ref-home .dw-ref-time-icon svg{
+    width:43px;height:43px;stroke:currentColor;fill:none;
+  }
+  html body #dw-ref-home .dw-ref-greeting-copy{
+    min-width:0;border-left:2px solid #ABC6D7;padding-left:22px;
+  }
+  html body #dw-ref-home .dw-ref-greeting-copy h1{
+    font-size:clamp(25px,2.45vw,45px)!important;
+    font-weight:850!important;line-height:1.1!important;
+    overflow-wrap:break-word;
+  }
+  html body #dw-ref-home .dw-ref-greeting p.dw-ref-greeting-date{
+    font-size:clamp(14px,1.24vw,19px)!important;
+    color:#355E72!important;font-weight:530!important;line-height:1.4!important;
+    margin:5px 0 0!important;
+  }
+  html body #dw-ref-home .dw-ref-balance-status{
+    display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+    min-height:82px;min-width:0;padding-left:22px;
+    border-left:2px solid #ABC6D7;gap:9px;
+  }
+  html body #dw-ref-home .dw-ref-balance-pill{
+    display:inline-flex;align-items:center;gap:9px;
+    border:1px solid rgba(96,241,173,.5);
+    border-radius:999px;background:rgba(96,241,173,.24);
+    color:#102B40;padding:7px 14px;font-size:clamp(13px,1vw,17px);
+    font-weight:750;line-height:1.2;white-space:nowrap;
+  }
+  html body #dw-ref-home .dw-ref-balance-pill::before{
+    content:"✓";width:23px;height:23px;display:grid;place-items:center;
+    border-radius:50%;background:#60F1AD;color:#0A1B2E;font-size:14px;font-weight:900;
+  }
+  html body #dw-ref-home .dw-ref-balance-pill[data-state="negative"]::before{content:"−"}
+  html body #dw-ref-home .dw-ref-balance-pill[data-state="unknown"]::before{content:"·"}
+  html body #dw-ref-home .dw-ref-balance-line{
+    margin:0!important;color:#355E72!important;
+    font-size:clamp(13px,1.03vw,17px)!important;
+    font-weight:550;line-height:1.35;
+  }
+  html body #dw-ref-home .dw-ref-balance-line strong{
+    color:#24B77F;font-weight:800;
+  }
+  html body #dw-ref-home .dw-ref-greeting[data-balance-state="negative"] .dw-ref-balance-line strong{
+    color:#173750;
+  }
+  @media(min-width:901px) and (max-width:1250px){
+    html body #dw-ref-home .dw-ref-greeting{
+      grid-template-columns:54px minmax(0,1fr)!important;gap:13px!important;min-height:115px!important;
+    }
+    html body #dw-ref-home .dw-ref-time-icon{width:54px;height:54px}
+    html body #dw-ref-home .dw-ref-time-icon svg{width:34px;height:34px}
+    html body #dw-ref-home .dw-ref-balance-status{display:none!important}
+    html body #dw-ref-home .dw-ref-greeting-copy{padding-left:13px}
+  }
   /* The original #dw-compact-add button now sits in the reference Add host.
      Keep the native menu/keyboard handlers and give that same button the
      screenshot's navy + mint pill appearance. */

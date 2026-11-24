@@ -29,7 +29,7 @@
  }
  function apply(){
    const selectors={
-     '#dw-ref-home .dw-ref-greeting p':'intro',
+     '#dw-ref-home .dw-ref-greeting p:not(.dw-ref-greeting-date)':'intro',
      '#dw-ref-stat-net .dw-ref-stat-label':'netBalance',
      '#dw-ref-stat-net .dw-ref-stat-detail':'trackerBalance',
      '#dw-ref-stat-income .dw-ref-stat-label':'totalIncome',
@@ -44,7 +44,9 @@
    };
    for(const [selector,key] of Object.entries(selectors))setText(selector,key);
    const greetingNode=document.getElementById('dw-ref-greeting');
-   if(greetingNode){
+   if(greetingNode&&!greetingNode.hasAttribute('data-dw-time-aware')){
+     // The new desktop time-aware greeting owns its own localized text.
+     // Avoid replacing "Good evening" with the generic "Hi" on locale refresh.
      const name=greetingNode.dataset.dwGreetingName||'';
      const label=greeting(name);
      if(greetingNode.textContent!==label)greetingNode.textContent=label;

@@ -39,9 +39,115 @@
  root.id='dw-ref-home';root.setAttribute('aria-label','Financial overview');
  const intro=document.createElement('div');intro.className='dw-ref-intro';
  const greet=document.createElement('div');greet.className='dw-ref-greeting';
- const h1=document.createElement('h1');h1.id='dw-ref-greeting';h1.textContent='Welcome back';
- const subtitle=document.createElement('p');subtitle.textContent='Here’s your overview for today.';
- greet.append(h1,subtitle);
+ const timeIcon=document.createElement('span');timeIcon.className='dw-ref-time-icon';timeIcon.setAttribute('aria-hidden','true');
+ const greetingCopy=document.createElement('div');greetingCopy.className='dw-ref-greeting-copy';
+ const h1=document.createElement('h1');h1.id='dw-ref-greeting';h1.dataset.dwTimeAware='true';h1.textContent='Welcome!';
+ const dateLabel=document.createElement('p');dateLabel.className='dw-ref-greeting-date';dateLabel.id='dw-ref-greeting-date';
+ greetingCopy.append(h1,dateLabel);
+ const summaryStatus=document.createElement('div');summaryStatus.className='dw-ref-balance-status';
+ const balanceBadge=document.createElement('span');balanceBadge.className='dw-ref-balance-pill';balanceBadge.id='dw-ref-balance-pill';
+ const balanceLine=document.createElement('p');balanceLine.className='dw-ref-balance-line';balanceLine.id='dw-ref-balance-line';
+ summaryStatus.append(balanceBadge,balanceLine);
+ greet.append(timeIcon,greetingCopy,summaryStatus);
+ renderTimeGreeting();
+ // The current viewer's device time, not a server clock or a fixed time zone,
+ // determines greeting and icon. The same banner respects the selected language.
+ const dayWords={
+  en:['Good morning','Good afternoon','Good evening','Good night'],
+  es:['Buenos días','Buenas tardes','Buenas noches','Buenas noches'],
+  fr:['Bonjour','Bon après-midi','Bonsoir','Bonne nuit'],
+  he:['בוקר טוב','צהריים טובים','ערב טוב','לילה טוב'],
+  'zh-Hans':['早上好','下午好','晚上好','晚安'],
+  pt:['Bom dia','Boa tarde','Boa noite','Boa noite'],
+  de:['Guten Morgen','Guten Tag','Guten Abend','Gute Nacht'],
+  it:['Buongiorno','Buon pomeriggio','Buonasera','Buonanotte'],
+  ja:['おはようございます','こんにちは','こんばんは','おやすみなさい'],
+  ar:['صباح الخير','طاب مساؤك','مساء الخير','ليلة سعيدة'],
+  ko:['좋은 아침입니다','좋은 오후입니다','좋은 저녁입니다','편안한 밤 되세요'],
+  hi:['सुप्रभात','शुभ दोपहर','शुभ संध्या','शुभ रात्रि'],
+  ru:['Доброе утро','Добрый день','Добрый вечер','Спокойной ночи'],
+  tr:['Günaydın','İyi günler','İyi akşamlar','İyi geceler'],
+  vi:['Chào buổi sáng','Chào buổi chiều','Chào buổi tối','Chúc ngủ ngon'],
+  nl:['Goedemorgen','Goedemiddag','Goedenavond','Goedenacht'],
+  pl:['Dzień dobry','Miłego popołudnia','Dobry wieczór','Dobranoc'],
+  sv:['God morgon','God eftermiddag','God kväll','God natt'],
+  bn:['সুপ্রভাত','শুভ অপরাহ্ন','শুভ সন্ধ্যা','শুভ রাত্রি']
+ };
+ // State labels do not treat a tracker balance as "today's" earnings.
+ const balanceWords={
+  en:['On track','To settle','All settled','Balance pending',"You're up",'You owe','No outstanding balance','Open a tracker to see your balance'],
+  es:['A tu favor','Por saldar','Todo saldado','Saldo pendiente','A tu favor','Debes','Sin saldos pendientes','Abre un grupo para ver tu saldo'],
+  fr:['Solde positif','À régler','Tout est réglé','Solde indisponible','En votre faveur','Vous devez','Aucun solde à régler','Ouvrez un groupe pour voir votre solde'],
+  he:['יתרה חיובית','יש להסדיר','הכול הוסדר','היתרה ממתינה','לזכותך','עליך לשלם','אין יתרה פתוחה','יש לפתוח קבוצה כדי לראות יתרה'],
+  'zh-Hans':['余额为正','待结清','已结清','余额待更新','你的应收','你需要支付','没有未结余额','打开分账组查看余额'],
+  pt:['Saldo positivo','A acertar','Tudo acertado','Saldo pendente','A seu favor','Você deve','Sem saldo pendente','Abra um grupo para ver o saldo'],
+  de:['Positiver Saldo','Ausgleich offen','Alles ausgeglichen','Saldo ausstehend','Zu deinen Gunsten','Du schuldest','Keine offenen Beträge','Öffne eine Gruppe für deinen Saldo'],
+  it:['Saldo positivo','Da saldare','Tutto saldato','Saldo in attesa','A tuo favore','Devi','Nessun saldo in sospeso','Apri un gruppo per vedere il saldo'],
+  ja:['プラス残高','精算が必要','精算済み','残高を確認中','受け取り予定','支払い予定','未精算の残高はありません','グループを開いて残高を確認'],
+  ar:['رصيد موجب','للتسوية','تمت التسوية','الرصيد قيد التحديث','لك مستحقات','عليك دفع','لا رصيد مستحق','افتح مجموعة لعرض الرصيد'],
+  ko:['플러스 잔액','정산 필요','모두 정산됨','잔액 확인 중','받을 금액','지불할 금액','미정산 잔액 없음','그룹을 열어 잔액을 확인하세요'],
+  hi:['सकारात्मक शेष','निपटान बाकी','सब निपटा','शेष लंबित','आपको मिलेंगे','आपको देने हैं','कोई बकाया नहीं','शेष देखने के लिए समूह खोलें'],
+  ru:['Положительный баланс','К оплате','Всё погашено','Баланс уточняется','Вам должны','Вы должны','Нет открытых задолженностей','Откройте группу, чтобы увидеть баланс'],
+  tr:['Pozitif bakiye','Ödenecek','Hesaplar kapandı','Bakiye bekleniyor','Alacağınız','Borcunuz','Açık bakiye yok','Bakiyeyi görmek için grup açın'],
+  vi:['Số dư dương','Cần thanh toán','Đã thanh toán hết','Đang tải số dư','Bạn được nhận','Bạn cần trả','Không còn số dư','Mở nhóm để xem số dư'],
+  nl:['Positief saldo','Nog te verrekenen','Alles verrekend','Saldo nog onbekend','Je ontvangt','Je bent verschuldigd','Geen openstaand saldo','Open een groep om je saldo te zien'],
+  pl:['Dodatnie saldo','Do rozliczenia','Wszystko rozliczone','Saldo oczekuje','Do otrzymania','Do zapłaty','Brak zaległych sald','Otwórz grupę, aby zobaczyć saldo'],
+  sv:['Positivt saldo','Att reglera','Allt reglerat','Saldo väntar','Du får tillbaka','Du är skyldig','Inget utestående saldo','Öppna en grupp för att se saldot'],
+  bn:['ধনাত্মক ব্যালেন্স','পরিশোধ বাকি','সব মিটেছে','ব্যালেন্স অপেক্ষমাণ','আপনি পাবেন','আপনাকে দিতে হবে','কোনো বকেয়া নেই','ব্যালেন্স দেখতে গ্রুপ খুলুন']
+ };
+ const timeSvg={
+  morning:'<circle cx="12" cy="12" r="4.1"/><path d="M12 2v2.5m0 15V22M4.9 4.9l1.8 1.8m10.6 10.6 1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/>',
+  afternoon:'<circle cx="12" cy="11" r="4.4"/><path d="M12 1.8v2.3M3.7 11H1.8m20.4 0h-1.9M5.8 4.8 4.2 3.2m14 1.6 1.6-1.6M4 19h16M8 22h8"/>',
+  evening:'<path d="M2 18h20M5 21h14M5 14.5a7 7 0 0 1 14 0M12 3v2m-7-1 1.6 1.6M19 4l-1.6 1.6"/>',
+  night:'<path d="M20 15.2A8.7 8.7 0 0 1 8.8 4a8.8 8.8 0 1 0 11.2 11.2Z"/><path d="M17.6 3v4M15.6 5h4m-1.3 5v2.4m-1.2-1.2h2.4"/>'
+ };
+ function phaseForHour(hour){
+  return hour>=5&&hour<12?'morning':hour>=12&&hour<17?'afternoon':hour>=17&&hour<21?'evening':'night';
+ }
+ function currentLanguage(){
+  const raw=window.DoWeoI18n?.resolve?.(window)||window.dwUnifiedLocale?.locale?.()||document.documentElement.lang||navigator.language||'en';
+  const normalized=raw==='he-script'?'he':raw;
+  return dayWords[normalized]?normalized:(dayWords[String(normalized).split('-')[0]]?String(normalized).split('-')[0]:'en');
+ }
+ function renderTimeGreeting(now=new Date()){
+  const lang=currentLanguage();
+  const phase=phaseForHour(now.getHours());
+  const icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">'+timeSvg[phase]+'</svg>';
+  if(timeIcon.dataset.phase!==phase){timeIcon.innerHTML=icon;timeIcon.dataset.phase=phase;}
+  const greetingIndex={morning:0,afternoon:1,evening:2,night:3}[phase];
+  const fullName=h1.dataset.dwGreetingName||'';
+  const name=fullName.split(/\s+/)[0];
+  const label=dayWords[lang][greetingIndex]+(name?', '+name:'')+'!';
+  if(h1.textContent!==label)h1.textContent=label;
+  greet.dataset.timeOfDay=phase;
+  try {
+   const formatted=new Intl.DateTimeFormat(lang,{weekday:'long',month:'long',day:'numeric'}).format(now);
+   if(dateLabel.textContent!==formatted)dateLabel.textContent=formatted;
+  }catch(_){dateLabel.textContent=new Intl.DateTimeFormat('en',{weekday:'long',month:'long',day:'numeric'}).format(now);}
+  updateBalanceStatus(lang);
+ }
+ function updateBalanceStatus(lang=currentLanguage()){
+  const words=balanceWords[lang]||balanceWords.en;
+  const source=document.getElementById('sq-clean-net');
+  const raw=source?.textContent?.trim()||'';
+  const number=Number(raw.replace(/[^\d.,−-]/g,'').replace(/,/g,'').replace('−','-'));
+  const state=!/[\d]/.test(raw)||!Number.isFinite(number)?'unknown':number>0.005?'positive':number<-.005?'negative':'zero';
+  greet.dataset.balanceState=state;
+  const labels={positive:words[0],negative:words[1],zero:words[2],unknown:words[3]};
+  if(balanceBadge.textContent!==labels[state])balanceBadge.textContent=labels[state];
+  balanceBadge.dataset.state=state;
+  const text=state==='positive'?words[4]:state==='negative'?words[5]:'';
+  const amount=state==='positive'?raw:state==='negative'?raw.replace(/[-−]/g,''):'';
+  if(state==='zero')balanceLine.textContent=words[6];
+  else if(state==='unknown')balanceLine.textContent=words[7];
+  else{
+   // Use the real tracker amount, not a hard-coded number or claimed daily gain.
+   const pieces=[document.createTextNode(text+' ')];
+   const value=document.createElement('strong');value.textContent=amount;
+   pieces.push(value);
+   if(balanceLine.textContent!==text+' '+amount)balanceLine.replaceChildren(...pieces);
+  }
+ }
  // Use the original real Add dropdown button itself, not a proxy control.
  // This preserves its keyboard menu interactions and all previous app tests.
  const add=document.createElement('div');add.id='dw-ref-add';
@@ -161,7 +267,7 @@
   const match=g.match(/(?:welcome back|hi)[,!]?\s*(.*)/i);
   const first=(match?.[1]||'').replace(/^,?\s*/,'').trim();
   h1.dataset.dwGreetingName=first;
-  h1.textContent=window.dwUnifiedLocale?.greeting?.(first)||(first ? 'Hi, '+first+'!' : 'Welcome back!');
+  renderTimeGreeting();
   const who=document.getElementById('who')?.textContent?.trim()||first||'';
   const initials=who.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x.charAt(0).toUpperCase()).join('')||'ME';
   const avatarLabel=avatar.querySelector('.dw-ref-avatar-label');
@@ -344,9 +450,15 @@
   if(active)syncBalances();
  });
  classObserver.observe(dashboard,{attributes:true,attributeFilter:['class']});
- document.addEventListener('visibilitychange',()=>{if(!document.hidden&&desktop.matches)refreshFinance(false);});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&desktop.matches){renderTimeGreeting();refreshFinance(false);}});
+ window.addEventListener('pageshow',()=>{if(desktop.matches)renderTimeGreeting();});
+ window.addEventListener('focus',()=>{if(desktop.matches)renderTimeGreeting();});
+ // Refresh at minute boundaries, including when the viewer crosses midnight or
+ // any of the four time-of-day boundaries with the dashboard still open.
+ setInterval(()=>{if(desktop.matches)renderTimeGreeting();},60*1000);
  document.addEventListener('doweo:finance-saved',()=>refreshFinance(true));
  document.addEventListener('doweo:languagechange',()=>{
+   renderTimeGreeting();
    if(lastChartRows.length)showChart(lastChartRows);
    else if(chartBody.querySelector('.dw-ref-chart-empty'))showChart([]);
  });
