@@ -14,7 +14,7 @@ try{
     const page=await browser.newPage({viewport:{width,height:mobile?844:900},deviceScaleFactor:1});
     await page.goto(base+'/?verify=tracker-settings-hub-v2',{waitUntil:'domcontentloaded',timeout:45000});
     await page.waitForFunction(() => [...document.styleSheets].some(sheet =>
-      sheet.href && sheet.href.includes('doweo-tracker-settings-hub.css?v=20261124-reference-hub-v2')
+      sheet.href && sheet.href.includes('doweo-tracker-settings-hub.css?v=20261124-reference-hub-v3')
     ),null,{timeout:25000});
     const state=await page.evaluate(()=>{
       const menu=document.createElement('div');
