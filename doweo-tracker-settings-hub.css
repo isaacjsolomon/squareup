@@ -11,6 +11,10 @@ html body .dw-ts-scrim{
 html body .tracker-tile-menu-panel:has(> .dw-tracker-settings-hub:not([hidden])){
   isolation:isolate!important;
   padding:25px 28px 27px!important;
+  /* The legacy tracker popover caps all menus at 310px. Explicitly release it
+     for this full-size settings sheet while retaining JS viewport/sidebar sizing. */
+  min-width:0!important;
+  max-width:calc(100vw - 24px)!important;
   box-sizing:border-box!important;
   border:1px solid #355E72!important;
   border-radius:34px!important;
