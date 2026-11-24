@@ -188,7 +188,7 @@
   }
   html body #dw-ref-home .dw-ref-intro{
     display:flex;align-items:center;justify-content:space-between;
-    gap:18px;margin:18px 0 8px;
+    gap:18px;margin:25px 0 12px;
     align-items:stretch!important;
   }
   html body #dw-ref-home h1{
@@ -205,10 +205,10 @@
     grid-template-columns:44px minmax(0,1fr) minmax(165px,auto)!important;
     align-items:center!important;column-gap:14px!important;
     flex:1 1 auto!important;min-width:0!important;
-    /* Compact to the user's guide lines: 72 CSS px and align vertically in the header. */
-    height:72px!important;min-height:72px!important;max-height:72px!important;
+    /* The reference's orange guides span ~100 CSS pixels at the screenshot scale. */
+    height:auto!important;min-height:100px!important;max-height:none!important;
     padding:7px 18px!important;
-    box-sizing:border-box!important;overflow:hidden!important;
+    box-sizing:border-box!important;overflow:visible!important;
     box-shadow:0 13px 32px rgba(10,27,46,.09)!important;
   }
   html body #dw-ref-home .dw-ref-time-icon{
@@ -264,7 +264,7 @@
   @media(min-width:901px) and (max-width:1250px){
     html body #dw-ref-home .dw-ref-greeting{
       grid-template-columns:44px minmax(0,1fr)!important;
-      column-gap:13px!important;min-height:72px!important;
+      column-gap:13px!important;min-height:100px!important;
     }
     html body #dw-ref-home .dw-ref-balance-status{display:none!important}
     html body #dw-ref-home .dw-ref-greeting-copy{padding-left:13px}
