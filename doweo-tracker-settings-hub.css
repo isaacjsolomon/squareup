@@ -1,10 +1,12 @@
 /* Tracker settings: compact desktop popup. The original mobile styling is retained below. */
 @media (min-width:901px){
+html body .tracker-tile-menu-panel[popover]{margin:0!important;filter:none!important;backdrop-filter:none!important}
+html body .tracker-tile-menu-panel[popover]::backdrop{background:rgba(3,16,31,.42);backdrop-filter:none;pointer-events:none}
 html body .dw-ts-scrim{position:fixed!important;inset:0!important;z-index:99998!important;background:rgba(3,16,31,.34)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 html body .tracker-tile-menu-panel:has(> .dw-tracker-settings-hub:not([hidden])){
  position:fixed!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%)!important;
- width:min(400px,calc(100vw - 32px))!important;max-width:calc(100vw - 32px)!important;min-width:0!important;
- max-height:min(75dvh,650px)!important;overflow-y:auto!important;box-sizing:border-box!important;
+ width:min(360px,calc(100vw - 32px))!important;max-width:calc(100vw - 32px)!important;min-width:0!important;
+ max-height:min(72dvh,560px)!important;overflow-y:auto!important;box-sizing:border-box!important;
  padding:18px 16px 14px!important;border:1px solid #355E72!important;border-radius:18px!important;
  background:#102B40!important;background-image:none!important;color:#F3F8FC!important;
  box-shadow:0 16px 46px rgba(0,10,24,.48)!important;z-index:100000!important;
@@ -21,10 +23,10 @@ html body .tracker-tile-menu-panel .dw-tracker-settings-hub:not([hidden]) .dw-ts
 }
 html body .tracker-tile-menu-panel .dw-tracker-settings-hub:not([hidden]) :is(.tracker-settings-back,.dw-ts-section-links,.dw-ts-appearance-icon,.dw-ts-appearance-heading-copy p,.dw-ts-appearance-preview){display:none!important}
 html body .tracker-tile-menu-panel .dw-tracker-settings-hub:not([hidden]) .dw-ts-close{
- display:grid!important;place-items:center!important;flex:0 0 32px!important;
- width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;
- padding:0!important;margin:0!important;border:1px solid #355E72!important;border-radius:8px!important;
- background:#173750!important;color:#F3F8FC!important;font:400 23px/1 Arial,sans-serif!important;cursor:pointer!important
+ display:grid!important;place-items:center!important;flex:0 0 auto!important;
+ width:auto!important;height:32px!important;min-width:32px!important;min-height:32px!important;
+ padding:0 10px!important;margin:0!important;border:1px solid #355E72!important;border-radius:8px!important;
+ background:#173750!important;color:#F3F8FC!important;font:600 13px/1 system-ui,sans-serif!important;cursor:pointer!important
 }
 html body .tracker-tile-menu-panel .dw-tracker-settings-hub:not([hidden]) .dw-ts-close:hover{background:#204158!important}
 html body .tracker-tile-menu-panel .dw-tracker-settings-hub:not([hidden]) :is(.sq-tracker-settings-group,.dw-ts-appearance){

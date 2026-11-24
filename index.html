@@ -2900,7 +2900,7 @@ async function renderTrackerGallery(){
       var settingsClose=document.createElement('button');
       settingsClose.type='button';settingsClose.className='dw-ts-close';
       settingsClose.setAttribute('aria-label','Close tracker settings');
-      settingsClose.textContent='×';
+      settingsClose.textContent='Close popup';
       settingsClose.onclick=function(){menu.open=false;menuToggle.focus();};
       settingsTop.append(settingsHeader,settingsHeading,settingsClose);
       var settingsQuickLinks=document.createElement('nav');
@@ -3053,8 +3053,17 @@ async function renderTrackerGallery(){
       function placeTrackerMenu(){
         if(!menu.open)return;
         var showingSettings=!settingsView.hidden;
-        if(showingSettings&&!settingsScrim.isConnected)document.body.append(settingsScrim);
-        if(!showingSettings)settingsScrim.remove();
+        if(showingSettings && window.innerWidth>900 && menuPanel.showPopover){
+          settingsScrim.remove();
+          menuPanel.setAttribute('popover','manual');
+          menuPanel.setAttribute('role','dialog');
+          menuPanel.setAttribute('aria-label','Tracker settings');
+          if(!menuPanel.matches(':popover-open'))menuPanel.showPopover();
+        }else{
+          resetSettingsPopup();
+          if(showingSettings && !settingsScrim.isConnected)document.body.append(settingsScrim);
+          if(!showingSettings)settingsScrim.remove();
+        }
         var viewport=window.visualViewport;
         var vw=window.innerWidth;
         var vh=viewport?viewport.height:window.innerHeight;
@@ -3091,6 +3100,13 @@ async function renderTrackerGallery(){
         menuPanel.style.top=Math.max(vt+12,Math.min(vt+vh-height-12,top))+'px';
         menuPanel.style.visibility='visible';
       }
+      function resetSettingsPopup(){
+        if(!menuPanel.hasAttribute('popover'))return;
+        menuPanel.hidePopover();
+        menuPanel.removeAttribute('popover');
+        menuPanel.removeAttribute('role');
+        menuPanel.removeAttribute('aria-label');
+      }
       function closeTrackerMenu(){menu.open=false;settingsScrim.remove();}
       function onTrackerMenuOutside(event){if(menu.open&&!menu.contains(event.target)&&!menuPanel.contains(event.target))closeTrackerMenu();}
       function onTrackerMenuKey(event){if(event.key==='Escape'&&menu.open)closeTrackerMenu();}
@@ -3103,6 +3119,7 @@ async function renderTrackerGallery(){
         }else{
           settingsScrim.remove();
           settingsView.hidden=true;mainView.hidden=false;
+          resetSettingsPopup();
           menu.append(menuPanel);
           menuPanel.removeAttribute('style');
           document.removeEventListener('pointerdown',onTrackerMenuOutside);
@@ -10313,7 +10330,7 @@ html body #backdrop-modal #backdrop-swatches .swatch > .dw-backdrop-preview-titl
 <!-- Category styling loads after legacy overrides, including mobile popup styles. -->
 <link rel="stylesheet" href="/doweo-backdrop-catalog.css?v=20261124-60-presets-v2">
 <!-- Authenticated tracker settings hub design; both sections remain on one page. -->
-<link rel="stylesheet" href="/doweo-tracker-settings-hub.css?v=20261124-simple-popup-v1">
+<link rel="stylesheet" href="/doweo-tracker-settings-hub.css?v=20261124-centered-popup-v3">
 </body>
 </html>
 
