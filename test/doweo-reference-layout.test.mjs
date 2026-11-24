@@ -8,7 +8,7 @@ const js=readFileSync(new URL('../doweo-reference-home.js',import.meta.url),'utf
 const flow=readFileSync(new URL('../.github/workflows/deploy-doweo-pages.yml',import.meta.url),'utf8');
 
 test('the screenshot layout ships as a real, connected piece of production HTML',()=>{
- for(const p of ['doweo-reference-home.css?v=20261123-time-greeting-wide-v1','doweo-reference-home.js?v=20261123-time-greeting-wide-v2'])
+ for(const p of ['doweo-reference-home.css?v=20261124-deploy-trigger-v6','doweo-reference-home.js?v=20261123-time-greeting-wide-v2'])
   assert.ok(html.includes(p),p+' is missing from index.html');
  assert.match(flow,/doweo-reference-home\.css doweo-global-search\.js doweo-reference-home\.js/);
  assert.match(flow,/node --check \.pages-output\/doweo-reference-home\.js/);
@@ -57,9 +57,9 @@ test('wide greeting uses device-local time, real balance and preserves the Add a
  assert.ok(js.indexOf('root.append(intro,statGrid,chart,lower);')<js.indexOf('renderTimeGreeting();',js.indexOf('root.append(intro,statGrid,chart,lower);')),'initialize greeting only after DOM and language constants exist');
  assert.doesNotMatch(js,/greet\.append\(timeIcon,greetingCopy,summaryStatus\);\s*renderTimeGreeting\(\)/,'prevent early greeting initialization');
  assert.match(css,/#dw-ref-home \.dw-ref-greeting\{/,'expanded greeting CSS present');
- assert.match(css,/grid-template-columns:68px minmax\(0,1fr\) minmax\(182px,auto\)/);
+ assert.match(css,/grid-template-columns:44px minmax\(0,1fr\) minmax\(165px,auto\)/);
  assert.match(html,/doweo-reference-home\.js\?v=20261123-time-greeting-wide-v2/);
- assert.match(html,/doweo-reference-home\.css\?v=20261123-time-greeting-wide-v1/);
+ assert.match(html,/doweo-reference-home\.css\?v=20261124-deploy-trigger-v6/);
  assert.match(html,/doweo-unified-localize\.js\?v=20261123-time-greeting-wide-v1/);
  assert.match(js,/if\(holder\.parentElement!==add\)add\.append\(holder\)/,'real Add button remains attached');
 });
