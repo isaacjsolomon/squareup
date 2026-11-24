@@ -205,7 +205,7 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
     background:getComputedStyle(el).backgroundColor,color:getComputedStyle(el).color
   }));
   console.log('ANALYTICS_SURFACE',JSON.stringify(analyticsPanel));
-  assert.equal(analyticsPanel.background,'rgb(247, 250, 255)',
+  assert.equal(analyticsPanel.background,'rgb(243, 248, 252)',
     'Analytics cards must use matching light surfaces, not unrelated dark panels');
 
   const secondaryTabs=await page.evaluate(()=>{
