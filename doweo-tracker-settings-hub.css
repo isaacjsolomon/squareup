@@ -71,8 +71,8 @@ html body .dw-tracker-settings-hub .dw-ts-section-link{
   gap:12px!important;width:100%!important;min-width:0!important;
   min-height:52px!important;padding:10px 13px!important;
   border-radius:999px!important;border:1px solid transparent!important;
-  font:700 clamp(14px,1.75vw,20px)/1.15 inherit!important;
-  font-family:inherit!important;
+  font-family:inherit!important;font-size:clamp(14px,1.75vw,20px)!important;
+  font-weight:700!important;line-height:1.15!important;
   color:#F3F8FC!important;background:transparent!important;
   cursor:pointer!important;white-space:normal!important;
 }
