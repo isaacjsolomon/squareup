@@ -8987,6 +8987,25 @@ document.getElementById('ac-log').addEventListener('click',function(){
  const walletPanel=makePanel('dw-my-wallet-flyout',['nav-analytics','nav-cashflow','sqev-nav']);
  finance.setAttribute('aria-controls',walletPanel.id);
  const socialPanel=makePanel('dw-social-flyout',['nav-chat','nav-friends']);
+ const originalChat=socialPanel.querySelector('#nav-chat');
+ if(originalChat){
+   const shortcut=document.createElement('button');
+   shortcut.type='button';
+   shortcut.id='dw-sidebar-chat';
+   shortcut.className='sq-nav-link';
+   shortcut.dataset.sqDestination='nav-chat';
+   const icon=originalChat.querySelector('.sq-nav-icon').cloneNode(true);
+   icon.className='dw-all-nav-icon';
+   icon.setAttribute('aria-hidden','true');
+   shortcut.append(icon,originalChat.querySelector('.sq-nav-label').cloneNode(true));
+   shortcut.style.setProperty('display','flex','important');
+   shortcut.style.setProperty('order',getComputedStyle(social).order,'important');
+   social.before(shortcut);
+   matchMedia('(min-width:901px)').addEventListener('change',event=>{
+     shortcut.style.setProperty('display',event.matches?'flex':'none','important');
+   });
+ }
+
  const morePanel=makePanel('dw-more-flyout',['nav-profile','nav-help-center','nav-about','nav-privacy-terms']);
  social.setAttribute('aria-controls',socialPanel.id);
  summary.setAttribute('aria-controls',morePanel.id);summary.setAttribute('aria-expanded','false');
@@ -9925,7 +9944,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 
 <!-- Unified desktop shell and reviewed offline labels for every supported language. -->
 <link rel="stylesheet" href="/doweo-unified-shell.css?v=20261123-cashflow-visible-v4">
-<script defer src="/doweo-unified-shell.js?v=20261123-my-wallet-icon-v1"></script>
+<script defer src="/doweo-unified-shell.js?v=20261124-sidebar-chat-v2"></script>
 <script defer src="/doweo-unified-localize.js?v=20261123-time-greeting-wide-v1"></script>
 <!-- This must load last, after the unified-shell and every legacy stylesheet. -->
 <link rel="stylesheet" href="/doweo-page-repairs.css?v=20261122-backdrop-colors-v1">
