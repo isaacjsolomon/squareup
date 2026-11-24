@@ -1530,6 +1530,7 @@ document.getElementById("clear").onclick = function () {
 render();
 
 </script>
+<script src="/doweo-backdrop-catalog.js?v=20261124-60-presets-v2"></script>
 <script type="module">
 // ============ ACCOUNTS (Netlify Identity) ============
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -2453,7 +2454,11 @@ var SQ_BANNER_PRESETS={
  lavender:'linear-gradient(125deg,#262c64,#856cae 55%,#d4a3c1)'
 };
 function sqBannerPalette(){
- return SQ_BANNER_PRESETS;
+ // Banner presets and tracker-wide backdrops share one maintained catalog.
+ var palette=Object.assign({},SQ_BANNER_PRESETS);
+ var catalog=window.DoWeoBackdropCatalog||{};
+ Object.keys(catalog).forEach(function(key){palette[key]=catalog[key].css;});
+ return palette;
 }
 var sqBannerDBPromise=null;
 function sqBannerDB(){
@@ -2484,15 +2489,74 @@ async function sqBannerEdit(trackerId,trackerName,banner){
  var overlay=document.createElement('div');overlay.id='sq-banner-editor';overlay.className='tracker-banner-editor';overlay.style.zIndex='2147482000';
  var dialog=document.createElement('div');dialog.className='tracker-banner-dialog';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Change tracker banner');
  var title=document.createElement('h2');title.textContent='Change banner · '+trackerName;
- var hint=document.createElement('p');hint.textContent='Choose a preset or upload a photo. Your choice is saved on this device.';
+ var hint=document.createElement('p');hint.textContent='Choose a photo, gradient, or texture. Banner choices are saved on this device.';
+ var tabs=document.createElement('div');tabs.className='dw-banner-categories';tabs.setAttribute('role','group');tabs.setAttribute('aria-label','Banner categories');
  var presets=document.createElement('div');presets.className='tracker-banner-presets';
- Object.keys(SQ_BANNER_PRESETS).forEach(function(name){var b=document.createElement('button');b.type='button';b.className='tracker-banner-choice';b.style.background=sqBannerPalette()[name];b.textContent=name.charAt(0).toUpperCase()+name.slice(1);b.onclick=async function(){try{var v={preset:name};await sqBannerSet(trackerId,v);sqBannerApply(banner,v);overlay.remove();}catch(e){alert('Could not save banner: '+e.message);}};presets.append(b);});
- var uploadLabel=document.createElement('p');uploadLabel.textContent='Or upload your own image (JPG, PNG, or WebP, max 3 MB):';
+ var catalog=window.DoWeoBackdropCatalog||{};
+ var categories=[{id:'all',label:'All'},{id:'nature',label:'Nature & Landscapes'},{id:'cities',label:'Cities & Travel'},{id:'gradients',label:'Gradients & Abstract'},{id:'textures',label:'Textures & Designs'},{id:'animals',label:'Animals'}];
+ var saved=await sqBannerGet(trackerId);
+ var chosen=saved&&saved.preset||'ocean';
+ var selectedCategory=(catalog[chosen]&&catalog[chosen].group)||'nature';
+ var palette=sqBannerPalette();
+ var names=Object.keys(palette);
+ function renderChoices(){
+   tabs.replaceChildren();
+   categories.forEach(function(cat){
+     var tab=document.createElement('button');tab.type='button';tab.className='dw-banner-tab';
+     tab.setAttribute('aria-pressed',String(selectedCategory===cat.id));
+     tab.textContent=cat.label;tab.onclick=function(){selectedCategory=cat.id;renderChoices();};
+     tabs.appendChild(tab);
+   });
+   var fragment=document.createDocumentFragment();
+   names.forEach(function(name){
+     var config=catalog[name];
+     var group=config?config.group:'gradients';
+     if(selectedCategory!=='all'&&selectedCategory!==group)return;
+     var button=document.createElement('button');button.type='button';button.className='tracker-banner-choice';
+     button.dataset.bannerPreset=name;
+     button.setAttribute('aria-pressed',String(name===chosen));
+     var label=config?config.label:name.charAt(0).toUpperCase()+name.slice(1);
+     button.setAttribute('aria-label','Use '+label+' banner');
+     var preview=config?(config.preview||config.css):palette[name];
+     button.style.setProperty('background-image',preview,'important');
+     setBackdropSwatchArtwork(button,preview,label);
+     button.onclick=async function(){
+       try{
+         button.disabled=true;
+         var value={preset:name};
+         await sqBannerSet(trackerId,value);
+         sqBannerApply(banner,value);
+         overlay.remove();
+       }catch(error){button.disabled=false;alert('Could not save banner: '+error.message);}
+     };
+     fragment.appendChild(button);
+   });
+   presets.replaceChildren(fragment);
+ }
+ renderChoices();
+ var credit=document.createElement('p');credit.className='dw-banner-credit';
+ credit.textContent='Animal, nature and city photographs use Unsplash images; gradients and textures are DoWeo designs.';
+ var uploadLabel=document.createElement('p');uploadLabel.textContent='Or upload your own image (JPG, PNG or WebP, max 3 MB):';
  var file=document.createElement('input');file.type='file';file.accept='image/jpeg,image/png,image/webp';
- file.onchange=async function(){var f=file.files&&file.files[0];if(!f)return;if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>3*1024*1024){alert('Choose a JPG, PNG, or WebP image under 3 MB.');file.value='';return;}
- try{var data=await new Promise(function(resolve,reject){var r=new FileReader();r.onload=function(){resolve(r.result)};r.onerror=function(){reject(Error('Could not read image'))};r.readAsDataURL(f);});var v={image:data};await sqBannerSet(trackerId,v);sqBannerApply(banner,v);overlay.remove();}catch(e){alert('Could not save image. Try a smaller photo. '+e.message);}};
- var actions=document.createElement('div');actions.className='banner-editor-actions';var close=document.createElement('button');close.classList.add('doweo-close-control');close.textContent='Close';close.onclick=function(){overlay.remove()};actions.append(close);
- dialog.append(title,hint,presets,uploadLabel,file,actions);overlay.append(dialog);overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove()});document.body.append(overlay);requestAnimationFrame(function(){close.focus();});
+ file.onchange=async function(){
+   var f=file.files&&file.files[0];if(!f)return;
+   if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>3*1024*1024){
+     alert('Choose a JPG, PNG, or WebP image under 3 MB.');file.value='';return;
+   }
+   try{
+     var data=await new Promise(function(resolve,reject){
+       var reader=new FileReader();reader.onload=function(){resolve(reader.result);};
+       reader.onerror=function(){reject(Error('Could not read image'));};reader.readAsDataURL(f);
+     });
+     var value={image:data};await sqBannerSet(trackerId,value);sqBannerApply(banner,value);overlay.remove();
+   }catch(error){alert('Could not save image. Try a smaller photo. '+error.message);}
+ };
+ var actions=document.createElement('div');actions.className='banner-editor-actions';
+ var close=document.createElement('button');close.type='button';close.classList.add('doweo-close-control');
+ close.textContent='Close';close.onclick=function(){overlay.remove();};actions.appendChild(close);
+ dialog.append(title,hint,tabs,presets,credit,uploadLabel,file,actions);
+ overlay.appendChild(dialog);overlay.addEventListener('click',function(event){if(event.target===overlay)overlay.remove();});
+ document.body.appendChild(overlay);requestAnimationFrame(function(){close.focus();});
 }
 
 // Permission editor: all changes are verified and saved by the backend.
@@ -3092,6 +3156,8 @@ var PRESETS = {
     css: "radial-gradient(ellipse at 63% 0%,rgba(178,136,235,.62),transparent 45%),linear-gradient(180deg,rgba(21,26,60,0) 50%,rgba(9,19,45,.8) 100%),linear-gradient(135deg,#172b50,#65518b 56%,#07192f)"
   }
 };
+// Share the same curated photo/gradient catalog with background and banner selectors.
+Object.assign(PRESETS, window.DoWeoBackdropCatalog || {});
 
 // Side panel takes a medium tint of the backdrop: a fixed tint for presets,
 // or the photo's average color mixed toward white.
@@ -3178,8 +3244,12 @@ function backdropMsg(text, kind) {
 }
 var backdropCategory = "gradients";
 var BACKDROP_CATEGORIES = [
-  { id: "gradients", label: "Gradients" },
-  { id: "nature", label: "Nature" },
+  { id: "all", label: "All" },
+  { id: "nature", label: "Nature & Landscapes" },
+  { id: "cities", label: "Cities & Travel" },
+  { id: "gradients", label: "Gradients & Abstract" },
+  { id: "textures", label: "Textures & Designs" },
+  { id: "animals", label: "Animals" },
   { id: "sky", label: "Sky & Modern" }
 ];
 // The mobile theme gives buttons a solid navy background with !important.
@@ -3232,7 +3302,7 @@ function renderBackdropPicker() {
   }
   Object.keys(PRESETS).forEach(function (key) {
     var config = PRESETS[key];
-    if (config.group !== backdropCategory) return;
+    if (backdropCategory !== "all" && config.group !== backdropCategory) return;
     var swatch = document.createElement("button");
     swatch.type = "button";
     swatch.className = "swatch" + (b.preset === key ? " active" : "");
@@ -10148,6 +10218,8 @@ html body #backdrop-modal #backdrop-swatches .swatch > .dw-backdrop-preview-titl
 <!-- Mobile overview redesign; loaded after legacy CSS so mobile alone receives these styles. -->
 <link rel="stylesheet" href="/doweo-mobile-app-theme.css?v=20261123-continuous-navy-v1" media="(max-width:900px)">
 <link rel="stylesheet" href="/doweo-mobile-overview.css?v=continuous-navy-v3">
+<!-- Category styling loads after legacy overrides, including mobile popup styles. -->
+<link rel="stylesheet" href="/doweo-backdrop-catalog.css?v=20261124-60-presets-v2">
 </body>
 </html>
 
