@@ -1,11 +1,14 @@
 import {readFileSync} from 'node:fs';
 import {join, resolve} from 'node:path';
+import {runInNewContext} from 'node:vm';
 
 // Check the actual Cloudflare Pages output, not a stale source snapshot.
 const root=resolve(process.argv[2]||'.pages-output');
 const html=readFileSync(join(root,'index.html'),'utf8');
 const css=readFileSync(join(root,'styles.css'),'utf8');
 const desktopCss=readFileSync(join(root,'doweo-desktop-standalone.css'),'utf8');
+const catalogJs=readFileSync(join(root,'doweo-backdrop-catalog.js'),'utf8');
+const catalogCss=readFileSync(join(root,'doweo-backdrop-catalog.css'),'utf8');
 const server=readFileSync('functions/api/[[path]].js','utf8');
 const assert=(condition,message)=>{if(!condition)throw Error(message);};
 const section=html.match(/var PRESETS = \{[\s\S]*?\n\};/)?.[0];
@@ -27,7 +30,7 @@ assert(html.includes('expanded-gallery-18-presets-20261123-v1'),'Missing expande
 assert(html.includes('expanded-gallery-28-presets-20261123-v2'),'Missing 28-preset gallery marker');
 assert(html.includes('doweo-desktop-standalone.css?v=20261123-tracker-workspace-wallpaper-v1'),'New desktop gallery CSS not cache-busted');
 assert(html.includes('styles.css?v=20261123-backdrop-gallery-v1'),'Backdrop gallery stylesheet not cache-busted');
-assert(/function sqBannerPalette\(\)\{\s*return SQ_BANNER_PRESETS;\s*\}/.test(html),'Mobile banner preset lock still active');
+assert(html.includes('Object.keys(catalog).forEach(function(key){palette[key]=catalog[key].css;});'),'Banner picker must include all curated backdrops');
 assert(!/\bMOBILE_PRESETS\b|\bSQ_MOBILE_BANNER_PRESETS\b|dw-mobile-theme-authoritative-v7|seven-color-source-palette/.test(html),'Legacy palette lock still active');
 assert(html.includes('setBackdropSwatchArtwork(swatch, previewImage, config.label)'),'Every preset category must render the actual image or gradient in its own thumbnail layer');
 assert(html.includes('setBackdropSwatchArtwork(custom, photoPreview, "Your photo")'),'Uploaded photo thumbnail must also be visible on mobile');
@@ -56,4 +59,37 @@ assert(html.includes('el.style.setProperty("background-image", chosenImage, "imp
 assert(!html.includes('el.style.setProperty("background-blend-mode", url ? "multiply"'),'Mobile photo tint still active');
 assert(!css.includes('#backdrop.photo::after'),'Photo recoloring overlay still active');
 assert(css.includes('--accent: #60F1AD;'),'Mint action accent lost');
-console.log('All 28 presets, all three mobile thumbnail tabs, uploaded-photo previews, and desktop gallery verified');
+const libraryWindow={};
+runInNewContext(catalogJs,{window:libraryWindow});
+const curated=libraryWindow.DoWeoBackdropCatalog;
+assert(curated&&typeof curated==='object','Curated backdrop library failed to initialize');
+const entries=Object.entries(curated);
+assert(entries.length===60,'Expected all 60 curated backdrop entries');
+const expectedGroups={nature:9,cities:6,gradients:6,textures:9,animals:30};
+for(const [group,count] of Object.entries(expectedGroups)){
+ assert(entries.filter(([,v])=>v.group===group).length===count,'Wrong backdrop count for '+group);
+}
+assert(entries.filter(([,v])=>v.kind==='photo').length===45,'Expected 45 real-photo presets');
+assert(entries.filter(([,v])=>v.kind==='design').length===15,'Expected 15 abstract/texture presets');
+for(const [id,item] of entries){
+ assert(item.label&&item.css&&item.preview&&Array.isArray(item.side),'Invalid catalog option '+id);
+ assert(server.includes("'"+id+"'"),'Curated option missing from API allowlist: '+id);
+}
+for(const category of ['all','nature','cities','gradients','textures','animals']){
+ assert(html.includes('id: "'+category+'"'),'Missing backdrop filter category '+category);
+}
+assert(html.includes('Object.assign(PRESETS, window.DoWeoBackdropCatalog || {})'),
+ 'Shared tracker picker does not register curated gallery');
+assert(html.includes('backdropCategory !== "all" && config.group !== backdropCategory'),
+ 'All backdrop tab does not show presets across categories');
+assert(html.includes('setBackdropSwatchArtwork(button,preview,label)'),
+ 'Banner chooser does not render the curated photo thumbnails');
+assert(html.includes('await sqBannerSet(trackerId,value)')&&html.includes('sqBannerApply(banner,value)'),
+ 'Banner chooser does not persist the selected image');
+assert(html.includes('/doweo-backdrop-catalog.js?v=')&&html.includes('/doweo-backdrop-catalog.css?v='),
+ 'Published HTML must load the new backdrop assets');
+assert(catalogCss.includes('#sq-banner-editor .tracker-banner-presets'),
+ 'Banner picker category and preview styles missing');
+assert(catalogCss.includes('#backdrop-modal #backdrop-swatches'),
+ 'Tracker backdrop picker category styles missing');
+console.log('Verified 28 legacy presets + 60 curated options (45 photos, 15 designs), both selectors, mobile thumbnails, and all API allowlist entries');
