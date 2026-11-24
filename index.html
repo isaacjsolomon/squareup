@@ -9558,7 +9558,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 <link rel="stylesheet" href="/doweo-beta-nudge.css?v=20261122-backdrop-colors-v1">
 <script defer src="/doweo-beta-nudge.js?v=20261122-backdrop-colors-v1"></script>
 <!-- Screenshot-matched layout, preserving existing DoWeo data and controls. -->
-<link rel="stylesheet" href="/doweo-reference-home.css?v=20261124-orange-guide-fit-v3">
+<link rel="stylesheet" href="/doweo-reference-home.css?v=20261124-reference-exact-v5">
 <script defer src="/doweo-reference-home.js?v=20261123-time-greeting-wide-v2"></script>
 
 <!-- Unified desktop shell and reviewed offline labels for every supported language. -->
@@ -9967,16 +9967,88 @@ html body #sq-return-activity > .sq-return-row::after {
   html body #tracker-dashboard.sq-tab-overview #sq-return-summary > .sq-return-welcome > .sq-overview-heading {
     display: none !important;
   }
+  /*
+   * Authoritative desktop greeting geometry. This rule sits in the existing
+   * late-loading desktop style section, so even an outdated secondary CSS
+   * asset cannot reinstate the old 140px card and 68px icon.
+   *
+   * The user's screenshot guides are ~152 image pixels apart at ~1.5x scale:
+   * a 100 CSS px card shifted 25 CSS px down matches their intended region.
+   */
+  html body #tracker-dashboard #dw-ref-home .dw-ref-intro,
+  html body #dw-ref-home .dw-ref-intro {
+    margin: 25px 0 12px !important;
+    align-items: center !important;
+  }
   html body #tracker-dashboard #dw-ref-home .dw-ref-greeting,
   html body #dw-ref-home .dw-ref-greeting {
     background: #F3F8FC !important;
     border-radius: 27px !important;
-    /* The greeting's padding is owned by doweo-reference-home.css. */
     width: 100% !important;
     max-width: none !important;
     flex: 1 1 auto !important;
     min-width: 0 !important;
-    box-sizing: border-box;
+    display: grid !important;
+    grid-template-columns: 44px minmax(0, 1fr) minmax(165px, auto) !important;
+    align-items: center !important;
+    column-gap: 14px !important;
+    height: auto !important;
+    min-height: 100px !important;
+    max-height: none !important;
+    padding: 7px 18px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+  html body #dw-ref-home .dw-ref-time-icon {
+    width: 44px !important;
+    height: 44px !important;
+    flex: 0 0 44px !important;
+    border-radius: 14px !important;
+  }
+  html body #dw-ref-home .dw-ref-time-icon svg {
+    width: 27px !important;
+    height: 27px !important;
+  }
+  html body #dw-ref-home .dw-ref-greeting-copy {
+    padding-left: 14px !important;
+  }
+  html body #dw-ref-home .dw-ref-greeting-copy h1 {
+    font-size: clamp(22px, 1.75vw, 31px) !important;
+    line-height: 1.08 !important;
+    margin: 0 !important;
+  }
+  html body #dw-ref-home .dw-ref-greeting p.dw-ref-greeting-date {
+    font-size: clamp(12px, .95vw, 15px) !important;
+    line-height: 1.15 !important;
+    margin: 3px 0 0 !important;
+  }
+  html body #dw-ref-home .dw-ref-balance-status {
+    min-height: 0 !important;
+    padding-left: 14px !important;
+    gap: 3px !important;
+  }
+  html body #dw-ref-home .dw-ref-balance-pill {
+    padding: 3px 10px !important;
+    font-size: clamp(12px, .9vw, 14px) !important;
+    gap: 7px !important;
+  }
+  html body #dw-ref-home .dw-ref-balance-pill::before {
+    width: 17px !important;
+    height: 17px !important;
+    font-size: 12px !important;
+  }
+  html body #dw-ref-home .dw-ref-balance-line {
+    font-size: clamp(11px, .88vw, 14px) !important;
+    line-height: 1.2 !important;
+  }
+  /* The balance badge disappears before the three columns become cramped. */
+  @media (max-width:1250px) {
+    html body #dw-ref-home .dw-ref-greeting {
+      grid-template-columns: 44px minmax(0,1fr) !important;
+    }
+    html body #dw-ref-home .dw-ref-balance-status {
+      display:none !important;
+    }
   }
   html body #dw-ref-toolbar button.dw-ref-tool:is([data-ref-tool="search"],[data-ref-tool="notifications"]),
   html body #dw-all-top-tools button.dw-all-tool:is([data-dw-all-tool="search"],[data-dw-all-tool="notifications"]) {
