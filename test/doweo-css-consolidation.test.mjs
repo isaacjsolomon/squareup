@@ -77,7 +77,7 @@ test('original backdrop gradients are selectable on mobile and desktop',()=>{
   const line=html.split('\n').find(s=>new RegExp('^\\s*'+name+':\\s*\\{\\s*label:').test(s));
   assert.ok(line?.includes(start)&&line?.includes(end),name+' original gradient missing');
  }
- assert.ok(html.includes('return SQ_BANNER_PRESETS;'));
+ assert.ok(html.includes('Object.keys(catalog).forEach(function(key){palette[key]=catalog[key].css;});'), 'Original banner gradients and all curated backdrops must remain selectable');
  assert.ok(!html.includes('MOBILE_PRESETS'));
  assert.ok(!html.includes('SQ_MOBILE_BANNER_PRESETS'));
  assert.ok(!html.includes('dw-mobile-theme-authoritative-v7'));
@@ -93,7 +93,7 @@ test('Cloudflare copy manifest carries stylesheet, and injects component CSS bef
  // Check the actual static copy command without relying on neighboring filenames.
  const copyLine=deploy.split('\n').find(line=>line.trimStart().startsWith('cp index.html styles.css '));
  assert.ok(copyLine,'Cloudflare must copy index.html and styles.css');
- for(const file of ['doweo-i18n.js','doweo-page-repairs.css','doweo-reference-home.css','doweo-reference-home.js'])
+ for(const file of ['doweo-i18n.js','doweo-page-repairs.css','doweo-reference-home.css','doweo-reference-home.js','doweo-backdrop-catalog.js','doweo-backdrop-catalog.css'])
   assert.ok(copyLine.split(/\s+/).includes(file),'Missing deploy asset '+file);
  assert.match(deploy,/test -s \.pages-output\/styles\.css/);
  assert.match(deploy,/html = html\.replace\(marker, css \+ marker, 1\)/);
