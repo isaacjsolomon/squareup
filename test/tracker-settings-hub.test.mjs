@@ -51,7 +51,7 @@ test('scrim closes cleanly, existing actions remain reachable, and mobile naviga
 });
 
 test('production workflow publishes the new component stylesheet and its reference',()=>{
-  assert.ok(html.includes('/doweo-tracker-settings-hub.css?v=20261124-reference-hub-v1'));
+  assert.ok(html.includes('/doweo-tracker-settings-hub.css?v=20261124-reference-hub-v2'));
   assert.match(workflow,/cp index\.html styles\.css [^\n]*doweo-tracker-settings-hub\.css \.pages-output\//);
   assert.ok(workflow.includes('test -s .pages-output/doweo-tracker-settings-hub.css'));
   assert.ok(workflow.includes("grep -Fq '/doweo-tracker-settings-hub.css?v=' .pages-output/index.html"));
