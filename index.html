@@ -9558,7 +9558,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 <link rel="stylesheet" href="/doweo-beta-nudge.css?v=20261122-backdrop-colors-v1">
 <script defer src="/doweo-beta-nudge.js?v=20261122-backdrop-colors-v1"></script>
 <!-- Screenshot-matched layout, preserving existing DoWeo data and controls. -->
-<link rel="stylesheet" href="/doweo-reference-home.css?v=20261123-time-greeting-wide-v1">
+<link rel="stylesheet" href="/doweo-reference-home.css?v=20261124-compact-greeting-v1">
 <script defer src="/doweo-reference-home.js?v=20261123-time-greeting-wide-v2"></script>
 
 <!-- Unified desktop shell and reviewed offline labels for every supported language. -->
@@ -9971,7 +9971,7 @@ html body #sq-return-activity > .sq-return-row::after {
   html body #dw-ref-home .dw-ref-greeting {
     background: #F3F8FC !important;
     border-radius: 27px !important;
-    padding: 22px 27px !important;
+    /* The greeting's padding is owned by doweo-reference-home.css. */
     width: 100% !important;
     max-width: none !important;
     flex: 1 1 auto !important;
@@ -10066,34 +10066,6 @@ html body #backdrop-modal #backdrop-swatches .swatch > .dw-backdrop-preview-titl
 <!-- Mobile overview redesign; loaded after legacy CSS so mobile alone receives these styles. -->
 <link rel="stylesheet" href="/doweo-mobile-app-theme.css?v=20261123-continuous-navy-v1" media="(max-width:900px)">
 <link rel="stylesheet" href="/doweo-mobile-overview.css?v=continuous-navy-v3">
-<!-- Desktop overview compact greeting: preserve mobile layout and existing interactions. -->
-<style id="dw-desktop-compact-greeting-20261123">
-@media (min-width:901px) {
-  html body #dw-ref-home .dw-ref-intro {
-    margin-bottom: 8px !important;
-  }
-  html body #tracker-dashboard #dw-ref-home .dw-ref-greeting,
-  html body #dw-ref-home .dw-ref-greeting {
-    min-height: 74px !important;
-    padding: 5px 16px !important;
-    column-gap: 13px !important;
-  }
-  html body #dw-ref-home .dw-ref-time-icon {
-    width: 44px !important;
-    height: 44px !important;
-  }
-  html body #dw-ref-home .dw-ref-time-icon svg {
-    width: 27px !important;
-    height: 27px !important;
-  }
-  html body #dw-ref-home .dw-ref-greeting-copy {
-    padding-left: 13px !important;
-  }
-  html body #dw-ref-home .dw-ref-greeting-copy h1 {
-    font-size: clamp(23px, 2vw, 31px) !important;
-  }
-}
-</style>
 </body>
 </html>
 
