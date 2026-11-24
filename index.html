@@ -10066,6 +10066,34 @@ html body #backdrop-modal #backdrop-swatches .swatch > .dw-backdrop-preview-titl
 <!-- Mobile overview redesign; loaded after legacy CSS so mobile alone receives these styles. -->
 <link rel="stylesheet" href="/doweo-mobile-app-theme.css?v=20261123-continuous-navy-v1" media="(max-width:900px)">
 <link rel="stylesheet" href="/doweo-mobile-overview.css?v=continuous-navy-v3">
+<!-- Desktop overview compact greeting: preserve mobile layout and existing interactions. -->
+<style id="dw-desktop-compact-greeting-20261123">
+@media (min-width:901px) {
+  html body #dw-ref-home .dw-ref-intro {
+    margin-bottom: 15px !important;
+  }
+  html body #tracker-dashboard #dw-ref-home .dw-ref-greeting,
+  html body #dw-ref-home .dw-ref-greeting {
+    min-height: 94px !important;
+    padding: 11px 22px !important;
+    column-gap: 16px !important;
+  }
+  html body #dw-ref-home .dw-ref-time-icon {
+    width: 56px !important;
+    height: 56px !important;
+  }
+  html body #dw-ref-home .dw-ref-time-icon svg {
+    width: 35px !important;
+    height: 35px !important;
+  }
+  html body #dw-ref-home .dw-ref-greeting-copy {
+    padding-left: 16px !important;
+  }
+  html body #dw-ref-home .dw-ref-greeting-copy h1 {
+    font-size: clamp(25px, 2.3vw, 36px) !important;
+  }
+}
+</style>
 </body>
 </html>
 
