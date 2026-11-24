@@ -1,0 +1,50 @@
+.dw-chat-brand,.dw-chat-empty,#dw-chat-shortcuts{display:none}
+@media(min-width:901px){
+body.dw-chats-open{overflow:hidden!important}
+html body.dw-chats-open #dw-chats:not([hidden]){
+ position:fixed;inset:2.5vh 1.8vw;z-index:2147481000;display:grid!important;
+ grid-template:60px minmax(0,1fr)/minmax(290px,31%) minmax(0,1fr);
+ background:#061d2e;color:#f3f8fc;border:1px solid #355e72;border-radius:22px;overflow:hidden;
+ box-shadow:0 0 0 100vmax #112d40,0 10px 55px #061523;font:16px system-ui,sans-serif
+}
+#dw-chats .dw-chat-brand{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:0 18px;background:#051a29;font-size:22px;border-bottom:1px solid #355e72}
+#dw-chats .dw-chat-brand img{width:34px;border-radius:9px}
+#dw-chats .dw-chat-brand span{color:#60f1ad}
+#dw-chats button{cursor:pointer}
+#dw-chats svg{width:20px;height:20px;flex:none}
+#dw-chats #dw-chat-list{grid-area:2/1;display:flex!important;flex-direction:column;gap:14px;overflow:hidden;padding:16px;border-right:1px solid #355e72;min-height:0}
+#dw-chats header,#dw-chats .dw-chat-search,#dw-chats .dw-chat-filters,#dw-chats .dw-contact-tabs{display:flex;align-items:center;gap:8px}
+#dw-chat-list header{justify-content:space-between}
+#dw-chat-list:not(.choosing) :is(h2,.dw-compose-caption,.dw-contact-tabs,#dw-people-back),#dw-chat-list .dw-chat-mark,#dw-chat-list.choosing :is(.dw-chat-filters,#dw-chat-compose),#dw-chats #dw-chat-back{display:none}
+#dw-chats button{background:#102e41;color:#f3f8fc;border:1px solid #355e72;border-radius:20px;padding:8px 12px}
+#dw-chats #dw-chat-compose{margin-left:auto;border-radius:10px}
+#dw-chats #dw-chat-compose,#dw-chats button[aria-pressed=true]{background:#60f1ad;color:#061d2e}
+#dw-chats .dw-chat-search{border:1px solid #47738a;border-radius:12px;padding:2px 12px;background:#102b40}
+#dw-chats #dw-chat-query{background:transparent!important;border:0!important;color:white;width:100%;padding:10px 0}
+#dw-chats #dw-chat-shortcuts{display:flex;justify-content:space-around}
+#dw-chats #dw-chat-shortcuts button{background:none;border:0;min-width:0;max-width:25%;padding:4px;color:white}
+#dw-chat-shortcuts span,#dw-chat-rows b,#dw-chat-rows small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#dw-chats i{width:46px;height:46px;border-radius:50%;background:#1c4054 center/cover;display:grid;place-items:center;font-style:normal}
+#dw-chat-shortcuts i{margin:0 auto 6px}
+#dw-chats .dw-chat-filters button{flex:1;padding:8px 3px;font-size:14px;white-space:nowrap}
+#dw-chats .dw-chat-filters svg{width:14px;vertical-align:middle}
+#dw-chat-rows{overflow:auto;min-height:0}
+#dw-chat-list:not(.choosing) #dw-chat-rows h3{display:none}
+#dw-chats #dw-chat-rows>button{width:100%;display:grid;grid-template-columns:46px minmax(0,1fr) auto;align-items:center;text-align:left;gap:10px;margin:5px 0;padding:14px;background:#092335;border-radius:16px}
+#dw-chats #dw-chat-rows>button[aria-current=true]{background:#113a40;border:2px solid #60f1ad}
+#dw-chat-rows small{color:#abc6d7}
+#dw-chats #dw-chat-thread,#dw-chats .dw-chat-empty{grid-area:2/2;min-height:0;min-width:0}
+#dw-chats .dw-chat-empty{display:grid;place-items:center;color:#abc6d7}
+#dw-chats:has(#dw-chat-thread:not([hidden])) .dw-chat-empty{display:none}
+#dw-chat-thread>header{padding:14px 22px;border-bottom:1px solid #355e72;justify-content:space-between}
+#dw-chat-thread header small{display:block;color:#abc6d7}
+#dw-chats :is(#dw-chat-thread:not([hidden]),#dw-chat-host,#dw-dm-panel:not([hidden]),#chat-card,.tracker-collapsible-body){display:flex!important;flex-direction:column;min-height:0;flex:1}
+#dw-chats #dw-chat-host #chat-card{position:static!important;background:none!important;border:0!important;box-shadow:none!important;margin:0!important;padding:12px!important}
+#dw-chats #dw-chat-host :is(summary,#sq-chat-mode-switch,.tracker-collapsible-body>p:first-child),#dw-chat-thread.direct :is(#dw-chat-host,#dw-chat-find),#dw-chat-host:not(.searching) :is(.sq-chat-tools,#sq-chat-search-tools){display:none!important}
+#dw-chats #dw-chat-thread.direct #dw-chat-host{display:none!important}
+#dw-chats :is(#tracker-chat-messages,#dw-dm-messages){flex:1;min-height:0!important;max-height:none!important;height:auto!important;overflow-y:auto!important;padding:16px;background:transparent!important}
+#dw-chats #tracker-chat-form,#dw-chats #dw-dm-form:not([hidden]){position:relative!important;inset:auto!important;display:flex;gap:8px;padding:12px;align-items:center}
+#dw-chats :is(#tracker-chat-input,#dw-dm-input){flex:1;min-width:0;border-radius:24px!important;background:#102b40!important;color:white!important;padding:12px}
+#dw-chats #dw-dm-messages p,#dw-chats .chat-bubble{width:fit-content;max-width:82%;border-radius:20px!important;padding:9px 16px!important;overflow-wrap:anywhere;background:#263f52!important;color:white!important}
+#dw-chats #dw-dm-messages .mine,#dw-chats .mine .chat-bubble{background:#60f1ad!important;color:#061d2e!important;margin-left:auto}
+}
