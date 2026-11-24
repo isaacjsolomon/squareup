@@ -4405,6 +4405,47 @@ function initMobileChatInbox(){
  const dmPanel=document.getElementById('dw-dm-panel'), dmBox=document.getElementById('dw-dm-messages'), dmInput=document.getElementById('dw-dm-input'),dmForm=document.getElementById('dw-dm-form'),dmStatus=document.getElementById('dw-dm-status');
  const dock=nav.closest('.sq-mobile-nav');
  let choosing=false,people=[],dmTimer=0;
+ const desktop=()=>!media.matches;
+ const threadHead=thread.querySelector('header');
+ const headFace=document.createElement('i');headFace.className='dw-chat-head-face dw-chat-v4-only';threadHead.insertBefore(headFace,threadHead.querySelector('div'));
+ const details=document.createElement('aside');details.id='dw-chat-details-v4';details.hidden=true;details.setAttribute('aria-label','Conversation details');pane.append(details);
+ const infoButton=document.createElement('button');infoButton.type='button';infoButton.className='dw-chat-v4-only dw-chat-info-toggle';infoButton.textContent='ⓘ';infoButton.title='Conversation details';infoButton.setAttribute('aria-label','Conversation details');threadHead.append(infoButton);
+ const dmSearch=document.createElement('input');dmSearch.type='search';dmSearch.className='dw-chat-v4-only dw-dm-search';dmSearch.placeholder='Search messages';dmSearch.hidden=true;dmPanel.prepend(dmSearch);
+ let detailsOpen=true;
+ const wallThemes={navy:'#0A1B2E',ocean:'linear-gradient(145deg,#0A1B2E,#204158)',forest:'linear-gradient(145deg,#0A1B2E,#194638)',dusk:'linear-gradient(145deg,#102B40,#3b305b)'};
+ const colorThemes={mint:'#60F1AD',blue:'#8BC5F0',lavender:'#C2B5F5',rose:'#F4A5BF'};
+ function faceFor(el,x){el.textContent=x.name.trim().slice(0,2).toUpperCase();setAvatarPhoto(el,null);if(prefs(x).icon){setAvatarPhoto(el,prefs(x).icon);el.textContent=''}else if(x.photo){avatarUrl(x.id,x.photo).then(url=>{if(url&&activeConversation&&pinKey(activeConversation)===pinKey(x)){setAvatarPhoto(el,url);el.textContent=''}}).catch(()=>{})}else if(!x.direct){el.innerHTML=groupIcon}}
+ function applyDesktopPrefs(x){if(!desktop())return;const p=prefs(x);thread.style.setProperty('--dw-chat-wall',wallThemes[p.wall]||wallThemes.navy);thread.style.setProperty('--dw-chat-bubble',colorThemes[p.bubble]||colorThemes.mint);faceFor(headFace,x)}
+ function detailButton(label,fn){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=fn;return b}
+ function activeDetail(){return activeConversation&&!activeConversation.direct&&current?.id===activeConversation.id?current:null}
+ function renderDetails(x){if(!desktop()||!x)return;
+  applyDesktopPrefs(x);details.hidden=!detailsOpen;pane.classList.toggle('dw-chat-details-open',detailsOpen);
+  infoButton.setAttribute('aria-expanded',String(detailsOpen));details.replaceChildren();
+  const top=document.createElement('div');top.className='dw-detail-top';const heading=document.createElement('strong');heading.textContent='Conversation details';top.append(heading,detailButton('×',()=>{detailsOpen=false;renderDetails(x)}));details.append(top);
+  const hero=document.createElement('div');hero.className='dw-detail-hero';const face=document.createElement('i');faceFor(face,x);const name=document.createElement('h2');name.textContent=titleFor(x);const sub=document.createElement('small');const d=activeDetail();sub.textContent=x.direct?'Direct message':d?d.members.length+' members':'Tracker chat';hero.append(face,name,sub);details.append(hero);
+  const quick=document.createElement('div');quick.className='dw-detail-quick';quick.append(detailButton('Search',()=>document.getElementById('dw-chat-find').click()),detailButton(pinIds().includes(pinKey(x))?'Unpin':'Pin',()=>{pinButton.click();renderDetails(x)}),detailButton('Edit',()=>customize(x)));details.append(quick);
+  const content=document.createElement('div');content.className='dw-detail-content';details.append(content);
+  function section(label,fn){const b=detailButton(label+'  ›',fn);b.className='dw-detail-row';content.append(b)}
+  function showItems(title,values){const view=document.createElement('div');view.className='dw-detail-section';const h=document.createElement('strong');h.textContent=title;view.append(h);if(!values.length){const p=document.createElement('p');p.textContent='Nothing here yet.';view.append(p)}else for(const value of values){if(value instanceof Node)view.append(value);else{const p=document.createElement('p');p.textContent=String(value);view.append(p)}}content.replaceChildren(detailButton('‹ Back',()=>renderDetails(x)),view)}
+  if(!x.direct){
+   section('Members'+(d?' · '+d.members.length:''),()=>showItems('Members',(activeDetail()?.members||[]).map(m=>m.name+(m.isYou?' (You)':''))));
+   section('Shared expenses',()=>{const entries=(activeDetail()?.entries||[]).filter(e=>e.type==='debt');showItems('Shared expenses',entries.map(e=>{const b=detailButton((e.description||e.note||e.title||'Expense')+' · '+sqFormat(Number(e.amount)||0),()=>{dismiss();document.querySelector('[data-sq-tab="expenses"]')?.click()});return b}))});
+   section('Group polls',()=>{if(activeDetail()){dismiss();window.dwOpenPollsPage?.()}});
+   section('Pinned messages',()=>{const pin=document.getElementById('sq-chat-pin');if(pin.hidden)showItems('Pinned messages',[]);else{const copy=document.createElement('p');copy.textContent=pin.querySelector('p')?.textContent||pin.textContent;showItems('Pinned messages',[copy,detailButton('Jump to message',()=>document.getElementById('sq-jump-chat')?.click())])}});
+   section('Shared photos',()=>{const imgs=[...document.querySelectorAll('#tracker-chat-messages img.sq-chat-image')].filter(i=>i.getAttribute('src'));showItems('Shared photos',imgs.map(i=>{const a=document.createElement('a');a.href=i.src;a.target='_blank';a.rel='noopener';const img=document.createElement('img');img.src=i.src;img.alt='Shared photo';a.append(img);return a}))});
+  }
+  section('Customize chat',()=>customize(x));
+  function customize(x){content.replaceChildren(detailButton('‹ Back',()=>renderDetails(x)));const h=document.createElement('h3');h.textContent='Customize conversation';content.append(h);
+   const name=document.createElement('input');name.value=titleFor(x);name.maxLength=100;name.setAttribute('aria-label','Chat name');content.append(name,detailButton('Save chat name',()=>{saveDisplay(x,{name:name.value.trim()});renderDetails(x)}),detailButton('Change chat icon',()=>{const picker=document.createElement('input');picker.type='file';picker.accept='image/*';picker.onchange=async()=>{if(picker.files[0]){await setChatIcon(x,picker.files[0]);renderDetails(x)}};picker.click()}));
+   for(const [label,key,options] of [['Wallpaper','wall',wallThemes],['Message color','bubble',colorThemes]]){const title=document.createElement('strong');title.textContent=label;content.append(title);const swatches=document.createElement('div');swatches.className='dw-detail-swatches';for(const [id,css] of Object.entries(options)){const b=detailButton(id,()=>{saveDisplay(x,{[key]:id});applyDesktopPrefs(x);customize(x)});b.style.background=css;b.setAttribute('aria-pressed',String((prefs(x)[key]||Object.keys(options)[0])===id));swatches.append(b)}content.append(swatches)}
+   const note=document.createElement('small');note.textContent='Your customization is saved in this browser.';content.append(note);
+  }
+ }
+ infoButton.onclick=()=>{if(activeConversation){detailsOpen=!detailsOpen;renderDetails(activeConversation)}};
+ function applyDmSearch(){const term=dmSearch.value.trim().toLowerCase();for(const bubble of dmBox.querySelectorAll('p'))bubble.hidden=!!term&&!bubble.textContent.toLowerCase().includes(term)}
+ dmSearch.addEventListener('input',applyDmSearch);
+ function paintCachedGroup(x,box){if(!desktop()||!Array.isArray(x.history))return false;box.replaceChildren();for(const m of x.history){const line=document.createElement('div');line.className='chat-line '+(String(m.senderId)===String(currentUser?.id)?'mine':'theirs');const sender=document.createElement('div');sender.className='chat-sender';sender.textContent=m.senderName||'';const bubble=document.createElement('div');bubble.className='chat-bubble';bubble.textContent=m.message||'Photo';line.append(sender,bubble);box.append(line)}if(!x.history.length)box.textContent='No messages yet. Say hello!';box.scrollTop=box.scrollHeight;return true}
+
  async function directory(){
   const {data,error}=await supabase.rpc('dw_dm_directory_layout');
   if(error)throw error;
@@ -4417,19 +4458,24 @@ function initMobileChatInbox(){
  async function direct(x){
   const seq=++version;threadId=x.id;list.hidden=true;thread.hidden=false;dmPanel.hidden=false;
   document.getElementById('dw-chat-name').textContent=titleFor(x);thread.querySelector('header small').textContent='Direct message';thread.classList.add('direct');
-  dmBox.replaceChildren();dmInput.value='';dmInput.placeholder='Message '+x.name;dmForm.hidden=!x.eligible;dmStatus.textContent='';
+  dmBox.replaceChildren();dmSearch.hidden=true;dmSearch.value='';dmInput.value='';dmInput.placeholder='Message '+x.name;dmForm.hidden=!x.eligible;dmStatus.textContent='';
   if(x.eligible)dmInput.focus({preventScroll:true});fit();
   let revision=0,signature='';
+  function draw(data){const next=JSON.stringify(data);if(next===signature)return;const bottom=!signature||dmBox.scrollHeight-dmBox.clientHeight-dmBox.scrollTop<40;const oldTop=dmBox.scrollTop;signature=next;dmBox.replaceChildren();
+   for(const m of [...data].reverse()){const bubble=document.createElement('p');bubble.className=m.sender_id===currentUser.id?'mine':'theirs';bubble.textContent=m.body;if(desktop()){const time=document.createElement('small');time.className='dw-dm-time';time.textContent=new Date(m.created_at).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});bubble.append(time)}dmBox.append(bubble)}
+   if(!data.length)dmBox.textContent='Start the conversation.';if(bottom)dmBox.scrollTop=dmBox.scrollHeight;else dmBox.scrollTop=oldTop;applyDmSearch();
+  }
+  if(desktop()&&Array.isArray(x.dmHistory))draw(x.dmHistory);
   async function refresh(){
    const request=++revision;
    const {data,error}=await supabase.from('dw_private_messages').select('id,sender_id,body,created_at').or('sender_id.eq.'+x.id+',recipient_id.eq.'+x.id).order('created_at',{ascending:false}).order('id',{ascending:false}).limit(100);
    if(seq!==version||request!==revision)return;
    if(error){dmStatus.textContent='Could not load messages.';return}
    const latest=data[0];if(latest)localStorage.setItem(seenKey('dm:'+x.id),String(Date.parse(latest.created_at)));
-   const next=latest?.id||'empty';if(next===signature)return;
+   if(desktop()){x.dmHistory=data;x.unread=0;draw(data)}else{const next=latest?.id||'empty';if(next===signature)return;
    const bottom=!signature||dmBox.scrollHeight-dmBox.clientHeight-dmBox.scrollTop<40;signature=next;dmBox.replaceChildren();
    for(const m of data.reverse()){const bubble=document.createElement('p');bubble.className=m.sender_id===currentUser.id?'mine':'theirs';bubble.textContent=m.body;dmBox.append(bubble)}
-   if(!data.length)dmBox.textContent='Start the conversation.';if(bottom)dmBox.scrollTop=dmBox.scrollHeight;
+   if(!data.length)dmBox.textContent='Start the conversation.';if(bottom)dmBox.scrollTop=dmBox.scrollHeight;}
   }
   dmForm.onsubmit=async event=>{
    event.preventDefault();const body=dmInput.value.trim();if(!body||dmForm.dataset.sending)return;
@@ -4451,10 +4497,11 @@ function initMobileChatInbox(){
   if(heading){rows.scrollTop+=heading.getBoundingClientRect().top-rows.getBoundingClientRect().top;selectSection(button.dataset.section)}
  };
  function openConversation(x){
-  if(busy)return;
+  if(busy||(!media.matches&&document.querySelector('#tracker-chat-form button[type=submit]')?.disabled))return;
   restore();
   activeConversation=x;updatePin();
   if(x.direct)direct(x);else enter(x);
+  if(desktop()){renderDetails(x);x.unread=0}
   paint();
  }
  const favorites=document.getElementById('dw-chat-shortcuts');
@@ -4476,7 +4523,7 @@ function initMobileChatInbox(){
   if(!activeConversation||!currentUser)return;
   const key=pinKey(activeConversation),ids=pinIds();
   localStorage.setItem(storageKey(),JSON.stringify(ids.includes(key)?ids.filter(id=>id!==key):[...ids,key]));
-  updatePin();paintShortcuts();
+  updatePin();paintShortcuts();if(desktop()&&activeConversation)renderDetails(activeConversation);
  };
  function prefsKey(x){return 'doweo.chat.display.'+currentUser.id+'.'+pinKey(x)}
  function prefs(x){try{return JSON.parse(localStorage.getItem(prefsKey(x)))||{}}catch{return {}}}
@@ -4537,6 +4584,7 @@ function initMobileChatInbox(){
     [titleFor(x),x.name,x.username,...(x.shared||[])].join(' ').toLowerCase().includes(term));
   const sections=choosing?
    [['friends','Friends',visible.filter(x=>x.friend)],['shared','Shared Trackers',visible.filter(x=>x.shared.length||!x.friend)]]:
+   desktop()?[['recent','Recent conversations',visible.filter(x=>filterIndex===2?x.direct&&x.friend:filterIndex===3?!x.direct:true).sort((a,b)=>(Date.parse(b.date)||0)-(Date.parse(a.date)||0))]]:
    [['groups','Group Chats',filterIndex===3?[]:visible.filter(x=>!x.direct)],['direct','Direct Messages',filterIndex===2?[]:visible.filter(x=>x.direct)]];
   if(choosing){
    for(const [i,button] of Array.from(contactTabs.children).entries()){
@@ -4575,6 +4623,7 @@ function initMobileChatInbox(){
   pane.style.setProperty('--dw-chat-bottom',(threadId?keyboard:Math.max(0,innerHeight-Math.min(footerTop,dock.getBoundingClientRect().top)))+'px');
  }
  function restore(){
+  details.hidden=true;pane.classList.remove('dw-chat-details-open');if(desktop())dmSearch.hidden=true;
   clearInterval(dmTimer);dmPanel.hidden=true;thread.classList.remove('direct');thread.querySelector('header small').textContent='Tracker chat';if(choosing)query.value='';choosing=false;list.classList.remove('choosing');list.querySelector('h2').textContent='Chats';query.placeholder='Search chats, friends, or trackers';
   document.body.classList.remove('dw-chat-keyboard');
   host.removeAttribute('data-opening');
@@ -4620,7 +4669,7 @@ function initMobileChatInbox(){
    list.hidden=true;thread.hidden=false;threadId=x.id;host.append(card);card.open=true;
    document.getElementById('dw-chat-name').textContent=titleFor(x);document.getElementById('sq-chat-search').value='';
    document.querySelector('#sq-chat-mode-switch [data-mode="chat"]')?.click();
-   const box=document.getElementById('tracker-chat-messages');box.textContent='Loading messages…';
+   const box=document.getElementById('tracker-chat-messages');if(!paintCachedGroup(x,box))box.textContent=desktop()?'Fetching conversation…':'Loading messages…';
    host.setAttribute('data-opening','');
    input.focus({preventScroll:true});
    fit();
@@ -4631,6 +4680,7 @@ function initMobileChatInbox(){
    host.removeAttribute('data-opening');
    x.history=messages;x.historyTime=Date.now();await loadTrackerChat(messages);if(seq!==version)return;
    const newest=squareUpChatRows.at(-1);if(newest?.createdAt&&box.querySelector('[data-chat-id]'))localStorage.setItem(seenKey(x.id),String(Date.parse(newest.createdAt)));
+   if(desktop()){x.unread=0;renderDetails(x)}
    requestAnimationFrame(()=>box.scrollTop=box.scrollHeight);
   }catch(err){if(seq===version){restore();rows.textContent=err.message}}
   finally{busy=false;if(!pane.hidden)paint()}
@@ -4646,13 +4696,17 @@ function initMobileChatInbox(){
  document.getElementById('dw-chat-compose').onclick=()=>choosing?menu():choose();
  document.getElementById('dw-chat-back').onclick=menu;
  document.getElementById('dw-people-back').onclick=menu;
- document.getElementById('dw-chat-find').onclick=()=>{host.classList.toggle('searching');if(host.classList.contains('searching'))document.getElementById('sq-chat-search').focus()};
+ document.getElementById('dw-chat-find').onclick=()=>{if(desktop()&&activeConversation?.direct){dmSearch.hidden=!dmSearch.hidden;if(!dmSearch.hidden)dmSearch.focus();else{dmSearch.value='';applyDmSearch()}return}host.classList.toggle('searching');if(host.classList.contains('searching'))document.getElementById('sq-chat-search').focus()};
  document.addEventListener('click',e=>{
   if(e.target.closest('#dw-chat-nav,#nav-chat,#sq-mobile-chat-top,[data-sq-destination="nav-chat"]')){e.preventDefault();e.stopImmediatePropagation();menu();return}
   if(!pane.hidden&&e.target.closest('.sq-mobile-nav button,.sq-nav-link,[data-sq-linked="expense"]'))dismiss();
   if(threadId&&e.target.closest('[data-sq-linked="poll"]'))document.querySelector('#sq-chat-mode-switch [data-mode="polls"]')?.click();
  },true);
  media.addEventListener('change',dismiss);window.addEventListener('resize',fit);
+ function desktopFilters(){const f=list.querySelector('.dw-chat-filters');if(!f)return;f.children[2].textContent=desktop()?'Friends':'Groups';f.children[3].textContent=desktop()?'Groups':'Direct';filterIndex=0;unreadOnly=false;[...f.children].forEach((b,i)=>b.setAttribute('aria-pressed',String(i===0)))}
+ if(desktop())desktopFilters();media.addEventListener('change',desktopFilters);
+ document.addEventListener('keydown',e=>{if(!desktop()||pane.hidden)return;if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();query.focus()}if(e.key==='Escape'&&detailsOpen&&activeConversation&&!thread.hidden){detailsOpen=false;renderDetails(activeConversation)}});
+
  const observer=new ResizeObserver(fit);for(const el of document.querySelectorAll('.wrap > .sq-mobile-top,.sq-mobile-nav'))observer.observe(el);
 }
 initMobileChatInbox();
@@ -10436,6 +10490,72 @@ html body #backdrop-modal #backdrop-swatches .swatch > .dw-backdrop-preview-titl
 }
 </style>
 <link rel="stylesheet" href="/doweo-web-chat.css?v=3">
+<style id="dw-web-chat-v4-20261124">
+.dw-chat-v4-only,#dw-chat-details-v4{display:none}
+@media(min-width:901px){
+html body.dw-chats-open{overflow:hidden!important}
+html body.dw-chats-open>aside.sidebar,html body.dw-chats-open #dw-all-topbar,html body.dw-chats-open #dw-all-top-tabs,html body.dw-chats-open .sq-workspace-tabs{visibility:hidden!important}
+html body.dw-chats-open section#dw-chats#dw-chats:not([hidden]){position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;max-height:none!important;max-width:none!important;margin:0!important;padding:0!important;box-sizing:border-box!important;z-index:2147481000!important;display:grid!important;grid-template:62px minmax(0,1fr)/clamp(280px,28vw,410px) minmax(0,1fr)!important;gap:0!important;background:#0A1B2E!important;background-image:none!important;color:#F3F8FC!important;border:0!important;border-radius:0!important;box-shadow:none!important;font-family:Inter,system-ui,sans-serif!important}
+html body.dw-chats-open section#dw-chats#dw-chats.dw-chat-details-open:not([hidden]){grid-template-columns:clamp(270px,27vw,390px) minmax(0,1fr) clamp(250px,24vw,360px)!important}
+#dw-chats#dw-chats [hidden]{display:none!important}
+#dw-chats#dw-chats .dw-chat-brand{grid-area:1/1!important;padding:16px 20px 5px!important;background:#0A1B2E!important;border:0!important}
+#dw-chats#dw-chats .dw-chat-brand img,#dw-chats#dw-chats .dw-chat-brand>b{display:none!important}
+#dw-chats#dw-chats #dw-chat-home{font-size:13px!important;padding:9px 14px!important;white-space:nowrap;border-radius:24px!important}
+#dw-chats#dw-chats #dw-chat-home::after{content:'  Back to Home Overview'}
+#dw-chats#dw-chats #dw-chat-list{grid-area:2/1!important;background:#0A1B2E!important;padding:12px 18px 16px!important;border-right:1px solid #355E72!important;gap:13px!important;min-height:0!important;overflow:hidden!important}
+#dw-chats#dw-chats #dw-chat-list header{min-height:45px;flex:0 0 auto!important}
+#dw-chats#dw-chats #dw-chat-list h2{display:block!important;font-size:27px!important;font-weight:750!important;margin:0!important;color:#F3F8FC!important}
+#dw-chats#dw-chats #dw-chat-list:not(.choosing) .dw-compose-caption{display:none!important}
+#dw-chats#dw-chats #dw-chat-list:not(.choosing) #dw-chat-rows h3{display:block!important;grid-column:1/-1;margin:8px 0 3px;font-size:13px!important;color:#ABC6D7!important}
+#dw-chats#dw-chats #dw-chat-list:not(.choosing) #dw-chat-rows h3 :is(svg,small){display:none!important}
+#dw-chats#dw-chats #dw-chat-shortcuts:not(:empty){position:relative;padding-top:25px!important;min-height:85px;flex:0 0 auto!important;order:3}
+#dw-chats#dw-chats #dw-chat-shortcuts:not(:empty)::before{content:'♧  Pinned';position:absolute;top:0;left:0;font-size:13px;color:#ABC6D7;font-weight:650}
+#dw-chats#dw-chats .dw-chat-filters{order:2;flex:0 0 auto}
+#dw-chats#dw-chats #dw-chat-rows{order:4;flex:1 1 auto;overflow:auto!important;min-height:0!important}
+#dw-chats#dw-chats #dw-chat-rows>button:not(.dw-chat-more){background:#102B40!important;color:#F3F8FC!important;border:1px solid transparent!important;padding:10px!important;border-radius:12px!important;margin:3px 0!important}
+#dw-chats#dw-chats #dw-chat-rows>button[aria-current=true]{background:#173F42!important;border-color:#60F1AD!important}
+#dw-chats#dw-chats #dw-chat-rows>button.dw-chat-more{background:transparent!important;border:0!important;color:#ABC6D7!important}
+#dw-chats#dw-chats #dw-chat-rows small{font-size:12px!important;color:#ABC6D7!important}
+#dw-chats#dw-chats #dw-chat-rows em{background:#60F1AD!important;color:#0A1B2E!important;border-radius:20px;padding:2px 6px;font-style:normal}
+#dw-chats#dw-chats :is(#dw-chat-thread,.dw-chat-empty){grid-area:1/2/3/3!important;min-width:0!important;min-height:0!important;height:100%!important}
+#dw-chats#dw-chats #dw-chat-thread{background:var(--dw-chat-wall,#0A1B2E)!important;overflow:hidden!important;padding:0!important}
+#dw-chats#dw-chats #dw-chat-thread>header{background:#0A1B2E!important;border-bottom:1px solid #355E72!important;min-height:76px!important;padding:12px 18px!important;gap:10px!important;justify-content:flex-start!important}
+#dw-chats#dw-chats .dw-chat-head-face{display:grid!important;width:48px!important;height:48px!important;flex:0 0 48px}
+#dw-chats#dw-chats #dw-chat-name{font-size:19px!important;color:#F3F8FC!important}
+#dw-chats#dw-chats .dw-chat-info-toggle{display:inline-flex!important;align-items:center;justify-content:center;font-size:21px!important}
+#dw-chats#dw-chats #dw-chat-thread.direct #dw-chat-find{display:inline-flex!important}
+#dw-chats#dw-chats #dw-chat-details-v4:not([hidden]){grid-area:1/3/3/4!important;display:flex!important;flex-direction:column;min-height:0;overflow-y:auto;padding:19px 18px!important;gap:16px;background:#0A1B2E!important;border-left:1px solid #355E72;color:#F3F8FC!important}
+#dw-chats#dw-chats .dw-detail-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+#dw-chats#dw-chats .dw-detail-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px;padding:12px 0}
+#dw-chats#dw-chats .dw-detail-hero i{width:86px;height:86px;font-size:24px}
+#dw-chats#dw-chats .dw-detail-hero h2{margin:6px 0 0;font-size:22px!important;color:#F3F8FC!important;overflow-wrap:anywhere}
+#dw-chats#dw-chats .dw-detail-hero small,#dw-chats#dw-chats .dw-detail-content small{color:#ABC6D7!important;font-size:12px}
+#dw-chats#dw-chats .dw-detail-quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding-bottom:14px;border-bottom:1px solid #355E72}
+#dw-chats#dw-chats .dw-detail-quick button{border-radius:12px!important;padding:12px 3px!important;font-size:13px!important}
+#dw-chats#dw-chats .dw-detail-content{display:flex;flex-direction:column;gap:9px;min-width:0}
+#dw-chats#dw-chats .dw-detail-row{border:0!important;border-bottom:1px solid #29465B!important;background:transparent!important;text-align:left!important;border-radius:0!important;padding:13px 5px!important}
+#dw-chats#dw-chats .dw-detail-content input,#dw-chats#dw-chats .dw-dm-search{display:block!important;background:#102B40!important;color:#F3F8FC!important;border:1px solid #355E72!important;border-radius:10px!important;padding:10px!important;min-width:0;width:100%;box-sizing:border-box}
+#dw-chats#dw-chats .dw-dm-search{width:calc(100% - 32px);margin:8px 16px}
+#dw-chats#dw-chats .dw-detail-swatches{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#dw-chats#dw-chats .dw-detail-swatches button{font-size:12px;text-transform:capitalize;border-radius:10px!important;color:#F3F8FC!important;text-shadow:0 1px 3px #0A1B2E}
+#dw-chats#dw-chats .dw-detail-swatches button[aria-pressed=true]{outline:2px solid #60F1AD}
+#dw-chats#dw-chats .dw-detail-section{display:flex;flex-direction:column;gap:10px}
+#dw-chats#dw-chats .dw-detail-section p{margin:0;color:#ABC6D7;overflow-wrap:anywhere}
+#dw-chats#dw-chats .dw-detail-section img{max-width:100%;border-radius:8px}
+#dw-chats#dw-chats #dw-chat-thread :is(#tracker-chat-messages,#dw-dm-messages){padding:18px 22px!important;scrollbar-width:thin;overscroll-behavior:contain}
+#dw-chats#dw-chats #dw-chat-thread .chat-line.mine .chat-bubble,#dw-chats#dw-chats #dw-dm-messages p.mine{background:var(--dw-chat-bubble,#60F1AD)!important;color:#0A1B2E!important;-webkit-text-fill-color:#0A1B2E!important}
+#dw-chats#dw-chats #dw-chat-thread .chat-line.theirs .chat-bubble,#dw-chats#dw-chats #dw-dm-messages p.theirs{background:#173750!important;color:#F3F8FC!important}
+#dw-chats#dw-chats .dw-dm-time{display:block;font-size:10px;opacity:.7;margin-top:4px;color:inherit!important}
+#dw-chats#dw-chats .chat-message-actions{opacity:0;transition:opacity .12s}
+#dw-chats#dw-chats .chat-line:hover .chat-message-actions,#dw-chats#dw-chats .chat-line:focus-within .chat-message-actions{opacity:1}
+#dw-chats#dw-chats .sq-chat-linked-card{background:#102B40!important;border:1px solid #355E72!important;border-radius:15px!important;color:#F3F8FC!important;padding:16px!important;text-align:left}
+#dw-chats#dw-chats .sq-chat-linked-card strong,#dw-chats#dw-chats .sq-chat-linked-card small{color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important}
+#dw-chats#dw-chats #sq-chat-pin{margin:10px 16px!important;background:#102B40!important;border:1px solid #355E72!important;border-radius:12px!important;padding:10px!important}
+#dw-chats#dw-chats #tracker-chat-form,#dw-chats#dw-chats #dw-dm-form{border-top:1px solid #355E72!important;background:#0A1B2E!important;padding:12px 16px!important;min-height:60px!important;box-sizing:border-box}
+#dw-chats#dw-chats :is(#tracker-chat-form,#dw-dm-form) button[type=submit]{background:#60F1AD!important;color:#0A1B2E!important;-webkit-text-fill-color:#0A1B2E!important}
+html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
+}
+</style>
 </body>
 </html>
 
