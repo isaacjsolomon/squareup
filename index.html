@@ -10041,13 +10041,23 @@ html body #sq-return-activity > .sq-return-row::after {
     font-size: clamp(11px, .88vw, 14px) !important;
     line-height: 1.2 !important;
   }
-  /* The balance badge disappears before the three columns become cramped. */
+  /* Narrow desktops: keep the status underneath the greeting instead of hiding it. */
   @media (max-width:1250px) {
     html body #dw-ref-home .dw-ref-greeting {
       grid-template-columns: 44px minmax(0,1fr) !important;
+      grid-template-rows: auto auto !important;
+      row-gap: 6px !important;
     }
     html body #dw-ref-home .dw-ref-balance-status {
-      display:none !important;
+      display: flex !important;
+      grid-column: 2 !important;
+      grid-row: 2 !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      flex-wrap: wrap !important;
+      gap: 6px !important;
+      border-left: 0 !important;
+      padding-left: 13px !important;
     }
   }
   html body #dw-ref-toolbar button.dw-ref-tool:is([data-ref-tool="search"],[data-ref-tool="notifications"]),
