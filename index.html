@@ -2556,7 +2556,7 @@ async function sqBannerEdit(trackerId,trackerName,banner){
  close.textContent='Close';close.onclick=function(){overlay.remove();};actions.appendChild(close);
  dialog.append(title,hint,tabs,presets,credit,uploadLabel,file,actions);
  overlay.appendChild(dialog);overlay.addEventListener('click',function(event){if(event.target===overlay)overlay.remove();});
- document.body.appendChild(overlay);requestAnimationFrame(function(){close.focus();});
+ document.body.appendChild(overlay);requestAnimationFrame(function(){dialog.scrollTop=0;var firstTab=tabs.querySelector('button');if(firstTab)firstTab.focus({preventScroll:true});});
 }
 
 // Permission editor: all changes are verified and saved by the backend.
