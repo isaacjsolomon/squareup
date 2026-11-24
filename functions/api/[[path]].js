@@ -39,11 +39,23 @@ async function exchangeRate(from, to) {
 
   return rate;
 }
-const presets = ['indigo', 'sunset', 'ocean', 'forest', 'night', 'berry',
+const presets = [
+  'indigo', 'sunset', 'ocean', 'forest', 'night', 'berry',
   'mountainMist', 'tropicalCoast', 'alpineLake', 'desertDunes', 'evergreen', 'snowfall',
   'cottonCandy', 'northernLights', 'stargazing', 'aquaFlow', 'topographic', 'midnightBlue',
-  'mountainSummit', 'forestTrail', 'oceanWaves', 'goldenValley', 'sunriseSkies',
-  'starryNight', 'blueMoon', 'glacierGlass', 'mintLagoon', 'violetHorizon'];
+  'mountainSummit', 'forestTrail', 'oceanWaves', 'goldenValley', 'sunriseSkies', 'starryNight',
+  'blueMoon', 'glacierGlass', 'mintLagoon', 'violetHorizon', 'tropicalEscape', 'alpineLakeScenic',
+  'midnightOcean', 'forestCanopy', 'snowyPeaks', 'desertDunesScenic', 'auroraBorealis', 'cottonCandySky',
+  'morningMist', 'nycSkyline', 'parisSunset', 'tokyoNights', 'amalfiCoast', 'londonLights',
+  'greekIslands', 'dolphinBlue', 'seaTurtleReef', 'koiGarden', 'jellyfishGlow', 'whaleHorizon',
+  'seaOtterCoast', 'arcticFox', 'polarBearIce', 'penguinColony', 'snowLeopard', 'redPandaForest',
+  'deerMeadow', 'wolfMoon', 'owlDusk', 'foxHollow', 'lionGold', 'elephantTrail',
+  'zebraHorizon', 'giraffeSunset', 'cheetahMotion', 'butterflyGarden', 'bunnyField', 'duckPond',
+  'puppySky', 'kittenWindow', 'mantaRay', 'tropicalReefFish', 'oceanSeal', 'seaLionCoast',
+  'reefOctopus', 'oceanGradient', 'lavenderDream', 'midnightNavy', 'liquidWaves', 'mintFrost',
+  'auroraGradient', 'navyMarble', 'poolReflections', 'starfield', 'frostedGlass', 'seaFoam',
+  'topographicLines', 'brushedMetal', 'geometricArcs', 'softBokeh'
+];
 
 function kind(b) {
   return b[0] === 255 && b[1] === 216 && b[2] === 255 ? 'image/jpeg' :
