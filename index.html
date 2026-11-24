@@ -3640,8 +3640,8 @@ function sqSetTrackerLoading(loading) {
   indicator.setAttribute('aria-busy', loading?'true':'false');
 }
 
-async function openTracker(id) {
-  sqSetTrackerLoading(true);
+async function openTracker(id, silent=false) {
+  if(!silent)sqSetTrackerLoading(true);
   store(CURRENT_KEY, id);
   lastSnapshot = "";
   if (window.sqLastOpenedTrackerDetail && window.sqLastOpenedTrackerDetail.id !== id) window.sqLastOpenedTrackerDetail = null;
@@ -3651,7 +3651,7 @@ async function openTracker(id) {
     renderMembers();
     applyBackdrop();
     useEntries(null, null);
-    sqSetTrackerLoading(false);
+    if(!silent)sqSetTrackerLoading(false);
     return;
   }
   $("tb-members").textContent = "Loading…";
@@ -3669,7 +3669,7 @@ async function openTracker(id) {
     console.error('DoWeo tracker load failed:', id, err);
     alert('Could not load your tracker. Your saved expenses have NOT been deleted. Error: ' + err.message);
   } finally {
-    sqSetTrackerLoading(false);
+    if(!silent)sqSetTrackerLoading(false);
   }
 }
 
@@ -4383,8 +4383,8 @@ function sqChatRichMessage(message){
  }
  return out+esc(raw.slice(start));
 }
-async function loadTrackerChat(){var box=document.getElementById('tracker-chat-messages');if(!box)return;if(!current){box.textContent='Open a shared tracker to chat.';return;}
- try{var id=current.id,rows=await api('trackers/'+id+'/chat');if(!current||current.id!==id)return;squareUpChatRows=rows;
+async function loadTrackerChat(prefetched){var box=document.getElementById('tracker-chat-messages');if(!box)return;if(!current){box.textContent='Open a shared tracker to chat.';return;}
+ try{var id=current.id,rows=Array.isArray(prefetched)?prefetched:await api('trackers/'+id+'/chat');if(!current||current.id!==id)return;squareUpChatRows=rows;
  var byId=new Map(rows.map(m=>[String(m.id),m]));
  box.innerHTML=rows.map(m=>{var mine=String(m.senderId)===String(currentUser?.id)||current.members.some(x=>x.isYou&&(String(x.userId||x.user_id||'')===String(m.senderId)||x.name===m.senderName)),parent=m.replyTo?byId.get(String(m.replyTo)):null;
  var reply=parent?'<div class="chat-reply-preview">'+esc(parent.senderName)+': '+esc(parent.message.slice(0,120))+'</div>':'';
@@ -4416,7 +4416,7 @@ function initMobileChatInbox(){
  }
  async function direct(x){
   const seq=++version;threadId=x.id;list.hidden=true;thread.hidden=false;dmPanel.hidden=false;
-  document.getElementById('dw-chat-name').textContent=x.name;thread.querySelector('header small').textContent='Direct message';thread.classList.add('direct');
+  document.getElementById('dw-chat-name').textContent=titleFor(x);thread.querySelector('header small').textContent='Direct message';thread.classList.add('direct');
   dmBox.replaceChildren();dmInput.value='';dmInput.placeholder='Message '+x.name;dmForm.hidden=!x.eligible;dmStatus.textContent='';
   if(x.eligible)dmInput.focus({preventScroll:true});fit();
   let revision=0,signature='';
@@ -4478,14 +4478,54 @@ function initMobileChatInbox(){
   localStorage.setItem(storageKey(),JSON.stringify(ids.includes(key)?ids.filter(id=>id!==key):[...ids,key]));
   updatePin();paintShortcuts();
  };
+ function prefsKey(x){return 'doweo.chat.display.'+currentUser.id+'.'+pinKey(x)}
+ function prefs(x){try{return JSON.parse(localStorage.getItem(prefsKey(x)))||{}}catch{return {}}}
+ function titleFor(x){return prefs(x).name||x.name}
+ function saveDisplay(x,patch){
+  try{localStorage.setItem(prefsKey(x),JSON.stringify({...prefs(x),...patch}))}catch{alert('Could not save your chat settings.');return}
+  if(activeConversation&&pinKey(activeConversation)===pinKey(x))document.getElementById('dw-chat-name').textContent=titleFor(x);
+  paint();
+ }
+ async function setChatIcon(x,file){
+  const url=URL.createObjectURL(file),image=new Image();
+  try{
+   image.src=url;await image.decode();
+   const canvas=document.createElement('canvas');canvas.width=96;canvas.height=96;
+   const side=Math.min(image.width,image.height);
+   canvas.getContext('2d').drawImage(image,(image.width-side)/2,(image.height-side)/2,side,side,0,0,96,96);
+   saveDisplay(x,{icon:canvas.toDataURL('image/png')});
+  }catch{alert('Choose an image your browser can open.')}finally{URL.revokeObjectURL(url)}
+ }
+ const actions=document.createElement('div');actions.id='dw-chat-row-actions';actions.popover='auto';pane.append(actions);
+ function showActions(x,anchor){
+  actions.replaceChildren();
+  const pinned=pinIds().includes(pinKey(x));
+  for(const label of ['Rename','Change chat icon',pinned?'Unpin':'Pin']){
+   const command=document.createElement('button');command.type='button';command.textContent=label;
+   command.onclick=()=>{
+    actions.hidePopover();
+    if(label==='Rename'){
+     const value=prompt('Chat name',titleFor(x));if(value!==null)saveDisplay(x,{name:value.trim().slice(0,100)});
+    }else if(label==='Change chat icon'){
+     const picker=document.createElement('input');picker.type='file';picker.accept='image/*';
+     picker.onchange=()=>{if(picker.files[0])setChatIcon(x,picker.files[0])};picker.click();
+    }else{
+     const ids=pinIds(),key=pinKey(x);localStorage.setItem(storageKey(),JSON.stringify(ids.includes(key)?ids.filter(id=>id!==key):[...ids,key]));updatePin();paint();
+    }
+   };actions.append(command);
+  }
+  actions.showPopover();const r=anchor.getBoundingClientRect();
+  actions.style.left=Math.max(4,r.right-actions.offsetWidth)+'px';
+  actions.style.top=Math.min(innerHeight-actions.offsetHeight-4,r.bottom)+'px';actions.firstChild.focus();
+ }
  function paintShortcuts(){
   favorites.replaceChildren();
   if(media.matches||choosing)return;
   for(const id of pinIds()){
    const x=items.find(item=>pinKey(item)===id)||contactDirectory.find(item=>pinKey(item)===id);if(!x)continue;
    const button=document.createElement('button'),face=document.createElement('i'),name=document.createElement('span');
-   button.type='button';face.textContent=x.name.trim().slice(0,1);name.textContent=x.name;
-   if(x.photo)avatarUrl(x.id,x.photo).then(url=>{if(url){setAvatarPhoto(face,url);face.textContent=''}});
+   button.type='button';face.textContent=x.name.trim().slice(0,1);name.textContent=titleFor(x);
+   if(prefs(x).icon){setAvatarPhoto(face,prefs(x).icon);face.textContent=''}else if(x.photo)avatarUrl(x.id,x.photo).then(url=>{if(url){setAvatarPhoto(face,url);face.textContent=''}});
    button.append(face,name);button.onclick=()=>openConversation(x);favorites.append(button);
   }
  }
@@ -4494,7 +4534,7 @@ function initMobileChatInbox(){
   rows.replaceChildren();
   const term=query.value.trim().toLowerCase();
   const visible=(choosing?people:items).filter(x=>(choosing||!unreadOnly||x.unread)&&
-    [x.name,x.username,...(x.shared||[])].join(' ').toLowerCase().includes(term));
+    [titleFor(x),x.name,x.username,...(x.shared||[])].join(' ').toLowerCase().includes(term));
   const sections=choosing?
    [['friends','Friends',visible.filter(x=>x.friend)],['shared','Shared Trackers',visible.filter(x=>x.shared.length||!x.friend)]]:
    [['groups','Group Chats',filterIndex===3?[]:visible.filter(x=>!x.direct)],['direct','Direct Messages',filterIndex===2?[]:visible.filter(x=>x.direct)]];
@@ -4512,9 +4552,12 @@ function initMobileChatInbox(){
     const b=document.createElement('button');b.type='button';b.disabled=busy;
     const initial=x.name.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
     const tags=choosing&&key==='shared'?x.shared.map(n=>'<span class="dw-tracker-tag" data-user-content>'+esc(n)+'</span>').join(''):'';
-    b.innerHTML='<i>'+(x.direct?esc(initial):groupIcon)+'</i><span><b data-user-content>'+esc(x.name)+'</b><small'+(choosing||x.date?' data-user-content':'')+'>'+esc(choosing?(x.username?'@'+x.username:''):x.preview||'')+'</small>'+tags+'</span><small>'+(choosing?chatIcon:esc(x.date?new Date(x.date).toLocaleDateString([],{month:'short',day:'numeric'}):'')+(x.unread?'<em>'+x.unread+'</em>':''))+'</small>';
-    if(x.photo){const avatar=b.firstElementChild;avatarUrl(x.id,x.photo).then(url=>{if(url){setAvatarPhoto(avatar,url);avatar.textContent=''}})}
+    b.innerHTML='<i>'+(x.direct?esc(initial):groupIcon)+'</i><span><b data-user-content>'+esc(titleFor(x))+'</b><small'+(choosing||x.date?' data-user-content':'')+'>'+esc(choosing?(x.username?'@'+x.username:''):x.preview||'')+'</small>'+tags+'</span><small>'+(choosing?chatIcon:esc(x.date?new Date(x.date).toLocaleDateString([],{month:'short',day:'numeric'}):'')+(x.unread?'<em>'+x.unread+'</em>':''))+'</small>';
+    if(prefs(x).icon){setAvatarPhoto(b.firstElementChild,prefs(x).icon);b.firstElementChild.textContent=''}else if(x.photo){const avatar=b.firstElementChild;avatarUrl(x.id,x.photo).then(url=>{if(url){setAvatarPhoto(avatar,url);avatar.textContent=''}})}
     b.setAttribute('aria-current',String(threadId===x.id));b.onclick=()=>openConversation(x);rows.append(b);
+    if(!media.matches&&!choosing){
+     const more=document.createElement('button');more.type='button';more.className='dw-chat-more';more.textContent='•••';more.setAttribute('aria-label','Options for '+titleFor(x));more.onclick=()=>showActions(x,more);rows.append(more);
+    }
    }
   }
   if(!rows.children.length)rows.textContent=choosing?'No matching people.':unreadOnly?'No unread chats.':'No matching chats.';
@@ -4559,7 +4602,7 @@ function initMobileChatInbox(){
    const groups=await api('trackers');if(seq!==version)return;
    items=groups.map(t=>({id:t.id,name:t.name||'Tracker',preview:'Loading messages…',unread:0}));paint();
    await Promise.all(items.map(async x=>{
-    try{const messages=await api('trackers/'+encodeURIComponent(x.id)+'/chat');const last=messages[messages.length-1];x.date=last?.createdAt;x.preview=last?(last.senderName||'Member')+': '+(last.message||'Photo').replace(/ \((Poll|Expense) ID: [^)]+\)/g,''):'Start a conversation';
+    try{const messages=await api('trackers/'+encodeURIComponent(x.id)+'/chat');x.history=messages;x.historyTime=Date.now();const last=messages[messages.length-1];x.date=last?.createdAt;x.preview=last?(last.senderName||'Member')+': '+(last.message||'Photo').replace(/ \((Poll|Expense) ID: [^)]+\)/g,''):'Start a conversation';
     const read=Number(localStorage.getItem(seenKey(x.id))||0);x.unread=messages.filter(m=>String(m.senderId)!==String(currentUser?.id)&&Date.parse(m.createdAt)>read).length;
     }catch{x.preview='Message preview unavailable'}
    }));if(seq!==version)return;try{const contacts=await directory();if(seq!==version)return;contactDirectory=contacts;items.push(...contacts.filter(x=>x.date))}catch{}if(seq===version){items.sort((a,b)=>(Date.parse(b.date)||0)-(Date.parse(a.date)||0));paint();if(!media.matches&&items.length&&!query.value&&!filterIndex)openConversation(items[0])}
@@ -4575,17 +4618,18 @@ function initMobileChatInbox(){
    }
    input.dataset.dwTracker=x.id;input.placeholder='Message '+x.name;
    list.hidden=true;thread.hidden=false;threadId=x.id;host.append(card);card.open=true;
-   document.getElementById('dw-chat-name').textContent=x.name;document.getElementById('sq-chat-search').value='';
+   document.getElementById('dw-chat-name').textContent=titleFor(x);document.getElementById('sq-chat-search').value='';
    document.querySelector('#sq-chat-mode-switch [data-mode="chat"]')?.click();
    const box=document.getElementById('tracker-chat-messages');box.textContent='Loading messages…';
    host.setAttribute('data-opening','');
    input.focus({preventScroll:true});
    fit();
-   if(current?.id!==x.id)await openTracker(x.id);
+   const recent=x.history && Date.now()-x.historyTime<10000;
+   const [messages]=await Promise.all([recent?x.history:api('trackers/'+encodeURIComponent(x.id)+'/chat'),current?.id!==x.id?openTracker(x.id,!media.matches):null]);
    if(seq!==version)return;
    if(current?.id!==x.id)throw Error('Could not open this tracker.');
    host.removeAttribute('data-opening');
-   await loadTrackerChat();if(seq!==version)return;
+   x.history=messages;x.historyTime=Date.now();await loadTrackerChat(messages);if(seq!==version)return;
    const newest=squareUpChatRows.at(-1);if(newest?.createdAt&&box.querySelector('[data-chat-id]'))localStorage.setItem(seenKey(x.id),String(Date.parse(newest.createdAt)));
    requestAnimationFrame(()=>box.scrollTop=box.scrollHeight);
   }catch(err){if(seq===version){restore();rows.textContent=err.message}}
@@ -10391,7 +10435,7 @@ html body #backdrop-modal #backdrop-swatches .swatch > .dw-backdrop-preview-titl
  }
 }
 </style>
-<link rel="stylesheet" href="/doweo-web-chat.css?v=2">
+<link rel="stylesheet" href="/doweo-web-chat.css?v=3">
 </body>
 </html>
 

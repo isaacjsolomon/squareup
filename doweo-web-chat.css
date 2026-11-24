@@ -66,3 +66,10 @@ html body.dw-chats-open #dw-chats:not([hidden]){
 @media(min-width:901px){
  html body.dw-chats-open #dw-all-top-tabs,html body.dw-chats-open #dw-all-topbar{display:none!important}
 }
+@media(min-width:901px){
+ #dw-chat-list:not(.choosing) #dw-chat-rows{display:grid;grid-template-columns:minmax(0,1fr) 36px;align-content:start;align-items:center;column-gap:4px}
+ #dw-chats #dw-chat-rows>button.dw-chat-more{display:block;padding:8px 0;border:0;background:transparent;letter-spacing:1px}
+ #dw-chat-row-actions{position:fixed;inset:auto;margin:0;padding:5px;background:#102b40;border:1px solid #355e72;border-radius:12px}
+ #dw-chat-row-actions:popover-open{display:grid;gap:3px}
+ #dw-chats #dw-chat-row-actions button{text-align:left;border:0;border-radius:6px}
+}
