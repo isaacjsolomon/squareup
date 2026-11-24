@@ -12,10 +12,19 @@ try {
   await page.waitForFunction(()=>typeof document.getElementById('btn-backdrop')?.onclick==='function',null,{timeout:45000});
   // The original picker is initialized even without a signed-in tracker.
   await page.evaluate(()=>document.getElementById('btn-backdrop').click());
+  await page.waitForFunction(() =>
+    window.DoWeoBackdropCatalog && Object.keys(window.DoWeoBackdropCatalog).length===60,
+    null,{timeout:25000}
+  );
+  // Legacy 28 + new 60 are available on mobile as separate searchable groups.
   const groups=[
-    {id:'gradients',expected:9},
-    {id:'nature',expected:10},
-    {id:'sky',expected:9}
+    {id:'gradients',expected:15},
+    {id:'nature',expected:19},
+    {id:'sky',expected:9},
+    {id:'cities',expected:6},
+    {id:'textures',expected:9},
+    {id:'animals',expected:30},
+    {id:'all',expected:88}
   ];
   for(const group of groups){
     await page.evaluate(id=>{
