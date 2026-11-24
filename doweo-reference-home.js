@@ -49,7 +49,6 @@
  const balanceLine=document.createElement('p');balanceLine.className='dw-ref-balance-line';balanceLine.id='dw-ref-balance-line';
  summaryStatus.append(balanceBadge,balanceLine);
  greet.append(timeIcon,greetingCopy,summaryStatus);
- renderTimeGreeting();
  // The current viewer's device time, not a server clock or a fixed time zone,
  // determines greeting and icon. The same banner respects the selected language.
  const dayWords={
@@ -247,6 +246,9 @@
  lower.append(activityCard,settleCard);
  root.append(intro,statGrid,chart,lower);
  toolbar.after(root);
+ // All language tables, time icons, status nodes and layout elements are ready.
+ // Do not call before the const definitions above have been initialized.
+ renderTimeGreeting();
 
  // Present the real existing tracker data and controls in the new layout.
  function layout(){
