@@ -122,6 +122,7 @@
   const originalSidebarStyles=new Map();
   function repairSidebar(){
     if(!desktop.matches){
+      sidebarNav.querySelector("#dw-sidebar-chat")?.remove();
       // Exact original inline styles return when the site switches to mobile.
       // The main phone navigation, sheets and More grid never use these icons.
       for(const [element,previous] of originalSidebarStyles){
@@ -131,6 +132,21 @@
       }
       originalSidebarStyles.clear();
       return;
+    }
+    const social=sidebarNav.querySelector(':scope > .dw-nav-social-trigger');
+    const originalChat=document.querySelector('#dw-social-flyout #nav-chat');
+    if(social&&originalChat&&!sidebarNav.querySelector('#dw-sidebar-chat')){
+      const shortcut=document.createElement('button');
+      shortcut.type='button';
+      shortcut.id='dw-sidebar-chat';
+      shortcut.className='sq-nav-link';
+      shortcut.dataset.sqDestination='nav-chat';
+      const icon=originalChat.querySelector('.sq-nav-icon').cloneNode(true);
+      icon.className='dw-all-nav-icon';
+      icon.setAttribute('aria-hidden','true');
+      shortcut.append(icon,originalChat.querySelector('.sq-nav-label').cloneNode(true));
+      shortcut.style.setProperty('order',getComputedStyle(social).order,'important');
+      social.before(shortcut);
     }
     // Anchor Cash Flow to the real desktop nav immediately ahead of Analytics.
     // This fixes older flex ordering and avoids proxy links or duplicate buttons.
