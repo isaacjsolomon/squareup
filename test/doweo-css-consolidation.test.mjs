@@ -25,7 +25,8 @@ const scopedRepairIds=[
  'dw-bills-exact-reference-v9',
  'dw-mobile-critical-colors-v8',
  'dw-activity-divider-cleanup-20261123',
- 'dw-mobile-chat-navy-release-20261124'
+ 'dw-mobile-chat-navy-release-20261124',
+ 'dw-web-chat-v4-20261124'
 ];
 
 test('design system retains base surfaces and the mint brand accent',()=>{
