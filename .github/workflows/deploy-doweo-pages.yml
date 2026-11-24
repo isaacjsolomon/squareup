@@ -7,6 +7,11 @@ on:
       - main
   workflow_dispatch:
 
+# A newer production commit must never be overwritten by a slower older run.
+concurrency:
+  group: doweo-pages-production-main
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
