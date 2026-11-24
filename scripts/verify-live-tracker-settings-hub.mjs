@@ -14,8 +14,40 @@ try{
     const page=await browser.newPage({viewport:{width,height:mobile?844:900},deviceScaleFactor:1});
     await page.goto(base+'/?verify=tracker-settings-hub-v2',{waitUntil:'domcontentloaded',timeout:45000});
     await page.waitForFunction(() => [...document.styleSheets].some(sheet =>
-      sheet.href && sheet.href.includes('doweo-tracker-settings-hub.css?v=20261124-reference-hub-v3')
+      sheet.href && sheet.href.includes('doweo-tracker-settings-hub.css?v=20261124-centered-popup-v3')
     ),null,{timeout:25000});
+    if(!mobile){
+      // Exercise the deployed gallery renderer with one local tracker fixture.
+      const html=await page.locator('script[type=module]').allTextContents();
+      const start="var menu=document.createElement('details');menu.className='tracker-tile-menu';";
+      const end='banner.append(menu);';
+      const source=html.find(code=>code.includes(start));
+      assert.ok(source?.includes(end),'Gallery renderer missing');
+      const renderer=source.slice(source.indexOf(start),source.indexOf(end,source.indexOf(start))+end.length);
+      await page.addScriptTag({content:`{
+        const t={id:'fixture',name:'Example',role:'owner'},d={},i=0;
+        const banner=document.createElement('div');document.body.append(banner);
+        ${renderer}
+        menu.open=true;
+      }`});
+      const entry=page.locator('body > .tracker-tile-menu-panel .tracker-settings-entry');
+      await entry.evaluate(button=>button.click());
+      const popup=page.getByRole('dialog',{name:'Tracker settings'});
+      const geometry=await popup.evaluate(panel=>{
+        const rect=panel.getBoundingClientRect(),css=getComputedStyle(panel);
+        return {dx:rect.left+rect.width/2-innerWidth/2,dy:rect.top+rect.height/2-innerHeight/2,
+          width:rect.width,filter:css.filter,backdrop:css.backdropFilter,topLayer:panel.matches(':popover-open')};
+      });
+      assert.ok(Math.abs(geometry.dx)<=1 && Math.abs(geometry.dy)<=1,JSON.stringify(geometry));
+      assert.equal(geometry.width,360);assert.equal(geometry.filter,'none');
+      assert.equal(geometry.backdrop,'none');assert.ok(geometry.topLayer);
+      await page.screenshot({path:'test-results/tracker-settings/desktop.png'});
+      await popup.getByRole('button',{name:'Close tracker settings'}).click();
+      await popup.waitFor({state:'hidden'});
+      console.log('Desktop popup centered, sharp, and dismissed',geometry);
+      await page.close();
+      continue;
+    }
     const state=await page.evaluate(()=>{
       const menu=document.createElement('div');
       menu.className='tracker-tile-menu-panel';
