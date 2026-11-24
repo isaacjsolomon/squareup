@@ -188,7 +188,7 @@
   }
   html body #dw-ref-home .dw-ref-intro{
     display:flex;align-items:center;justify-content:space-between;
-    gap:18px;margin:0 0 12px;
+    gap:18px;margin:18px 0 8px;
     align-items:stretch!important;
   }
   html body #dw-ref-home h1{
@@ -198,15 +198,15 @@
   html body #dw-ref-home .dw-ref-greeting p{
     color:#355E72!important;margin:0;font-family:inherit;font-size:clamp(14px,1.35vw,19px);font-weight:500;line-height:1.35;
   }
-  /* Compact desktop greeting. Content (including translated text) is allowed
-     to expand naturally; no 82px status-panel floor inflates this banner. */
+  /* Desktop banner only: keep visible text, date, icon, and balance status within the
+     compact greeting. The mobile UI uses its separate layout rules. */
   html body #dw-ref-home .dw-ref-greeting{
     display:grid!important;
     grid-template-columns:44px minmax(0,1fr) minmax(165px,auto)!important;
     align-items:center!important;column-gap:14px!important;
     flex:1 1 auto!important;min-width:0!important;
-    /* Target the two screenshot guide lines: 100 CSS pixels tall. */
-    height:100px!important;min-height:100px!important;max-height:100px!important;
+    /* Compact to the user's guide lines: 72 CSS px and align vertically in the header. */
+    height:72px!important;min-height:72px!important;max-height:72px!important;
     padding:7px 18px!important;
     box-sizing:border-box!important;overflow:hidden!important;
     box-shadow:0 13px 32px rgba(10,27,46,.09)!important;
@@ -264,7 +264,7 @@
   @media(min-width:901px) and (max-width:1250px){
     html body #dw-ref-home .dw-ref-greeting{
       grid-template-columns:44px minmax(0,1fr)!important;
-      column-gap:13px!important;min-height:100px!important;
+      column-gap:13px!important;min-height:72px!important;
     }
     html body #dw-ref-home .dw-ref-balance-status{display:none!important}
     html body #dw-ref-home .dw-ref-greeting-copy{padding-left:13px}
