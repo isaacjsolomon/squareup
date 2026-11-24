@@ -2840,7 +2840,35 @@ async function renderTrackerGallery(){
       var menu=document.createElement('details');menu.className='tracker-tile-menu';
       var menuToggle=document.createElement('summary');menuToggle.textContent='⋯';menuToggle.setAttribute('aria-label','Actions for '+t.name);
       var menuPanel=document.createElement('div');menuPanel.className='tracker-tile-menu-panel';
-      var settingsView=document.createElement('div');settingsView.className='tracker-settings-view';settingsView.hidden=true;var appearanceGroup=document.createElement('section');appearanceGroup.className='sq-tracker-settings-group';var managementGroup=document.createElement('section');managementGroup.className='sq-tracker-settings-group';function groupTitle(group,label){var h=document.createElement('h3');h.className='sq-tracker-settings-group-title';h.textContent=label;group.append(h)}groupTitle(appearanceGroup,'Appearance');groupTitle(managementGroup,'Tracker management');
+      // The settings hub is one scrollable page, not separate Appearance/Management tabs.
+      var settingsView=document.createElement('div');
+      settingsView.className='tracker-settings-view dw-tracker-settings-hub';
+      settingsView.hidden=true;
+      var appearanceGroup=document.createElement('section');
+      appearanceGroup.className='sq-tracker-settings-group dw-ts-appearance';
+      appearanceGroup.id='dw-ts-appearance-'+i;
+      var managementGroup=document.createElement('section');
+      managementGroup.className='sq-tracker-settings-group dw-ts-management';
+      managementGroup.id='dw-ts-management-'+i;
+      var appearanceHeading=document.createElement('div');
+      appearanceHeading.className='dw-ts-appearance-heading';
+      var appearanceIcon=document.createElement('span');
+      appearanceIcon.className='dw-ts-appearance-icon';
+      appearanceIcon.setAttribute('aria-hidden','true');
+      appearanceIcon.innerHTML='<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3"><rect x="11" y="12" width="42" height="40" rx="9"/><circle cx="43" cy="23" r="4" fill="currentColor" stroke="none"/><path d="M14 45 28 29l11 12 6-7 8 11"/></svg>';
+      var appearanceHeadingCopy=document.createElement('div');
+      appearanceHeadingCopy.className='dw-ts-appearance-heading-copy';
+      var appearanceTitle=document.createElement('h3');appearanceTitle.textContent='Appearance';
+      var appearanceHint=document.createElement('p');appearanceHint.textContent='Customize how your tracker looks across DoWeo.';
+      appearanceHeadingCopy.append(appearanceTitle,appearanceHint);
+      appearanceHeading.append(appearanceIcon,appearanceHeadingCopy);
+      appearanceGroup.append(appearanceHeading);
+      var managementHeading=document.createElement('h3');
+      managementHeading.className='sq-tracker-settings-group-title dw-ts-management-heading';
+      managementHeading.textContent='Management quick actions';
+      var managementActions=document.createElement('div');
+      managementActions.className='dw-ts-management-actions';
+      managementGroup.append(managementHeading,managementActions);
       var mainView=document.createElement('div');mainView.className='tracker-menu-main';
       function makeMenuButton(icon,label,cls,fn,subtitle){
         var btn=document.createElement('button');btn.type='button';btn.className='tracker-menu-action '+(cls||'');
@@ -2861,8 +2889,35 @@ async function renderTrackerGallery(){
         if(subtitle){var hint=document.createElement('small');hint.textContent=subtitle;words.append(hint);}
         btn.append(glyph,words);btn.onclick=fn;return btn;
       }
-      var settingsHeader=document.createElement('button');settingsHeader.type='button';settingsHeader.className='tracker-settings-back';settingsHeader.textContent='‹  Tracker settings';
-      settingsHeader.onclick=function(){settingsView.hidden=true;mainView.hidden=false;placeTrackerMenu();menuToggle.focus();};settingsView.append(settingsHeader,appearanceGroup,managementGroup);
+      var settingsTop=document.createElement('header');
+      settingsTop.className='dw-ts-top';
+      var settingsHeader=document.createElement('button');
+      settingsHeader.type='button';settingsHeader.className='tracker-settings-back';
+      settingsHeader.setAttribute('aria-label','Back to tracker actions');
+      settingsHeader.innerHTML='<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
+      settingsHeader.onclick=function(){settingsView.hidden=true;mainView.hidden=false;placeTrackerMenu();menuToggle.focus();};
+      var settingsHeading=document.createElement('h2');settingsHeading.textContent='Tracker settings';
+      settingsTop.append(settingsHeader,settingsHeading);
+      var settingsQuickLinks=document.createElement('nav');
+      settingsQuickLinks.className='dw-ts-section-links';
+      settingsQuickLinks.setAttribute('aria-label','Jump to tracker settings section');
+      function settingsSectionLink(label,section,icon,selected){
+        var link=document.createElement('button');
+        link.type='button';link.className='dw-ts-section-link'+(selected?' dw-ts-section-link-active':'');
+        link.innerHTML=icon;
+        var words=document.createElement('span');words.textContent=label;link.append(words);
+        link.addEventListener('click',function(){
+          settingsQuickLinks.querySelectorAll('.dw-ts-section-link').forEach(function(x){x.classList.remove('dw-ts-section-link-active');});
+          link.classList.add('dw-ts-section-link-active');
+          var box=menuPanel.getBoundingClientRect();
+          var where=section.getBoundingClientRect().top-box.top+menuPanel.scrollTop-18;
+          menuPanel.scrollTo({top:Math.max(0,where),behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+        });
+        settingsQuickLinks.append(link);
+      }
+      settingsSectionLink('Appearance',appearanceGroup,'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1"/><path d="m4 17 5-5 4 4 3-3 4 4"/></svg>',true);
+      settingsSectionLink('Management',managementGroup,'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg>',false);
+      settingsView.append(settingsTop,settingsQuickLinks,appearanceGroup,managementGroup);
       // Consistent outline icons for tracker settings (visual only; handlers unchanged).
       var trackerSettingsIconPaths={
         'Change banner':'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><path d="m7 16 3-3 2 2 3-3 3 4"/>',
@@ -2873,13 +2928,33 @@ async function renderTrackerGallery(){
         'Expense approval':'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4.5V3h6v1.5"/><path d="m9 14 2 2 4-4"/>'
       };
       function settingsAction(icon,label,fn){
-        var btn=makeMenuButton(icon,label,'sq-tracker-settings-action',async function(){menu.open=false;settingsView.hidden=true;mainView.hidden=false;await fn();});
+        var isAppearance=label==='Change banner'||label==='Change tracker backdrop';
+        var detail={
+          'Change banner':"Update the tracker's header banner.",
+          'Change tracker backdrop':'Set a new backdrop for this tracker.',
+          'Rename tracker':'Give your tracker a new name.',
+          'Archive tracker':'Hide and store this tracker.',
+          'Manage permissions':'Control who can view and edit.',
+          'Expense approval':'Manage expense reviews.'
+        }[label]||'';
+        var btn=makeMenuButton(icon,label,'sq-tracker-settings-action '+(isAppearance?'dw-ts-appearance-action':'dw-ts-management-action'),async function(){
+          menu.open=false;settingsView.hidden=true;mainView.hidden=false;await fn();
+        },detail);
         var glyph=btn.querySelector('.tracker-menu-glyph');
         if(glyph && trackerSettingsIconPaths[label]){
-          glyph.innerHTML='<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+trackerSettingsIconPaths[label]+'</svg>';
+          glyph.innerHTML='<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+trackerSettingsIconPaths[label]+'</svg>';
         }
-        var arrow=document.createElement('span');arrow.className='tracker-menu-chevron';arrow.textContent='›';btn.append(arrow);
-        (label==='Change banner'||label==='Change tracker backdrop'?appearanceGroup:managementGroup).append(btn);
+        if(isAppearance){
+          var art=document.createElement('span');
+          art.className='dw-ts-appearance-preview '+(label==='Change banner'?'dw-ts-banner-preview':'dw-ts-backdrop-preview');
+          art.setAttribute('aria-hidden','true');
+          var artLayer=document.createElement('span');artLayer.className='dw-ts-preview-layer';
+          art.append(artLayer);
+          btn.append(art);
+        }
+        var arrow=document.createElement('span');arrow.className='tracker-menu-chevron';
+        arrow.setAttribute('aria-hidden','true');arrow.textContent='›';btn.append(arrow);
+        (isAppearance?appearanceGroup:managementActions).append(btn);
       }
       settingsAction('▧','Change banner',async function(){await sqBannerEdit(t.id,t.name,banner);});
       settingsAction('▧','Change tracker backdrop',async function(){
@@ -2954,7 +3029,11 @@ async function renderTrackerGallery(){
           }catch(err){status.textContent='Could not save: '+(err.message||err);save.disabled=false;toggle.disabled=false;}
         };
       });
-      var settingsButton=makeMenuButton('⚙','Tracker settings','tracker-settings-entry',function(){mainView.hidden=true;settingsView.hidden=false;placeTrackerMenu();},'Banner, backdrop, name, permissions, approvals');
+      var settingsButton=makeMenuButton('⚙','Tracker settings','tracker-settings-entry',function(){
+        mainView.hidden=true;settingsView.hidden=false;menuPanel.scrollTop=0;
+        settingsQuickLinks.querySelectorAll('.dw-ts-section-link').forEach(function(link,index){link.classList.toggle('dw-ts-section-link-active',index===0);});
+        placeTrackerMenu();
+      },'Banner, backdrop, name, permissions, approvals');
       var arrow=document.createElement('span');arrow.className='tracker-menu-chevron';arrow.textContent='›';settingsButton.append(arrow);mainView.append(settingsButton);
       mainView.append(document.createElement('hr'));
       mainView.append(makeMenuButton('↥','Share tracker','',async function(){menu.open=false;await openTracker(t.id);if(current&&current.id===t.id)await openShare();}));
@@ -2975,7 +3054,8 @@ async function renderTrackerGallery(){
         var sidebarEdge=sideRect && sideRect.right>0 && sideRect.left<vw && vw>800
           ? Math.min(vw-80,Math.max(0,sideRect.right)):0;
         var available=vw-sidebarEdge;
-        var width=showingSettings?Math.min(360,available-32):Math.min(310,vw-24);
+        // The design uses a wide, centered settings hub; the quick actions popover stays small.
+        var width=showingSettings?Math.min(880,Math.max(0,available-24)):Math.min(310,vw-24);
         var left=showingSettings
           ? sidebarEdge+Math.max(12,(available-width)/2)
           : Math.max(12,Math.min(vw-width-12,rect.right-width));
@@ -2988,7 +3068,7 @@ async function renderTrackerGallery(){
         menuPanel.style.left=left+'px';
         menuPanel.style.right='auto';
         menuPanel.style.zIndex='100000';
-        menuPanel.style.maxHeight=(showingSettings?Math.min(490,vh-24):Math.min(440,vh-24))+'px';
+        menuPanel.style.maxHeight=(showingSettings?Math.min(960,vh-24):Math.min(440,vh-24))+'px';
         menuPanel.style.overflowY='auto';
         menuPanel.style.visibility='hidden';
         var height=Math.min(menuPanel.getBoundingClientRect().height,vh-24);
@@ -10220,6 +10300,8 @@ html body #backdrop-modal #backdrop-swatches .swatch > .dw-backdrop-preview-titl
 <link rel="stylesheet" href="/doweo-mobile-overview.css?v=continuous-navy-v3">
 <!-- Category styling loads after legacy overrides, including mobile popup styles. -->
 <link rel="stylesheet" href="/doweo-backdrop-catalog.css?v=20261124-60-presets-v2">
+<!-- Authenticated tracker settings hub design; both sections remain on one page. -->
+<link rel="stylesheet" href="/doweo-tracker-settings-hub.css?v=20261124-reference-hub-v1">
 </body>
 </html>
 
