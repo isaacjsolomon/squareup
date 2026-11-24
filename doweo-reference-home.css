@@ -204,8 +204,10 @@
     display:grid!important;
     grid-template-columns:44px minmax(0,1fr) minmax(165px,auto)!important;
     align-items:center!important;column-gap:14px!important;
-    flex:1 1 auto!important;min-width:0!important;min-height:70px!important;
-    height:auto!important;padding:7px 18px!important;
+    flex:1 1 auto!important;min-width:0!important;
+    /* Target the two screenshot guide lines: 100 CSS pixels tall. */
+    height:100px!important;min-height:100px!important;max-height:100px!important;
+    padding:7px 18px!important;
     box-sizing:border-box!important;overflow:hidden!important;
     box-shadow:0 13px 32px rgba(10,27,46,.09)!important;
   }
@@ -262,7 +264,7 @@
   @media(min-width:901px) and (max-width:1250px){
     html body #dw-ref-home .dw-ref-greeting{
       grid-template-columns:44px minmax(0,1fr)!important;
-      column-gap:13px!important;min-height:70px!important;
+      column-gap:13px!important;min-height:100px!important;
     }
     html body #dw-ref-home .dw-ref-balance-status{display:none!important}
     html body #dw-ref-home .dw-ref-greeting-copy{padding-left:13px}
