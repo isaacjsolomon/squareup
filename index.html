@@ -4432,8 +4432,41 @@ function initMobileChatInbox(){
    section('Shared expenses',()=>{const entries=(activeDetail()?.entries||[]).filter(e=>e.type==='debt');showItems('Shared expenses',entries.map(e=>{const b=detailButton((e.description||e.note||e.title||'Expense')+' · '+sqFormat(Number(e.amount)||0),()=>{dismiss();document.querySelector('[data-sq-tab="expenses"]')?.click()});return b}))});
    section('Group polls',()=>{if(activeDetail()){dismiss();window.dwOpenPollsPage?.()}});
    section('Pinned messages',()=>{const pin=document.getElementById('sq-chat-pin');if(pin.hidden)showItems('Pinned messages',[]);else{const copy=document.createElement('p');copy.textContent=pin.querySelector('p')?.textContent||pin.textContent;showItems('Pinned messages',[copy,detailButton('Jump to message',()=>document.getElementById('sq-jump-chat')?.click())])}});
-   section('Shared photos',()=>{const imgs=[...document.querySelectorAll('#tracker-chat-messages img.sq-chat-image')].filter(i=>i.getAttribute('src'));showItems('Shared photos',imgs.map(i=>{const a=document.createElement('a');a.href=i.src;a.target='_blank';a.rel='noopener';const img=document.createElement('img');img.src=i.src;img.alt='Shared photo';a.append(img);return a}))});
+   section('Shared photos',()=>{
+    const gallery=document.createElement('div');gallery.className='dw-photo-gallery';
+    for(const photo of host.querySelectorAll('img.sq-chat-image')){
+     const row=photo.closest('[data-chat-id]');
+     if(!row)continue;
+     const thumb=detailButton('View photo',()=>{
+      const message=Array.from(host.querySelectorAll('[data-chat-id]')).find(el=>el.dataset.chatId===row.dataset.chatId);
+      if(message){document.getElementById('sq-chat-search').value='';squareUpApplyChatSearch();message.scrollIntoView({block:'center'})}
+     });
+     if(photo.complete&&photo.naturalWidth){
+      const preview=document.createElement('canvas');preview.width=120;preview.height=90;
+      const scale=Math.max(120/photo.naturalWidth,90/photo.naturalHeight);
+      preview.getContext('2d').drawImage(photo,(120-photo.naturalWidth*scale)/2,(90-photo.naturalHeight*scale)/2,photo.naturalWidth*scale,photo.naturalHeight*scale);
+      thumb.prepend(preview);
+     }
+     gallery.append(thumb);
+    }
+    showItems('Shared photos',gallery.childElementCount?[gallery]:[]);
+   });
   }
+  section('Shared links',()=>{
+   const messages=x.direct?x.dmHistory:activeDetail()?squareUpChatRows:x.history;
+   const links=new Map();
+   for(const message of messages||[]){
+    for(const match of String(message.body||message.message||'').matchAll(/https?:\/\/[^\s<>"']+/gi)){
+     try{
+      const url=new URL(match[0].replace(/[.,!?]+$/,''));
+      if(links.has(url.href))continue;
+      const link=document.createElement('a');link.href=url.href;link.target='_blank';link.rel='noopener noreferrer';link.textContent=url.href;
+      links.set(url.href,link);
+     }catch{}
+    }
+   }
+   showItems('Shared links',[...links.values()]);
+  });
   section('Customize chat',()=>customize(x));
   function customize(x){content.replaceChildren(detailButton('‹ Back',()=>renderDetails(x)));const h=document.createElement('h3');h.textContent='Customize conversation';content.append(h);
    const name=document.createElement('input');name.value=titleFor(x);name.maxLength=100;name.setAttribute('aria-label','Chat name');content.append(name,detailButton('Save chat name',()=>{saveDisplay(x,{name:name.value.trim()});renderDetails(x)}),detailButton('Change chat icon',()=>{const picker=document.createElement('input');picker.type='file';picker.accept='image/*';picker.onchange=async()=>{if(picker.files[0]){await setChatIcon(x,picker.files[0]);renderDetails(x)}};picker.click()}));
@@ -4452,7 +4485,7 @@ function initMobileChatInbox(){
   return data.map(p=>({id:p.peer,name:p.name,username:p.username,friend:p.is_friend,shared:p.shared_names||[],photo:p.photo,eligible:p.eligible,direct:true,preview:p.preview,date:p.last_at,unread:p.incoming&&Date.parse(p.last_at)>Number(localStorage.getItem(seenKey('dm:'+p.peer))||0)?1:0}));
  }
  async function choose(){
-  restore();const seq=++version;choosing=true;people=[];query.value='';list.querySelector('h2').textContent='New Message';query.placeholder='Search people';list.classList.add('choosing');rows.textContent='Loading people…';
+  inboxGeneration++;restore();const seq=++version;choosing=true;people=[];query.value='';list.querySelector('h2').textContent='New Message';query.placeholder='Search people';list.classList.add('choosing');rows.textContent='Loading people…';
   try{const result=await directory();if(seq!==version)return;contactDirectory=result;people=result.filter(x=>x.eligible).sort((a,b)=>a.name.localeCompare(b.name));paint()}catch{if(seq===version)rows.textContent='Could not load people. Go back and try again.'}
  }
  async function direct(x){
@@ -4641,20 +4674,29 @@ function initMobileChatInbox(){
   if(event.cancelable)event.preventDefault();
  }
  for(const type of ['touchmove','wheel'])document.addEventListener(type,containChatGesture,{passive:false});
- let pageY=0;
+ let inboxGeneration=0,pageY=0;
  function dismiss(){if(pane.hidden)return;version++;restore();pane.hidden=true;document.body.classList.remove('dw-chats-open');window.scrollTo({top:pageY,behavior:'instant'});nav.removeAttribute('aria-current')}
  async function menu(){
+  const generation=++inboxGeneration;
   if(pane.hidden)pageY=window.scrollY;
   const seq=++version;restore();pane.hidden=false;document.body.classList.add('dw-chats-open');nav.setAttribute('aria-current','page');fit();
   rows.textContent='Loading chats…';items=[];contactDirectory=[];favorites.replaceChildren();
   try{
-   const groups=await api('trackers');if(seq!==version)return;
+   const contactsRequest=directory().catch(()=>[]);
+   const groups=await api('trackers');if(generation!==inboxGeneration||pane.hidden||choosing)return;
    items=groups.map(t=>({id:t.id,name:t.name||'Tracker',preview:'Loading messages…',unread:0}));paint();
-   await Promise.all(items.map(async x=>{
+   const groupsReady=Promise.all(items.map(async x=>{
     try{const messages=await api('trackers/'+encodeURIComponent(x.id)+'/chat');x.history=messages;x.historyTime=Date.now();const last=messages[messages.length-1];x.date=last?.createdAt;x.preview=last?(last.senderName||'Member')+': '+(last.message||'Photo').replace(/ \((Poll|Expense) ID: [^)]+\)/g,''):'Start a conversation';
     const read=Number(localStorage.getItem(seenKey(x.id))||0);x.unread=messages.filter(m=>String(m.senderId)!==String(currentUser?.id)&&Date.parse(m.createdAt)>read).length;
     }catch{x.preview='Message preview unavailable'}
-   }));if(seq!==version)return;try{const contacts=await directory();if(seq!==version)return;contactDirectory=contacts;items.push(...contacts.filter(x=>x.date))}catch{}if(seq===version){items.sort((a,b)=>(Date.parse(b.date)||0)-(Date.parse(a.date)||0));paint();if(!media.matches&&items.length&&!query.value&&!filterIndex)openConversation(items[0])}
+   }));
+   const contacts=await contactsRequest;
+   if(generation!==inboxGeneration||pane.hidden||choosing)return;
+   contactDirectory=contacts;items.push(...contacts.filter(x=>x.date));paint();
+   await groupsReady;
+   if(generation!==inboxGeneration||pane.hidden||choosing)return;
+   items.sort((a,b)=>(Date.parse(b.date)||0)-(Date.parse(a.date)||0));paint();
+   if(seq===version&&!media.matches&&items.length&&!query.value&&!filterIndex)openConversation(items[0]);
   }catch{if(seq===version)rows.textContent='Could not load chats. Tap Chat to retry.'}
  }
  async function enter(x){
@@ -10490,7 +10532,7 @@ html body #backdrop-modal #backdrop-swatches .swatch > .dw-backdrop-preview-titl
  }
 }
 </style>
-<link rel="stylesheet" href="/doweo-web-chat.css?v=3">
+<link rel="stylesheet" href="/doweo-web-chat.css?v=20261124-inbox-4">
 <style id="dw-web-chat-v4-20261124">
 .dw-chat-v4-only,#dw-chat-details-v4{display:none}
 @media(min-width:901px){
@@ -10542,6 +10584,9 @@ html body.dw-chats-open section#dw-chats#dw-chats.dw-chat-details-open:not([hidd
 #dw-chats#dw-chats .dw-detail-swatches button[aria-pressed=true]{outline:2px solid #60F1AD}
 #dw-chats#dw-chats .dw-detail-section{display:flex;flex-direction:column;gap:10px}
 #dw-chats#dw-chats .dw-detail-section p{margin:0;color:#ABC6D7;overflow-wrap:anywhere}
+#dw-chats .dw-photo-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:8px}
+#dw-chats .dw-photo-gallery canvas{display:block;width:100%;height:auto;border-radius:6px}
+#dw-chats .dw-detail-section a{color:#60F1AD;overflow-wrap:anywhere}
 #dw-chats#dw-chats .dw-detail-section img{max-width:100%;border-radius:8px}
 #dw-chats#dw-chats #dw-chat-thread :is(#tracker-chat-messages,#dw-dm-messages){padding:18px 22px!important;scrollbar-width:thin;overscroll-behavior:contain}
 #dw-chats#dw-chats #dw-chat-thread .chat-line.mine .chat-bubble,#dw-chats#dw-chats #dw-dm-messages p.mine{background:var(--dw-chat-bubble,#60F1AD)!important;color:#0A1B2E!important;-webkit-text-fill-color:#0A1B2E!important}
