@@ -115,7 +115,8 @@ test('every main desktop route has the navy/mint shell, icons, and localized rea
    return [...nav.querySelectorAll(':scope > button.sq-nav-link,:scope > .dw-nav-social-trigger,:scope > .dw-nav-group > summary')]
     .filter(el=>!!el.getClientRects().length&&getComputedStyle(el).display!=='none')
     .map(el=>{
-      const icon=el.querySelector(':scope > .dw-all-nav-icon');
+      // My Wallet uses its approved custom icon rather than a generic duplicate.
+      const icon=el.querySelector(':scope > .dw-all-nav-icon,:scope > .dw-my-wallet-icon');
       const label=el.querySelector('.sq-nav-label,.dw-social-label,.dw-nav-group-name');
       const rect=el.getBoundingClientRect(),glyph=icon?.getBoundingClientRect();
       return {id:el.id||el.closest('details')?.dataset.dwNavGroup||el.className,
