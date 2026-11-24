@@ -58,7 +58,7 @@ test('wide greeting uses device-local time, real balance and preserves the Add a
  assert.doesNotMatch(js,/greet\.append\(timeIcon,greetingCopy,summaryStatus\);\s*renderTimeGreeting\(\)/,'prevent early greeting initialization');
  assert.match(css,/#dw-ref-home \.dw-ref-greeting\{/,'expanded greeting CSS present');
  assert.match(css,/grid-template-columns:68px minmax\(0,1fr\) minmax\(182px,auto\)/);
- assert.match(html,/doweo-reference-home\.js\?v=20261123-time-greeting-wide-v1/);
+ assert.match(html,/doweo-reference-home\.js\?v=20261123-time-greeting-wide-v2/);
  assert.match(html,/doweo-reference-home\.css\?v=20261123-time-greeting-wide-v1/);
  assert.match(html,/doweo-unified-localize\.js\?v=20261123-time-greeting-wide-v1/);
  assert.match(js,/if\(holder\.parentElement!==add\)add\.append\(holder\)/,'real Add button remains attached');
