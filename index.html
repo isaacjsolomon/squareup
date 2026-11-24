@@ -2897,7 +2897,12 @@ async function renderTrackerGallery(){
       settingsHeader.innerHTML='<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
       settingsHeader.onclick=function(){settingsView.hidden=true;mainView.hidden=false;placeTrackerMenu();menuToggle.focus();};
       var settingsHeading=document.createElement('h2');settingsHeading.textContent='Tracker settings';
-      settingsTop.append(settingsHeader,settingsHeading);
+      var settingsClose=document.createElement('button');
+      settingsClose.type='button';settingsClose.className='dw-ts-close';
+      settingsClose.setAttribute('aria-label','Close tracker settings');
+      settingsClose.textContent='×';
+      settingsClose.onclick=function(){menu.open=false;menuToggle.focus();};
+      settingsTop.append(settingsHeader,settingsHeading,settingsClose);
       var settingsQuickLinks=document.createElement('nav');
       settingsQuickLinks.className='dw-ts-section-links';
       settingsQuickLinks.setAttribute('aria-label','Jump to tracker settings section');
@@ -3033,6 +3038,7 @@ async function renderTrackerGallery(){
         mainView.hidden=true;settingsView.hidden=false;menuPanel.scrollTop=0;
         settingsQuickLinks.querySelectorAll('.dw-ts-section-link').forEach(function(link,index){link.classList.toggle('dw-ts-section-link-active',index===0);});
         placeTrackerMenu();
+        if(window.innerWidth>900)settingsClose.focus();
       },'Banner, backdrop, name, permissions, approvals');
       var arrow=document.createElement('span');arrow.className='tracker-menu-chevron';arrow.textContent='›';settingsButton.append(arrow);mainView.append(settingsButton);
       mainView.append(document.createElement('hr'));
@@ -10307,7 +10313,7 @@ html body #backdrop-modal #backdrop-swatches .swatch > .dw-backdrop-preview-titl
 <!-- Category styling loads after legacy overrides, including mobile popup styles. -->
 <link rel="stylesheet" href="/doweo-backdrop-catalog.css?v=20261124-60-presets-v2">
 <!-- Authenticated tracker settings hub design; both sections remain on one page. -->
-<link rel="stylesheet" href="/doweo-tracker-settings-hub.css?v=20261124-reference-hub-v3">
+<link rel="stylesheet" href="/doweo-tracker-settings-hub.css?v=20261124-simple-popup-v1">
 </body>
 </html>
 
