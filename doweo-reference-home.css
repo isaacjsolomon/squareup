@@ -264,9 +264,15 @@
   @media(min-width:901px) and (max-width:1250px){
     html body #dw-ref-home .dw-ref-greeting{
       grid-template-columns:44px minmax(0,1fr)!important;
-      column-gap:13px!important;min-height:100px!important;
+      grid-template-rows:auto auto!important;
+      column-gap:13px!important;row-gap:6px!important;
+      min-height:100px!important;
     }
-    html body #dw-ref-home .dw-ref-balance-status{display:none!important}
+    html body #dw-ref-home .dw-ref-balance-status{
+      display:flex!important;grid-column:2;grid-row:2;
+      flex-direction:row;align-items:center;flex-wrap:wrap;
+      border-left:0;padding-left:13px;gap:6px;
+    }
     html body #dw-ref-home .dw-ref-greeting-copy{padding-left:13px}
   }
   /* The original #dw-compact-add button now sits in the reference Add host.
