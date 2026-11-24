@@ -35,6 +35,33 @@ test('the reference Overview is built from existing tracker + authenticated pers
  assert.match(css,/#dw-ref-home \.dw-ref-settle/);
 });
 
+test('wide greeting uses device-local time, real balance and preserves the Add action',()=>{
+ const phases=js.match(/function phaseForHour\(hour\)\{[\s\S]*?\n \}/);
+ assert.ok(phases,'time-of-day classifier missing');
+ const phase=Function('return ('+phases[0]+')')();
+ for(const [hour,expected] of [
+  [0,'night'],[4,'night'],[5,'morning'],[11,'morning'],[12,'afternoon'],
+  [16,'afternoon'],[17,'evening'],[20,'evening'],[21,'night'],[23,'night']
+ ])assert.equal(phase(hour),expected,'hour '+hour);
+ for(const key of ['morning','afternoon','evening','night'])
+  assert.ok(js.includes(key+':'),key+' greeting icon missing');
+ assert.match(js,/now\.getHours\(\)/,'greeting must use the viewer local hour');
+ assert.match(js,/Intl\.DateTimeFormat\(lang,\{weekday:'long',month:'long',day:'numeric'\}\)/,'date comes from live local time and language');
+ assert.match(js,/setInterval\(\(\)=>\{if\(desktop\.matches\)renderTimeGreeting\(\);\},60\*1000\)/,'greeting refreshes while page is open');
+ assert.match(js,/doweo:languagechange/,'greeting updates when user changes language');
+ assert.match(js,/squareup:tracker-detail/,'tracker status responds to tracker updates');
+ assert.match(js,/document\.getElementById\('sq-clean-net'\)/,'tracker status is computed from real balance');
+ assert.match(js,/state==='negative'/,'negative balances have separate messaging');
+ assert.match(js,/state==='zero'/,'settled balances are not labeled positive');
+ assert.match(js,/greet\.append\(timeIcon,greetingCopy,summaryStatus\)/,'approved greeting layout present');
+ assert.match(css,/#dw-ref-home \.dw-ref-greeting\{/,'expanded greeting CSS present');
+ assert.match(css,/grid-template-columns:68px minmax\(0,1fr\) minmax\(182px,auto\)/);
+ assert.match(html,/doweo-reference-home\.js\?v=20261123-time-greeting-wide-v1/);
+ assert.match(html,/doweo-reference-home\.css\?v=20261123-time-greeting-wide-v1/);
+ assert.match(html,/doweo-unified-localize\.js\?v=20261123-time-greeting-wide-v1/);
+ assert.match(js,/if\(holder\.parentElement!==add\)add\.append\(holder\)/,'real Add button remains attached');
+});
+
 test('the desktop visual shell does not override mobile navigation geometry',()=>{
  assert.match(css,/@media\(min-width:901px\)/);
  assert.match(css,/@media\(max-width:900px\)/);
