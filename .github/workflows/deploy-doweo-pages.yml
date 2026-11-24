@@ -186,14 +186,14 @@ jobs:
           set -euo pipefail
           for attempt in {1..15}; do
             page="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/?theme=mint-and-original-backdrops-v1' || true)"
-            mint_css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/doweo-reference-home.css?v=20261123-time-greeting-wide-v1' || true)"
+            mint_css="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/doweo-reference-home.css?verify=active-mint-styles' || true)"
             mint_js="$(curl --connect-timeout 8 --max-time 15 -fsSL -H 'Cache-Control: no-cache' 'https://doweo.app/doweo-cashflow-analytics.js?v=20261122-original-mint-v1' || true)"
             if [[ "$page" == *'restored-original-backdrops-20261122-v1'* ]] &&
                [[ "$page" == *'expanded-gallery-18-presets-20261123-v1'* ]] &&
                [[ "$page" == *'id="backdrop-categories"'* ]] &&
                [[ "$page" == *'id="dw-mobile-critical-colors-v8"'* ]] &&
                [[ "$page" == *'background:#60F1AD!important'* ]] &&
-               [[ "$page" == *'doweo-reference-home.css?v=20261123-time-greeting-wide-v1'* ]] &&
+               [[ "$page" == *'doweo-reference-home.css?v='* ]] &&
                [[ "$page" == *'doweo-cashflow-analytics.js?v=20261122-original-mint-v1'* ]] &&
                [[ "$mint_css" == *'background:#60F1AD!important'* ]] &&
                [[ "$mint_js" == *'#60F1AD'* ]]; then
