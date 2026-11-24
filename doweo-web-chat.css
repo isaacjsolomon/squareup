@@ -48,3 +48,21 @@ html body.dw-chats-open #dw-chats:not([hidden]){
 #dw-chats #dw-dm-messages p,#dw-chats .chat-bubble{width:fit-content;max-width:82%;border-radius:20px!important;padding:9px 16px!important;overflow-wrap:anywhere;background:#263f52!important;color:white!important}
 #dw-chats #dw-dm-messages .mine,#dw-chats .mine .chat-bubble{background:#60f1ad!important;color:#061d2e!important;margin-left:auto}
 }
+.dw-thread-pin{display:none}
+@media(min-width:901px){
+ html body.dw-chats-open .sq-workspace-tabs,
+ html body.dw-chats-open .wrap{visibility:hidden!important}
+ html body.dw-chats-open #dw-chats{visibility:visible!important}
+ #dw-chats .dw-thread-pin{display:inline-flex;margin-left:auto}
+ #dw-chats #dw-chat-shortcuts:empty{display:none}
+ #dw-chats #dw-chat-shortcuts{overflow-x:auto;justify-content:flex-start;gap:12px}
+ #dw-chats #dw-chat-shortcuts button{flex:0 0 70px}
+ #dw-chats #dw-chat-thread{overflow:hidden;height:100%}
+ #dw-chats #dw-chat-thread>header,#dw-chats #tracker-chat-form,#dw-chats #dw-dm-form{flex:0 0 auto!important}
+ #dw-chats #dw-chat-host,#dw-chats #dw-dm-panel,#dw-chats #chat-card,#dw-chats #chat-card>.tracker-collapsible-body{overflow:hidden;min-height:0!important;max-height:100%;box-sizing:border-box}
+ #dw-chats details#chat-card::details-content{display:flex;flex-direction:column;flex:1 1 0;min-height:0;overflow:hidden}
+ #dw-chats #tracker-chat-messages,#dw-chats #dw-dm-messages{flex:1 1 0!important;overflow:auto!important}
+}
+@media(min-width:901px){
+ html body.dw-chats-open #dw-all-top-tabs,html body.dw-chats-open #dw-all-topbar{display:none!important}
+}
