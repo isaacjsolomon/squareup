@@ -27,6 +27,7 @@
 <style id="dw-brand-first-paint">
 @layer dwDesktopRail {
 .dw-rail-only {display:none!important}
+@media(max-width:900px){#dw-sidebar-chat{display:none!important}}
 @media(min-width:901px){
 body>aside.sidebar{position:fixed!important;top:0!important;bottom:0!important;height:100dvh!important;max-height:100dvh!important;min-height:0!important;margin-block:0!important;box-sizing:border-box!important;overflow-y:auto!important;overscroll-behavior:contain!important;background:linear-gradient(153deg,#0b3145 0%,#051e31 21%,#051d30 84%,#0b3444 100%)!important;border-right:1px solid #296071!important;border-radius:0!important;color:#f3f8fc!important}
 .sidebar .sidebar-top-row{background:linear-gradient(110deg,#072337,#0b384a)!important;border-radius:0 0 36px 0!important;padding:12px 16px!important}
@@ -52,7 +53,8 @@ body>aside.sidebar{position:fixed!important;top:0!important;bottom:0!important;h
 .dw-rail-quick div{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:4px!important}
 .sidebar .dw-rail-quick button{min-width:0!important;padding:8px 2px!important;font-size:12px!important;line-height:1.2!important;display:grid!important;justify-items:center!important;gap:5px!important}
 .dw-rail-quick svg,.dw-rail-only>svg{width:21px!important;height:21px!important;flex:none!important;color:#60f1ad!important}
-.sidebar .dw-rail-edge{position:absolute!important;top:50%!important;right:0!important;transform:translateY(-50%)!important;z-index:50!important;width:20px!important;height:48px!important;min-width:0!important;padding:0!important;align-items:center!important;justify-content:center!important;border-radius:12px 0 0 12px!important;border:1px solid #355e72!important;background:#102b40!important;color:#60f1ad!important;font-size:23px!important}
+body>.dw-rail-edge{display:flex!important;position:fixed!important;top:var(--rail-arrow-y)!important;left:var(--rail-arrow-x)!important;right:auto!important;transform:translateY(-50%)!important;z-index:2147483100!important;width:26px!important;height:48px!important;min-width:0!important;padding:0!important;align-items:center!important;justify-content:center!important;border-radius:12px!important;border:1px solid #355e72!important;background:#102b40!important;color:#60f1ad!important;font-size:23px!important}
+body>.dw-rail-edge[hidden],body.sq-auth-guest>.dw-rail-edge,body.sq-auth-loading>.dw-rail-edge{display:none!important}
 body:not(.side-collapsed)>aside.sidebar{left:0!important;margin-left:0!important}
 body:not(.side-collapsed) .sidebar .sidebar-top-row{padding-inline-start:7px!important}
 body.side-collapsed .sidebar #dw-beta-launch{display:none!important}
@@ -9099,12 +9101,8 @@ document.getElementById('ac-log').addEventListener('click',function(){
    icon.className='dw-all-nav-icon';
    icon.setAttribute('aria-hidden','true');
    shortcut.append(icon,originalChat.querySelector('.sq-nav-label').cloneNode(true));
-   shortcut.style.setProperty('display','flex','important');
    shortcut.style.setProperty('order',getComputedStyle(social).order,'important');
    social.before(shortcut);
-   matchMedia('(min-width:901px)').addEventListener('change',event=>{
-     shortcut.style.setProperty('display',event.matches?'flex':'none','important');
-   });
  }
 
  const morePanel=makePanel('dw-more-flyout',['nav-profile','nav-help-center','nav-about','nav-privacy-terms']);
@@ -11234,7 +11232,7 @@ html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
 (function(){
  const sidebar=document.querySelector('aside.sidebar'),nav=sidebar.querySelector('.squareup-nav');
  const desktop=matchMedia('(min-width:901px)');
- const icons={expense:'M5 3h14v18l-3-2-4 2-4-2-3 2z M8 8h8 M8 12h6',tracker:'M20 11a8 8 0 1 1-7-7 M12 12l8-8 M16 4h4v4',pay:'M2 10l20-7-7 19-4-8z M11 14L22 3',bills:'M3 6h18v15H3z M3 10h18 M7 3v5 M17 3v5',friends:'M15 20v-2a5 5 0 0 0-10 0v2 M13 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0 M19 9v6 M16 12h6',settings:'M4 6h16 M4 12h16 M4 18h16 M8 3v6 M16 9v6 M10 15v6'};
+ const icons={expense:'M5 3h14v18l-3-2-4 2-4-2-3 2z M8 8h8 M8 12h6',tracker:'M20 11a8 8 0 1 1-7-7 M12 12l8-8 M16 4h4v4',pay:'M2 10l20-7-7 19-4-8z M11 14L22 3',bills:'M3 6h18v15H3z M3 10h18 M7 3v5 M17 3v5',friends:'M15 20v-2a5 5 0 0 0-10 0v2 M13 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0 M19 9v6 M16 12h6',settings:'M9.5 3l.5-1h4l.5 2 2 .9 1.9-.6 2 3.4-1.5 1.5.2 2.3 1.6 1.5-1.6 3.6-2-.2-1.8 1.4-.3 2.2-3.9.6-1-1.9-2.2-.6-1.9 1-2.7-2.9.9-2-.5-2.1-1.9-1 .6-3.9 2.1-.4 1.4-1.8-.2-2 3.6-1.5z M15.4 11.7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 1 1 7 0'};
  function button(label,key,selector){
   const b=document.createElement('button');b.type='button';b.title=label;b.setAttribute('aria-label',label);
   b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+icons[key]+'"/></svg><span class="dw-rail-short-label"></span>';
@@ -11252,10 +11250,26 @@ html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
  }
  const quick=document.createElement('section');quick.className='dw-rail-only dw-rail-quick';quick.innerHTML='<strong>ϟ　Quick Actions</strong><div></div>';
  for(const item of actions)quick.lastChild.append(button(...item));nav.after(quick);
- const edge=document.createElement('button');edge.type='button';edge.className='dw-rail-only dw-rail-edge';const toggle=document.getElementById('side-toggle');edge.onclick=()=>toggle.click();sidebar.append(edge);
+ const edge=document.createElement('button');edge.type='button';edge.className='dw-rail-only dw-rail-edge';const toggle=document.getElementById('side-toggle');edge.onclick=()=>toggle.click();document.body.append(edge);
+ const arrowObserver=new ResizeObserver(placeArrow);
+ arrowObserver.observe(sidebar);arrowObserver.observe(nav);
+ function placeArrow(){
+  const events=document.getElementById('sqev-nav');
+  const anchor=events?.getClientRects().length?events:document.getElementById('dw-personal-finance');
+  edge.hidden=!desktop.matches||!sidebar.getClientRects().length||!anchor?.getClientRects().length;
+  if(edge.hidden)return;
+  const rect=anchor.getBoundingClientRect();
+  edge.style.setProperty('--rail-arrow-y',(rect.top+rect.height/2)+'px');
+  edge.style.setProperty('--rail-arrow-x',(sidebar.getBoundingClientRect().right-12)+'px');
+ }
+ document.addEventListener('scroll',placeArrow,{capture:true,passive:true});
+ window.addEventListener('resize',placeArrow);
+ new MutationObserver(placeArrow).observe(nav,{subtree:true,attributes:true,attributeFilter:['aria-expanded','open']});
+
  function sync(){const expanded=toggle.getAttribute('aria-expanded');edge.textContent=expanded==='true'?'‹':'›';edge.title=toggle.title;edge.setAttribute('aria-label',toggle.title);edge.setAttribute('aria-expanded',expanded)}
  new MutationObserver(sync).observe(toggle,{attributes:true,attributeFilter:['aria-expanded']});sync();
  function labels(){
+  placeArrow();
   if(!desktop.matches)return;
   const chat=nav.querySelector('#dw-sidebar-chat');if(chat)chat.style.setProperty('order','-80','important');
   if(document.documentElement.lang==='en'){for(const [id,old,label] of [['nav-home','Home','Overview'],['dw-personal-finance','My Wallet','Personal Finance']]){const el=document.querySelector('#'+id+' .sq-nav-label');if(el?.textContent===old)el.textContent=label}}
