@@ -4813,7 +4813,8 @@ function sqRenderMonthlyRecap(){
   totals[key]=(totals[key]||0)+amount;counts[key]=(counts[key]||0)+1;
  });
  var amount=totals[selected]||0,previous=totals[prev]||0,count=counts[selected]||0;
- var cards=[['Recorded expenses',squareUpMoney(amount)],['Expense entries',String(count)],['Previous month',squareUpMoney(previous)],['Month-over-month',previous?((amount-previous)/previous*100).toFixed(1)+'%':'Not available']];
+ var desktopAnalytics=window.matchMedia('(min-width:901px)').matches;
+ var cards=[[desktopAnalytics?'Selected month spending':'Recorded expenses',squareUpMoney(amount)],[desktopAnalytics?'Selected month entries':'Expense entries',String(count)],['Previous month',squareUpMoney(previous)],['Month-over-month',previous?((amount-previous)/previous*100).toFixed(1)+'%':'Not available']];
  out.innerHTML=cards.map(function(c){return '<div class="sq-recap-stat"><span>'+esc(c[0])+'</span><strong>'+esc(c[1])+'</strong></div>';}).join('');
  breakdown.textContent='Based on recorded debt entries dated in this month. Split bills can create multiple entries; totals reflect entries, not unique receipts. Undated and pending/disputed entries are excluded.';
 }
@@ -4830,7 +4831,8 @@ function renderSquareUpAnalytics(){
  var people={},total=0,months={};
  entries.forEach(e=>{var n=Number(e.amount)||0;if(n<=0)return;total+=n;var person=e.from||'Unknown';people[person]=(people[person]||0)+n;var d=entryDate(e);if(d){var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');months[key]=(months[key]||0)+n;}});
  var avg=entries.length?total/entries.length:0;
- var cards=[['◈','Total expenses',squareUpMoney(total),'Recorded in this period'],['▤','Expense entries',String(entries.length),'Recorded expenses'],['♧','Members',String(current.members.length),'In this tracker'],['▥','Average expense',squareUpMoney(avg),'Per expense entry']];
+ var desktopAnalytics=window.matchMedia('(min-width:901px)').matches;
+ var cards=[['◈',desktopAnalytics?'Period spending':'Total expenses',squareUpMoney(total),'Recorded in this period'],['▤',desktopAnalytics?'Period entries':'Expense entries',String(entries.length),desktopAnalytics?'In the selected time range':'Recorded expenses'],['♧','Members',String(current.members.length),'In this tracker'],['▥','Average expense',squareUpMoney(avg),'Per expense entry']];
  stats.innerHTML=cards.map(c=>'<div class="analytics-stat"><div class="sq-stat-label"><span class="sq-stat-icon">'+c[0]+'</span>'+c[1]+'</div><strong>'+c[2]+'</strong><small>'+c[3]+'</small></div>').join('');
  var keys=[];
  if(range==='all')keys=Object.keys(months).sort();
@@ -4845,7 +4847,7 @@ function renderSquareUpAnalytics(){
  else{
   var colors=window.matchMedia("(max-width:900px)").matches
     ? ['#60F1AD','#ABC6D7','#ABC6D7','#355E72','#ABC6D7','#ABC6D7']
-    : ['#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7'];
+    : ['#173750','#60F1AD','#3878B5','#168A87','#7965A9','#D39645','#CF6980','#ABC6D7'];
   var angle=0;
   var stops=personRows.map((row,i)=>{var from=angle;angle+=row[1]/total*100;return colors[i%colors.length]+' '+from.toFixed(3)+'% '+angle.toFixed(3)+'%';});
   peopleEl.innerHTML='<div class="sq-person-donut" style="background:conic-gradient('+stops.join(',')+')"><div class="sq-person-donut-hole"><strong>'+squareUpMoney(total)+'</strong><span>Total</span></div></div><div class="sq-person-legend">'+personRows.map((r,i)=>'<div class="sq-person-legend-item"><span class="sq-person-dot" style="background:'+colors[i%colors.length]+'"></span><div><span>'+esc(r[0])+'</span><strong>'+squareUpMoney(r[1])+'</strong><small>'+(r[1]/total*100).toFixed(0)+'% of total</small></div></div>').join('')+'</div>';
@@ -10248,7 +10250,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 <script defer src="/doweo-polls-dashboard.js?v=20261122-backdrop-colors-v1"></script>
 <script defer src="/doweo-cashflow-analytics.js?v=20261124-chart-colors-v1"></script>
 <script defer src="/doweo-desktop-standalone.js?v=20261122-backdrop-colors-v1"></script>
-<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261124-cashflow-light-wallpaper-v2">
+<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261124-analytics-contrast-v3">
 <link rel="stylesheet" href="/doweo-polls-dashboard.css?v=20261122-backdrop-colors-v1">
 <style id="dw-mobile-critical-colors-v8">
 /* Desktop and mobile: the brand icon is one self-contained SVG image, not a

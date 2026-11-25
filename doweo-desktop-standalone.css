@@ -817,3 +817,70 @@
  }
  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-cash-recap-grid .sq-recap-stat span{color:#355E72!important}
 }
+
+/* Spending Analytics — same light wallpaper wash and legible navy/mint
+   chart palette as Cash Flow. Desktop-only; preserve tracker calculations. */
+@media (min-width:901px){
+ html body.analytics-view #analytics-page#analytics-page{
+  background-color:#F3F8FC!important;
+  background-image:linear-gradient(color-mix(in srgb,#F3F8FC 52%,transparent),color-mix(in srgb,#F3F8FC 52%,transparent)),var(--dw-selected-tracker-wallpaper,linear-gradient(145deg,#ABC6D7,#F3F8FC))!important;
+  background-size:cover,cover!important;background-position:center,center!important;
+  background-repeat:no-repeat,no-repeat!important;background-attachment:fixed,fixed!important;
+  color:#173750!important;max-width:none!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page .sq-analytics-shell{
+  background:transparent!important;color:#173750!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page .sq-analytics-panel,
+ html body.analytics-view #analytics-page#analytics-page .analytics-stat{
+  background:#F3F8FC!important;color:#173750!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page :is(.sq-analytics-header h2,.sq-analytics-panel h3,.sq-recap-stat strong,.analytics-stat strong,.sq-recent-amount,.sq-recent-main b,.sq-person-legend-item strong){
+  color:#173750!important;-webkit-text-fill-color:#173750!important;opacity:1!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page :is(.sq-analytics-header p,.sq-analytics-filter,.sq-recap-stat span,.sq-recap-breakdown,.sq-analytics-panel-heading p,.analytics-stat small,.sq-stat-label,.sq-month-label,.sq-month-value,.sq-person-legend-item div>span,.sq-person-legend-item small,.sq-recent-main small,.sq-recent-date,.sq-analytics-empty){
+  color:#355E72!important;-webkit-text-fill-color:#355E72!important;opacity:1!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page .analytics-stat .sq-stat-icon{
+  background:#173750!important;color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;opacity:1!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page #analytics-people .sq-person-donut-hole{
+  background:#173750!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page #analytics-people .sq-person-donut-hole > strong{
+  color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;opacity:1!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page #analytics-people .sq-person-donut-hole > span{
+  color:#ABC6D7!important;-webkit-text-fill-color:#ABC6D7!important;opacity:1!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page #analytics-people .sq-person-dot{
+  box-shadow:inset 0 0 0 1px #355E72!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page #analytics-months .sq-month-bar{
+  background:#173750!important;min-height:0!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page #analytics-months .sq-month-bar.is-latest{
+  background:#60F1AD!important;box-shadow:inset 0 0 0 1px #26845C!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page #analytics-months .sq-month-bar-space{
+  background:repeating-linear-gradient(to top,transparent 0,transparent calc(25% - 1px),#D4E3EC calc(25% - 1px),#D4E3EC 25%)!important;border-color:#ABC6D7!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page :is(#analytics-range,#sq-recap-month){
+  background:#F3F8FC!important;color:#173750!important;-webkit-text-fill-color:#173750!important;color-scheme:light!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page #sq-recap-export{
+  background:#173750!important;color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page #sq-monthly-recap > .sq-analytics-panel-heading{
+  display:flex!important;align-items:center!important;justify-content:space-between!important;flex-wrap:wrap!important;gap:12px!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page #sq-monthly-recap .sq-recap-controls{
+  display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:10px!important;margin:0!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page .sq-analytics-friends .friend-card{
+  background:#173750!important;color:#F3F8FC!important;
+ }
+ html body.analytics-view #analytics-page#analytics-page .sq-analytics-friends .friend-card :is(b,strong,span,small){
+  color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;opacity:1!important;
+ }
+}
