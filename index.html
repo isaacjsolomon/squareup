@@ -9919,6 +9919,9 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
   style.setProperty('--dw-analytics-left',Math.max(0,sidebar.getBoundingClientRect().right)+'px');
   const rect=toolbar?.getBoundingClientRect();
   style.setProperty('--dw-report-top',Math.ceil(rect?.height?Math.max(0,rect.bottom):0)+'px');
+  // Cash Flow clears the visible fixed tabs and their tools, not the hidden legacy heading.
+  const cashNavBottom=Math.max(0,...['dw-all-top-tabs','dw-all-top-tools'].map(id=>{const r=document.getElementById(id)?.getBoundingClientRect();return r?.height?r.bottom:0;}));
+  style.setProperty('--dw-cash-nav-clearance',Math.ceil(cashNavBottom+16)+'px');
  }
  const observer=new ResizeObserver(align);
  observer.observe(sidebar);
@@ -10243,9 +10246,9 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 })();
 </script>
 <script defer src="/doweo-polls-dashboard.js?v=20261122-backdrop-colors-v1"></script>
-<script defer src="/doweo-cashflow-analytics.js?v=20261122-original-mint-v1"></script>
+<script defer src="/doweo-cashflow-analytics.js?v=20261124-chart-colors-v1"></script>
 <script defer src="/doweo-desktop-standalone.js?v=20261122-backdrop-colors-v1"></script>
-<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261123-tracker-workspace-wallpaper-v1">
+<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261124-cashflow-clearance-v1">
 <link rel="stylesheet" href="/doweo-polls-dashboard.css?v=20261122-backdrop-colors-v1">
 <style id="dw-mobile-critical-colors-v8">
 /* Desktop and mobile: the brand icon is one self-contained SVG image, not a

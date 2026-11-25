@@ -605,8 +605,8 @@
   display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:8px
  }
  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-cash-key i:first-child{margin-left:0}
- html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-cash-key i.income{background:#ABC6D7}
- html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-cash-key i.spending{background:#ABC6D7}
+ html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-cash-key i.income{background:#60F1AD!important;border:1px solid #26845C}
+ html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-cash-key i.spending{background:#173750!important}
  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-cash-chart-scroll{
   width:100%!important;max-width:100%!important;min-width:0!important;
   margin:0!important;padding:9px 0 4px!important;overflow-x:auto!important;overflow-y:hidden!important
@@ -631,8 +631,8 @@
   max-width:25px!important;min-height:0!important;align-self:flex-end!important;
   border-radius:7px 7px 0 0!important
  }
- html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-cash-bar.income{background:#ABC6D7!important}
- html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-cash-bar.spending{background:#ABC6D7!important}
+ html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-cash-bar.income{background:#60F1AD!important;box-shadow:inset 0 0 0 1px #26845C!important}
+ html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-cash-bar.spending{background:#173750!important}
  html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-cash-month .sq-month-label{
   display:block!important;margin-top:9px!important;color:#355E72!important;font-size:12px!important
  }
@@ -802,4 +802,18 @@
   html body:not(.sq-auth-guest) #backdrop-modal.dw-desktop-standalone #backdrop-swatches {
     grid-template-columns:repeat(3,minmax(0,1fr))!important;
   }
+}
+
+/* Cash Flow: reserve the real shared navigation clearance outside the scroll
+   region. Keep the selected wallpaper behind the header and desktop only. */
+@media (min-width:901px){
+ html body.sq-finance-open #sq-nextgen#sq-nextgen[data-section="finance"]:has(> .sq-ng-shell > #sq-ng-content > .dw-cash-header){
+  top:0!important;bottom:0!important;height:auto!important;min-height:0!important;box-sizing:border-box!important;
+  padding:max(120px,var(--dw-cash-nav-clearance,120px)) 0 0!important;overflow:hidden!important;
+ }
+ html body.sq-finance-open #sq-nextgen#sq-nextgen[data-section="finance"]:has(> .sq-ng-shell > #sq-ng-content > .dw-cash-header) > .sq-ng-shell{
+  height:100%!important;max-height:100%!important;min-height:0!important;
+  padding:16px clamp(20px,2.5vw,42px) 65px!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain;
+ }
+ html body.sq-finance-open #sq-nextgen[data-section="finance"] .dw-cash-recap-grid .sq-recap-stat span{color:#355E72!important}
 }

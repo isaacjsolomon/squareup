@@ -33,7 +33,7 @@
   const groups=Object.entries(categories).sort((a,b)=>b[1]-a[1]);
   const colors=window.matchMedia('(max-width:900px)').matches
     ? ['#60F1AD','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7']
-    : ['#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7','#ABC6D7'];
+    : ['#173750','#60F1AD','#3878B5','#168A87','#7965A9','#D39645','#CF6980','#ABC6D7'];
   let angle=0;
   const gradient=groups.map(([name,amount],i)=>{const start=angle;angle+=spent?amount/spent*100:0;return colors[i%colors.length]+' '+start.toFixed(2)+'% '+angle.toFixed(2)+'%';}).join(',');
   const legend=groups.map(([name,amount],i)=>'<div class="sq-person-legend-item dw-cash-person-row"><span class="sq-person-dot" style="background:'+colors[i%colors.length]+'"></span><div><span>'+esc(name)+'</span><strong>'+esc(money(amount))+'</strong><small>'+(spent?(amount/spent*100).toFixed(0):0)+'% of spending</small></div></div>').join('');
