@@ -1924,6 +1924,31 @@ var pollTimer = null;
 // Fast mobile reload: a short-lived, account-scoped session snapshot is shown
 // immediately while the server independently supplies the authoritative data.
 function sqStartupCacheKey(userId){return 'sq-startup-detail-v1:'+String(userId||'');}
+function sqLastTrackerKey(userId){return 'sq-last-tracker-v2:'+String(userId||'');}
+function sqReadLastTracker(user){
+  if(!user||!user.id)return null;
+  try{
+    var record=JSON.parse(read(sqLastTrackerKey(user.id))||'null');
+    return record&&typeof record.id==='string'?record:null;
+  }catch(_){return null;}
+}
+function sqRememberTracker(id,backdrop){
+  if(!id)return;
+  store(CURRENT_KEY,id);
+  if(!currentUser||!currentUser.id)return;
+  var preset=backdrop&&typeof backdrop.preset==='string'?backdrop.preset:null;
+  store(sqLastTrackerKey(currentUser.id),JSON.stringify({id:String(id),preset:preset}));
+}
+function sqRestoreKnownWallpaper(record){
+  if(!record||record.id==='local'||!record.preset||record.preset==='photo')return;
+  if(!Object.prototype.hasOwnProperty.call(PRESETS,record.preset))return;
+  var config=PRESETS[record.preset],el=$('backdrop');
+  if(!el)return;
+  el.classList.remove('photo');el.dataset.preset=record.preset;
+  el.style.setProperty('background-image',config.css,'important');
+  document.documentElement.style.setProperty('--dw-selected-tracker-wallpaper',config.css);
+  setSideTint(config.side);
+}
 function sqReadStartupDetail(user){
   if(!user||!user.id)return null;
   try{
@@ -1935,6 +1960,7 @@ function sqReadStartupDetail(user){
 }
 function sqWriteStartupDetail(detail){
   if(!currentUser||!currentUser.id||!detail||!detail.id)return;
+  sqRememberTracker(detail.id,detail.backdrop||{preset:'indigo'});
   try{sessionStorage.setItem(sqStartupCacheKey(currentUser.id),JSON.stringify({savedAt:Date.now(),detail:detail}));}catch(_){}
 }
 
@@ -3313,14 +3339,19 @@ function backdropState() {
 async function photoUrl(b) {
   if (!current) return b.image || null;
   if (!b.photo) return null;
-  var key = current.id + "/" + b.photo;
-  if (photoCache.key === key) return photoCache.url;
-  try { await refreshSession(); } catch (e) {}
-  var res = await fetch("/api/trackers/" + current.id + "/backdrop?v=" + encodeURIComponent(b.photo), { credentials: "same-origin", headers: await authHeaders() });
-  if (!res.ok) return null;
-  var url = URL.createObjectURL(await res.blob());
-  if (photoCache.url) URL.revokeObjectURL(photoCache.url);
-  photoCache = { key: key, url: url };
+  var trackerId=current.id,accountId=currentUser&&currentUser.id;
+  var key=String(accountId||'')+"/"+trackerId+"/"+b.photo;
+  if(photoCache.key===key)return photoCache.url;
+  try{await refreshSession();}catch(e){}
+  var res=await fetch("/api/trackers/"+encodeURIComponent(trackerId)+"/backdrop?v="+encodeURIComponent(b.photo),{credentials:"same-origin",headers:await authHeaders()});
+  if(!res.ok)return null;
+  var blob=await res.blob();
+  // An older photo request must not replace or revoke the newly selected tracker image.
+  if(!current||current.id!==trackerId||(currentUser&&currentUser.id)!==accountId||current.backdrop?.photo!==b.photo)return null;
+  if(photoCache.key===key)return photoCache.url;
+  var url=URL.createObjectURL(blob);
+  if(photoCache.url)URL.revokeObjectURL(photoCache.url);
+  photoCache={key:key,url:url};
   return url;
 }
 
@@ -3329,7 +3360,10 @@ async function applyBackdrop() {
   var run = ++backdropRun;
   var b = backdropState();
   var el = $("backdrop");
-  var url = b.preset === "photo" ? await photoUrl(b) : null;
+  var url=null;
+  if(b.preset==="photo"){
+    try{url=await photoUrl(b);}catch(error){console.warn("Tracker wallpaper could not be loaded",error);}
+  }
   if (run !== backdropRun) return;
   // Honor the selected preset or uploaded photo at every screen width.
   // No mobile recoloring, navy multiplication or palette whitelist.
@@ -3339,6 +3373,7 @@ async function applyBackdrop() {
     ? 'url("' + url + '")'
     : (PRESETS[b.preset] || PRESETS.indigo).css;
   el.style.setProperty("background-image", chosenImage, "important");
+  document.documentElement.style.setProperty("--dw-selected-tracker-wallpaper",chosenImage);
   el.style.removeProperty("background-color");
   el.style.removeProperty("background-blend-mode");
   var tint = url ? await photoTint(url) : null;
@@ -3596,6 +3631,7 @@ async function mutate(path, method, body) {
 }
 
 function applyDetail(detail) {
+  var backdropReady=Promise.resolve();
   var snapshot = JSON.stringify(detail);
   current = detail;
   window.sqLastOpenedTrackerDetail = detail;
@@ -3616,7 +3652,7 @@ function applyDetail(detail) {
     lastSnapshot = snapshot;
     renderPicker();
     renderMembers();
-    applyBackdrop();
+    backdropReady=applyBackdrop().catch(function(error){console.warn("Wallpaper refresh failed",error);});
     useEntries(detail.entries, cloudApi);
     // Budget depends on the tracker detail's actual expense entries.
     if (typeof window.sqRenderBudget === 'function') {
@@ -3626,6 +3662,7 @@ function applyDetail(detail) {
     if ($("share-modal").classList.contains("open")) renderShareMembers();
   }
   if(typeof window.sqRefreshRestoredSummary === "function") window.sqRefreshRestoredSummary();
+  return backdropReady;
 }
 
 function sqSetTrackerLoading(loading) {
@@ -3642,14 +3679,14 @@ function sqSetTrackerLoading(loading) {
 
 async function openTracker(id, silent=false) {
   if(!silent)sqSetTrackerLoading(true);
-  store(CURRENT_KEY, id);
   lastSnapshot = "";
   if (window.sqLastOpenedTrackerDetail && window.sqLastOpenedTrackerDetail.id !== id) window.sqLastOpenedTrackerDetail = null;
   if (id === "local" || !trackers.some(function (t) { return t.id === id; })) {
     current = null;
     renderPicker();
     renderMembers();
-    applyBackdrop();
+    if(id==="local")sqRememberTracker("local",null);
+    await applyBackdrop();
     useEntries(null, null);
     if(!silent)sqSetTrackerLoading(false);
     return;
@@ -3658,7 +3695,7 @@ async function openTracker(id, silent=false) {
   try {
     var openedDetail = await api("trackers/" + id);
     window.sqLastOpenedTrackerDetail = openedDetail;
-    applyDetail(openedDetail);
+    await applyDetail(openedDetail);
     // Refresh the restored overview after tracker data and entries are installed.
     if (typeof window.sqRefreshRestoredSummary === "function") {
       window.sqRefreshRestoredSummary();
@@ -3682,7 +3719,8 @@ async function loadTrackers(preferId) {
     sqSetTrackerLoading(false);
     return;
   }
-  var want = preferId || (current && current.id) || read(CURRENT_KEY);
+  var remembered=sqReadLastTracker(currentUser);
+  var want=preferId||(current&&current.id)||remembered?.id||read(CURRENT_KEY);
   if (!want || (want !== "local" && !trackers.some(function (t) { return t.id === want; }))) {
     want = trackers.length ? trackers[0].id : "local";
   }
@@ -3713,7 +3751,10 @@ async function syncTrackers(user) {
   if (!user) {
     trackers = [];
     current = null;
+    window.sqLastOpenedTrackerDetail=null;
     lastSnapshot = "";
+    if(photoCache.url)URL.revokeObjectURL(photoCache.url);
+    photoCache={key:null,url:null};
     applyBackdrop();
     useEntries(null, null);
     sqSetTrackerLoading(false);
@@ -3721,8 +3762,14 @@ async function syncTrackers(user) {
   }
   // Paint previously loaded tracker data without waiting for a network round trip.
   // Only reuse the snapshot for the same authenticated account and tracker.
+  current=null;
+  var remembered=sqReadLastTracker(user);
   var cached=sqReadStartupDetail(user);
-  var preferred=read(CURRENT_KEY);
+  var preferred=remembered?.id||read(CURRENT_KEY);
+  // Paint only known public presets before network validation. Uploaded photos
+  // are fetched with authenticated access after the server confirms the tracker.
+  if(remembered)sqRestoreKnownWallpaper(remembered);
+  else if(cached&&(!preferred||cached.id===preferred))sqRestoreKnownWallpaper({id:cached.id,preset:cached.backdrop?.preset});
   if(cached&&(!preferred||cached.id===preferred)){
     try{
       current=cached;
@@ -3992,6 +4039,7 @@ async function removeTracker(t) {
   if (current && current.id === t.id) {
     current = null;
     store(CURRENT_KEY, null);
+    if(currentUser?.id)store(sqLastTrackerKey(currentUser.id),null);
     await loadTrackers();
   } else {
     renderPicker();
@@ -10799,7 +10847,7 @@ html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
 </script>
 
 
-<style id="dw-creation-popups-v8">
+<style id="dw-creation-popups-v9">
 @media(min-width:901px){
  /* Creation is an overlay, never a separate page. Retain the live underlying
     wallpaper, navigation, and existing form event listeners. */
@@ -11050,6 +11098,87 @@ html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
 })();
 
 </script>
+
+<script id="dw-creation-popup-top-layer-v9">
+(function(){
+ 'use strict';
+ const desktop=matchMedia('(min-width:901px)');
+ const ids=['new-modal','share-modal','settle-modal','sq-pay-now-modal','sq-ng-txn-overlay','sq-expense-dialog','sq-receipt-dialog'];
+ const closeSelectors={
+  'new-modal':'[data-close]','share-modal':'[data-close]','settle-modal':'#settle-close',
+  'sq-pay-now-modal':'#sq-pay-now-cancel','sq-ng-txn-overlay':'.sq-ng-txn-close',
+  'sq-expense-dialog':'#sq-entry-x','sq-receipt-dialog':'#sq-receipt-x,#receipt-close'
+ };
+ const records=new Map();
+ const overlayStyle={
+  position:'fixed',inset:'0',width:'100vw',height:'100dvh','min-width':'0','max-width':'none',
+  'min-height':'0','max-height':'100dvh',display:'flex','align-items':'center','justify-content':'center',
+  margin:'0',padding:'24px','box-sizing':'border-box',background:'rgba(10,27,46,.58)',
+  'background-image':'none','backdrop-filter':'none','-webkit-backdrop-filter':'none',transform:'none',
+  border:'0','border-radius':'0','overflow-y':'auto','overflow-x':'hidden','z-index':'2147483550'
+ };
+ function isOpen(el){return el.isConnected&&!el.hidden&&(el.classList.contains('modal-bg')?el.classList.contains('open'):el.getAttribute('aria-hidden')!=='true')}
+ function release(el){
+  const state=records.get(el);if(!state)return;
+  records.delete(el);
+  if(state.topLayer){
+   try{if(el.matches(':popover-open'))el.hidePopover()}catch(_){}
+   if(state.hadPopover)el.setAttribute('popover',state.oldPopover);else el.removeAttribute('popover');
+  }
+  for(const [prop,value,priority] of state.styles){
+   if(value)el.style.setProperty(prop,value,priority);else el.style.removeProperty(prop);
+  }
+  el.removeAttribute('data-dw-creation-popup');
+ }
+ function activate(el){
+  // Remove the exact class and synthetic page header that caused the old bug.
+  el.classList.remove('dw-desktop-standalone');
+  el.querySelector(':scope > .dw-standalone-head')?.remove();
+  if(records.has(el))return;
+  const state={styles:Object.keys(overlayStyle).map(prop=>[prop,el.style.getPropertyValue(prop),el.style.getPropertyPriority(prop)]),hadPopover:el.hasAttribute('popover'),oldPopover:el.getAttribute('popover'),topLayer:false};
+  records.set(el,state);
+  el.setAttribute('data-dw-creation-popup','');
+  for(const [prop,value] of Object.entries(overlayStyle))el.style.setProperty(prop,value,'important');
+  if(typeof el.showPopover==='function'){
+   try{el.setAttribute('popover','manual');el.showPopover();state.topLayer=true}
+   catch(_){if(state.hadPopover)el.setAttribute('popover',state.oldPopover);else el.removeAttribute('popover')}
+  }
+ }
+ let queued=false;
+ function sync(){
+  queued=false;
+  for(const el of [...records.keys()])if(!desktop.matches||!isOpen(el))release(el);
+  if(!desktop.matches)return;
+  for(const id of ids){
+   const el=document.getElementById(id);if(!el)continue;
+   if(isOpen(el))activate(el);
+   else if(el.classList.contains('dw-desktop-standalone')){
+    el.classList.remove('dw-desktop-standalone');el.querySelector(':scope > .dw-standalone-head')?.remove();
+   }
+  }
+ }
+ function queue(){if(!queued){queued=true;queueMicrotask(sync)}}
+ new MutationObserver(queue).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden','aria-hidden']});
+ desktop.addEventListener('change',queue);window.addEventListener('pageshow',queue);
+ document.addEventListener('keydown',function(event){
+  if(event.key!=='Escape'||event.defaultPrevented||!desktop.matches)return;
+  const el=[...records.keys()].reverse().find(isOpen);
+  if(el){const close=el.querySelector(closeSelectors[el.id]);if(close){event.preventDefault();close.click()}}
+ });
+ queue();
+})();
+</script>
+<style id="dw-creation-popup-top-layer-style-v9">
+@media(min-width:901px){
+ html body [data-dw-creation-popup]::backdrop{background:transparent}
+ html body [data-dw-creation-popup] > .dw-standalone-head{display:none!important}
+ html body [data-dw-creation-popup] > :is(.card.modal,.sq-action-modal-inner,.sq-ng-txn-dialog,#sq-pay-now-panel){
+  position:relative!important;inset:auto!important;transform:none!important;
+  min-height:0!important;height:auto!important;max-height:calc(100dvh - 48px)!important;
+  margin:auto!important;overflow-y:auto!important;overscroll-behavior:contain;
+ }
+}
+</style>
 </body>
 </html>
 
