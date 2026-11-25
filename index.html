@@ -9949,7 +9949,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 
 <!-- Unified desktop shell and reviewed offline labels for every supported language. -->
 <link rel="stylesheet" href="/doweo-unified-shell.css?v=20261123-cashflow-visible-v4">
-<script defer src="/doweo-unified-shell.js?v=20261124-sidebar-chat-v2"></script>
+<script defer src="/doweo-unified-shell.js?v=20261124-workspace-v6"></script>
 <script defer src="/doweo-unified-localize.js?v=20261123-time-greeting-wide-v1"></script>
 <!-- This must load last, after the unified-shell and every legacy stylesheet. -->
 <link rel="stylesheet" href="/doweo-page-repairs.css?v=20261122-backdrop-colors-v1">
@@ -10249,8 +10249,8 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 </script>
 <script defer src="/doweo-polls-dashboard.js?v=20261122-backdrop-colors-v1"></script>
 <script defer src="/doweo-cashflow-analytics.js?v=20261124-chart-colors-v1"></script>
-<script defer src="/doweo-desktop-standalone.js?v=20261122-backdrop-colors-v1"></script>
-<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261124-workspace-wallpaper-split-contrast-v5">
+<script defer src="/doweo-desktop-standalone.js?v=20261124-workspace-v6"></script>
+<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261124-workspace-v6">
 <link rel="stylesheet" href="/doweo-polls-dashboard.css?v=20261122-backdrop-colors-v1">
 <style id="dw-mobile-critical-colors-v8">
 /* Desktop and mobile: the brand icon is one self-contained SVG image, not a
@@ -10626,6 +10626,193 @@ html body.dw-chats-open section#dw-chats#dw-chats.dw-chat-details-open:not([hidd
 html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
 }
 </style>
+<style id="dw-workspace-critical-v6">
+/* Desktop workspaces shown in the user reports: leave the shared top tabs
+   outside the scroll viewport; mirror the selected tracker image. */
+@media(min-width:901px){
+ html body:not(.sq-auth-guest) :is(#sq-expense-dialog#sq-expense-dialog,#sq-receipt-dialog#sq-receipt-dialog,#new-modal#new-modal,#dw-legal-standalone#dw-legal-standalone).dw-desktop-standalone{
+  position:fixed!important;top:max(120px,var(--dw-workspace-clearance,120px))!important;
+  left:var(--dw-workspace-left,270px)!important;right:0!important;bottom:0!important;
+  width:auto!important;min-width:0!important;max-width:none!important;box-sizing:border-box!important;
+  transform:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;height:auto!important;min-height:0!important;max-height:none!important;
+  padding:16px clamp(22px,3.5vw,54px) 70px!important;
+  overflow-y:auto!important;overflow-x:hidden!important;scroll-padding-block:16px 32px;
+  background-color:#F3F8FC!important;
+  background-image:linear-gradient(color-mix(in srgb,#F3F8FC 52%,transparent),color-mix(in srgb,#F3F8FC 52%,transparent)),var(--dw-selected-tracker-wallpaper,linear-gradient(145deg,#ABC6D7,#F3F8FC))!important;
+  background-size:cover,cover!important;background-position:center,center!important;
+  background-repeat:no-repeat,no-repeat!important;background-attachment:fixed,fixed!important;
+ }
+ html body:not(.sq-auth-guest) :is(#sq-expense-dialog,#sq-receipt-dialog,#new-modal,#dw-legal-standalone).dw-desktop-standalone > .dw-standalone-head{
+  width:min(1120px,100%)!important;margin:0 auto 24px!important;padding:0 0 16px!important;
+ }
+ html body:not(.sq-auth-guest) :is(#sq-expense-dialog,#sq-receipt-dialog,#new-modal,#dw-legal-standalone).dw-desktop-standalone > .dw-standalone-head :is(h1,p,.dw-standalone-eyebrow){
+  color:#173750!important;-webkit-text-fill-color:#173750!important;opacity:1!important;
+ }
+ html body:not(.sq-auth-guest) :is(#sq-expense-dialog,#new-modal).dw-desktop-standalone input::placeholder{
+  color:#355E72!important;-webkit-text-fill-color:#355E72!important;opacity:1!important;
+ }
+ /* The existing split form stays a single popup, but is bounded below the
+    toolbar and scrolls internally instead of clipping at short heights. */
+ html body.split-view #split-page#split-page{
+  position:fixed!important;top:max(120px,var(--dw-workspace-clearance,120px))!important;
+  bottom:auto!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;
+  width:min(880px,calc(100vw - 48px))!important;max-width:880px!important;
+  max-height:calc(100dvh - max(120px,var(--dw-workspace-clearance,120px)) - 18px)!important;
+  min-height:0!important;height:auto!important;margin:0!important;
+  box-sizing:border-box!important;padding:22px!important;overflow-y:auto!important;overflow-x:hidden!important;
+  border-radius:22px!important;border:1px solid #355E72!important;
+  background-color:#102B40!important;
+  background-image:linear-gradient(rgba(16,43,64,.90),rgba(10,27,46,.92)),var(--dw-selected-tracker-wallpaper,linear-gradient(145deg,#173750,#102B40))!important;
+  background-position:center!important;background-size:cover!important;background-repeat:no-repeat!important;
+  color:#F3F8FC!important;overscroll-behavior:contain;
+  z-index:2147482900!important;
+ }
+ html body.split-view #split-page#split-page .split-header{
+  background:transparent!important;border:0!important;
+ }
+ html body.split-view #split-page#split-page .split-header :is(h2,label,p){
+  color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;opacity:1!important;
+ }
+ html body.split-view #split-page#split-page #split-back{
+  color:#60F1AD!important;-webkit-text-fill-color:#60F1AD!important;opacity:1!important;
+ }
+ html body.split-view #split-page#split-page .split-panel{
+  background:#F3F8FC!important;color:#173750!important;border:1px solid #ABC6D7!important;
+ }
+ html body.split-view #split-page#split-page .split-panel :is(h3,label,.split-name,.split-count,#split-count,.split-summary-line,.split-summary-line span,.split-summary-line strong,.split-field,.split-person){
+  color:#173750!important;-webkit-text-fill-color:#173750!important;opacity:1!important;
+ }
+ html body.split-view #split-page#split-page .split-panel :is(.split-message,.feature-muted){
+  color:#355E72!important;-webkit-text-fill-color:#355E72!important;opacity:1!important;
+ }
+ html body.split-view #split-page#split-page .split-panel .split-avatar{
+  background:#173750!important;color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;opacity:1!important;
+ }
+ html body.split-view #split-page#split-page .split-panel .receipt-scan-box{
+  background:#204158!important;color:#F3F8FC!important;border-color:#355E72!important;
+ }
+ html body.split-view #split-page#split-page .split-panel .receipt-scan-box :is(strong,p,label,small,.feature-muted){
+  color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;opacity:1!important;
+ }
+ html body.split-view #split-page#split-page :is(#split-currency,#split-description,#split-total,.split-custom){
+  background:#F3F8FC!important;color:#173750!important;-webkit-text-fill-color:#173750!important;
+  border:1px solid #ABC6D7!important;color-scheme:light!important;
+ }
+ html body.split-view #split-page#split-page input::placeholder{
+  color:#355E72!important;-webkit-text-fill-color:#355E72!important;opacity:1!important;
+ }
+ html body.split-view #split-page#split-page .split-method{
+  background:#102B40!important;
+ }
+ html body.split-view #split-page#split-page .split-method button{
+  color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;
+ }
+ html body.split-view #split-page#split-page .split-method button.active,
+ html body.split-view #split-page#split-page #split-save:not(:disabled){
+  background:#60F1AD!important;color:#102B40!important;-webkit-text-fill-color:#102B40!important;
+ }
+ html body.split-view #split-page#split-page #split-save:disabled{
+  background:#D4E3EC!important;color:#355E72!important;-webkit-text-fill-color:#355E72!important;opacity:1!important;
+ }
+ html body.split-view #split-page#split-page #split-summary-total,
+ html body.split-view #split-page#split-page .split-due{
+  color:#173750!important;-webkit-text-fill-color:#173750!important;
+ }
+}
+
+@media(min-width:901px){
+ /* Use the real shared navigation on workspaces opened from Overview too.
+    Its stacking level must be above the old full-screen modal layer. */
+ html body.dw-workspace-clearance-active:not(.sq-auth-guest):not(.sq-auth-loading) #dw-all-topbar,
+ html body.split-view:not(.sq-auth-guest):not(.sq-auth-loading) #dw-all-topbar{
+   display:flex!important;visibility:visible!important;opacity:1!important;
+   z-index:2147483400!important;
+ }
+ html body.dw-workspace-clearance-active #dw-all-top-tabs,
+ html body.split-view #dw-all-top-tabs{
+   visibility:visible!important;opacity:1!important;pointer-events:auto!important;
+ }
+ html body.dw-workspace-clearance-active #tracker-dashboard > .sq-workspace-tabs{
+   display:none!important;visibility:hidden!important;
+ }
+ html body:not(.sq-auth-guest) #sq-nextgen #sq-ng-txn-overlay#sq-ng-txn-overlay.dw-desktop-standalone:not([hidden]){
+   top:max(120px,var(--dw-workspace-clearance,120px))!important;
+   left:var(--dw-workspace-left,270px)!important;right:0!important;bottom:0!important;
+   height:auto!important;min-height:0!important;max-height:none!important;
+ }
+ html body:not(.sq-auth-guest) :is(#sq-expense-dialog#sq-expense-dialog,#sq-receipt-dialog#sq-receipt-dialog,#new-modal#new-modal,#dw-legal-standalone#dw-legal-standalone).dw-desktop-standalone{
+   z-index:2147483200!important;
+ }
+ html body:not(.sq-auth-guest) :is(#sq-expense-dialog,#sq-receipt-dialog).dw-desktop-standalone > .sq-action-modal-inner{
+   width:min(1120px,100%)!important;max-width:1120px!important;
+   height:auto!important;max-height:none!important;overflow:visible!important;
+ }
+ html body:not(.sq-auth-guest) #sq-receipt-dialog.dw-desktop-standalone #receipt-card{
+   max-height:none!important;overflow:visible!important;
+ }
+ html body.split-view #split-page#split-page .split-layout{
+   display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+   gap:16px!important;align-items:start!important;
+ }
+ html body.split-view #split-page#split-page .split-panel .split-name{
+   display:block!important;visibility:visible!important;opacity:1!important;
+   color:#173750!important;-webkit-text-fill-color:#173750!important;
+ }
+ html body.split-view #split-page#split-page .split-header #split-currency{
+   color:#173750!important;-webkit-text-fill-color:#173750!important;
+ }
+ html body.split-view #split-page#split-page .split-panel .receipt-scan-box :is(strong,p,label,.feature-muted){
+   color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;
+ }
+ html body.split-view #split-page#split-page .split-panel .split-method button.active{
+   color:#102B40!important;-webkit-text-fill-color:#102B40!important;
+ }
+}
+
+</style>
+
+<script id="dw-workspace-layout-runtime-v6">
+(function(){
+ 'use strict';
+ const desktop=matchMedia('(min-width:901px)'), root=document.documentElement;
+ const sidebar=document.querySelector('aside.sidebar');
+ const backdrop=document.getElementById('backdrop');
+ let queued=false, watched=new WeakSet();
+ const resizeObserver=typeof ResizeObserver==='function'?new ResizeObserver(queue):null;
+ function queue(){if(!queued){queued=true;requestAnimationFrame(measure)}}
+ function write(name,value){if(root.style.getPropertyValue(name)!==value)root.style.setProperty(name,value)}
+ function measure(){
+  queued=false;
+  if(!desktop.matches)return;
+  const navs=[document.getElementById('dw-all-topbar'),document.getElementById('dw-all-top-tabs'),document.getElementById('dw-all-top-tools'),document.querySelector('#tracker-dashboard > .sq-workspace-tabs')].filter(Boolean);
+  let bottom=0;
+  for(const nav of navs){
+   if(resizeObserver&&!watched.has(nav)){resizeObserver.observe(nav);watched.add(nav)}
+   const rect=nav.getBoundingClientRect(),style=getComputedStyle(nav);
+   if(rect.height>0&&style.display!=='none'&&style.visibility!=='hidden')bottom=Math.max(bottom,rect.bottom);
+  }
+  write('--dw-workspace-clearance',Math.max(120,Math.ceil(bottom+18))+'px');
+  if(sidebar){const rect=sidebar.getBoundingClientRect();if(rect.width>0)write('--dw-workspace-left',Math.max(0,Math.ceil(rect.right))+'px')}
+  if(backdrop){
+   const style=getComputedStyle(backdrop),image=backdrop.style.backgroundImage||style.backgroundImage;
+   const color=backdrop.style.backgroundColor||style.backgroundColor;
+   if(image&&image!=='none')write('--dw-selected-tracker-wallpaper',image);
+   else if(color&&color!=='transparent'&&color!=='rgba(0, 0, 0, 0)')write('--dw-selected-tracker-wallpaper','linear-gradient('+color+','+color+')');
+  }
+ }
+ if(sidebar&&resizeObserver)resizeObserver.observe(sidebar);
+ new MutationObserver(queue).observe(document.body,{attributes:true,attributeFilter:['class']});
+ if(backdrop)new MutationObserver(queue).observe(backdrop,{attributes:true,attributeFilter:['style','class']});
+ window.addEventListener('resize',queue,{passive:true});
+ window.visualViewport?.addEventListener('resize',queue);
+ window.addEventListener('pageshow',queue);
+ window.addEventListener('squareup:tracker-detail',queue);
+ document.addEventListener('DOMContentLoaded',queue,{once:true});
+ desktop.addEventListener('change',queue);
+ queue();
+})();
+</script>
+
 </body>
 </html>
 

@@ -16,10 +16,11 @@
   ['sq-pay-now-modal','Pay Now','Choose a payment destination and amount.','#sq-pay-now-cancel'],
   ['sq-ng-txn-overlay','Add personal transaction','Track private income and spending.','.sq-ng-txn-close'],
   ['sq-details-overlay','Expense details','View activity and manage this expense.','#sq-details-close'],
-  ['sq-expense-dialog','Add expense','Record a shared expense.','.sq-action-modal-close'],
-  ['sq-receipt-dialog','Scan receipt','Review a receipt and assign purchases.','.sq-action-modal-close'],
+  ['sq-expense-dialog','Add expense','Record a shared expense.','#sq-entry-x,.sq-action-modal-close'],
+  ['sq-receipt-dialog','Scan receipt','Review a receipt and assign purchases.','#sq-receipt-x,#receipt-close,.sq-action-modal-close'],
   ['dw-legal-standalone','Privacy and Terms','Review DoWeo policies and account terms.','[data-dw-legal-close]']
  ];
+ const clearanceWorkspaces=new Set(['sq-expense-dialog','sq-receipt-dialog','new-modal','dw-legal-standalone','sq-ng-txn-overlay']);
  let current=null,storedUrl=null,storedState=null,syncQueued=false,popping=false;
  function setupLegalPage(){
   const trigger=document.getElementById('nav-privacy-terms');
@@ -82,7 +83,7 @@
    history.replaceState(storedState,'',storedUrl);
   }
   storedUrl=null;storedState=null;
-  document.body.classList.remove('dw-standalone-active');
+  document.body.classList.remove('dw-standalone-active','dw-workspace-clearance-active');
   if(old.el?.isConnected)old.el.querySelector('.dw-standalone-back')?.blur();
  }
  function sync(){
@@ -97,6 +98,7 @@
   storedUrl=location.href;storedState=history.state;
   current=active;
   document.body.classList.add('dw-standalone-active');
+  document.body.classList.toggle('dw-workspace-clearance-active',clearanceWorkspaces.has(active.spec[0]));
   try{
    const url=new URL(location.href);
    url.searchParams.set('workspace',active.spec[0].replace(/-modal$|-overlay$|-dialog$/,''));
@@ -124,7 +126,7 @@
  if(document.readyState!=='loading')setupLegalPage();
  document.addEventListener('click',event=>{
   if(!desktop.matches||!current)return;
-  const target=event.target.closest('aside.sidebar button.sq-nav-link,aside.sidebar .dw-nav-social-trigger');
+  const target=event.target.closest('aside.sidebar button.sq-nav-link,aside.sidebar .dw-nav-social-trigger,#dw-all-top-tabs button[data-dw-all-tab]');
   if(target&&target.id!=='nav-privacy-terms')closeViaOriginal(current.el,current.spec[3]);
  },true);
  requestSync();
@@ -151,14 +153,16 @@
  const root=document.documentElement.style;
  function syncWallpaper(){
   if(!desktop.matches)return;
-  const image=backdrop.style.backgroundImage;
-  const next=image&&image!=='none'?image:fallback;
+  const computed=getComputedStyle(backdrop);
+  const image=backdrop.style.backgroundImage||computed.backgroundImage;
+  const color=backdrop.style.backgroundColor||computed.backgroundColor;
+  const next=image&&image!=='none'?image:(color&&color!=='transparent'&&color!=='rgba(0, 0, 0, 0)'?'linear-gradient('+color+','+color+')':fallback);
   if(root.getPropertyValue('--dw-selected-tracker-wallpaper')!==next){
    root.setProperty('--dw-selected-tracker-wallpaper',next);
   }
  }
  syncWallpaper();
- new MutationObserver(syncWallpaper).observe(backdrop,{attributes:true,attributeFilter:['style']});
+ new MutationObserver(syncWallpaper).observe(backdrop,{attributes:true,attributeFilter:['style','class']});
  desktop.addEventListener('change',syncWallpaper);
  window.addEventListener('squareup:tracker-detail',syncWallpaper);
  document.addEventListener('DOMContentLoaded',syncWallpaper,{once:true});

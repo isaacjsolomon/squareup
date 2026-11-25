@@ -268,7 +268,7 @@
     isolateStandaloneViews();
     keepMatchingTabGeometry();
     const legacyView=pageStates.some(key=>body.classList.contains(key));
-    const isOverview=!legacyView && dashboard.classList.contains('sq-tab-overview') &&
+    const isOverview=!legacyView && !body.classList.contains('dw-workspace-clearance-active') && dashboard.classList.contains('sq-tab-overview') &&
       !dashboard.classList.contains('dw-template-original')&&visible('tracker-dashboard');
     const secondary=desktop.matches&&!isOverview;
     const guest=body.classList.contains('sq-auth-guest')||body.classList.contains('sq-auth-loading');
