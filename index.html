@@ -170,7 +170,7 @@ window.dwBillDueDate=function(value){
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css?v=20261123-backdrop-gallery-v1">
-<meta name="doweo-release" content="doweo-redeploy-20261124-v11">
+<meta name="doweo-release" content="doweo-popup-tracker-v12">
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
@@ -3100,9 +3100,11 @@ async function renderTrackerGallery(){
         var sideRect=sidebar?sidebar.getBoundingClientRect():null;
         var sidebarEdge=sideRect && sideRect.right>0 && sideRect.left<vw && vw>800
           ? Math.min(vw-80,Math.max(0,sideRect.right)):0;
+        var desktopSettings=showingSettings && vw>900;
+        if(desktopSettings)sidebarEdge=0;
         var available=vw-sidebarEdge;
         // The design uses a wide, centered settings hub; the quick actions popover stays small.
-        var width=showingSettings?Math.min(880,Math.max(0,available-24)):Math.min(310,vw-24);
+        var width=showingSettings?Math.min(desktopSettings?680:880,Math.max(0,available-24)):Math.min(310,vw-24);
         var left=showingSettings
           ? sidebarEdge+Math.max(12,(available-width)/2)
           : Math.max(12,Math.min(vw-width-12,rect.right-width));
@@ -3678,7 +3680,10 @@ function sqSetTrackerLoading(loading) {
   indicator.setAttribute('aria-busy', loading?'true':'false');
 }
 
+var trackerOpenSequence = 0;
 async function openTracker(id, silent=false) {
+  var sequence = ++trackerOpenSequence;
+  var account = sessionUserId;
   if(!silent)sqSetTrackerLoading(true);
   lastSnapshot = "";
   if (window.sqLastOpenedTrackerDetail && window.sqLastOpenedTrackerDetail.id !== id) window.sqLastOpenedTrackerDetail = null;
@@ -3695,6 +3700,7 @@ async function openTracker(id, silent=false) {
   $("tb-members").textContent = "Loading…";
   try {
     var openedDetail = await api("trackers/" + id);
+    if (sequence !== trackerOpenSequence || account !== sessionUserId) return;
     window.sqLastOpenedTrackerDetail = openedDetail;
     await applyDetail(openedDetail);
     // Refresh the restored overview after tracker data and entries are installed.
@@ -3703,11 +3709,12 @@ async function openTracker(id, silent=false) {
       requestAnimationFrame(function () { window.sqRefreshRestoredSummary(); });
     }
   } catch (err) {
+    if (sequence !== trackerOpenSequence || account !== sessionUserId) return;
     $("tb-members").textContent = 'Could not load tracker: ' + err.message;
     console.error('DoWeo tracker load failed:', id, err);
     alert('Could not load your tracker. Your saved expenses have NOT been deleted. Error: ' + err.message);
   } finally {
-    if(!silent)sqSetTrackerLoading(false);
+    if(!silent && sequence === trackerOpenSequence && account === sessionUserId)sqSetTrackerLoading(false);
   }
 }
 
@@ -5010,8 +5017,8 @@ var sqTemplates=[['🏠','Roommates','Rent, utilities, groceries and shared expe
 var sqTemplateSelected=-1;
 function sqDrawTemplates(){var grid=$('sq-template-grid');grid.innerHTML=sqTemplates.map((t,i)=>i===0?'':'<button type="button" class="sq-template-card" data-template="'+i+'" aria-pressed="'+(i===sqTemplateSelected)+'"><span class="sq-template-icon">'+t[0]+'</span><span><strong>'+t[1]+'</strong><small>'+t[2]+'</small></span></button>').join('');$('sq-template-detail').innerHTML=sqTemplateSelected<0?'':sqTemplates[sqTemplateSelected][3].map(t=>'<span>'+esc(t)+'</span>').join('');}
 sqDrawTemplates();$('sq-template-grid').addEventListener('click',e=>{var b=e.target.closest('[data-template]');if(!b)return;sqTemplateSelected=Number(b.dataset.template);$('new-name').value=sqTemplates[sqTemplateSelected][1];sqDrawTemplates();});
-$('sq-template-tab').onclick=()=>{$('sq-template-grid').hidden=false;$('sq-template-detail').hidden=false;$('sq-template-tab').setAttribute('aria-selected','true');$('sq-blank-tab').setAttribute('aria-selected','false');};
-$('sq-blank-tab').onclick=()=>{sqTemplateSelected=-1;$('sq-template-grid').hidden=true;$('sq-template-detail').hidden=true;$('sq-template-tab').setAttribute('aria-selected','false');$('sq-blank-tab').setAttribute('aria-selected','true');};
+$('sq-template-tab').onclick=()=>{$('new-modal').dataset.startMode='template';$('sq-template-grid').hidden=false;$('sq-template-detail').hidden=false;$('sq-template-tab').setAttribute('aria-selected','true');$('sq-blank-tab').setAttribute('aria-selected','false');};
+$('sq-blank-tab').onclick=()=>{$('new-modal').dataset.startMode='blank';sqTemplateSelected=-1;$('sq-template-grid').hidden=true;$('sq-template-detail').hidden=true;$('sq-template-tab').setAttribute('aria-selected','false');$('sq-blank-tab').setAttribute('aria-selected','true');};
 // Message search and per-device pinning. Pinning never modifies other members' chats.
 function squareUpApplyChatSearch(){var box=$('tracker-chat-messages');if(!box)return;var q=$('sq-chat-search').value.trim().toLowerCase();box.querySelectorAll('.chat-line').forEach(line=>line.classList.toggle('sq-chat-message-hidden',!!q&&!line.textContent.toLowerCase().includes(q)));}
 $('sq-chat-search').addEventListener('input',squareUpApplyChatSearch);
@@ -11132,10 +11139,10 @@ html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
   el.removeAttribute('data-dw-creation-popup');
  }
  function activate(el){
-  // Remove the exact class and synthetic page header that caused the old bug.
+  if(records.has(el))return;
+  // Clean up once. Repeated class writes retrigger the observer before the browser can paint.
   el.classList.remove('dw-desktop-standalone');
   el.querySelector(':scope > .dw-standalone-head')?.remove();
-  if(records.has(el))return;
   const state={styles:Object.keys(overlayStyle).map(prop=>[prop,el.style.getPropertyValue(prop),el.style.getPropertyPriority(prop)]),hadPopover:el.hasAttribute('popover'),oldPopover:el.getAttribute('popover'),topLayer:false};
   records.set(el,state);
   el.setAttribute('data-dw-creation-popup','');
