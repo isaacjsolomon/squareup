@@ -1979,11 +1979,10 @@ function sqReadLastTracker(user){
   }catch(_){return null;}
 }
 function sqRememberTracker(id,backdrop){
-  if(!id)return;
-  store(CURRENT_KEY,id);
-  if(!currentUser||!currentUser.id)return;
+  if(!id||!currentUser||!currentUser.id||sessionUserId!==currentUser.id)return;
   var preset=backdrop&&typeof backdrop.preset==='string'?backdrop.preset:null;
   store(sqLastTrackerKey(currentUser.id),JSON.stringify({id:String(id),preset:preset}));
+  store(CURRENT_KEY,id);
 }
 function sqRestoreKnownWallpaper(record){
   if(!record||record.id==='local'||!record.preset||record.preset==='photo')return;
@@ -1995,11 +1994,8 @@ function sqRestoreKnownWallpaper(record){
   document.documentElement.style.setProperty('--dw-selected-tracker-wallpaper',config.css);
   setSideTint(config.side);
 }
-// Save the active tab even when the tracker was restored before this tab gained focus.
-function rememberVisibleTracker(){
-  if (current && currentUser && sessionUserId === currentUser.id) sqRememberTracker(current.id,current.backdrop);
-}
-document.addEventListener('visibilitychange', rememberVisibleTracker);
+// The selection is persisted synchronously when a tracker opens, not on
+// visibilitychange/pagehide: an older tab closing must not overwrite it.
 function sqReadStartupDetail(user){
   if(!user||!user.id)return null;
   try{
@@ -2009,9 +2005,12 @@ function sqReadStartupDetail(user){
     return d&&typeof d.id==='string'&&Array.isArray(d.entries)&&Array.isArray(d.members)?d:null;
   }catch(_){return null;}
 }
-function sqWriteStartupDetail(detail){
-  if(!currentUser||!currentUser.id||!detail||!detail.id)return;
-  if (document.visibilityState !== 'hidden') sqRememberTracker(detail.id,detail.backdrop);
+function sqWriteStartupDetail(detail,rememberSelection){
+  if(!currentUser||!currentUser.id||sessionUserId!==currentUser.id||!detail||!detail.id)return;
+  var remembered=sqReadLastTracker(currentUser);
+  // Only a completed selection can change the last tracker. Polling and edits
+  // may update its preset, but cannot choose a different tracker.
+  if(rememberSelection||remembered?.id===String(detail.id))sqRememberTracker(detail.id,detail.backdrop);
   try{sessionStorage.setItem(sqStartupCacheKey(currentUser.id),JSON.stringify({savedAt:Date.now(),detail:detail}));}catch(_){}
 }
 
@@ -3686,13 +3685,15 @@ async function mutate(path, method, body) {
   }
 }
 
-function applyDetail(detail) {
+function applyDetail(detail,rememberSelection=false) {
+  if(!detail||!detail.id||!currentUser||sessionUserId!==currentUser.id)return Promise.resolve();
+  if(!rememberSelection&&(!current||current.id!==detail.id))return Promise.resolve();
   var backdropReady=Promise.resolve();
   var snapshot = JSON.stringify(detail);
   current = detail;
   window.sqLastOpenedTrackerDetail = detail;
-  sqWriteStartupDetail(detail);
-  if (snapshot !== lastSnapshot) backdropReady=applyBackdrop().catch(function(error){console.warn("Wallpaper refresh failed",error);});
+  sqWriteStartupDetail(detail,rememberSelection);
+  if (snapshot !== lastSnapshot || (detail.backdrop?.preset==="photo"&&!$("backdrop").classList.contains("photo"))) backdropReady=applyBackdrop().catch(function(error){console.warn("Wallpaper refresh failed",error);});
   window.dwSyncTemplateHome?.();
   window.dispatchEvent(new CustomEvent("squareup:tracker-detail", {detail:{id:detail.id}}));
   sqFillCurrencies();
@@ -3755,7 +3756,7 @@ async function openTracker(id, silent=false) {
     var openedDetail = await api("trackers/" + id);
     if (sequence !== trackerOpenSequence || account !== sessionUserId) return;
     window.sqLastOpenedTrackerDetail = openedDetail;
-    await applyDetail(openedDetail);
+    await applyDetail(openedDetail,true);
     // Refresh the restored overview after tracker data and entries are installed.
     if (typeof window.sqRefreshRestoredSummary === "function") {
       window.sqRefreshRestoredSummary();
@@ -3784,7 +3785,8 @@ async function loadTrackers(preferId) {
     return;
   }
   var remembered=sqReadLastTracker(currentUser);
-  var want=preferId||remembered?.id||(current&&current.id)||read(CURRENT_KEY);
+  var cached=sqReadStartupDetail(currentUser);
+  var want=preferId||remembered?.id||(current&&current.id)||cached?.id;
   if (!want || (want !== "local" && !trackers.some(function (t) { return t.id === want; }))) {
     want = trackers.length ? trackers[0].id : "local";
   }
@@ -3809,6 +3811,8 @@ async function syncTrackers(user) {
   var id = user ? user.id : null;
   if (id === sessionUserId) return;
   sessionUserId = id;
+  ++trackerOpenSequence;
+  ++backdropRun;
   clearInterval(pollTimer);
   $("tb-local").hidden = !!user;
   $("tb-cloud").hidden = !user;
@@ -3829,7 +3833,7 @@ async function syncTrackers(user) {
   current=null;
   var remembered=sqReadLastTracker(user);
   var cached=sqReadStartupDetail(user);
-  var preferred=remembered?.id||cached?.id||read(CURRENT_KEY);
+  var preferred=remembered?.id||cached?.id;
   // Paint only known public presets before network validation. Uploaded photos
   // are fetched with authenticated access after the server confirms the tracker.
   if(remembered)sqRestoreKnownWallpaper(remembered);
@@ -3842,7 +3846,9 @@ async function syncTrackers(user) {
     }catch(err){console.warn('Cached dashboard preview unavailable',err);}
   }
   var joined = await joinPending();
+  if(sessionUserId!==id)return;
   await loadTrackers(joined);
+  if(sessionUserId!==id)return;
   // Pick up changes made by friends; also refresh promptly on return to the app.
   // Keep the server authoritative and avoid overlapping refresh requests.
   if (!window.sqRefreshTrackerNow) {
@@ -3850,12 +3856,13 @@ async function syncTrackers(user) {
     window.sqRefreshTrackerNow = async function () {
       if (sqRefreshBusy || !current || !current.id || !navigator.onLine || document.visibilityState !== "visible" || document.body.classList.contains('sqev-page-open')) return;
       var requestedId = current.id;
+      var requestedSequence=trackerOpenSequence,requestedAccount=sessionUserId;
       sqRefreshBusy = true;
       try {
         var detail = await api("trackers/" + encodeURIComponent(requestedId));
-        if (current && current.id === requestedId && !document.body.classList.contains('sqev-page-open')) applyDetail(detail);
+        if (requestedSequence===trackerOpenSequence&&requestedAccount===sessionUserId&&current&&current.id===requestedId&&!document.body.classList.contains('sqev-page-open')) applyDetail(detail);
       } catch (err) {
-        if (err.status === 404 && current && current.id === requestedId) {
+        if (err.status === 404 && requestedSequence===trackerOpenSequence&&requestedAccount===sessionUserId&&current&&current.id===requestedId) {
           alert("You no longer have access to this tracker.");
           loadTrackers();
         }
@@ -3945,9 +3952,9 @@ $("new-form").addEventListener("submit", async function (e) {
     trackers.push({ id: detail.id, name: detail.name, role: detail.role, memberCount: 1 });
     // Refresh the gallery immediately after creation, even while the share dialog is open.
     renderTrackerGallery().catch(function(err){console.warn('Tracker gallery refresh:',err);});
-    store(CURRENT_KEY, detail.id);
+    ++trackerOpenSequence;
     lastSnapshot = "";
-    applyDetail(detail);
+    applyDetail(detail,true);
     openShare();
   } catch (err) {
     $("new-msg").className = "msg error";
