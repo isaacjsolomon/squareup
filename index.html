@@ -53,6 +53,16 @@ body>aside.sidebar{position:fixed!important;top:0!important;bottom:0!important;h
 .sidebar .dw-rail-quick button{min-width:0!important;padding:8px 2px!important;font-size:12px!important;line-height:1.2!important;display:grid!important;justify-items:center!important;gap:5px!important}
 .dw-rail-quick svg,.dw-rail-only>svg{width:21px!important;height:21px!important;flex:none!important;color:#60f1ad!important}
 .sidebar .dw-rail-edge{position:absolute!important;top:50%!important;right:0!important;transform:translateY(-50%)!important;z-index:50!important;width:20px!important;height:48px!important;min-width:0!important;padding:0!important;align-items:center!important;justify-content:center!important;border-radius:12px 0 0 12px!important;border:1px solid #355e72!important;background:#102b40!important;color:#60f1ad!important;font-size:23px!important}
+body:not(.side-collapsed)>aside.sidebar{left:0!important;margin-left:0!important}
+body.side-collapsed .sidebar #dw-beta-launch{display:none!important}
+body.side-collapsed .sidebar :is(.sidebar-top-row,.logo-btn){display:flex!important;justify-content:center!important;align-items:center!important;width:100%!important;min-width:0!important;box-sizing:border-box!important;padding-inline:0!important;margin-inline:0!important}
+body.side-collapsed .sidebar .logo-btn .logo{position:static!important;transform:none!important;margin:0!important}
+body.side-collapsed .sidebar .squareup-nav{width:100%!important;padding-inline:0!important;margin-inline:0!important}
+body.side-collapsed .sidebar .squareup-nav>:is(button,details),body.side-collapsed .sidebar .squareup-nav>details>summary{box-sizing:border-box!important;width:100%!important;min-width:0!important;margin-inline:0!important}
+body.side-collapsed .sidebar .squareup-nav>button,body.side-collapsed .sidebar .squareup-nav>details>summary{position:relative!important;padding-inline:0!important}
+body.side-collapsed .sidebar .squareup-nav>button:is(#nav-home,#nav-trackers,#dw-ref-nav-notifications,#dw-sidebar-chat,#dw-personal-finance,.dw-nav-social-trigger,#dw-rail-bills,#dw-rail-friends,#dw-rail-settings),body.side-collapsed .sidebar .squareup-nav>details>summary{display:grid!important;grid-template-columns:1fr 27px 1fr!important;column-gap:0!important}
+body.side-collapsed .sidebar .squareup-nav :is(.dw-all-nav-icon,.dw-my-wallet-icon){grid-column:2!important;grid-row:1!important}
+body.side-collapsed .sidebar .squareup-nav :is(.sq-nav-label,.dw-nav-group-name,.dw-social-label,.dw-flyout-caret,.dw-ref-static-icon){position:absolute!important;clip-path:inset(50%)!important;width:1px!important;height:1px!important;overflow:hidden!important}
 body.side-collapsed .sidebar :is(.dw-rail-quick,.dw-rail-add,.dw-rail-short-label){display:none!important}
 }
 }
