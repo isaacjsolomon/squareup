@@ -884,3 +884,29 @@
   color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;opacity:1!important;
  }
 }
+
+/* Add Personal Transaction: keep the actual scroll viewport below the shared
+   desktop navigation and reuse the user's existing tracker backdrop. */
+@media (min-width:901px){
+ html body:not(.sq-auth-guest) #sq-nextgen #sq-ng-txn-overlay.dw-desktop-standalone:not([hidden]){
+  top:max(120px,var(--dw-cash-nav-clearance,120px))!important;
+  bottom:0!important;height:auto!important;min-height:0!important;max-height:none!important;
+  padding:16px clamp(22px,3.5vw,54px) 70px!important;
+  overflow-y:auto!important;overflow-x:hidden!important;scroll-padding-block:16px 32px;
+  background-color:#F3F8FC!important;
+  background-image:linear-gradient(color-mix(in srgb,#F3F8FC 52%,transparent),color-mix(in srgb,#F3F8FC 52%,transparent)),var(--dw-selected-tracker-wallpaper,linear-gradient(145deg,#ABC6D7,#F3F8FC))!important;
+  background-size:cover,cover!important;background-position:center,center!important;
+  background-repeat:no-repeat,no-repeat!important;background-attachment:fixed,fixed!important;
+ }
+ html body:not(.sq-auth-guest) #sq-nextgen #sq-ng-txn-overlay.dw-desktop-standalone > .dw-standalone-head{
+  width:min(1120px,100%)!important;margin:0 auto 24px!important;
+  padding:0 0 16px!important;
+ }
+ html body:not(.sq-auth-guest) #sq-nextgen #sq-ng-txn-overlay.dw-desktop-standalone .sq-ng-txn-header p,
+ html body:not(.sq-auth-guest) #sq-nextgen #sq-ng-txn-overlay.dw-desktop-standalone .sq-ng-txn-feedback{
+  color:#ABC6D7!important;-webkit-text-fill-color:#ABC6D7!important;opacity:1!important;
+ }
+ html body:not(.sq-auth-guest) #sq-nextgen #sq-ng-txn-overlay.dw-desktop-standalone .sq-ng-txn-form input::placeholder{
+  color:#355E72!important;-webkit-text-fill-color:#355E72!important;opacity:1!important;
+ }
+}
