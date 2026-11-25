@@ -1995,6 +1995,11 @@ function sqRestoreKnownWallpaper(record){
   document.documentElement.style.setProperty('--dw-selected-tracker-wallpaper',config.css);
   setSideTint(config.side);
 }
+// Save the active tab even when the tracker was restored before this tab gained focus.
+function rememberVisibleTracker(){
+  if (current && currentUser && sessionUserId === currentUser.id) sqRememberTracker(current.id,current.backdrop);
+}
+document.addEventListener('visibilitychange', rememberVisibleTracker);
 function sqReadStartupDetail(user){
   if(!user||!user.id)return null;
   try{
@@ -2006,7 +2011,7 @@ function sqReadStartupDetail(user){
 }
 function sqWriteStartupDetail(detail){
   if(!currentUser||!currentUser.id||!detail||!detail.id)return;
-  sqRememberTracker(detail.id,detail.backdrop||{preset:'indigo'});
+  if (document.visibilityState !== 'hidden') sqRememberTracker(detail.id,detail.backdrop);
   try{sessionStorage.setItem(sqStartupCacheKey(currentUser.id),JSON.stringify({savedAt:Date.now(),detail:detail}));}catch(_){}
 }
 
@@ -3531,7 +3536,10 @@ async function setPreset(preset) {
   }
   backdropMsg("Saving…");
   try {
-    applyDetail(await api("trackers/" + current.id, "PATCH", { backdrop: preset }));
+    var id=current.id;
+    var updated=await api("trackers/" + id, "PATCH", { backdrop: preset });
+    if (current?.id !== id) return;
+    await applyDetail(updated);
     backdropMsg("Backdrop updated for everyone in this tracker.", "ok");
   } catch (err) { backdropMsg(err.message, "error"); }
 }
@@ -3683,8 +3691,9 @@ function applyDetail(detail) {
   var snapshot = JSON.stringify(detail);
   current = detail;
   window.sqLastOpenedTrackerDetail = detail;
-  window.dwSyncTemplateHome?.();
   sqWriteStartupDetail(detail);
+  if (snapshot !== lastSnapshot) backdropReady=applyBackdrop().catch(function(error){console.warn("Wallpaper refresh failed",error);});
+  window.dwSyncTemplateHome?.();
   window.dispatchEvent(new CustomEvent("squareup:tracker-detail", {detail:{id:detail.id}}));
   sqFillCurrencies();
   sqRenderBudget();
@@ -3700,7 +3709,6 @@ function applyDetail(detail) {
     lastSnapshot = snapshot;
     renderPicker();
     renderMembers();
-    backdropReady=applyBackdrop().catch(function(error){console.warn("Wallpaper refresh failed",error);});
     useEntries(detail.entries, cloudApi);
     // Budget depends on the tracker detail's actual expense entries.
     if (typeof window.sqRenderBudget === 'function') {
@@ -3766,14 +3774,17 @@ async function openTracker(id, silent=false) {
 async function loadTrackers(preferId) {
   sqSetTrackerLoading(true);
   try {
-    trackers = await api("trackers");
+    var accountAtRequest = sessionUserId;
+    var accessible = await api("trackers");
+    if (accountAtRequest !== sessionUserId) return;
+    trackers = accessible;
   } catch (err) {
     $("tb-members").textContent = err.message;
     sqSetTrackerLoading(false);
     return;
   }
   var remembered=sqReadLastTracker(currentUser);
-  var want=preferId||(current&&current.id)||remembered?.id||read(CURRENT_KEY);
+  var want=preferId||remembered?.id||(current&&current.id)||read(CURRENT_KEY);
   if (!want || (want !== "local" && !trackers.some(function (t) { return t.id === want; }))) {
     want = trackers.length ? trackers[0].id : "local";
   }
@@ -3818,7 +3829,7 @@ async function syncTrackers(user) {
   current=null;
   var remembered=sqReadLastTracker(user);
   var cached=sqReadStartupDetail(user);
-  var preferred=remembered?.id||read(CURRENT_KEY);
+  var preferred=remembered?.id||cached?.id||read(CURRENT_KEY);
   // Paint only known public presets before network validation. Uploaded photos
   // are fetched with authenticated access after the server confirms the tracker.
   if(remembered)sqRestoreKnownWallpaper(remembered);
@@ -4142,7 +4153,7 @@ $("manage-list").addEventListener("click", async function (e) {
   renderManageList();
 });
 
-applyBackdrop();
+// Resolve the account before painting a device or shared tracker background.
 
 // Handle links from emails (confirm account and reset password)
 try {
@@ -4154,7 +4165,7 @@ try {
 }
 var startUser = await getUser();
 showUser(startUser);
-if (!startUser) sqSetTrackerLoading(false);
+if (!startUser && !currentUser) { await applyBackdrop(); sqSetTrackerLoading(false); }
 if (startUser) maybeShowOnboarding(startUser);
 if (!startUser && pendingJoin() && !$("auth-modal").classList.contains("open")) openAuth("signup");
 // --- Notifications, payment approval and itemized receipt split ---
