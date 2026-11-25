@@ -1,26 +1,20 @@
-/* Convert long desktop tools from centered blocking popups into navigable, full-width
-   workspace pages. Existing forms, IDs, handlers and API calls stay in place. */
+/* Only navigation/management tools become desktop workspaces. Creation and
+   payment forms retain their original centered modal controllers and URL. */
 (function(){
  'use strict';
  const desktop=window.matchMedia('(min-width:901px)');
  const specs=[
-  ['new-modal','Create new tracker','Choose a template or start with a blank tracker.','[data-close]'],
   ['manage-modal','Manage trackers','Review, rename or leave your trackers.','[data-close]'],
-  ['share-modal','Share tracker','Manage invitations and share access.','[data-close]'],
   ['backdrop-modal','Tracker backdrop','Customize the appearance of this tracker.','[data-close]'],
-  ['settle-modal','Settle up','Record a payment against a shared balance.','#settle-close'],
   ['photo-modal','Profile photo','Manage the photo shown to tracker members.','#photo-close'],
   ['sq-quick-calculator','Quick split calculator','Split a total, with tax and tip, without saving.','#sq-calc-close'],
   ['sq-social-modal','DoWeo Social','Wrapped insights and shareable group activity.','#sq-social-close'],
   ['sq-features-overlay','Tracker extras','Goals, attachments and collaborative tools.','#sq-features-close'],
-  ['sq-pay-now-modal','Pay Now','Choose a payment destination and amount.','#sq-pay-now-cancel'],
-  ['sq-ng-txn-overlay','Add personal transaction','Track private income and spending.','.sq-ng-txn-close'],
   ['sq-details-overlay','Expense details','View activity and manage this expense.','#sq-details-close'],
-  ['sq-expense-dialog','Add expense','Record a shared expense.','#sq-entry-x,.sq-action-modal-close'],
-  ['sq-receipt-dialog','Scan receipt','Review a receipt and assign purchases.','#sq-receipt-x,#receipt-close,.sq-action-modal-close'],
   ['dw-legal-standalone','Privacy and Terms','Review DoWeo policies and account terms.','[data-dw-legal-close]']
  ];
- const clearanceWorkspaces=new Set(['sq-expense-dialog','sq-receipt-dialog','new-modal','dw-legal-standalone','sq-ng-txn-overlay']);
+ // Creation forms use their original modal controllers; never decorate them as pages.
+ const clearanceWorkspaces=new Set(['dw-legal-standalone']);
  let current=null,storedUrl=null,storedState=null,syncQueued=false,popping=false;
  function setupLegalPage(){
   const trigger=document.getElementById('nav-privacy-terms');

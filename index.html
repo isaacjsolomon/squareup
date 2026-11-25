@@ -10249,8 +10249,8 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 </script>
 <script defer src="/doweo-polls-dashboard.js?v=20261122-backdrop-colors-v1"></script>
 <script defer src="/doweo-cashflow-analytics.js?v=20261124-chart-colors-v1"></script>
-<script defer src="/doweo-desktop-standalone.js?v=20261124-workspace-v6"></script>
-<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261124-workspace-v6">
+<script defer src="/doweo-desktop-standalone.js?v=20261124-creation-popups-v7"></script>
+<link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261124-creation-popups-v7">
 <link rel="stylesheet" href="/doweo-polls-dashboard.css?v=20261122-backdrop-colors-v1">
 <style id="dw-mobile-critical-colors-v8">
 /* Desktop and mobile: the brand icon is one self-contained SVG image, not a
@@ -10630,7 +10630,7 @@ html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
 /* Desktop workspaces shown in the user reports: leave the shared top tabs
    outside the scroll viewport; mirror the selected tracker image. */
 @media(min-width:901px){
- html body:not(.sq-auth-guest) :is(#sq-expense-dialog#sq-expense-dialog,#sq-receipt-dialog#sq-receipt-dialog,#new-modal#new-modal,#dw-legal-standalone#dw-legal-standalone).dw-desktop-standalone{
+ html body:not(.sq-auth-guest) #dw-legal-standalone#dw-legal-standalone.dw-desktop-standalone{
   position:fixed!important;top:max(120px,var(--dw-workspace-clearance,120px))!important;
   left:var(--dw-workspace-left,270px)!important;right:0!important;bottom:0!important;
   width:auto!important;min-width:0!important;max-width:none!important;box-sizing:border-box!important;
@@ -10642,14 +10642,11 @@ html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
   background-size:cover,cover!important;background-position:center,center!important;
   background-repeat:no-repeat,no-repeat!important;background-attachment:fixed,fixed!important;
  }
- html body:not(.sq-auth-guest) :is(#sq-expense-dialog,#sq-receipt-dialog,#new-modal,#dw-legal-standalone).dw-desktop-standalone > .dw-standalone-head{
+ html body:not(.sq-auth-guest) #dw-legal-standalone.dw-desktop-standalone > .dw-standalone-head{
   width:min(1120px,100%)!important;margin:0 auto 24px!important;padding:0 0 16px!important;
  }
- html body:not(.sq-auth-guest) :is(#sq-expense-dialog,#sq-receipt-dialog,#new-modal,#dw-legal-standalone).dw-desktop-standalone > .dw-standalone-head :is(h1,p,.dw-standalone-eyebrow){
+ html body:not(.sq-auth-guest) #dw-legal-standalone.dw-desktop-standalone > .dw-standalone-head :is(h1,p,.dw-standalone-eyebrow){
   color:#173750!important;-webkit-text-fill-color:#173750!important;opacity:1!important;
- }
- html body:not(.sq-auth-guest) :is(#sq-expense-dialog,#new-modal).dw-desktop-standalone input::placeholder{
-  color:#355E72!important;-webkit-text-fill-color:#355E72!important;opacity:1!important;
  }
  /* The existing split form stays a single popup, but is bounded below the
     toolbar and scrolls internally instead of clipping at short heights. */
@@ -10735,20 +10732,8 @@ html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
  html body.dw-workspace-clearance-active #tracker-dashboard > .sq-workspace-tabs{
    display:none!important;visibility:hidden!important;
  }
- html body:not(.sq-auth-guest) #sq-nextgen #sq-ng-txn-overlay#sq-ng-txn-overlay.dw-desktop-standalone:not([hidden]){
-   top:max(120px,var(--dw-workspace-clearance,120px))!important;
-   left:var(--dw-workspace-left,270px)!important;right:0!important;bottom:0!important;
-   height:auto!important;min-height:0!important;max-height:none!important;
- }
- html body:not(.sq-auth-guest) :is(#sq-expense-dialog#sq-expense-dialog,#sq-receipt-dialog#sq-receipt-dialog,#new-modal#new-modal,#dw-legal-standalone#dw-legal-standalone).dw-desktop-standalone{
+ html body:not(.sq-auth-guest) #dw-legal-standalone#dw-legal-standalone.dw-desktop-standalone{
    z-index:2147483200!important;
- }
- html body:not(.sq-auth-guest) :is(#sq-expense-dialog,#sq-receipt-dialog).dw-desktop-standalone > .sq-action-modal-inner{
-   width:min(1120px,100%)!important;max-width:1120px!important;
-   height:auto!important;max-height:none!important;overflow:visible!important;
- }
- html body:not(.sq-auth-guest) #sq-receipt-dialog.dw-desktop-standalone #receipt-card{
-   max-height:none!important;overflow:visible!important;
  }
  html body.split-view #split-page#split-page .split-layout{
    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
@@ -10812,6 +10797,91 @@ html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
  queue();
 })();
 </script>
+
+
+<style id="dw-creation-popups-v7">
+@media(min-width:901px){
+ /* Creation is an overlay, never a separate page. Retain the live underlying
+    wallpaper, navigation, and existing form event listeners. */
+ html body :is(#new-modal,#share-modal,#settle-modal,#sq-pay-now-modal,#sq-expense-dialog,#sq-receipt-dialog,#sq-ng-txn-overlay):not([hidden]):not(.modal-bg),
+ html body :is(#new-modal,#share-modal,#settle-modal).modal-bg.open{
+  position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;
+  min-width:0!important;max-width:none!important;min-height:0!important;max-height:100dvh!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  margin:0!important;padding:24px!important;box-sizing:border-box!important;
+  background:rgba(10,27,46,.58)!important;background-image:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  transform:none!important;border:0!important;border-radius:0!important;
+  overflow-y:auto!important;overflow-x:hidden!important;z-index:2147483550!important;
+ }
+ html body :is(#new-modal,#share-modal,#settle-modal,#sq-pay-now-modal,#sq-expense-dialog,#sq-receipt-dialog,#sq-ng-txn-overlay)[hidden],
+ html body :is(#new-modal,#share-modal,#settle-modal).modal-bg:not(.open){
+  display:none!important;
+ }
+ html body :is(#new-modal,#share-modal,#settle-modal,#sq-pay-now-modal,#sq-expense-dialog,#sq-receipt-dialog,#sq-ng-txn-overlay) > .dw-standalone-head{display:none!important}
+ html body :is(#new-modal,#share-modal,#settle-modal) > .card.modal,
+ html body :is(#sq-expense-dialog,#sq-receipt-dialog) > .sq-action-modal-inner,
+ html body #sq-nextgen #sq-ng-txn-overlay > .sq-ng-txn-dialog,
+ html body #sq-pay-now-modal > #sq-pay-now-panel{
+  position:relative!important;inset:auto!important;transform:none!important;
+  box-sizing:border-box!important;flex:0 1 auto!important;
+  width:min(100%,680px)!important;max-width:680px!important;min-width:0!important;
+  height:auto!important;min-height:0!important;max-height:calc(100dvh - 48px)!important;
+  margin:auto!important;overflow-y:auto!important;overflow-x:hidden!important;
+  overscroll-behavior:contain!important;border-radius:20px!important;
+  border:1px solid #355E72!important;background:#102B40!important;
+  color:#F3F8FC!important;box-shadow:0 20px 60px rgba(10,27,46,.32)!important;
+ }
+ html body #new-modal[data-start-mode="template"] > .card.modal{
+  width:min(100%,790px)!important;max-width:790px!important;
+ }
+ html body #new-modal[data-start-mode="blank"] > .card.modal{
+  width:min(100%,520px)!important;max-width:520px!important;
+ }
+ html body #sq-expense-dialog > .sq-action-modal-inner{
+  width:min(100%,780px)!important;max-width:780px!important;padding:0!important;
+ }
+ html body #sq-receipt-dialog > .sq-action-modal-inner{
+  width:min(100%,1040px)!important;max-width:1040px!important;padding:0!important;
+ }
+ html body #sq-receipt-dialog #receipt-card{
+  max-height:none!important;overflow:visible!important;
+ }
+ html body #sq-nextgen #sq-ng-txn-overlay > .sq-ng-txn-dialog{
+  width:min(100%,560px)!important;max-width:560px!important;
+ }
+ /* The personal transaction overlay lives inside a fixed finance workspace.
+    Raise that stacking context only for the duration of the open popup. */
+ html body.sq-finance-open #sq-nextgen#sq-nextgen:has(#sq-ng-txn-overlay:not([hidden])){
+  z-index:2147483500!important;
+ }
+ html body :is(#new-modal,#share-modal,#settle-modal,#sq-pay-now-modal,#sq-expense-dialog,#sq-receipt-dialog,#sq-ng-txn-overlay) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]),select,textarea){
+  color:#173750!important;-webkit-text-fill-color:#173750!important;
+  background:#F3F8FC!important;color-scheme:light!important;
+  border:1px solid #ABC6D7!important;
+ }
+ html body :is(#new-modal,#share-modal,#settle-modal,#sq-pay-now-modal,#sq-expense-dialog,#sq-receipt-dialog,#sq-ng-txn-overlay) input::placeholder,
+ html body :is(#new-modal,#share-modal,#settle-modal,#sq-pay-now-modal,#sq-expense-dialog,#sq-receipt-dialog,#sq-ng-txn-overlay) textarea::placeholder{
+  color:#355E72!important;-webkit-text-fill-color:#355E72!important;opacity:1!important;
+ }
+ html body :is(#new-modal,#share-modal,#settle-modal) > .card.modal :is(h2,h3,label),
+ html body #sq-ng-txn-overlay .sq-ng-txn-header h2{
+  color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;
+ }
+ html body #sq-ng-txn-overlay :is(.sq-ng-txn-header p,.sq-ng-txn-feedback){
+  color:#ABC6D7!important;-webkit-text-fill-color:#ABC6D7!important;
+ }
+ html body #new-modal #new-submit{
+  position:static!important;background:#60F1AD!important;color:#102B40!important;
+  -webkit-text-fill-color:#102B40!important;box-shadow:none!important;
+ }
+ html body #new-modal #new-currency{min-height:42px!important;padding:8px 12px!important}
+ html body #new-modal #sq-template-grid{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important}
+ html body :is(#new-modal,#share-modal,#settle-modal,#sq-pay-now-modal,#sq-expense-dialog,#sq-receipt-dialog,#sq-ng-txn-overlay) :is(.sq-action-modal-close,.sq-ng-txn-close,.close,#sq-entry-x,#sq-receipt-x,#sq-pay-now-cancel){
+  color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;
+ }
+}
+</style>
 
 </body>
 </html>
