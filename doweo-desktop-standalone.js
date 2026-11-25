@@ -3,6 +3,7 @@
 (function(){
  'use strict';
  const desktop=window.matchMedia('(min-width:901px)');
+ const creationPopupIds=new Set(['new-modal','share-modal','settle-modal','sq-pay-now-modal','sq-ng-txn-overlay','sq-expense-dialog','sq-receipt-dialog']);
  const specs=[
   ['manage-modal','Manage trackers','Review, rename or leave your trackers.','[data-close]'],
   ['backdrop-modal','Tracker backdrop','Customize the appearance of this tracker.','[data-close]'],
@@ -57,7 +58,7 @@
   el.hidden=true;el.classList.remove('open');el.setAttribute('aria-hidden','true');
  }
  function decorate(el,spec){
-  if(el.classList.contains('dw-desktop-standalone'))return;
+  if(creationPopupIds.has(el.id)||el.classList.contains('dw-desktop-standalone'))return;
   const head=document.createElement('header');head.className='dw-standalone-head';
   const back=document.createElement('button');back.type='button';back.className='dw-standalone-back';back.textContent='← Back';
   const copy=document.createElement('div');copy.className='dw-standalone-copy';
@@ -83,7 +84,7 @@
  function sync(){
   syncQueued=false;
   if(!desktop.matches){release();return}
-  const active=specs.map(spec=>({spec,el:document.getElementById(spec[0])}))
+  const active=specs.filter(spec=>!creationPopupIds.has(spec[0])).map(spec=>({spec,el:document.getElementById(spec[0])}))
     .find(entry=>hasOpen(entry.el,entry.spec[0]));
   if(!active){release();return}
   decorate(active.el,active.spec);

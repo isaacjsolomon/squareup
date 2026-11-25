@@ -69,9 +69,6 @@
   }
   html body .dw-desktop-standalone .dw-standalone-head button{color:#102B40!important;background:#F3F8FC!important}
   html body .dw-desktop-standalone .card.modal>.close{top:17px!important;right:17px!important;color:#F3F8FC!important}
-  html body #new-modal.dw-desktop-standalone .card.modal,
-  html body #share-modal.dw-desktop-standalone .card.modal{width:min(1120px,100%)!important;max-width:1120px!important;max-height:none!important;overflow:visible!important}
-  html body #new-modal.dw-desktop-standalone #sq-template-grid{grid-template-columns:repeat(auto-fit,minmax(185px,1fr))!important}
   html body #sq-social-modal.dw-desktop-standalone #sq-social-panel,
   html body #sq-features-overlay.dw-desktop-standalone #sq-features-panel,
   html body #sq-pay-now-modal.dw-desktop-standalone #sq-pay-now-panel{width:min(1120px,100%)!important;max-width:1120px!important;max-height:none!important;overflow:visible!important}
