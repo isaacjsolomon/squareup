@@ -447,9 +447,9 @@
   top:0!important;bottom:0!important;height:auto!important;max-height:none!important;
   overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain!important;
   background-color:#F3F8FC!important;
-  /* Match the navy-muted treatment of Spending Analytics, over the exact same
-     live tracker image. Tint only the canvas, not the white page cards. */
-  background-image:linear-gradient(color-mix(in srgb, #0A1B2E 35%, transparent),color-mix(in srgb, #0A1B2E 35%, transparent)),
+  /* Light blue-white wash matching the area behind the sidebar.
+     Preserve the selected tracker wallpaper and leave the white cards untouched. */
+  background-image:linear-gradient(color-mix(in srgb, #F3F8FC 52%, transparent),color-mix(in srgb, #F3F8FC 52%, transparent)),
     var(--dw-selected-tracker-wallpaper,linear-gradient(145deg,#ABC6D7,#F3F8FC))!important;
   background-size:cover,cover!important;background-position:center,center!important;
   background-repeat:no-repeat,no-repeat!important;background-attachment:fixed,fixed!important;
