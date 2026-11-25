@@ -9,8 +9,8 @@ const js=read('doweo-desktop-standalone.js');
 const workflow=read('.github/workflows/deploy-doweo-pages.yml');
 
 test('desktop-only full-page workspace assets deploy and preserve mobile dialogs',()=>{
- assert.match(html,/doweo-desktop-standalone\.css\?v=20261123-tracker-workspace-wallpaper-v1/);
- assert.match(html,/doweo-desktop-standalone\.js\?v=20261122-backdrop-colors-v1/);
+ assert.match(html,/doweo-desktop-standalone\.css\?v=20261124-creation-popups-v8/);
+ assert.match(html,/<script id="dw-desktop-workspace-controller-v8">/);
  assert.match(workflow,/doweo-desktop-standalone\.css doweo-desktop-standalone\.js/);
  assert.match(css,/@media\(min-width:901px\)/);
  assert.doesNotMatch(css,/@media\(max-width:900px\)/);
@@ -49,12 +49,12 @@ test('Cash Flow matches Spending Analytics white panels, KPIs and visual charts'
  assert.match(css,/\.dw-cash-panel/);
  assert.match(css,/\.dw-cash-comparison \.dw-cash-table-wrap :is\(th,td\)/);
  assert.match(css,/-webkit-text-fill-color:#F3F8FC!important/);
- assert.match(css,/color-mix\(in srgb, #0A1B2E 35%, transparent\)/);
+ assert.match(css,/color-mix\(in srgb, #F3F8FC 52%, transparent\)/);
  assert.match(css,/top:0!important;bottom:0!important/);
  assert.match(css,/padding:calc\(var\(--dw-report-top,96px\) \+ 20px\)/);
  assert.match(css,/#dw-all-topbar\{/);
  assert.match(html,/dwCashFlowAnalyticsRender/);
- assert.match(html,/doweo-cashflow-analytics\.js\?v=20261122-original-mint-v1/);
+ assert.match(html,/doweo-cashflow-analytics\.js\?v=20261124-chart-colors-v1/);
  assert.doesNotMatch(html,/select\(hub,'\.sq-ng-card'/);
  assert.doesNotMatch(html,/paint\(hub,/);
 });

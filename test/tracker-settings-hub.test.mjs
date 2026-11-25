@@ -35,7 +35,7 @@ test('approved image-style Appearance and four-card Management layout is include
   assert.ok(css.includes('.dw-ts-section-link-active'));
   assert.ok(css.includes('color:#0A1B2E'));
   assert.ok(css.includes('#60F1AD'));
-  assert.ok(html.includes("var width=showingSettings?Math.min(880,Math.max(0,available-24))"),'Wide centered settings overlay must not collapse to the old 360px popover');
+  assert.ok(html.includes("var width=showingSettings?Math.min(desktopSettings?680:880,Math.max(0,available-24))"),'Wide centered settings overlay must not collapse to the old 360px popover');
   assert.ok(html.includes("Math.min(960,vh-24)"),'Large modal must scroll on shorter devices');
 });
 
