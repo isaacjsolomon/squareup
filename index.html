@@ -26,6 +26,39 @@
 
 <style id="dw-brand-first-paint">
 @layer trackerMobile {
+ /* Spending Analytics uses opaque surfaces for all text over the wallpaper. */
+ #analytics-page .sq-analytics-header {
+  background:#102B40!important;border:1px solid #355E72!important;border-radius:16px!important;
+  padding:16px!important;color:#F3F8FC!important;text-shadow:none!important;
+ }
+ #analytics-page .sq-analytics-header h2 {
+  color:#F3F8FC!important;-webkit-text-fill-color:currentColor!important;
+ }
+ #analytics-page .sq-analytics-header :is(p,.sq-analytics-filter) {
+  color:#D4E3EC!important;-webkit-text-fill-color:currentColor!important;
+ }
+ #analytics-page #analytics-range {
+  background:#204158!important;color:#F3F8FC!important;-webkit-text-fill-color:currentColor!important;
+  border-color:#ABC6D7!important;color-scheme:dark!important;
+ }
+ #analytics-page #analytics-range:focus-visible {
+  outline:2px solid #60F1AD!important;outline-offset:2px!important;
+ }
+ #analytics-page :is(.sq-analytics-panel,.analytics-stat) {
+  background:#F3F8FC!important;color:#102B40!important;
+  --text:#102B40;--text-muted:#355E72;--muted:#355E72;--surface-1:#F3F8FC;
+ }
+ #analytics-page #sq-recap-summary .sq-recap-stat {
+  background:#E1EDF4!important;color:#102B40!important;border-color:#ABC6D7!important;
+ }
+ #analytics-page #sq-recap-summary .sq-recap-stat span,
+ #analytics-page :is(.sq-recap-breakdown,.sq-analytics-panel-heading p,.analytics-stat small,.sq-analytics-empty) {
+  color:#355E72!important;-webkit-text-fill-color:currentColor!important;
+ }
+ #analytics-page #sq-recap-summary .sq-recap-stat strong,
+ #analytics-page :is(.sq-analytics-panel-heading h3,.analytics-stat strong,.sq-month-value,.sq-month-label) {
+  color:#102B40!important;-webkit-text-fill-color:currentColor!important;
+ }
  @media(max-width:900px) {
   #dw-expense-workspace .entry :is(.dw-expense-copy,.dw-expense-copy strong,.dw-expense-copy small,.dw-expense-status[data-status="confirmed"],.dw-expense-more,.dw-expense-more > button) {
    background:transparent!important;border:0!important;box-shadow:none!important;color:#102b40!important;-webkit-text-fill-color:#102b40!important;
