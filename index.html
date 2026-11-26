@@ -7433,6 +7433,8 @@ function notice(t){msg.textContent=t;}
 function api(path,method='GET',data){if(typeof window.squareUpApi!=='function')throw Error('Please sign in before using Bills.');return window.squareUpApi(path,method,data);}
 function resetView(){document.body.classList.remove('sq-bills-open');page.hidden=true;generation++;}
 async function openBills(){
+  const mobileBills=matchMedia('(max-width:760px)').matches;
+  const mobilePreferred=mobileBills?(window.squareUpApprovalTracker?.()?.id||localStorage.getItem('squareup-current-tracker')):null;
   // Navigate first, then display Bills independently of tracker/dashboard state.
   if(typeof settingsRoute==='function')settingsRoute('trackers');
   else $('nav-trackers')?.click();
@@ -7446,9 +7448,10 @@ async function openBills(){
     const trackers=await api('trackers');if(token!==generation)return;
     selector.replaceChildren(new Option('Choose a tracker',''));
     (Array.isArray(trackers)?trackers:[]).filter(t=>uuid.test(t.id)).forEach(t=>selector.add(new Option(t.name||'Untitled tracker',t.id)));
-    const preferred=localStorage.getItem('squareup-current-tracker');
+    const preferred=mobilePreferred||localStorage.getItem('squareup-current-tracker');
     if(preferred&&Array.from(selector.options).some(o=>o.value===preferred))selector.value=preferred;
     else if(selector.options.length===2)selector.selectedIndex=1;
+    if(mobileBills&&!selector.value){$('sq-bills-bill-list').textContent='Open a tracker from Trackers to see its bills.';$('sq-bills-sub-list').textContent='Open a tracker from Trackers to see its subscriptions.';notice('Open a tracker from Trackers first.');window.sqPremiumBills=[];window.sqPremiumRender?.();return;}
     await loadBills();await loadBillMembers();
   }catch(e){selector.replaceChildren(new Option('Could not load trackers',''));notice(e.message||'Could not load trackers.');}
 }
@@ -11372,6 +11375,87 @@ try {
     button.append(badge);
   }
 } catch (_) {}
+</script>
+
+<style id="dw-bills-navy-floating-v1">
+.dw-bills-add,.dw-bills-filter,.dw-bills-row-more{display:none!important}
+@media(max-width:760px){
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact{background:transparent!important;background-image:none!important;overflow:visible!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-workspace{background:transparent!important;background-image:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;backdrop-filter:none!important;padding:8px 0 0!important;gap:14px!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-workspace > .sq-bills-back{display:none!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .sq-bills-title > .sq-bills-tracker-compact{display:none!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-workspace > .sq-bills-title{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;padding:8px 2px!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .sq-bills-title > div:first-child{width:auto!important;flex:1 1 0!important;min-width:0!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .sq-bills-title h2{color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;text-shadow:0 1px 5px #0A1B2E,0 0 12px #0A1B2E!important;font-size:clamp(20px,5.3vw,26px)!important;overflow-wrap:normal!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-add{display:flex!important;align-items:center!important;justify-content:center!important;flex:0 0 auto!important;min-height:42px!important;padding:9px 14px!important;border:0!important;border-radius:999px!important;background:#60F1AD!important;color:#0A1B2E!important;-webkit-text-fill-color:#0A1B2E!important;font:inherit!important;font-size:14px!important;font-weight:750!important;white-space:nowrap!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-add:disabled{opacity:.55!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-workspace > .sq-premium-overview{border:0!important;box-shadow:none!important;gap:0!important;background:transparent!important;padding:0!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-workspace .sq-premium-metrics{display:grid!important;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important;gap:0!important;padding:16px 14px!important;border:1px solid #355E72!important;border-radius:20px!important;background:linear-gradient(145deg,#102B40F5,#0A1B2EF5)!important;box-shadow:0 5px 18px #0A1B2E26!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-workspace .sq-premium-metrics > article{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0 10px 0 0!important;min-width:0!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-workspace .sq-premium-metrics > article:nth-child(2){border-left:1px solid #355E72!important;padding:0 0 0 12px!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .sq-premium-metrics article span{color:#ABC6D7!important;-webkit-text-fill-color:#ABC6D7!important;font-size:12px!important;line-height:1.35!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact #sq-premium-monthly{color:#60F1AD!important;-webkit-text-fill-color:#60F1AD!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact #sq-premium-active{color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-workspace .sq-bill-create-card.sq-mobile-collapsed{display:none!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-filter{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:4px!important;padding:4px!important;border:1px solid #ABC6D799!important;background:#102B40B8!important;border-radius:999px!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-filter button{min-width:0!important;min-height:42px!important;border:0!important;border-radius:999px!important;padding:8px 4px!important;background:transparent!important;color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;font-size:clamp(12px,3.4vw,15px)!important;font-weight:700!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-filter button[aria-pressed='true']{background:#60F1AD!important;color:#0A1B2E!important;-webkit-text-fill-color:#0A1B2E!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-workspace > .sq-bills-columns{display:grid!important;gap:0!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .sq-bills-columns[data-dw-bill-filter='subscription'] > .sq-bills-card:first-child, html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .sq-bills-columns[data-dw-bill-filter='bill'] > .sq-bills-card:nth-child(2){display:none!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-workspace .sq-bills-columns > .sq-bills-card{background:linear-gradient(145deg,#102B40F5,#0A1B2EF5)!important;border:1px solid #355E72!important;border-radius:20px!important;padding:14px!important;box-shadow:0 5px 18px #0A1B2E26!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .sq-bills-columns .sq-bills-list-head{display:none!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact :is(#sq-bills-bill-list,#sq-bills-sub-list){gap:0!important;color:#ABC6D7!important;-webkit-text-fill-color:#ABC6D7!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-workspace .sq-bills-row{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:12px 0!important;display:grid!important;grid-template-columns:minmax(0,1fr) 32px!important;align-items:center!important;gap:6px!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-workspace .sq-bills-row + .sq-bills-row{border-top:1px solid #355E72!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .sq-bill-info{grid-template-columns:36px minmax(0,1fr)!important;gap:10px!important;align-items:center!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .sq-bills-row strong{flex-wrap:nowrap!important;gap:7px!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .sq-bills-row :is(strong,.sq-bill-name,.sq-bill-price){color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .sq-bills-row small{color:#ABC6D7!important;-webkit-text-fill-color:#ABC6D7!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .sq-bills-row .dw-bills-row-more{display:grid!important;place-items:center!important;width:32px!important;min-width:32px!important;min-height:42px!important;background:transparent!important;border:0!important;color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;font-size:24px!important;padding:0!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .sq-bills-row .sq-premium-actions{grid-column:1/-1!important;display:none!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .sq-bills-row[data-dw-expanded='true'] .sq-premium-actions{display:flex!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-calendar-fold{background:#102B40E8!important;border:1px solid #355E72!important;color:#F3F8FC!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact .dw-bills-calendar-fold > summary{color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;}
+html body.sq-bills-open #sq-bills-page#sq-bills-page#sq-bills-page#sq-bills-page.dw-bills-compact #sq-bills-message{color:#F3F8FC!important;text-shadow:0 1px 4px #0A1B2E!important;}
+}
+</style>
+<script id="dw-bills-navy-floating-script-v1">
+(function(){
+'use strict';
+const page=document.getElementById('sq-bills-page');
+if(!page)return;
+const media=matchMedia('(max-width:760px)');
+const title=page.querySelector('.sq-bills-title'),columns=page.querySelector('.sq-bills-columns');
+const selector=document.getElementById('sq-bills-tracker'),toggle=document.getElementById('sq-bill-mobile-toggle');
+if(!title||!columns||!selector||!toggle)return;
+const add=document.createElement('button');add.className='dw-bills-add';add.type='button';add.textContent='+ Add';add.setAttribute('aria-label','Add a bill or subscription');add.onclick=()=>toggle.click();title.append(add);
+const filter=document.createElement('div');filter.className='dw-bills-filter';filter.setAttribute('role','group');filter.setAttribute('aria-label','Filter recurring payments');
+const entries=[['bill','Bills','sq-bills-bill-list'],['subscription','Subscriptions','sq-bills-sub-list']];
+let selected='subscription',manual=false;
+const buttons=entries.map(([key,label])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=()=>{manual=true;selected=key;sync()};filter.append(b);return b});
+function sync(){
+ const mobile=media.matches;
+ if(mobile&&filter.parentNode!==columns.parentNode)columns.before(filter);
+ if(!mobile){delete columns.dataset.dwBillFilter;return;}
+ const counts=entries.map(([, ,id])=>document.getElementById(id).querySelectorAll('.sq-bills-row').length);
+ if(!manual){selected=counts[1]||!counts[0]?'subscription':'bill'}
+ columns.dataset.dwBillFilter=selected;
+ buttons.forEach((b,i)=>{const label=entries[i][1]+' ('+counts[i]+')';if(b.textContent!==label)b.textContent=label;b.setAttribute('aria-pressed',String(entries[i][0]===selected))});
+ add.disabled=!selector.value;
+ for(const row of columns.querySelectorAll('.sq-bills-row')){
+  if(row.querySelector('.dw-bills-row-more'))continue;
+  const more=document.createElement('button');more.type='button';more.className='dw-bills-row-more';more.textContent='›';more.setAttribute('aria-label','Show bill actions');more.setAttribute('aria-expanded','false');
+  more.onclick=()=>{const expanded=row.dataset.dwExpanded!=='true';row.dataset.dwExpanded=String(expanded);more.setAttribute('aria-expanded',String(expanded));more.setAttribute('aria-label',expanded?'Hide bill actions':'Show bill actions');more.textContent=expanded?'⌄':'›'};
+  row.insertBefore(more,row.querySelector('.sq-premium-actions'));
+ }
+}
+let scheduled=false;function queue(){if(!scheduled){scheduled=true;queueMicrotask(()=>{scheduled=false;sync()})}}
+new MutationObserver(queue).observe(columns,{childList:true,subtree:true});
+new MutationObserver(queue).observe(selector,{childList:true,subtree:true});
+selector.addEventListener('change',queue);
+let wasOpen=false;new MutationObserver(()=>{const open=document.body.classList.contains('sq-bills-open');if(open&&!wasOpen){manual=false;queue()}wasOpen=open}).observe(document.body,{attributes:true,attributeFilter:['class']});
+media.addEventListener('change',queue);document.addEventListener('DOMContentLoaded',queue);queue();
+})();
 </script>
 </body>
 </html>
