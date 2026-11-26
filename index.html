@@ -129,6 +129,13 @@ body.side-collapsed .sidebar :is(.dw-rail-quick,.dw-rail-add,.dw-rail-short-labe
       animation:none!important;stroke-dashoffset:0!important;
     }
   }
+
+@layer trackerMobile {
+ @media(max-width:900px){
+  html body.trackers-view:not(.sq-bills-open) #trackers-page #dw-trackers-search::placeholder{color:#ABC6D7!important;-webkit-text-fill-color:#ABC6D7!important;opacity:1!important}
+  html body.trackers-view:not(.sq-bills-open) #trackers-page #trackers-gallery .sq-favorite-toggle::after{color:#60F1AD!important;-webkit-text-fill-color:#60F1AD!important}
+ }
+}
 </style>
 
 <meta name="dw-backdrop-preset-build" content="restored-original-backdrops-20261122-v1">
@@ -246,7 +253,7 @@ window.dwBillDueDate=function(value){
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css?v=20261123-backdrop-gallery-v1">
-<meta name="doweo-release" content="doweo-mobile-more-glass-20261126-v1">
+<meta name="doweo-release" content="doweo-mobile-trackers-colors-20261126-v1">
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
@@ -11727,6 +11734,56 @@ new MutationObserver(queue).observe(grid,{childList:true});
 window.addEventListener('resize',queue,{passive:true});window.visualViewport?.addEventListener('resize',queue);media.addEventListener('change',queue);
 if(typeof ResizeObserver==='function'){const ro=new ResizeObserver(queue);if(header)ro.observe(header);if(dock)ro.observe(dock)}
 queue();
+})();
+</script>
+<script id="dw-mobile-trackers-palette-v1">
+
+(function(){
+'use strict';
+const page=document.getElementById('trackers-page'),gallery=document.getElementById('trackers-gallery'),media=matchMedia('(max-width:900px)');
+if(!page||!gallery)return;
+const white='#F3F8FC',muted='#ABC6D7',mint='#60F1AD',navy='#102B40',ink='#0A1B2E';
+const saved=new Map();
+function paint(el,props){if(!el)return;if(!saved.has(el))saved.set(el,new Map());const previous=saved.get(el);for(const [key,value] of Object.entries(props)){if(!previous.has(key))previous.set(key,[el.style.getPropertyValue(key),el.style.getPropertyPriority(key)]);if(el.style.getPropertyValue(key)!==value||el.style.getPropertyPriority(key)!=='important')el.style.setProperty(key,value,'important')}}
+function restore(){for(const [el,props] of saved)for(const [key,[value,priority]] of props){if(value)el.style.setProperty(key,value,priority);else el.style.removeProperty(key)}saved.clear()}
+function color(el,value){paint(el,{color:value,'-webkit-text-fill-color':value,'text-shadow':'none'})}
+function all(root,selector,fn){root.querySelectorAll(selector).forEach(fn)}
+function background(el,value){paint(el,{background:value,'box-shadow':'none'})}
+const glass='linear-gradient(145deg,rgba(23,55,80,.83),rgba(10,27,46,.91))';
+let frame=0;
+function sync(){
+ frame=0;
+ if(!media.matches||!document.body.classList.contains('trackers-view')||document.body.classList.contains('sq-bills-open')){restore();return}
+ for(const el of saved.keys())if(!el.isConnected)saved.delete(el);
+ const toolbar=document.getElementById('dw-trackers-toolbar'),search=document.getElementById('dw-trackers-search'),create=document.getElementById('dw-trackers-new');
+ paint(toolbar,{background:'transparent','background-image':'none',border:'0','box-shadow':'none'});
+ for(const h of page.querySelectorAll('#dw-trackers-toolbar h2,.dw-trackers-collection-heading h3')){color(h,white);paint(h,{'text-shadow':'0 1px 4px rgba(10,27,46,.9)'})}
+ paint(create,{background:mint,'border-color':mint,'box-shadow':'none'});color(create,ink);
+ paint(search,{background:navy,border:'1px solid #355E72','box-shadow':'none','caret-color':mint});color(search,white);
+ all(gallery,'.dw-trackers-collection-heading > div',el=>paint(el,{background:navy,'border-color':'#355E72','box-shadow':'none'}));
+ all(gallery,'.dw-trackers-collection-heading button',el=>{const active=el.getAttribute('aria-pressed')==='true';background(el,active?mint:'transparent');color(el,active?ink:white)});
+ all(gallery,'.tracker-tile',card=>{
+  const featured=card.classList.contains('dw-featured-tracker');
+  paint(card,{background:glass,border:'1px solid '+(featured?'#60F1AD99':'#ABC6D766'),'box-shadow':'0 4px 14px rgba(10,27,46,.18)','-webkit-backdrop-filter':'blur(10px)','backdrop-filter':'blur(10px)'});
+  color(card,white);
+  all(card,'.tracker-tile-body,.tracker-tile-head,.tracker-tile-members,.tracker-people,.tracker-tile-actions,.dw-trackers-meta',el=>background(el,'transparent'));
+  all(card,'.tracker-tile-head h3',el=>color(el,white));
+  all(card,'.dw-trackers-meta,.dw-trackers-meta span,.tracker-sub,.tracker-people-names,.sq-tile-last,.sq-gallery-member-count,.tracker-stat span',el=>color(el,muted));
+  all(card,'.tracker-stat b',el=>color(el,white));
+  all(card,'.dw-trackers-icon,.tracker-tile-icon',el=>{paint(el,{background:'#204158','border-color':'#60F1AD80','box-shadow':'none'});color(el,mint);all(el,'svg,svg path',svg=>paint(svg,{stroke:mint,color:mint}))});
+  all(card,'.tracker-avatar',el=>{paint(el,{background:'#102B40',border:'2px solid #537E92','box-shadow':'none'});color(el,white)});
+  all(card,'.tracker-tile-menu > summary',el=>{background(el,'transparent');color(el,white)});
+  all(card,'.sq-favorite-toggle',el=>{background(el,'transparent');color(el,mint)});
+  all(card,'.tile-open',el=>{paint(el,{background:mint,'border-color':mint,'box-shadow':'none'});color(el,ink)});
+  all(card,'.sq-restore-tracker',el=>{paint(el,{background:navy,'border-color':'#355E72'});color(el,white)});
+ });
+ all(gallery,'.sq-archive-toggle',el=>{paint(el,{background:'#204158E8','border-color':'#537E92','box-shadow':'none'});color(el,muted)});
+ all(gallery,'.dw-trackers-empty,.trackers-empty',el=>color(el,white));
+}
+function queue(){if(!frame)frame=requestAnimationFrame(sync)}
+new MutationObserver(queue).observe(gallery,{childList:true,subtree:true,attributes:true,attributeFilter:['class','aria-pressed','hidden']});
+new MutationObserver(queue).observe(document.body,{attributes:true,attributeFilter:['class']});
+media.addEventListener('change',queue);window.addEventListener('pageshow',queue);document.addEventListener('DOMContentLoaded',queue);queue();
 })();
 </script>
 </body>
