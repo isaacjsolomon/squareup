@@ -136,6 +136,14 @@ body.side-collapsed .sidebar :is(.dw-rail-quick,.dw-rail-add,.dw-rail-short-labe
   html body.trackers-view:not(.sq-bills-open) #trackers-page #trackers-gallery .sq-favorite-toggle::after{color:#60F1AD!important;-webkit-text-fill-color:#60F1AD!important}
  }
 }
+
+@layer trackerMobile {
+ @media(max-width:900px){
+  html body #new-modal #new-name::placeholder{color:#ABC6D7!important;-webkit-text-fill-color:#ABC6D7!important;opacity:1!important}
+  html body #new-modal :is(#new-name,#new-currency):focus-visible{outline:2px solid #60F1AD!important;outline-offset:2px!important}
+  html body #new-modal #new-currency option{background:#102B40;color:#F3F8FC}
+ }
+}
 </style>
 
 <meta name="dw-backdrop-preset-build" content="restored-original-backdrops-20261122-v1">
@@ -253,7 +261,7 @@ window.dwBillDueDate=function(value){
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css?v=20261123-backdrop-gallery-v1">
-<meta name="doweo-release" content="doweo-mobile-trackers-colors-20261126-v1">
+<meta name="doweo-release" content="doweo-mobile-create-tracker-20261126-v1">
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
@@ -11784,6 +11792,65 @@ function queue(){if(!frame)frame=requestAnimationFrame(sync)}
 new MutationObserver(queue).observe(gallery,{childList:true,subtree:true,attributes:true,attributeFilter:['class','aria-pressed','hidden']});
 new MutationObserver(queue).observe(document.body,{attributes:true,attributeFilter:['class']});
 media.addEventListener('change',queue);window.addEventListener('pageshow',queue);document.addEventListener('DOMContentLoaded',queue);queue();
+})();
+</script>
+<script id="dw-mobile-new-tracker-glass-v1">
+
+(function(){
+'use strict';
+const modal=document.getElementById('new-modal'),choice=document.getElementById('tracker-start-choice'),media=matchMedia('(max-width:900px)');
+if(!modal||!choice)return;
+const panel=modal.querySelector('.card.modal'),form=document.getElementById('new-form'),grid=document.getElementById('sq-template-grid');
+const white='#F3F8FC',muted='#C0D8E7',mint='#60F1AD',navy='#102B40',ink='#0A1B2E';
+const saved=new Map();
+function paint(el,props){if(!el)return;if(!saved.has(el))saved.set(el,new Map());const previous=saved.get(el);for(const [key,value] of Object.entries(props)){if(!previous.has(key))previous.set(key,[el.style.getPropertyValue(key),el.style.getPropertyPriority(key)]);if(el.style.getPropertyValue(key)!==value||el.style.getPropertyPriority(key)!=='important')el.style.setProperty(key,value,'important')}}
+function restore(){for(const [el,props] of saved)for(const [key,[value,priority]] of props){if(value)el.style.setProperty(key,value,priority);else el.style.removeProperty(key)}saved.clear()}
+const text=(el,value)=>paint(el,{color:value,'-webkit-text-fill-color':value,'text-shadow':'none'});
+const glass={background:'linear-gradient(145deg,rgba(23,55,80,.97),rgba(10,27,46,.96))',border:'1px solid #537E92','border-radius':'22px','box-shadow':'0 12px 35px rgba(10,27,46,.30)','backdrop-filter':'none','-webkit-backdrop-filter':'none',color:white,'box-sizing':'border-box'};
+const surface={background:navy,border:'1px solid #537E92','border-radius':'12px','box-shadow':'none'};
+const action={background:mint,border:'1px solid '+mint,'border-radius':'13px','box-shadow':'none',color:ink,'-webkit-text-fill-color':ink,'font-weight':'750','min-height':'46px'};
+const closeStyle={...surface,position:'absolute',top:'14px',right:'14px',width:'40px',height:'40px','min-width':'40px','min-height':'40px',padding:'0',margin:'0',float:'none',display:'grid','place-items':'center','font-size':'25px','line-height':'1',color:white,'-webkit-text-fill-color':white};
+let frame=0;
+function sync(){
+ frame=0;
+ if(!media.matches){restore();return}
+ for(const e of saved.keys())if(!e.isConnected)saved.delete(e);
+ if(choice.open){
+  paint(choice,{...glass,width:'min(390px,calc(100% - 28px))','max-width':'390px',padding:'22px 17px 17px',margin:'auto',position:'fixed',inset:'0',height:'fit-content','max-height':'85dvh',overflow:'auto'});
+  paint(choice.querySelector('h2'),{'font-size':'23px','line-height':'1.2',margin:'0 48px 9px 0'});text(choice.querySelector('h2'),white);
+  paint(choice.querySelector('.close'),closeStyle);
+  paint(choice.querySelector('[value="blank"]'),action);paint(choice.querySelector('[value="template"]'),{...surface,'min-height':'46px',color:white,'-webkit-text-fill-color':white});
+ }
+ if(!modal.classList.contains('open'))return;
+ const vh=window.visualViewport?.height||innerHeight;
+ const pad=Math.max(16,Math.min(54,Math.floor(vh*.065)));
+ paint(modal,{position:'fixed',inset:'0',width:'100%','height':vh+'px','max-height':vh+'px',padding:pad+'px 12px 16px','box-sizing':'border-box',display:'flex','align-items':'center','justify-content':'center',overflow:'hidden',background:'rgba(10,27,46,.57)','backdrop-filter':'none','-webkit-backdrop-filter':'none'});
+ paint(panel,{...glass,position:'relative',inset:'auto',transform:'none',width:'100%','max-width':'460px','min-height':'0',height:'auto','max-height':'100%',margin:'0',padding:'19px 16px 18px','overflow-y':'auto','overflow-x':'hidden','overscroll-behavior':'contain','scroll-padding-bottom':'18px'});
+ paint(panel.querySelector('.close'),closeStyle);
+ const title=document.getElementById('new-title');paint(title,{'font-size':'25px','line-height':'1.25','font-weight':'750',margin:'0 48px 20px 0',padding:'0','min-height':'36px'});text(title,white);
+ paint(form,{display:'flex','flex-direction':'column',gap:'12px',height:'auto','max-height':'none',overflow:'visible',margin:'0',padding:'0',background:'transparent'});
+ if(!grid.hidden)paint(grid,{display:'grid','grid-template-columns':'minmax(0,1fr)',gap:'8px',margin:'0',padding:'0',height:'auto','max-height':'none',overflow:'visible'});
+ else paint(grid,{display:'none'});
+ for(const b of grid.querySelectorAll('.sq-template-card')){
+  const active=b.getAttribute('aria-pressed')==='true';
+  paint(b,{...surface,background:active?'#204B48':navy,border:'1px solid '+(active?mint:'#355E72'),display:'flex','align-items':'center','text-align':'left',gap:'11px',width:'100%','min-height':'58px',height:'auto',padding:'10px 12px',margin:'0'});
+  const icon=b.querySelector('.sq-template-icon');paint(icon,{'font-size':'24px',width:'32px',flex:'0 0 32px',background:'transparent'});
+  const label=b.querySelector('strong'),desc=b.querySelector('small');
+  paint(label,{'font-size':'15px','line-height':'1.25','font-weight':'700'});text(label,white);
+  paint(desc,{'font-size':'12px','line-height':'1.35',margin:'3px 0 0','white-space':'normal'});text(desc,muted);
+ }
+ const tags=document.getElementById('sq-template-detail');if(tags){paint(tags,{display:tags.hidden||!tags.children.length?'none':'flex',margin:'0',gap:'5px','flex-wrap':'wrap'});for(const t of tags.children){paint(t,{background:'#204158','border-radius':'999px','font-size':'11px',padding:'4px 8px'});text(t,mint)}}
+ const currency=document.getElementById('new-currency'),name=document.getElementById('new-name');
+ paint(currency?.closest('label'),{display:'flex','flex-direction':'column',gap:'7px',margin:'0','font-size':'14px','font-weight':'650'});text(currency?.closest('label'),white);
+ for(const field of [currency,name]){paint(field,{...surface,width:'100%','min-width':'0','min-height':'46px',height:'auto','box-sizing':'border-box',padding:'11px 12px',margin:'0','font-size':'16px','color-scheme':'dark','caret-color':mint});text(field,white)}
+ const imported=document.getElementById('new-import-row');if(imported&&!imported.hidden)text(imported,white);
+ const msg=document.getElementById('new-msg');paint(msg,{margin:'0',padding:'0','font-size':'13px'});text(msg,msg.classList.contains('error')?'#FFB4B4':muted);
+ const submit=document.getElementById('new-submit');paint(submit,{...action,position:'static',inset:'auto',width:'100%',height:'auto',margin:'0',padding:'12px','font-size':'16px',opacity:submit.disabled?'.65':'1'});
+}
+function queue(){if(!frame)frame=requestAnimationFrame(sync)}
+new MutationObserver(queue).observe(modal,{attributes:true,childList:true,subtree:true,attributeFilter:['class','hidden','aria-pressed','data-start-mode','disabled']});
+new MutationObserver(queue).observe(choice,{attributes:true,attributeFilter:['open']});
+media.addEventListener('change',queue);window.addEventListener('resize',queue,{passive:true});window.visualViewport?.addEventListener('resize',queue);document.addEventListener('DOMContentLoaded',queue);queue();
 })();
 </script>
 </body>
