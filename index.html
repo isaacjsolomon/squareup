@@ -969,17 +969,25 @@ window.dwBillDueDate=function(value){
 <!-- BACKDROP MODAL -->
 <div class="modal-bg dw-standard-dialog-overlay" id="backdrop-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="backdrop-title">
-    <button type="button" class="doweo-close-control close" data-close aria-label="Close">×</button>
-    <h2 id="backdrop-title">Change Tracker Backdrop</h2>
-    <p class="hint" id="backdrop-scope"></p>
-    <div id="dw-backdrop-hero" aria-live="polite"><span></span></div>
-    <div class="backdrop-categories" id="backdrop-categories" role="group" aria-label="Backdrop categories"></div>
-    <div class="swatches" id="backdrop-swatches" style="margin-top:12px"></div>
-    <input type="file" id="backdrop-file" accept="image/*,.heic,.heif,.hif,.tif,.tiff,.avif,.gif,.bmp,.svg,.jfif,.ico" hidden>
-    <div class="tb-row" style="margin-top:12px">
-      <button type="button" class="small-btn accent" id="backdrop-upload">Upload a photo</button>
+    <header class="dw-backdrop-header">
+      <button type="button" class="doweo-close-control close" data-close aria-label="Close">
+        <span class="dw-backdrop-close-x" aria-hidden="true">×</span>
+        <svg class="dw-backdrop-back" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>
+      </button>
+      <h2 id="backdrop-title">Change Tracker Backdrop</h2>
+    </header>
+    <div class="dw-backdrop-content">
+      <div id="dw-backdrop-hero" aria-live="polite"><span></span></div>
+      <div class="backdrop-categories" id="backdrop-categories" role="group" aria-label="Backdrop categories"></div>
+      <div class="swatches" id="backdrop-swatches"></div>
+      <p class="hint" id="backdrop-scope"></p>
+      <input type="file" id="backdrop-file" accept="image/*,.heic,.heif,.hif,.tif,.tiff,.avif,.gif,.bmp,.svg,.jfif,.ico" hidden>
+      <div class="tb-row"><button type="button" class="small-btn accent" id="backdrop-upload">Upload a photo</button></div>
     </div>
-    <div class="msg" id="backdrop-msg" style="margin-top:8px"></div><div id="dw-backdrop-footer"><button type="button" id="dw-backdrop-apply">Use This Backdrop</button></div>
+    <div id="dw-backdrop-footer">
+      <div class="msg" id="backdrop-msg" role="status"></div>
+      <button type="button" id="dw-backdrop-apply">Use This Backdrop</button>
+    </div>
   </div>
 </div>
 
@@ -3582,7 +3590,8 @@ function dwRenderBackdropPreview(){
  var b=backdropState(), key=dwPendingBackdrop||b.preset, config=PRESETS[key]||PRESETS.indigo;
  var hero=$("dw-backdrop-hero"), image=key==="photo"?$("backdrop").style.backgroundImage:(config.preview||config.css);
  hero.style.setProperty("background-image",image,"important");
- hero.firstElementChild.textContent=(key===b.preset?"✓ Current Backdrop":"Preview · "+config.label);
+ hero.classList.toggle("is-current",key===b.preset);
+ hero.firstElementChild.textContent=key===b.preset?"Current Backdrop":"Preview · "+config.label;
  $("dw-backdrop-apply").disabled=dwBackdropSaving||!dwPendingBackdrop||key===b.preset;
  $("dw-backdrop-apply").textContent=dwBackdropSaving?"Saving…":"Use This Backdrop";
  $("backdrop-swatches").querySelectorAll("[data-preset]").forEach(function(btn){
@@ -3732,6 +3741,7 @@ $("btn-backdrop").onclick = function () {
   backdropCategory = (PRESETS[backdropState().preset] || PRESETS.indigo).group;
   renderBackdropPicker();
   $("backdrop-modal").classList.add("open");
+  $("backdrop-modal").querySelector(".dw-backdrop-content").scrollTop=0;
 };
 // The Account page no longer has a backdrop button; tracker cards provide it instead.
 // Keep the legacy handler optional so initialization continues on every page.
@@ -10942,7 +10952,7 @@ html body #backdrop-modal #backdrop-swatches .swatch > .dw-backdrop-preview-titl
 <link rel="stylesheet" href="/doweo-mobile-app-theme.css?v=20261124-mobile-chat-navy-v2" media="(max-width:900px)">
 <link rel="stylesheet" href="/doweo-mobile-overview.css?v=continuous-navy-v3">
 <!-- Category styling loads after legacy overrides, including mobile popup styles. -->
-<link rel="stylesheet" href="/doweo-backdrop-catalog.css?v=20261126-preview-v3">
+<link rel="stylesheet" href="/doweo-backdrop-catalog.css?v=20261126-large-preview-v4">
 <!-- Authenticated tracker settings hub design; both sections remain on one page. -->
 <link rel="stylesheet" href="/doweo-tracker-settings-hub.css?v=20261126-tracker-settings-sheet-v1">
 <style id="dw-mobile-chat-navy-release-20261124">
