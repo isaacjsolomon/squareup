@@ -159,6 +159,8 @@ body.side-collapsed .sidebar :is(.dw-rail-quick,.dw-rail-add,.dw-rail-short-labe
  html body :is(#entry-card,#receipt-card,#dw-expense-editor,.sq-bill-create-card,.sq-bill-edit-overlay .sq-premium-dialog) :is(button,input,select,textarea):focus-visible{outline:2px solid #60F1AD!important;outline-offset:2px}
  html body #receipt-card #dw-receipt-camera{display:block}
 }
+
+@media(max-width:900px){html body #sq-expense-dialog #entry-card [hidden]{display:none!important}html body #sq-expense-dialog #entry-card #dw-entry-error:not([hidden]){display:block!important;color:#FFB4B4!important;-webkit-text-fill-color:#FFB4B4!important;font-size:13px!important;line-height:1.4!important;margin:0!important}html body #sq-expense-dialog #entry-card #form button[type="submit"]{min-height:48px!important;width:100%!important}html body #sq-expense-dialog #entry-card #form select{font-size:16px!important;min-height:44px!important}}
 </style>
 
 <meta name="dw-backdrop-preset-build" content="restored-original-backdrops-20261122-v1">
@@ -276,7 +278,7 @@ window.dwBillDueDate=function(value){
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css?v=20261123-backdrop-gallery-v1">
-<meta name="doweo-release" content="doweo-mobile-expense-bills-receipt-20261126-v2">
+<meta name="doweo-release" content="doweo-entry-functional-20261126-v1">
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
@@ -491,7 +493,8 @@ window.dwBillDueDate=function(value){
       </div>
       <div class="sq-category-row" id="sq-category-wrap"><label for="sq-category">Expense category</label><select id="sq-category"><option>Food & Dining</option><option>Groceries</option><option>Transportation</option><option>Shopping</option><option>Entertainment</option><option>Travel</option><option>Housing</option><option>Utilities</option><option>School</option><option>Other</option></select></div><select id="expense-recurring" hidden aria-hidden="true"><option value="none" selected>One-time expense</option></select>
       <label id="due-date-wrap" style="display:block;margin:10px 0;color:var(--muted)">Payment due date (optional) <input id="expense-due-date" type="date" style="margin-top:6px;width:100%"></label><div class="preview" id="preview"></div>
-      <button class="primary" type="submit">Save entry</button>
+      <p id="dw-entry-error" role="alert" hidden></p>
+      <button class="primary" type="submit">Save expense</button>
     </form>
   </div>
 
@@ -1117,40 +1120,31 @@ function avatar(name, idx) {
   return '<div class="avatar" style="background:' + COLORS[idx % COLORS.length] + '">' + esc(name.charAt(0)) + "</div>";
 }
 
-function populateExpenseMembers() {
-  var members = typeof window.squareUpExpenseMembers === 'function' ? window.squareUpExpenseMembers() : [];
-  var options = members.map(function(m) {
-    return { name: String(m.name || m.email || '').trim(), id: m.id };
-  }).filter(function(m) { return m.name; });
-  // For local-only mode, keep the historical name-based behavior.
-  if (!cloud) {
-    var names = nameMap();
-    options = Object.keys(names).map(function(k) { return { name: names[k] }; });
-  }
-  ['person1','person2'].forEach(function(id) {
-    var select = document.getElementById(id);
-    if (!select) return;
-    var old = select.value;
-    var label = id === 'person1' ? 'Who owes money?' : 'Who is owed money?';
-    select.replaceChildren();
-    var placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = label;
-    select.appendChild(placeholder);
-    options.forEach(function(member) {
-      var option = document.createElement('option');
-      option.value = member.name;
-      option.textContent = member.name;
-      select.appendChild(option);
-    });
-    if (options.some(function(member) { return member.name === old; })) select.value = old;
-  });
+function sqEntryMembers(){
+ if(cloud){
+  const members=typeof window.squareUpExpenseMembers==='function'?window.squareUpExpenseMembers():[];
+  const seen=new Set();
+  return members.map(m=>({name:String(m.ledgerName||m.name||m.email||'').trim(),label:String(m.name||m.ledgerName||m.email||'').trim(),isYou:!!m.isYou})).filter(m=>{const key=norm(m.name);if(!key||seen.has(key))return false;seen.add(key);return true;});
+ }
+ const names=nameMap();return Object.keys(names).map(k=>({name:names[k],label:names[k],isYou:false}));
 }
-// Refresh options when a person opens either dropdown, including after tracker changes.
-['person1','person2'].forEach(function(id) {
-  var el = document.getElementById(id);
-  if (el) el.addEventListener('pointerdown', populateExpenseMembers);
-});
+function populateExpenseMembers(){
+ const members=sqEntryMembers(),payment=mode==='payment',mine=cloud&&payment?members.find(m=>m.isYou):null;
+ for(const id of ['person1','person2']){
+  const select=document.getElementById(id);if(!select)continue;
+  const payer=id==='person1',old=select.value,placeholder=payment?(payer?'Who paid?':'Who received the payment?'):(payer?'Who owes money?':'Who is owed money?');
+  const options=mine?members.filter(m=>payer?m.isYou:!m.isYou):members;
+  const expected=[['',placeholder],...options.map(m=>[m.name,m.isYou?'You ('+m.label+')':m.label])];
+  const existing=Array.from(select.options).map(o=>[o.value,o.textContent]);
+  if(JSON.stringify(existing)!==JSON.stringify(expected)){
+   select.replaceChildren(...expected.map(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=label;return option}));
+   if(options.some(m=>m.name===old))select.value=old;
+  }
+  if(mine&&payer)select.value=mine.name;
+  select.disabled=!!(mine&&payer);
+  select.setAttribute('aria-label',placeholder);
+ }
+}
 
 function renderSmartSettle(){
  var el=document.getElementById('smart-settle-list');if(!el)return;
@@ -1225,9 +1219,12 @@ function updatePreview() {
   var b = document.getElementById("person2").value.trim();
   var el = document.getElementById("preview");
   if (!a || !b) { el.textContent = ""; return; }
+  var people=sqEntryMembers(),label=n=>people.find(m=>m.name===n)?.label||pretty(n);
+  var amt=Number(document.getElementById("amount").value),currency=mode==="payment"?sqCurrency():document.getElementById("expense-currency").value;
   el.textContent = mode === "debt"
-    ? pretty(a) + " owes " + pretty(b)
-    : pretty(a) + " paid " + pretty(b) + " back";
+    ? label(a) + " owes " + label(b)
+    : label(a) + " paid " + label(b) + " back";
+  if(amt>0&&Number.isFinite(amt))el.textContent+=" · "+sqFormat(amt,currency);
 }
 
 // ============ ACTIONS ============
@@ -1263,35 +1260,40 @@ function addEntry(type, from, to, amount, note) {
 }
 
 var sqEntrySaveInFlight = false;
+function sqEntryError(message){const el=document.getElementById("dw-entry-error");if(el){el.textContent=message||"";el.hidden=!message;}}
 document.getElementById("form").addEventListener("submit", async function (e) {
   e.preventDefault();
   if (sqEntrySaveInFlight) return;
   var a = document.getElementById("person1").value;
   var b = document.getElementById("person2").value;
   var amt = parseFloat(document.getElementById("amount").value);
-  if (!a || !b || norm(a) === norm(b)) { alert("Choose two different tracker members."); return; }
+  sqEntryError("");
+  if (!a || !b || norm(a) === norm(b)) { sqEntryError("Choose two different tracker members."); return; }
   if (cloud) {
-    var valid = (typeof window.squareUpExpenseMembers === 'function' ? window.squareUpExpenseMembers() : []).map(function(m){ return norm(m.name || m.email || ''); });
-    if (!valid.includes(norm(a)) || !valid.includes(norm(b))) {
-      alert('Choose both people from the members of this tracker.'); return;
-    }
+    var members=sqEntryMembers(),valid=members.map(m=>norm(m.name));
+    if (!valid.includes(norm(a)) || !valid.includes(norm(b))) {sqEntryError("Choose both people from the members of this tracker.");return;}
+    if(mode==="payment"&&!members.some(m=>m.isYou&&norm(m.name)===norm(a))){sqEntryError("You can only record a payment you made.");return;}
   }
-  if (!(amt > 0)) return;
+  if (!Number.isFinite(amt)||amt<.01||Math.round(amt*100)/100<.01){sqEntryError("Enter a valid amount of at least 0.01.");return;}
   var form = e.currentTarget;
   var saveButton = form.querySelector('button[type="submit"],input[type="submit"]');
   sqEntrySaveInFlight = true;
   if (saveButton) { saveButton.disabled = true; saveButton.setAttribute('aria-busy', 'true'); }
   try {
-    var saved = await addEntry(mode, a, b, amt, document.getElementById("note").value);
+    var note=document.getElementById("note").value;
+    if(mode==="debt")note="[Category: "+document.getElementById("sq-category").value+"] "+note.replace(/^\[Category: [^\]]+\]\s*/,"").trim();
+    var saved = await addEntry(mode, a, b, amt, note);
     // A failed request must not erase the user's amount, payee, or notes.
-    if (saved === false) return;
+    if (saved === false) {sqEntryError("Entry was not saved. Check the error and try again.");return;}
     window.dwNotify?.(mode === 'payment' ? 'Payment recorded.' : 'Expense saved.','success');
     form.reset();
+    sqFillCurrencies();document.getElementById("expense-currency").value=sqCurrency();
     render();
     document.getElementById("entry-card").classList.remove("entry-open");
     document.getElementById("quick-expense").setAttribute("aria-expanded", "false");
     document.getElementById("quick-payment").setAttribute("aria-expanded", "false");
   } catch (err) {
+    sqEntryError("Could not save the entry: "+(err.message||err));
     window.dwNotify?.('Could not save the entry: ' + (err.message || err),'error');
   } finally {
     sqEntrySaveInFlight = false;
@@ -1300,25 +1302,32 @@ document.getElementById("form").addEventListener("submit", async function (e) {
 });
 
 function setMode(m) {
-  mode = m;
-  document.getElementById("mode-debt").classList.toggle("active", m === "debt");
-  document.getElementById("mode-payment").classList.toggle("active", m === "payment");
-  document.getElementById("due-date-wrap").hidden = m !== "debt";
-  document.getElementById("recurring-wrap").hidden = m !== "debt";
-  updatePreview();
+  mode=m==='payment'?'payment':'debt';
+  const payment=mode==='payment';
+  document.getElementById("mode-debt").classList.toggle("active",!payment);
+  document.getElementById("mode-payment").classList.toggle("active",payment);
+  document.getElementById("mode-debt").setAttribute("aria-pressed",String(!payment));
+  document.getElementById("mode-payment").setAttribute("aria-pressed",String(payment));
+  document.getElementById("due-date-wrap").hidden=payment;
+  document.getElementById("sq-category-wrap").hidden=payment;
+  const recurring=document.getElementById("recurring-wrap");if(recurring)recurring.hidden=payment;
+  const currency=document.getElementById("expense-currency");
+  if(!currency.options.length)sqFillCurrencies();
+  if(payment)currency.value=sqCurrency();
+  currency.disabled=payment;
+  document.getElementById("entry-title").textContent=payment?"Log Payment":"Add Expense";
+  document.querySelector('#form button[type="submit"]').textContent=payment?"Record payment":"Save expense";
+  populateExpenseMembers();sqEntryError("");updatePreview();
 }
 function showEntryForm(m) {
-  var card = document.getElementById("entry-card");
-  var wasOpen = card.classList.contains("entry-open") && mode === m;
-  card.classList.toggle("entry-open", !wasOpen);
-  if (!wasOpen) {
-    setMode(m);
-    document.getElementById("entry-title").textContent = m === "debt" ? "Add Expense" : "Log Payment";
-    card.scrollIntoView({behavior:"smooth",block:"nearest"});
-    document.getElementById("person1").focus({preventScroll:true});
-  }
-  document.getElementById("quick-expense").setAttribute("aria-expanded", String(card.classList.contains("entry-open")));
-  document.getElementById("quick-payment").setAttribute("aria-expanded", String(card.classList.contains("entry-open")));
+  if(sqEntrySaveInFlight)return;
+  const card=document.getElementById("entry-card"),modal=document.getElementById("sq-expense-dialog"),receipt=document.getElementById("sq-receipt-dialog");
+  const receiptCard=document.getElementById("receipt-card");
+  if(receipt)receipt.hidden=true;if(receiptCard)receiptCard.hidden=true;
+  card.classList.add("entry-open");setMode(m);
+  if(modal){modal.hidden=false;document.body.classList.add("sq-action-dialog-open");modal.querySelector(".sq-action-modal-inner").scrollTop=0;}
+  document.getElementById("quick-expense").setAttribute("aria-expanded",String(mode==="debt"));
+  document.getElementById("quick-payment").setAttribute("aria-expanded",String(mode==="payment"));
 }
 // Close buttons only collapse the panels; form data and tracker data are unchanged.
 document.getElementById('sq-entry-x').addEventListener('click', function () {
@@ -1339,8 +1348,7 @@ document.getElementById("quick-expense").onclick = function () { showEntryForm("
 document.getElementById("quick-payment").onclick = function () { showEntryForm("payment"); };
 document.getElementById("mode-debt").onclick = function () { setMode("debt"); };
 document.getElementById("mode-payment").onclick = function () { setMode("payment"); };
-document.getElementById("person1").addEventListener("input", updatePreview);
-document.getElementById("person2").addEventListener("input", updatePreview);
+for(const id of ["person1","person2","amount","expense-currency"]){const el=document.getElementById(id);el.addEventListener("input",updatePreview);el.addEventListener("change",updatePreview);}
 
 
 // Expense approvals are stored server-side. Only the assigned debtor can decide.
@@ -5696,12 +5704,7 @@ var form=document.getElementById('form'), note=document.getElementById('note'), 
 var paymentMode=document.getElementById('mode-payment'), debtMode=document.getElementById('mode-debt');
 function syncCategory(){var wrap=document.getElementById('sq-category-wrap');if(wrap)wrap.hidden=!!(paymentMode&&paymentMode.classList.contains('active'));}
 [paymentMode,debtMode].forEach(function(b){if(b)b.addEventListener('click',function(){setTimeout(syncCategory,0);});});syncCategory();
-// Encode category in the existing note field, so it persists through existing local and server APIs.
-// Capture phase runs before the existing submit handler, and only modifies a debt note.
-if(form)form.addEventListener('submit',function(){
- if(paymentMode&&paymentMode.classList.contains('active'))return;
- var val=note.value.replace(pattern,'').trim();note.value='[Category: '+cat.value+'] '+val;
-},true);
+// The expense submit handler now encodes the category without mutating the draft note.
 var overlay=document.getElementById('sq-details-overlay'), grid=document.getElementById('sq-details-grid');
 function close(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');}
 document.getElementById('sq-details-close').addEventListener('click',close);document.getElementById('sq-details-x').addEventListener('click',close);
@@ -8491,7 +8494,7 @@ window.squareUpOpenFinanceHub=open;
  expenseModal.firstElementChild.appendChild(entry);receiptModal.firstElementChild.appendChild(receipt);
  function hide(modal){modal.hidden=true;document.body.classList.toggle('sq-action-dialog-open',!expenseModal.hidden||!receiptModal.hidden)}
  function show(modal){hide(modal===expenseModal?receiptModal:expenseModal);modal.hidden=false;document.body.classList.add('sq-action-dialog-open')}
- function openExpense(mode){show(expenseModal);if(typeof showEntryForm==='function'){entry.classList.remove('entry-open');showEntryForm(mode)}else{entry.classList.add('entry-open')} }
+ function openExpense(mode){if(typeof showEntryForm==='function')showEntryForm(mode);else{entry.classList.add('entry-open');show(expenseModal)} }
  const expenseButton=document.getElementById('quick-expense'),paymentButton=document.getElementById('quick-payment'),receiptButton=document.getElementById('quick-receipt');
  if(expenseButton)expenseButton.onclick=function(){openExpense('debt')};
  if(paymentButton)paymentButton.onclick=function(){openExpense('payment')};
