@@ -144,6 +144,13 @@ body.side-collapsed .sidebar :is(.dw-rail-quick,.dw-rail-add,.dw-rail-short-labe
   html body #new-modal #new-currency option{background:#102B40;color:#F3F8FC}
  }
 }
+
+@media(max-width:900px){
+ html body [data-dw-mobile-form-theme][data-dw-mobile-form-theme] :is(input,textarea)::placeholder{color:#ABC6D7!important;-webkit-text-fill-color:#ABC6D7!important;opacity:1!important}
+ html body [data-dw-mobile-form-theme] :is(input,select,textarea,button):focus-visible{outline:2px solid #60F1AD!important;outline-offset:2px!important}
+ html body [data-dw-mobile-form-theme] :is(button,input,select,textarea):disabled{opacity:.55!important}
+ html body [data-dw-mobile-form-theme] select option{background:#173750!important;color:#F3F8FC!important}
+}
 </style>
 
 <meta name="dw-backdrop-preset-build" content="restored-original-backdrops-20261122-v1">
@@ -261,7 +268,7 @@ window.dwBillDueDate=function(value){
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css?v=20261123-backdrop-gallery-v1">
-<meta name="doweo-release" content="doweo-mobile-create-tracker-20261126-v1">
+<meta name="doweo-release" content="doweo-mobile-create-add-20261126-v1">
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
@@ -11852,6 +11859,76 @@ function queue(){if(!frame)frame=requestAnimationFrame(sync)}
 new MutationObserver(queue).observe(modal,{attributes:true,childList:true,subtree:true,attributeFilter:['class','hidden','aria-pressed','data-start-mode','disabled']});
 new MutationObserver(queue).observe(choice,{attributes:true,attributeFilter:['open']});
 media.addEventListener('change',queue);window.addEventListener('resize',queue,{passive:true});window.visualViewport?.addEventListener('resize',queue);document.addEventListener('DOMContentLoaded',queue);queue();
+})();
+</script>
+<script id="dw-mobile-create-add-palette-v1">
+
+(function(){
+'use strict';
+const mobile=matchMedia('(max-width:900px)');
+const navy='#102B40',ink='#0A1B2E',field='#173750',line='#355E72',white='#F3F8FC',muted='#ABC6D7',mint='#60F1AD',danger='#FFB4B4';
+const roots=[
+ '#sq-balanced-add-sheet > .sq-balanced-sheet','#dw-compact-add-menu',
+ '#entry-card','#receipt-card','#split-page','#sq-expense-dialog > .sq-action-modal-inner','#sq-receipt-dialog > .sq-action-modal-inner',
+ '.sq-bill-create-card','.sq-bill-edit-overlay .sq-premium-dialog','#sq-pay-now-panel',
+ '#settle-modal > .card.modal','#share-modal > .card.modal','#sq-ng-txn-overlay > .sq-ng-txn-dialog',
+ '#sqev-create-box','#sq-ng-workspace-create-form','#sq-ng-workspace-link-form','#dw-trip-create','#dw-trip-add-item',
+ '#dw-poll-editor','#dw-expense-editor','#sq-quick-calculator .sq-practical-modal',
+ '#sq-next-bill-form','#sq-next-trip-form','#sq-wish-form','#sq-budget-form'
+].join(',');
+const saved=new Map(),marked=new Set();
+function paint(el,properties){
+ if(!el)return;if(!saved.has(el))saved.set(el,new Map());const record=saved.get(el);
+ for(const [key,value] of Object.entries(properties)){
+  if(!record.has(key))record.set(key,[el.style.getPropertyValue(key),el.style.getPropertyPriority(key)]);
+  if(el.style.getPropertyValue(key)!==value||el.style.getPropertyPriority(key)!=='important')el.style.setProperty(key,value,'important');
+ }
+}
+function restore(){for(const [el,properties] of saved)for(const [key,[value,priority]] of properties){if(value)el.style.setProperty(key,value,priority);else el.style.removeProperty(key)}saved.clear();for(const el of marked)el.removeAttribute('data-dw-mobile-form-theme');marked.clear()}
+function color(el,value){paint(el,{color:value,'-webkit-text-fill-color':value,'text-shadow':'none'})}
+function surface(el,background=navy){paint(el,{background,'border-color':line,'box-shadow':'none'});color(el,white)}
+function all(root,selector,fn){root.querySelectorAll(selector).forEach(fn)}
+function active(el){return el.matches('[aria-pressed="true"],[aria-selected="true"],.active,.selected,.is-active,.is-selected,[data-selected="true"]')}
+const textSelector='h1,h2,h3,h4,label,legend,strong,b,p,small,.sq-bill-section-label,.sq-bill-people-title,.sq-receipt-section-title,.sq-pay-method-label,.split-summary-line,.split-message,.sq-balanced-icon';
+const nested='.split-panel,.receipt-scan-box,.sq-receipt-section,.sq-receipt-preview,.sq-receipt-tip-settings,.sq-receipt-fix,.sq-bill-assign,.sq-icon-picker,.sq-bill-people-group,.preview,#sq-pay-now-summary,#sq-pay-now-remaining,.sq-ng-txn-tabs,.sq-ng-txn-form fieldset,fieldset,.sq-balanced-actions > button,.dw-trip-row,.sqev-grid';
+const primary='button.primary,button.sq-ng-primary,button.sqev-primary,button.dw-trip-primary,button.sq-pay-primary,button.split-save,#dw-split-step-next,#receipt-save,#sq-pay-now-continue,#sq-bills-create > button[type="submit"],#sq-ng-workspace-create-form button[type="submit"],#sq-ng-workspace-link-form button[type="submit"],#dw-poll-editor button[type="submit"]:not([value="cancel"]),#dw-expense-editor button[type="submit"]:not([value="cancel"]),#sq-next-bill-form button[type="submit"],#sq-next-trip-form button[type="submit"],#sq-wish-form button[type="submit"]';
+const fields='input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not([type="range"]):not([type="button"]):not([type="submit"]),select,textarea';
+const status='[role="alert"],.error,.msg.error,#sq-pay-now-error,.sq-ng-txn-feedback.error,.split-message.error,[aria-invalid="true"]';
+function apply(root){
+ if(!marked.has(root)){marked.add(root);root.setAttribute('data-dw-mobile-form-theme','')}
+ surface(root,root.id==='split-page'?'transparent':'linear-gradient(155deg,rgba(16,43,64,.97),rgba(10,27,46,.96))');
+ paint(root,{'color-scheme':'dark','--text':white,'--muted':muted,'--text-muted':muted,'--surface':navy,'--border':line});
+ all(root,nested,el=>surface(el,field));
+ all(root,textSelector,el=>color(el,el.matches('small,.sq-receipt-hint,.split-message,.sq-bills-help')?muted:white));
+ all(root,'.sq-receipt-hint,.sq-bills-help,.feature-muted,.sq-pay-note,.sq-ng-txn-feedback,.sq-ng-muted,.sq-receipt-kicker,.sq-receipt-status,.dw-trip-status',el=>color(el,muted));
+ all(root,fields,el=>{surface(el,field);paint(el,{'color-scheme':'dark','caret-color':mint,'border-color':el.getAttribute('aria-invalid')==='true'?danger:line})});
+ all(root,'input[type="checkbox"],input[type="radio"]',el=>paint(el,{'accent-color':mint}));
+ all(root,'button',el=>{
+  if(el.closest('#sq-icon-grid')||el.matches('.sq-icon-trigger'))return;
+  const destructive=el.matches('.danger,.danger-btn,.delete,.destructive,[data-danger],[data-delete],[data-remove]')||/^(delete|remove|clear receipt|log out)\b/i.test(el.textContent.trim());
+  const isPrimary=!destructive&&(el.matches(primary)||active(el));
+  surface(el,isPrimary?mint:field);color(el,destructive?danger:isPrimary?ink:white);
+  if(destructive)paint(el,{'border-color':'#A7606A'});
+  else if(isPrimary)paint(el,{'border-color':mint});
+  all(el,'span,strong,small',child=>{if(!child.matches('.sq-balanced-icon'))color(child,destructive?danger:isPrimary?ink:child.tagName==='SMALL'?muted:white)});
+  if(el.matches('.sq-balanced-actions > button'))all(el,'.sq-balanced-icon',icon=>{surface(icon,navy);color(icon,mint)});
+ });
+ all(root,status,el=>{if(el.matches('input,select,textarea'))paint(el,{'border-color':danger});else color(el,danger)});
+ all(root,'.sq-bill-step',el=>{surface(el,mint);color(el,ink)});
+}
+let frame=0;
+function sync(){
+ frame=0;if(!mobile.matches){if(saved.size)restore();return}
+ for(const el of saved.keys())if(!el.isConnected)saved.delete(el);
+ for(const el of marked)if(!el.isConnected)marked.delete(el);
+ const matches=[...document.querySelectorAll(roots)];
+ for(const el of matches)if(!matches.some(other=>other!==el&&other.contains(el)))apply(el);
+ // Nested form surfaces must retain their own styling even when moved into an existing modal.
+ for(const el of matches)if(el.matches('#entry-card,#receipt-card,#split-page,.sq-bill-create-card'))apply(el);
+}
+function queue(){if(!frame)frame=requestAnimationFrame(sync)}
+new MutationObserver(records=>{if(!mobile.matches)return;if(records.some(r=>r.target===document.body||r.target.closest?.(roots)||[...r.addedNodes].some(n=>n.nodeType===1&&(n.matches?.(roots)||n.querySelector?.(roots)))))queue()}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class','aria-pressed','aria-selected','aria-invalid','open','data-selected']});
+mobile.addEventListener('change',queue);window.addEventListener('pageshow',queue);document.addEventListener('DOMContentLoaded',queue);queue();
 })();
 </script>
 </body>
