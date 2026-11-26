@@ -11172,6 +11172,60 @@ html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
  }
 }
 
+
+/* Mobile Trackers flat surfaces */
+.sq-archive-toggle :is(.dw-archive-icon,.dw-archive-chevron){display:none}
+
+@media(max-width:900px){
+  html body.trackers-view:not(.sq-bills-open) .wrap > .sq-mobile-top{
+    background:#0A2335!important;box-shadow:none!important;
+    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border-radius:11px!important
+  }
+  html body.trackers-view:not(.sq-bills-open) #dw-trackers-toolbar{
+    margin:12px 0 19px
+  }
+  #dw-trackers-toolbar .dw-trackers-title{margin-bottom:16px}
+  html body #dw-trackers-toolbar h2{font-size:clamp(27px,8vw,34px);font-weight:760}
+  html body #dw-trackers-toolbar #dw-trackers-new{
+    min-height:43px!important;font-size:14px!important;border-radius:12px!important
+  }
+  .dw-trackers-search-field{position:relative}
+  .dw-trackers-search-field svg{
+    position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#ABC6D7;pointer-events:none;z-index:1
+  }
+  html body #dw-trackers-toolbar #dw-trackers-search{
+    padding-inline:45px 13px!important;border-radius:12px!important;font-size:15px!important
+  }
+  html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile{
+    box-sizing:border-box!important;border-radius:16px!important;padding:14px!important
+  }
+  html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile.dw-featured-tracker{
+    padding:16px 19px!important;border-radius:18px!important
+  }
+  html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile.dw-featured-tracker h3{
+    font-size:23px!important
+  }
+  #trackers-gallery .dw-featured-tracker .dw-trackers-icon{width:40px;height:40px}
+  #trackers-gallery .dw-trackers-icon{border-radius:11px}
+  html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile .tracker-avatars{gap:4px}
+  html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile .tracker-avatar{
+    margin-left:0!important;border-width:1px!important;width:23px!important;height:23px!important;min-width:23px!important
+  }
+  html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile.dw-featured-tracker .tile-open{
+    border-radius:12px!important;font-weight:750!important
+  }
+  html body.trackers-view #trackers-page #trackers-gallery .dw-trackers-collection-heading{
+    padding:11px 0 2px
+  }
+  html body.trackers-view #trackers-page #trackers-gallery>.sq-archive-toggle{
+    width:100%!important;min-height:44px!important;box-sizing:border-box!important;
+    display:flex!important;align-items:center;gap:13px;padding:9px 15px!important;
+    border-radius:12px!important;font-size:14px!important;font-weight:500!important;text-align:start
+  }
+  #trackers-gallery .sq-archive-toggle :is(.dw-archive-icon,.dw-archive-chevron){display:block;flex:none}
+  #trackers-gallery .dw-archive-chevron{margin-inline-start:auto}
+  #trackers-gallery .sq-archive-toggle[aria-expanded="true"] .dw-archive-chevron{transform:rotate(90deg)}
+}
 </style>
 
 <script id="dw-workspace-layout-runtime-v6">
@@ -11911,60 +11965,6 @@ if(typeof ResizeObserver==='function'){const ro=new ResizeObserver(queue);if(hea
 queue();
 })();
 </script>
-<style id="dw-mobile-trackers-flat-v1">
-.sq-archive-toggle :is(.dw-archive-icon,.dw-archive-chevron){display:none}
-
-@media(max-width:900px){
-  html body.trackers-view:not(.sq-bills-open) .wrap > .sq-mobile-top{
-    background:#0A2335!important;box-shadow:none!important;
-    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border-radius:11px!important
-  }
-  html body.trackers-view:not(.sq-bills-open) #dw-trackers-toolbar{
-    margin:12px 0 19px
-  }
-  #dw-trackers-toolbar .dw-trackers-title{margin-bottom:16px}
-  html body #dw-trackers-toolbar h2{font-size:clamp(27px,8vw,34px);font-weight:760}
-  html body #dw-trackers-toolbar #dw-trackers-new{
-    min-height:43px!important;font-size:14px!important;border-radius:12px!important
-  }
-  .dw-trackers-search-field{position:relative}
-  .dw-trackers-search-field svg{
-    position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#ABC6D7;pointer-events:none;z-index:1
-  }
-  html body #dw-trackers-toolbar #dw-trackers-search{
-    padding-inline:45px 13px!important;border-radius:12px!important;font-size:15px!important
-  }
-  html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile{
-    box-sizing:border-box!important;border-radius:16px!important;padding:14px!important
-  }
-  html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile.dw-featured-tracker{
-    padding:16px 19px!important;border-radius:18px!important
-  }
-  html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile.dw-featured-tracker h3{
-    font-size:23px!important
-  }
-  #trackers-gallery .dw-featured-tracker .dw-trackers-icon{width:40px;height:40px}
-  #trackers-gallery .dw-trackers-icon{border-radius:11px}
-  html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile .tracker-avatars{gap:4px}
-  html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile .tracker-avatar{
-    margin-left:0!important;border-width:1px!important;width:23px!important;height:23px!important;min-width:23px!important
-  }
-  html body.trackers-view #trackers-page #trackers-gallery>.tracker-tile.dw-featured-tracker .tile-open{
-    border-radius:12px!important;font-weight:750!important
-  }
-  html body.trackers-view #trackers-page #trackers-gallery .dw-trackers-collection-heading{
-    padding:11px 0 2px
-  }
-  html body.trackers-view #trackers-page #trackers-gallery>.sq-archive-toggle{
-    width:100%!important;min-height:44px!important;box-sizing:border-box!important;
-    display:flex!important;align-items:center;gap:13px;padding:9px 15px!important;
-    border-radius:12px!important;font-size:14px!important;font-weight:500!important;text-align:start
-  }
-  #trackers-gallery .sq-archive-toggle :is(.dw-archive-icon,.dw-archive-chevron){display:block;flex:none}
-  #trackers-gallery .dw-archive-chevron{margin-inline-start:auto}
-  #trackers-gallery .sq-archive-toggle[aria-expanded="true"] .dw-archive-chevron{transform:rotate(90deg)}
-}
-</style>
 <script id="dw-mobile-trackers-palette-v1">
 
 (function(){
