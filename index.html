@@ -6461,15 +6461,36 @@ document.addEventListener('click',function(event){var trigger=event.target.close
      else if(!e.shiftKey&&i===nodes.length-1){e.preventDefault();nodes[0].focus();}
    }
  });
+ const auth=document.getElementById('auth-modal');
+ const setup=document.getElementById('onboarding-page');
+ function onboardingVisible(){
+   return Boolean(auth.getClientRects().length || setup.getClientRects().length ||
+     document.documentElement.classList.contains('sq-auth-loading'));
+ }
+ let timer=null;
+ function schedule(){
+   if(onboardingVisible()){
+     clearTimeout(timer);
+     timer=null;
+     invite.hidden=true;
+   }else if(!shown && timer===null){
+     timer=setTimeout(show,20000);
+   }
+ }
  function show(){
-   if(shown)return;
+   timer=null;
+   if(shown || onboardingVisible())return;
    shown=true;
    try{sessionStorage.setItem(key,'yes');}catch(e){}
    previousFocus=document.activeElement;
    invite.hidden=false;
    invite.querySelector('.sq-ig-x').focus();
  }
- setTimeout(show,20000);
+ const observer=new MutationObserver(schedule);
+ for(const element of [document.documentElement,document.body,auth,setup]){
+   observer.observe(element,{attributes:true,attributeFilter:['class','hidden','style']});
+ }
+ schedule();
 })();
 </script>
 
@@ -11310,7 +11331,7 @@ html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
  new MutationObserver(labels).observe(nav,{childList:true,subtree:true});desktop.addEventListener('change',refresh);document.addEventListener('DOMContentLoaded',labels);labels();
 })();
 </script>
-<link rel="stylesheet" href="/doweo-ocean-welcome.css?v=1">
+<link rel="stylesheet" href="/doweo-ocean-welcome.css?v=2">
 <script>
 try {
   const provider = localStorage.getItem("doweo-last-provider");

@@ -42,3 +42,23 @@ html body #auth-modal.ocean-welcome :is(#auth-tabs,.sq-auth-divider,#auth-form) 
 .ocean-last-used { font-size: .72em; margin-inline-start: 8px; border: 1px solid currentColor; padding: 2px 5px; border-radius: 6px; }
 html body #auth-modal.ocean-welcome:has(#auth-msg:not(:empty)) #auth-form { display: block !important; }
 html body #auth-modal.ocean-welcome #auth-form > :not(#auth-msg) { display: none !important; }
+
+@layer dwDesktopRail {
+  @media (max-width: 900px) {
+    html body #auth-modal #auth-form #sq-auth-swap-copy { display: none !important; }
+    html body #auth-modal #auth-form :is(#sq-auth-eye, #auth-forgot) {
+      box-sizing: border-box !important;
+      flex: 0 0 auto !important;
+      width: max-content !important;
+      max-width: 100% !important;
+      height: auto !important;
+      min-height: 32px !important;
+      padding: 6px 12px !important;
+      line-height: 1.25 !important;
+      border-radius: 999px !important;
+      background: #102b40 !important;
+      color: #f3f8fc !important;
+      -webkit-text-fill-color: #f3f8fc !important;
+    }
+  }
+}
