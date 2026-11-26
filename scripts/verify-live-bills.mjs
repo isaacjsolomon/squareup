@@ -6,7 +6,15 @@ const hash=s=>createHash('sha256').update(s).digest('hex');
 const localIndex=readFileSync('.pages-output/index.html','utf8');
 for(let attempt=0;attempt<12;attempt++){
  try{
-  const index=await fetch(origin+'/',{cache:'no-store'}).then(r=>r.text());
+  const release=localIndex.match(/<meta name="doweo-release" content="([^"]+)">/)?.[1];
+  if(!release)throw Error('Missing production release marker');
+  for(const base of [origin,'https://doweo.pages.dev']){
+   const response=await fetch(base+'/?release='+encodeURIComponent(release),{cache:'no-store'});
+   if(!response.ok)throw Error('Production HTTP '+response.status+': '+base);
+   const html=await response.text();
+   if(!html.includes('content="'+release+'"')||!html.includes('id="dw-bills-navy-floating-v1"')||!html.includes('id="dw-bills-navy-floating-script-v1"'))throw Error('Mobile Bills release not published at '+base);
+  }
+  const index=await fetch(origin+'/?release='+encodeURIComponent(release),{cache:'no-store'}).then(r=>r.text());
   for(const file of ['doweo-bills-mobile-dashboard.css','doweo-bills-mobile-dashboard.js']){
    const ref=localIndex.match(new RegExp(file.replaceAll('.','\\.')+'\\?v=[^"\\s]+'))[0];
    if(!index.includes(ref))throw Error('Production index is not the new version: '+ref);
