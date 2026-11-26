@@ -438,3 +438,32 @@ html body .tracker-tile-menu-panel .tracker-settings-view.dw-tracker-settings-hu
 }
 
 }
+
+/* Mobile settings must sit above its own scrim, not behind its blur. */
+@media (max-width:900px){
+ html body .dw-ts-scrim{
+   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+   background:rgba(3,16,31,.48)!important;
+   z-index:99998!important;
+ }
+ html body .tracker-tile-menu-panel.tracker-tile-menu-panel:has(> .dw-tracker-settings-hub:not([hidden])){
+   position:fixed!important;inset:auto!important;left:50%!important;top:50%!important;
+   transform:translate(-50%,-50%)!important;margin:0!important;
+   width:min(480px,calc(100vw - 24px))!important;
+   max-height:calc(100dvh - 112px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important;
+   overflow-y:auto!important;overflow-x:hidden!important;
+   z-index:100000!important;filter:none!important;
+   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+   opacity:1!important;visibility:visible!important;pointer-events:auto!important;
+ }
+ html body .tracker-tile-menu-panel[popover]::backdrop{
+   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+   background:transparent!important;pointer-events:none!important;
+ }
+ html body .tracker-tile-menu-panel .dw-tracker-settings-hub:not([hidden]) .dw-ts-close{
+   display:inline-flex!important;align-items:center;justify-content:center;
+   margin-left:auto!important;min-height:44px;padding:0 12px;
+   background:#173750!important;color:#F3F8FC!important;
+   border:1px solid #355E72!important;border-radius:10px;
+ }
+}
