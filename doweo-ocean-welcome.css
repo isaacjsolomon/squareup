@@ -44,21 +44,42 @@ html body #auth-modal.ocean-welcome:has(#auth-msg:not(:empty)) #auth-form { disp
 html body #auth-modal.ocean-welcome #auth-form > :not(#auth-msg) { display: none !important; }
 
 @layer dwDesktopRail {
-  @media (max-width: 900px) {
-    html body #auth-modal #auth-form #sq-auth-swap-copy { display: none !important; }
-    html body #auth-modal #auth-form :is(#sq-auth-eye, #auth-forgot) {
-      box-sizing: border-box !important;
-      flex: 0 0 auto !important;
-      width: max-content !important;
-      max-width: 100% !important;
-      height: auto !important;
-      min-height: 32px !important;
-      padding: 6px 12px !important;
-      line-height: 1.25 !important;
-      border-radius: 999px !important;
-      background: #102b40 !important;
-      color: #f3f8fc !important;
-      -webkit-text-fill-color: #f3f8fc !important;
-    }
+  #auth-modal #auth-form #sq-auth-swap-copy { display: none !important; }
+  #auth-modal #auth-tabs button,
+  #auth-modal #sq-auth-invite {
+    background: #f3f8fc !important;
+    color: #102b40 !important;
+    -webkit-text-fill-color: #102b40 !important;
+  }
+  #auth-modal #auth-tabs button.active {
+    background: #102b40 !important;
+    color: #fff !important;
+    -webkit-text-fill-color: white !important;
+  }
+  #auth-modal #sq-auth-invite { border: 1px solid #355e72 !important; }
+  #auth-modal #auth-form :is(#auth-forgot,#sq-auth-eye) {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: inherit !important;
+    -webkit-text-fill-color: currentColor !important;
+  }
+  #auth-modal #auth-form #auth-forgot {
+    text-decoration: underline !important;
+    text-underline-offset: .2em;
+    padding: 6px 0 !important;
+  }
+  #auth-modal #auth-form #sq-auth-eye {
+    display: grid !important;
+    place-items: center;
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    flex: none;
+  }
+  #auth-modal #sq-auth-eye[aria-pressed="false"] .eye-slash { display: none; }
+  #auth-modal .sq-auth-brand, #auth-modal .sq-auth-brand img {
+    filter: none !important;
+    text-shadow: none !important;
   }
 }

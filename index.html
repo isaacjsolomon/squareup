@@ -795,7 +795,7 @@ window.dwBillDueDate=function(value){
   </section>
   <section class="sq-auth-right" aria-label="Sign in or create your DoWeo account">
    <button type="button" class="doweo-close-control close" id="auth-close" aria-label="Close account screen">×</button>
-   <div class="sq-auth-brand"><img src="/icons/icon-192.png?v=doweo-mobile-brand-v3" width="46" height="46" alt="DoWeo logo"><strong>DoWeo</strong></div>
+   <div class="sq-auth-brand"><img src="/icons/icon-512.png?v=doweo-mobile-brand-v3" width="46" height="46" alt="DoWeo logo"><strong>DoWeo</strong></div>
    <div class="sq-auth-form-panel">
     <h1 id="auth-title">Welcome to DoWeo</h1>
     <p id="sq-auth-subtitle">Sign in to your account or create a new one to get started.</p>
@@ -816,12 +816,11 @@ window.dwBillDueDate=function(value){
     <form id="auth-form">
      <div class="sq-auth-field" id="sq-auth-name-wrap" hidden><span aria-hidden="true">♙</span><input id="auth-name" aria-label="Your name" placeholder="Your name" autocomplete="name" hidden></div>
      <div class="sq-auth-field" id="sq-auth-email-wrap"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></span><input id="auth-email" type="email" aria-label="Email address" placeholder="Email address" autocomplete="email" required></div>
-     <div class="sq-auth-field" id="sq-auth-password-wrap"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><input id="auth-password" type="password" aria-label="Password" placeholder="Password" autocomplete="current-password" required minlength="6"><button type="button" id="sq-auth-eye" aria-label="Show password" aria-pressed="false">Show</button></div>
+     <div class="sq-auth-field" id="sq-auth-password-wrap"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><input id="auth-password" type="password" aria-label="Password" placeholder="Password" autocomplete="current-password" required minlength="6"><button type="button" id="sq-auth-eye" aria-label="Show password" aria-controls="auth-password" aria-pressed="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="m3 3 18 18"/></svg></button></div>
      <div class="sq-auth-forgot-row"><button type="button" class="link-btn" id="auth-forgot">Forgot password?</button></div>
      <div class="msg" id="auth-msg" role="status" aria-live="polite"></div>
      <button type="button" id="auth-resend" class="link-btn" hidden style="margin:8px auto 12px;font-weight:700;text-decoration:underline">Resend confirmation email</button>
      <button class="primary sq-auth-submit" type="submit" id="auth-submit">Continue with email <span aria-hidden="true">→</span></button>
-     <button type="button" id="sq-auth-alternative">Create account</button>
      <p id="sq-auth-swap-copy">Don't have an account? <button type="button" id="sq-auth-swap">Create one</button></p>
      <p id="sq-auth-legal-note" hidden>Before registering, review the <button type="button" class="sq-legal-inline" data-open-legal="terms">Terms of Service</button> and <button type="button" class="sq-legal-inline" data-open-legal="privacy">Privacy Policy</button>. These documents are drafts pending review.</p>
     </form>
@@ -1665,13 +1664,14 @@ function setAuthMode(m) {
   var submits = { login: "Log in", signup: "Create account", forgot: "Send reset link", reset: "Save password" };
   $("auth-title").textContent = (m === "login" || m === "signup") ? "Welcome to DoWeo" : titles[m];
   $("sq-auth-subtitle").textContent = m === "login" ? "Sign in to your account or create a new one to get started." : m === "signup" ? "Create your account and start sharing expenses with friends." : m === "forgot" ? "Enter your email address and we'll send you a reset link." : "Choose a new password for your DoWeo account.";
-  $("sq-auth-alternative").hidden = m !== "login";
   $("sq-auth-swap-copy").hidden = m === "forgot" || m === "reset";
   $("sq-auth-swap-copy").firstChild.textContent = m === "signup" ? "Already have an account? " : "Don't have an account? ";
   $("sq-auth-swap").textContent = m === "signup" ? "Sign in" : "Create one";
   $("auth-submit").textContent = (m === "login" || m === "signup") ? "Continue with email →" : submits[m];
   $("auth-tabs").hidden = m === "forgot" || m === "reset";
   $("auth-submit").hidden = false;
+  $("tab-login").setAttribute("aria-pressed",String(m==="login"));
+  $("tab-signup").setAttribute("aria-pressed",String(m==="signup"));
   $("tab-login").classList.toggle("active", m === "login");
   $("tab-signup").classList.toggle("active", m === "signup");
   $("sq-auth-legal-note").hidden = m !== "signup";
@@ -1683,7 +1683,6 @@ function setAuthMode(m) {
   $("auth-password").hidden = m === "forgot";
   $("sq-auth-password-wrap").hidden = m === "forgot";
   $("auth-password").type = "password";
-  $("sq-auth-eye").textContent = "Show";
   $("sq-auth-eye").setAttribute("aria-pressed","false");
   $("auth-password").required = m !== "forgot";
   $("auth-password").placeholder = m === "reset" ? "New password" : "Password";
@@ -1776,11 +1775,10 @@ $("btn-change-pw").onclick = function () {
   if (currentUser && currentUser.email) $("auth-email").value = currentUser.email;
   $("auth-submit").focus();
 };
-$("sq-auth-alternative").onclick = function(){setAuthMode("signup");$("auth-name").focus();};
 $("sq-auth-swap").onclick = function(){setAuthMode(authMode==="signup"?"login":"signup");(authMode==="signup"?$("auth-name"):$("auth-email")).focus();};
 $("sq-auth-eye").onclick = function(){
  var pass=$("auth-password"),show=pass.type==="password";
- pass.type=show?"text":"password";this.textContent=show?"Hide":"Show";this.setAttribute("aria-pressed",String(show));
+ pass.type=show?"text":"password";this.setAttribute("aria-pressed",String(show));
 };
 $("sq-auth-invite").onclick = function(){var form=$("sq-auth-invite-form");form.hidden=!form.hidden;if(!form.hidden)$("sq-auth-invite-input").focus();};
 $("sq-auth-invite-form").addEventListener("submit",function(e){
@@ -11331,7 +11329,7 @@ html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
  new MutationObserver(labels).observe(nav,{childList:true,subtree:true});desktop.addEventListener('change',refresh);document.addEventListener('DOMContentLoaded',labels);labels();
 })();
 </script>
-<link rel="stylesheet" href="/doweo-ocean-welcome.css?v=2">
+<link rel="stylesheet" href="/doweo-ocean-welcome.css?v=3">
 <script>
 try {
   const provider = localStorage.getItem("doweo-last-provider");
