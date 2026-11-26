@@ -2,14 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-test('tracker settings render six semantic line icons instead of character glyphs',()=>{
+test('tracker settings render semantic line icons instead of character glyphs',()=>{
   for(const label of ['Change banner','Change tracker backdrop','Rename tracker','Archive tracker','Manage permissions','Expense approval']){
     assert.ok(html.includes("'"+label+"':"),'missing icon for '+label);
     assert.ok(html.includes("'"+label+"'"),'missing action '+label);
   }
   assert.match(html,/glyph\.innerHTML='<svg viewBox=/);
   assert.match(html,/aria-hidden="true" focusable="false"/);
-  assert.match(html,/id="dw-tracker-settings-icons"/);
+  assert.ok(html.includes("trackerSettingsIconPaths[label==='Change tracker backdrop'?'Change banner':label]"));
 });
 test('existing tracker settings handlers and compact drawer are preserved',()=>{
   assert.match(html,/function settingsAction\(icon,label,fn\)/);

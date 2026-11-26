@@ -2,117 +2,91 @@ import assert from 'node:assert/strict';
 import {mkdirSync} from 'node:fs';
 import {chromium} from 'playwright';
 
-// Production CSS browser check. No login, tracker writes, or private data needed.
-// Recreate the markup emitted by the actual tracker settings renderer on doweo.app,
-// then inspect computed styles at realistic desktop/mobile viewport widths.
 const base=(process.env.HOME_BASE_URL||'https://doweo.app').replace(/\/$/,'');
-const browser=await chromium.launch({headless:true});
+const version='20261126-tracker-settings-sheet-v1';
+const browser=await chromium.launch({
+  executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined,
+});
 mkdirSync('test-results/tracker-settings',{recursive:true});
+
 try{
-  for(const width of [390,1280]){
-    const mobile=width<700;
-    const page=await browser.newPage({viewport:{width,height:mobile?844:900},deviceScaleFactor:1});
-    await page.goto(base+'/?verify=tracker-settings-hub-v2',{waitUntil:'domcontentloaded',timeout:45000});
-    await page.waitForFunction(() => [...document.styleSheets].some(sheet =>
-      sheet.href && sheet.href.includes('doweo-tracker-settings-hub.css?v=20261124-centered-popup-v3')
-    ),null,{timeout:25000});
-    if(!mobile){
-      // Exercise the deployed gallery renderer with one local tracker fixture.
-      const html=await page.locator('script[type=module]').allTextContents();
-      const start="var menu=document.createElement('details');menu.className='tracker-tile-menu';";
-      const end='banner.append(menu);';
-      const source=html.find(code=>code.includes(start));
-      assert.ok(source?.includes(end),'Gallery renderer missing');
-      const renderer=source.slice(source.indexOf(start),source.indexOf(end,source.indexOf(start))+end.length);
-      await page.addScriptTag({content:`{
-        const t={id:'fixture',name:'Example',role:'owner'},d={},i=0;
-        const banner=document.createElement('div');document.body.append(banner);
+  for(const [width,height] of [[390,844],[320,568],[1280,900]]){
+    const mobile=width<=900;
+    const page=await browser.newPage({viewport:{width,height},deviceScaleFactor:1});
+    await page.goto(base+'/?verify='+version,{waitUntil:'domcontentloaded',timeout:45000});
+    await page.waitForFunction(version=>[...document.styleSheets].some(sheet=>
+      sheet.href?.includes('doweo-tracker-settings-hub.css?v='+version)
+    ),version,{timeout:25000});
+
+    // Exercise the deployed renderer with a local tracker and stubbed side effects.
+    const start="var menu=document.createElement('details');menu.className='tracker-tile-menu';";
+    const end='banner.append(menu);';
+    const scripts=await page.locator('script[type=module]').allTextContents();
+    const source=scripts.find(code=>code.includes(start));
+    const offset=source?.indexOf(start);
+    const stop=source?.indexOf(end,offset);
+    assert.ok(stop>offset,'Tracker settings renderer missing');
+    const renderer=source.slice(offset,stop+end.length);
+    await page.evaluate(renderer=>{
+      const mount=document.createElement('div');
+      document.body.append(mount);
+      const dock=document.querySelector('.sq-mobile-nav');
+      if(dock) dock.style.setProperty('visibility','visible','important');
+      new Function('mount',`
+        const t={id:'fixture',name:'Baja Trip 🌴',role:'owner'},d={members:Array(6)},i=0;
+        const banner=document.createElement('div');mount.append(banner);
+        const sqBannerGet=async()=>null;
+        const sqBannerApply=thumb=>{thumb.style.backgroundImage='linear-gradient(#204158,#173750)';};
+        const sqBannerEdit=()=>{mount.dataset.action='banner';};
+        const sqManagePermissions=()=>{mount.dataset.action='permissions';};
+        const removeTracker=()=>{mount.dataset.action='delete';return false;};
+        let current;
+        const openTracker=id=>{current={id};};
+        const settingsRoute=route=>{mount.dataset.route=route;};
         ${renderer}
+        mount.id='tracker-settings-fixture';
         menu.open=true;
-      }`});
-      const entry=page.locator('body > .tracker-tile-menu-panel .tracker-settings-entry');
-      await entry.evaluate(button=>button.click());
-      const popup=page.getByRole('dialog',{name:'Tracker settings'});
-      const geometry=await popup.evaluate(panel=>{
-        const rect=panel.getBoundingClientRect(),css=getComputedStyle(panel);
-        return {dx:rect.left+rect.width/2-innerWidth/2,dy:rect.top+rect.height/2-innerHeight/2,
-          width:rect.width,filter:css.filter,backdrop:css.backdropFilter,topLayer:panel.matches(':popover-open')};
-      });
-      assert.ok(Math.abs(geometry.dx)<=1 && Math.abs(geometry.dy)<=1,JSON.stringify(geometry));
-      assert.equal(geometry.width,360);assert.equal(geometry.filter,'none');
-      assert.equal(geometry.backdrop,'none');assert.ok(geometry.topLayer);
-      await page.screenshot({path:'test-results/tracker-settings/desktop.png'});
-      await popup.getByRole('button',{name:'Close tracker settings'}).click();
-      await popup.waitFor({state:'hidden'});
-      console.log('Desktop popup centered, sharp, and dismissed',geometry);
-      await page.close();
-      continue;
-    }
-    const state=await page.evaluate(()=>{
-      const menu=document.createElement('div');
-      menu.className='tracker-tile-menu-panel';
-      menu.style.cssText='position:fixed;z-index:100000;box-sizing:border-box;left:12px;top:12px;right:auto;overflow-y:auto;max-height:calc(100dvh - 24px);';
-      const sidebar=window.innerWidth>=900?270:0;
-      const width=Math.min(880,window.innerWidth-sidebar-24);
-      menu.style.width=width+'px';
-      menu.style.left=(sidebar+(window.innerWidth-sidebar-width)/2)+'px';
-      const view=document.createElement('div');
-      view.className='tracker-settings-view dw-tracker-settings-hub';
-      const top=document.createElement('header');top.className='dw-ts-top';
-      top.innerHTML='<button class="tracker-settings-back" type="button">‹</button><h2>Tracker settings</h2>';
-      const nav=document.createElement('nav');nav.className='dw-ts-section-links';
-      nav.innerHTML='<button class="dw-ts-section-link dw-ts-section-link-active">Appearance</button><button class="dw-ts-section-link">Management</button>';
-      const appearance=document.createElement('section');appearance.className='sq-tracker-settings-group dw-ts-appearance';
-      appearance.innerHTML='<div class="dw-ts-appearance-heading"><span class="dw-ts-appearance-icon"></span><div class="dw-ts-appearance-heading-copy"><h3>Appearance</h3><p>Customize how your tracker looks across DoWeo.</p></div></div>';
-      for(const [title,hint,type] of [
-        ['Change banner',"Update the tracker's header banner.",'banner'],
-        ['Change tracker backdrop','Set a new backdrop for this tracker.','backdrop']
-      ]){
-        const btn=document.createElement('button');btn.className='tracker-menu-action sq-tracker-settings-action dw-ts-appearance-action';
-        btn.innerHTML='<span class="tracker-menu-glyph"></span><span class="tracker-menu-words"><span></span><small></small></span><span class="dw-ts-appearance-preview dw-ts-'+type+'-preview"><span class="dw-ts-preview-layer"></span></span><span class="tracker-menu-chevron">›</span>';
-        btn.querySelector('.tracker-menu-words>span').textContent=title;
-        btn.querySelector('small').textContent=hint;
-        appearance.append(btn);
-      }
-      const management=document.createElement('section');management.className='sq-tracker-settings-group dw-ts-management';
-      management.innerHTML='<h3 class="sq-tracker-settings-group-title dw-ts-management-heading">Management quick actions</h3><div class="dw-ts-management-actions"></div>';
-      const actions=management.querySelector('.dw-ts-management-actions');
-      for(const title of ['Rename tracker','Archive tracker','Manage permissions','Expense approval']){
-        const btn=document.createElement('button');btn.className='tracker-menu-action sq-tracker-settings-action dw-ts-management-action';
-        btn.innerHTML='<span class="tracker-menu-glyph"></span><span class="tracker-menu-words"><span></span><small>Settings</small></span><span class="tracker-menu-chevron">›</span>';
-        btn.querySelector('.tracker-menu-words>span').textContent=title;actions.append(btn);
-      }
-      view.append(top,nav,appearance,management);menu.append(view);document.body.append(menu);
-      const rect=el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,width:r.width,top:r.top,bottom:r.bottom,height:r.height}};
-      const result={
-        width:window.innerWidth,
-        panel:rect(menu),
-        background:getComputedStyle(menu).backgroundImage,
-        appearanceDisplay:getComputedStyle(appearance).display,
-        appearanceGap:getComputedStyle(appearance).gap,
-        managementDisplay:getComputedStyle(actions).display,
-        managementColumns:getComputedStyle(actions).gridTemplateColumns.split(' ').filter(Boolean).length,
-        cards:[...view.querySelectorAll('.sq-tracker-settings-action')].map(el=>({
-          label:el.querySelector('.tracker-menu-words>span')?.textContent,
-          display:getComputedStyle(el).display,
-          size:rect(el)
-        })),
-        scrollable:menu.scrollHeight>menu.clientHeight,
-        scrollHeight:menu.scrollHeight,clientHeight:menu.clientHeight
-      };
-      return result;
+      `)(mount);
+    },renderer);
+    const entry=page.locator('body > .tracker-tile-menu-panel .tracker-settings-entry');
+    await entry.evaluate(button=>button.click());
+    const popup=page.getByRole('dialog',{name:'Tracker settings',exact:true});
+    const geometry=await popup.evaluate(panel=>{
+      const rect=panel.getBoundingClientRect(),css=getComputedStyle(panel);
+      return {left:rect.left,right:rect.right,top:rect.top,bottom:rect.bottom,width:rect.width,
+        dy:rect.top+rect.height/2-innerHeight/2,filter:css.filter,backdrop:css.backdropFilter,
+        topLayer:panel.matches(':popover-open'),scrollable:panel.scrollHeight>panel.clientHeight,
+        dockTop:document.querySelector('.sq-mobile-nav').getBoundingClientRect().top};
     });
-    console.log('Live tracker settings layout:',JSON.stringify(state));
-    assert.equal(state.appearanceDisplay,'flex','Appearance should remain a visible stacked group');
-    assert.equal(state.managementDisplay,'grid','Management must be a visible grid on the same page');
-    assert.equal(state.managementColumns,mobile?2:4,'Wrong management card layout');
-    assert.equal(state.cards.length,6,'All settings must be available in one view');
-    assert.ok(state.background.includes('gradient'),'Navy and mint modal background did not apply');
-    assert.ok(state.panel.left>=0&&state.panel.right<=width+1,'Tracker settings panel overflows viewport');
-    assert.ok(state.cards.every(c=>c.display!=='none'),'Some settings actions are hidden');
-    assert.ok(state.cards.every(c=>c.size.width>80&&c.size.height>42),'Settings action unexpectedly collapsed');
-    assert.ok(Number.parseFloat(state.appearanceGap)>0,'Appearance cards lost their spacing');
-    await page.screenshot({path:'test-results/tracker-settings/'+(mobile?'mobile':'desktop')+'.png'});
+    assert.equal(geometry.filter,'none');
+    assert.equal(geometry.backdrop,'none');
+    assert.ok(geometry.topLayer);
+    if(mobile){
+      assert.ok(geometry.left>=0&&geometry.right<=width&&geometry.top>=0,JSON.stringify(geometry));
+      assert.ok(geometry.dockTop>0&&geometry.bottom<geometry.dockTop,JSON.stringify(geometry));
+      assert.equal(await popup.getByText('Baja Trip 🌴',{exact:true}).isVisible(),true);
+      assert.equal(await popup.getByText('6 members',{exact:true}).isVisible(),true);
+      const rows=await popup.locator('.sq-tracker-settings-action:visible').evaluateAll(buttons=>
+        buttons.map(button=>button.querySelector('.tracker-menu-words').innerText.trim()));
+      assert.deepEqual(rows,['Banner','Background','Rename tracker','Archive tracker','Delete tracker','View members']);
+      if(height===568)assert.ok(geometry.scrollable,'Short sheet must scroll');
+    }else{
+      assert.ok(Math.abs(geometry.dy)<=1,JSON.stringify(geometry));
+      assert.equal(geometry.width,360);
+      assert.equal(await popup.getByRole('button',{name:'Manage permissions',exact:true}).isVisible(),true);
+    }
+    await page.screenshot({path:'test-results/tracker-settings/'+width+'.png'});
+    await popup.getByRole('button',{name:'Close tracker settings'}).click();
+    await popup.waitFor({state:'hidden'});
+    if(mobile){
+      const fixture=page.locator('#tracker-settings-fixture');
+      await fixture.locator('details').evaluate(menu=>{menu.open=true;});
+      await entry.evaluate(button=>button.click());
+      await popup.getByRole('button',{name:'View members',exact:true}).click();
+      await popup.waitFor({state:'hidden'});
+      assert.equal(await fixture.getAttribute('data-route'),'dashboard');
+    }
+    console.log('Tracker Settings verified at '+width+' × '+height,geometry);
     await page.close();
   }
 }finally{await browser.close();}

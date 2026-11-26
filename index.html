@@ -3024,7 +3024,7 @@ async function renderTrackerGallery(){
       appearanceGroup.append(appearanceHeading);
       var managementHeading=document.createElement('h3');
       managementHeading.className='sq-tracker-settings-group-title dw-ts-management-heading';
-      managementHeading.textContent='Management quick actions';
+      managementHeading.textContent='Management';
       var managementActions=document.createElement('div');
       managementActions.className='dw-ts-management-actions';
       managementGroup.append(managementHeading,managementActions);
@@ -3060,14 +3060,14 @@ async function renderTrackerGallery(){
       settingsClose.type='button';settingsClose.className='dw-ts-close';
       settingsClose.setAttribute('aria-label','Close tracker settings');
       settingsClose.textContent='Close popup';
-      settingsClose.onclick=function(){menu.open=false;menuToggle.focus();};
+      settingsClose.onclick=function(){closeTrackerMenu();menuToggle.focus();};
       var mobileIdentity=document.createElement('div');mobileIdentity.className='dw-ts-mobile-identity';
       var mobileThumb=document.createElement('span');mobileThumb.className='dw-ts-mobile-thumb';mobileThumb.setAttribute('aria-hidden','true');
       sqBannerGet(t.id).then(function(v){sqBannerApply(mobileThumb,v);}).catch(function(){});
       var mobileCopy=document.createElement('div');mobileCopy.className='dw-ts-mobile-copy';
       var mobileName=document.createElement('strong');mobileName.textContent=t.name;
       var mobileCount=document.createElement('small');
-      var memberCount=Array.isArray(d&&d.members)?d.members.length:null;
+      var memberCount=Array.isArray(d&&d.members)?d.members.length:t.memberCount??null;
       mobileCount.textContent=memberCount===null?'Tracker settings':memberCount+' '+(memberCount===1?'member':'members');
       mobileCopy.append(mobileName,mobileCount);mobileIdentity.append(mobileThumb,mobileCopy);
       settingsTop.append(settingsHeader,settingsHeading,mobileIdentity,settingsClose);
@@ -3093,8 +3093,8 @@ async function renderTrackerGallery(){
       settingsView.append(settingsTop,settingsQuickLinks,appearanceGroup,managementGroup);
       // Consistent outline icons for tracker settings (visual only; handlers unchanged).
       var trackerSettingsIconPaths={
-        'Change banner':'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><path d="m7 16 3-3 2 2 3-3 3 4"/>',
-        'Change tracker backdrop':'<path d="M4 20h16"/><path d="M6 17 16.5 6.5a2.12 2.12 0 0 1 3 3L9 20H6v-3Z"/><path d="m14.5 8.5 3 3"/>',
+        'Change banner':'<rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m2 18 6-6 4 4 4-5 6 6"/>',
+        'View members':'<circle cx="9" cy="7" r="3"/><path d="M2 21v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2ZM16 4a3 3 0 0 1 0 6m2 4a5 5 0 0 1 4 5"/>',
         'Rename tracker':'<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/><path d="m14.5 5.5 4 4"/>',
         'Archive tracker':'<rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v12h14V8"/><path d="M10 12h4"/>',
         'Manage permissions':'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><circle cx="12" cy="10" r="2"/><path d="M8.5 16a4 4 0 0 1 7 0"/>',
@@ -3114,10 +3114,16 @@ async function renderTrackerGallery(){
           menu.open=false;settingsView.hidden=true;mainView.hidden=false;await fn();
         },detail);
         var glyph=btn.querySelector('.tracker-menu-glyph');
-        if(glyph && trackerSettingsIconPaths[label]){
-          glyph.innerHTML='<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+trackerSettingsIconPaths[label]+'</svg>';
+        var iconPath=trackerSettingsIconPaths[label==='Change tracker backdrop'?'Change banner':label];
+        if(glyph && iconPath){
+          glyph.innerHTML='<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+iconPath+'</svg>';
         }
         if(isAppearance){
+          btn.querySelector('.tracker-menu-words > span').classList.add('dw-ts-desktop-label');
+          var shortLabel=document.createElement('span');
+          shortLabel.className='dw-ts-mobile-label';
+          shortLabel.textContent=label==='Change banner'?'Banner':'Background';
+          btn.querySelector('.tracker-menu-words').append(shortLabel);
           var art=document.createElement('span');
           art.className='dw-ts-appearance-preview '+(label==='Change banner'?'dw-ts-banner-preview':'dw-ts-backdrop-preview');
           art.setAttribute('aria-hidden','true');
@@ -3127,7 +3133,21 @@ async function renderTrackerGallery(){
         }
         var arrow=document.createElement('span');arrow.className='tracker-menu-chevron';
         arrow.setAttribute('aria-hidden','true');arrow.textContent='›';btn.append(arrow);
-        (isAppearance?appearanceGroup:managementActions).append(btn);
+        if(label==='View members'){
+          btn.classList.add('dw-ts-view-members','dw-ts-mobile-only');
+          settingsView.append(btn);
+        }else{
+          (isAppearance?appearanceGroup:managementActions).append(btn);
+        }
+        if(label==='Manage permissions'||label==='Expense approval'){
+          btn.classList.add('dw-ts-desktop-only');
+          var mobileAction=btn.cloneNode(true);
+          mobileAction.classList.remove('dw-ts-desktop-only','sq-tracker-settings-action','dw-ts-management-action');
+          mobileAction.classList.add('dw-ts-mobile-only');
+          mobileAction.onclick=btn.onclick;
+          mainView.append(mobileAction);
+        }
+        if(label==='Delete tracker'||label==='Leave tracker')btn.classList.add('dw-ts-mobile-only','dw-ts-danger');
       }
       settingsAction('▧','Change banner',async function(){await sqBannerEdit(t.id,t.name,banner);});
       settingsAction('▧','Change tracker backdrop',async function(){
@@ -3202,17 +3222,34 @@ async function renderTrackerGallery(){
           }catch(err){status.textContent='Could not save: '+(err.message||err);save.disabled=false;toggle.disabled=false;}
         };
       });
+      var removeAction=t.role==='owner'?'Delete tracker':'Leave tracker';
+      async function handleRemoveTracker(){
+        menu.open=false;
+        try{
+          if(await removeTracker(t)){
+            await renderTrackerGallery();
+            window.dwNotify?.(t.role==='owner'?'Tracker deleted.':'You left the tracker.','success');
+          }
+        }catch(err){window.dwNotify?.(err.message||'Could not remove tracker.','error');}
+      }
+      settingsAction('♜',removeAction,handleRemoveTracker);
+      settingsAction('♙','View members',async function(){
+        await openTracker(t.id);
+        if(!current||current.id!==t.id)return;
+        settingsRoute('dashboard');
+        document.querySelector('#tracker-dashboard [data-sq-tab="members"]')?.click();
+      });
       var settingsButton=makeMenuButton('⚙','Tracker settings','tracker-settings-entry',function(){
         mainView.hidden=true;settingsView.hidden=false;menuPanel.scrollTop=0;
         settingsQuickLinks.querySelectorAll('.dw-ts-section-link').forEach(function(link,index){link.classList.toggle('dw-ts-section-link-active',index===0);});
         placeTrackerMenu();
-        if(window.innerWidth>900)settingsClose.focus();
+        settingsClose.focus({preventScroll:true});
       },'Banner, backdrop, name, permissions, approvals');
-      var arrow=document.createElement('span');arrow.className='tracker-menu-chevron';arrow.textContent='›';settingsButton.append(arrow);mainView.append(settingsButton);
+      var arrow=document.createElement('span');arrow.className='tracker-menu-chevron';arrow.textContent='›';settingsButton.append(arrow);mainView.prepend(settingsButton);
       mainView.append(document.createElement('hr'));
       mainView.append(makeMenuButton('↥','Share tracker','',async function(){menu.open=false;await openTracker(t.id);if(current&&current.id===t.id)await openShare();}));
       mainView.append(document.createElement('hr'));
-      mainView.append(makeMenuButton('♜',t.role==='owner'?'Delete tracker':'Leave tracker','danger',async function(){menu.open=false;try{if(await removeTracker(t)){await renderTrackerGallery();window.dwNotify?.(t.role==='owner'?'Tracker deleted.':'You left the tracker.','success');}}catch(err){window.dwNotify?.(err.message||'Could not remove tracker.','error');}}));
+      mainView.append(makeMenuButton('♜',removeAction,'danger',handleRemoveTracker));
       // Render the action panel outside the clipped tracker tile so all original
       // actions remain accessible, including on short cards and mobile screens.
       var settingsScrim=document.createElement('div');
@@ -3221,14 +3258,20 @@ async function renderTrackerGallery(){
       function placeTrackerMenu(){
         if(!menu.open)return;
         var showingSettings=!settingsView.hidden;
-        if(showingSettings && window.innerWidth>900 && menuPanel.showPopover){
-          settingsScrim.remove();
-          menuPanel.setAttribute('popover','manual');
+        if(showingSettings){
+          var dock=document.querySelector('.sq-mobile-nav');
+          var dockTop=dock?.getBoundingClientRect().top;
+          var dockClearance=dockTop>0&&dockTop<innerHeight?innerHeight-dockTop+30:0;
+          menuPanel.style.setProperty('--dw-ts-bottom',Math.max(12,dockClearance)+'px');
           menuPanel.setAttribute('role','dialog');
           menuPanel.setAttribute('aria-label','Tracker settings');
+        }
+        if(showingSettings && menuPanel.showPopover){
+          settingsScrim.remove();
+          menuPanel.setAttribute('popover','manual');
           if(!menuPanel.matches(':popover-open'))menuPanel.showPopover();
         }else{
-          resetSettingsPopup();
+          if(!showingSettings)resetSettingsPopup();
           if(showingSettings && !settingsScrim.isConnected)document.body.append(settingsScrim);
           if(!showingSettings)settingsScrim.remove();
         }
@@ -3271,15 +3314,16 @@ async function renderTrackerGallery(){
         menuPanel.style.visibility='visible';
       }
       function resetSettingsPopup(){
-        if(!menuPanel.hasAttribute('popover'))return;
-        menuPanel.hidePopover();
-        menuPanel.removeAttribute('popover');
+        if(menuPanel.hasAttribute('popover')){
+          menuPanel.hidePopover();
+          menuPanel.removeAttribute('popover');
+        }
         menuPanel.removeAttribute('role');
         menuPanel.removeAttribute('aria-label');
       }
       function closeTrackerMenu(){menu.open=false;settingsScrim.remove();}
       function onTrackerMenuOutside(event){if(menu.open&&!menu.contains(event.target)&&!menuPanel.contains(event.target))closeTrackerMenu();}
-      function onTrackerMenuKey(event){if(event.key==='Escape'&&menu.open)closeTrackerMenu();}
+      function onTrackerMenuKey(event){if(event.key==='Escape'&&menu.open){closeTrackerMenu();menuToggle.focus();}}
       menu.addEventListener('toggle',function(){
         if(menu.open){document.body.append(menuPanel);placeTrackerMenu();
           document.addEventListener('pointerdown',onTrackerMenuOutside);
@@ -10900,7 +10944,7 @@ html body #backdrop-modal #backdrop-swatches .swatch > .dw-backdrop-preview-titl
 <!-- Category styling loads after legacy overrides, including mobile popup styles. -->
 <link rel="stylesheet" href="/doweo-backdrop-catalog.css?v=20261126-preview-v3">
 <!-- Authenticated tracker settings hub design; both sections remain on one page. -->
-<link rel="stylesheet" href="/doweo-tracker-settings-hub.css?v=20261126-compact-mobile-v4">
+<link rel="stylesheet" href="/doweo-tracker-settings-hub.css?v=20261126-tracker-settings-sheet-v1">
 <style id="dw-mobile-chat-navy-release-20261124">
 @layer mobileApp {
  @media(max-width:900px){

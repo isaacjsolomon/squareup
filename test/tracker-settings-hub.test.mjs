@@ -22,21 +22,14 @@ test('tracker settings is one continuous page, with Appearance and Management to
   assert.ok(html.includes("if(t.role==='owner'||(d&&d.role==='owner')) settingsAction('✓','Expense approval'"),'Approval authorization preserved');
 });
 
-test('approved image-style Appearance and four-card Management layout is included',()=>{
-  assert.ok(html.includes("className='dw-ts-appearance-preview '"));
-  assert.ok(html.includes("'dw-ts-banner-preview':'dw-ts-backdrop-preview'"));
-  assert.ok(html.includes("managementActions.className='dw-ts-management-actions'"));
-  assert.ok(css.includes('grid-template-columns:repeat(4,minmax(0,1fr))'));
-  assert.ok(css.includes('grid-template-columns:repeat(2,minmax(0,1fr))'));
-  assert.ok(css.includes('.dw-ts-banner-preview'));
-  assert.ok(css.includes('.dw-ts-backdrop-preview'));
-  assert.ok(css.includes('.dw-ts-management-action'));
-  assert.ok(css.includes('.dw-ts-appearance-action'));
-  assert.ok(css.includes('.dw-ts-section-link-active'));
-  assert.ok(css.includes('color:#0A1B2E'));
-  assert.ok(css.includes('#60F1AD'));
-  assert.ok(html.includes("var width=showingSettings?Math.min(desktopSettings?680:880,Math.max(0,available-24))"),'Wide centered settings overlay must not collapse to the old 360px popover');
-  assert.ok(html.includes("Math.min(960,vh-24)"),'Large modal must scroll on shorter devices');
+test('mobile settings anchors above navigation and preserves room to scroll',()=>{
+  assert.match(css,/bottom:var\(--dw-ts-bottom,110px\)!important/);
+  assert.match(css,/max-height:calc\(100dvh/);
+  assert.match(css,/overflow:auto!important;overscroll-behavior:contain/);
+  assert.match(html,/dock.getBoundingClientRect\(\)|dock\?\.getBoundingClientRect\(\)/);
+  assert.ok(html.includes("settingsAction('♜',removeAction,handleRemoveTracker)"));
+  assert.ok(html.includes("settingsAction('♙','View members'"));
+  assert.ok(html.includes("mainView.append(mobileAction)"),'Mobile quick actions keep permissions and approval accessible');
 });
 
 test('scrim closes cleanly, existing actions remain reachable, and mobile navigation unchanged',()=>{
@@ -51,7 +44,7 @@ test('scrim closes cleanly, existing actions remain reachable, and mobile naviga
 });
 
 test('production workflow publishes the new component stylesheet and its reference',()=>{
-  assert.ok(html.includes('/doweo-tracker-settings-hub.css?v=20261124-centered-popup-v3'));
+  assert.ok(html.includes('/doweo-tracker-settings-hub.css?v=20261126-tracker-settings-sheet-v1'));
   assert.match(workflow,/cp index\.html styles\.css [^\n]*doweo-tracker-settings-hub\.css \.pages-output\//);
   assert.ok(workflow.includes('test -s .pages-output/doweo-tracker-settings-hub.css'));
   assert.ok(workflow.includes("grep -Fq '/doweo-tracker-settings-hub.css?v=' .pages-output/index.html"));
