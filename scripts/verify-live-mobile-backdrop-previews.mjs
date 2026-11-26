@@ -56,6 +56,7 @@ try {
   });
   assert.ok(layout.bottom<=layout.height-70,'Picker leaves space for mobile navigation');
   assert.equal(layout.rows,3,'Categories use three rows');
+  assert.equal(await page.locator("#backdrop-modal .dw-backdrop-back").isVisible(),true);
 
   // Legacy 28 + new 60 are available on mobile as separate searchable groups.
   const groups=[

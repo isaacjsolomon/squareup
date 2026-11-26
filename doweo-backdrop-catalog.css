@@ -86,7 +86,7 @@
   #backdrop-modal #backdrop-swatches .swatch {height:90px !important;min-height:90px !important;}
 }
 
-#backdrop-modal :is(#dw-backdrop-hero,#dw-backdrop-apply,.dw-backdrop-back){display:none}
+#backdrop-modal :is(#dw-backdrop-hero,#dw-backdrop-apply),#backdrop-modal .dw-backdrop-back{display:none}
 #backdrop-modal #backdrop-swatches{margin-top:12px}
 #backdrop-modal #backdrop-scope{margin:12px 0 8px}
 #backdrop-msg:empty{display:none}
