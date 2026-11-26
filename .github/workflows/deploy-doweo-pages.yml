@@ -153,6 +153,7 @@ jobs:
       # Run Wrangler from the repository root so it discovers ./functions.
       # Uploading through the dashboard would not compile Pages Functions.
       - name: Deploy to doweo.pages.dev
+        id: deploy_pages
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -255,6 +256,7 @@ jobs:
           name: split-bill-mobile-verification
           path: test-results/split/
       - name: Verify published Bills assets and actual production rendering
+        if: ${{ !cancelled() && steps.deploy_pages.outcome == 'success' }}
         env:
           BILLS_BASE_URL: https://doweo.app
         run: |
