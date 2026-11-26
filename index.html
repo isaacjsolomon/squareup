@@ -5231,8 +5231,33 @@ function renderSquareUpAnalytics(){
  var all=squareUpEntries().filter(squareUpConfirmedExpense);
  function entryDate(e){var raw=e.date||e.dateLabel||e.createdAt||e.created_at||'';var d=new Date(raw);return Number.isNaN(d.getTime())?null:d;}
  var entries=all.filter(e=>{var d=entryDate(e);return range==='all'||!d||d>=start;});
- var people={},total=0,months={};
- entries.forEach(e=>{var n=Number(e.amount)||0;if(n<=0)return;total+=n;var person=e.from||'Unknown';people[person]=(people[person]||0)+n;var d=entryDate(e);if(d){var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');months[key]=(months[key]||0)+n;}});
+ var people=Object.create(null),total=0,months={};
+ entries.forEach(e=>{
+  var n=Number(e.amount)||0;if(n<=0)return;
+  total+=n;
+  var person=e.from||'Unknown';
+  people[person]=(people[person]||0)+n;
+  var d=entryDate(e);
+  if(d){
+   var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+   var month=months[key]||(months[key]={total:0,people:Object.create(null)});
+   month.total+=n;
+   month.people[person]=(month.people[person]||0)+n;
+  }
+ });
+ var personRows=Object.entries(people).sort((a,b)=>b[1]-a[1]);
+ var colors=window.matchMedia("(max-width:900px)").matches
+   ? ['#60F1AD','#ABC6D7','#355E72','#3878B5','#168A87','#7965A9','#D39645','#CF6980']
+   : ['#173750','#60F1AD','#3878B5','#168A87','#7965A9','#D39645','#CF6980','#ABC6D7'];
+ var personColors=new Map(personRows.map(([person],i)=>[person,colors[i%colors.length]]));
+ function shareStops(rows,sum){
+  var running=0;
+  return rows.map(([person,amount])=>{
+   var from=running;
+   running+=amount/sum*100;
+   return personColors.get(person)+' '+from.toFixed(3)+'% '+running.toFixed(3)+'%';
+  }).join(',');
+ }
  var avg=entries.length?total/entries.length:0;
  var desktopAnalytics=window.matchMedia('(min-width:901px)').matches;
  var cards=[['◈',desktopAnalytics?'Period spending':'Total expenses',squareUpMoney(total),'Recorded in this period'],['▤',desktopAnalytics?'Period entries':'Expense entries',String(entries.length),desktopAnalytics?'In the selected time range':'Recorded expenses'],['♧','Members',String(current.members.length),'In this tracker'],['▥','Average expense',squareUpMoney(avg),'Per expense entry']];
@@ -5242,18 +5267,23 @@ function renderSquareUpAnalytics(){
  else{var count=Number(range);for(var i=count-1;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth()-i,1);keys.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));}}
  if(!keys.length){monthsEl.innerHTML='<p class="sq-analytics-empty">No dated expenses to chart yet.</p>';}
  else{
-  var max=Math.max(1,...keys.map(k=>months[k]||0));
-  monthsEl.innerHTML=keys.map((k,i)=>{var parts=k.split('-');var d=new Date(Number(parts[0]),Number(parts[1])-1,1);var amount=months[k]||0;var label=d.toLocaleDateString(undefined,{month:'short'});return '<div class="sq-month-column"><div class="sq-month-bar-space"><div class="sq-month-bar'+(i===keys.length-1?' is-latest':'')+'" style="height:'+(amount?Math.max(3,amount/max*100):0).toFixed(1)+'%" title="'+esc(d.toLocaleDateString(undefined,{month:'long',year:'numeric'}))+' · '+esc(squareUpMoney(amount))+'">'+(amount?'<span class="sq-month-value">'+esc(squareUpMoney(amount))+'</span>':'')+'</div></div><span class="sq-month-label">'+esc(label)+'</span></div>';}).join('');
+  var max=Math.max(1,...keys.map(k=>months[k]?.total||0));
+  monthsEl.innerHTML=keys.map(k=>{
+   var parts=k.split('-');
+   var d=new Date(Number(parts[0]),Number(parts[1])-1,1);
+   var month=months[k],amount=month?.total||0;
+   var rows=month?personRows.filter(([person])=>month.people[person]).map(([person])=>[person,month.people[person]]):[];
+   var label=d.toLocaleDateString(undefined,{month:'short'});
+   var detail=[d.toLocaleDateString(undefined,{month:'long',year:'numeric'}),squareUpMoney(amount),
+     ...rows.map(([person,value])=>person+': '+squareUpMoney(value))].join(' · ');
+   var fill=amount?'linear-gradient(to top,'+shareStops(rows,amount)+')':'transparent';
+   var height=amount?Math.max(3,amount/max*100):0;
+   return '<div class="sq-month-column"><div class="sq-month-bar-space"><div class="sq-month-bar" style="height:'+height.toFixed(1)+'%;min-height:0!important;background:'+fill+'!important" role="img" aria-label="'+esc(detail)+'" title="'+esc(detail)+'">'+(amount?'<span class="sq-month-value">'+esc(squareUpMoney(amount))+'</span>':'')+'</div></div><span class="sq-month-label">'+esc(label)+'</span></div>';
+  }).join('');
  }
- var personRows=Object.entries(people).sort((a,b)=>b[1]-a[1]);
  if(!personRows.length){peopleEl.innerHTML='<p class="sq-analytics-empty">No expenses recorded for this period.</p>';}
  else{
-  var colors=window.matchMedia("(max-width:900px)").matches
-    ? ['#60F1AD','#ABC6D7','#ABC6D7','#355E72','#ABC6D7','#ABC6D7']
-    : ['#173750','#60F1AD','#3878B5','#168A87','#7965A9','#D39645','#CF6980','#ABC6D7'];
-  var angle=0;
-  var stops=personRows.map((row,i)=>{var from=angle;angle+=row[1]/total*100;return colors[i%colors.length]+' '+from.toFixed(3)+'% '+angle.toFixed(3)+'%';});
-  peopleEl.innerHTML='<div class="sq-person-donut" style="background:conic-gradient('+stops.join(',')+')"><div class="sq-person-donut-hole"><strong>'+squareUpMoney(total)+'</strong><span>Total</span></div></div><div class="sq-person-legend">'+personRows.map((r,i)=>'<div class="sq-person-legend-item"><span class="sq-person-dot" style="background:'+colors[i%colors.length]+'"></span><div><span>'+esc(r[0])+'</span><strong>'+squareUpMoney(r[1])+'</strong><small>'+(r[1]/total*100).toFixed(0)+'% of total</small></div></div>').join('')+'</div>';
+  peopleEl.innerHTML='<div class="sq-person-donut" style="background:conic-gradient('+shareStops(personRows,total)+')"><div class="sq-person-donut-hole"><strong>'+squareUpMoney(total)+'</strong><span>Total</span></div></div><div class="sq-person-legend">'+personRows.map(r=>'<div class="sq-person-legend-item"><span class="sq-person-dot" style="background:'+personColors.get(r[0])+'"></span><div><span>'+esc(r[0])+'</span><strong>'+squareUpMoney(r[1])+'</strong><small>'+(r[1]/total*100).toFixed(0)+'% of total</small></div></div>').join('')+'</div>';
  }
  var recent=entries.slice().sort((a,b)=>(entryDate(b)?.getTime()||0)-(entryDate(a)?.getTime()||0)).slice(0,5);
  recentEl.innerHTML=recent.length?recent.map(e=>{var d=entryDate(e);return '<div class="sq-recent-row"><div class="sq-recent-main"><b>'+esc(e.note||'Expense')+'</b><small>'+esc(e.from||'Unknown')+' → '+esc(e.to||'Unknown')+'</small></div><span class="sq-recent-date">'+(d?esc(d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})):'Date unavailable')+'</span><span class="sq-recent-amount">'+squareUpMoney(Number(e.amount)||0)+'</span></div>';}).join(''):'<p class="sq-analytics-empty">No recent expenses in this period.</p>';
