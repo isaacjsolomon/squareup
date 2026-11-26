@@ -12,7 +12,7 @@ for(let attempt=0;attempt<12;attempt++){
    const response=await fetch(base+'/?release='+encodeURIComponent(release),{cache:'no-store'});
    if(!response.ok)throw Error('Production HTTP '+response.status+': '+base);
    const html=await response.text();
-   if(!html.includes('content="'+release+'"')||!html.includes('id="dw-bills-navy-floating-v1"')||!html.includes('id="dw-bills-navy-floating-script-v1"'))throw Error('Mobile Bills release not published at '+base);
+   if(!html.includes('content="'+release+'"')||!html.includes('id="dw-bills-navy-floating-v1"')||!html.includes('id="dw-bills-navy-floating-script-v1"')||!html.includes('id="dw-mobile-billing-calendar-v1"'))throw Error('Mobile Bills release not published at '+base);
   }
   const index=await fetch(origin+'/?release='+encodeURIComponent(release),{cache:'no-store'}).then(r=>r.text());
   for(const file of ['doweo-bills-mobile-dashboard.css','doweo-bills-mobile-dashboard.js']){
