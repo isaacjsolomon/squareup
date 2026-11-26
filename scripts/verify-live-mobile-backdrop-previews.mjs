@@ -35,11 +35,29 @@ try {
   assert.equal(await preview.innerText(),'Current Backdrop');
   assert.equal(await apply.isDisabled(),true);
   const footer=await apply.boundingBox();
+  const palette=await page.locator('#backdrop-modal').evaluate(modal=>{
+    const style=selector=>getComputedStyle(modal.querySelector(selector));
+    return {
+      surface:style('.card.modal').backgroundColor,
+      title:style('#backdrop-title').webkitTextFillColor,
+      label:style('#dw-backdrop-hero span').webkitTextFillColor,
+      backButton:style('[data-close]').backgroundColor,
+      activeCategory:style('.backdrop-category[aria-pressed="true"]').backgroundColor
+    };
+  });
+  assert.deepEqual(palette,{
+    surface:'rgb(10, 27, 46)',
+    title:'rgb(243, 248, 252)',
+    label:'rgb(243, 248, 252)',
+    backButton:'rgba(0, 0, 0, 0)',
+    activeCategory:'rgb(96, 241, 173)'
+  });
   const firstChoice=page.locator('#backdrop-swatches [data-preset="ocean"]');
   await firstChoice.evaluate(button=>button.click());
   assert.equal(await preview.innerText(),'Preview · Ocean');
   assert.equal(await firstChoice.getAttribute('aria-pressed'),'true');
   assert.equal(await apply.isEnabled(),true);
+  assert.equal(await apply.evaluate(button=>getComputedStyle(button).backgroundColor),'rgb(96, 241, 173)');
   assert.deepEqual(await apply.boundingBox(),footer,'Apply stays in place while scrolling');
   await apply.evaluate(button=>button.click());
   await page.waitForFunction(()=>document.querySelector('#dw-backdrop-hero').innerText==='Current Backdrop');
