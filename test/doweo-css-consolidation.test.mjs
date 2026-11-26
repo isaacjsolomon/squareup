@@ -29,7 +29,8 @@ const scopedRepairIds=[
  'dw-web-chat-v4-20261124',
  'dw-workspace-critical-v6',
  'dw-creation-popups-v9',
- 'dw-creation-popup-top-layer-style-v9'
+ 'dw-creation-popup-top-layer-style-v9',
+ 'dw-bills-navy-floating-v1'
 ];
 
 test('design system retains base surfaces and the mint brand accent',()=>{
