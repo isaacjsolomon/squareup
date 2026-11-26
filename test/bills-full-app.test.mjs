@@ -132,7 +132,10 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   await page.locator('#sq-bills-bill-list .sq-bills-row').waitFor();
   await safeAreaStyle.evaluate(el=>el.remove());
   await page.locator('.dw-bills-calendar-fold > summary').click();
-  await page.locator('#sq-bills-page.dw-bills-calendar-open').waitFor();
+  await page.locator('#dw-calendar-fullscreen').waitFor();
+  assert.equal(await page.locator('.sq-bills-workspace-tabs').isVisible(),false,'underlying tabs must not bleed through');
+  assert.equal(await page.locator('#dw-calendar-fullscreen #sq-premium-days').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length),7,'seven columns');
+  assert.ok(await page.locator('#sq-premium-days button[data-day="1"]').evaluate(el=>el.getBoundingClientRect().height)>=43,'date targets have breathing room');
   assert.equal(await page.locator('.dw-bills-add').isVisible(),false,'calendar is a separate subpage');
   assert.ok(await page.locator('#sq-premium-next').isVisible());
   assert.ok(await page.locator('.dw-cal-day-summary').isVisible());
@@ -145,6 +148,9 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   for(let i=0;i<Math.abs(diff);i++)await page.locator(diff>0?'#sq-premium-next':'#sq-premium-prev').click();
   await page.locator('#sq-premium-days button[data-day="1"]').click();
   assert.match(await page.locator('.dw-cal-day-summary').textContent(),/\$68\.00/);
+  await page.locator('#sq-premium-days button[data-day="2"]').click();
+  assert.equal(await page.locator('.dw-cal-empty strong').textContent(),'No bills due today!');
+  await page.locator('#sq-premium-days button[data-day="1"]').click();
   await page.locator('.dw-cal-payment').filter({hasText:'Electricity'}).click();
   await page.locator('.sq-premium-dialog').getByRole('button',{name:'Close',exact:true}).click();
   await page.screenshot({path:resolve(root,'test-results/bills/calendar-430.png'),fullPage:true});
