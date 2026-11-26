@@ -47,7 +47,7 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   await page.locator('#auth-modal.open').waitFor({state:'hidden'});
   // The public tracker navigation is used; never replace Bills HTML or CSS.
   await page.evaluate(()=>document.getElementById('sq-bills-open').click());
-  await page.locator('#sq-bills-bill-list .sq-bills-row').waitFor();
+  await page.locator('#sq-bills-sub-list .sq-bills-row').waitFor();
   mkdirSync(resolve(root,'test-results/bills'),{recursive:true});
   for(const width of [320,375,390,430]){
    await page.setViewportSize({width,height:844});
@@ -63,8 +63,14 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
    });
    console.log('FULL_APP_LAYOUT',width,JSON.stringify(state));
    assert.ok(state.nav.top>=state.header.bottom+8,'all tabs must be below the fixed header');
-   assert.ok(state.nav.bottom<=state.back.top+1,'tabs must be above Back');
-   assert.ok(state.back.bottom<=state.title.top+1,'Back must be above title');
+   assert.ok(state.nav.bottom<=state.title.top+1,'tabs must be above title');
+   assert.equal(await page.locator('#sq-bills-tracker').isVisible(),false,'mobile tracker switcher is hidden');
+   assert.equal(await page.locator('.sq-bills-back').isVisible(),false,'redundant Back is hidden');
+   assert.equal(await page.locator('.dw-bills-add').isVisible(),true,'header Add is visible');
+   const surfaces=await page.evaluate(()=>{const s=e=>getComputedStyle(document.querySelector(e));return {workspace:s('.dw-bills-workspace').backgroundColor,workspaceImage:s('.dw-bills-workspace').backgroundImage,metrics:s('.sq-premium-metrics').backgroundImage}});
+   assert.equal(surfaces.workspace,'rgba(0, 0, 0, 0)','wallpaper remains exposed');
+   assert.equal(surfaces.workspaceImage,'none','no enclosing panel');
+   assert.match(surfaces.metrics,/gradient/,'navy metric card');
    assert.ok(state.title.bottom<=state.a.top+1,'metrics below title');
    assert.ok(Math.abs(state.a.top-state.b.top)<2,'metrics side by side');
    assert.ok(state.a.height<=150&&state.b.height<=150,'compact metrics');
@@ -82,13 +88,16 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
    assert.ok(visibleTabs,'entire tab bar stays visible while scrolling');
    await page.screenshot({path:resolve(root,`test-results/bills/scrolled-${width}.png`)});
    for(const name of ['Electricity','Netflix']){
+    await page.locator('.dw-bills-filter').getByRole('button',{name:name==='Electricity'?/^Bills \(/:/^Subscriptions \(/}).click();
     const row=page.locator('.sq-bills-row').filter({hasText:name});
+    await row.locator('.dw-bills-row-more').click();
     await row.getByRole('button',{name:'Edit',exact:true}).click();
     const dialog=page.getByRole('dialog',{name:'Edit bill or subscription'});
     await dialog.getByLabel('Name',{exact:true}).fill(name+' updated');
     await dialog.getByRole('button',{name:'Save changes'}).click();
     await dialog.waitFor({state:'hidden'});
     const updated=page.locator('.sq-bills-row').filter({hasText:name+' updated'});
+    await updated.locator('.dw-bills-row-more').click();
     await updated.getByRole('button',{name:'Edit',exact:true}).click();
     assert.equal(await dialog.getByLabel('Name',{exact:true}).inputValue(),name+' updated');
     await dialog.getByLabel('Name',{exact:true}).fill(name);
@@ -113,18 +122,19 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   // Match the reported page: no bills and one saved subscription.
   const allBills=bills;bills=bills.filter(item=>item.kind==='subscription');
   await page.setViewportSize({width:390,height:844});
-  await page.locator('#sq-bills-tracker').selectOption(tracker);
+  await page.locator('#sq-bills-tracker').evaluate(e=>{e.dispatchEvent(new Event('change',{bubbles:true}))});
   await page.waitForFunction(()=>document.getElementById('sq-bills-bill-list').textContent==='No bills yet.');
   await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
   await page.screenshot({path:resolve(root,'test-results/bills/iphone-subscriptions-only-390.png')});
-  bills=allBills;await page.locator('#sq-bills-tracker').selectOption(tracker);
+  bills=allBills;await page.locator('#sq-bills-tracker').evaluate(e=>{e.dispatchEvent(new Event('change',{bubbles:true}))});
+  await page.locator('.dw-bills-filter').getByRole('button',{name:/^Bills \(/}).click();
   await page.locator('#sq-bills-bill-list .sq-bills-row').waitFor();
   await safeAreaStyle.evaluate(el=>el.remove());
   await page.locator('.dw-bills-calendar-fold > summary').click();
   assert.ok(await page.locator('#sq-premium-next').isVisible());
   await page.locator('#sq-premium-next').click();
   await page.screenshot({path:resolve(root,'test-results/bills/calendar-430.png'),fullPage:true});
-  await page.locator('.sq-bill-create-heading h3').click();
+  await page.locator('.dw-bills-add').click();
   await page.locator('#sq-bill-name').fill('Water');await page.locator('#sq-bill-amount').fill('32');await page.locator('#sq-bill-date').fill('2026-12-10');
   await page.locator('.sq-bill-type-tab[data-kind="bill"]').click();
   await page.screenshot({path:resolve(root,'test-results/bills/add-430.png')});
@@ -134,6 +144,8 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   await page.getByRole('button',{name:'Done',exact:true}).click();
   // Close the existing add dialog after saving, then reopen the saved record.
   if(await page.locator('.sq-bill-modal-portal:not([hidden])').count())await page.locator('#sq-bill-mobile-toggle').click();
+  await page.locator('.dw-bills-filter').getByRole('button',{name:/^Bills \(/}).click();
+  await page.locator('.sq-bills-row').filter({hasText:'Water'}).locator('.dw-bills-row-more').click();
   await page.locator('.sq-bills-row').filter({hasText:'Water'}).getByRole('button',{name:'Edit',exact:true}).click();
   await page.screenshot({path:resolve(root,'test-results/bills/edit-430.png')});
   assert.equal(await page.getByRole('dialog',{name:'Edit bill or subscription'}).getByLabel('Name',{exact:true}).inputValue(),'Water');
