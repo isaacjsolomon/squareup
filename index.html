@@ -3060,7 +3060,16 @@ async function renderTrackerGallery(){
       settingsClose.setAttribute('aria-label','Close tracker settings');
       settingsClose.textContent='Close popup';
       settingsClose.onclick=function(){menu.open=false;menuToggle.focus();};
-      settingsTop.append(settingsHeader,settingsHeading,settingsClose);
+      var mobileIdentity=document.createElement('div');mobileIdentity.className='dw-ts-mobile-identity';
+      var mobileThumb=document.createElement('span');mobileThumb.className='dw-ts-mobile-thumb';mobileThumb.setAttribute('aria-hidden','true');
+      sqBannerGet(t.id).then(function(v){sqBannerApply(mobileThumb,v);}).catch(function(){});
+      var mobileCopy=document.createElement('div');mobileCopy.className='dw-ts-mobile-copy';
+      var mobileName=document.createElement('strong');mobileName.textContent=t.name;
+      var mobileCount=document.createElement('small');
+      var memberCount=Array.isArray(d&&d.members)?d.members.length:null;
+      mobileCount.textContent=memberCount===null?'Tracker settings':memberCount+' '+(memberCount===1?'member':'members');
+      mobileCopy.append(mobileName,mobileCount);mobileIdentity.append(mobileThumb,mobileCopy);
+      settingsTop.append(settingsHeader,settingsHeading,mobileIdentity,settingsClose);
       var settingsQuickLinks=document.createElement('nav');
       settingsQuickLinks.className='dw-ts-section-links';
       settingsQuickLinks.setAttribute('aria-label','Jump to tracker settings section');
@@ -10866,7 +10875,7 @@ html body #backdrop-modal #backdrop-swatches .swatch > .dw-backdrop-preview-titl
 <!-- Category styling loads after legacy overrides, including mobile popup styles. -->
 <link rel="stylesheet" href="/doweo-backdrop-catalog.css?v=20261124-60-presets-v2">
 <!-- Authenticated tracker settings hub design; both sections remain on one page. -->
-<link rel="stylesheet" href="/doweo-tracker-settings-hub.css?v=20261124-centered-popup-v3">
+<link rel="stylesheet" href="/doweo-tracker-settings-hub.css?v=20261126-compact-mobile-v4">
 <style id="dw-mobile-chat-navy-release-20261124">
 @layer mobileApp {
  @media(max-width:900px){
