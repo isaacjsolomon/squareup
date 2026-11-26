@@ -970,15 +970,16 @@ window.dwBillDueDate=function(value){
 <div class="modal-bg dw-standard-dialog-overlay" id="backdrop-modal">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="backdrop-title">
     <button type="button" class="doweo-close-control close" data-close aria-label="Close">×</button>
-    <h2 id="backdrop-title">Backdrop</h2>
+    <h2 id="backdrop-title">Change Tracker Backdrop</h2>
     <p class="hint" id="backdrop-scope"></p>
+    <div id="dw-backdrop-hero" aria-live="polite"><span></span></div>
     <div class="backdrop-categories" id="backdrop-categories" role="group" aria-label="Backdrop categories"></div>
     <div class="swatches" id="backdrop-swatches" style="margin-top:12px"></div>
     <input type="file" id="backdrop-file" accept="image/*,.heic,.heif,.hif,.tif,.tiff,.avif,.gif,.bmp,.svg,.jfif,.ico" hidden>
     <div class="tb-row" style="margin-top:12px">
       <button type="button" class="small-btn accent" id="backdrop-upload">Upload a photo</button>
     </div>
-    <div class="msg" id="backdrop-msg" style="margin-top:8px"></div>
+    <div class="msg" id="backdrop-msg" style="margin-top:8px"></div><div id="dw-backdrop-footer"><button type="button" id="dw-backdrop-apply">Use This Backdrop</button></div>
   </div>
 </div>
 
@@ -3530,6 +3531,20 @@ function backdropMsg(text, kind) {
   $("backdrop-msg").textContent = text || "";
 }
 var backdropCategory = "gradients";
+var dwPendingBackdrop = null;
+var dwBackdropSaving = false;
+function dwMobileBackdrop(){return window.matchMedia("(max-width:900px)").matches;}
+function dwRenderBackdropPreview(){
+ var b=backdropState(), key=dwPendingBackdrop||b.preset, config=PRESETS[key]||PRESETS.indigo;
+ var hero=$("dw-backdrop-hero"), image=key==="photo"?$("backdrop").style.backgroundImage:(config.preview||config.css);
+ hero.style.setProperty("background-image",image,"important");
+ hero.firstElementChild.textContent=(key===b.preset?"✓ Current Backdrop":"Preview · "+config.label);
+ $("dw-backdrop-apply").disabled=dwBackdropSaving||!dwPendingBackdrop||key===b.preset;
+ $("dw-backdrop-apply").textContent=dwBackdropSaving?"Saving…":"Use This Backdrop";
+ $("backdrop-swatches").querySelectorAll("[data-preset]").forEach(function(btn){
+ var selected=btn.dataset.preset===key;btn.classList.toggle("active",selected);btn.setAttribute("aria-pressed",String(selected));
+ });
+}
 var BACKDROP_CATEGORIES = [
   { id: "all", label: "All" },
   { id: "nature", label: "Nature & Landscapes" },
@@ -3602,6 +3617,7 @@ function renderBackdropPicker() {
   });
   $("backdrop-swatches").replaceChildren(choices);
   $("backdrop-upload").textContent = b.preset === "photo" ? "Upload a different photo" : "Upload a photo";
+  if(dwMobileBackdrop())dwRenderBackdropPreview();
 }
 
 // Shrink big phone photos before saving so they upload fast and fit in browser storage
@@ -3667,6 +3683,7 @@ async function uploadPhoto(file) {
 }
 
 $("btn-backdrop").onclick = function () {
+  dwPendingBackdrop=null;dwBackdropSaving=false;
   backdropMsg("");
   backdropCategory = (PRESETS[backdropState().preset] || PRESETS.indigo).group;
   renderBackdropPicker();
@@ -3689,9 +3706,17 @@ $("backdrop-categories").addEventListener("click", function (e) {
 $("backdrop-swatches").addEventListener("click", function (e) {
   var swatch = e.target.closest("button[data-preset]");
   var preset = swatch && swatch.dataset.preset;
-  if (preset && preset !== "photo" && preset !== backdropState().preset) setPreset(preset);
+  if(!preset||dwBackdropSaving)return;
+  if(dwMobileBackdrop()){dwPendingBackdrop=preset==="photo"?null:preset;dwRenderBackdropPreview();}
+  else if(preset!=="photo"&&preset!==backdropState().preset)setPreset(preset);
 });
-$("backdrop-upload").onclick = function () { $("backdrop-file").click(); };
+$("dw-backdrop-apply").onclick=async function(){
+ if(!dwPendingBackdrop||dwBackdropSaving)return;
+ var selected=dwPendingBackdrop;dwBackdropSaving=true;dwRenderBackdropPreview();
+ try{await setPreset(selected);if(backdropState().preset===selected)dwPendingBackdrop=null;}
+ finally{dwBackdropSaving=false;dwRenderBackdropPreview();}
+};
+$("backdrop-upload").onclick = function () { dwPendingBackdrop=null; $("backdrop-file").click(); };
 $("backdrop-file").onchange = function (e) {
   var file = e.target.files && e.target.files[0];
   e.target.value = "";
@@ -10873,7 +10898,7 @@ html body #backdrop-modal #backdrop-swatches .swatch > .dw-backdrop-preview-titl
 <link rel="stylesheet" href="/doweo-mobile-app-theme.css?v=20261124-mobile-chat-navy-v2" media="(max-width:900px)">
 <link rel="stylesheet" href="/doweo-mobile-overview.css?v=continuous-navy-v3">
 <!-- Category styling loads after legacy overrides, including mobile popup styles. -->
-<link rel="stylesheet" href="/doweo-backdrop-catalog.css?v=20261124-60-presets-v2">
+<link rel="stylesheet" href="/doweo-backdrop-catalog.css?v=20261126-preview-v3">
 <!-- Authenticated tracker settings hub design; both sections remain on one page. -->
 <link rel="stylesheet" href="/doweo-tracker-settings-hub.css?v=20261126-compact-mobile-v4">
 <style id="dw-mobile-chat-navy-release-20261124">
