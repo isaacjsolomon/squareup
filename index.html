@@ -151,6 +151,14 @@ body.side-collapsed .sidebar :is(.dw-rail-quick,.dw-rail-add,.dw-rail-short-labe
  html body [data-dw-mobile-form-theme] :is(button,input,select,textarea):disabled{opacity:.55!important}
  html body [data-dw-mobile-form-theme] select option{background:#173750!important;color:#F3F8FC!important}
 }
+
+@media(max-width:900px){
+ html body :is(#sq-expense-dialog,#sq-receipt-dialog,.sq-bill-modal-portal,.sq-bill-edit-overlay){--dw-form-bg:#102B40;--dw-form-field:#173750;--dw-form-ink:#F3F8FC}
+ html body #dw-expense-editor::backdrop{background:rgba(10,27,46,.60)!important}
+ html body :is(#entry-card,#receipt-card,#dw-expense-editor,.sq-bill-create-card,.sq-bill-edit-overlay .sq-premium-dialog) :is(input,textarea)::placeholder{color:#ABC6D7!important;-webkit-text-fill-color:#ABC6D7!important;opacity:1!important}
+ html body :is(#entry-card,#receipt-card,#dw-expense-editor,.sq-bill-create-card,.sq-bill-edit-overlay .sq-premium-dialog) :is(button,input,select,textarea):focus-visible{outline:2px solid #60F1AD!important;outline-offset:2px}
+ html body #receipt-card #dw-receipt-camera{display:block}
+}
 </style>
 
 <meta name="dw-backdrop-preset-build" content="restored-original-backdrops-20261122-v1">
@@ -268,7 +276,7 @@ window.dwBillDueDate=function(value){
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css?v=20261123-backdrop-gallery-v1">
-<meta name="doweo-release" content="doweo-mobile-create-add-20261126-v1">
+<meta name="doweo-release" content="doweo-mobile-expense-bills-receipt-20261126-v2">
 </head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
@@ -4454,7 +4462,15 @@ function receiptPreview(){
  document.getElementById('receipt-tip-person-label').hidden=receiptTipMode!=='one';
  return {shares,payer,valid};
 }
-document.getElementById('quick-receipt').onclick=function(){var card=document.getElementById('receipt-card');card.hidden=!card.hidden;if(!card.hidden){if(!current){alert('Open a shared tracker to save receipt expenses.');card.hidden=true;return;}receiptDraw();card.scrollIntoView({behavior:'smooth',block:'start'});}};
+function squareUpOpenReceiptReview(){
+ if(!current){alert('Open a shared tracker first to scan and assign receipt expenses.');return false;}
+ const card=document.getElementById('receipt-card'),modal=document.getElementById('sq-receipt-dialog');
+ if(!card||!modal)return false;
+ const expense=document.getElementById('sq-expense-dialog');if(expense)expense.hidden=true;
+ card.hidden=false;modal.hidden=false;document.body.classList.add('sq-action-dialog-open');
+ receiptDraw();return true;
+}
+document.getElementById('quick-receipt').onclick=()=>squareUpOpenReceiptReview();
 document.getElementById('receipt-add-item').onclick=()=>receiptAddLine('', '');
 document.getElementById('receipt-close').onclick=function(){document.getElementById('receipt-card').hidden=true;document.getElementById('quick-receipt').scrollIntoView({behavior:'smooth',block:'center'});};
 document.getElementById('receipt-clear').onclick=function(){
@@ -4527,27 +4543,79 @@ function squareUpShowParsedReceipt(parsed,status){
  document.getElementById('receipt-tax').value=parsed.tax.toFixed(2);
  document.getElementById('receipt-tip').value=parsed.tip.toFixed(2);
  document.getElementById('receipt-total').value=parsed.total===null?'':parsed.total.toFixed(2);
- document.getElementById('receipt-card').hidden=false;
- receiptDraw();
+ if(!squareUpOpenReceiptReview())return;
  var warning=parsed.total!==null&&Math.abs(parsed.items.reduce((sum,x)=>sum+Number(x.amount),0)+parsed.tax+parsed.tip-parsed.total)>0.02;
  status.textContent='Recognized '+parsed.items.length+' item'+(parsed.items.length===1?'':'s')+'. Choose who ordered each item below. '+(warning?'⚠️ Detected amounts do not match the printed total; correct any errors before saving.':'Check the detected amounts before saving.');
  document.getElementById('receipt-card').scrollIntoView({behavior:'smooth',block:'start'});
 }
-async function squareUpReadReceipt(file){
- if(!file||!file.type.startsWith('image/'))throw Error('Choose a receipt photo.');
- if(!window.Tesseract)await new Promise((resolve,reject)=>{var sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';sc.onload=resolve;sc.onerror=reject;document.head.appendChild(sc);});
- var result=await window.Tesseract.recognize(file,'eng');
- return squareUpParseReceipt(result.data.text);
+let receiptScanVersion=0;
+const receiptLibraries=new Map();
+function receiptDeadline(p,ms,message){
+ return new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error(message)),ms);Promise.resolve(p).then(v=>{clearTimeout(timer);resolve(v)},e=>{clearTimeout(timer);reject(e)})});
+}
+function receiptLibrary(url,globalName){
+ if(window[globalName])return Promise.resolve(window[globalName]);
+ if(receiptLibraries.has(globalName))return receiptLibraries.get(globalName);
+ const task=new Promise((resolve,reject)=>{
+  const node=document.createElement('script');node.src=url;node.async=true;
+  const timer=setTimeout(()=>{node.remove();reject(new Error('The image reader could not load. Check your connection and retry.'))},20000);
+  node.onload=()=>{clearTimeout(timer);if(window[globalName])resolve(window[globalName]);else reject(new Error('The image reader did not initialize.'))};
+  node.onerror=()=>{clearTimeout(timer);node.remove();reject(new Error('The image reader could not load. Check your connection and retry.'))};
+  document.head.append(node);
+ }).catch(err=>{receiptLibraries.delete(globalName);throw err});
+ receiptLibraries.set(globalName,task);return task;
+}
+async function receiptNormalizeImage(file){
+ if(!file||(!/^image\//i.test(file.type||'')&&!/\.(jpe?g|png|webp|gif|bmp|heic|heif|avif|tiff?)$/i.test(file.name||'')))throw new Error('Choose a receipt image.');
+ let source=file;
+ const heic=/heic|heif/i.test(file.type||'')||/\.(heic|heif)$/i.test(file.name||'');
+ async function raster(blob){
+  const url=URL.createObjectURL(blob);try{
+   const image=new Image();await receiptDeadline(new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error('Could not decode the image.'));image.src=url}),18000,'The photo took too long to decode.');
+   const w=image.naturalWidth,h=image.naturalHeight;if(!w||!h)throw new Error('The photo is empty.');
+   const scale=Math.min(1,2600/Math.max(w,h));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(w*scale));canvas.height=Math.max(1,Math.round(h*scale));
+   const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Could not prepare the photo.');
+   ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0,canvas.width,canvas.height);
+   return await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Could not prepare the photo.')),'image/jpeg',.94));
+  }finally{URL.revokeObjectURL(url)}
+ }
+ try{return await raster(source)}catch(err){
+  if(!heic)throw new Error('This image could not be opened. Try a JPG or PNG photo.');
+  const convert=await receiptLibrary('/third_party/heic2any.min.js?v=0.0.4','heic2any');
+  const result=await receiptDeadline(convert({blob:file,toType:'image/jpeg',quality:.94}),35000,'The HEIC photo took too long to convert. Try a JPG or PNG.');
+  return await raster(Array.isArray(result)?result[0]:result);
+ }
+}
+async function squareUpReadReceipt(file,onProgress=()=>{}){
+ onProgress('Preparing receipt photo…');
+ const image=await receiptNormalizeImage(file);
+ const reader=await receiptLibrary('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js','Tesseract');
+ onProgress('Loading receipt recognition…');
+ let worker,expired=false;
+ const creation=reader.createWorker('eng',1,{logger:m=>{
+  if(m.status==='recognizing text')onProgress('Reading receipt… '+Math.round((m.progress||0)*100)+'%');
+ }});
+ creation.then(w=>{if(expired)Promise.resolve(w.terminate()).catch(()=>{});},()=>{});
+ try{
+  worker=await receiptDeadline(creation,60000,'Recognition could not start. Check your connection and retry.');
+  const result=await receiptDeadline(worker.recognize(image),90000,'Recognition timed out. Try a smaller or clearer photo.');
+  return squareUpParseReceipt(result.data.text);
+ }finally{expired=true;if(worker)Promise.resolve(worker.terminate()).catch(()=>{})}
 }
 document.getElementById('receipt-file').onchange=async function(e){
- var file=e.target.files[0];if(!file)return;
- var status=document.getElementById('receipt-status');status.textContent='Reading receipt photo and sorting items, tax, tip and total…';
+ const file=e.target.files?.[0];if(!file)return;
+ const version=++receiptScanVersion,trackerId=current?.id,status=document.getElementById('receipt-status');
+ const valid=()=>version===receiptScanVersion&&current?.id===trackerId&&!document.getElementById('sq-receipt-dialog').hidden;
+ const report=message=>{if(valid())status.textContent=message};
+ report('Preparing receipt photo…');
  try{
-  var parsed=await squareUpReadReceipt(file);
-  if(!parsed.items.length){status.textContent='No items recognized. Try a clearer photo or add items manually.';return;}
+  const parsed=await squareUpReadReceipt(file,report);if(!valid())return;
+  if(!parsed.items.length){report('No items recognized. Try a clearer photo or enter items manually.');return;}
   squareUpShowParsedReceipt(parsed,status);
- }catch(err){status.textContent='Automatic reading failed. Try another photo or enter items manually.';console.warn(err);}
+ }catch(err){report(err.message||'Automatic reading failed. Try another photo or enter items manually.');console.warn(err);}
+ finally{if(version===receiptScanVersion)e.target.value='';}
 };
+for(const id of ['receipt-clear','sq-receipt-x','receipt-close'])document.getElementById(id)?.addEventListener('click',()=>{receiptScanVersion++});
 document.getElementById('receipt-save').onclick=async function(){
  if(receiptSaving)return;
  var result=receiptPreview();
@@ -5128,7 +5196,7 @@ document.getElementById('split-receipt-file').addEventListener('change',async fu
  var file=this.files?.[0],status=document.getElementById('split-receipt-status');if(!file)return;
  status.textContent='Reading receipt and sorting items, tax, tip and total…';
  try{
-  var parsed=await squareUpReadReceipt(file),items=parsed.items;
+  var parsed=await squareUpReadReceipt(file,message=>{status.textContent=message}),items=parsed.items;
   if(!items.length){status.textContent='Could not recognize items. Try a clearer photo or enter the bill manually.';return;}
   squareUpScannedLines=items;
   squareUpScannedLines.tax=parsed.tax;squareUpScannedLines.tip=parsed.tip;squareUpScannedLines.total=parsed.total;
@@ -5142,7 +5210,7 @@ document.getElementById('split-receipt-file').addEventListener('change',async fu
   status.textContent='Receipt scanned. Item-by-item breakdown opened.';
   document.getElementById('split-receipt-items').innerHTML='';
   document.getElementById('split-use-itemized').hidden=true;
- }catch(err){status.textContent='Could not read this receipt. Enter the amount manually or try another photo.';console.warn(err);}
+ }catch(err){status.textContent=err.message||'Could not read this receipt. Enter the amount manually or try another photo.';console.warn(err);}finally{this.value='';}
 });
 document.getElementById('split-use-itemized').addEventListener('click',()=>{
  if(!current)return alert('Open a shared tracker first.');
@@ -10008,8 +10076,8 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
  head.querySelector('h2').textContent='Review receipt';head.querySelector('p').textContent='Review before saving.';
  const body=document.createElement('div');body.id='dw-receipt-body';const left=document.createElement('aside');left.id='dw-receipt-photo';left.setAttribute('aria-label','Receipt photo');
  const image=document.createElement('img');image.id='dw-receipt-image';image.alt='Your receipt photo';image.hidden=true;const placeholder=document.createElement('div');placeholder.id='dw-receipt-photo-placeholder';placeholder.textContent='Add a receipt photo or enter items manually.';
- const change=document.createElement('button');change.type='button';change.textContent='Change photo';change.onclick=()=>document.getElementById('receipt-file').click();
- left.append(image,placeholder,change,document.getElementById('receipt-status'));const input=document.getElementById('receipt-file');input.hidden=true;left.append(input);
+ const change=document.createElement('button');change.type='button';change.textContent='Choose receipt photo';change.id='dw-receipt-choose';change.onclick=()=>{const file=document.getElementById('receipt-file');file.removeAttribute('capture');file.value='';file.click()};
+ const camera=document.createElement('button');camera.type='button';camera.id='dw-receipt-camera';camera.textContent='Take photo';camera.onclick=()=>{const file=document.getElementById('receipt-file');file.setAttribute('capture','environment');file.value='';file.click()};left.append(image,placeholder,change,camera,document.getElementById('receipt-status'));const input=document.getElementById('receipt-file');input.setAttribute('accept','image/*,.heic,.heif,.jpg,.jpeg,.png,.webp');input.hidden=true;left.append(input);
  const right=document.createElement('div');right.id='dw-receipt-fields';payer.querySelector('.sq-receipt-section-title').textContent='Paid by';items.querySelector('.sq-receipt-section-title').textContent='Items';items.querySelector('.sq-receipt-hint')?.remove();
  const columns=document.createElement('div');columns.className='dw-receipt-columns';columns.innerHTML='<span>Item</span><span>Price</span><span>People</span><span></span>';document.getElementById('receipt-items').before(columns);
  const extra=document.createElement('details');extra.id='dw-receipt-extras';extra.innerHTML='<summary><span>Extras<span id="dw-receipt-extra-summary"></span></span></summary>';
@@ -10052,7 +10120,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
  const error=document.createElement('p');error.id='dw-split-step-error';error.setAttribute('role','alert');layout.after(error);
  const footer=document.createElement('div');footer.id='dw-split-step-footer';footer.innerHTML='<div><span>Total</span><strong id="dw-split-total">$0.00</strong></div><button type="button" id="dw-split-step-back">Back</button><button type="button" id="dw-split-step-next">Continue</button>';page.append(footer);
  const save=document.getElementById('split-save'),marker=document.createComment('split-save-original');save.before(marker);
- const scan=document.createElement('button');scan.id='dw-split-scan';scan.type='button';scan.textContent='Scan a receipt instead';first.prepend(scan);scan.onclick=()=>{page.classList.add('dw-show-split-scan');document.getElementById('split-receipt-file').click();};
+ const scan=document.createElement('button');scan.id='dw-split-scan';scan.type='button';scan.textContent='Scan a receipt instead';first.prepend(scan);scan.onclick=()=>{page.classList.add('dw-show-split-scan');const file=document.getElementById('split-receipt-file');file.setAttribute('accept','image/*,.heic,.heif,.jpg,.jpeg,.png,.webp');file.removeAttribute('capture');file.value='';file.click();};
  function go(n){step=n;page.dataset.splitStep=String(n);error.textContent='';bar.querySelectorAll('span').forEach((e,i)=>{if(i===n-1)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');});if(mobile.matches)window.scrollTo({top:0,behavior:'instant'});}
  footer.querySelector('#dw-split-step-back').onclick=()=>go(Math.max(1,step-1));footer.querySelector('#dw-split-step-next').onclick=()=>{
   if(step===1){const total=document.getElementById('split-total'),payer=document.querySelector('#split-payers input:checked');if(!Number.isFinite(Number(total.value))||Number(total.value)<=0||!total.checkValidity()||!payer){error.textContent='Enter a valid bill total and choose who paid.';return;}}
@@ -11929,6 +11997,42 @@ function sync(){
 function queue(){if(!frame)frame=requestAnimationFrame(sync)}
 new MutationObserver(records=>{if(!mobile.matches)return;if(records.some(r=>r.target===document.body||r.target.closest?.(roots)||[...r.addedNodes].some(n=>n.nodeType===1&&(n.matches?.(roots)||n.querySelector?.(roots)))))queue()}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class','aria-pressed','aria-selected','aria-invalid','open','data-selected']});
 mobile.addEventListener('change',queue);window.addEventListener('pageshow',queue);document.addEventListener('DOMContentLoaded',queue);queue();
+})();
+</script>
+<script id="dw-mobile-expense-bill-polish-v2">
+
+(function(){
+const mobile=matchMedia('(max-width:900px)'),white='#F3F8FC',muted='#ABC6D7',navy='#102B40',field='#173750',mint='#60F1AD',ink='#0A1B2E',border='#355E72';
+const scope='#sq-expense-dialog > .sq-action-modal-inner,#sq-receipt-dialog > .sq-action-modal-inner,#dw-expense-editor,.sq-bill-modal-portal > .sq-bill-create-card,.sq-bill-edit-overlay .sq-premium-dialog';
+const saved=new Map();let frame=0;
+function paint(el,props){if(!el)return;if(!saved.has(el))saved.set(el,new Map());const state=saved.get(el);for(const [k,v] of Object.entries(props)){if(!state.has(k))state.set(k,[el.style.getPropertyValue(k),el.style.getPropertyPriority(k)]);if(el.style.getPropertyValue(k)!==v||el.style.getPropertyPriority(k)!=='important')el.style.setProperty(k,v,'important')}}
+function color(el,v){paint(el,{color:v,'-webkit-text-fill-color':v,'text-shadow':'none'})}
+function surface(el,bg=navy){paint(el,{background:bg,'border-color':border,'box-shadow':'none'});color(el,white)}
+function restore(){for(const [el,state] of saved)for(const [k,[v,p]] of state){if(v)el.style.setProperty(k,v,p);else el.style.removeProperty(k)}saved.clear()}
+function all(root,s,fn){root.querySelectorAll(s).forEach(fn)}
+function sync(){
+ frame=0;if(!mobile.matches){if(saved.size)restore();return}for(const el of saved.keys())if(!el.isConnected)saved.delete(el);
+ for(const root of document.querySelectorAll(scope)){
+  surface(root,'linear-gradient(150deg,#173750,#102B40 55%,#0A1B2E)');paint(root,{'border-radius':'20px','color-scheme':'dark'});
+  all(root,'#entry-card,#receipt-card,form,.sq-entry-heading,.sq-receipt-heading,.sq-bill-create-heading,.sq-bill-section-label,.row,.sq-category-row,#dw-receipt-body,#dw-receipt-fields,#dw-receipt-photo',el=>{surface(el,'transparent')});
+  all(root,'.toggle,.sq-bill-type-tabs,.sq-bill-assign,#preview,.sq-receipt-section,.sq-receipt-item,.sq-receipt-preview,#dw-receipt-footer,#dw-receipt-photo-placeholder,#dw-receipt-extras,#dw-mobile-receipt-review,.sq-icon-picker',el=>{surface(el,field)});
+  all(root,'h1,h2,h3,h4,label,legend,strong,b,p,span,small,summary',el=>{if(!el.closest('#sq-icon-grid')&&!el.closest('button'))color(el,el.matches('small,.sq-bills-help,.sq-receipt-hint,.sq-receipt-kicker,.sq-receipt-status')?muted:white)});
+  all(root,'input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=hidden]),select,textarea',el=>{surface(el,field);paint(el,{'color-scheme':'dark','border':'1px solid '+border,'border-radius':'11px','caret-color':mint,'font-size':'16px','min-height':'44px'})});
+  all(root,'input[type=checkbox],input[type=radio]',el=>paint(el,{'accent-color':mint}));
+  all(root,'button',el=>{
+   if(el.closest('#sq-icon-grid')||el.matches('#sq-icon-trigger'))return;
+   const danger=el.matches('[data-item-remove],.danger,.delete')||/^(remove|delete|clear receipt)\b/i.test(el.textContent.trim());
+   const on=!danger&&el.matches('[type=submit],.primary,.active,[aria-pressed=true],[aria-selected=true],#receipt-save,#dw-receipt-next,#dw-receipt-choose,#receipt-add-item');
+   const close=el.matches('#sq-entry-x,#sq-receipt-x,#sq-bill-mobile-toggle,.doweo-close-control');
+   surface(el,on?mint:field);paint(el,{'border-radius':close?'50%':'11px','border-color':on?mint:border});color(el,danger?'#FFB4B4':on?ink:white);all(el,'span,strong,small',s=>color(s,danger?'#FFB4B4':on?ink:white))
+  });
+  all(root,'[role=alert],.error,.sq-receipt-alert,.sq-receipt-attention',el=>color(el,'#FFB4B4'));
+  all(root,'.sq-bill-step',el=>{surface(el,mint);color(el,ink)});
+ }
+}
+function queue(){if(!frame)frame=requestAnimationFrame(sync)}
+new MutationObserver(rs=>{if(mobile.matches&&rs.some(r=>r.target===document.body||r.target.closest?.(scope)||[...r.addedNodes].some(n=>n.nodeType===1&&(n.matches?.(scope)||n.querySelector?.(scope)))))queue()}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class','aria-pressed','aria-selected','open','data-receipt-step']});
+mobile.addEventListener('change',queue);document.addEventListener('DOMContentLoaded',queue);queue();
 })();
 </script>
 </body>
