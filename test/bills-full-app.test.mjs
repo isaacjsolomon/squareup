@@ -77,8 +77,9 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
    assert.ok(state.overflow<=width+1,'no horizontal overflow');
    assert.ok(Math.abs(state.bottom.bottom-844)<2,'bottom navigation anchored');
    assert.equal(await page.locator('#sq-bills-create').isVisible(),false,'Add form stays collapsed until requested');
-   const gap=await page.evaluate(()=>document.querySelector('.sq-legal-footer').getBoundingClientRect().top-document.querySelector('.dw-bills-calendar-fold').getBoundingClientRect().bottom);
-   assert.ok(gap<90,'no unused spacer below the calendar: '+gap);
+   const calendarLink=await page.locator('.dw-bills-calendar-fold > summary').boundingBox();
+   assert.ok(calendarLink.y>=state.title.bottom-1&&calendarLink.y+calendarLink.height<=state.a.top+1,'calendar link sits between title and summary');
+   assert.equal(await page.locator('#sq-premium-days').isVisible(),false,'calendar stays off Bills home');
    await page.screenshot({path:resolve(root,`test-results/bills/mobile-${width}.png`),fullPage:true});
    await page.screenshot({path:resolve(root,`test-results/bills/viewport-${width}.png`)});
    await page.locator('.dw-bills-calendar-fold').scrollIntoViewIfNeeded();
@@ -131,9 +132,24 @@ test('full app Bills layout, calendar, add/edit/reopen and responsive navigation
   await page.locator('#sq-bills-bill-list .sq-bills-row').waitFor();
   await safeAreaStyle.evaluate(el=>el.remove());
   await page.locator('.dw-bills-calendar-fold > summary').click();
+  await page.locator('#sq-bills-page.dw-bills-calendar-open').waitFor();
+  assert.equal(await page.locator('.dw-bills-add').isVisible(),false,'calendar is a separate subpage');
   assert.ok(await page.locator('#sq-premium-next').isVisible());
+  assert.ok(await page.locator('.dw-cal-day-summary').isVisible());
+  const currentMonth=await page.locator('#sq-premium-month').textContent();
   await page.locator('#sq-premium-next').click();
+  assert.notEqual(await page.locator('#sq-premium-month').textContent(),currentMonth);
+  // The seeded records start in December 2026. Navigate there from today.
+  await page.locator('.dw-cal-today').click();
+  const today=new Date();const diff=(2026-today.getFullYear())*12+11-today.getMonth();
+  for(let i=0;i<Math.abs(diff);i++)await page.locator(diff>0?'#sq-premium-next':'#sq-premium-prev').click();
+  await page.locator('#sq-premium-days button[data-day="1"]').click();
+  assert.match(await page.locator('.dw-cal-day-summary').textContent(),/\$68\.00/);
+  await page.locator('.dw-cal-payment').filter({hasText:'Electricity'}).click();
+  await page.locator('.sq-premium-dialog').getByRole('button',{name:'Close',exact:true}).click();
   await page.screenshot({path:resolve(root,'test-results/bills/calendar-430.png'),fullPage:true});
+  await page.locator('.dw-cal-top button').click();
+  assert.equal(await page.locator('#sq-premium-days').isVisible(),false);
   await page.locator('.dw-bills-add').click();
   await page.locator('#sq-bill-name').fill('Water');await page.locator('#sq-bill-amount').fill('32');await page.locator('#sq-bill-date').fill('2026-12-10');
   await page.locator('.sq-bill-type-tab[data-kind="bill"]').click();
