@@ -38,6 +38,14 @@
    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important;margin:0!important;padding:3px!important;
    border:1px solid #355e72!important;border-radius:999px!important;background:#102b40!important;height:auto!important;
   }
+  /* The mobile tracker controller reserves space for a fixed bar. Use its
+     measured header bounds in the same layer as the default in-flow tabs. */
+  #tracker-dashboard.dw-mobile-tabs-ready > .sq-workspace-tabs {
+   position:fixed!important;
+   top:var(--dw-tracker-tabs-top,80px)!important;
+   left:var(--dw-tracker-tabs-left,13px)!important;
+   width:var(--dw-tracker-tabs-width,calc(100% - 26px))!important;
+  }
   :is(#tracker-dashboard > .sq-workspace-tabs,#sq-bills-page .sq-bills-workspace-tabs) > button:not([hidden]) {
    border:0!important;border-radius:999px!important;box-shadow:none!important;background:transparent!important;color:#f3f8fc!important;-webkit-text-fill-color:#f3f8fc!important;
    width:100%!important;min-width:0!important;min-height:36px!important;height:auto!important;padding:7px 1px!important;font-size:clamp(11px,3vw,14px)!important;font-weight:650!important;line-height:1.2!important;white-space:normal!important;overflow-wrap:anywhere;
