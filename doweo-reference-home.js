@@ -244,90 +244,7 @@
  });
  settleCard.append(settleHead,smartSlot,settleCTA);
  lower.append(activityCard,settleCard);
- const insights=document.createElement('div');
- insights.className='glass-insights';
- const categories=document.createElement('section');
- categories.className='dw-ref-paper glass-categories';
- const title=document.createElement('h2');
- title.textContent='Spending by Category';
- const breakdown=document.createElement('div');
- categories.append(title,breakdown);
- const ranges=document.createElement('div');
- ranges.className='glass-ranges';
- let range=7;
- for(const [label,days] of [['7D',7],['30D',30],['3M',90],['All',0]]){
-  const button=document.createElement('button');
-  button.type='button';button.textContent=label;
-  button.setAttribute('aria-pressed',String(days===range));
-  button.onclick=()=>{
-   range=days;
-   for(const item of ranges.children)item.setAttribute('aria-pressed',String(item===button));
-   drawTrend(lastChartRows);
-  };
-  ranges.append(button);
- }
- chartHead.append(ranges);
- const trend=document.createElement('div');trend.className='glass-trend';
- chart.append(trend);
- function drawTrend(rows){
-  const dates=new Map();
-  const end=new Date();end.setHours(0,0,0,0);
-  const start=new Date(end);start.setDate(start.getDate()-range+1);
-  if(range)dates.set(start.getTime(),[0,0]);
-  dates.set(end.getTime(),[0,0]);
-  let count=0;
-  for(const row of rows){
-   const day=new Date(String(row.occurred_on).slice(0,10)+'T00:00:00').getTime();
-   if(!Number.isFinite(day)||day>end||(range&&day<start)||!['income','expense'].includes(row.kind)||!Number.isFinite(+row.amount))continue;
-   const pair=dates.get(day)||[0,0];pair[row.kind==='income'?0:1]+=Number(row.amount);dates.set(day,pair);count++;
-  }
-  trend.replaceChildren();
-  if(!count){trend.textContent='No transactions in this period.';return;}
-  const ordered=[...dates].sort((a,b)=>a[0]-b[0]);
-  let income=0,spending=0;
-  const points=ordered.map(([day,pair])=>[day,income+=pair[0],spending+=pair[1]]);
-  const max=Math.max(1,income,spending);
-  const graph=svg('svg',{viewBox:'0 0 520 148',role:'img','aria-label':'Cumulative income and spending'});
-  const x=day=>45+460*(day-points[0][0])/Math.max(1,end-points[0][0]);
-  for(const fraction of [0,.5,1]){
-   const y=125-110*fraction;
-   graph.append(svg('line',{x1:45,x2:505,y1:y,y2:y,stroke:'#ffffff33'}));
-   const label=svg('text',{x:0,y:y+4,fill:'#cee2ee','font-size':10});label.textContent=new Intl.NumberFormat(chartLocale(),{notation:'compact'}).format(max*fraction);graph.append(label);
-  }
-  for(const [series,color] of [[1,'#68efb2'],[2,'#68c5ff']]){
-   const coords=points.map(p=>[x(p[0]),125-110*p[series]/max]);
-   graph.append(svg('polyline',{points:coords.map(p=>p.join(',')).join(' '),fill:'none',stroke:color,'stroke-width':3}));
-   for(const [cx,cy] of coords)graph.append(svg('circle',{cx,cy,r:2.5,fill:color}));
-  }
-  const legend=document.createElement('small');legend.textContent='Income '+money(income)+'  ·  Spending '+money(spending);
-  trend.append(graph,legend);
- }
- function drawCategories(rows){
-  const totals=new Map();
-  for(const r of rows)if(r.kind==='expense'&&Number(r.amount)>0){
-   const name=r.category||'Uncategorized';totals.set(name,(totals.get(name)||0)+Number(r.amount));
-  }
-  breakdown.replaceChildren();
-  if(!totals.size){breakdown.textContent='No spending recorded yet.';return;}
-  const ordered=[...totals].sort((a,b)=>b[1]-a[1]);
-  const sum=ordered.reduce((total,entry)=>total+entry[1],0);
-  const palette=['#68efb2','#63bfff','#bb92ff','#ffab99','#ffdc79','#a9bed0'];
-  const list=document.createElement('ul'),stops=[];
-  let angle=0;
-  ordered.forEach(([name,value],i)=>{
-   const color=palette[i%palette.length],next=angle+360*value/sum;
-   stops.push(color+' '+angle+'deg '+next+'deg');angle=next;
-   const li=document.createElement('li');li.style.setProperty('--key',color);
-   const label=document.createElement('span');label.textContent=name;
-   const amount=document.createElement('b');amount.textContent=money(value);
-   li.append(label,Math.round(100*value/sum)+'%',amount);list.append(li);
-  });
-  const ring=document.createElement('div');ring.className='glass-ring';
-  ring.style.backgroundImage='conic-gradient('+stops.join(',')+')';
-  const center=document.createElement('strong');center.textContent=money(sum);ring.append(center);breakdown.append(ring,list);
- }
- insights.append(categories,chart);
- root.append(intro,statGrid,insights,lower);
+ root.append(intro,statGrid,chart,lower);
  toolbar.after(root);
  // All language tables, time icons, status nodes and layout elements are ready.
  // Do not call before the const definitions above have been initialized.
@@ -389,7 +306,6 @@
   chartBody.removeAttribute('data-dw-shell-key');
   chartBody.replaceChildren();
   lastChartRows=Array.isArray(rows)?rows.slice():[];
-  drawCategories(lastChartRows);drawTrend(lastChartRows);
   const now=new Date();
   const monthLocale=chartLocale();
   const months=[];
@@ -500,7 +416,6 @@
    else throw new Error('Unexpected finance response');
   }catch(_){
    incomeAmount.textContent='—';spendAmount.textContent='—';
-   lastChartRows=[];breakdown.textContent='Spending is unavailable.';trend.textContent='Cash flow is unavailable.';
    chartBody.dataset.dwShellKey='chartUnavailable';
    chartBody.textContent=tr('chartUnavailable','Cash flow is unavailable right now. You can still open Cash Flow from the sidebar.');
   }finally{financeBusy=false;}
