@@ -1,0 +1,44 @@
+html body #auth-modal .sq-auth-layout {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  place-items: center;
+  background: linear-gradient(180deg, #08243a40, #08243a55 34%, #06182ce8), url("/images/onboarding-ocean.jpg") center / cover !important;
+}
+html body #auth-modal .sq-auth-hero { display: none !important; }
+html body #auth-modal .sq-auth-right {
+  box-sizing: border-box;
+  width: min(100%, 490px);
+  padding: max(32px, env(safe-area-inset-top)) 22px max(22px, env(safe-area-inset-bottom)) !important;
+  gap: 20px;
+  background: transparent !important;
+  min-height: 100dvh;
+}
+html body #auth-modal .sq-auth-brand {
+  align-self: center !important;
+  color: white !important;
+  text-shadow: 0 2px 12px #081a30;
+}
+html body #auth-modal .sq-auth-form-panel {
+  box-sizing: border-box;
+  padding: clamp(20px, 4vw, 36px) !important;
+  border: 1px solid #cfeeff55;
+  border-radius: 26px;
+  background: #0a2135e8 !important;
+  backdrop-filter: blur(16px);
+  color: #f3f8fc;
+}
+html body #auth-modal :is(#auth-title,#sq-auth-subtitle,.sq-auth-legal-footer,.sq-auth-legal-footer button) {
+  color: #f3f8fc !important;
+  -webkit-text-fill-color: #f3f8fc !important;
+}
+html body #auth-modal .sq-auth-legal-footer { text-align: center; }
+#auth-modal #ocean-email { display: none !important; }
+html body #auth-modal.ocean-welcome #ocean-email {
+  display: block !important;
+  width: 100%; min-height: 48px; border-radius: 14px;
+  background: #60f1ad !important; color: #0a1b2e !important;
+}
+html body #auth-modal.ocean-welcome :is(#auth-tabs,.sq-auth-divider,#auth-form) { display: none !important; }
+.ocean-last-used { font-size: .72em; margin-inline-start: 8px; border: 1px solid currentColor; padding: 2px 5px; border-radius: 6px; }
+html body #auth-modal.ocean-welcome:has(#auth-msg:not(:empty)) #auth-form { display: block !important; }
+html body #auth-modal.ocean-welcome #auth-form > :not(#auth-msg) { display: none !important; }

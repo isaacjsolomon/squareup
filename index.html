@@ -765,7 +765,7 @@ window.dwBillDueDate=function(value){
 
 
 <!-- DEDICATED DOWEO AUTHENTICATION EXPERIENCE -->
-<div class="modal-bg" id="auth-modal">
+<div class="modal-bg ocean-welcome" id="auth-modal">
  <div class="sq-auth-layout" role="dialog" aria-modal="true" aria-labelledby="auth-title">
   <section class="sq-auth-hero" aria-label="Discover DoWeo">
    <div class="sq-auth-aura sq-auth-aura-top" aria-hidden="true"></div>
@@ -810,6 +810,7 @@ window.dwBillDueDate=function(value){
      <button type="button" id="tab-login" class="active">Sign in</button>
      <button type="button" id="tab-signup">Create account</button>
     </div>
+    <button type="button" class="primary" id="ocean-email" aria-controls="auth-form">Continue with email</button>
     <button type="button" id="dw-google-signin" class="dw-google-signin"><svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6C44.4 38.03 46.98 31.88 46.98 24.55z"/><path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.6.27-3.16.76-4.59l-7.98-6.2A23.9 23.9 0 0 0 0 24c0 3.87.93 7.51 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.18 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><span>Continue with Google</span></button>
     <div class="sq-auth-divider"><span>or continue with email</span></div>
     <form id="auth-form">
@@ -1656,6 +1657,7 @@ function errorText(err) {
 
 function setAuthMode(m) {
   authMode = m;
+  $("auth-modal").classList.remove("ocean-welcome");
   $("auth-resend").hidden = true;
   $("dw-google-signin").hidden = m === "forgot" || m === "reset";
   resendEmail = "";
@@ -1700,6 +1702,11 @@ $("dw-google-signin").addEventListener("click", async function(){
 function openAuth(m) {
   setAuthMode(m);
   $("auth-modal").classList.add("open");
+  if (m === "login") {
+    $("auth-modal").classList.add("ocean-welcome");
+    $("ocean-email").focus();
+    return;
+  }
   (m === "reset" ? $("auth-password") : m === "signup" ? $("auth-name") : $("auth-email")).focus();
 }
 function closeAuth() {
@@ -1710,6 +1717,9 @@ function closeAuth() {
 function showUser(user) {
   if(!user && document.body.classList.contains("settings-view")) settingsRoute("dashboard");
   var loggedIn = !!user;
+  if (user?.authProvider) {
+    try { localStorage.setItem("doweo-last-provider", user.authProvider); } catch (_) {}
+  }
   currentUser = user || null;
   document.body.classList.toggle("sq-auth-guest",!loggedIn);
   document.documentElement.classList.remove("sq-auth-loading");
@@ -1752,6 +1762,10 @@ $("settings-menu").addEventListener("keydown", function (e) {
 $("guest-auth-button").onclick = function () { openAuth("login"); };
 $("btn-login").onclick = function () { openAuth("login"); };
 $("btn-signup").onclick = function () { openAuth("signup"); };
+$("ocean-email").onclick = function () {
+  setAuthMode("login");
+  $("auth-email").focus();
+};
 $("tab-login").onclick = function () { setAuthMode("login"); };
 $("tab-signup").onclick = function () { setAuthMode("signup"); };
 $("auth-forgot").onclick = function () { setAuthMode("forgot"); };
@@ -10060,7 +10074,7 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 <script defer src="/doweo-beta-nudge.js?v=20261122-backdrop-colors-v1"></script>
 <!-- Screenshot-matched layout, preserving existing DoWeo data and controls. -->
 <link rel="stylesheet" href="/doweo-reference-home.css?v=20261124-deploy-trigger-v6">
-<script defer src="/doweo-reference-home.js?v=20261123-time-greeting-wide-v2"></script>
+<script defer src="/doweo-reference-home.js?v=20261125-glass-1"></script>
 
 <!-- Unified desktop shell and reviewed offline labels for every supported language. -->
 <link rel="stylesheet" href="/doweo-unified-shell.css?v=20261123-cashflow-visible-v4">
@@ -11295,6 +11309,20 @@ html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
  function refresh(){if(!desktop.matches && document.documentElement.lang==='en')for(const [id,label] of [['nav-home','Home'],['dw-personal-finance','My Wallet']]){const el=document.querySelector('#'+id+' .sq-nav-label');if(el)el.textContent=label}labels()}
  new MutationObserver(labels).observe(nav,{childList:true,subtree:true});desktop.addEventListener('change',refresh);document.addEventListener('DOMContentLoaded',labels);labels();
 })();
+</script>
+<link rel="stylesheet" href="/doweo-glass.css?v=1">
+<link rel="stylesheet" href="/doweo-ocean-welcome.css?v=1">
+<script>
+try {
+  const provider = localStorage.getItem("doweo-last-provider");
+  const button = document.getElementById(provider === "google" ? "dw-google-signin" : "ocean-email");
+  if (["email","google"].includes(provider)) {
+    const badge = document.createElement("small");
+    badge.className = "ocean-last-used";
+    badge.textContent = "Last used";
+    button.append(badge);
+  }
+} catch (_) {}
 </script>
 </body>
 </html>
