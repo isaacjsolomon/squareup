@@ -23,7 +23,7 @@
 <!-- DoWeo installable app -->
 <link rel="manifest" href="/manifest.webmanifest?v=20261122-backdrop-colors-v1">
 <meta name="theme-color" content="#0A1B2E">
-<meta name="doweo-release" content="20261126-compact-more-v4">
+<meta name="doweo-release" content="20261126-compact-more-v5">
 
 <style id="dw-brand-first-paint">
 @layer trackerMobile {
@@ -12996,8 +12996,8 @@ function paint(el,props){if(!el)return;if(!saved.has(el))saved.set(el,new Map())
 function restore(){for(const [el,props] of saved)for(const [key,[value,priority]] of props){if(value)el.style.setProperty(key,value,priority);else el.style.removeProperty(key)}saved.clear()}
 const paths={tracker:'<rect x="3" y="5" width="18" height="15" rx="3"/><path d="M3 10h18M16 15h2"/>',finance:'<path d="M5 19v-7m7 7V5m7 14V9"/>',social:'<circle cx="9" cy="7" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 4a3 3 0 0 1 0 6m1 4a6 6 0 0 1 3 5"/>',support:'<circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4m0 3h.01"/>',chevron:'<path d="m6 9 6 6 6-6"/>'};
 const svg=(key)=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+paths[key]+'</svg>';
-const groups=[['tracker','Tracker Tools',['[data-dw-mobile-section="expenses"]','[data-dw-mobile-section="bills"]','[data-dw-mobile-section="members"]']],['finance','Personal Finance',['[data-sq-destination="nav-analytics"]','[data-sq-destination="nav-cashflow"]','[data-sq-destination="sqev-nav"]','[data-sq-destination="dw-mobile-trips"]','[data-sq-destination="dw-mobile-households"]']],['social','Social',[]],['support','About & Support',['[data-sq-destination="nav-about"]','[data-sq-destination="nav-privacy-terms"]']]];
-const expanded=new Set(['tracker','finance']);const sections=new Map();let built=false,frame=0,wasOpen=false,installAnchor=null;
+const groups=[['tracker','Tracker Tools',['[data-dw-mobile-section="expenses"]','[data-dw-mobile-section="bills"]','[data-dw-mobile-section="members"]']],['finance','Personal Finance',['[data-sq-destination="nav-analytics"]','[data-sq-destination="nav-cashflow"]','[data-sq-destination="sqev-nav"]','[data-sq-destination="dw-mobile-trips"]','[data-sq-destination="dw-mobile-households"]']],['social','Social',[]],['support','About & Support',['[data-sq-destination="nav-profile"]','[data-sq-destination="nav-about"]','[data-sq-destination="nav-privacy-terms"]']]];
+const expanded=new Set(['tracker','finance']);const sections=new Map();let built=false,frame=0,wasOpen=false,installAnchor=null,betaAnchor=null,betaButton=null;
 const originalSocial=more.querySelector('#sq-mobile-social-options');
 const brand=document.createElement('div');brand.className='dw-more-brand';brand.innerHTML='<img src="/images/logo.png?v=doweo-mobile-brand-v3" alt=""><span>DoWeo</span>';
 function renderGroup(key){const g=sections.get(key);if(!g)return;const open=expanded.has(key);g.header.setAttribute('aria-expanded',String(open));g.body.hidden=!open;g.body.style.setProperty('display',open?'grid':'none','important');g.section.classList.toggle('dw-more-expanded',open)}
@@ -13015,13 +13015,23 @@ function organize(){
   if(install){installAnchor=document.createComment('more-install-home');install.before(installAnchor);sections.get('support').body.append(install)}
  }
  for(const [key,,selectors] of groups){const body=sections.get(key).body;for(const selector of selectors){const tile=grid.querySelector(selector);if(tile&&tile.parentElement!==body)body.append(tile)}renderGroup(key)}
- const settings=grid.querySelector('[data-sq-destination="nav-profile"]');if(settings&&settings.parentElement===grid){settings.classList.add('dw-more-settings-row');const support=sections.get('support').section;if(settings.nextElementSibling!==support)support.before(settings)}
+ const supportBody=sections.get('support').body;
+ const beta=document.getElementById('dw-beta-more-action');
+ if(beta&&beta.parentElement!==supportBody){
+  if(betaAnchor?.parentNode)betaAnchor.remove();
+  betaAnchor=document.createComment('more-beta-original');beta.before(betaAnchor);betaButton=beta;
+  supportBody.append(beta);
+ }
+ if(beta&&beta.parentElement===supportBody){
+  paint(beta,{'display':'flex','align-items':'center','justify-content':'flex-start','gap':'8px','width':'100%','min-width':'0','min-height':'47px','height':'auto','padding':'8px 9px','margin':'0','grid-column':'auto','background':'#173750','background-image':'none','border':'1px solid #355E7255','border-radius':'10px','box-shadow':'none','font-size':'13px','font-weight':'650','line-height':'1.25','color':'#F3F8FC','white-space':'normal','text-align':'left'});
+ }
  // Keep the old Overview and Social launcher for existing handlers, not as redundant tiles.
  for(const selector of ['[data-dw-mobile-section="overview"]','[data-sq-social-open]','[data-sq-destination="sq-mobile-notifications"]','[data-sq-destination="sq-finance-nav"]']){const tile=grid.querySelector(selector);if(tile)paint(tile,{display:'none'})}
 }
 function teardown(){
  if(!built)return;
  for(const [key,,selectors] of groups){const body=sections.get(key)?.body;if(!body)continue;for(const selector of selectors){const tile=body.querySelector(selector);if(tile)grid.append(tile)}}
+ if(betaAnchor?.parentNode&&betaButton){betaAnchor.after(betaButton);betaAnchor.remove()}betaAnchor=null;betaButton=null;
  if(installAnchor?.parentNode&&install){installAnchor.after(install);installAnchor.remove()}installAnchor=null;
  for(const g of sections.values())g.section.remove();sections.clear();brand.remove();panel.classList.remove('dw-more-compact-v4');grid.querySelector('.dw-more-settings-row')?.classList.remove('dw-more-settings-row');built=false;
 }
@@ -13046,6 +13056,7 @@ function sync(){
 function queue(){if(!frame)frame=requestAnimationFrame(sync)}
 new MutationObserver(queue).observe(more,{attributes:true,attributeFilter:['hidden']});
 new MutationObserver(queue).observe(grid,{childList:true});
+new MutationObserver(queue).observe(panel,{childList:true});
 window.addEventListener('resize',queue,{passive:true});window.visualViewport?.addEventListener('resize',queue);media.addEventListener('change',queue);
 dock?.addEventListener('click',e=>{if(!media.matches||more.hidden)return;const b=e.target.closest('button');if(!b)return;if(b.id==='sq-mobile-more'){e.preventDefault();e.stopImmediatePropagation();more.querySelector('[data-sq-close]')?.click()}else more.querySelector('[data-sq-close]')?.click()},true);
 queue();
