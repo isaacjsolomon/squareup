@@ -23,6 +23,7 @@
 <!-- DoWeo installable app -->
 <link rel="manifest" href="/manifest.webmanifest?v=20261122-backdrop-colors-v1">
 <meta name="theme-color" content="#0A1B2E">
+<meta name="doweo-release" content="20261126-mobile-refinement-v2">
 
 <style id="dw-brand-first-paint">
 @layer trackerMobile {
@@ -389,7 +390,7 @@ window.dwBillDueDate=function(value){
   <button type="button" id="nav-home" class="sq-nav-link active" aria-current="page"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/><path d="M7 10v-1m10 1V9"/></svg></span><span class="sq-nav-label">Home</span></button>
   <button type="button" id="nav-trackers" class="sq-nav-link"><span class="sq-nav-icon "><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 7 2 2 3-4"/><path d="M12 7h9"/><circle cx="6" cy="17" r="2"/><path d="M12 17h9"/></svg></span><span class="sq-nav-label">Trackers</span></button>
   <button type="button" id="nav-chat" class="sq-nav-link" aria-label="Open tracker group chat"><span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8A8.5 8.5 0 0 1 12.5 20a8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 12.5 3H13a8.5 8.5 0 0 1 8 8v.5Z"/></svg></span><span class="sq-nav-label">Chat</span></button>
-  <button type="button" id="nav-friends" class="sq-nav-link" hidden aria-hidden="true" tabindex="-1"><span class="sq-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2"/><path d="M18 8v8M14 12h8"/></svg></span><span class="sq-nav-label">Friends</span></button>
+  <button type="button" id="nav-friends" class="sq-nav-link" hidden aria-hidden="true" tabindex="-1"><span class="sq-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></svg></span><span class="sq-nav-label">Friends</span></button>
   <button type="button" id="sq-finance-nav" class="sq-nav-link"><span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7 16v-4m5 4V8m5 8v-6"/><path d="M6.5 6.5h2"/></svg></span><span class="sq-nav-label">Finance Hub</span></button>
   <button type="button" id="sqev-nav" class="sq-nav-link" aria-label="Open Events"><span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 15h3m3 0h2"/></svg></span><span class="sq-nav-label">Events</span></button>
   <button type="button" id="nav-cashflow" class="sq-nav-link" aria-label="Open Cash Flow"><span class="sq-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m6 15 4-4 3 2 5-7"/><path d="M16 6h2v2"/></svg></span><span class="sq-nav-label">Cash Flow</span></button>
@@ -8809,7 +8810,7 @@ window.squareUpOpenFinanceHub=open;
   <div class="sq-balanced-actions sq-balanced-more-grid">
    <button type="button" data-sq-destination="sqev-nav"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 15h3m3 0h2"/></svg></span><strong>Events</strong></button>
    <button type="button" data-sq-destination="nav-analytics"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 16v-5m5 5V7m5 9V5"/></svg></span><strong>Analytics</strong></button>
-   <button type="button" data-sq-social-open aria-controls="sq-mobile-social-options" aria-expanded="false"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-8 8 8 8 0 0 1-3.5-.8L4 20l1.3-4.5A8 8 0 1 1 20 11.5Z"/><path d="M8 11h8M8 14h5"/></svg></span><strong>Social</strong></button>
+   <button type="button" data-sq-social-open aria-controls="sq-mobile-social-options" aria-expanded="false"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><strong>Social</strong></button>
    <button type="button" data-sq-destination="sq-mobile-notifications"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></span><strong>Notifications</strong></button>
    <button type="button" data-sq-destination="nav-profile"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.09a2 2 0 0 1 1 1.73v.51a2 2 0 0 1-1 1.73l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.73v-.51a2 2 0 0 1 1-1.73l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span><strong>Settings</strong></button>
    <button type="button" data-sq-destination="nav-about"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".7" fill="currentColor" stroke="none"/></svg></span><strong>About</strong></button>
@@ -8821,7 +8822,7 @@ window.squareUpOpenFinanceHub=open;
    <h3>Social</h3>
    <p>Connect with friends and keep conversations going.</p>
    <div class="sq-balanced-actions sq-balanced-more-grid">
-    <button type="button" data-sq-destination="nav-friends"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M18 8v8M14 12h8"/></svg></span><strong>Friends</strong></button>
+    <button type="button" data-sq-destination="nav-friends"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></svg></span><strong>Friends</strong></button>
     <button type="button" data-dw-social-members><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 15a5 5 0 0 1 5 5"/></svg></span><strong>Members</strong></button>
     <button type="button" data-sq-destination="nav-chat"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8A8.5 8.5 0 0 1 12.5 20a8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 12.5 3H13a8.5 8.5 0 0 1 8 8v.5Z"/></svg></span><strong>Chat</strong></button>
     <a class="sq-social-instagram" href="https://www.instagram.com/doweo.app/" target="_blank" rel="noopener noreferrer" aria-label="DoWeo on Instagram (opens in a new tab)"><span class="sq-balanced-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></span><span class="sq-social-instagram-copy"><strong>Follow us on Instagram</strong><small>@doweo.app</small></span></a>
@@ -9462,7 +9463,7 @@ document.getElementById('ac-log').addEventListener('click',function(){
  const social=document.createElement('button');
  social.type='button';social.className='dw-nav-social-trigger';
  social.setAttribute('aria-haspopup','true');social.setAttribute('aria-expanded','false');
- social.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M18 8v8M14 12h8"/></svg><span class="dw-social-label">Social</span><span class="dw-flyout-caret" aria-hidden="true">›</span>';
+ social.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="dw-social-label">Social</span><span class="dw-flyout-caret" aria-hidden="true">›</span>';
  nav.insertBefore(social,more);
  const makePanel=(id,ids)=>{
    const panel=document.createElement('div');panel.id=id;panel.className='dw-desktop-side-flyout';
@@ -11678,7 +11679,7 @@ html body.dw-chats-open #sq-startup-overlay[hidden]{display:none!important}
 (function(){
  const sidebar=document.querySelector('aside.sidebar'),nav=sidebar.querySelector('.squareup-nav');
  const desktop=matchMedia('(min-width:901px)');
- const icons={expense:'M5 3h14v18l-3-2-4 2-4-2-3 2z M8 8h8 M8 12h6',tracker:'M20 11a8 8 0 1 1-7-7 M12 12l8-8 M16 4h4v4',pay:'M2 10l20-7-7 19-4-8z M11 14L22 3',bills:'M3 6h18v15H3z M3 10h18 M7 3v5 M17 3v5',friends:'M15 20v-2a5 5 0 0 0-10 0v2 M13 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0 M19 9v6 M16 12h6',settings:'M9.5 3l.5-1h4l.5 2 2 .9 1.9-.6 2 3.4-1.5 1.5.2 2.3 1.6 1.5-1.6 3.6-2-.2-1.8 1.4-.3 2.2-3.9.6-1-1.9-2.2-.6-1.9 1-2.7-2.9.9-2-.5-2.1-1.9-1 .6-3.9 2.1-.4 1.4-1.8-.2-2 3.6-1.5z M15.4 11.7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 1 1 7 0'};
+ const icons={expense:'M5 3h14v18l-3-2-4 2-4-2-3 2z M8 8h8 M8 12h6',tracker:'M20 11a8 8 0 1 1-7-7 M12 12l8-8 M16 4h4v4',pay:'M2 10l20-7-7 19-4-8z M11 14L22 3',bills:'M3 6h18v15H3z M3 10h18 M7 3v5 M17 3v5',friends:'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0 M16 11l2 2 4-4',settings:'M9.5 3l.5-1h4l.5 2 2 .9 1.9-.6 2 3.4-1.5 1.5.2 2.3 1.6 1.5-1.6 3.6-2-.2-1.8 1.4-.3 2.2-3.9.6-1-1.9-2.2-.6-1.9 1-2.7-2.9.9-2-.5-2.1-1.9-1 .6-3.9 2.1-.4 1.4-1.8-.2-2 3.6-1.5z M15.4 11.7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 1 1 7 0'};
  function button(label,key,selector){
   const b=document.createElement('button');b.type='button';b.title=label;b.setAttribute('aria-label',label);
   b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+icons[key]+'"/></svg><span class="dw-rail-short-label"></span>';
@@ -12344,6 +12345,100 @@ html body :is(#dw-ref-home,#dw-mobile-home-layered,#analytics-page,#sq-bills-pag
 html body :is(#dw-chats,#analytics-page,#sq-bills-page,#settings-page,#trackers-page,#dw-expense-workspace,#sq-nextgen[data-section="finance"]){scrollbar-color:#355E72 transparent;scrollbar-width:thin}
 </style>
 
+<style id="dw-mobile-refinement-20261126-v2">
+/* Same page layouts; layered rules match the existing mobile cascade. */
+@layer trackerMobile {
+
+@media(max-width:900px){
+ html body #dw-mobile-home-layered#dw-mobile-home-layered {gap:14px!important;font-family:Inter,system-ui,sans-serif!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-hero {background:#102B40!important;background-image:none!important;border:1px solid #355E72!important;border-radius:14px!important;box-shadow:none!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-hero::before,html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-hero::after{display:none!important;content:none!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered :is(.dw-mh-small,.dw-mh-activity){background:#102B40!important;background-image:none!important;border:1px solid #355E72!important;border-radius:14px!important;box-shadow:none!important;color:#F3F8FC!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered :is(.dw-mh-small,.dw-mh-activity) :is(h3,strong){color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered :is(#dw-mh-caption,#dw-mh-members-count,#dw-mh-upcoming-name,.dw-mh-entry-copy small,.dw-mh-empty){color:#ABC6D7!important;-webkit-text-fill-color:#ABC6D7!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered #dw-mh-amount{font-size:clamp(34px,8vw,44px)!important;font-weight:750!important;font-variant-numeric:tabular-nums;color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-entry{background:transparent!important;box-shadow:none!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-entry+.dw-mh-entry{border-top:1px solid #355E72!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered :is(.dw-mh-entry-icon,.dw-mh-small-icon){background:#173750!important;color:#ABC6D7!important;box-shadow:none!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-see-all{color:#60F1AD!important;-webkit-text-fill-color:#60F1AD!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-actions button{border-radius:10px!important;box-shadow:none!important;background-image:none!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-actions button:first-child{background:#60F1AD!important;color:#0A1B2E!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-actions button:first-child :is(svg,span){color:#0A1B2E!important;-webkit-text-fill-color:currentColor!important;}
+ html body :is(#trackers-page,#settings-page,#analytics-page,#sq-bills-page,#friends-page,#notifications-page,#dw-polls-page,#dw-expense-workspace,#sq-nextgen[data-section="finance"]) :is(.card,.sq-ng-card,.sq-analytics-panel,.sq-bills-card,.sq-premium-calendar,.settings-panel,.dw-poll-card){box-shadow:none!important;background-image:none!important;border-radius:14px!important;}
+ html body :is(#analytics-page,#sq-nextgen[data-section="finance"]) :is(.sq-analytics-panel,.sq-ng-card,.sq-recap-stat,.dw-cash-panel){background:#102B40!important;color:#F3F8FC!important;border:1px solid #355E72!important;}
+ html body :is(#analytics-page,#sq-nextgen[data-section="finance"]) :is(.sq-analytics-panel,.sq-ng-card,.sq-recap-stat,.dw-cash-panel) :is(h2,h3,h4,b,strong,.sq-chart-label,.sq-month-label){color:#F3F8FC!important;-webkit-text-fill-color:currentColor!important;}
+ html body #sq-nextgen[data-section="finance"] :is(.dw-analytics-bar.income,.dw-cash-bar.income,.dw-cash-key .income){background:#60F1AD!important;}
+ html body #sq-nextgen[data-section="finance"] :is(.dw-analytics-bar.expense,.dw-cash-bar.spending,.dw-cash-key .spending){background:#355E72!important;}
+ html body #dw-chats :is(.chat-bubble,#dw-dm-messages p){border-radius:16px!important;box-shadow:none!important;line-height:1.4!important;}
+ html body #dw-chats #dw-chat-rows>button:not(.dw-chat-more){border-radius:10px!important;box-shadow:none!important;}
+ html body #sq-bills-page .sq-premium-days button{border-radius:9px!important;box-shadow:none!important;}
+ html body #settings-page .settings-panel{background:#102B40!important;border:1px solid #355E72!important;color:#F3F8FC!important;}
+ html body #settings-page .settings-panel :is(h3,h4,label,strong,b){color:#F3F8FC!important;-webkit-text-fill-color:currentColor!important;}
+ html body #settings-page .settings-panel .settings-muted{color:#ABC6D7!important;}
+}
+
+}
+@layer mobileApp {
+
+@media(max-width:900px){
+ html body #dw-mobile-home-layered#dw-mobile-home-layered {gap:14px!important;font-family:Inter,system-ui,sans-serif!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-hero {background:#102B40!important;background-image:none!important;border:1px solid #355E72!important;border-radius:14px!important;box-shadow:none!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-hero::before,html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-hero::after{display:none!important;content:none!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered :is(.dw-mh-small,.dw-mh-activity){background:#102B40!important;background-image:none!important;border:1px solid #355E72!important;border-radius:14px!important;box-shadow:none!important;color:#F3F8FC!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered :is(.dw-mh-small,.dw-mh-activity) :is(h3,strong){color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered :is(#dw-mh-caption,#dw-mh-members-count,#dw-mh-upcoming-name,.dw-mh-entry-copy small,.dw-mh-empty){color:#ABC6D7!important;-webkit-text-fill-color:#ABC6D7!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered #dw-mh-amount{font-size:clamp(34px,8vw,44px)!important;font-weight:750!important;font-variant-numeric:tabular-nums;color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-entry{background:transparent!important;box-shadow:none!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-entry+.dw-mh-entry{border-top:1px solid #355E72!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered :is(.dw-mh-entry-icon,.dw-mh-small-icon){background:#173750!important;color:#ABC6D7!important;box-shadow:none!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-see-all{color:#60F1AD!important;-webkit-text-fill-color:#60F1AD!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-actions button{border-radius:10px!important;box-shadow:none!important;background-image:none!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-actions button:first-child{background:#60F1AD!important;color:#0A1B2E!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-actions button:first-child :is(svg,span){color:#0A1B2E!important;-webkit-text-fill-color:currentColor!important;}
+ html body :is(#trackers-page,#settings-page,#analytics-page,#sq-bills-page,#friends-page,#notifications-page,#dw-polls-page,#dw-expense-workspace,#sq-nextgen[data-section="finance"]) :is(.card,.sq-ng-card,.sq-analytics-panel,.sq-bills-card,.sq-premium-calendar,.settings-panel,.dw-poll-card){box-shadow:none!important;background-image:none!important;border-radius:14px!important;}
+ html body :is(#analytics-page,#sq-nextgen[data-section="finance"]) :is(.sq-analytics-panel,.sq-ng-card,.sq-recap-stat,.dw-cash-panel){background:#102B40!important;color:#F3F8FC!important;border:1px solid #355E72!important;}
+ html body :is(#analytics-page,#sq-nextgen[data-section="finance"]) :is(.sq-analytics-panel,.sq-ng-card,.sq-recap-stat,.dw-cash-panel) :is(h2,h3,h4,b,strong,.sq-chart-label,.sq-month-label){color:#F3F8FC!important;-webkit-text-fill-color:currentColor!important;}
+ html body #sq-nextgen[data-section="finance"] :is(.dw-analytics-bar.income,.dw-cash-bar.income,.dw-cash-key .income){background:#60F1AD!important;}
+ html body #sq-nextgen[data-section="finance"] :is(.dw-analytics-bar.expense,.dw-cash-bar.spending,.dw-cash-key .spending){background:#355E72!important;}
+ html body #dw-chats :is(.chat-bubble,#dw-dm-messages p){border-radius:16px!important;box-shadow:none!important;line-height:1.4!important;}
+ html body #dw-chats #dw-chat-rows>button:not(.dw-chat-more){border-radius:10px!important;box-shadow:none!important;}
+ html body #sq-bills-page .sq-premium-days button{border-radius:9px!important;box-shadow:none!important;}
+ html body #settings-page .settings-panel{background:#102B40!important;border:1px solid #355E72!important;color:#F3F8FC!important;}
+ html body #settings-page .settings-panel :is(h3,h4,label,strong,b){color:#F3F8FC!important;-webkit-text-fill-color:currentColor!important;}
+ html body #settings-page .settings-panel .settings-muted{color:#ABC6D7!important;}
+}
+
+}
+
+@media(max-width:900px){
+ html body #dw-mobile-home-layered#dw-mobile-home-layered {gap:14px!important;font-family:Inter,system-ui,sans-serif!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-hero {background:#102B40!important;background-image:none!important;border:1px solid #355E72!important;border-radius:14px!important;box-shadow:none!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-hero::before,html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-hero::after{display:none!important;content:none!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered :is(.dw-mh-small,.dw-mh-activity){background:#102B40!important;background-image:none!important;border:1px solid #355E72!important;border-radius:14px!important;box-shadow:none!important;color:#F3F8FC!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered :is(.dw-mh-small,.dw-mh-activity) :is(h3,strong){color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered :is(#dw-mh-caption,#dw-mh-members-count,#dw-mh-upcoming-name,.dw-mh-entry-copy small,.dw-mh-empty){color:#ABC6D7!important;-webkit-text-fill-color:#ABC6D7!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered #dw-mh-amount{font-size:clamp(34px,8vw,44px)!important;font-weight:750!important;font-variant-numeric:tabular-nums;color:#F3F8FC!important;-webkit-text-fill-color:#F3F8FC!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-entry{background:transparent!important;box-shadow:none!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-entry+.dw-mh-entry{border-top:1px solid #355E72!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered :is(.dw-mh-entry-icon,.dw-mh-small-icon){background:#173750!important;color:#ABC6D7!important;box-shadow:none!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-see-all{color:#60F1AD!important;-webkit-text-fill-color:#60F1AD!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-actions button{border-radius:10px!important;box-shadow:none!important;background-image:none!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-actions button:first-child{background:#60F1AD!important;color:#0A1B2E!important;}
+ html body #dw-mobile-home-layered#dw-mobile-home-layered .dw-mh-actions button:first-child :is(svg,span){color:#0A1B2E!important;-webkit-text-fill-color:currentColor!important;}
+ html body :is(#trackers-page,#settings-page,#analytics-page,#sq-bills-page,#friends-page,#notifications-page,#dw-polls-page,#dw-expense-workspace,#sq-nextgen[data-section="finance"]) :is(.card,.sq-ng-card,.sq-analytics-panel,.sq-bills-card,.sq-premium-calendar,.settings-panel,.dw-poll-card){box-shadow:none!important;background-image:none!important;border-radius:14px!important;}
+ html body :is(#analytics-page,#sq-nextgen[data-section="finance"]) :is(.sq-analytics-panel,.sq-ng-card,.sq-recap-stat,.dw-cash-panel){background:#102B40!important;color:#F3F8FC!important;border:1px solid #355E72!important;}
+ html body :is(#analytics-page,#sq-nextgen[data-section="finance"]) :is(.sq-analytics-panel,.sq-ng-card,.sq-recap-stat,.dw-cash-panel) :is(h2,h3,h4,b,strong,.sq-chart-label,.sq-month-label){color:#F3F8FC!important;-webkit-text-fill-color:currentColor!important;}
+ html body #sq-nextgen[data-section="finance"] :is(.dw-analytics-bar.income,.dw-cash-bar.income,.dw-cash-key .income){background:#60F1AD!important;}
+ html body #sq-nextgen[data-section="finance"] :is(.dw-analytics-bar.expense,.dw-cash-bar.spending,.dw-cash-key .spending){background:#355E72!important;}
+ html body #dw-chats :is(.chat-bubble,#dw-dm-messages p){border-radius:16px!important;box-shadow:none!important;line-height:1.4!important;}
+ html body #dw-chats #dw-chat-rows>button:not(.dw-chat-more){border-radius:10px!important;box-shadow:none!important;}
+ html body #sq-bills-page .sq-premium-days button{border-radius:9px!important;box-shadow:none!important;}
+ html body #settings-page .settings-panel{background:#102B40!important;border:1px solid #355E72!important;color:#F3F8FC!important;}
+ html body #settings-page .settings-panel :is(h3,h4,label,strong,b){color:#F3F8FC!important;-webkit-text-fill-color:currentColor!important;}
+ html body #settings-page .settings-panel .settings-muted{color:#ABC6D7!important;}
+}
+
+</style>
 </body>
 </html>
 
