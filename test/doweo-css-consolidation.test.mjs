@@ -18,7 +18,7 @@ const compatibilityIds=[
  'dw-overview-consistent-type',
  'dw-home-heading-alignment'
 ];
-// Retain explicitly reviewed, scoped production overrides.
+// Recent page repairs retain two separately scoped production-only overrides.
 const scopedRepairIds=[
  'dw-brand-first-paint',
  'doweo-desktop-v5-navy-analytics',
@@ -30,9 +30,7 @@ const scopedRepairIds=[
  'dw-workspace-critical-v6',
  'dw-creation-popups-v9',
  'dw-creation-popup-top-layer-style-v9',
- 'dw-bills-navy-floating-v1',
- 'dw-polish-20261126',
- 'dw-mobile-refinement-20261126-v2'
+ 'dw-bills-navy-floating-v1'
 ];
 
 test('design system retains base surfaces and the mint brand accent',()=>{
