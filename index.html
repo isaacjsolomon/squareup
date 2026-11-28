@@ -8238,6 +8238,7 @@ const trendCard=`<section class="sq-ng-card dw-web-trend"><h2>Cash Flow Trend</h
 content.innerHTML=`<div class="sq-ng-finance-overview"><div class="sq-ng-grid sq-ng-summary-stack">${card('Personal cash flow',money(income-spent),true)}${card('Total income',money(income))}${card('Total spending',money(spent))}</div><button type="button" class="sq-ng-add-action" id="sq-ng-open-transaction" aria-haspopup="dialog" aria-controls="sq-ng-txn-overlay"><span class="sq-ng-add-action-icon" aria-hidden="true">+</span><strong>Add Expense</strong><span class="sq-ng-add-action-hint">Or record income</span></button></div>${trendCard}<section class="sq-ng-card sq-ng-section"><h2>Recent personal activity</h2><div class="sq-ng-list">${finance.length?finance.map(x=>`<div class="sq-ng-item"><div><b>${esc(x.description)}</b><small>${esc(x.category)} · ${esc(x.kind)} · ${esc(x.occurred_on)}</small></div><div><b>${x.kind==='expense'?'-':'+'}${esc(money(x.amount))}</b> <button type="button" data-delete="${esc(x.id)}">Delete</button></div></div>`).join(''):'<div class="sq-ng-empty">No personal transactions yet. Add your first one above.</div>'}</div></section>${desktopSections.matches ? categoryCard+comparisonCard : ''}<p class="sq-ng-note">Personal records are private and never change shared tracker balances.</p>`;
 }
 }
+const mobileTxn=document.body.classList.contains('dw-mobile-cashflow');
 const modalHtml = `<div id="sq-ng-txn-overlay" class="sq-ng-txn-overlay" hidden>
  <section class="sq-ng-txn-dialog" role="dialog" aria-modal="true" aria-labelledby="sq-ng-txn-title">
   <header class="sq-ng-txn-header"><div><span class="sq-ng-txn-eyebrow">PERSONAL FINANCE</span><h2 id="sq-ng-txn-title">Add personal expense</h2><p>Track spending and income separately from shared trackers.</p></div><button type="button" class="sq-ng-txn-close" aria-label="Close transaction form">×</button></header>
@@ -8254,7 +8255,7 @@ const modalHtml = `<div id="sq-ng-txn-overlay" class="sq-ng-txn-overlay" hidden>
   </div>
  </section>
 </div>`;
-content.insertAdjacentHTML('beforeend',modalHtml);
+content.insertAdjacentHTML('beforeend',mobileTxn?modalHtml.replace('<div id="sq-ng-txn-overlay"','<dialog id="sq-ng-txn-overlay"').replace(/<\/div>$/,'</dialog>'):modalHtml);
 const overlay=content.querySelector('#sq-ng-txn-overlay');
 const opener=content.querySelector('#sq-ng-open-transaction');
 const form=content.querySelector('#sq-ng-add');
@@ -8278,6 +8279,7 @@ const setKind=kind=>{
  feedback.textContent='';
 };
 const closeModal=()=>{
+ if(mobileTxn&&overlay.open)overlay.close();
  overlay.hidden=true;
  opener.focus();
 };
@@ -8285,7 +8287,8 @@ opener.addEventListener('click',()=>{
  form.reset();
  setKind('expense');
  overlay.hidden=false;
- form.elements.namedItem('description').focus();
+ if(mobileTxn&&!overlay.open)overlay.showModal();
+ if(!mobileTxn)form.elements.namedItem('description').focus();
 });
 content.querySelector('.sq-ng-txn-close').addEventListener('click',closeModal);
 overlay.addEventListener('click',event=>{if(event.target===overlay)closeModal();});
@@ -8306,11 +8309,15 @@ overlay.addEventListener('keydown',event=>{
 });
 form.addEventListener('submit',async event=>{
  event.preventDefault();
+ if(saveButton.disabled)return;
  const values=Object.fromEntries(new FormData(form));
+ values.description=values.description.trim();values.category=values.category.trim();values.amount=Number(values.amount);
+ if(!values.description||!values.category||!Number.isFinite(values.amount)||values.amount<=0){feedback.textContent='Enter a description, category and valid amount.';return;}
  saveButton.disabled=true;
  feedback.textContent='Saving…';
  try{
   await api('finance/transactions','POST',values);
+  if(mobileTxn){closeModal();cfPeriod='month';cfCategory='';}
   await render();
   status.textContent=values.kind==='expense'?'Personal expense saved.':'Personal income saved.';
   content.querySelector('#sq-ng-open-transaction')?.focus();
@@ -11826,6 +11833,14 @@ try {
 </script>
 
 <style id="dw-bills-navy-floating-v1">
+@media(max-width:900px){
+html body.dw-mobile-cashflow #sq-nextgen dialog#sq-ng-txn-overlay[open]:not([hidden]){display:block!important;position:fixed!important;inset:0!important;margin:auto!important;width:min(92vw,440px)!important;height:max-content!important;max-height:85dvh!important;overflow:auto!important;padding:0!important;background:#102B40!important;border:1px solid #355E72!important;border-radius:18px!important;color:#F3F8FC!important;transform:none!important;opacity:1!important}
+html body.dw-mobile-cashflow #sq-nextgen dialog#sq-ng-txn-overlay::backdrop{background:rgba(0,0,0,.65)}
+html body.dw-mobile-cashflow #sq-nextgen dialog#sq-ng-txn-overlay .sq-ng-txn-dialog{position:static!important;transform:none!important;width:100%!important;max-width:none!important;height:auto!important;max-height:none!important;margin:0!important;padding:18px!important;background:#102B40!important;box-sizing:border-box!important}
+html body.dw-mobile-cashflow #sq-ng-txn-overlay input:not([type=hidden]){font-size:16px!important;min-height:44px!important;color:#F3F8FC!important;background:#173750!important}
+html body.dw-mobile-cashflow #sq-ng-txn-overlay .sq-ng-txn-save{background:#60F1AD!important;color:#0A1B2E!important;min-height:44px!important}
+}
+
 @media(max-width:900px){
 html body.dw-mobile-cashflow #sq-nextgen .sq-ng-shell{background-image:linear-gradient(180deg,rgba(10,27,46,.35),#0A1B2E 250px),var(--cf-art,none)!important;background-size:100% 270px,100% 270px!important;background-repeat:no-repeat!important;background-position:top center!important}
 html body.dw-mobile-cashflow #sq-nextgen #sq-ng-back{background:#102B40!important;border:1px solid #355E72!important;box-shadow:none!important}
