@@ -8038,7 +8038,7 @@ const outsideNavigation=(event)=>{
   const nav=event.target.closest('button[id]');
   if(!nav||!['nav-home','nav-trackers','nav-chat','nav-analytics','nav-profile',
    'nav-about','nav-help-center','nav-friends','nav-settings','nav-notifications'].includes(nav.id))return;
-  hub.hidden=true;document.body.classList.remove('sq-finance-open');
+  window.squareUpCloseFinanceHub?.();hub.hidden=true;document.body.classList.remove('sq-finance-open');
   document.body.style.removeProperty('--sq-finance-sidebar-offset');
   document.body.style.overflow='';return;
  }
@@ -8141,10 +8141,9 @@ window.addEventListener('resize',()=>{if(!root.hidden)syncFinanceSidebar()});
 document.getElementById('side-toggle')?.addEventListener('click',()=>{if(!root.hidden)requestAnimationFrame(syncFinanceSidebar)});
 function switchFinanceTab(next){if(desktopDestination(next)||next===tab)return;previousFinanceTabs.push(tab);tab=next;openedWorkspaces.trip=null;openedWorkspaces.household=null;render();}
 document.getElementById('sq-finance-nav').addEventListener('click',()=>open('finance','wallet'));
-// Cash Flow is now a standalone desktop sidebar destination (not an Analytics tab).
+// Cash Flow is a standalone destination on desktop and mobile.
 const cashflowLink=document.getElementById('nav-cashflow');
 cashflowLink?.addEventListener('click',()=>{
- if(!desktopSections.matches)return;
  // Reset any previous standalone page through the existing router before opening.
  document.getElementById('nav-home')?.click();
  open('finance','cashflow');
@@ -8160,10 +8159,10 @@ async function render(){
  document.getElementById('sq-ng-mobile-select').value=tab;
  root.querySelectorAll('[data-ng-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.ngTab===tab));
  const labels={finance:['Personal Finance Hub','Private spending and income, separate from your shared trackers.'],wallet:['Wallet & Settlements','Your balances across existing trackers, without changing any debts.'],trip:['Trip Mode','Your existing trips stay linked to their trackers.'],home:['Household Mode','Build shared routines around your existing trackers.'],subscriptions:['Subscription Manager','Manage recurring bills in your existing billing center.'],currencies:['Multi-Currency','Understand how currency conversion works in DoWeo.'],insights:['Smart Insights','Useful answers calculated from your saved financial records.']};
- document.getElementById('sq-ng-title').textContent=(desktopSections.matches&&(tab==='finance'?(financeOpenSource==='cashflow'?'Cash Flow':'My Wallet'):({insights:'Insights',trip:'Trips',home:'Households'})[tab]))||labels[tab][0];
+ document.getElementById('sq-ng-title').textContent=(tab==='finance'&&financeOpenSource==='cashflow'?'Cash Flow':(desktopSections.matches&&(tab==='finance'?'My Wallet':({insights:'Insights',trip:'Trips',home:'Households'})[tab])))||labels[tab][0];
  document.getElementById('sq-ng-subtitle').textContent=labels[tab][1];
  status.textContent='';content.innerHTML='<p>Loading your workspace…</p>';
- const stale=()=>desktopSections.matches&&(root.hidden||ticket!==renderToken||tab!==requestedTab);
+ const stale=()=>root.hidden||ticket!==renderToken||tab!==requestedTab;
  try{
   if(tab==='finance'||tab==='insights'){
    const rows=await api('finance/transactions');
@@ -8868,7 +8867,7 @@ window.squareUpOpenFinanceHub=open;
    const action=e.target.closest('[data-sq-action]');
    if(action){const id=action.dataset.sqAction;close();const target=document.getElementById(id);if(target){target.click()}return}
    const link=e.target.closest('[data-sq-destination]');
-   if(link){const id=link.dataset.sqDestination;close();const target=document.getElementById(id);if(target&&!target.hidden)target.click();else if(id==='nav-friends'){document.querySelector('[data-sq-tab="members"]')?.click();}return}
+   if(link){const id=link.dataset.sqDestination;close();const target=document.getElementById(id);if(target&&(!target.hidden||id==='nav-cashflow'))target.click();else if(id==='nav-friends'){document.querySelector('[data-sq-tab="members"]')?.click();}return}
   });
  });
  document.getElementById('sq-mobile-more-logout')?.addEventListener('click',function(){
