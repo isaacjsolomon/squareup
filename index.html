@@ -8255,8 +8255,8 @@ const modalHtml = `<div id="sq-ng-txn-overlay" class="sq-ng-txn-overlay" hidden>
   </div>
  </section>
 </div>`;
-content.insertAdjacentHTML('beforeend',mobileTxn?modalHtml.replace('<div id="sq-ng-txn-overlay"','<dialog id="sq-ng-txn-overlay"').replace(/<\/div>$/,'</dialog>'):modalHtml);
-const overlay=content.querySelector('#sq-ng-txn-overlay');
+content.insertAdjacentHTML('beforeend',mobileTxn?modalHtml.replace('<div id="sq-ng-txn-overlay"','<dialog id="dw-cf-transaction-dialog"').replace(/<\/div>$/,'</dialog>'):modalHtml);
+const overlay=content.querySelector(mobileTxn?'#dw-cf-transaction-dialog':'#sq-ng-txn-overlay');
 const opener=content.querySelector('#sq-ng-open-transaction');
 const form=content.querySelector('#sq-ng-add');
 const kindInput=form.elements.namedItem('kind');
@@ -8293,7 +8293,7 @@ opener.addEventListener('click',()=>{
  form.reset();
  setKind('expense');
  overlay.hidden=false;
- if(mobileTxn&&!overlay.open)overlay.showModal();
+ if(mobileTxn&&!overlay.open){try{overlay.showModal()}catch(error){feedback.textContent=error.message;overlay.setAttribute('open','');}}
  if(!mobileTxn)form.elements.namedItem('description').focus();
 });
 content.querySelector('.sq-ng-txn-close').addEventListener('click',closeModal);
@@ -8317,15 +8317,16 @@ form.addEventListener('submit',async event=>{
  event.preventDefault();
  if(saveButton.disabled)return;
  const values=Object.fromEntries(new FormData(form));
+ const today=new Date();values.occurred_on=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
  if(values.category==='__custom__')values.category=customCategory.value.trim();
  values.description=values.description.trim();values.category=values.category.trim();values.amount=Number(values.amount);
  if(!values.description||!values.category||!Number.isFinite(values.amount)||values.amount<=0){feedback.textContent='Enter a description, category and valid amount.';return;}
  saveButton.disabled=true;
  feedback.textContent='Saving…';
  try{
-  await api('finance/transactions','POST',values);
-  if(mobileTxn){closeModal();cfPeriod='month';cfCategory='';}
-  await render();
+  const saved=await api('finance/transactions','POST',values);
+  if(!saved?.id)throw Error('Server did not confirm the transaction. Refresh before retrying.');
+  if(mobileTxn){closeModal();cfPeriod='month';cfCategory='';finance=[saved,...finance.filter(x=>x.id!==saved.id)];drawFinance();}else await render();
   status.textContent=values.kind==='expense'?'Personal expense saved.':'Personal income saved.';
   content.querySelector('#sq-ng-open-transaction')?.focus();
  }catch(error){
@@ -11839,7 +11840,20 @@ try {
 } catch (_) {}
 </script>
 
-<style id="dw-bills-navy-floating-v1">#sq-ng-txn-overlay #sq-ng-custom-category-label[hidden]{display:none!important}#sq-ng-txn-overlay #sq-ng-txn-category{width:100%;min-height:44px;border:1px solid #355E72;border-radius:10px;background:#173750;color:#F3F8FC;padding:10px;font:inherit;color-scheme:dark;box-sizing:border-box}
+<style id="dw-bills-navy-floating-v1">
+@media(max-width:900px){
+#dw-cf-transaction-dialog[hidden]{display:none!important}
+#dw-cf-transaction-dialog[open]{position:fixed!important;inset:0!important;margin:auto!important;width:min(92vw,440px)!important;max-height:85dvh!important;height:max-content!important;overflow:auto!important;padding:0!important;background:#102B40!important;color:#F3F8FC!important;border:1px solid #355E72!important;border-radius:18px!important;display:block!important;z-index:2147483647!important;box-sizing:border-box!important}
+#dw-cf-transaction-dialog::backdrop{background:rgba(0,0,0,.7)}
+#dw-cf-transaction-dialog .sq-ng-txn-dialog{position:static!important;transform:none!important;width:100%!important;max-width:none!important;height:auto!important;margin:0!important;padding:18px!important;background:#102B40!important;box-sizing:border-box!important;color:#F3F8FC!important}
+#dw-cf-transaction-dialog form{display:grid!important;gap:12px!important}
+#dw-cf-transaction-dialog label{display:grid;gap:5px;color:#F3F8FC!important}
+#dw-cf-transaction-dialog label[hidden]{display:none!important}
+#dw-cf-transaction-dialog :is(input:not([type=hidden]),select){width:100%!important;box-sizing:border-box!important;min-height:44px!important;padding:10px!important;border:1px solid #355E72!important;border-radius:10px!important;background:#173750!important;color:#F3F8FC!important;font-size:16px!important}
+#dw-cf-transaction-dialog .sq-ng-txn-save{background:#60F1AD!important;color:#0A1B2E!important;min-height:44px!important}
+#dw-cf-transaction-dialog .sq-ng-txn-feedback{color:#F3F8FC!important}
+}
+#sq-ng-txn-overlay #sq-ng-custom-category-label[hidden]{display:none!important}#sq-ng-txn-overlay #sq-ng-txn-category{width:100%;min-height:44px;border:1px solid #355E72;border-radius:10px;background:#173750;color:#F3F8FC;padding:10px;font:inherit;color-scheme:dark;box-sizing:border-box}
 
 @media(max-width:900px){
 html body.dw-mobile-cashflow #sq-nextgen dialog#sq-ng-txn-overlay[open]:not([hidden]){display:block!important;position:fixed!important;inset:0!important;margin:auto!important;width:min(92vw,440px)!important;height:max-content!important;max-height:85dvh!important;overflow:auto!important;padding:0!important;background:#102B40!important;border:1px solid #355E72!important;border-radius:18px!important;color:#F3F8FC!important;transform:none!important;opacity:1!important}
