@@ -8189,12 +8189,13 @@ function drawMobileCashFlow(){
  const backdrop=document.getElementById('backdrop'),art=backdrop?getComputedStyle(backdrop).backgroundImage:'none';
  root.style.setProperty('--cf-art',art&&art!=='none'?art:'linear-gradient(145deg,#204158,#102B40)');
  const now=new Date(),start=new Date(now.getFullYear(),now.getMonth(),1),day=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
- const end=day(now),begin=cfPeriod==='month'?day(start):cfPeriod==='last'?day(new Date(now.getFullYear(),now.getMonth()-1,1)):'',finish=cfPeriod==='last'?day(new Date(now.getFullYear(),now.getMonth(),0)):end;
+ const begin=cfPeriod==='month'?day(start):cfPeriod==='last'?day(new Date(now.getFullYear(),now.getMonth()-1,1)):'';
+ const finish=day(new Date(now.getFullYear(),now.getMonth()+(cfPeriod==='last'?0:1),0));
  const valid=finance.filter(x=>x&&['income','expense'].includes(x.kind)&&Number.isFinite(Number(x.amount))&&Number(x.amount)>=0);
  const rows=valid.filter(x=>!begin||(String(x.occurred_on).slice(0,10)>=begin&&String(x.occurred_on).slice(0,10)<=finish));
  const sum=(list,k)=>list.filter(x=>x.kind===k).reduce((a,x)=>a+Number(x.amount),0),inc=sum(rows,'income'),out=sum(rows,'expense'),total=inc+out,pct=total?100*inc/total:0;
- const cats={};rows.filter(x=>x.kind==='expense').forEach(x=>{const k=x.category||'Uncategorized';cats[k]=(cats[k]||0)+Number(x.amount)});
- const sorted=Object.entries(cats).sort((a,b)=>b[1]-a[1]),activity=rows.filter(x=>!cfCategory||(x.kind==='expense'&&(x.category||'Uncategorized')===cfCategory)).sort((a,b)=>String(b.occurred_on).localeCompare(String(a.occurred_on)));
+ const cats=Object.create(null);rows.filter(x=>x.kind==='expense').forEach(x=>{const k=x.category||'Uncategorized';cats[k]=(cats[k]||0)+Number(x.amount)});
+ const sorted=Object.entries(cats).sort((a,b)=>b[1]-a[1]),activity=rows.filter(x=>!cfCategory||(x.kind==='expense'&&(x.category||'Uncategorized')===cfCategory)).sort((a,b)=>String(b.created_at||b.occurred_on).localeCompare(String(a.created_at||a.occurred_on)));
  const signed=n=>(n>=0?'+':'−')+money(Math.abs(n));
  const prevStart=day(new Date(now.getFullYear(),now.getMonth()-(cfPeriod==='last'?2:1),1)),prevEnd=day(new Date(now.getFullYear(),now.getMonth()-(cfPeriod==='last'?1:0),0));
  const prev=valid.filter(x=>String(x.occurred_on).slice(0,10)>=prevStart&&String(x.occurred_on).slice(0,10)<=prevEnd),prevNet=sum(prev,'income')-sum(prev,'expense');
@@ -8210,12 +8211,12 @@ function drawMobileCashFlow(){
  content.querySelector('#cf-current').onclick=()=>root.querySelector('.sq-ng-shell')?.scrollTo({top:0,behavior:'auto'});
  const nav=content.querySelector('.cf-nav');if(nav)root.appendChild(nav);
 }
-function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce((a,x)=>a+Number(x.amount),0),spent=finance.filter(x=>x.kind==='expense').reduce((a,x)=>a+Number(x.amount),0);const byCategory={};finance.filter(x=>x.kind==='expense').forEach(x=>byCategory[x.category]=(byCategory[x.category]||0)+Number(x.amount));{
+function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce((a,x)=>a+Number(x.amount),0),spent=finance.filter(x=>x.kind==='expense').reduce((a,x)=>a+Number(x.amount),0);const byCategory=Object.create(null);finance.filter(x=>x.kind==='expense').forEach(x=>byCategory[x.category]=(byCategory[x.category]||0)+Number(x.amount));{
  const now=new Date(),months=[];
  for(let n=5;n>=0;n--){const d=new Date(now.getFullYear(),now.getMonth()-n,1);months.push({key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleDateString(undefined,{month:'short',year:'2-digit'}),income:0,expense:0});}
  const valid=finance.filter(x=>x&&['income','expense'].includes(x.kind)&&Number.isFinite(Number(x.amount))&&Number(x.amount)>=0);
  for(const x of valid){const m=months.find(m=>m.key===String(x.occurred_on||'').slice(0,7));if(m)m[x.kind]+=Number(x.amount);}
- const current=months[5],previous=months[4],categories={};
+ const current=months[5],previous=months[4],categories=Object.create(null);
  for(const x of valid.filter(x=>x.kind==='expense'&&String(x.occurred_on||'').slice(0,7)===current.key)){const name=String(x.category||'Uncategorized');categories[name]=(categories[name]||0)+Number(x.amount);}
  const max=Math.max(1,...months.flatMap(m=>[m.income,m.expense]));
  const chart=months.map(m=>`<div class="dw-analytics-month"><div class="dw-analytics-bars"><span class="dw-analytics-bar income" style="height:${(m.income>0?Math.max(2,m.income/max*100):0)}%" title="Income ${esc(money(m.income))}"></span><span class="dw-analytics-bar expense" style="height:${(m.expense>0?Math.max(2,m.expense/max*100):0)}%" title="Spending ${esc(money(m.expense))}"></span></div><small>${esc(m.label)}</small></div>`).join('');
@@ -8261,6 +8262,9 @@ const opener=content.querySelector('#sq-ng-open-transaction');
 const form=content.querySelector('#sq-ng-add');
 const kindInput=form.elements.namedItem('kind');
 const saveButton=form.querySelector('button[type="submit"]');
+const closeButton=overlay.querySelector('.sq-ng-txn-close');
+opener.setAttribute('aria-haspopup','dialog');
+opener.setAttribute('aria-controls',overlay.id);
 const feedback=content.querySelector('#sq-ng-txn-feedback');
 const tabs=[...content.querySelectorAll('[data-txn-kind]')];
 const categorySelect=form.elements.namedItem('category');
@@ -8270,6 +8274,7 @@ const categoryOptions={expense:['Food & Dining','Groceries','Transportation','Sh
 function syncCustomCategory(){const custom=categorySelect.value==='__custom__';customLabel.hidden=!custom;customCategory.disabled=!custom;customCategory.required=custom;if(!custom)customCategory.value='';}
 categorySelect.addEventListener('change',syncCustomCategory);
 const setKind=kind=>{
+ if(saveButton.disabled)return;
  if(!['expense','income'].includes(kind))return;
  kindInput.value=kind;
  tabs.forEach(button=>{
@@ -8285,6 +8290,7 @@ const setKind=kind=>{
  feedback.textContent='';
 };
 const closeModal=()=>{
+ if(saveButton.disabled)return;
  if(mobileTxn&&overlay.open)overlay.close();
  overlay.hidden=true;
  opener.focus();
@@ -8296,7 +8302,8 @@ opener.addEventListener('click',()=>{
  if(mobileTxn&&!overlay.open){try{overlay.showModal()}catch(error){feedback.textContent=error.message;overlay.setAttribute('open','');}}
  if(!mobileTxn)form.elements.namedItem('description').focus();
 });
-content.querySelector('.sq-ng-txn-close').addEventListener('click',closeModal);
+closeButton.addEventListener('click',closeModal);
+if(mobileTxn)overlay.addEventListener('cancel',event=>{event.preventDefault();closeModal()});
 overlay.addEventListener('click',event=>{if(event.target===overlay)closeModal();});
 tabs.forEach(button=>button.addEventListener('click',()=>setKind(button.dataset.txnKind)));
 overlay.addEventListener('keydown',event=>{
@@ -8321,18 +8328,26 @@ form.addEventListener('submit',async event=>{
  if(values.category==='__custom__')values.category=customCategory.value.trim();
  values.description=values.description.trim();values.category=values.category.trim();values.amount=Number(values.amount);
  if(!values.description||!values.category||!Number.isFinite(values.amount)||values.amount<=0){feedback.textContent='Enter a description, category and valid amount.';return;}
- saveButton.disabled=true;
+ const controls=[saveButton,closeButton,...tabs];
+ controls.forEach(control=>{control.disabled=true});
  feedback.textContent='Saving…';
+ let saved;
  try{
-  const saved=await api('finance/transactions','POST',values);
+  saved=await api('finance/transactions','POST',values);
   if(!saved?.id)throw Error('Server did not confirm the transaction. Refresh before retrying.');
-  if(mobileTxn){closeModal();cfPeriod='month';cfCategory='';finance=[saved,...finance.filter(x=>x.id!==saved.id)];drawFinance();}else await render();
-  status.textContent=values.kind==='expense'?'Personal expense saved.':'Personal income saved.';
-  content.querySelector('#sq-ng-open-transaction')?.focus();
  }catch(error){
   feedback.textContent=error.message||'Could not save transaction.';
-  saveButton.disabled=false;
+  return;
+ }finally{
+  controls.forEach(control=>{control.disabled=false});
  }
+ if(root.hidden||!form.isConnected)return;
+ closeModal();
+ if(mobileTxn){cfPeriod='month';cfCategory='';}
+ finance=[saved,...finance.filter(row=>row.id!==saved.id)];
+ drawFinance();
+ status.textContent=values.kind==='expense'?'Personal expense saved.':'Personal income saved.';
+ content.querySelector('#sq-ng-open-transaction')?.focus();
 });
 content.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Delete this personal transaction?'))return;try{await api('finance/transactions/'+b.dataset.delete,'DELETE');await render()}catch(err){status.textContent=err.message}}));}
 async function drawWallet(){
