@@ -321,40 +321,7 @@ window.dwBillDueDate=function(value){
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css?v=20261123-backdrop-gallery-v1">
 <meta name="doweo-release" content="doweo-entry-functional-20261126-v1">
-<style id="dw-mobile-cashflow-v1">
-@media(max-width:900px){
-body.dw-mobile-cashflow #sq-nextgen:not([hidden]){position:fixed!important;inset:0!important;z-index:10000!important;display:block!important;overflow-y:auto!important;overscroll-behavior:contain;background:linear-gradient(180deg,#204158 0%,#0A1B2E 40%)!important;color:#F3F8FC!important;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)!important;}
-body.dw-mobile-cashflow #sq-nextgen .sq-ng-shell{position:relative!important;inset:auto!important;width:100%!important;max-width:none!important;margin:0!important;padding:16px 14px 90px!important;background:none!important;overflow:visible!important;}
-body.dw-mobile-cashflow #sq-nextgen .sq-ng-header{display:block!important;position:static!important;background:none!important;padding:0!important;margin:0 0 16px!important;}
-body.dw-mobile-cashflow #sq-nextgen :is(.sq-ng-kicker,.sq-ng-tabs,.dw-section-tabs,#sq-finance-mobile-tiles){display:none!important}
-body.dw-mobile-cashflow #sq-nextgen #sq-ng-title{font-size:32px!important;color:#F3F8FC!important;margin:12px 0 4px!important}
-body.dw-mobile-cashflow #sq-nextgen #sq-ng-subtitle{color:#ABC6D7!important;font-size:14px!important}
-body.dw-mobile-cashflow #sq-nextgen #sq-ng-content{display:block!important;position:static!important;background:none!important;padding:0!important;margin:0!important}
-#dw-cf-mobile{display:grid;gap:14px;color:#F3F8FC;font-size:14px}
-#dw-cf-mobile *{box-sizing:border-box}
-#dw-cf-mobile .cf-card{background:#102B40;border:1px solid #355E72;border-radius:18px;padding:16px;min-width:0}
-#dw-cf-mobile button,#dw-cf-mobile select{font:inherit;color:#F3F8FC;background:#173750;border:1px solid #355E72;border-radius:12px;padding:10px;cursor:pointer}
-#dw-cf-mobile .cf-date{display:flex;gap:8px;align-items:center}#dw-cf-mobile select{width:100%}
-#dw-cf-mobile .cf-net{font-size:36px;font-weight:750;margin:6px 0;color:#F3F8FC}
-#dw-cf-mobile .cf-mint{color:#60F1AD}#dw-cf-mobile .cf-muted{color:#ABC6D7;font-size:12px}
-#dw-cf-mobile .cf-chart{display:grid;grid-template-columns:minmax(110px,1fr) minmax(110px,1fr);gap:14px;align-items:center}
-#dw-cf-mobile .cf-ring{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;max-width:180px;width:100%;margin:auto}
-#dw-cf-mobile .cf-hole{width:72%;aspect-ratio:1;border-radius:50%;background:#102B40;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-#dw-cf-mobile .cf-hole strong{font-size:clamp(14px,4vw,22px)}
-#dw-cf-mobile .cf-legend>div{padding:10px 0;border-bottom:1px solid #355E72}#dw-cf-mobile .cf-legend>div:last-child{border:0}
-#dw-cf-mobile .cf-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}#dw-cf-mobile h2{font-size:20px;color:#F3F8FC;margin:0}
-#dw-cf-mobile .cf-heading button{border:0;background:none;color:#60F1AD;padding:4px}
-#dw-cf-mobile .cf-cats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-#dw-cf-mobile .cf-cats button{display:grid;gap:5px;text-align:left;overflow-wrap:anywhere}#dw-cf-mobile .cf-cats button[aria-pressed=true]{background:#60F1AD;color:#0A1B2E}
-#dw-cf-mobile .cf-row{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #355E72}#dw-cf-mobile .cf-row:last-child{border:0}
-#dw-cf-mobile .cf-row b{overflow-wrap:anywhere}#dw-cf-mobile .cf-row small{display:block;color:#ABC6D7}
-#dw-cf-mobile .cf-icon{border-radius:50%;background:#204158;text-align:center;padding:6px;color:#60F1AD}
-#dw-cf-mobile #sq-ng-open-transaction{background:#60F1AD;color:#0A1B2E;font-weight:700;width:100%}
-#dw-cf-mobile .cf-nav{position:sticky;bottom:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#102B40;padding:8px;border-radius:16px;border:1px solid #355E72}
-#dw-cf-mobile .cf-nav [aria-current]{color:#60F1AD;background:#204158}
-body.dw-mobile-cashflow #sq-nextgen #sq-ng-txn-overlay:not([hidden]){z-index:10010!important}
-}
-</style></head>
+</head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
   <div class="sq-startup-content"><svg class="doweo-loading-logo" data-brand-colors="mint-cyan-v8" role="presentation" viewBox="0 0 972 972" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -8224,7 +8191,7 @@ function drawMobileCashFlow(){
  const prevStart=day(new Date(now.getFullYear(),now.getMonth()-(cfPeriod==='last'?2:1),1)),prevEnd=day(new Date(now.getFullYear(),now.getMonth()-(cfPeriod==='last'?1:0),0));
  const prev=valid.filter(x=>String(x.occurred_on).slice(0,10)>=prevStart&&String(x.occurred_on).slice(0,10)<=prevEnd),prevNet=sum(prev,'income')-sum(prev,'expense');
  const comparison=cfPeriod==='all'?'All recorded transactions':prevNet? signed(inc-out-prevNet)+' vs. previous month':'No previous net balance for comparison';
- content.innerHTML=`<div id="dw-cf-mobile"><label class="cf-date"><select id="cf-period" aria-label="Cash flow date range"><option value="month">This month · ${esc(begin)} – ${esc(end)}</option><option value="last">Last month</option><option value="all">All time</option></select></label><section class="cf-card"><b class="cf-mint">Net cash flow ⓘ</b><div class="cf-net">${esc(signed(inc-out))}</div><span class="cf-muted">${esc(comparison)}</span></section><section class="cf-card cf-chart"><div class="cf-ring" role="img" aria-label="Income ${Math.round(pct)} percent of total flow" style="background:${total?'conic-gradient(#60F1AD 0 '+pct+'%,#355E72 '+pct+'% 100%)':'#355E72'}"><div class="cf-hole"><strong>${esc(money(total))}</strong><span class="cf-muted">Total flow</span></div></div><div class="cf-legend"><div><b class="cf-mint">● Income</b><br><strong>${esc(money(inc))}</strong> <small class="cf-muted">${Math.round(pct)}%</small></div><div><b>● Expenses</b><br><strong>${esc(money(out))}</strong> <small class="cf-muted">${total?100-Math.round(pct):0}%</small></div></div></section><div class="cf-heading"><h2>Spending by Category</h2><button id="cf-all-cats">${cfAllCategories?'Show less':'See all'} ›</button></div><div class="cf-cats">${(cfAllCategories?sorted:sorted.slice(0,4)).map(([k,v])=>`<button data-cf-cat="${esc(k)}" aria-pressed="${cfCategory===k}"><span>${esc(k)}</span><b>${esc(money(v))}</b></button>`).join('')||'<span class="cf-muted">No spending in this period.</span>'}</div><div class="cf-heading"><h2>Recent Activity</h2><button id="cf-all-activity">${cfAllActivity?'Show less':'See all'} ›</button></div><section class="cf-card">${(cfAllActivity?activity:activity.slice(0,3)).map(x=>`<div class="cf-row"><span class="cf-icon">${x.kind==='income'?'↓':'↑'}</span><div><b>${esc(x.description)}</b><small>${esc(x.category||x.kind)}</small></div><div><b class="${x.kind==='income'?'cf-mint':''}">${esc(signed(x.kind==='income'?Number(x.amount):-Number(x.amount)))}</b><small>${esc(x.occurred_on)}</small><button data-delete="${esc(x.id)}" aria-label="Delete transaction">Delete</button></div></div>`).join('')||'<span class="cf-muted">No transactions in this period.</span>'}</section><button id="sq-ng-open-transaction" type="button">＋ Add expense or income</button><nav class="cf-nav" aria-label="Cash flow navigation"><button id="cf-home">⌂ Home</button><button aria-current="page" id="cf-current">▥ Cash Flow</button><button id="cf-settings">⚙ Settings</button></nav></div>`;
+ content.innerHTML=`<div id="dw-cf-mobile"><label class="cf-date"><select id="cf-period" aria-label="Cash flow date range"><option value="month">This month · ${esc(day(start))} – ${esc(end)}</option><option value="last">Last month</option><option value="all">All time</option></select></label><section class="cf-card"><b class="cf-mint">Net cash flow ⓘ</b><div class="cf-net">${esc(signed(inc-out))}</div><span class="cf-muted">${esc(comparison)}</span></section><section class="cf-card cf-chart"><div class="cf-ring" role="img" aria-label="Income ${Math.round(pct)} percent of total flow" style="background:${total?'conic-gradient(#60F1AD 0 '+pct+'%,#355E72 '+pct+'% 100%)':'#355E72'}"><div class="cf-hole"><strong>${esc(money(total))}</strong><span class="cf-muted">Total flow</span></div></div><div class="cf-legend"><div><b class="cf-mint">● Income</b><br><strong>${esc(money(inc))}</strong> <small class="cf-muted">${Math.round(pct)}%</small></div><div><b>● Expenses</b><br><strong>${esc(money(out))}</strong> <small class="cf-muted">${total?100-Math.round(pct):0}%</small></div></div></section><div class="cf-heading"><h2>Spending by Category</h2><button id="cf-all-cats">${cfAllCategories?'Show less':'See all'} ›</button></div><div class="cf-cats">${(cfAllCategories?sorted:sorted.slice(0,4)).map(([k,v])=>`<button data-cf-cat="${esc(k)}" aria-pressed="${cfCategory===k}"><span>${esc(k)}</span><b>${esc(money(v))}</b></button>`).join('')||'<span class="cf-muted">No spending in this period.</span>'}</div><div class="cf-heading"><h2>Recent Activity</h2><button id="cf-all-activity">${cfAllActivity?'Show less':'See all'} ›</button></div><section class="cf-card">${(cfAllActivity?activity:activity.slice(0,3)).map(x=>`<div class="cf-row"><span class="cf-icon">${x.kind==='income'?'↓':'↑'}</span><div><b>${esc(x.description)}</b><small>${esc(x.category||x.kind)}</small></div><div><b class="${x.kind==='income'?'cf-mint':''}">${esc(signed(x.kind==='income'?Number(x.amount):-Number(x.amount)))}</b><small>${esc(x.occurred_on)}</small><button data-delete="${esc(x.id)}" aria-label="Delete transaction">Delete</button></div></div>`).join('')||'<span class="cf-muted">No transactions in this period.</span>'}</section><button id="sq-ng-open-transaction" type="button">＋ Add expense or income</button><nav class="cf-nav" aria-label="Cash flow navigation"><button id="cf-home">⌂ Home</button><button aria-current="page" id="cf-current">▥ Cash Flow</button><button id="cf-settings">⚙ Settings</button></nav></div>`;
  content.querySelector('#cf-period').value=cfPeriod;
  content.querySelector('#cf-period').onchange=e=>{cfPeriod=e.target.value;cfCategory='';drawFinance()};
  content.querySelector('#cf-all-cats').onclick=()=>{cfAllCategories=!cfAllCategories;drawFinance()};
@@ -10820,6 +10787,39 @@ const h=Math.ceil(sidebar.getBoundingClientRect().height);if(h>0)workspace.style
 <link rel="stylesheet" href="/doweo-desktop-standalone.css?v=20261124-creation-popups-v8">
 <link rel="stylesheet" href="/doweo-polls-dashboard.css?v=20261122-backdrop-colors-v1">
 <style id="dw-mobile-critical-colors-v8">
+@media(max-width:900px){
+body.dw-mobile-cashflow #sq-nextgen:not([hidden]){position:fixed!important;inset:0!important;z-index:10000!important;display:block!important;overflow-y:auto!important;overscroll-behavior:contain;background:linear-gradient(180deg,#204158 0%,#0A1B2E 40%)!important;color:#F3F8FC!important;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)!important;}
+body.dw-mobile-cashflow #sq-nextgen .sq-ng-shell{position:relative!important;inset:auto!important;width:100%!important;max-width:none!important;margin:0!important;padding:16px 14px 90px!important;background:none!important;overflow:visible!important;}
+body.dw-mobile-cashflow #sq-nextgen .sq-ng-header{display:block!important;position:static!important;background:none!important;padding:0!important;margin:0 0 16px!important;}
+body.dw-mobile-cashflow #sq-nextgen :is(.sq-ng-kicker,.sq-ng-tabs,.dw-section-tabs,#sq-finance-mobile-tiles){display:none!important}
+body.dw-mobile-cashflow #sq-nextgen #sq-ng-title{font-size:32px!important;color:#F3F8FC!important;margin:12px 0 4px!important}
+body.dw-mobile-cashflow #sq-nextgen #sq-ng-subtitle{color:#ABC6D7!important;font-size:14px!important}
+body.dw-mobile-cashflow #sq-nextgen #sq-ng-content{display:block!important;position:static!important;background:none!important;padding:0!important;margin:0!important}
+#dw-cf-mobile{display:grid;gap:14px;color:#F3F8FC;font-size:14px}
+#dw-cf-mobile *{box-sizing:border-box}
+#dw-cf-mobile .cf-card{background:#102B40;border:1px solid #355E72;border-radius:18px;padding:16px;min-width:0}
+#dw-cf-mobile button,#dw-cf-mobile select{font:inherit;color:#F3F8FC;background:#173750;border:1px solid #355E72;border-radius:12px;padding:10px;cursor:pointer}
+#dw-cf-mobile .cf-date{display:flex;gap:8px;align-items:center}#dw-cf-mobile select{width:100%}
+#dw-cf-mobile .cf-net{font-size:36px;font-weight:750;margin:6px 0;color:#F3F8FC}
+#dw-cf-mobile .cf-mint{color:#60F1AD}#dw-cf-mobile .cf-muted{color:#ABC6D7;font-size:12px}
+#dw-cf-mobile .cf-chart{display:grid;grid-template-columns:minmax(110px,1fr) minmax(110px,1fr);gap:14px;align-items:center}
+#dw-cf-mobile .cf-ring{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;max-width:180px;width:100%;margin:auto}
+#dw-cf-mobile .cf-hole{width:72%;aspect-ratio:1;border-radius:50%;background:#102B40;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+#dw-cf-mobile .cf-hole strong{font-size:clamp(14px,4vw,22px)}
+#dw-cf-mobile .cf-legend>div{padding:10px 0;border-bottom:1px solid #355E72}#dw-cf-mobile .cf-legend>div:last-child{border:0}
+#dw-cf-mobile .cf-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}#dw-cf-mobile h2{font-size:20px;color:#F3F8FC;margin:0}
+#dw-cf-mobile .cf-heading button{border:0;background:none;color:#60F1AD;padding:4px}
+#dw-cf-mobile .cf-cats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#dw-cf-mobile .cf-cats button{display:grid;gap:5px;text-align:left;overflow-wrap:anywhere}#dw-cf-mobile .cf-cats button[aria-pressed=true]{background:#60F1AD;color:#0A1B2E}
+#dw-cf-mobile .cf-row{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #355E72}#dw-cf-mobile .cf-row:last-child{border:0}
+#dw-cf-mobile .cf-row b{overflow-wrap:anywhere}#dw-cf-mobile .cf-row small{display:block;color:#ABC6D7}
+#dw-cf-mobile .cf-icon{border-radius:50%;background:#204158;text-align:center;padding:6px;color:#60F1AD}
+#dw-cf-mobile #sq-ng-open-transaction{background:#60F1AD;color:#0A1B2E;font-weight:700;width:100%}
+#dw-cf-mobile .cf-nav{position:sticky;bottom:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#102B40;padding:8px;border-radius:16px;border:1px solid #355E72}
+#dw-cf-mobile .cf-nav [aria-current]{color:#60F1AD;background:#204158}
+body.dw-mobile-cashflow #sq-nextgen #sq-ng-txn-overlay:not([hidden]){z-index:10010!important}
+}
+
 /* Desktop and mobile: the brand icon is one self-contained SVG image, not a
    theme-colored camera glyph. Keep old gradient backgrounds out of the mark. */
 html body #sq-instagram-invite .sq-ig-mark {
