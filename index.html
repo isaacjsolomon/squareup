@@ -321,7 +321,40 @@ window.dwBillDueDate=function(value){
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css?v=20261123-backdrop-gallery-v1">
 <meta name="doweo-release" content="doweo-entry-functional-20261126-v1">
-</head>
+<style id="dw-mobile-cashflow-v1">
+@media(max-width:900px){
+body.dw-mobile-cashflow #sq-nextgen:not([hidden]){position:fixed!important;inset:0!important;z-index:10000!important;display:block!important;overflow-y:auto!important;overscroll-behavior:contain;background:linear-gradient(180deg,#204158 0%,#0A1B2E 40%)!important;color:#F3F8FC!important;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)!important;}
+body.dw-mobile-cashflow #sq-nextgen .sq-ng-shell{position:relative!important;inset:auto!important;width:100%!important;max-width:none!important;margin:0!important;padding:16px 14px 90px!important;background:none!important;overflow:visible!important;}
+body.dw-mobile-cashflow #sq-nextgen .sq-ng-header{display:block!important;position:static!important;background:none!important;padding:0!important;margin:0 0 16px!important;}
+body.dw-mobile-cashflow #sq-nextgen :is(.sq-ng-kicker,.sq-ng-tabs,.dw-section-tabs,#sq-finance-mobile-tiles){display:none!important}
+body.dw-mobile-cashflow #sq-nextgen #sq-ng-title{font-size:32px!important;color:#F3F8FC!important;margin:12px 0 4px!important}
+body.dw-mobile-cashflow #sq-nextgen #sq-ng-subtitle{color:#ABC6D7!important;font-size:14px!important}
+body.dw-mobile-cashflow #sq-nextgen #sq-ng-content{display:block!important;position:static!important;background:none!important;padding:0!important;margin:0!important}
+#dw-cf-mobile{display:grid;gap:14px;color:#F3F8FC;font-size:14px}
+#dw-cf-mobile *{box-sizing:border-box}
+#dw-cf-mobile .cf-card{background:#102B40;border:1px solid #355E72;border-radius:18px;padding:16px;min-width:0}
+#dw-cf-mobile button,#dw-cf-mobile select{font:inherit;color:#F3F8FC;background:#173750;border:1px solid #355E72;border-radius:12px;padding:10px;cursor:pointer}
+#dw-cf-mobile .cf-date{display:flex;gap:8px;align-items:center}#dw-cf-mobile select{width:100%}
+#dw-cf-mobile .cf-net{font-size:36px;font-weight:750;margin:6px 0;color:#F3F8FC}
+#dw-cf-mobile .cf-mint{color:#60F1AD}#dw-cf-mobile .cf-muted{color:#ABC6D7;font-size:12px}
+#dw-cf-mobile .cf-chart{display:grid;grid-template-columns:minmax(110px,1fr) minmax(110px,1fr);gap:14px;align-items:center}
+#dw-cf-mobile .cf-ring{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;max-width:180px;width:100%;margin:auto}
+#dw-cf-mobile .cf-hole{width:72%;aspect-ratio:1;border-radius:50%;background:#102B40;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+#dw-cf-mobile .cf-hole strong{font-size:clamp(14px,4vw,22px)}
+#dw-cf-mobile .cf-legend>div{padding:10px 0;border-bottom:1px solid #355E72}#dw-cf-mobile .cf-legend>div:last-child{border:0}
+#dw-cf-mobile .cf-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}#dw-cf-mobile h2{font-size:20px;color:#F3F8FC;margin:0}
+#dw-cf-mobile .cf-heading button{border:0;background:none;color:#60F1AD;padding:4px}
+#dw-cf-mobile .cf-cats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#dw-cf-mobile .cf-cats button{display:grid;gap:5px;text-align:left;overflow-wrap:anywhere}#dw-cf-mobile .cf-cats button[aria-pressed=true]{background:#60F1AD;color:#0A1B2E}
+#dw-cf-mobile .cf-row{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #355E72}#dw-cf-mobile .cf-row:last-child{border:0}
+#dw-cf-mobile .cf-row b{overflow-wrap:anywhere}#dw-cf-mobile .cf-row small{display:block;color:#ABC6D7}
+#dw-cf-mobile .cf-icon{border-radius:50%;background:#204158;text-align:center;padding:6px;color:#60F1AD}
+#dw-cf-mobile #sq-ng-open-transaction{background:#60F1AD;color:#0A1B2E;font-weight:700;width:100%}
+#dw-cf-mobile .cf-nav{position:sticky;bottom:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#102B40;padding:8px;border-radius:16px;border:1px solid #355E72}
+#dw-cf-mobile .cf-nav [aria-current]{color:#60F1AD;background:#204158}
+body.dw-mobile-cashflow #sq-nextgen #sq-ng-txn-overlay:not([hidden]){z-index:10010!important}
+}
+</style></head>
 <body>
 <div id="sq-startup-overlay" role="status" aria-live="polite" aria-label="Loading DoWeo">
   <div class="sq-startup-content"><svg class="doweo-loading-logo" data-brand-colors="mint-cyan-v8" role="presentation" viewBox="0 0 972 972" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -8107,6 +8140,7 @@ function open(which,source='wallet'){
  syncFinanceSidebar();document.body.style.overflow='hidden';tab=which;render();
 }
 function close(){
+ document.body.classList.remove('dw-mobile-cashflow');
  renderToken++;
  root.hidden=true;root.setAttribute('aria-hidden','true');
  root.style.setProperty('display','none','important');
@@ -8156,11 +8190,12 @@ document.getElementById('sq-ng-mobile-select').addEventListener('change',e=>swit
 async function render(){
  const ticket=++renderToken, requestedTab=tab;
  syncSectionTabs();
+ document.body.classList.toggle('dw-mobile-cashflow',!desktopSections.matches&&tab==='finance'&&financeOpenSource==='cashflow');
  document.getElementById('sq-ng-mobile-select').value=tab;
  root.querySelectorAll('[data-ng-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.ngTab===tab));
  const labels={finance:['Personal Finance Hub','Private spending and income, separate from your shared trackers.'],wallet:['Wallet & Settlements','Your balances across existing trackers, without changing any debts.'],trip:['Trip Mode','Your existing trips stay linked to their trackers.'],home:['Household Mode','Build shared routines around your existing trackers.'],subscriptions:['Subscription Manager','Manage recurring bills in your existing billing center.'],currencies:['Multi-Currency','Understand how currency conversion works in DoWeo.'],insights:['Smart Insights','Useful answers calculated from your saved financial records.']};
  document.getElementById('sq-ng-title').textContent=(tab==='finance'&&financeOpenSource==='cashflow'?'Cash Flow':(desktopSections.matches&&(tab==='finance'?'My Wallet':({insights:'Insights',trip:'Trips',home:'Households'})[tab])))||labels[tab][0];
- document.getElementById('sq-ng-subtitle').textContent=labels[tab][1];
+ document.getElementById('sq-ng-subtitle').textContent=document.body.classList.contains('dw-mobile-cashflow')?'Track your income, spending, and overall cash flow.':labels[tab][1];
  status.textContent='';content.innerHTML='<p>Loading your workspace…</p>';
  const stale=()=>root.hidden||ticket!==renderToken||tab!==requestedTab;
  try{
@@ -8175,6 +8210,29 @@ async function render(){
  }catch(e){
   if(!stale())content.innerHTML='<div class="sq-ng-empty">'+esc(e.message||'Could not load this section')+'</div>';
  }
+}
+let cfPeriod='month',cfCategory='',cfAllCategories=false,cfAllActivity=false;
+function drawMobileCashFlow(){
+ const now=new Date(),start=new Date(now.getFullYear(),now.getMonth(),1),day=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ const end=day(now),begin=cfPeriod==='month'?day(start):cfPeriod==='last'?day(new Date(now.getFullYear(),now.getMonth()-1,1)):'',finish=cfPeriod==='last'?day(new Date(now.getFullYear(),now.getMonth(),0)):end;
+ const valid=finance.filter(x=>x&&['income','expense'].includes(x.kind)&&Number.isFinite(Number(x.amount))&&Number(x.amount)>=0);
+ const rows=valid.filter(x=>!begin||(String(x.occurred_on).slice(0,10)>=begin&&String(x.occurred_on).slice(0,10)<=finish));
+ const sum=(list,k)=>list.filter(x=>x.kind===k).reduce((a,x)=>a+Number(x.amount),0),inc=sum(rows,'income'),out=sum(rows,'expense'),total=inc+out,pct=total?100*inc/total:0;
+ const cats={};rows.filter(x=>x.kind==='expense').forEach(x=>{const k=x.category||'Uncategorized';cats[k]=(cats[k]||0)+Number(x.amount)});
+ const sorted=Object.entries(cats).sort((a,b)=>b[1]-a[1]),activity=rows.filter(x=>!cfCategory||(x.kind==='expense'&&(x.category||'Uncategorized')===cfCategory)).sort((a,b)=>String(b.occurred_on).localeCompare(String(a.occurred_on)));
+ const signed=n=>(n>=0?'+':'−')+money(Math.abs(n));
+ const prevStart=day(new Date(now.getFullYear(),now.getMonth()-(cfPeriod==='last'?2:1),1)),prevEnd=day(new Date(now.getFullYear(),now.getMonth()-(cfPeriod==='last'?1:0),0));
+ const prev=valid.filter(x=>String(x.occurred_on).slice(0,10)>=prevStart&&String(x.occurred_on).slice(0,10)<=prevEnd),prevNet=sum(prev,'income')-sum(prev,'expense');
+ const comparison=cfPeriod==='all'?'All recorded transactions':prevNet? signed(inc-out-prevNet)+' vs. previous month':'No previous net balance for comparison';
+ content.innerHTML=`<div id="dw-cf-mobile"><label class="cf-date"><select id="cf-period" aria-label="Cash flow date range"><option value="month">This month · ${esc(begin)} – ${esc(end)}</option><option value="last">Last month</option><option value="all">All time</option></select></label><section class="cf-card"><b class="cf-mint">Net cash flow ⓘ</b><div class="cf-net">${esc(signed(inc-out))}</div><span class="cf-muted">${esc(comparison)}</span></section><section class="cf-card cf-chart"><div class="cf-ring" role="img" aria-label="Income ${Math.round(pct)} percent of total flow" style="background:${total?'conic-gradient(#60F1AD 0 '+pct+'%,#355E72 '+pct+'% 100%)':'#355E72'}"><div class="cf-hole"><strong>${esc(money(total))}</strong><span class="cf-muted">Total flow</span></div></div><div class="cf-legend"><div><b class="cf-mint">● Income</b><br><strong>${esc(money(inc))}</strong> <small class="cf-muted">${Math.round(pct)}%</small></div><div><b>● Expenses</b><br><strong>${esc(money(out))}</strong> <small class="cf-muted">${total?100-Math.round(pct):0}%</small></div></div></section><div class="cf-heading"><h2>Spending by Category</h2><button id="cf-all-cats">${cfAllCategories?'Show less':'See all'} ›</button></div><div class="cf-cats">${(cfAllCategories?sorted:sorted.slice(0,4)).map(([k,v])=>`<button data-cf-cat="${esc(k)}" aria-pressed="${cfCategory===k}"><span>${esc(k)}</span><b>${esc(money(v))}</b></button>`).join('')||'<span class="cf-muted">No spending in this period.</span>'}</div><div class="cf-heading"><h2>Recent Activity</h2><button id="cf-all-activity">${cfAllActivity?'Show less':'See all'} ›</button></div><section class="cf-card">${(cfAllActivity?activity:activity.slice(0,3)).map(x=>`<div class="cf-row"><span class="cf-icon">${x.kind==='income'?'↓':'↑'}</span><div><b>${esc(x.description)}</b><small>${esc(x.category||x.kind)}</small></div><div><b class="${x.kind==='income'?'cf-mint':''}">${esc(signed(x.kind==='income'?Number(x.amount):-Number(x.amount)))}</b><small>${esc(x.occurred_on)}</small><button data-delete="${esc(x.id)}" aria-label="Delete transaction">Delete</button></div></div>`).join('')||'<span class="cf-muted">No transactions in this period.</span>'}</section><button id="sq-ng-open-transaction" type="button">＋ Add expense or income</button><nav class="cf-nav" aria-label="Cash flow navigation"><button id="cf-home">⌂ Home</button><button aria-current="page" id="cf-current">▥ Cash Flow</button><button id="cf-settings">⚙ Settings</button></nav></div>`;
+ content.querySelector('#cf-period').value=cfPeriod;
+ content.querySelector('#cf-period').onchange=e=>{cfPeriod=e.target.value;cfCategory='';drawFinance()};
+ content.querySelector('#cf-all-cats').onclick=()=>{cfAllCategories=!cfAllCategories;drawFinance()};
+ content.querySelector('#cf-all-activity').onclick=()=>{cfAllActivity=!cfAllActivity;drawFinance()};
+ content.querySelectorAll('[data-cf-cat]').forEach(b=>b.onclick=()=>{cfCategory=cfCategory===b.dataset.cfCat?'':b.dataset.cfCat;drawFinance()});
+ content.querySelector('#cf-home').onclick=()=>{close();document.getElementById('nav-home')?.click()};
+ content.querySelector('#cf-settings').onclick=()=>{close();document.getElementById('nav-settings')?.click()};
+ content.querySelector('#cf-current').onclick=()=>root.scrollTo({top:0,behavior:'auto'});
 }
 function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce((a,x)=>a+Number(x.amount),0),spent=finance.filter(x=>x.kind==='expense').reduce((a,x)=>a+Number(x.amount),0);const byCategory={};finance.filter(x=>x.kind==='expense').forEach(x=>byCategory[x.category]=(byCategory[x.category]||0)+Number(x.amount));{
  const now=new Date(),months=[];
@@ -8197,7 +8255,7 @@ function drawFinance(){const income=finance.filter(x=>x.kind==='income').reduce(
  content.innerHTML=`<div class="sq-ng-grid">${card('This month income',money(current.income),true)}${card('This month spending',money(current.expense))}${card('Monthly cash flow',money(current.income-current.expense))}</div><div class="dw-analytics-layout"><section class="sq-ng-card"><h2>Last six months</h2><p class="sq-ng-note"><span class="dw-income-key">Income</span> · <span class="dw-spending-key">Spending</span></p><div class="dw-analytics-months" role="img" aria-label="Six-month income and spending chart">${chart}</div></section>${categoryCard}</div>${comparisonCard}<p class="sq-ng-note">Calculated from your private personal transactions in USD; shared tracker debts are excluded.</p>`;
  return;
 }
-if(desktopSections.matches && tab==='finance' && financeOpenSource==='cashflow') {
+if(!desktopSections.matches && tab==='finance' && financeOpenSource==='cashflow'){drawMobileCashFlow();} else if(desktopSections.matches && tab==='finance' && financeOpenSource==='cashflow') {
  window.dwCashFlowAnalyticsRender({content,finance,money,esc,refresh:drawFinance});
 } else {
 const trendCard=`<section class="sq-ng-card dw-web-trend"><h2>Cash Flow Trend</h2><p class="sq-ng-note"><span class="dw-income-key">Income</span> · <span class="dw-spending-key">Spending</span></p><div class="dw-analytics-months" role="img" aria-label="Six-month income and spending chart">${chart}</div></section>`;
