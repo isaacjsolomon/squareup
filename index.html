@@ -8247,7 +8247,7 @@ const modalHtml = `<div id="sq-ng-txn-overlay" class="sq-ng-txn-overlay" hidden>
    <form class="sq-ng-txn-form" id="sq-ng-add">
     <input type="hidden" name="kind" value="expense">
     <label for="sq-ng-txn-description">Description<input id="sq-ng-txn-description" name="description" required maxlength="120" placeholder="Groceries" autocomplete="off"></label>
-    <label for="sq-ng-txn-category">Category<input id="sq-ng-txn-category" name="category" required maxlength="50" placeholder="Food" autocomplete="off"></label>
+    <label for="sq-ng-txn-category">Category<select id="sq-ng-txn-category" name="category" required></select></label><label id="sq-ng-custom-category-label" hidden>Custom category<input id="sq-ng-custom-category" maxlength="50" autocomplete="off" placeholder="Enter category" disabled></label>
     <label for="sq-ng-txn-amount">Amount (USD)<input id="sq-ng-txn-amount" name="amount" type="number" min="0.01" max="99999999" step="0.01" inputmode="decimal" required placeholder="0.00"></label>
     <p id="sq-ng-txn-feedback" class="sq-ng-txn-feedback" role="status" aria-live="polite"></p>
     <button class="sq-ng-primary sq-ng-txn-save" type="submit">Save expense</button>
@@ -8263,6 +8263,12 @@ const kindInput=form.elements.namedItem('kind');
 const saveButton=form.querySelector('button[type="submit"]');
 const feedback=content.querySelector('#sq-ng-txn-feedback');
 const tabs=[...content.querySelectorAll('[data-txn-kind]')];
+const categorySelect=form.elements.namedItem('category');
+const customCategory=form.querySelector('#sq-ng-custom-category');
+const customLabel=form.querySelector('#sq-ng-custom-category-label');
+const categoryOptions={expense:['Food & Dining','Groceries','Transportation','Shopping','Entertainment','Subscriptions','School & Education','Health','Travel','Gifts','Bills & Utilities','Other'],income:['Salary / Paycheck','Job','Allowance','Gifts','Freelance','Business','Refunds','Interest','Other']};
+function syncCustomCategory(){const custom=categorySelect.value==='__custom__';customLabel.hidden=!custom;customCategory.disabled=!custom;customCategory.required=custom;if(!custom)customCategory.value='';}
+categorySelect.addEventListener('change',syncCustomCategory);
 const setKind=kind=>{
  if(!['expense','income'].includes(kind))return;
  kindInput.value=kind;
@@ -8274,7 +8280,7 @@ const setKind=kind=>{
  content.querySelector('#sq-ng-txn-panel').setAttribute('aria-labelledby','sq-ng-txn-tab-'+kind);
  content.querySelector('#sq-ng-txn-title').textContent=kind==='expense'?'Add personal expense':'Add personal income';
  form.elements.namedItem('description').placeholder=kind==='expense'?'Groceries':'Paycheck';
- form.elements.namedItem('category').placeholder=kind==='expense'?'Food':'Work';
+ categorySelect.replaceChildren(new Option('Select a category',''),...categoryOptions[kind].map(c=>new Option(c,c)),new Option('Custom category…','__custom__'));categorySelect.value='';syncCustomCategory();
  saveButton.textContent=kind==='expense'?'Save expense':'Save income';
  feedback.textContent='';
 };
@@ -8301,7 +8307,7 @@ overlay.addEventListener('keydown',event=>{
   setKind(target.dataset.txnKind);target.focus();return;
  }
  if(event.key==='Tab'){
-  const focusables=[...overlay.querySelectorAll('button:not([disabled]):not([tabindex="-1"]),input:not([type="hidden"]):not([disabled])')];
+  const focusables=[...overlay.querySelectorAll('button:not([disabled]):not([tabindex="-1"]),input:not([type="hidden"]):not([disabled]),select:not([disabled])')];
   const first=focusables[0],last=focusables[focusables.length-1];
   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
   else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
@@ -8311,6 +8317,7 @@ form.addEventListener('submit',async event=>{
  event.preventDefault();
  if(saveButton.disabled)return;
  const values=Object.fromEntries(new FormData(form));
+ if(values.category==='__custom__')values.category=customCategory.value.trim();
  values.description=values.description.trim();values.category=values.category.trim();values.amount=Number(values.amount);
  if(!values.description||!values.category||!Number.isFinite(values.amount)||values.amount<=0){feedback.textContent='Enter a description, category and valid amount.';return;}
  saveButton.disabled=true;
@@ -11832,7 +11839,8 @@ try {
 } catch (_) {}
 </script>
 
-<style id="dw-bills-navy-floating-v1">
+<style id="dw-bills-navy-floating-v1">#sq-ng-txn-overlay #sq-ng-custom-category-label[hidden]{display:none!important}#sq-ng-txn-overlay #sq-ng-txn-category{width:100%;min-height:44px;border:1px solid #355E72;border-radius:10px;background:#173750;color:#F3F8FC;padding:10px;font:inherit;color-scheme:dark;box-sizing:border-box}
+
 @media(max-width:900px){
 html body.dw-mobile-cashflow #sq-nextgen dialog#sq-ng-txn-overlay[open]:not([hidden]){display:block!important;position:fixed!important;inset:0!important;margin:auto!important;width:min(92vw,440px)!important;height:max-content!important;max-height:85dvh!important;overflow:auto!important;padding:0!important;background:#102B40!important;border:1px solid #355E72!important;border-radius:18px!important;color:#F3F8FC!important;transform:none!important;opacity:1!important}
 html body.dw-mobile-cashflow #sq-nextgen dialog#sq-ng-txn-overlay::backdrop{background:rgba(0,0,0,.65)}
