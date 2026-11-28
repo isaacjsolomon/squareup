@@ -1873,6 +1873,9 @@ if (
         const description = clean(body.description, 120);
         const category = clean(body.category, 50);
         const amount = Number(body.amount);
+        const requestedDate = String(body.occurred_on || '');
+        const parsedDate = new Date(requestedDate + 'T12:00:00Z');
+        const occurredOn = /^\d{4}-\d{2}-\d{2}$/.test(requestedDate) && Number.isFinite(parsedDate.getTime()) && parsedDate.toISOString().slice(0,10) === requestedDate ? requestedDate : new Date().toISOString().slice(0,10);
 
         if (
           !['income', 'expense'].includes(kind) ||
@@ -1894,7 +1897,7 @@ if (
             category,
             amount: Math.round(amount * 100) / 100,
             currency: 'USD',
-            occurred_on: new Date().toISOString().slice(0, 10)
+            occurred_on: occurredOn
           }
         });
 
